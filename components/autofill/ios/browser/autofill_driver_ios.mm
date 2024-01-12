@@ -31,6 +31,16 @@ AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
       web_frame);
 }
 
+// static
+AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndLocalFrameToken(
+    web::WebState* web_state,
+    LocalFrameToken token) {
+  web::WebFramesManager* frames_manager =
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+  web::WebFrame* frame = frames_manager->GetFrameWithId(token.ToString());
+  return frame ? FromWebStateAndWebFrame(web_state, frame) : nullptr;
+}
+
 AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
                                      web::WebFrame* web_frame,
                                      AutofillClient* client,
@@ -75,8 +85,7 @@ std::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
 }
 
 AutofillDriverIOS* AutofillDriverIOS::GetParent() {
-  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
-  return nullptr;
+  return parent_.get();
 }
 
 BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
@@ -162,6 +171,7 @@ void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
       browser_autofill_manager_->form_structures();
   std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures;
   form_structures.reserve(forms.size());
+
   for (const FormData& form : forms) {
     auto it = map.find(form.global_id());
     if (it != map.end())
@@ -247,6 +257,27 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
   web::WebFramesManager* frames_manager =
       AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);
   return frames_manager->GetFrameWithId(web_frame_id_);
+}
+
+void AutofillDriverIOS::NotifyOfChildFrame(RemoteFrameToken token) {
+  auto* registrar = ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
+  if (registrar && known_child_frames_.insert(token).second) {
+    registrar->DeclareNewRemoteToken(
+        token, base::BindOnce(&AutofillDriverIOS::SetSelfAsParent,
+                              weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {
+  parent_ = std::move(parent);
+}
+
+void AutofillDriverIOS::SetSelfAsParent(LocalFrameToken token) {
+  AutofillDriverIOS* child_driver =
+      FromWebStateAndLocalFrameToken(web_state_, token);
+  if (child_driver) {
+    child_driver->SetParent(weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 }  // namespace autofill

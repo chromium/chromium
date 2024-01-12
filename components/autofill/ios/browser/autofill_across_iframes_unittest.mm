@@ -313,6 +313,43 @@ TEST_F(AutofillAcrossIframesTest, Resolve) {
   EXPECT_FALSE(shouldnt_exist.has_value());
 }
 
+TEST_F(AutofillAcrossIframesTest, SetAndGetParent) {
+  AddIframe("cf1", "child frame 1");
+  AddInput("text", "name");
+  StartTestServerAndLoad();
+
+  // Wait for a form with a child frame, and grab its remote token.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
+  const FormData& form = main_frame_manager().seen_forms()[0];
+  ASSERT_EQ(form.child_frames.size(), 1u);
+  FrameTokenWithPredecessor remote_token = form.child_frames[0];
+  EXPECT_THAT(remote_token.token, VariantWith<RemoteFrameToken>(IsTrue()));
+
+  // Wait for the child frame to register itself.
+  auto* registrar =
+      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state());
+  ASSERT_TRUE(registrar);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+        return registrar
+            ->LookupChildFrame(absl::get<RemoteFrameToken>(remote_token.token))
+            .has_value();
+      }));
+
+  // The main frame shouldn't have a parent – it's the root.
+  EXPECT_FALSE(main_frame_driver()->GetParent());
+
+  // The child frame should have the main frame as its parent.
+  std::optional<LocalFrameToken> local_token =
+      main_frame_driver()->Resolve(remote_token.token);
+  ASSERT_TRUE(local_token);
+  auto* child_frame_driver = AutofillDriverIOS::FromWebStateAndLocalFrameToken(
+      web_state(), *local_token);
+  ASSERT_TRUE(child_frame_driver);
+  EXPECT_EQ(main_frame_driver(), child_frame_driver->GetParent());
+}
+
 // Ensure that disabling the feature actually disables the feature.
 TEST_F(AutofillAcrossIframesTest, FeatureDisabled) {
   base::test::ScopedFeatureList disable;

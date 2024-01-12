@@ -45,6 +45,17 @@ class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
   // values are malformed.
   void ProcessRegistrationMessage(base::Value* message);
 
+  // Notifies the registrar that a remote token `remote` has been dispatched to
+  // a child frame. If the registrar already knows about this token, `callback`
+  // will be invoked immediately with the corresponding local token. If not,
+  // the registrar will hold on to the callback until it encounters `remote` and
+  // execute it at that time.
+  // Be careful what you bind to `callback`, and use WeakPtr as necessary, as
+  // it may be retained indefinitely.
+  void DeclareNewRemoteToken(
+      RemoteFrameToken remote,
+      base::OnceCallback<void(LocalFrameToken)> callback);
+
   // Returns the existing registrar for the given `web_state`, if there is one,
   // or creates a new one. May return nullptr if this functionality is not
   // available.
@@ -57,6 +68,12 @@ class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
 
   // Maintains the mapping used by `LookupChildFrame`.
   std::map<RemoteFrameToken, LocalFrameToken> lookup_map_;
+
+  // When `DeclareNewRemoteToken` is called, the RemoteFrameToken may not
+  // yet correspond to a known frame. In this case, the callback is stored in
+  // this map until a matching remote token is registered.
+  std::map<RemoteFrameToken, base::OnceCallback<void(LocalFrameToken)>>
+      pending_callbacks_;
 };
 
 }  // namespace autofill

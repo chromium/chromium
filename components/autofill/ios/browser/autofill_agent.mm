@@ -243,15 +243,34 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 }
 
 // Notifies the autofill manager when forms are detected on a page.
-- (void)notifyBrowserAutofillManager:
-            (autofill::BrowserAutofillManager*)autofillManager
-                         ofFormsSeen:(const FormDataVector&)updated_forms {
-  DCHECK(autofillManager);
-  DCHECK(!updated_forms.empty());
+- (void)notifyFormsSeen:(const FormDataVector&)updatedForms
+                inFrame:(web::WebFrame*)frame {
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
+  if (!driver) {
+    return;
+  }
+
+  DCHECK(!updatedForms.empty());
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    for (const autofill::FormData& form : updatedForms) {
+      for (const autofill::FrameTokenWithPredecessor& childFrame :
+           form.child_frames) {
+        // This absl::get is safe because on iOS, FormData::child_frames is
+        // only ever populated with RemoteFrameTokens. absl::get will fail a
+        // CHECK if this assumption is ever wrong.
+        auto token = absl::get<autofill::RemoteFrameToken>(childFrame.token);
+        driver->NotifyOfChildFrame(token);
+      }
+    }
+  }
+
   // TODO(crbug.com/1215337): Notify |autofillManager| about deleted fields.
-  std::vector<FormGlobalId> removed_forms;
-  autofillManager->OnFormsSeen(/*updated_forms=*/updated_forms,
-                               /*removed_forms=*/removed_forms);
+  std::vector<FormGlobalId> removedForms;
+  driver->GetAutofillManager().OnFormsSeen(/*updated_forms=*/updatedForms,
+                                           /*removed_forms=*/removedForms);
 }
 
 // Notifies the autofill manager when forms are submitted.
@@ -916,13 +935,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   __weak AutofillAgent* weakSelf = self;
   id completionHandler = ^(BOOL success, const FormDataVector& forms) {
     AutofillAgent* strongSelf = weakSelf;
-    if (!strongSelf || !success)
+    if (!strongSelf || !success || forms.empty()) {
       return;
-    autofill::BrowserAutofillManager* autofillManager =
-        [strongSelf autofillManagerFromWebState:webState webFrame:webFrame];
-    if (!autofillManager || forms.empty())
-      return;
-    [strongSelf notifyBrowserAutofillManager:autofillManager ofFormsSeen:forms];
+    }
+    [strongSelf notifyFormsSeen:forms inFrame:webFrame];
   };
   // The document has now been fully loaded. Scan for forms to be extracted.
   size_t min_required_fields =
