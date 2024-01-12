@@ -798,6 +798,12 @@ gfx::Size AppListItemView::GetIconSize() const {
     return app_list_config_->folder_icon_size();
   }
   if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
+    // Placeholder icons do not change size between states.
+    if (icon_image_model_.IsVectorIcon() ||
+        (ShouldUseFallbackIconImageModel() &&
+         fallback_icon_image_model_.IsVectorIcon())) {
+      return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
+    }
     return GetPreferredIconSizeForProgressRing();
   }
 
@@ -883,13 +889,8 @@ void AppListItemView::UpdateDraggedItem(const AppListItem* dragged_item) {
 }
 
 gfx::Size AppListItemView::GetPreferredIconSizeForProgressRing() const {
-  DCHECK(is_promise_app_);
+  DCHECK(is_promise_app_ || ShouldUseFallbackIconImageModel());
   CHECK(item_weak_);
-  // Placeholder icons do not change size between states.
-  // TODO(b/314251625): Evaluate the correct size for icons across spec.
-  if (icon_image_model_.IsVectorIcon()) {
-    return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
-  }
 
   switch (item_weak_->app_status()) {
     case AppStatus::kPending:
@@ -919,6 +920,7 @@ void AppListItemView::ScaleIconImmediatly(float scale_factor) {
   layer()->SetTransform(gfx::Transform());
   if (progress_indicator_) {
     UpdateProgressRingBounds();
+    progress_indicator_->layer()->SetTransform(gfx::Transform());
   }
 }
 
@@ -1006,6 +1008,9 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
     const gfx::Transform scale_transform = gfx::GetScaleTransform(
         GetIconView()->bounds().CenterPoint(), 1 / kDragDropAppIconScale);
     layer()->SetTransform(scale_transform);
+    if (progress_indicator_) {
+      progress_indicator_->layer()->SetTransform(scale_transform);
+    }
   } else if (drag_state_ != DragState::kNone) {
     // If a drag view has been created for this icon, the item transition to
     // target bounds is handled by the apps grid view bounds animator. At the
@@ -1023,13 +1028,20 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
                             : gfx::Tween::EASE_OUT_2);
   if (scale_up) {
     layer()->SetTransform(gfx::Transform());
+    if (progress_indicator_) {
+      progress_indicator_->layer()->SetTransform(gfx::Transform());
+    }
   } else {
     if (drag_state_ == DragState::kNone) {
       // To avoid poor quality icons, update icon image with the correct scale
       // after the transform animation is completed.
       settings.AddObserver(this);
-      layer()->SetTransform(gfx::GetScaleTransform(
-          GetContentsBounds().CenterPoint(), 1 / kDragDropAppIconScale));
+      const gfx::Transform reverse_scale_transform = gfx::GetScaleTransform(
+          GetContentsBounds().CenterPoint(), 1 / kDragDropAppIconScale);
+      layer()->SetTransform(reverse_scale_transform);
+      if (progress_indicator_) {
+        progress_indicator_->layer()->SetTransform(reverse_scale_transform);
+      }
     }
   }
 }
@@ -2205,6 +2217,20 @@ void AppListItemView::UpdateProgressRingBounds() {
 
   gfx::Rect progress_bounds = gfx::Rect(
       views::View::ConvertRectToTarget(icon_, this, icon_->GetImageBounds()));
+
+  const gfx::Size promise_icon_preferred_size = gfx::ScaleToRoundedSize(
+      GetPreferredIconSizeForProgressRing(), icon_scale_);
+
+  // If the icon is smaller than the expected icon size (i,e for placeholder
+  // icons), add padding to ensure the overall size of the promise icon is
+  // correct regardless of the image icon size.
+  progress_bounds.Inset(gfx::Insets::VH(
+      std::max(
+          0,
+          (progress_bounds.width() - promise_icon_preferred_size.width()) / 2),
+      std::max(
+          0, (progress_bounds.height() - promise_icon_preferred_size.height()) /
+                 2)));
 
   const gfx::Insets progress_ring_padding =
       icon_image_model_.IsVectorIcon() ||
