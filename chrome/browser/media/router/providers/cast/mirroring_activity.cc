@@ -694,7 +694,7 @@ void MirroringActivity::OnInternalMessage(
   channel_to_service_->OnMessage(std::move(ptr));
 }
 
-void MirroringActivity::CreateMediaController(
+void MirroringActivity::BindMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);

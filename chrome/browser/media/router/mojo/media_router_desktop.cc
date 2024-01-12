@@ -358,9 +358,9 @@ void MediaRouterDesktop::GetMediaController(
       route->controller_type() == RouteControllerType::kNone) {
     return;
   }
-  auto callback = base::BindOnce(&MediaRouterDesktop::OnMediaControllerCreated,
+  auto callback = base::BindOnce(&MediaRouterDesktop::OnMediaControllerBound,
                                  weak_factory_.GetWeakPtr(), route_id);
-  media_route_providers_[*provider_id]->CreateMediaRouteController(
+  media_route_providers_[*provider_id]->BindMediaController(
       route_id, std::move(controller), std::move(observer),
       std::move(callback));
 }
@@ -698,9 +698,8 @@ void MediaRouterDesktop::RouteResponseReceived(
   std::move(callback).Run(std::move(connection), *result);
 }
 
-void MediaRouterDesktop::OnMediaControllerCreated(
-    const MediaRoute::Id& route_id,
-    bool success) {
+void MediaRouterDesktop::OnMediaControllerBound(const MediaRoute::Id& route_id,
+                                                bool success) {
   MediaRouterMojoMetrics::RecordMediaRouteControllerCreationResult(success);
 }
 

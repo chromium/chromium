@@ -94,7 +94,7 @@ class CastActivityManager : public CastActivityManagerBase,
       const MediaRoute::Id& route_id,
       mojom::MediaRouteProvider::TerminateRouteCallback callback);
 
-  bool CreateMediaController(
+  bool BindMediaController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer);

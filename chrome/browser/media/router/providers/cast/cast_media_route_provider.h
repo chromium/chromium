@@ -80,11 +80,11 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   void DetachRoute(const std::string& route_id) override;
   void EnableMdnsDiscovery() override;
   void DiscoverSinksNow() override;
-  void CreateMediaRouteController(
+  void BindMediaController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-      CreateMediaRouteControllerCallback callback) override;
+      BindMediaControllerCallback callback) override;
   void GetState(GetStateCallback callback) override;
 
   CastActivityManager* GetCastActivityManagerForTest() {

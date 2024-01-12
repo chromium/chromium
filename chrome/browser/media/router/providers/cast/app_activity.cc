@@ -113,7 +113,7 @@ void AppActivity::SendMediaStatusToClients(
     media_controller_->SetMediaStatus(media_status);
 }
 
-void AppActivity::CreateMediaController(
+void AppActivity::BindMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   if (!media_controller_) {

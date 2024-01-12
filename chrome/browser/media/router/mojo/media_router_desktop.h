@@ -181,8 +181,8 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
                              const absl::optional<std::string>& error_text,
                              mojom::RouteRequestResultCode result_code);
 
-  // Callback called by MRP's CreateMediaRouteController().
-  void OnMediaControllerCreated(const MediaRoute::Id& route_id, bool success);
+  // Callback called by MRP's BindMediaController().
+  void OnMediaControllerBound(const MediaRoute::Id& route_id, bool success);
 
   void AddMirroringMediaControllerHost(const MediaRoute& route);
 

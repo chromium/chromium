@@ -560,9 +560,8 @@ TEST_F(MirroringActivityTest, OnSourceChangedNotifiesMediaStatusObserver) {
       NiceMock<MockMediaStatusObserver>(
           observer_pending_remote.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::MediaController> media_controller;
-  activity_->CreateMediaController(
-      media_controller.BindNewPipeAndPassReceiver(),
-      std::move(observer_pending_remote));
+  activity_->BindMediaController(media_controller.BindNewPipeAndPassReceiver(),
+                                 std::move(observer_pending_remote));
   RunUntilIdle();
 
   // A random int indicating the new tab source.
@@ -620,9 +619,8 @@ TEST_F(MirroringActivityTest, Pause) {
       NiceMock<MockMediaStatusObserver>(
           observer_pending_remote.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::MediaController> media_controller;
-  activity_->CreateMediaController(
-      media_controller.BindNewPipeAndPassReceiver(),
-      std::move(observer_pending_remote));
+  activity_->BindMediaController(media_controller.BindNewPipeAndPassReceiver(),
+                                 std::move(observer_pending_remote));
   RunUntilIdle();
 
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
@@ -646,9 +644,8 @@ TEST_F(MirroringActivityTest, Play) {
       NiceMock<MockMediaStatusObserver>(
           observer_pending_remote.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::MediaController> media_controller;
-  activity_->CreateMediaController(
-      media_controller.BindNewPipeAndPassReceiver(),
-      std::move(observer_pending_remote));
+  activity_->BindMediaController(media_controller.BindNewPipeAndPassReceiver(),
+                                 std::move(observer_pending_remote));
   RunUntilIdle();
 
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
@@ -713,9 +710,8 @@ TEST_F(MirroringActivityTest, OnRemotingStateChanged) {
       NiceMock<MockMediaStatusObserver>(
           observer_pending_remote.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::MediaController> media_controller;
-  activity_->CreateMediaController(
-      media_controller.BindNewPipeAndPassReceiver(),
-      std::move(observer_pending_remote));
+  activity_->BindMediaController(media_controller.BindNewPipeAndPassReceiver(),
+                                 std::move(observer_pending_remote));
   RunUntilIdle();
 
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
@@ -752,7 +748,7 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
       NiceMock<MockMediaStatusObserver>(
           observer_pending_remote_1.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::MediaController> media_controller_1;
-  activity_->CreateMediaController(
+  activity_->BindMediaController(
       media_controller_1.BindNewPipeAndPassReceiver(),
       std::move(observer_pending_remote_1));
 
@@ -762,7 +758,7 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
       NiceMock<MockMediaStatusObserver>(
           observer_pending_remote_2.InitWithNewPipeAndPassReceiver());
   mojo::Remote<mojom::MediaController> media_controller_2;
-  activity_->CreateMediaController(
+  activity_->BindMediaController(
       media_controller_2.BindNewPipeAndPassReceiver(),
       std::move(observer_pending_remote_2));
 

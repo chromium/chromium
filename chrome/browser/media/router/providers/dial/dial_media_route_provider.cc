@@ -589,11 +589,11 @@ void DialMediaRouteProvider::DiscoverSinksNow() {
   media_sink_service_->DiscoverSinksNow();
 }
 
-void DialMediaRouteProvider::CreateMediaRouteController(
+void DialMediaRouteProvider::BindMediaController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer,
-    CreateMediaRouteControllerCallback callback) {
+    BindMediaControllerCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(false);
 }
