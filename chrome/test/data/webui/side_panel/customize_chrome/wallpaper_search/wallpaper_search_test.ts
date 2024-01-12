@@ -188,6 +188,33 @@ suite('WallpaperSearchTest', () => {
           'true');
     });
 
+    test('unselects colors', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertFalse(
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+
+      $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
+      let checkedMarkedColors =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '#descriptorMenuD button [checked]');
+      assertEquals(1, checkedMarkedColors.length);
+
+      // Clicking again should deselect it.
+      $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
+      checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          '#descriptorMenuD button [checked]');
+      assertEquals(0, checkedMarkedColors.length);
+
+      // Verify submitting does not send a color.
+      wallpaperSearchElement.$.submitButton.click();
+      await flushTasks();
+      assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
+      assertEquals(
+          undefined, handler.getArgs('getWallpaperSearchResults')[0].color);
+    });
+
     test('unselects hue', async () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();

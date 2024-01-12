@@ -496,10 +496,15 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private onDefaultColorClick_(e: DomRepeatEvent<string>) {
     this.selectedHue_ = null;
-    this.selectedDefaultColor_ = e.model.item;
-    this.selectedDescriptorD_ = {
-      color: hexColorToSkColor(this.selectedDefaultColor_),
-    };
+    if (this.selectedDefaultColor_ === e.model.item) {
+      this.selectedDefaultColor_ = undefined;
+      this.selectedDescriptorD_ = null;
+    } else {
+      this.selectedDefaultColor_ = e.model.item;
+      this.selectedDescriptorD_ = {
+        color: hexColorToSkColor(this.selectedDefaultColor_),
+      };
+    }
   }
 
   private onColorDescriptorChange_() {

@@ -222,8 +222,13 @@ export class CustomizeChromeCombobox extends PolymerElement {
     if (!selectableTarget) {
       return;
     }
-    this.selectItem_(selectableTarget);
-    this.expanded_ = false;
+
+    if (this.selectedElement_ === selectableTarget) {
+      this.unselectSelectedItem_();
+    } else {
+      this.selectItem_(selectableTarget);
+      this.expanded_ = false;
+    }
   }
 
   private onDropdownPointerdown_(e: PointerEvent) {
@@ -332,7 +337,9 @@ export class CustomizeChromeCombobox extends PolymerElement {
     if (e.key === 'Enter' || e.key === 'Space') {
       e.preventDefault();
       e.stopPropagation();
-      if (this.selectItem_(this.highlightedElement_)) {
+      if (this.selectedElement_ === this.highlightedElement_) {
+        this.unselectSelectedItem_();
+      } else if (this.selectItem_(this.highlightedElement_)) {
         this.expanded_ = false;
       }
       return;
@@ -427,6 +434,15 @@ export class CustomizeChromeCombobox extends PolymerElement {
     item.toggleAttribute('selected', true);
     this.selectedElement_ = item as OptionElement;
     return true;
+  }
+
+  private unselectSelectedItem_() {
+    if (!this.selectedElement_) {
+      return;
+    }
+
+    this.selectedElement_.removeAttribute('selected');
+    this.selectedElement_ = null;
   }
 }
 
