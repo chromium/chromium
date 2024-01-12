@@ -176,17 +176,18 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler", R"(
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_search_handler_descriptors_fetcher", R"(
         semantics {
           sender: "Customize Chrome"
           description:
-            "This service downloads different configurations "
-            "for Customize Chrome."
+            "This service downloads different descriptors "
+            "for Customize Chrome's Wallpaper Search."
           trigger:
             "Opening Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "None."
+          data: "Sends the URL to where the descriptor's JSON is located."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -194,7 +195,7 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
             }
           }
           user_data {
-            type: NONE
+            type: ACCESS_TOKEN
           }
           last_reviewed: "2023-10-10"
         }
@@ -230,8 +231,9 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler_image",
-                                          R"(
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_search_handler_inspirations_fetcher",
+          R"(
         semantics {
           sender: "Customize Chrome"
           description:
@@ -241,7 +243,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
             "Opening Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "None."
+          data: "Sends the URL to where the example images' JSON is located."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -249,7 +251,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
             }
           }
           user_data {
-            type: NONE
+            type: ACCESS_TOKEN
           }
           last_reviewed: "2024-01-10"
         }
@@ -377,6 +379,67 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
   }
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
       result_id, bitmap, base::ElapsedTimer());
+}
+
+void WallpaperSearchHandler::SetBackgroundToInspirationImage(
+    const base::Token& id,
+    const GURL& background_url) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_search_handler_inspiration_image_downloader", R"(
+        semantics {
+          sender: "Customize Chrome"
+          description:
+            "Downloads an image to customize Chrome's appearance "
+            "i.e. change NTP background image and extract colors from the "
+            "image to change Chrome's color."
+          trigger:
+            "Pressing an image under the category titled 'Inspiration' "
+            "in Customize Chrome on the Desktop NTP, "
+            "if Google is the default search provider "
+            "and the user is signed in."
+          data: "Sends the URL for the image that the user selected."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2024-01-12"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by signing out or "
+            "selecting a non-Google default search engine in Chrome "
+            "settings under 'Search Engine'."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+          }
+        })");
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(background_url);
+  resource_request->request_initiator =
+      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+
+  image_download_simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  image_download_simple_url_loader_->SetRetryOptions(
+      /*max_retries=*/3,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+  image_download_simple_url_loader_->DownloadToString(
+      profile_->GetURLLoaderFactory().get(),
+      base::BindOnce(&WallpaperSearchHandler::OnInspirationImageDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), id, base::ElapsedTimer()),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void WallpaperSearchHandler::UpdateHistory() {
@@ -624,6 +687,30 @@ void WallpaperSearchHandler::OnHistoryDecoded(
   client_->SetHistory(std::move(thumbnails));
 }
 
+void WallpaperSearchHandler::OnInspirationImageDownloaded(
+    const base::Token& id,
+    base::ElapsedTimer timer,
+    std::unique_ptr<std::string> response_body) {
+  if (!response_body) {
+    // Network errors (i.e. the server did not provide a response).
+    DVLOG(1) << "Request failed with error: "
+             << image_download_simple_url_loader_->NetError();
+    return;
+  }
+  image_decoder_->DecodeImage(
+      *response_body, gfx::Size(), nullptr,
+      base::BindOnce(&WallpaperSearchHandler::OnInspirationImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), id, std::move(timer)));
+}
+
+void WallpaperSearchHandler::OnInspirationImageDecoded(
+    const base::Token& id,
+    base::ElapsedTimer timer,
+    const gfx::Image& image) {
+  wallpaper_search_background_manager_->SelectLocalBackgroundImage(
+      id, image.AsBitmap(), std::move(timer));
+}
+
 void WallpaperSearchHandler::OnInspirationsRetrieved(
     GetInspirationsCallback callback,
     std::unique_ptr<std::string> response_body) {
@@ -679,6 +766,9 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
       }
       auto mojo_inspiration_a =
           side_panel::customize_chrome::mojom::Inspiration::New();
+      // TODO(b/317402041): Ensure inspiration images have the same token
+      // everywhere they show in the UI.
+      mojo_inspiration_a->id = base::Token::CreateRandom();
       mojo_inspiration_a->background_url =
           GURL(base::StrCat({kGstaticBaseURL, *background_image}));
       mojo_inspiration_a->thumbnail_url =

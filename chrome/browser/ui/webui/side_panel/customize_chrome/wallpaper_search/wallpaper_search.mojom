@@ -37,6 +37,7 @@ struct Descriptors {
 };
 
 struct Inspiration {
+  mojo_base.mojom.Token id;
   url.mojom.Url background_url;
   url.mojom.Url thumbnail_url;
 };
@@ -108,6 +109,11 @@ interface WallpaperSearchHandler {
   // image.
   SetBackgroundToHistoryImage(mojo_base.mojom.Token result_id,
       ResultDescriptors descriptors);
+
+  // Sets the inspiration image identified by `id` as the current background
+  // image.
+  SetBackgroundToInspirationImage(mojo_base.mojom.Token id,
+      url.mojom.Url background_url);
 
   // Sets wallpaper search result identified by `result_id` to background image.
   // `time` is Unix epoch time stamp of when the user selected the respective

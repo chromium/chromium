@@ -428,7 +428,8 @@
       </div>
       <cr-grid columns="3" disable-arrow-navigation>
         <template is="dom-repeat" items="[[inspirations_.inspirationA]]">
-          <div class="tile result" tabindex="0" role="button">
+          <div class="tile result" on-click="onInspirationImageClick_"
+              tabindex="0" role="button">
             <div class="image-container">
             <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]"></img>
             </div>

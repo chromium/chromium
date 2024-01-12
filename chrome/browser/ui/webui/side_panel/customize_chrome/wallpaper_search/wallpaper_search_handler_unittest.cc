@@ -204,6 +204,9 @@ class WallpaperSearchHandlerTest : public testing::Test {
     return mock_image_decoder_;
   }
   TestingProfile& profile() { return *profile_.get(); }
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -1546,4 +1549,62 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Failure_DataUnreachable) {
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(inspirations);
+}
+
+TEST_F(WallpaperSearchHandlerTest, SetBackgroundToInspirationImage) {
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback;
+  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
+      .WillOnce(Invoke(
+          [&decoder_callback](const std::string& image_data,
+                              const gfx::Size& desired_image_frame_size,
+                              data_decoder::DataDecoder* data_decoder,
+                              image_fetcher::ImageDecodedCallback callback) {
+            decoder_callback = std::move(callback);
+          }));
+  base::Token token_arg;
+  SkBitmap bitmap_arg;
+  base::ElapsedTimer timer_arg;
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SelectLocalBackgroundImage(An<const base::Token&>(),
+                                         An<const SkBitmap&>(),
+                                         An<base::ElapsedTimer>()))
+      .WillOnce(DoAll(SaveArg<0>(&token_arg), SaveArg<1>(&bitmap_arg),
+                      MoveArg<2>(&timer_arg)));
+  // Ensure that the set theme is *not* saved to history on destruction.
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SaveCurrentBackgroundToHistory(_))
+      .Times(0);
+
+  // Create test bitmap.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  std::vector<unsigned char> encoded;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                    &encoded);
+  // Respond with encoded image string when image is downloaded.
+  test_url_loader_factory().SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& request) {}));
+  std::string image_url("https://example.com/image.png");
+  test_url_loader_factory().AddResponse(
+      image_url, std::string(encoded.begin(), encoded.end()));
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  base::Token token = base::Token::CreateRandom();
+  handler->SetBackgroundToInspirationImage(token, GURL(image_url));
+  task_environment().AdvanceClock(base::Milliseconds(123));
+  task_environment().RunUntilIdle();
+  std::move(decoder_callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_EQ(token_arg, token);
+  EXPECT_EQ(bitmap_arg.getColor(0, 0), bitmap.getColor(0, 0));
+  EXPECT_EQ(bitmap_arg.width(), bitmap.width());
+  EXPECT_EQ(bitmap_arg.height(), bitmap.height());
+  EXPECT_EQ(timer_arg.Elapsed().InMilliseconds(), 123);
+
+  // Ensure that after resetting a handler, no call is made to
+  // |mock_wallpaper_search_background_manager|'s,
+  // |SaveCurrentBackgroundToHistory|. The expectation is declared earlier in
+  // this test.
+  handler.reset();
 }

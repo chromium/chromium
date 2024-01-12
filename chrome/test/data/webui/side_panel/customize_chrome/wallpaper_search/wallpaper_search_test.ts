@@ -1466,10 +1466,12 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement(/*descriptors=*/ null, {
         inspirationA: [
           {
+            id: {high: BigInt(10), low: BigInt(1)},
             backgroundUrl: {url: 'https://example.com/foo_1.png'},
             thumbnailUrl: {url: 'https://example.com/foo_2.png'},
           },
           {
+            id: {high: BigInt(8), low: BigInt(2)},
             backgroundUrl: {url: 'https://example.com/bar_1.png'},
             thumbnailUrl: {url: 'https://example.com/bar_2.png'},
           },
@@ -1487,6 +1489,32 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           'https://example.com/bar_2.png',
           (inspirations[1]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+    });
+
+    test('setting inspiration to background calls backend', async () => {
+      createWallpaperSearchElement(/*descriptors=*/ null, {
+        inspirationA: [{
+          id: {high: BigInt(10), low: BigInt(1)},
+          backgroundUrl: {url: 'https://example.com/foo_1.png'},
+          thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+        }],
+      });
+      await flushTasks();
+
+      const result =
+          $$(wallpaperSearchElement, '#inspirationCard .tile.result');
+      assertTrue(!!result);
+      (result as HTMLElement).click();
+      assertEquals(1, handler.getCallCount('setBackgroundToInspirationImage'));
+      assertEquals(
+          BigInt(10),
+          handler.getArgs('setBackgroundToInspirationImage')[0][0].high);
+      assertEquals(
+          BigInt(1),
+          handler.getArgs('setBackgroundToInspirationImage')[0][0].low);
+      assertEquals(
+          'https://example.com/foo_1.png',
+          handler.getArgs('setBackgroundToInspirationImage')[0][1].url);
     });
   });
 });
