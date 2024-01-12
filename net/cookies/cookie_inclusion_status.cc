@@ -76,6 +76,9 @@ void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
   // If the cookie would be excluded for reasons other than the new SameSite
   // rules, don't bother warning about it.
   MaybeClearSameSiteWarning();
+  // If the cookie would be excluded for reasons unrelated to 3pcd, don't bother
+  // warning about 3pcd.
+  MaybeClearThirdPartyPhaseoutReason();
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
@@ -115,6 +118,19 @@ void CookieInclusionStatus::MaybeClearSameSiteWarning() {
     RemoveWarningReason(WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
 
     RemoveWarningReason(WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
+  }
+}
+
+void CookieInclusionStatus::MaybeClearThirdPartyPhaseoutReason() {
+  if (!IsInclude()) {
+    RemoveWarningReason(WARN_THIRD_PARTY_PHASEOUT);
+  }
+  if (ExclusionReasonsWithout(
+          {EXCLUDE_THIRD_PARTY_PHASEOUT,
+           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}) != 0u) {
+    // TODO(crbug.com/1516673): Once the bug is fixed, also remove
+    // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET.
+    RemoveExclusionReason(EXCLUDE_THIRD_PARTY_PHASEOUT);
   }
 }
 

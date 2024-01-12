@@ -392,6 +392,11 @@ class NET_EXPORT CookieInclusionStatus {
   ExclusionReasonBitset ExclusionReasonsWithout(
       const std::vector<ExclusionReason>& reasons) const;
 
+  // If the cookie would have been excluded by reasons that are not
+  // Third-party cookie phaseout related, clear the Third-party cookie phaseout
+  // warning/exclusion reason in this case.
+  void MaybeClearThirdPartyPhaseoutReason();
+
   // A bit vector of the applicable exclusion reasons.
   ExclusionReasonBitset exclusion_reasons_;
 
