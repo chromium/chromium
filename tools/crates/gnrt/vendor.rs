@@ -21,23 +21,15 @@ use anyhow::{format_err, Context, Result};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
-pub fn vendor(
-    args: VendorCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || vendor_impl(args, tools, paths))?;
+    without_cargo_config_toml(paths, || vendor_impl(args, paths))?;
     println!("Vendor successful: run gnrt gen to generate GN rules.");
     Ok(())
 }
 
-fn vendor_impl(
-    args: VendorCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config_file_path = paths.third_party_config_file;
     let config_file_contents = std::fs::read_to_string(config_file_path).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
@@ -59,7 +51,7 @@ fn vendor_impl(
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
     let metadata =
-        run_cargo_metadata(paths.third_party_cargo_root.into(), tools, Vec::new(), HashMap::new())
+        run_cargo_metadata(paths.third_party_cargo_root.into(), Vec::new(), HashMap::new())
             .context("run_cargo_metadata")?;
     let packages: HashMap<_, _> = metadata_packages(&metadata)?;
     let nodes: HashMap<_, _> = metadata_nodes(&metadata);

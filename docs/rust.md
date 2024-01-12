@@ -47,6 +47,11 @@ https://doc.rust-lang.org/cargo/reference/manifest.html), though the crate
 itself is never built, it is only used to collect dependencies through the
 `[dependencies]` section.
 
+These instructions require the presence of nightly `cargo` which is normally found
+in `//third_party/rust-toolchain/bin`. But [on Mac Arm](https://crbug.com/1515913)
+it is missing, and will need to be installed separately with
+[`rustup install nightly`](https://rustup.rs/) and added to the `PATH` environment.
+
 To use a third-party crate "bar" version 3 from first party code:
 1. Change directory to the root `src/` dir of Chromium.
 1. Add the crate to `//third_party/rust/chromium_crates_io/Cargo.toml`:
@@ -78,14 +83,11 @@ To use a third-party crate "bar" version 3 from first party code:
    * Or, directly through (nightly) cargo:
      `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
 1. Verify if all new dependencies are already audited by running `cargo vet`:
-   * To install and use `cargo vet`, you need nightly cargo in your `PATH`, which can be
-     found in `//third_party/rust-toolchain/bin` (except [on Mac Arm](https://crbug.com/1515913),
-     where it will need to be installed separately with
-     [`rustup install nightly`](https://rustup.rs/)).
-      * `cargo install --git https://github.com/mozilla/cargo-vet cargo-vet`
+   * Install `cargo vet` if it's not yet installed:
+      * `./tools/crates/run_cargo.py install --git https://github.com/mozilla/cargo-vet cargo-vet`
       * We use `--git` to install cargo-vet from HEAD in order to use the `--cargo-arg` argument
         which is not released yet.
-   * `cargo -Zunstable-options -C third_party/rust/chromium_crates_io/ vet check --cargo-arg=-Zbindeps --no-registry-suggestions`
+   * `./tools/crates/run_cargo.py -Zunstable-options -C third_party/rust/chromium_crates_io/ vet check --cargo-arg=-Zbindeps --no-registry-suggestions`
    * If `check` fails, then there are missing audits, which need to be added to
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
       * See [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md)

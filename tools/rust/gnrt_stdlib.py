@@ -17,6 +17,10 @@ sys.path.append(
 from build import (RunCommand)
 from update import (CHROMIUM_DIR)
 
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates'))
+from run_cargo import RunCargo
+
 from build_bindgen import (EXE, RUST_BETA_SYSROOT_DIR, InstallRustBetaSysroot)
 from build_rust import (RustTargetTriple, RUST_SRC_DIR)
 from update_rust import (RUST_REVISION)
@@ -51,22 +55,18 @@ def main():
 
     # Build and run gnrt to update the stdlib GN rules.
     if args.out_dir:
-        run_gnrt(cargo_bin, rustc_bin, args.out_dir)
+        run_gnrt(RUST_BETA_SYSROOT_DIR, args.out_dir)
     else:
         with tempfile.TemporaryDirectory() as out_dir:
-            run_gnrt(cargo_bin, rustc_bin, out_dir)
+            run_gnrt(RUST_BETA_SYSROOT_DIR, out_dir)
 
 
-def run_gnrt(cargo, rustc, out_dir):
-    cargo_env = os.environ
-    cargo_env['CARGO_HOME'] = os.path.abspath(
-        os.path.join(out_dir, 'cargo_home'))
+def run_gnrt(sysroot_dir, out_dir):
     target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
-    RunCommand([
-        cargo, '--quiet', '--locked', 'run', '--release', '--manifest-path',
-        GNRT_CARGO_TOML_PATH, f'--target-dir={target_dir}', '--config',
-        f'build.rustc="{rustc}"', '--', f'--cargo-path={cargo}',
-        f'--rustc-path={rustc}', 'gen',
+    home_dir = os.path.join(target_dir, 'cargo_home')
+    RunCargo(sysroot_dir, home_dir, [
+        '--quiet', '--locked', 'run', '--release', '--manifest-path',
+        GNRT_CARGO_TOML_PATH, f'--target-dir={target_dir}', '--', 'gen',
         f'--for-std={os.path.relpath(RUST_SRC_DIR, CHROMIUM_DIR)}'
     ])
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::paths::{ChromiumPaths, ToolPaths};
+use crate::paths::ChromiumPaths;
 use handlebars::handlebars_helper;
 use std::collections::HashMap;
 use std::fs;
@@ -91,18 +91,11 @@ pub fn without_cargo_config_toml<T>(
 /// Run cargo metadata command, optionally with extra flags and environment.
 pub fn run_cargo_metadata(
     workspace_path: PathBuf,
-    tools: &ToolPaths,
     mut extra_options: Vec<String>,
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
 ) -> Result<cargo_metadata::Metadata> {
     let mut command = cargo_metadata::MetadataCommand::new();
     command.current_dir(workspace_path);
-    if let Some(cargo_path) = &tools.cargo {
-        command.cargo_path(cargo_path);
-    }
-    if let Some(rustc_path) = &tools.rustc {
-        command.env("RUSTC", rustc_path);
-    }
 
     // Allow the binary dependency on cxxbridge-cmd.
     extra_options.push("-Zbindeps".to_string());
@@ -120,18 +113,13 @@ pub fn run_cargo_metadata(
 pub fn run_cargo_command(
     workspace_path: PathBuf,
     subcommand: &str,
-    tools: &ToolPaths,
     extra_options: Vec<String>,
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
 ) -> Result<()> {
     assert!(subcommand != "metadata");
 
-    let cargo = tools.cargo.as_deref().unwrap_or_else(|| "cargo");
-    let mut command = std::process::Command::new(&cargo);
+    let mut command = std::process::Command::new("cargo");
     command.current_dir(workspace_path);
-    if let Some(rustc_path) = &tools.rustc {
-        command.env("RUSTC", rustc_path);
-    }
 
     // Allow the binary dependency on cxxbridge-cmd.
     command.arg("-Zbindeps");
@@ -142,7 +130,7 @@ pub fn run_cargo_command(
         command.env(k, v);
     }
 
-    log::debug!("invoking cargo {} with:\n`{:?}`", subcommand, cargo);
+    log::debug!("invoking cargo {}", subcommand);
     let mut handle = command.spawn().with_context(|| format!("running cargo {}", subcommand))?;
     let code = handle.wait().context("waiting for cargo process")?;
     if !code.success() {

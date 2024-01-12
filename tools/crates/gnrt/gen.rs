@@ -21,23 +21,15 @@ use std::process;
 
 use anyhow::{ensure, format_err, Context, Result};
 
-pub fn generate(
-    args: GenCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.for_std.is_some() {
-        generate_for_std(args, tools, paths)
+        generate_for_std(args, paths)
     } else {
-        generate_for_third_party(args, tools, paths)
+        generate_for_third_party(args, paths)
     }
 }
 
-fn generate_for_std(
-    args: GenCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
     let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
@@ -105,12 +97,7 @@ fn generate_for_std(
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
     let mut dependencies = deps::collect_dependencies(
-        &run_cargo_metadata(
-            paths.std_fake_root.into(),
-            tools,
-            cargo_extra_options,
-            cargo_extra_env,
-        )?,
+        &run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)?,
         Some(vec![config.resolve.root.clone()]),
         None,
         &config,
@@ -230,11 +217,7 @@ fn generate_for_std(
     Ok(())
 }
 
-fn generate_for_third_party(
-    args: GenCommandArgs,
-    tools: &paths::ToolPaths,
-    paths: &paths::ChromiumPaths,
-) -> Result<()> {
+fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config_file_contents = std::fs::read_to_string(paths.third_party_config_file).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
 
@@ -256,7 +239,6 @@ fn generate_for_third_party(
     let mut dependencies = deps::collect_dependencies(
         &run_cargo_metadata(
             paths.third_party_cargo_root.into(),
-            tools,
             cargo_extra_options,
             HashMap::new(),
         )?,
