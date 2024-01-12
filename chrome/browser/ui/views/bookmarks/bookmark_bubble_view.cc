@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
@@ -384,28 +383,24 @@ void BookmarkBubbleView::ShowBubble(
       std::move(delegate), browser, url, show_simplified_flow);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
-  std::optional<commerce::ProductInfo> product_info = std::nullopt;
-  gfx::Image product_image;
-  if (shopping_service->IsShoppingListEligible()) {
-    product_info = shopping_service->GetAvailableProductInfoForUrl(url);
-    auto* tab_helper =
-        commerce::CommerceUiTabHelper::FromWebContents(web_contents);
-    if (tab_helper) {
-      product_image = tab_helper->GetProductImage();
-    }
-  }
-
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
-  gfx::ImageSkia main_image = product_image.AsImageSkia();
 
-  if (product_image.IsEmpty()) {
+  std::optional<commerce::ProductInfo> product_info = std::nullopt;
+  if (shopping_service->IsShoppingListEligible()) {
+    product_info = shopping_service->GetAvailableProductInfoForUrl(url);
+  }
+
+  if (product_info.has_value() && !product_info->image_url.is_empty()) {
+    HandleImageUrlResponse(profile, product_info->image_url);
+  } else {
     // Fetch image from ImageService asynchronously
     FetchImageForUrl(url, profile);
-    // Display favicon while awaiting ImageService response
-    const auto centered_favicon = GetFaviconForWebContents(web_contents);
-    main_image = centered_favicon;
   }
+
+  // Display favicon while awaiting one of the above options to load.
+  const auto centered_favicon = GetFaviconForWebContents(web_contents);
+  gfx::ImageSkia main_image = centered_favicon;
 
   dialog_model_builder.SetMainImage(ui::ImageModel::FromImageSkia(main_image));
 
@@ -491,15 +486,14 @@ void BookmarkBubbleView::ShowBubble(
                                   base::Unretained(bubble_delegate))))
       .SetInitiallyFocusedField(initially_focused_field);
 
-  if (commerce::CanTrackPrice(product_info) && !product_image.IsEmpty()) {
+  if (commerce::CanTrackPrice(product_info)) {
     bool is_price_tracked = shopping_service->IsSubscribedFromCache(
         commerce::BuildUserSubscriptionForClusterId(
             product_info->product_cluster_id.value()));
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
-            std::make_unique<PriceTrackingView>(
-                profile, url, *product_image.ToImageSkia(), is_price_tracked,
-                product_info.value()),
+            std::make_unique<PriceTrackingView>(profile, url, is_price_tracked,
+                                                product_info.value()),
             views::BubbleDialogModelHost::FieldType::kControl),
         kPriceTrackingBookmarkViewElementId);
   }
