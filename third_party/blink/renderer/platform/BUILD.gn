@@ -453,6 +453,8 @@ component("platform") {
     "bindings/exception_state.h",
     "bindings/extensions_registry.cc",
     "bindings/extensions_registry.h",
+    "bindings/frozen_array_base.cc",
+    "bindings/frozen_array_base.h",
     "bindings/idl_member_installer.cc",
     "bindings/idl_member_installer.h",
     "bindings/multi_worlds_v8_reference.cc",

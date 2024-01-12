@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/platform/bindings/frozen_array_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -572,6 +573,23 @@ struct ToV8Traits<
 // IDLArray
 template <typename T>
 struct ToV8Traits<IDLArray<T>> {
+  // TODO(yukishiino): Make the signature of this function
+  //   ToV8(ScriptState*, const bindings::FrozenArrayBase&)
+  // and make this de-templated.
+  //
+  // This function is templated only in order to have a priority over the
+  // other function template (without 'requires'). Once we remove the other
+  // function template, we can make this de-templated.
+  template <typename ContainerType>
+    requires std::derived_from<ContainerType, bindings::FrozenArrayBase>
+  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const ContainerType& value) {
+    return value.ToV8(script_state);
+  }
+
+  // TODO(yukishiino): Remove this overload as IDL FrozenArray should be
+  // implemented as FrozenArray<T> rather than (Heap)Vector<T>.
   template <typename ContainerType>
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
