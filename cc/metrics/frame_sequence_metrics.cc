@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -495,10 +496,32 @@ void FrameSequenceMetrics::TraceData::TerminateV3(
   dict->SetInteger("dropped", v3.frames_dropped);
   dict->SetInteger("missing_content", v3.frames_missing_content);
   dict->EndDictionary();
+  base::TimeTicks termination_time =
+      v3.last_presented_frame.GetTerminationTimeForThread(effective_thread);
+  // FrameSequenceTracker termination is based on FrameSorter. This way it can
+  // reflect delays in gfx::PresentationFeedback arriving, while also not
+  // terminating due to out-of-order dropped frames. The default termination is
+  // when the final frame produced for the sequence has been presented.
+  //
+  // Otherwise we will terminate once a frame, newer than the final one of the
+  // sequence has been produced, not dropped, and sorted. This can be a
+  // FrameInfo::FrameFinalState::NoUpdateDesired, which has no termination time,
+  // due to never being presented. When this occurs after a series of dropped
+  // frames, we can potentially have an entire sequence that was dropped.
+  // Leading to `v3.last_presented_frame` having no valid timestamp.
+  //
+  // Here we check for alternative timestamps, so as not to provide a null
+  // timestamp to the trace.
+  if (termination_time.is_null()) {
+    termination_time =
+        v3.last_frame.GetTerminationTimeForThread(effective_thread);
+    if (termination_time.is_null()) {
+      termination_time = base::TimeTicks::Now();
+    }
+  }
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
       "cc,benchmark", "FrameSequenceTrackerV3", TRACE_ID_LOCAL(trace_id),
-      v3.last_presented_frame.GetTerminationTimeForThread(effective_thread),
-      "args", std::move(dict));
+      termination_time, "args", std::move(dict));
   trace_id = 0u;
 }
 
