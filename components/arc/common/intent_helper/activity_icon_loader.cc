@@ -157,11 +157,8 @@ scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(image.GetRepresentation(scale).GetBitmap(),
                                     false /* discard_transparency */, &output);
-  std::string encoded;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(output.data()),
-                        output.size()),
-      &encoded);
+  const std::string encoded = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(output.data()), output.size()));
   return base::WrapRefCounted(
       new base::RefCountedData<GURL>(GURL(kPngDataUrlPrefix + encoded)));
 }

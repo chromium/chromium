@@ -114,9 +114,8 @@ using RawResponse = FeedNetwork::RawResponse;
 
 net::HttpRequestHeaders CreateApiRequestHeaders(
     const RequestMetadata& request_metadata) {
-  std::string encoded_client_info;
-  base::Base64Encode(CreateClientInfo(request_metadata).SerializeAsString(),
-                     &encoded_client_info);
+  const std::string encoded_client_info = base::Base64Encode(
+      CreateClientInfo(request_metadata).SerializeAsString());
   net::HttpRequestHeaders headers;
   headers.SetHeader(kClientInfoHeader, encoded_client_info);
   return headers;

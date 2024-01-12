@@ -101,10 +101,9 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
 
   std::string response_string;
   CHECK(response.SerializeToString(&response_string));
-  std::string encoded_response_string;
-  base::Base64Encode(response_string, &encoded_response_string);
   test_api(*autofill_manager)
-      .OnLoadedServerPredictions(encoded_response_string, signatures);
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
+                                 signatures);
   return true;
 }
 
@@ -158,10 +157,9 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
 
   std::string response_string;
   CHECK(response.SerializeToString(&response_string));
-  std::string encoded_response_string;
-  base::Base64Encode(response_string, &encoded_response_string);
   test_api(*autofill_manager)
-      .OnLoadedServerPredictions(encoded_response_string, signatures);
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
+                                 signatures);
   return true;
 }
 

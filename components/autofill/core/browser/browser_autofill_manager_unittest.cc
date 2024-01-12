@@ -6458,12 +6458,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
-  std::string encoded_response_string;
-  base::Base64Encode(response_string, &encoded_response_string);
-
   // Query autofill server for the field type prediction.
   test_api(*browser_autofill_manager_)
-      .OnLoadedServerPredictions(encoded_response_string,
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
                                  test::GetEncodedSignatures(*form_structure));
   std::vector<FieldType> types{NAME_FIRST, ADDRESS_HOME_LINE1,
                                ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
@@ -6559,12 +6556,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
-  std::string encoded_response_string;
-  base::Base64Encode(response_string, &encoded_response_string);
-
   // Query autofill server for the field type prediction.
   test_api(*browser_autofill_manager_)
-      .OnLoadedServerPredictions(encoded_response_string,
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
                                  test::GetEncodedSignatures(*form_structure));
   std::vector<FieldType> overall_types{NAME_FULL, ADDRESS_HOME_LINE1,
                                        ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY};
@@ -6901,16 +6895,14 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
-  std::string encoded_response_string;
-  base::Base64Encode(response_string, &encoded_response_string);
-
   std::vector<FormSignature> signatures =
       test::GetEncodedSignatures({form_structure, form_structure2});
 
   // Run method under test.
   base::HistogramTester histogram_tester;
   test_api(*browser_autofill_manager_)
-      .OnLoadedServerPredictions(encoded_response_string, signatures);
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
+                                 signatures);
 
   // Verify whether the relevant histograms were updated.
   histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
@@ -6963,16 +6955,13 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
-
-  std::string response_string_base64;
-  base::Base64Encode(response_string, &response_string_base64);
-
   // Reset the manager (such as during a navigation).
   browser_autofill_manager_->Reset();
 
   base::HistogramTester histogram_tester;
   test_api(*browser_autofill_manager_)
-      .OnLoadedServerPredictions(response_string_base64, signatures);
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
+                                 signatures);
 
   // Verify that FormStructure::ParseQueryResponse was NOT called.
   histogram_tester.ExpectTotalCount("Autofill.ServerQueryResponse", 0);
@@ -7021,13 +7010,9 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
-
-  std::string response_string_base64;
-  base::Base64Encode(response_string, &response_string_base64);
-
   base::HistogramTester histogram_tester;
   test_api(*browser_autofill_manager_)
-      .OnLoadedServerPredictions(response_string_base64,
+      .OnLoadedServerPredictions(base::Base64Encode(response_string),
                                  test::GetEncodedSignatures(*form_structure));
   // Verify that FormStructure::ParseQueryResponse was called (here and below).
   histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",

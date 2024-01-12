@@ -60,9 +60,7 @@ namespace {
 // Encodes Sync metadata and cleans up the input string to decrease peak memory
 // usage during encoding.
 base::Value EncodeSyncMetadata(std::string sync_metadata_str) {
-  std::string sync_metadata_str_base64;
-  base::Base64Encode(sync_metadata_str, &sync_metadata_str_base64);
-  return base::Value(std::move(sync_metadata_str_base64));
+  return base::Value(base::Base64Encode(sync_metadata_str));
 }
 
 }  // namespace

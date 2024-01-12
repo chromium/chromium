@@ -96,8 +96,7 @@ const net::HttpRequestHeaders GetDiscourseContext(
   std::string serialized;
   proto.SerializeToString(&serialized);
 
-  std::string encoded_context;
-  base::Base64Encode(serialized, &encoded_context);
+  std::string encoded_context = base::Base64Encode(serialized);
   // The server memoizer expects a web-safe encoding.
   std::replace(encoded_context.begin(), encoded_context.end(), '+', '-');
   std::replace(encoded_context.begin(), encoded_context.end(), '/', '_');

@@ -113,10 +113,7 @@ std::string CreateProto(
   std::string serialized_proto;
   metadata.SerializeToString(&serialized_proto);
 
-  std::string serialize_and_encoded_proto;
-  base::Base64Encode(serialized_proto, &serialize_and_encoded_proto);
-
-  return serialize_and_encoded_proto;
+  return base::Base64Encode(serialized_proto);
 }
 
 }  // namespace LensMetadata

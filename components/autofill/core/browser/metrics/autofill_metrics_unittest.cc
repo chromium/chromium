@@ -163,9 +163,7 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
     LOG(ERROR) << "Cannot serialize the response proto";
     return "";
   }
-  std::string response_string;
-  base::Base64Encode(unencoded_response_string, &response_string);
-  return response_string;
+  return base::Base64Encode(unencoded_response_string);
 }
 
 }  // namespace

@@ -585,9 +585,7 @@ void GCMEncryptionProviderTest::TestEncryptionRoundTrip(
 
       message.data["content-encoding"] = "aes128gcm";
       if (use_internal_raw_data_for_draft08) {
-        std::string raw_data_base64;
-        base::Base64Encode(encrypted_message(), &raw_data_base64);
-        message.data["_googRawData"] = raw_data_base64;
+        message.data["_googRawData"] = base::Base64Encode(encrypted_message());
       } else {
         message.raw_data = encrypted_message();
       }

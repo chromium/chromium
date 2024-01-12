@@ -32,11 +32,11 @@ EnvironmentRecorder::~EnvironmentRecorder() = default;
 std::string EnvironmentRecorder::SerializeAndRecordEnvironmentToPrefs(
     const SystemProfileProto& system_profile) {
   std::string serialized_system_profile;
-  std::string base64_system_profile;
   if (system_profile.SerializeToString(&serialized_system_profile)) {
     // Persist the system profile to disk. In the event of an unclean shutdown,
     // it will be used as part of the initial stability report.
-    base::Base64Encode(serialized_system_profile, &base64_system_profile);
+    const std::string base64_system_profile =
+        base::Base64Encode(serialized_system_profile);
     local_state_->SetString(prefs::kStabilitySavedSystemProfile,
                             base64_system_profile);
     local_state_->SetString(prefs::kStabilitySavedSystemProfileHash,
