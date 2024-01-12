@@ -5,11 +5,11 @@
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 
 #include <memory>
-#include <string>
-
 #include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/json/json_value_converter.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
@@ -39,7 +39,7 @@ constexpr char kDueTimeNanosComponent[] = "nanos";
 
 constexpr char kPublishedCourseWorkItemState[] = "PUBLISHED";
 
-bool ConvertCourseWorkItemState(base::StringPiece input,
+bool ConvertCourseWorkItemState(std::string_view input,
                                 CourseWorkItem::State* output) {
   *output = input == kPublishedCourseWorkItemState
                 ? CourseWorkItem::State::kPublished
@@ -47,7 +47,7 @@ bool ConvertCourseWorkItemState(base::StringPiece input,
   return true;
 }
 
-bool ConvertCourseWorkItemAlternateLink(base::StringPiece input, GURL* output) {
+bool ConvertCourseWorkItemAlternateLink(std::string_view input, GURL* output) {
   *output = GURL(input);
   return true;
 }

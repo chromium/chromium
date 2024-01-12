@@ -5,9 +5,9 @@
 #include "google_apis/tasks/tasks_api_task_status.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 
 namespace google_apis::tasks {
 namespace {
@@ -17,7 +17,7 @@ constexpr char kTaskStatusNeedsAction[] = "needsAction";
 
 }  // namespace
 
-TaskStatus TaskStatusFromString(base::StringPiece task_status) {
+TaskStatus TaskStatusFromString(std::string_view task_status) {
   if (task_status == kTaskStatusCompleted) {
     return TaskStatus::kCompleted;
   }

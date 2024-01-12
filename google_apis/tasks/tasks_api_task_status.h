@@ -6,8 +6,7 @@
 #define GOOGLE_APIS_TASKS_TASKS_API_TASK_STATUS_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace google_apis::tasks {
 
@@ -21,7 +20,7 @@ enum class TaskStatus {
 };
 
 // Converts `task_status` string to its enum value equivalent.
-TaskStatus TaskStatusFromString(base::StringPiece task_status);
+TaskStatus TaskStatusFromString(std::string_view task_status);
 
 // Converts `task_status` enum value to string.
 std::string TaskStatusToString(TaskStatus task_status);

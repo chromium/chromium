@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/json/json_value_converter.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 
@@ -21,7 +21,7 @@ constexpr char kApiResponseCourseStateKey[] = "courseState";
 
 constexpr char kActiveCourseState[] = "ACTIVE";
 
-bool ConvertCourseState(base::StringPiece input, Course::State* output) {
+bool ConvertCourseState(std::string_view input, Course::State* output) {
   *output = input == kActiveCourseState ? Course::State::kActive
                                         : Course::State::kOther;
   return true;

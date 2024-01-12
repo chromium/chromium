@@ -5,6 +5,7 @@
 #include "google_apis/common/time_util.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/i18n/time_formatting.h"
@@ -22,20 +23,20 @@ namespace {
 constexpr char kNullTimeString[] = "null";
 
 // Sugar for calling the base:: method with the handling we always desire.
-std::vector<base::StringPiece> SplitStringPiece(base::StringPiece input,
-                                                base::StringPiece separators) {
+std::vector<std::string_view> SplitStringPiece(std::string_view input,
+                                               std::string_view separators) {
   return base::SplitStringPiece(input, separators, base::KEEP_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace
 
-bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
+bool GetTimeFromString(std::string_view raw_value, base::Time* parsed_time) {
   // Split the input into "date" and "time" parts.
-  base::StringPiece date;
-  base::StringPiece time;
+  std::string_view date;
+  std::string_view time;
   {
-    std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "T");
+    std::vector<std::string_view> parts = SplitStringPiece(raw_value, "T");
     if (parts.size() != 2) {
       return false;
     }
@@ -53,14 +54,14 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       time.remove_suffix(1);
     } else {
       bool ahead = true;
-      std::vector<base::StringPiece> parts = SplitStringPiece(time, "+");
+      std::vector<std::string_view> parts = SplitStringPiece(time, "+");
       if (parts.size() != 2) {
         ahead = false;
         parts = SplitStringPiece(time, "-");
       }
       if (parts.size() == 2) {
         // Timezone is "+/-hh:mm".
-        std::vector<base::StringPiece> tz_parts =
+        std::vector<std::string_view> tz_parts =
             SplitStringPiece(parts[1], ":");
         int hour = 0, minute = 0;
         if (tz_parts.empty() || !base::StringToInt(tz_parts[0], &hour) ||
@@ -78,7 +79,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   // Parse the date.
   base::Time::Exploded exploded = {0};
   {
-    std::vector<base::StringPiece> parts = SplitStringPiece(date, "-");
+    std::vector<std::string_view> parts = SplitStringPiece(date, "-");
     if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.year) ||
         !base::StringToInt(parts[1], &exploded.month) ||
         !base::StringToInt(parts[2], &exploded.day_of_month)) {
@@ -88,13 +89,13 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
 
   // Parse the time.
   {
-    std::vector<base::StringPiece> parts = SplitStringPiece(time, ":");
+    std::vector<std::string_view> parts = SplitStringPiece(time, ":");
     if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.hour) ||
         !base::StringToInt(parts[1], &exploded.minute)) {
       return false;
     }
 
-    std::vector<base::StringPiece> seconds_parts =
+    std::vector<std::string_view> seconds_parts =
         SplitStringPiece(parts[2], ".");
     if (seconds_parts.size() >= 3 ||
         !base::StringToInt(seconds_parts[0], &exploded.second) ||
@@ -115,12 +116,12 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
   return true;
 }
 
-bool GetDateOnlyFromString(base::StringPiece raw_value,
+bool GetDateOnlyFromString(std::string_view raw_value,
                            base::Time* parsed_time) {
   // Parse the date part.
   base::Time::Exploded exploded = {0};
   {
-    std::vector<base::StringPiece> parts = SplitStringPiece(raw_value, "-");
+    std::vector<std::string_view> parts = SplitStringPiece(raw_value, "-");
     if (parts.size() != 3 || !base::StringToInt(parts[0], &exploded.year) ||
         !base::StringToInt(parts[1], &exploded.month) ||
         !base::StringToInt(parts[2], &exploded.day_of_month)) {
