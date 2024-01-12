@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -3149,6 +3150,56 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PermissionsAPIEmbedderHasAccessDenyMedia) {
   TestHelper("testDenyMedia",
              "web_view/permissions_test/embedder_has_permission",
              NEEDS_TEST_SERVER);
+}
+
+class WebHidWebViewTest : public WebViewTest {
+ public:
+  WebHidWebViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kEnableWebHidInWebView);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebHidWebViewTest,
+                       PermissionsAPIEmbedderHasAccessAllowHid) {
+  TestHelper("testAllowHid",
+             "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  auto* web_view = extensions::WebViewGuest::FromGuestViewBase(guest);
+  ASSERT_TRUE(web_view);
+
+  base::test::TestFuture<bool> allowed_future;
+  // TODO(b/281855555): Replace this C++ call with an actual call to WebHID from
+  // webview script, when WebHID support is fully implemented.
+  web_view->web_view_permission_helper()->RequestHidPermission(
+      guest->GetGuestMainFrame()->GetLastCommittedURL(),
+      allowed_future.GetCallback());
+
+  ASSERT_TRUE(allowed_future.Take());
+}
+
+IN_PROC_BROWSER_TEST_F(WebHidWebViewTest,
+                       PermissionsAPIEmbedderHasAccessDenyHid) {
+  TestHelper("testDenyHid", "web_view/permissions_test/embedder_has_permission",
+             NEEDS_TEST_SERVER);
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  auto* web_view = extensions::WebViewGuest::FromGuestViewBase(guest);
+  ASSERT_TRUE(web_view);
+
+  base::test::TestFuture<bool> allowed_future;
+  // TODO(b/281855555): Replace this C++ call with an actual call to WebHID from
+  // webview script, when WebHID support is fully implemented.
+  web_view->web_view_permission_helper()->RequestHidPermission(
+      guest->GetGuestMainFrame()->GetLastCommittedURL(),
+      allowed_future.GetCallback());
+
+  ASSERT_FALSE(allowed_future.Take());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest,

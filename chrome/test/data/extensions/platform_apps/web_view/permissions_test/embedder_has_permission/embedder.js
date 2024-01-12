@@ -235,6 +235,32 @@ function testDenyMedia() {
   embedder.registerAndWaitForPostMessage_('testMedia', 'access-denied');
 }
 
+function testAllowHid() {
+  const webview = embedder.setUpGuest_();
+  const onPermissionRequest = function(e) {
+    e.request.allow();
+  };
+  webview.addEventListener('permissionrequest', onPermissionRequest);
+
+  const onWebViewLoadStop = function(e) {
+    embedder.test.succeed();
+  }
+  webview.addEventListener('loadstop', onWebViewLoadStop);
+}
+
+function testDenyHid() {
+  var webview = embedder.setUpGuest_();
+  var onPermissionRequest = function(e) {
+    e.request.deny();
+  };
+  webview.addEventListener('permissionrequest', onPermissionRequest);
+
+  const onWebViewLoadStop = function(e) {
+    embedder.test.succeed();
+  }
+  webview.addEventListener('loadstop', onWebViewLoadStop);
+}
+
 embedder.test.testList = {
   'testAllowGeolocation': testAllowGeolocation,
   'testDenyGeolocation': testDenyGeolocation,
@@ -243,7 +269,9 @@ embedder.test.testList = {
   'testAllowMicrophone': testAllowMicrophone,
   'testDenyMicrophone': testDenyMicrophone,
   'testAllowMedia': testAllowMedia,
-  'testDenyMedia': testDenyMedia
+  'testDenyMedia': testDenyMedia,
+  'testAllowHid': testAllowHid,
+  'testDenyHid': testDenyHid,
 };
 
 onload = function() {

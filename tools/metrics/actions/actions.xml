@@ -40126,6 +40126,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebView.PermissionAllow.HID">
+  <owner>vkovalova@google.com</owner>
+  <description>
+    Tracks when showing the HID selection dialog is explicitly allowed on a
+    webview.
+  </description>
+</action>
+
 <action name="WebView.PermissionAllow.JSDialog">
   <owner>fsamuel@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -40179,6 +40187,14 @@ should be able to be added at any place in this file.
   <owner>lazyboy@chromium.org</owner>
   <description>
     Tracks when the geolocation permission is explicitly denied on a webview.
+  </description>
+</action>
+
+<action name="WebView.PermissionDeny.HID">
+  <owner>vkovalova@google.com</owner>
+  <description>
+    Tracks when showing the HID selection dialog is explicitly denied on a
+    webview.
   </description>
 </action>
 

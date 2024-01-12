@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view_event.h"
@@ -18,6 +20,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
+#include "extensions/common/extension_features.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -39,6 +42,8 @@ static std::string PermissionTypeToString(WebViewPermissionType type) {
       return webview::kPermissionTypeFullscreen;
     case WEB_VIEW_PERMISSION_TYPE_GEOLOCATION:
       return webview::kPermissionTypeGeolocation;
+    case WEB_VIEW_PERMISSION_TYPE_HID:
+      return webview::kPermissionTypeHid;
     case WEB_VIEW_PERMISSION_TYPE_JAVASCRIPT_DIALOG:
       return webview::kPermissionTypeDialog;
     case WEB_VIEW_PERMISSION_TYPE_LOAD_PLUGIN:
@@ -81,6 +86,9 @@ void RecordUserInitiatedUMA(
         base::RecordAction(
             UserMetricsAction("WebView.PermissionAllow.Geolocation"));
         break;
+      case WEB_VIEW_PERMISSION_TYPE_HID:
+        base::RecordAction(UserMetricsAction("WebView.PermissionAllow.HID"));
+        break;
       case WEB_VIEW_PERMISSION_TYPE_JAVASCRIPT_DIALOG:
         base::RecordAction(
             UserMetricsAction("WebView.PermissionAllow.JSDialog"));
@@ -120,6 +128,9 @@ void RecordUserInitiatedUMA(
       case WEB_VIEW_PERMISSION_TYPE_GEOLOCATION:
         base::RecordAction(
             UserMetricsAction("WebView.PermissionDeny.Geolocation"));
+        break;
+      case WEB_VIEW_PERMISSION_TYPE_HID:
+        base::RecordAction(UserMetricsAction("WebView.PermissionDeny.HID"));
         break;
       case WEB_VIEW_PERMISSION_TYPE_JAVASCRIPT_DIALOG:
         base::RecordAction(
@@ -252,11 +263,24 @@ void WebViewPermissionHelper::RequestPointerLockPermission(
 }
 
 void WebViewPermissionHelper::RequestGeolocationPermission(
-    const GURL& requesting_frame,
+    const GURL& requesting_frame_url,
     bool user_gesture,
     base::OnceCallback<void(bool)> callback) {
   web_view_permission_helper_delegate_->RequestGeolocationPermission(
-      requesting_frame, user_gesture, std::move(callback));
+      requesting_frame_url, user_gesture, std::move(callback));
+}
+
+void WebViewPermissionHelper::RequestHidPermission(
+    const GURL& requesting_frame_url,
+    base::OnceCallback<void(bool)> callback) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kEnableWebHidInWebView)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  web_view_permission_helper_delegate_->RequestHidPermission(
+      requesting_frame_url, std::move(callback));
 }
 
 void WebViewPermissionHelper::RequestFileSystemPermission(
