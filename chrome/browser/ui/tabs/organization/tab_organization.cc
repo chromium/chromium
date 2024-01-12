@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -153,6 +154,16 @@ void TabOrganization::Accept() {
   }
   std::sort(valid_indices.begin(), valid_indices.end());
 
+  // TODO(b/319273296): Find a more permanent fix.
+  // From this point on, we start modifying the tab strip, which
+  // potentially notifies a large set of observers. TabOrganizationSession
+  // (which owns |this|) gets destroyed when a tab is added or removed
+  // from the tab strip. There is a risk that a tab strip observer modifies
+  // the tab strip and therefore causes |this| to be deleted. So we keep
+  // a WeakPtr to |this| to detect this case and avoid accessing member
+  // variables, just in case.
+  base::WeakPtr<TabOrganization> this_weak_ref =
+      weak_ptr_factory_.GetWeakPtr();
   tab_groups::TabGroupId group_id =
       tab_strip_model->AddToNewGroup(valid_indices);
   TabGroup* const tab_group =
@@ -178,8 +189,19 @@ void TabOrganization::Accept() {
   if (tab_strip_model->GetTabGroupForTab(move_index) != tab_group->id()) {
     tab_strip_model->MoveGroupTo(tab_group->id(), move_index);
   }
-
-  NotifyObserversOfUpdate();
+  // If |this| has been destroyed, there is no need to notify the observers:
+  // in practice, the only observer is the TabOrganizationSession which owns
+  // this object (and therefore has been destroyed) and who will just
+  // notify WebUI it has been updated (of which there is no need because
+  // WebUI is now tracking the new TabOrganizationSession which has replaced
+  // the destroyed one).
+  if (this_weak_ref) {
+    NotifyObserversOfUpdate();
+  } else {
+    // We'd like to know if this really happens: if so, we should really
+    // change the ownership model of TabOrganizationSession.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void TabOrganization::Reject() {
