@@ -515,7 +515,7 @@ bool ResolveLocalHostname(base::StringPiece host,
 
 struct HostResolverManager::JobKey {
   explicit JobKey(ResolveContext* resolve_context)
-      : resolve_context(resolve_context->AsSafeRef()) {}
+      : resolve_context(resolve_context->GetWeakPtr()) {}
 
   bool operator<(const JobKey& other) const {
     return std::forward_as_tuple(query_types.ToEnumBitmask(), flags, source,
@@ -537,7 +537,7 @@ struct HostResolverManager::JobKey {
   HostResolverFlags flags;
   HostResolverSource source;
   SecureDnsMode secure_dns_mode;
-  base::SafeRef<ResolveContext, base::SafeRefDanglingUntriaged> resolve_context;
+  base::WeakPtr<ResolveContext> resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const {
     if (query_types.Size() != 1) {
@@ -559,7 +559,8 @@ struct HostResolverManager::JobKey {
   }
 
   handles::NetworkHandle GetTargetNetwork() const {
-    return resolve_context->GetTargetNetwork();
+    return resolve_context ? resolve_context->GetTargetNetwork()
+                           : handles::kInvalidNetworkHandle;
   }
 };
 
