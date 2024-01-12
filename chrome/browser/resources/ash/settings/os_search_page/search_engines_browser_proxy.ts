@@ -42,7 +42,6 @@ export interface SearchEnginesInfo {
 }
 
 export interface SearchEnginesBrowserProxy {
-  setDefaultSearchEngine(modelIndex: number): void;
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
   openBrowserSearchSettings(): void;
 }
@@ -57,10 +56,6 @@ export class SearchEnginesBrowserProxyImpl implements
 
   static setInstanceForTesting(obj: SearchEnginesBrowserProxy): void {
     instance = obj;
-  }
-
-  setDefaultSearchEngine(modelIndex: number): void {
-    chrome.send('setDefaultSearchEngine', [modelIndex]);
   }
 
   getSearchEnginesList(): Promise<SearchEnginesInfo> {

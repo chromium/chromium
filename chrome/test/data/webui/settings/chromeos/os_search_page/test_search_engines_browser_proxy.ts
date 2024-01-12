@@ -9,14 +9,9 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     SearchEnginesBrowserProxy {
   constructor(private searchEngineInfo: SearchEnginesInfo) {
     super([
-      'setDefaultSearchEngine',
       'getSearchEnginesList',
       'openBrowserSearchSettings',
     ]);
-  }
-
-  setDefaultSearchEngine(modelIndex: number): void {
-    this.methodCalled('setDefaultSearchEngine', modelIndex);
   }
 
   getSearchEnginesList(): Promise<SearchEnginesInfo> {
