@@ -53,7 +53,11 @@ class AsyncCheckTracker
   // Takes ownership of `checker`.
   void TransferUrlChecker(std::unique_ptr<UrlCheckerOnSB> checker);
 
+  // Returns whether navigation is pending.
+  bool IsNavigationPending(int64_t navigation_id);
+
   // content::WebContentsObserver methods:
+  void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   bool HasPendingCheckerForTesting();
@@ -81,6 +85,9 @@ class AsyncCheckTracker
   // Set to true if interstitial should be shown after DidFinishNavigation is
   // called. Reset to false after interstitial is triggered.
   bool show_interstitial_after_finish_navigation_ = false;
+
+  // A set of navigation ids that are pending.
+  base::flat_set<int64_t> pending_navigation_ids_;
 
   base::WeakPtrFactory<AsyncCheckTracker> weak_factory_{this};
 

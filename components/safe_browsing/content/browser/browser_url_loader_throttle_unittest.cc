@@ -301,9 +301,12 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
                                ? base::WrapUnique(new AsyncCheckTracker(
                                      web_contents_, ui_manager_.get()))
                                : nullptr;
+    absl::optional<int64_t> navigation_id =
+        async_check_enabled ? absl::optional<int64_t>(1u) : absl::nullopt;
+
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter.Get(),
-        /*frame_tree_node_id=*/0, /*navigation_id=*/absl::nullopt,
+        /*frame_tree_node_id=*/0, navigation_id,
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
                                      : nullptr,
         /*hash_realtime_service=*/nullptr,
@@ -323,7 +326,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*has_user_gesture=*/false, url_checker_delegate_,
             mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
             /*render_frame_token=*/std::nullopt,
-            UnsafeResource::kNoFrameTreeNodeId, /*navigation_id=*/absl::nullopt,
+            UnsafeResource::kNoFrameTreeNodeId, navigation_id,
             url_real_time_lookup_enabled,
             /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,

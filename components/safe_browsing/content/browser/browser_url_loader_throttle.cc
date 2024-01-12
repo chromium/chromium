@@ -163,7 +163,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
 
   // TODO(crbug.com/1501194): Add more checks (e.g. prefetch/prerender) to
   // ensure this URL loader is eligible for async check.
-  if (async_check_tracker_) {
+  if (async_check_tracker_ && navigation_id.has_value()) {
     CHECK(can_check_db);
     CHECK(url_real_time_lookup_enabled_ ||
           hash_realtime_selection !=

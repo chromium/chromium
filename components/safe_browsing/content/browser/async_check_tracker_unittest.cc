@@ -4,10 +4,12 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -48,6 +50,10 @@ class MockUIManager : public BaseUIManager {
 
 class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
  protected:
+  AsyncCheckTrackerTest() {
+    feature_list_.InitAndEnableFeature(kSafeBrowsingAsyncRealTimeCheck);
+  }
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
@@ -85,6 +91,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
     tracker_->PendingCheckerCompleted(result);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   GURL url_;
   scoped_refptr<MockUIManager> ui_manager_;
   raw_ptr<AsyncCheckTracker> tracker_;
@@ -130,6 +137,37 @@ TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
+}
+
+TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
+  content::MockNavigationHandle handle(web_contents());
+  UnsafeResource resource;
+  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.navigation_id = handle.GetNavigationId();
+
+  AsyncCheckTracker* tracker =
+      AsyncCheckTracker::FromWebContents(web_contents());
+  tracker->DidStartNavigation(&handle);
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+
+  tracker->DidFinishNavigation(&handle);
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+}
+
+TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
+  content::MockNavigationHandle handle(web_contents());
+  UnsafeResource resource;
+  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+
+  EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+
+  // If there is no navigation id associated with the resource, whether the
+  // main page load is pending is determined by
+  // UnsafeResource::IsMainPageLoadPendingWithSyncCheck.
+  resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+  EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 }
 
 }  // namespace safe_browsing

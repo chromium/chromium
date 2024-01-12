@@ -32,8 +32,17 @@ AsyncCheckTracker* AsyncCheckTracker::GetOrCreateForWebContents(
 // static
 bool AsyncCheckTracker::IsMainPageLoadPending(
     const security_interstitials::UnsafeResource& resource) {
-  // TODO(crbug.com/1501194): Implement this function when
-  // async Safe Browsing check is enabled.
+  content::WebContents* web_contents =
+      unsafe_resource_util::GetWebContentsForResource(resource);
+  if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
+      resource.navigation_id.has_value() &&
+      base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+    // If async check is enabled, whether the main page load is pending cannot
+    // be solely determined by the fields in resource. The page load may or may
+    // not be pending, depending on when the async check completes.
+    return AsyncCheckTracker::FromWebContents(web_contents)
+        ->IsNavigationPending(resource.navigation_id.value());
+  }
   return resource.IsMainPageLoadPendingWithSyncCheck();
 }
 
@@ -65,7 +74,21 @@ void AsyncCheckTracker::PendingCheckerCompleted(
   }
 }
 
+bool AsyncCheckTracker::IsNavigationPending(int64_t navigation_id) {
+  // This approach works based on the assumption that
+  //   1) DidStartNavigation must be called before DidFinishNavigation.
+  //   2) DidFinishNavigation must be called if DidStartNavigation is called (to
+  //      avoid memory leak).
+  //   3) The navigation id remains unchanged.
+  return base::Contains(pending_navigation_ids_, navigation_id);
+}
+
+void AsyncCheckTracker::DidStartNavigation(content::NavigationHandle* handle) {
+  pending_navigation_ids_.insert(handle->GetNavigationId());
+}
+
 void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
+  pending_navigation_ids_.erase(handle->GetNavigationId());
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument() ||
       !handle->HasCommitted()) {
     return;
