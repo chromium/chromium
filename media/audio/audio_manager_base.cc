@@ -178,14 +178,17 @@ void AudioManagerBase::GetAudioDeviceDescriptions(
   }
 
   for (auto& name : device_names) {
-    if (AudioDeviceDescription::IsDefaultDevice(name.unique_id))
+    bool is_system_default = name.unique_id == real_default_device_id;
+    if (AudioDeviceDescription::IsDefaultDevice(name.unique_id)) {
       name.device_name = real_default_name;
-    else if (AudioDeviceDescription::IsCommunicationsDevice(name.unique_id))
+      is_system_default = true;
+    } else if (AudioDeviceDescription::IsCommunicationsDevice(name.unique_id)) {
       name.device_name = real_communications_name;
+    }
     std::string group_id = (this->*get_group_id)(name.unique_id);
     device_descriptions->emplace_back(std::move(name.device_name),
                                       std::move(name.unique_id),
-                                      std::move(group_id));
+                                      std::move(group_id), is_system_default);
   }
 }
 

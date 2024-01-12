@@ -122,6 +122,8 @@ void CheckDescriptionLabels(const AudioDeviceDescriptions& descriptions,
       EXPECT_TRUE(base::EndsWith(description.device_name,
                                  real_communications_label,
                                  base::CompareCase::SENSITIVE));
+    } else if (description.unique_id == real_default_id) {
+      EXPECT_TRUE(description.is_system_default);
     }
   }
 }
