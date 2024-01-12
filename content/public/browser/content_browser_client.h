@@ -606,8 +606,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // unless the embedder cannot easily handle a process exit in non-live frames.
   virtual bool ShouldAllowNoLongerUsedProcessToExit();
 
-  // Called when a site instance is first associated with a process.
-  virtual void SiteInstanceGotProcess(SiteInstance* site_instance) {}
+  // Called when a SiteInstance is first associated with both a process and a
+  // site. SiteInstances may be created with or without a site, and they may
+  // get a process before or after their site is set. This call is only
+  // dispatched when both the site and the process are set. Note that this may
+  // get called after some navigations have already committed in the process,
+  // if those earlier navigations did not set a site (e.g., about:blank) but a
+  // subsequent navigation does.
+  virtual void SiteInstanceGotProcessAndSite(SiteInstance* site_instance) {}
 
   // Returns true if for the navigation from |current_effective_url| to
   // |destination_effective_url| in |site_instance|, a new SiteInstance and

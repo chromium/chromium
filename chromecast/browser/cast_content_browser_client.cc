@@ -392,9 +392,6 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
-void CastContentBrowserClient::SiteInstanceGotProcess(
-    content::SiteInstance* site_instance) {}
-
 void CastContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {

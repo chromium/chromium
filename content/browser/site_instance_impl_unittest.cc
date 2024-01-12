@@ -2405,4 +2405,127 @@ TEST_F(SiteInstanceTest, GroupTokensUnrelatedSiteInstances) {
             base_instance->coop_related_group_token());
 }
 
+namespace {
+
+class SiteInstanceGotProcessAndSiteBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  SiteInstanceGotProcessAndSiteBrowserClient() {}
+
+  void SiteInstanceGotProcessAndSite(SiteInstance* site_instance) override {
+    call_count_++;
+  }
+
+  int call_count() { return call_count_; }
+
+ private:
+  int call_count_ = 0;
+};
+
+}  // namespace
+
+// Check that there's one call to SiteInstanceGotProcessAndSite() when a
+// SiteInstance gets a process first and a site second.
+TEST_F(SiteInstanceTest, SiteInstanceGotProcessAndSite_ProcessThenSite) {
+  SiteInstanceGotProcessAndSiteBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  const auto site_instance = SiteInstanceImpl::Create(context());
+  EXPECT_FALSE(site_instance->HasSite());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  // Assigning a process shouldn't call SiteInstanceGotProcessAndSite(), since
+  // there's no site yet.
+  EXPECT_FALSE(site_instance->HasProcess());
+  site_instance->GetProcess();
+  EXPECT_TRUE(site_instance->HasProcess());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  // Now, assign a site and expect a call to SiteInstanceGotProcessAndSite().
+  site_instance->SetSite(UrlInfo::CreateForTesting(GURL("https://foo.com")));
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Repeated calls to get a process shouldn't produce new calls.
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
+// Same as above, but now SiteInstance gets a site first and a process second.
+TEST_F(SiteInstanceTest, SiteInstanceGotProcessAndSite_SiteThenProcess) {
+  SiteInstanceGotProcessAndSiteBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  const auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(GURL("https://foo.com")),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
+  EXPECT_TRUE(site_instance->HasSite());
+  EXPECT_FALSE(site_instance->HasProcess());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Repeated calls to get a process shouldn't produce new calls.
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Expect a new call if a SiteInstance's RenderProcessHost gets destroyed
+  // and replaced with a new one.
+  EXPECT_TRUE(site_instance->HasProcess());
+  site_instance->GetProcess()->Cleanup();
+  EXPECT_FALSE(site_instance->HasProcess());
+  site_instance->GetProcess();
+  EXPECT_TRUE(site_instance->HasProcess());
+  EXPECT_EQ(2, custom_client.call_count());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
+// Check that SiteInstanceGotProcessAndSite() works properly in
+// process-per-site mode.
+TEST_F(SiteInstanceTest, SiteInstanceGotProcessAndSite_ProcessPerSite) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kProcessPerSite);
+  SiteInstanceGotProcessAndSiteBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  const auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(GURL("https://foo.com")),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
+  EXPECT_TRUE(site_instance->HasSite());
+  EXPECT_FALSE(site_instance->HasProcess());
+  EXPECT_EQ(0, custom_client.call_count());
+
+  site_instance->GetProcess();
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Create another SiteInstance for the same site, which should reuse the
+  // process from the first SiteInstance, since we're in process-per-site mode.
+  const auto second_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(GURL("https://foo.com")),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*is_fixed_storage_partition=*/false);
+
+  // In process-per-site mode, HasProcess() returns true even if the
+  // SiteInstance hasn't gone through SetProcessInternal(). However,
+  // SiteInstanceGotProcess() shouldn't have been called on it yet.
+  EXPECT_TRUE(second_instance->HasProcess());
+  EXPECT_EQ(1, custom_client.call_count());
+
+  // Assigning a process for the second SiteInstance should trigger a call to
+  // SiteInstanceGotProcess(), even though the process is reused.
+  second_instance->GetProcess();
+  EXPECT_EQ(second_instance->GetProcess(), site_instance->GetProcess());
+  EXPECT_EQ(2, custom_client.call_count());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
 }  // namespace content

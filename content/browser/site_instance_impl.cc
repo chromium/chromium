@@ -416,7 +416,7 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
-  // Create a new SiteInstanceGroup and RenderProcessHost is there isn't one.
+  // Create a new SiteInstanceGroup and RenderProcessHost if there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
   // AgentSchedulingGroupHost. A group must have a process. If the process gets
   // destructed, `site_instance_group_` will get cleared, and another one with a
@@ -488,7 +488,15 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   TRACE_EVENT2("navigation", "SiteInstanceImpl::SetProcessInternal", "site id",
                id_.value(), "process id",
                site_instance_group_->process()->GetID());
-  GetContentClient()->browser()->SiteInstanceGotProcess(this);
+
+  // Inform the embedder if the SiteInstance now has both the process and the
+  // site assigned. Note that this can be called either here or when setting
+  // the site in SetSiteInfoInternal() below. This could be called multiple
+  // times if the SiteInstance's RenderProcessHost goes away and a new one
+  // replaces it later.
+  if (has_site_) {
+    GetContentClient()->browser()->SiteInstanceGotProcessAndSite(this);
+  }
 
   // Notify SiteInstanceGroupManager that the process was set on this
   // SiteInstance. This must be called after LockProcessIfNeeded() because
@@ -613,6 +621,11 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
 
   if (has_group()) {
     LockProcessIfNeeded();
+
+    // Inform the embedder if the SiteInstance now has both the process and the
+    // site assigned. Note that this can be called either here or when setting
+    // the process in SetProcessInternal() above.
+    GetContentClient()->browser()->SiteInstanceGotProcessAndSite(this);
 
     // Ensure the process is registered for this site if necessary.
     if (should_use_process_per_site) {

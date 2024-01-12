@@ -2258,7 +2258,7 @@ bool ChromeContentBrowserClient::ShouldEmbeddedFramesTryToReuseExistingProcess(
 #endif
 }
 
-void ChromeContentBrowserClient::SiteInstanceGotProcess(
+void ChromeContentBrowserClient::SiteInstanceGotProcessAndSite(
     SiteInstance* site_instance) {
   CHECK(site_instance->HasProcess());
 
@@ -2280,7 +2280,7 @@ void ChromeContentBrowserClient::SiteInstanceGotProcess(
 #endif
 
   for (auto& part : extra_parts_) {
-    part->SiteInstanceGotProcess(site_instance);
+    part->SiteInstanceGotProcessAndSite(site_instance);
   }
 }
 
