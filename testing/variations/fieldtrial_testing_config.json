@@ -8475,32 +8475,17 @@
     "HeapProfilingAllProcesses": [
         {
             "platforms": [
-                "mac"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "EnabledInGPUAndNetwork",
                     "params": {
                         "gpu-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":5000000,\"stable-probability\":1}",
-                        "network-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":10000000,\"stable-probability\":1}"
-                    },
-                    "enable_features": [
-                        "HeapProfilerReporting"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledInNetwork",
-                    "params": {
                         "network-process-params": "{\"is-supported\":true,\"nonstable-probability\":1,\"sampling-rate\":10000000,\"stable-probability\":1}"
                     },
                     "enable_features": [

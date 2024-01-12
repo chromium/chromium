@@ -4,9 +4,11 @@
 
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
@@ -22,6 +24,29 @@
 namespace heap_profiling {
 
 namespace {
+
+using ProcessType = metrics::CallStackProfileParams::Process;
+
+// A copy of HeapProfilerParameters with all fields optional.
+struct ParameterOverrides {
+  std::optional<bool> is_supported;
+  std::optional<double> stable_probability;
+  std::optional<double> nonstable_probability;
+  std::optional<int> sampling_rate_bytes;
+  std::optional<base::TimeDelta> collection_interval;
+
+  void ApplyOverridesTo(HeapProfilerParameters& params) const {
+    params.is_supported = is_supported.value_or(params.is_supported);
+    params.stable_probability =
+        stable_probability.value_or(params.stable_probability);
+    params.nonstable_probability =
+        nonstable_probability.value_or(params.nonstable_probability);
+    params.sampling_rate_bytes =
+        sampling_rate_bytes.value_or(params.sampling_rate_bytes);
+    params.collection_interval =
+        collection_interval.value_or(params.collection_interval);
+  }
+};
 
 // Platform-specific parameter defaults.
 
@@ -55,6 +80,8 @@ constexpr double kDefaultStableProbability = 0.01;
 // provider if it's on a non-stable channel.
 constexpr double kDefaultNonStableProbability = 0.5;
 
+// Parameters used for processes that don't have an override in
+// kProcessParameterOverrides.
 constexpr HeapProfilerParameters kDefaultHeapProfilerParameters{
     .is_supported = false,
     // If a process overrides `is_supported`, use the following defaults.
@@ -63,6 +90,26 @@ constexpr HeapProfilerParameters kDefaultHeapProfilerParameters{
     .sampling_rate_bytes = kDefaultSamplingRateBytes,
     .collection_interval = kDefaultCollectionInterval,
 };
+
+// Parameters used for specific processes unless overridden by an experiment.
+// Processes that aren't in this map use kDefaultHeapProfilerParameters
+// unchanged.
+constexpr auto kProcessParameterOverrides =
+    base::MakeFixedFlatMap<ProcessType, ParameterOverrides>({
+        {ProcessType::kBrowser, {.is_supported = true}},
+#if BUILDFLAG(IS_MAC)
+        // The GPU process is currently only enabled by default on Mac.
+        {ProcessType::kGpu,
+         {
+             .is_supported = true,
+             // Use half the default sampling rate of the browser process,
+             // because the GPU process allocates about half as much memory
+             // at the median.
+             .sampling_rate_bytes = kDefaultSamplingRateBytes / 2,
+         }},
+#endif
+        {ProcessType::kNetworkService, {.is_supported = true}},
+    });
 
 // Feature parameters.
 
@@ -161,9 +208,7 @@ HeapProfilerParameters GetDefaultHeapProfilerParameters() {
 }
 
 HeapProfilerParameters GetHeapProfilerParametersForProcess(
-    metrics::CallStackProfileParams::Process process_type) {
-  using Process = metrics::CallStackProfileParams::Process;
-
+    ProcessType process_type) {
   HeapProfilerParameters params = kDefaultHeapProfilerParameters;
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -173,8 +218,10 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
     return params;
   }
 
-  // By default only the browser process is supported.
-  params.is_supported = (process_type == Process::kBrowser);
+  const auto* it = kProcessParameterOverrides.find(process_type);
+  if (it != kProcessParameterOverrides.end()) {
+    it->second.ApplyOverridesTo(params);
+  }
 
   // Override with field trial parameters if any are set.
   if (!params.UpdateFromJSON(kDefaultParameters.Get())) {
@@ -182,22 +229,22 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
     return params;
   }
   switch (process_type) {
-    case Process::kBrowser:
+    case ProcessType::kBrowser:
       params.UpdateFromJSON(kBrowserProcessParameters.Get());
       break;
-    case Process::kRenderer:
+    case ProcessType::kRenderer:
       params.UpdateFromJSON(kRendererProcessParameters.Get());
       break;
-    case Process::kGpu:
+    case ProcessType::kGpu:
       params.UpdateFromJSON(kGPUProcessParameters.Get());
       break;
-    case Process::kUtility:
+    case ProcessType::kUtility:
       params.UpdateFromJSON(kUtilityProcessParameters.Get());
       break;
-    case Process::kNetworkService:
+    case ProcessType::kNetworkService:
       params.UpdateFromJSON(kNetworkProcessParameters.Get());
       break;
-    case Process::kUnknown:
+    case ProcessType::kUnknown:
     default:
       // Do nothing. Profiler hasn't been tested in these process types.
       break;
