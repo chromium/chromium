@@ -73,22 +73,19 @@ void Fence::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-void Fence::reportEvent(ScriptState* script_state,
-                        const V8UnionFenceEventOrString* event,
+void Fence::reportEvent(const V8UnionFenceEventOrString* event,
                         ExceptionState& exception_state) {
   switch (event->GetContentType()) {
     case V8UnionFenceEventOrString::ContentType::kString:
-      reportPrivateAggregationEvent(script_state, event->GetAsString(),
-                                    exception_state);
+      reportPrivateAggregationEvent(event->GetAsString(), exception_state);
       return;
     case V8UnionFenceEventOrString::ContentType::kFenceEvent:
-      reportEvent(script_state, event->GetAsFenceEvent(), exception_state);
+      reportEvent(event->GetAsFenceEvent(), exception_state);
       return;
   }
 }
 
-void Fence::reportEvent(ScriptState* script_state,
-                        const FenceEvent* event,
+void Fence::reportEvent(const FenceEvent* event,
                         ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
@@ -106,14 +103,13 @@ void Fence::reportEvent(ScriptState* script_state,
   if (event->hasDestinationURL() &&
       base::FeatureList::IsEnabled(
           blink::features::kAdAuctionReportingWithMacroApi)) {
-    reportEventToDestinationURL(script_state, event, exception_state);
+    reportEventToDestinationURL(event, exception_state);
   } else {
-    reportEventToDestinationEnum(script_state, event, exception_state);
+    reportEventToDestinationEnum(event, exception_state);
   }
 }
 
-void Fence::reportEventToDestinationEnum(ScriptState* script_state,
-                                         const FenceEvent* event,
+void Fence::reportEventToDestinationEnum(const FenceEvent* event,
                                          ExceptionState& exception_state) {
   if (!event->hasDestination()) {
     exception_state.ThrowTypeError("Missing required 'destination' property.");
@@ -155,8 +151,7 @@ void Fence::reportEventToDestinationEnum(ScriptState* script_state,
       event->getEventDataOr(String{""}), event->eventType(), destinations);
 }
 
-void Fence::reportEventToDestinationURL(ScriptState* script_state,
-                                        const FenceEvent* event,
+void Fence::reportEventToDestinationURL(const FenceEvent* event,
                                         ExceptionState& exception_state) {
   if (event->hasEventType()) {
     exception_state.ThrowTypeError(
@@ -214,7 +209,6 @@ void Fence::reportEventToDestinationURL(ScriptState* script_state,
 }
 
 void Fence::setReportEventDataForAutomaticBeacons(
-    ScriptState* script_state,
     const FenceEvent* event,
     ExceptionState& exception_state) {
   if (!DomWindow()) {
@@ -333,8 +327,7 @@ void Fence::DisableUntrustedNetworkComplete(ScriptPromiseResolver* resolver) {
   resolver->Resolve();
 }
 
-void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
-                                          const String& event,
+void Fence::reportPrivateAggregationEvent(const String& event,
                                           ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
       !blink::features::kPrivateAggregationApiEnabledInProtectedAudience
