@@ -317,9 +317,21 @@ void MaybeShowStandaloneMigrationNudge(const std::string& app_id,
   CHECK(app_service_proxy);
 
   std::string app_name;
+  apps::WindowMode window_mode;
+
+  // Retrieving an app's window mode, set prior to the default window mode
+  // change, allows us to verify whether the nudge should be shown on opening
+  // this app. The nudge is to only be shown for apps previously displayed
+  // within the browser by default.
   app_service_proxy->AppRegistryCache().ForOneApp(
-      app_id,
-      [&app_name](const apps::AppUpdate& update) { app_name = update.Name(); });
+      app_id, [&app_name, &window_mode](const apps::AppUpdate& update) {
+        app_name = update.Name();
+        window_mode = update.WindowMode();
+      });
+
+  if (window_mode != apps::WindowMode::kBrowser) {
+    return;
+  }
 
   ash::CreateAndShowNudge(anchor_view, base::UTF8ToUTF16(app_name));
 }

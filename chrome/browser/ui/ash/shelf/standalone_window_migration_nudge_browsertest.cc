@@ -39,12 +39,12 @@ class StandaloneWindowMigrationNudgeBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override { ASSERT_TRUE(controller()); }
 
   webapps::AppId CreateWebApp(const GURL& app_url,
-                              const std::u16string& app_name) {
+                              const std::u16string& app_name,
+                              web_app::mojom::UserDisplayMode display_mode) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->title = app_name;
-    web_app_info->user_display_mode =
-        web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->user_display_mode = display_mode;
 
     return web_app::test::InstallWebApp(browser()->profile(),
                                         std::move(web_app_info));
@@ -61,7 +61,9 @@ class StandaloneWindowMigrationNudgeBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(StandaloneWindowMigrationNudgeBrowserTest, CheckNudge) {
   GURL app_url = GURL("https://example.org/");
   std::u16string app_name = u"app_name";
-  auto app_id = CreateWebApp(app_url, app_name);
+
+  auto app_id = CreateWebApp(app_url, app_name,
+                             web_app::mojom::UserDisplayMode::kBrowser);
 
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
@@ -73,4 +75,24 @@ IN_PROC_BROWSER_TEST_F(StandaloneWindowMigrationNudgeBrowserTest, CheckNudge) {
   ASSERT_TRUE(anchored_nudge_manager);
 
   EXPECT_TRUE(anchored_nudge_manager->IsNudgeShown(kNudgeId));
+}
+
+IN_PROC_BROWSER_TEST_F(StandaloneWindowMigrationNudgeBrowserTest,
+                       CheckNudgeDoesNotShow) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string app_name = u"app_name";
+
+  auto app_id = CreateWebApp(app_url, app_name,
+                             web_app::mojom::UserDisplayMode::kStandalone);
+
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
+
+  ash::AnchoredNudgeManager* anchored_nudge_manager =
+      ash::AnchoredNudgeManager::Get();
+  ASSERT_TRUE(anchored_nudge_manager);
+
+  EXPECT_FALSE(anchored_nudge_manager->IsNudgeShown(kNudgeId));
 }
