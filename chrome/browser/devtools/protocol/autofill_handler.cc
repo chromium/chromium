@@ -244,15 +244,16 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   const autofill::AutofillProfile* profile_used_to_fill_form =
       absl::get<const autofill::AutofillProfile*>(profile_or_credit_card);
 
+  auto field_id_to_form_field_data =
+      base::MakeFlatMap<FieldGlobalId, const FormFieldData*>(
+          filled_fields, {}, [](const FormFieldData* field) {
+            return std::make_pair(field->global_id(), field);
+          });
+
   auto filled_fields_to_be_sent_to_devtools =
       std::make_unique<protocol::Array<protocol::Autofill::FilledField>>();
   filled_fields_to_be_sent_to_devtools->reserve(filled_fields.size());
-  for (const FormFieldData* field : filled_fields) {
-    AutofillField* autofill_field =
-        form_structure.GetFieldById(field->global_id());
-    if (!autofill_field) {
-      continue;
-    }
+  for (const auto& autofill_field : form_structure) {
     // Whether the field was classified from the autocomplete attribute or
     // predictions. If no autocomplete attribute exists OR the actual ServerType
     // differs from what it would have been with only autocomplete, autofill
@@ -263,13 +264,19 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
         HtmlFieldTypeToBestCorrespondingFieldType(
             autofill_field->html_type()) !=
             autofill_field->Type().GetStorableType();
+    auto filled_field_iterator =
+        field_id_to_form_field_data.find(autofill_field->global_id());
+    const std::u16string filled_value =
+        filled_field_iterator != field_id_to_form_field_data.end()
+            ? filled_field_iterator->second->value
+            : u"";
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()
             .SetId(base::UTF16ToUTF8(autofill_field->id_attribute))
             .SetName(base::UTF16ToUTF8(autofill_field->name_attribute))
-            .SetValue(base::UTF16ToUTF8(field->value))
-            .SetHtmlType(std::string(
-                autofill::FormControlTypeToString(field->form_control_type)))
+            .SetValue(base::UTF16ToUTF8(filled_value))
+            .SetHtmlType(std::string(autofill::FormControlTypeToString(
+                autofill_field->form_control_type)))
             .SetAutofillType(
                 std::string(FieldTypeToDeveloperRepresentationString(
                     autofill_field->Type().GetStorableType())))
@@ -280,7 +287,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                           AutocompleteAttribute)
             .SetFieldId(base::FeatureList::IsEnabled(
                             blink::features::kAutofillUseDomNodeIdForRendererId)
-                            ? field->unique_renderer_id.value()
+                            ? autofill_field->unique_renderer_id.value()
                             : 0)
             .Build());
   }
