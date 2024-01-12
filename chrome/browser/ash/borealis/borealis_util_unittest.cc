@@ -8,8 +8,11 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/windows.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
@@ -243,6 +246,38 @@ TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
   EXPECT_EQ(info.game_id, 123);
   EXPECT_EQ(info.proton, "None");
   EXPECT_EQ(info.slr, "None");
+}
+
+guest_os::GuestOsRegistryService::Registration CreateRegistration(
+    std::string guest_os_app_id,
+    base::StringPiece name,
+    base::StringPiece exec) {
+  base::Value pref(base::Value::Type::DICT);
+  base::Value::Dict localized_name;
+  localized_name.Set("" /* locale */, base::Value(name));
+  pref.GetDict().Set(guest_os::prefs::kAppNameKey, std::move(localized_name));
+  pref.GetDict().Set(guest_os::prefs::kAppExecKey, exec);
+  return guest_os::GuestOsRegistryService::Registration(guest_os_app_id,
+                                                        std::move(pref));
+}
+
+TEST_F(BorealisUtilTest, HidesFutureProtonTools) {
+  EXPECT_TRUE(ShouldHideIrrelevantApp(CreateRegistration(
+      "fake app id", "Proton 9.0", "steam://rungameid/999")));
+}
+
+TEST_F(BorealisUtilTest, HidesToolsById) {
+  EXPECT_TRUE(ShouldHideIrrelevantApp(CreateRegistration(
+      "fake app id", "A bold new name for an existing tool",
+      "steam://rungameid/1391110"  // Soldier SLR
+      )));
+}
+
+TEST_F(BorealisUtilTest, DoesNotHideGames) {
+  // "Proton Rush" reads like a Proton version, but isn't, so don't hide it.
+  // It's also not an actual game (yet?), this is just an example.
+  EXPECT_FALSE(ShouldHideIrrelevantApp(CreateRegistration(
+      "fake app id", "Proton Rush", "steam://rungameid/123456789")));
 }
 
 }  // namespace borealis

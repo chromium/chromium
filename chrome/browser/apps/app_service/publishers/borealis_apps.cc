@@ -200,7 +200,7 @@ void BorealisApps::CreateAppOverrides(
   app->allow_uninstall = true;
 
   // Hide some known spurious "apps" from the user.
-  if (borealis::ShouldHideIrrelevantApp(registration.Name())) {
+  if (borealis::ShouldHideIrrelevantApp(registration)) {
     SetAppVisibility(*app, false);
   }
 
