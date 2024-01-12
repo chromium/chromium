@@ -34,9 +34,9 @@ static_library("installer_policies_no_content_deps") {
     "//components/component_updater",
     "//components/lookalikes/core:proto",
     "//components/lookalikes/core:safety_tips",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/tpcd/metadata",
-    "//components/update_client:update_client",
+    "//components/update_client",
     "//services/network/public/cpp",
   ]
 

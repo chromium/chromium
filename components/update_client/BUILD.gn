@@ -17,7 +17,7 @@ source_set("network_impl") {
     ":update_client",
     "//base",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -161,7 +161,7 @@ static_library("update_client") {
     "//components/client_update_protocol",
     "//components/crx_file",
     "//components/prefs",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//crypto",
     "//third_party/zlib/google:compression_utils",
     "//url",
@@ -302,10 +302,10 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/services/patch:in_process",
     "//components/services/unzip:in_process",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/cpp:cpp_base",
     "//testing/gmock",
     "//testing/gtest",
@@ -320,7 +320,7 @@ fuzzer_test("update_client_protocol_serializer_fuzzer") {
   sources = [ "protocol_serializer_fuzzer.cc" ]
   deps = [
     ":update_client",
-    "//base:base",
+    "//base",
   ]
   seed_corpus = "fuzzer_corpuses/protocol_serializer/"
 }
@@ -329,7 +329,7 @@ fuzzer_test("update_client_protocol_parser_fuzzer") {
   sources = [ "protocol_parser_fuzzer.cc" ]
   deps = [
     ":update_client",
-    "//base:base",
+    "//base",
   ]
   seed_corpus = "fuzzer_corpuses/protocol_parser/"
 }
