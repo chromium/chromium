@@ -6,8 +6,11 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
+#include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -15,6 +18,55 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+class ScriptCallbackInternalObserver final : public ObservableInternalObserver {
+ public:
+  ScriptCallbackInternalObserver(V8ObserverCallback* next_callback,
+                                 V8ObserverCallback* error_callback,
+                                 V8ObserverCompleteCallback* complete_callback)
+      : next_callback_(next_callback),
+        error_callback_(error_callback),
+        complete_callback_(complete_callback) {}
+
+  void Next(ScriptValue value) override {
+    if (next_callback_) {
+      next_callback_->InvokeAndReportException(nullptr, value);
+    }
+  }
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    if (error_callback_) {
+      error_callback_->InvokeAndReportException(nullptr, error_value);
+    } else {
+      // This is the "default error algorithm" [1] that must be invoked in the
+      // case where `error_callback_` was not provided.
+      //
+      // [1]: https://wicg.github.io/observable/#default-error-algorithm
+      ObservableInternalObserver::Error(script_state, error_value);
+    }
+  }
+  void Complete() override {
+    if (complete_callback_) {
+      complete_callback_->InvokeAndReportException(nullptr);
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(next_callback_);
+    visitor->Trace(error_callback_);
+    visitor->Trace(complete_callback_);
+  }
+
+ private:
+  Member<V8ObserverCallback> next_callback_;
+  Member<V8ObserverCallback> error_callback_;
+  Member<V8ObserverCompleteCallback> complete_callback_;
+};
+
+}  // namespace
 
 using PassKey = base::PassKey<Observable>;
 
@@ -60,18 +112,24 @@ void Observable::subscribe(ScriptState* script_state,
   switch (observer_union->GetContentType()) {
     case V8UnionObserverOrObserverCallback::ContentType::kObserver: {
       Observer* observer = observer_union->GetAsObserver();
-      subscriber = MakeGarbageCollected<Subscriber>(
-          PassKey(), script_state,
-          observer->hasNext() ? observer->next() : nullptr,
-          observer->hasComplete() ? observer->complete() : nullptr,
-          observer->hasError() ? observer->error() : nullptr, options);
+      ScriptCallbackInternalObserver* internal_observer =
+          MakeGarbageCollected<ScriptCallbackInternalObserver>(
+              observer->hasNext() ? observer->next() : nullptr,
+              observer->hasError() ? observer->error() : nullptr,
+              observer->hasComplete() ? observer->complete() : nullptr);
+
+      subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
+                                                    internal_observer, options);
       break;
     }
     case V8UnionObserverOrObserverCallback::ContentType::kObserverCallback:
-      subscriber = MakeGarbageCollected<Subscriber>(
-          PassKey(), script_state,
-          /*next=*/observer_union->GetAsObserverCallback(),
-          /*complete=*/nullptr, /*error=*/nullptr, options);
+      ScriptCallbackInternalObserver* internal_observer =
+          MakeGarbageCollected<ScriptCallbackInternalObserver>(
+              /*next=*/observer_union->GetAsObserverCallback(),
+              /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
+
+      subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
+                                                    internal_observer, options);
       break;
   }
 
