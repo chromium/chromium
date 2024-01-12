@@ -129,6 +129,44 @@ uint32_t TagnameHash(const String& s) {
   V(Strong)               \
   V(Ul)
 
+using UCharLiteralBufferType = UCharLiteralBuffer<32>;
+
+template <class Char>
+struct ScanTextResult {
+  // Converts `text` to a String. This handles converting UChar to LChar if
+  // possible.
+  String TextToString() const;
+
+  // HTML strings of the form '\n<space>*' are widespread on the web. Caching
+  // them saves us allocations, which improves the runtime.
+  String TryCanonicalizeString() const {
+    DCHECK(!text.empty());
+    if (is_newline_then_whitespace_string &&
+        text.size() < WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
+      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
+          String(text.data(), static_cast<unsigned>(text.size()))));
+      return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
+          text.size());
+    }
+    return TextToString();
+  }
+
+  base::span<const Char> text;
+  UCharLiteralBufferType* escaped_text = nullptr;
+  bool is_newline_then_whitespace_string = false;
+};
+
+template <>
+String ScanTextResult<LChar>::TextToString() const {
+  return String(text.data(), static_cast<unsigned>(text.size()));
+}
+
+template <>
+String ScanTextResult<UChar>::TextToString() const {
+  return String(StringImpl::Create8BitIfPossible(
+      text.data(), static_cast<wtf_size_t>(text.size())));
+}
+
 // This HTML parser is used as a fast-path for setting innerHTML.
 // It is faster than the general parser by only supporting a subset of valid
 // HTML. This way, it can be spec-compliant without following the algorithm
@@ -175,7 +213,6 @@ class HTMLFastPathParser {
   typedef std::conditional<std::is_same_v<Char, UChar>,
                            UCharLiteralBuffer<32>,
                            LCharLiteralBuffer<32>>::type LiteralBufferType;
-  typedef UCharLiteralBuffer<32> UCharLiteralBufferType;
   static_assert(std::is_same_v<Char, UChar> || std::is_same_v<Char, LChar>);
 
  public:
@@ -501,35 +538,13 @@ class HTMLFastPathParser {
     }
   }
 
-  struct ScanTextResult {
-    // HTML strings of the form '\n<space>*' are widespread on the web. Caching
-    // them saves us allocations, which improves the runtime.
-    String TryCanonicalizeString() const {
-      DCHECK(!text.empty());
-      if (is_newline_then_whitespace_string &&
-          text.size() < WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
-#if DCHECK_IS_ON()
-        DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
-            String(text.data(), static_cast<unsigned>(text.size()))));
-#endif  // DCHECK_IS_ON()
-        return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
-            text.size());
-      }
-      return String(text.data(), static_cast<unsigned>(text.size()));
-    }
-
-    Span text;
-    USpan escaped_text;
-    bool is_newline_then_whitespace_string = false;
-  };
-
   // We first try to scan text as an unmodified subsequence of the input.
   // However, if there are escape sequences, we have to copy the text to a
   // separate buffer and we might go outside of `Char` range if we are in an
   // `LChar` parser. Therefore, this function returns either a `Span` or a
   // `USpan`. Callers distinguish the two cases by checking if the `Span` is
   // empty, as only one of them can be non-empty.
-  ScanTextResult ScanText() {
+  ScanTextResult<Char> ScanText() {
     const Char* start = pos_;
     bool is_newline_then_whitespace_string = false;
     if (pos_ != end_ && *pos_ == '\n') {
@@ -544,7 +559,7 @@ class HTMLFastPathParser {
         return {Span{}, ScanEscapedText()};
       } else if (UNLIKELY(*pos_ == '\0')) {
         return Fail(HtmlFastPathResult::kFailedContainsNull,
-                    ScanTextResult{Span{}, USpan{}});
+                    ScanTextResult<Char>{Span{}, nullptr});
       }
       if (*pos_ != ' ') {
         is_newline_then_whitespace_string = false;
@@ -552,19 +567,19 @@ class HTMLFastPathParser {
       ++pos_;
     }
     return {{start, static_cast<size_t>(pos_ - start)},
-            USpan{},
+            nullptr,
             is_newline_then_whitespace_string};
   }
 
   // Slow-path of `ScanText()`, which supports escape sequences by copying to a
   // separate buffer.
-  USpan ScanEscapedText() {
+  UCharLiteralBufferType* ScanEscapedText() {
     uchar_buffer_.clear();
     while (pos_ != end_ && *pos_ != '<') {
       if (*pos_ == '&') {
         ScanHTMLCharacterReference(&uchar_buffer_);
         if (failed_) {
-          return USpan{};
+          return nullptr;
         }
       } else if (*pos_ == '\r') {
         // Normalize "\r\n" to "\n" according to
@@ -575,13 +590,13 @@ class HTMLFastPathParser {
         uchar_buffer_.AddChar('\n');
         ++pos_;
       } else if (UNLIKELY(*pos_ == '\0')) {
-        return Fail(HtmlFastPathResult::kFailedContainsNull, USpan{});
+        return Fail(HtmlFastPathResult::kFailedContainsNull, nullptr);
       } else {
         uchar_buffer_.AddChar(*pos_);
         ++pos_;
       }
     }
-    return {uchar_buffer_.data(), uchar_buffer_.size()};
+    return &uchar_buffer_;
   }
 
   // Scan a tagname and convert to lowercase if necessary.
@@ -882,11 +897,11 @@ class HTMLFastPathParser {
   template <class ParentTag>
   void ParseChildren(ContainerNode* parent) {
     while (true) {
-      ScanTextResult scanned_text = ScanText();
+      ScanTextResult<Char> scanned_text = ScanText();
       if (failed_) {
         return;
       }
-      DCHECK(scanned_text.text.empty() || scanned_text.escaped_text.empty());
+      DCHECK(scanned_text.text.empty() || !scanned_text.escaped_text);
       if (!scanned_text.text.empty()) {
         const auto text = scanned_text.text;
         if (text.size() >= Text::kDefaultLengthLimit) {
@@ -899,20 +914,16 @@ class HTMLFastPathParser {
           parent->ParserAppendChild(
               Text::Create(document_, scanned_text.TryCanonicalizeString()));
         }
-      } else if (!scanned_text.escaped_text.empty()) {
-        if (scanned_text.escaped_text.size() >= Text::kDefaultLengthLimit) {
+      } else if (scanned_text.escaped_text) {
+        if (scanned_text.escaped_text->size() >= Text::kDefaultLengthLimit) {
           return Fail(HtmlFastPathResult::kFailedBigText);
         }
         if (bulk_insert_notify_) {
-          parent->ParserAppendChildInDocumentFragment(Text::Create(
-              document_,
-              String(scanned_text.escaped_text.data(),
-                     static_cast<unsigned>(scanned_text.escaped_text.size()))));
+          parent->ParserAppendChildInDocumentFragment(
+              Text::Create(document_, scanned_text.escaped_text->AsString()));
         } else {
           parent->ParserAppendChild(Text::Create(
-              document_,
-              String(scanned_text.escaped_text.data(),
-                     static_cast<unsigned>(scanned_text.escaped_text.size()))));
+              document_, String(scanned_text.escaped_text->AsString())));
         }
       }
       if (pos_ == end_) {

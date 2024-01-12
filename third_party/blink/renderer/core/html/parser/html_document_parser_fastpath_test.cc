@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/xml/dom_parser.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -321,6 +322,34 @@ TEST(HTMLDocumentParserFastpathTest, NullMappedToReplacementChar) {
   // Null chars are generally mapped to \uFFFD (at least this test should
   // trigger the replacement).
   EXPECT_EQ(AtomicString(String(u"x\uFFFDy")), new_div->GetNameAttribute());
+}
+
+TEST(HTMLDocumentParserFastpathTest, MixedEncoding) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write("<body></body>");
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+  div->setInnerHTML(u"Hello");
+  Text* text_node = To<Text>(div->firstChild());
+  ASSERT_TRUE(text_node);
+  // Even though the supplied string was utf16, it only contained 8-bit chars,
+  // so should end up as 8-bit.
+  EXPECT_TRUE(text_node->data().Is8Bit());
+}
+
+TEST(HTMLDocumentParserFastpathTest, Escaped8BitText) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write("<body></body>");
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+
+  div->setInnerHTML("&amp;");
+  Text* text_node = To<Text>(div->firstChild());
+  ASSERT_TRUE(text_node);
+  // "&amp;" should be represented as 8-bit.
+  EXPECT_TRUE(text_node->data().Is8Bit());
 }
 
 }  // namespace
