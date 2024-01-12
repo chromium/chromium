@@ -607,6 +607,7 @@ src/webgpu/shader/execution/expression/call/builtin/atomics/atomicOr.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicSub.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicXor.spec.ts
+src/webgpu/shader/execution/expression/call/user/ptr_params.spec.ts
 src/webgpu/shader/execution/expression/unary/af_arithmetic.cache.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
 src/webgpu/shader/execution/expression/unary/af_arithmetic.spec.ts
