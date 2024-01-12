@@ -548,7 +548,7 @@ public class TabSwitcherCoordinator
 
 
     private View getTabGridDialogAnimationSourceView(int tabId) {
-        int index = mTabListCoordinator.indexOfTab(tabId);
+        int index = mTabListCoordinator.getTabIndexFromTabId(tabId);
         // TODO(crbug.com/999372): This is band-aid fix that will show basic fade-in/fade-out
         // animation when we cannot find the animation source view holder. This is happening due to
         // current group id in TabGridDialog can not be indexed in TabListModel, which should never

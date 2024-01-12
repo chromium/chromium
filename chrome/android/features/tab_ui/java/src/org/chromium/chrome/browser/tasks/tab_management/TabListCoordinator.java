@@ -555,7 +555,7 @@ public class TabListCoordinator
     boolean updateThumbnailLocation() {
         Rect rect =
                 mRecyclerView.getRectOfCurrentThumbnail(
-                        mMediator.indexOfTab(mMediator.selectedTabId()), mMediator.selectedTabId());
+                        mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());
         if (rect == null) return false;
         rect.offset(0, getTabListTopOffset());
         mThumbnailLocationOfCurrentTab.set(rect);
@@ -647,10 +647,6 @@ public class TabListCoordinator
 
     boolean resetWithListOfTabs(@Nullable List<Tab> tabs) {
         return resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
-    }
-
-    int indexOfTab(int tabId) {
-        return mMediator.indexOfTab(tabId);
     }
 
     void softCleanup() {

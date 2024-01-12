@@ -1889,18 +1889,6 @@ class TabListMediator {
         return TabModelUtils.getCurrentTabId(mCurrentTabModelFilterSupplier.get().getTabModel());
     }
 
-    /**
-     * Find the index of the given tab in the {@link TabListRecyclerView}.
-     * Note that Tabs may have different index in {@link TabListRecyclerView} and {@link
-     * TabModelSelector}, like when {@link resetWithListOfTabs} above is called with MRU mode
-     * enabled.
-     * @param tabId The given Tab id.
-     * @return The index of the Tab in the {@link TabListRecyclerView}.
-     */
-    int indexOfTab(int tabId) {
-        return mModel.indexFromId(tabId);
-    }
-
     private void setupPersistedTabDataFetcherForTab(PseudoTab pseudoTab, int index) {
         if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
             assert mProfile != null;
