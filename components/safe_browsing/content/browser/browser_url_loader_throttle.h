@@ -45,9 +45,7 @@ class AsyncCheckTracker;
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   // Helper class to perform whether the check can be skipped on the SB thread.
-  class SkipCheckCheckerOnSB
-      : public base::SupportsWeakPtr<
-            BrowserURLLoaderThrottle::SkipCheckCheckerOnSB> {
+  class SkipCheckCheckerOnSB final {
    public:
     using OnCompleteCheckCallback =
         base::OnceCallback<void(bool /* should_skip */)>;
@@ -61,10 +59,15 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                           bool originated_from_service_worker);
     void CheckRedirectUrl(OnCompleteCheckCallback callback);
 
+    base::WeakPtr<SkipCheckCheckerOnSB> AsWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
    private:
     UrlCheckerOnSB::GetDelegateCallback delegate_getter_;
     int frame_tree_node_id_;
     bool should_skip_checks_ = false;
+    base::WeakPtrFactory<SkipCheckCheckerOnSB> weak_factory_{this};
   };
 
   static std::unique_ptr<BrowserURLLoaderThrottle> Create(

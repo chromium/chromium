@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -16,8 +17,7 @@
 
 namespace safe_browsing {
 
-class WebApiHandshakeChecker::CheckerOnSB
-    : public base::SupportsWeakPtr<WebApiHandshakeChecker::CheckerOnSB> {
+class WebApiHandshakeChecker::CheckerOnSB {
  public:
   CheckerOnSB(base::WeakPtr<WebApiHandshakeChecker> handshake_checker,
               GetDelegateCallback delegate_getter,
@@ -92,6 +92,8 @@ class WebApiHandshakeChecker::CheckerOnSB
                        base::Unretained(this)));
   }
 
+  base::WeakPtr<CheckerOnSB> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
  private:
   // See comments in BrowserUrlLoaderThrottle::OnCheckUrlResult().
   void OnCheckUrlResult(
@@ -140,6 +142,7 @@ class WebApiHandshakeChecker::CheckerOnSB
   const int frame_tree_node_id_;
   GURL last_committed_url_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
+  base::WeakPtrFactory<CheckerOnSB> weak_factory_{this};
 };
 
 WebApiHandshakeChecker::WebApiHandshakeChecker(

@@ -35,7 +35,7 @@ class HashRealTimeService;
 // throttle.
 // TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
 // UI thread.
-class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
+class UrlCheckerOnSB final {
  public:
   struct StartParams {
     StartParams(net::HttpRequestHeaders headers,
@@ -109,6 +109,10 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   bool IsRealTimeCheckForTesting();
 
+  base::WeakPtr<UrlCheckerOnSB> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // If |slow_check_notifier| is non-null, it indicates that a "slow check" is
   // ongoing, i.e., the URL may be unsafe and a more time-consuming process is
@@ -148,6 +152,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
       hash_realtime_utils::HashRealTimeSelection::kNone;
   base::TimeTicks creation_time_;
+  base::WeakPtrFactory<UrlCheckerOnSB> weak_factory_{this};
 };
 
 }  // namespace safe_browsing
