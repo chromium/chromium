@@ -1156,14 +1156,11 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
 }
 
 void WebAppIntegrationTestDriver::EnterFullScreenApp() {
-// TODO(crbug.com/1481727): Fullscreen is flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  GTEST_SKIP() << "Flaky on Lacros (crbug.com/1481727)";
-#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  FullscreenNotificationObserver fullscreen_observer(app_browser());
+  BrowserFullscreenModeWaiter fullscreen_observer(
+      app_browser(), /*wait_until_exit_fullscreen_mode=*/false);
   FullscreenController* fullscreen_controller =
       app_browser()->exclusive_access_manager()->fullscreen_controller();
   ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
@@ -1171,18 +1168,14 @@ void WebAppIntegrationTestDriver::EnterFullScreenApp() {
   fullscreen_observer.Wait();
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
-#endif  // IS_CHROMEOS_LACROS
 }
 
 void WebAppIntegrationTestDriver::ExitFullScreenApp() {
-// TODO(crbug.com/1481727): Fullscreen is flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  GTEST_SKIP() << "Flaky on Lacros (crbug.com/1481727)";
-#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  FullscreenNotificationObserver fullscreen_observer(app_browser());
+  BrowserFullscreenModeWaiter fullscreen_observer(
+      app_browser(), /*wait_until_exit_fullscreen_mode=*/true);
   FullscreenController* fullscreen_controller =
       app_browser()->exclusive_access_manager()->fullscreen_controller();
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
@@ -1190,7 +1183,6 @@ void WebAppIntegrationTestDriver::ExitFullScreenApp() {
   fullscreen_observer.Wait();
   ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
-#endif  // IS_CHROMEOS_LACROS
 }
 
 void WebAppIntegrationTestDriver::DisableFileHandling(Site site) {

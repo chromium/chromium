@@ -37,6 +37,50 @@
 
 using content::WebContents;
 
+BrowserFullscreenModeWaiter::BrowserFullscreenModeWaiter(
+    Browser* browser,
+    bool wait_until_exit_fullscreen_mode)
+    : wait_until_exit_fullscreen_mode_(wait_until_exit_fullscreen_mode),
+      controller_(
+          browser->exclusive_access_manager()->fullscreen_controller()) {
+  CHECK(controller_);
+  CHECK_EQ(wait_until_exit_fullscreen_mode_,
+           controller_->IsFullscreenForBrowser());
+  observation_.Observe(controller_);
+}
+
+BrowserFullscreenModeWaiter::~BrowserFullscreenModeWaiter() = default;
+
+void BrowserFullscreenModeWaiter::OnFullscreenStateChanged() {
+  // Note: In Lacros, when full screen mode changes, FullscreenController
+  // triggers WindowFullscreenStateChanged twice for the same change
+  // asynchronously. If the test code toggles fullscreen mode on and off, there
+  // is a race between the second notification of fullscreen mode on and test
+  // code toggle fullscreen mode off. Wait until the fullscreen state changes to
+  // the expected mode. See details in crbug.com/1481727.
+  if (wait_until_exit_fullscreen_mode_ &&
+      controller_->IsFullscreenForBrowser()) {
+    return;
+  }
+  if (!wait_until_exit_fullscreen_mode_ &&
+      !controller_->IsFullscreenForBrowser()) {
+    return;
+  }
+
+  observed_change_ = true;
+  if (run_loop_.running()) {
+    run_loop_.Quit();
+  }
+}
+
+void BrowserFullscreenModeWaiter::Wait() {
+  if (observed_change_) {
+    return;
+  }
+
+  run_loop_.Run();
+}
+
 FullscreenNotificationObserver::FullscreenNotificationObserver(
     Browser* browser) {
   observation_.Observe(
@@ -47,8 +91,9 @@ FullscreenNotificationObserver::~FullscreenNotificationObserver() = default;
 
 void FullscreenNotificationObserver::OnFullscreenStateChanged() {
   observed_change_ = true;
-  if (run_loop_.running())
+  if (run_loop_.running()) {
     run_loop_.Quit();
+  }
 }
 
 void FullscreenNotificationObserver::Wait() {
