@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.app.Activity;
 import android.graphics.Point;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -29,6 +29,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModuleDelegateHost mModuleDelegateHost;
     private final HomeModulesMediator mMediator;
     private final SimpleRecyclerViewAdapter mAdapter;
+    private final RecyclerView mRecyclerView;
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
 
@@ -49,16 +50,15 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mModel = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         ModuleRegistry.getInstance().registerAdapter(mAdapter, this::onViewCreated);
-        RecyclerView recyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
+        mRecyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
 
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(mAdapter);
         LinearLayoutManager linearLayoutManager =
                 new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         // Add pager indicator.
-        recyclerView.addItemDecoration(
+        mRecyclerView.addItemDecoration(
                 new CirclePagerIndicatorDecoration(
                         activity,
                         moduleDelegateHost.getUiConfig(),
@@ -69,23 +69,29 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                                         .color_primary_with_alpha_15),
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)));
         PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(recyclerView);
+        snapHelper.attachToRecyclerView(mRecyclerView);
 
-        mMediator =
-                new HomeModulesMediator(
-                        mModel,
-                        (isVisible) -> {
-                            recyclerView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-                        },
-                        ModuleRegistry.getInstance());
+        mMediator = new HomeModulesMediator(mModel, ModuleRegistry.getInstance());
     }
 
-    /** Gets the module ranking list and shows the home modules. */
-    public void show() {
+    /**
+     * Gets the module ranking list and shows the home modules.
+     *
+     * @param onHomeModulesShownCallback The callback called when the magic stack is shown.
+     */
+    public void show(Callback<Boolean> onHomeModulesShownCallback) {
         List<Integer> moduleList = getModuleList();
-        if (moduleList == null) return;
+        if (moduleList == null) {
+            onHomeModulesShownCallback.onResult(false);
+            return;
+        }
 
-        mMediator.buildModulesAndShow(moduleList, this);
+        mMediator.buildModulesAndShow(
+                moduleList,
+                this,
+                (isVisible) -> {
+                    onHomeModulesShownCallback.onResult(isVisible);
+                });
     }
 
     /** Hides the modules and cleans up. */

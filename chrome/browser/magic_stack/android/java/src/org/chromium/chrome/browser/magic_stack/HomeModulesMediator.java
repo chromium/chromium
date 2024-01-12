@@ -22,7 +22,6 @@ import java.util.Map;
 public class HomeModulesMediator {
     private static final int INVALID_INDEX = -1;
     private final ModelList mModel;
-    private final Callback<Boolean> mSetVisibilityCallback;
     private final ModuleRegistry mModuleRegistry;
 
     /** A map of <ModuleType, ModuleProvider>. */
@@ -47,19 +46,14 @@ public class HomeModulesMediator {
 
     /** The ranking index of the module whose response that the magic stack is waiting for. */
     private int mModuleResultsWaitingIndex;
-
     private boolean mIsShown;
+    private Callback<Boolean> mSetVisibilityCallback;
 
     /**
      * @param model The instance of {@link ModelList} of the RecyclerView.
-     * @param setVisibilityCallback The callback to update the visibility of the magic stack.
      */
-    public HomeModulesMediator(
-            @NonNull ModelList model,
-            @NonNull Callback<Boolean> setVisibilityCallback,
-            @NonNull ModuleRegistry moduleRegistry) {
+    public HomeModulesMediator(@NonNull ModelList model, @NonNull ModuleRegistry moduleRegistry) {
         mModel = model;
-        mSetVisibilityCallback = setVisibilityCallback;
         mModuleRegistry = moduleRegistry;
     }
 
@@ -70,7 +64,10 @@ public class HomeModulesMediator {
      * @param moduleDelegate The instance of the magic stack {@link ModuleDelegate}.
      */
     void buildModulesAndShow(
-            @NonNull @ModuleType List<Integer> moduleList, @NonNull ModuleDelegate moduleDelegate) {
+            @NonNull @ModuleType List<Integer> moduleList,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull Callback<Boolean> setVisibilityCallback) {
+        mSetVisibilityCallback = setVisibilityCallback;
         assert mModel.size() == 0;
         mIsShown = true;
         cacheRanking(moduleList);

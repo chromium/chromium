@@ -54,7 +54,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SE
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -93,6 +92,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -172,9 +172,9 @@ public class StartSurfaceMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private OnClickListener mTabSwitcherClickHandler;
     @Mock private TabSwitcher mTabSwitcherModule;
     @Mock private TabListDelegate mTabListDelegate;
+    @Mock private HomeModulesCoordinator mHomeModulesCoordinator;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -266,6 +266,8 @@ public class StartSurfaceMediatorUnitTest {
                 .getFeedReliabilityLogger();
         mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridge);
         doReturn(mLogoView).when(mLogoContainerView).findViewById(R.id.search_provider_logo);
+
+        when(mOmniboxStub.getVoiceRecognitionHandler()).thenReturn(mVoiceRecognitionHandler);
     }
 
     @After
@@ -302,7 +304,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void showAndHideSingleSurface() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -355,7 +356,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void hideTabCardWithNoTabs() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -371,7 +371,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void hideTabCardWhenClosingLastTab() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -397,7 +396,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void hideTabCardWhenClosingAndSelectingNtpTab() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -426,7 +424,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void reshowTabCardWhenTabClosureUndone() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -460,7 +457,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void pendingTabModelObserverWithBothShowOverviewAndHideBeforeTabModelInitialization() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         mTabModels.clear();
@@ -478,7 +474,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void pendingTabModelObserverWithShowOverviewBeforeAndHideAfterTabModelInitialization() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         mTabModels.clear();
@@ -502,7 +497,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void pendingTabModelObserverWithBothShowAndHideOverviewAfterTabModelInitialization() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         mTabModels.clear();
@@ -526,7 +520,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void addAndRemoveTabModelSelectorObserverWithOverviewAfterTabModelInitialization() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -543,7 +536,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void addAndRemoveTabModelSelectorObserverWithOverview() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -565,7 +557,6 @@ public class StartSurfaceMediatorUnitTest {
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void overviewModeStatesNormalModeSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -613,7 +604,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void overviewModeIncognitoModeSinglePane() {
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -646,7 +636,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void overviewModeSwitchToIncognitoModeAndBackSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -692,7 +681,6 @@ public class StartSurfaceMediatorUnitTest {
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void activityIsFinishingOrDestroyedSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -745,7 +733,6 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void activityIsFinishingOrDestroyedSinglePaneWithRefactorEnabled() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -771,7 +758,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void overviewModeIncognitoTabswitcher() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -808,7 +794,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void paddingForBottomBarSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -847,7 +832,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void setIncognitoDescriptionShowSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -898,7 +882,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void setIncognitoDescriptionHideSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -943,7 +926,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void showAndHideTabSwitcherToolbarHomePage() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -989,7 +971,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void setOverviewState_webFeed_resetsFeedInstanceState() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
@@ -1006,7 +987,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void setOverviewState_nonWebFeed_doesNotResetFeedInstanceState() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
@@ -1035,7 +1015,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void defaultStateSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1052,7 +1031,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void showAndHideTabSwitcherToolbarTabswitcher() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1097,7 +1075,6 @@ public class StartSurfaceMediatorUnitTest {
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void singleShowingPrevious() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1159,7 +1136,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void singleShowingPreviousFromATabOfFeeds() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1203,7 +1179,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void changeTopContentOffset() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         doNothing()
@@ -1263,7 +1238,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void exploreSurfaceInitializedAfterNativeInSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1271,7 +1245,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
         verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
@@ -1299,7 +1273,7 @@ public class StartSurfaceMediatorUnitTest {
                 /* isStartSurfaceEnabled= */ true,
                 /* isRefactorEnabled= */ false,
                 /* hadWarmStart= */ false,
-                /* useMagicSpace= */ false);
+                /* useMagicStack= */ false);
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginPolished));
@@ -1326,7 +1300,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
 
         // Tasks surface body top margin should be updated when tab single card visibility
         // is changed.
@@ -1353,7 +1327,6 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(INSTANT_START)
     public void feedPlaceholderFromWarmStart() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1361,7 +1334,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ true,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
         assertFalse(mediator.shouldShowFeedPlaceholder());
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
@@ -1377,7 +1350,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void setSecondaryTasksSurfaceVisibilityWhenShowingTabSwitcher() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1399,7 +1371,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void singeTabSwitcherHideTabSwitcherTitle() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(TabSwitcherType.SINGLE)
                 .when(mSingleTabSwitcherModuleController)
@@ -1419,7 +1390,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void hideSingleTabSwitcherWhenCurrentSelectedTabIsNtp() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(2).when(mNormalTabModel).getCount();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -1443,7 +1413,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void testInitializeMVTilesWhenShownHomepage() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(2).when(mNormalTabModel).getCount();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -1456,7 +1425,6 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testNotInitializeLogoWhenShownHomepage() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         StartSurfaceMediator mediator =
@@ -1464,7 +1432,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
@@ -1474,7 +1442,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testInitializeLogoWhenSurfacePolishedMoveDownLogoEnabled() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(true);
@@ -1485,7 +1452,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView).setVisibility(View.VISIBLE);
@@ -1496,7 +1463,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testNotInitializeLogoWhenSurfacePolishedMoveDownLogoDisabled() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         Assert.assertFalse(ReturnToChromeUtil.moveDownLogo());
@@ -1506,7 +1472,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
@@ -1515,8 +1481,6 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testFeedReliabilityLoggerPageLoadStarted() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
@@ -1529,8 +1493,6 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testFeedReliabilityLoggerObservesUrlFocus() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         verify(mSingleTabSwitcherModuleController)
@@ -1556,7 +1518,6 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testFeedReliabilityLoggerBackPressed() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
@@ -1572,7 +1533,6 @@ public class StartSurfaceMediatorUnitTest {
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testBackPressHandler() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doAnswer((inv) -> mCardTabSwitcherModuleControllerDialogVisibleSupplier.get())
                 .when(mSingleTabSwitcherModuleController)
@@ -1650,7 +1610,6 @@ public class StartSurfaceMediatorUnitTest {
             @StartSurfaceState Integer state) {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
@@ -1677,7 +1636,6 @@ public class StartSurfaceMediatorUnitTest {
     public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreated() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1706,7 +1664,6 @@ public class StartSurfaceMediatorUnitTest {
     public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreatedAndRefactorEnabled() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1731,7 +1688,6 @@ public class StartSurfaceMediatorUnitTest {
     public void testBackPressHandlerOnTabSwitcher() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator =
@@ -1781,7 +1737,6 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void testRecordTimeSpendInStart() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
@@ -1817,7 +1772,6 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShowAndOnHide() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(mSingleTabSwitcherModuleController).when(mTabSwitcherModule).getController();
         doReturn(TabSwitcherType.SINGLE)
@@ -1853,15 +1807,13 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testDefaultSearchEngineChanged() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-
         mProfileSupplier = new ObservableSupplierImpl<>();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
+                        /* useMagicStack= */ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         mProfileSupplier.set(mProfile);
@@ -1889,7 +1841,6 @@ public class StartSurfaceMediatorUnitTest {
         Assert.assertTrue(ChromeFeatureList.sMagicStackAndroid.isEnabled());
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
@@ -1899,7 +1850,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ true,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ true);
+                        /* useMagicStack= */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertNull(mediator.getTabSwitcherModuleForTesting());
         assertNull(mediator.getControllerForTesting());
@@ -1965,7 +1916,6 @@ public class StartSurfaceMediatorUnitTest {
         Assert.assertTrue(ChromeFeatureList.sMagicStackAndroid.isEnabled());
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
@@ -1975,7 +1925,7 @@ public class StartSurfaceMediatorUnitTest {
                         /* isStartSurfaceEnabled= */ true,
                         /* isRefactorEnabled= */ true,
                         /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ true);
+                        /* useMagicStack= */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertNull(mediator.getTabSwitcherModuleForTesting());
         assertNull(mediator.getControllerForTesting());
@@ -2014,7 +1964,6 @@ public class StartSurfaceMediatorUnitTest {
     public void testUpdateStartSurfaceBackgroundColor() {
         Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         // Make sure the background color is not set.
         assertEquals(0, mPropertyModel.get(BACKGROUND_COLOR));
 
@@ -2038,12 +1987,33 @@ public class StartSurfaceMediatorUnitTest {
         assertEquals(newBackgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    public void testSetMagicStackVisibility() {
+        assertTrue(StartSurfaceConfiguration.useMagicStack());
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled= */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicStack= */ true);
+        assertNull(mediator.getHomeModulesCoordinatorForTesting());
+
+        mediator.setMagicStackVisibility(true);
+        // Verifies that a HomeModulesCoordinator is created and shown.
+        assertEquals(mHomeModulesCoordinator, mediator.getHomeModulesCoordinatorForTesting());
+        verify(mHomeModulesCoordinator).show(any());
+
+        mediator.setMagicStackVisibility(false);
+        verify(mHomeModulesCoordinator).show(any());
+    }
+
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {
         return createStartSurfaceMediator(
                 isStartSurfaceEnabled,
                 /* isRefactorEnabled= */ false,
                 /* hadWarmStart= */ false,
-                /* useMagicSpace= */ false);
+                /* useMagicStack= */ false);
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(
@@ -2052,17 +2022,17 @@ public class StartSurfaceMediatorUnitTest {
                 isStartSurfaceEnabled,
                 isRefactorEnabled,
                 /* hadWarmStart= */ false,
-                /* useMagicSpace= */ false);
+                /* useMagicStack= */ false);
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(
             boolean isStartSurfaceEnabled,
             boolean isRefactorEnabled,
             boolean hadWarmStart,
-            boolean useMagicSpace) {
+            boolean useMagicStack) {
         StartSurfaceMediator mediator =
                 createStartSurfaceMediatorWithoutInit(
-                        isStartSurfaceEnabled, isRefactorEnabled, hadWarmStart, useMagicSpace);
+                        isStartSurfaceEnabled, isRefactorEnabled, hadWarmStart, useMagicStack);
         mediator.initWithNative(
                 mOmniboxStub,
                 isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null,
@@ -2075,11 +2045,11 @@ public class StartSurfaceMediatorUnitTest {
             boolean isStartSurfaceEnabled,
             boolean isRefactorEnabled,
             boolean hadWarmStart,
-            boolean useMagicSpace) {
+            boolean useMagicStack) {
         boolean hasTasksView = isStartSurfaceEnabled && !isRefactorEnabled;
-        boolean hasTabSwitcherModule = isStartSurfaceEnabled && isRefactorEnabled && !useMagicSpace;
+        boolean hasTabSwitcherModule = isStartSurfaceEnabled && isRefactorEnabled && !useMagicStack;
         return new StartSurfaceMediator(
-                useMagicSpace ? null : mSingleTabSwitcherModuleController,
+                useMagicStack ? null : mSingleTabSwitcherModuleController,
                 /* tabSwitcherContainer= */ null,
                 hasTabSwitcherModule ? mTabSwitcherModule : null,
                 mTabModelSelector,
@@ -2093,12 +2063,12 @@ public class StartSurfaceMediatorUnitTest {
                 mStartSurfaceSupplier,
                 hadWarmStart,
                 isStartSurfaceEnabled ? mInitializeMVTilesRunnable : null,
+                useMagicStack ? (homeSurfaceHost) -> mHomeModulesCoordinator : null,
                 mParentTabSupplier,
                 mLogoContainerView,
                 mBackPressManager,
                 /* feedPlaceholderParentView= */ null,
                 mActivityLifecycleDispatcher,
-                mTabSwitcherClickHandler,
                 mProfileSupplier);
     }
 

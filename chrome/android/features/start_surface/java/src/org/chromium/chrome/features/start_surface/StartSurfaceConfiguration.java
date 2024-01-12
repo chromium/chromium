@@ -131,8 +131,8 @@ public class StartSurfaceConfiguration {
                 || !isTablet && ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled();
     }
 
-    /** Returns whether a magic space is enabled on Start surface. */
-    public static boolean useMagicSpace() {
+    /** Returns whether a magic stack is enabled on Start surface. */
+    public static boolean useMagicStack() {
         return ChromeFeatureList.sSurfacePolish.isEnabled()
                 && ChromeFeatureList.sMagicStackAndroid.isEnabled()
                 && ChromeFeatureList.sStartSurfaceRefactor.isEnabled();

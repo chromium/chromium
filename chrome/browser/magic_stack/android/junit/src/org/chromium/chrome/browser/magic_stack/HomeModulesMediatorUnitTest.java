@@ -70,7 +70,7 @@ public class HomeModulesMediatorUnitTest {
             doReturn(true).when(mModuleProviderBuilderList[i]).build(eq(mModuleDelegate), any());
             mListItems[i] = new ListItem(mModuleTypeList[i], Mockito.mock(PropertyModel.class));
         }
-        mMediator = new HomeModulesMediator(mModel, mSetVisibilityCallback, mModuleRegistry);
+        mMediator = new HomeModulesMediator(mModel, mModuleRegistry);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Calls buildModulesAndShow() to initialize ranking index map.
-        mMediator.buildModulesAndShow(moduleList, mModuleDelegate);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
 
@@ -124,7 +124,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Calls buildModulesAndShow() to initialize ranking index map.
-        mMediator.buildModulesAndShow(moduleList, mModuleDelegate);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
         SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
@@ -170,7 +170,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 
         // Calls buildModulesAndShow() to initialize ranking index map.
-        mMediator.buildModulesAndShow(moduleList, mModuleDelegate);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
         SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
@@ -207,6 +207,10 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testHide() {
         // Adds 3 modules' data to the magic stack's RecyclerView.
+        List<Integer> moduleList =
+                List.of(mModuleTypeList[0], mModuleTypeList[1], mModuleTypeList[2]);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+
         ModuleProvider[] moduleProviders = new ModuleProvider[MODULE_TYPES];
         for (int i = 0; i < MODULE_TYPES; i++) {
             moduleProviders[i] = Mockito.mock(ModuleProvider.class);
@@ -255,6 +259,9 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testAppend() {
+        List<Integer> moduleList = List.of(mModuleTypeList[0], mModuleTypeList[1]);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
+
         // Verifies that the RecyclerView is changed to be visible when the first item is added.
         doReturn(1).when(mModel).size();
         mMediator.append(mListItems[0]);
@@ -273,7 +280,7 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     public void testRemove() {
         List<Integer> moduleList = List.of(mModuleTypeList[0]);
-        mMediator.buildModulesAndShow(moduleList, mModuleDelegate);
+        mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mSetVisibilityCallback);
 
         ModuleProvider moduleProvider = Mockito.mock(ModuleProvider.class);
         mMediator.onModuleBuilt(mModuleTypeList[0], moduleProvider);

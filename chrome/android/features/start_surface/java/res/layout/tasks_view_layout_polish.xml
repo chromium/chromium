@@ -56,6 +56,7 @@ found in the LICENSE file.
     <include layout="@layout/mv_tiles_container_polish" />
     <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
     <include layout="@layout/tab_switcher_module_container" />
+    <include layout="@layout/home_modules_recycler_view_layout" />
   </com.google.android.material.appbar.AppBarLayout>
 
   <!-- This incognito_description_container_layout_stub and the below tasks_surface_body

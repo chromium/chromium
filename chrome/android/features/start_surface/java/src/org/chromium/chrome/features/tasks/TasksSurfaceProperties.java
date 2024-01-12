@@ -58,6 +58,8 @@ public class TasksSurfaceProperties {
             LENS_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey MV_TILES_VISIBLE =
             IS_CONTAINER_VISIBLE;
+    public static final PropertyModel.WritableBooleanPropertyKey MAGIC_STACK_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey QUERY_TILES_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
@@ -95,6 +97,7 @@ public class TasksSurfaceProperties {
                 LENS_BUTTON_CLICK_LISTENER,
                 MV_TILES_VISIBLE,
                 QUERY_TILES_VISIBLE,
+                MAGIC_STACK_VISIBLE,
                 VOICE_SEARCH_BUTTON_CLICK_LISTENER,
                 TASKS_SURFACE_BODY_TOP_MARGIN,
                 MV_TILES_CONTAINER_TOP_MARGIN,

@@ -22,6 +22,7 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFA
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_STACK_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
@@ -90,6 +91,8 @@ public class TasksViewBinder {
                     .addLensButtonClickListener(model.get(LENS_BUTTON_CLICK_LISTENER));
         } else if (propertyKey == MV_TILES_VISIBLE) {
             view.setMostVisitedVisibility(model.get(MV_TILES_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == MAGIC_STACK_VISIBLE) {
+            view.setMagicStackVisibility(model.get(MAGIC_STACK_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == QUERY_TILES_VISIBLE) {
             view.setQueryTilesVisibility(model.get(QUERY_TILES_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == VOICE_SEARCH_BUTTON_CLICK_LISTENER) {
