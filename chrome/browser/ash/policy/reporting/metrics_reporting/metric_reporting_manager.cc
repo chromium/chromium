@@ -186,11 +186,6 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   website_event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
       std::move(website_event_rate_limiter), source_info);
-  user_peripheral_events_and_telemetry_report_queue_ =
-      delegate_->CreateMetricReportQueue(
-          EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY,
-          /*rate_limiter=*/nullptr, std::move(source_info));
-
   if (base::FeatureList::IsEnabled(
           chromeos::features::kKioskHeartbeatsViaERP)) {
     kiosk_heartbeat_telemetry_report_queue_ =
@@ -199,8 +194,12 @@ void MetricReportingManager::OnLogin(Profile* profile) {
             Priority::IMMEDIATE, &reporting_settings_,
             ::ash::kHeartbeatFrequency,
             metrics::GetDefaultKioskHeartbeatUploadFrequency(),
-            /*rate_limit_to_ms=*/1, std::move(source_info));
+            /*rate_limit_to_ms=*/1, source_info);
   }
+  user_peripheral_events_and_telemetry_report_queue_ =
+      delegate_->CreateMetricReportQueue(
+          EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY,
+          /*rate_limiter=*/nullptr, std::move(source_info));
 
   CHECK(profile);
   user_reporting_settings_ =
@@ -790,6 +789,11 @@ void MetricReportingManager::InitDeviceActivityCollector() {
 }
 
 void MetricReportingManager::InitKioskHeartbeatTelemetryCollector() {
+  if (!kiosk_heartbeat_telemetry_report_queue_) {
+    LOG(WARNING) << "No report queue created for KioskHeartbeatEvents. No "
+                    "TelemetryCollector created.";
+    return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto heartbeat_sampler = std::make_unique<KioskHeartbeatTelemetrySampler>();
   InitPeriodicTelemetryCollector(

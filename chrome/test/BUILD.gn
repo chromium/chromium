@@ -4694,6 +4694,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.cc",
         "../browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.h",
+        "../browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_events_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/network/network_events_observer_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler_browsertest.cc",
