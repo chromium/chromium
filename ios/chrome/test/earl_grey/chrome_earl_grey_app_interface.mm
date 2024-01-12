@@ -280,8 +280,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 }
 
 + (void)primesTakeMemorySnapshot:(NSString*)eventName {
-  // TODO: return this call after https://crrev.com/i/6376711 has landed
-  // ios::provider::PrimesTakeMemorySnapshot(eventName);
+  ios::provider::PrimesTakeMemorySnapshot(eventName);
 }
 
 #pragma mark - Tab Utilities (EG2)
