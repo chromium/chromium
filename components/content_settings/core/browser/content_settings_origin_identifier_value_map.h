@@ -86,10 +86,9 @@ class OriginIdentifierValueMap {
 
   size_t size() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Returns an iterator for reading the rules for |content_type| and
-  // |resource_identifier|. It is not allowed to call functions of
-  // |OriginIdentifierValueMap| (also |GetRuleIterator|) before the iterator
-  // has been destroyed.
+  // Returns an iterator for reading the rules for |content_type|. It is not
+  // allowed to call functions of |OriginIdentifierValueMap| (also
+  // |GetRuleIterator|) before the iterator has been destroyed.
   //
   // |lock_| will be acquired and held until the returned RuleIterator is
   // destroyed.
