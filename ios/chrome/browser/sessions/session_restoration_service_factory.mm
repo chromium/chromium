@@ -6,6 +6,7 @@
 
 #import "base/files/file_util.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -97,6 +98,44 @@ SessionStorageFormat SessionStorageFormatFromRequestedFormat(
   }
 }
 
+// Store the session storage format `storage_format` metric.
+void RecordSessionStorageFormatMetric(SessionStorageFormat storage_format) {
+  base::UmaHistogramEnumeration(
+      kSessionHistogramStorageFormat,
+      storage_format == SessionStorageFormat::kLegacy
+          ? SessionHistogramStorageFormat::kLegacy
+          : SessionHistogramStorageFormat::kOptimized);
+}
+
+// Store the session storage format `storage_format` and the migration
+// status `migration_status` metrics.
+void RecordSessionStorageFormatAndMigrationStatusMetrics(
+    SessionStorageFormat storage_format,
+    SessionStorageMigrationStatus migration_status) {
+  RecordSessionStorageFormatMetric(storage_format);
+
+  SessionHistogramStorageMigrationStatus histogram_status;
+  switch (migration_status) {
+    case SessionStorageMigrationStatus::kSuccess:
+      histogram_status = SessionHistogramStorageMigrationStatus::kSuccess;
+      break;
+
+    case SessionStorageMigrationStatus::kFailure:
+      histogram_status = SessionHistogramStorageMigrationStatus::kFailure;
+      break;
+
+    case SessionStorageMigrationStatus::kInProgress:
+      histogram_status = SessionHistogramStorageMigrationStatus::kInterrupted;
+      break;
+
+    case SessionStorageMigrationStatus::kUnkown:
+      NOTREACHED_NORETURN();
+  }
+
+  base::UmaHistogramEnumeration(kSessionHistogramStorageMigrationStatus,
+                                histogram_status);
+}
+
 // Store the session storage format `storage_format` and the migration
 // status `migration_status` to `pref_service`.
 void RecordSessionStorageFormatAndMigrationStatus(
@@ -141,6 +180,8 @@ void OnStorageFormatDetected(
       browser_state->GetPrefs(), storage_format,
       SessionStorageMigrationStatus::kSuccess);
 
+  RecordSessionStorageFormatMetric(storage_format);
+
   std::move(closure).Run();
 }
 
@@ -156,12 +197,22 @@ void OnSessionMigrationDone(
     return;
   }
 
-  RecordSessionStorageFormatAndMigrationStatus(
-      browser_state->GetPrefs(),
-      SessionStorageFormatFromRequestedFormat(requested_format, status),
+  const SessionStorageMigrationStatus migration_status =
       status == ios::sessions::MigrationStatus::kSuccess
           ? SessionStorageMigrationStatus::kSuccess
-          : SessionStorageMigrationStatus::kFailure);
+          : SessionStorageMigrationStatus::kFailure;
+
+  const SessionStorageFormat storage_format =
+      SessionStorageFormatFromRequestedFormat(requested_format, status);
+
+  RecordSessionStorageFormatAndMigrationStatus(
+      browser_state->GetPrefs(), storage_format, migration_status);
+
+  RecordSessionStorageFormatAndMigrationStatusMetrics(storage_format,
+                                                      migration_status);
+
+  base::UmaHistogramTimes(kSessionHistogramStorageMigrationTiming,
+                          base::TimeTicks::Now() - migration_start);
 
   std::move(closure).Run();
 }
@@ -213,6 +264,9 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
           prefs, format, SessionStorageMigrationStatus::kSuccess);
     }
 
+    RecordSessionStorageFormatAndMigrationStatusMetrics(
+        format, SessionStorageMigrationStatus::kSuccess);
+
     return std::move(closure).Run();
   }
 
@@ -226,7 +280,6 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
                        requested_format),
         base::BindOnce(&OnStorageFormatDetected, browser_state->AsWeakPtr(),
                        std::move(closure)));
-
     return;
   }
 
@@ -244,6 +297,8 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
     // again.
     case SessionStorageMigrationStatus::kInProgress:
     case SessionStorageMigrationStatus::kFailure:
+      RecordSessionStorageFormatAndMigrationStatusMetrics(format, status);
+
       return std::move(closure).Run();
 
     // The status must be "success" by this point, and the format different

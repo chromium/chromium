@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 
 #import "base/run_loop.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/prefs/pref_service.h"
@@ -109,9 +110,14 @@ class SessionRestorationServiceFactoryTest : public PlatformTest {
     return browser_state_->GetOffTheRecordChromeBrowserState();
   }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that the factory correctly instantiate a new service when the storage
@@ -249,6 +255,20 @@ TEST_F(SessionRestorationServiceFactoryTest, MigrateSession_ToLegacy_Legacy) {
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does not perform conversion when the
@@ -277,6 +297,19 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does not perform conversion when the
@@ -317,6 +350,19 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does not perform conversion when the
@@ -357,6 +403,19 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) succeed when asked to migrate to
@@ -395,6 +454,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
 }
 
 // Tests that MigrateSessionStorage(...) will mark the migration as failed
@@ -437,6 +510,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kFailure);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kFailure, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
 }
 
 // Tests that MigrateSessionStorage(...) does nothing synchronously if
@@ -462,6 +549,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kFailure);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kFailure, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does nothing synchronously if
@@ -488,6 +589,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kInProgress);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(base::Bucket(
+          SessionHistogramStorageMigrationStatus::kInterrupted, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) succeed when asked to migrate to
@@ -521,6 +636,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does not perform conversion when the
@@ -549,6 +678,19 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does not perform conversion when the
@@ -589,6 +731,19 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does not perform conversion when the
@@ -629,6 +784,19 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) succeed when asked to migrate to
@@ -667,6 +835,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
 }
 
 // Tests that MigrateSessionStorage(...) will mark the migration as failed
@@ -709,6 +891,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kFailure);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kFailure, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
 }
 
 // Tests that MigrateSessionStorage(...) does nothing synchronously if
@@ -734,6 +930,20 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kFailure);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kFailure, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }
 
 // Tests that MigrateSessionStorage(...) does nothing synchronously if
@@ -760,4 +970,18 @@ TEST_F(SessionRestorationServiceFactoryTest,
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kInProgress);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(base::Bucket(
+          SessionHistogramStorageMigrationStatus::kInterrupted, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      base::BucketsAre());
 }

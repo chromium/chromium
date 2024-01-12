@@ -990,6 +990,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WebStates.StorageFormat" enum="SessionStorageFormat"
+    expires_after="2024-07-07">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The format used for the session storage. Recorded during every startup of
+    the application (after the migration if one is needed). Corresponds to the
+    actual format of the storage.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.StorageMigrationDuration" units="ms"
+    expires_after="2024-07-07">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The time spent to migrate the session storage. This corresponds to the time
+    the user has to wait during the application startup (and includes the time
+    spent to wait for the background processing to complete).
+
+    This is recorded only when the storage may require migration (either because
+    the storage needs to be converted or the format is unknown).
+
+    The application is unresponsive (but won't be killed by the watchdog) during
+    the migration, so large value for this histogram are bad.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.StorageMigrationStatus"
+    enum="SessionStorageMigrationStatus" expires_after="2024-07-07">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The status of the session storage format migration (from legacy to optimized
+    or from optimized to legacy). Recorded during every startup of the
+    application (except if the storage format is undetermined), even if no
+    migration is attempted (in that case, the status of the previous migration
+    attempt will be reported).
+
+    See go/bling-session-restoration for information about the session storage
+    refactoring. This details the different storage format.
+  </summary>
+</histogram>
+
 <histogram name="Session.WebStates.WriteToFileTime" units="ms"
     expires_after="2024-10-08">
   <owner>justincohen@chromium.org</owner>
