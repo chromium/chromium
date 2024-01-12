@@ -227,6 +227,9 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   const absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
     return parent_permissions_info_;
   }
+  bool can_disable_untrusted_network() const {
+    return can_disable_untrusted_network_;
+  }
 
  private:
   friend class content::FencedFrameProperties;
@@ -250,6 +253,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
   absl::optional<ParentPermissionsInfo> parent_permissions_info_;
+  bool can_disable_untrusted_network_ = false;
 };
 
 }  // namespace blink::FencedFrame

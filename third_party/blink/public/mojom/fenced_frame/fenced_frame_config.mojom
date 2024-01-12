@@ -231,4 +231,10 @@ struct FencedFrameProperties {
   // permissions inheritance. Only non-null for non-opaque fenced frames (i.e.
   // fenced frames whose mode = DeprecatedFencedFrameMode::kDefault).
   ParentPermissionsInfo? parent_permissions_info;
+
+  // Whether this config allows calls to window.fence.disableUntrustedNetwork()
+  // (and then access to unpartitioned storage).
+  // Currently false in urn iframes, and in documents cross-origin to the
+  // mapped url in fenced frames.
+  bool can_disable_untrusted_network;
 };

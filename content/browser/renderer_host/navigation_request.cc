@@ -1600,9 +1600,10 @@ NavigationRequest::NavigationRequest(
               ? is_embedder_initiated_fenced_frame_opaque_url_navigation_
               : frame_tree_node->current_frame_host()
                     ->is_fenced_frame_root_originating_from_opaque_url()),
-      fenced_frame_properties_(is_embedder_initiated_fenced_frame_navigation
-                                   ? std::make_optional(FencedFrameProperties())
-                                   : std::nullopt),
+      fenced_frame_properties_(
+          is_embedder_initiated_fenced_frame_navigation
+              ? std::make_optional(FencedFrameProperties(common_params_->url))
+              : std::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context),
       has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()) {
   CHECK(!common_params_->initiator_base_url ||
@@ -2444,11 +2445,12 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
       embedder_shared_storage_context_);
   embedder_shared_storage_context_ = std::nullopt;
 
-  // For urns loaded into iframes for FLEDGE OT, for compatibility we don't
-  // want to use a fenced frame nonce.
+  // For urns loaded into iframes, we disable certain aspects of fenced frames:
+  // * a storage/network partition nonce
+  // * the ability to call window.fence.disableUntrustedNetwork
   if (!frame_tree_node_->IsFencedFrameRoot()) {
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
-    fenced_frame_properties_->ClearPartitionNonce();
+    fenced_frame_properties_->AdjustPropertiesForUrnIframe();
   }
 
   // This implies the URN is created from shared storage.
@@ -7499,7 +7501,6 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     // In certain circumstances, the FencedFrameProperties will not have a
     // mapped url.
     // * The initial about:blank navigation in a fenced frame.
-    // * Embedder-initiated FF root navigations to transparent (non-urn) urls.
     // In those cases, we skip this step.
     if (fenced_frame_properties_.has_value() &&
         fenced_frame_properties_->mapped_url().has_value()) {

@@ -199,6 +199,16 @@ FencedFrameProperties::FencedFrameProperties()
                        VisibilityToEmbedder::kOpaque,
                        VisibilityToContent::kOpaque) {}
 
+FencedFrameProperties::FencedFrameProperties(const GURL& mapped_url)
+    : mapped_url_(std::in_place,
+                  mapped_url,
+                  VisibilityToEmbedder::kTransparent,
+                  VisibilityToContent::kTransparent),
+      partition_nonce_(std::in_place,
+                       base::UnguessableToken::Create(),
+                       VisibilityToEmbedder::kOpaque,
+                       VisibilityToContent::kOpaque) {}
+
 FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
     : mapped_url_(config.mapped_url_),
       container_size_(config.container_size_),
@@ -304,6 +314,11 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
       effective_enabled_permissions_;
 
   redacted_properties.parent_permissions_info_ = parent_permissions_info_;
+
+  if (entity != FencedFrameEntity::kCrossOriginContent) {
+    redacted_properties.can_disable_untrusted_network_ =
+        can_disable_untrusted_network_;
+  }
 
   return redacted_properties;
 }

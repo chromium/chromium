@@ -653,6 +653,17 @@ interface LocalFrameHost {
   SendFencedFrameReportingBeaconToCustomURL(
       url.mojom.Url destination_url);
 
+  // See:
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md
+  //
+  // This implements the API:
+  // window.fence.disableUntrustedNetwork()
+  //
+  // A document in a fenced frame can invoke the disableUntrustedNetwork API to
+  // disable the frame tree's access to the network (except trusted servers in
+  // the future) and gain access to unpartitioned storage.
+  DisableUntrustedNetworkInFencedFrame() => ();
+
   // Notify the browser that there is a legacy technology used by the page.
   // The event contains the technology `type` and code location from the
   // ExecutionContext.

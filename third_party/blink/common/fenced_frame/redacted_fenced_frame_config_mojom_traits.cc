@@ -519,6 +519,9 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
 
   out_properties->has_fenced_frame_reporting_ =
       data.has_fenced_frame_reporting();
+
+  out_properties->can_disable_untrusted_network_ =
+      data.can_disable_untrusted_network();
   return true;
 }
 

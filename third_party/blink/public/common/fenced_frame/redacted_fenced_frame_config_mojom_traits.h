@@ -322,6 +322,10 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.effective_enabled_permissions_;
   }
+  static bool can_disable_untrusted_network(
+      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
+    return properties.can_disable_untrusted_network_;
+  }
 
   static const absl::optional<blink::FencedFrame::ParentPermissionsInfo>&
   parent_permissions_info(

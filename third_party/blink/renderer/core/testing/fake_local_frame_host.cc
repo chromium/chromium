@@ -269,6 +269,11 @@ void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     bool once,
     bool cross_origin_exposed) {}
 
+void FakeLocalFrameHost::DisableUntrustedNetworkInFencedFrame(
+    DisableUntrustedNetworkInFencedFrameCallback callback) {
+  std::move(callback).Run();
+}
+
 void FakeLocalFrameHost::SendLegacyTechEvent(
     const WTF::String& type,
     mojom::blink::LegacyTechEventCodeLocationPtr code_location) {}
