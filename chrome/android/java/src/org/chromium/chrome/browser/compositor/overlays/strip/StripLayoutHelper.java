@@ -1354,6 +1354,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mUpdateHost.requestUpdate();
     }
 
+    void dragForTabDrop(long time, float x, float y, float deltaX, boolean draggedTabIncognito) {
+        if (mIncognito == draggedTabIncognito) {
+            drag(time, x, y, deltaX);
+        }
+    }
+
     private void onStripScrollStart() {
         long currentTime = SystemClock.elapsedRealtime();
 
@@ -3681,18 +3687,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mLastOffsetX;
     }
 
-    void prepareForTabDrop(long time, float currX, float lastX, boolean isSourceStrip) {
+    void prepareForTabDrop(
+            long time,
+            float currX,
+            float lastX,
+            boolean isSourceStrip,
+            boolean draggedTabIncognito) {
         if (isSourceStrip) {
             dragActiveClickedTabOntoStrip(time, lastX);
-        } else {
+        } else if (mIncognito == draggedTabIncognito) {
             startReorderModeForTabDrop(currX);
         }
     }
 
-    void clearForTabDrop(long time, boolean isSourceStrip) {
+    void clearForTabDrop(long time, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             dragActiveClickedTabOutOfStrip(time);
-        } else {
+        } else if (mIncognito == draggedTabIncognito) {
             onUpOrCancel(time);
         }
     }
