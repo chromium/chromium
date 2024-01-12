@@ -4490,8 +4490,8 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
       /*delegate=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
-      base::Time(), base::Time(), false, false, net::CookieSameSite::LAX_MODE,
-      net::COOKIE_PRIORITY_LOW);
+      base::Time(), base::Time(), false, false,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW);
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   net::CookieInclusionStatus status;

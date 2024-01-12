@@ -174,6 +174,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool MitigationsEnabledFor3pcd() const override;
   bool IsStorageAccessApiEnabled() const override;
 
+  bool IsThirdPartyPhaseoutEnabled() const;
+
   const ContentSettingsForOneType& GetContentSettings(
       ContentSettingsType type) const;
 
@@ -209,6 +211,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 
+  // Returns true if user blocks 3PC or 3PCD is on.
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   bool block_truncated_cookies_ = true;

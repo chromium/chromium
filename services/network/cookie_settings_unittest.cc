@@ -72,6 +72,19 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
       net::CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie_partition_key);
 }
 
+std::unique_ptr<net::CanonicalCookie> MakeCanonicalSameSiteNoneCookie(
+    const std::string& name,
+    const std::string& domain,
+    absl::optional<net::CookiePartitionKey> cookie_partition_key =
+        absl::nullopt) {
+  return net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      name, "1", domain, /*path=*/"/", /*creation=*/base::Time(),
+      /*expiration=*/base::Time(), /*last_access=*/base::Time(),
+      /*last_update=*/base::Time(),
+      /*secure=*/true, /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie_partition_key);
+}
+
 // NOTE: Consider modifying
 // /components/content_settings/core/browser/cookie_settings_unittest.cc if
 // applicable.
@@ -865,7 +878,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
   settings.set_block_third_party_cookies(false);
 
   std::unique_ptr<net::CanonicalCookie> cookie =
-      MakeCanonicalCookie("name", kURL);
+      MakeCanonicalSameSiteNoneCookie("name", kURL);
 
   EXPECT_TRUE(settings.IsCookieAccessible(
       *cookie, GURL(kURL), net::SiteForCookies(),
@@ -1039,7 +1052,7 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_SitesInFirstPartySets) {
   }
 
   std::unique_ptr<net::CanonicalCookie> cookie =
-      MakeCanonicalCookie("name", kFPSMemberURL);
+      MakeCanonicalSameSiteNoneCookie("name", kFPSMemberURL);
 
   EXPECT_FALSE(settings.IsCookieAccessible(
       *cookie, GURL(kFPSMemberURL), net::SiteForCookies(), top_level_origin,
@@ -1075,10 +1088,10 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
   }
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalCookie("third_party", kURL), {}},
-      {*MakeCanonicalCookie("cookie", kURL), {}}};
+      {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}},
+      {*MakeCanonicalSameSiteNoneCookie("cookie", kURL), {}}};
   net::CookieAccessResultList excluded_cookies = {
-      {*MakeCanonicalCookie("excluded_other", kURL),
+      {*MakeCanonicalSameSiteNoneCookie("excluded_other", kURL),
        // The ExclusionReason below is irrelevant, as long as there is
        // one.
        net::CookieAccessResult(net::CookieInclusionStatus(
@@ -1182,7 +1195,8 @@ TEST_P(CookieSettingsTest,
   settings.set_block_third_party_cookies(false);
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalCookie("third_party", kURL), {}}};
+      {*MakeCanonicalCookie("lax_by_default", kURL), {}},
+      {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}}};
   net::CookieAccessResultList excluded_cookies = {};
   url::Origin origin = url::Origin::Create(GURL(kOtherURL));
 
@@ -1197,15 +1211,25 @@ TEST_P(CookieSettingsTest,
   // Verify that the allowed cookie has the expected warning reason.
   EXPECT_THAT(
       maybe_included_cookies,
-      ElementsAre(MatchesCookieWithAccessResult(
-          net::MatchesCookieWithName("third_party"),
-          MatchesCookieAccessResult(
-              AllOf(net::IsInclude(),
-                    net::HasExactlyWarningReasonsForTesting(
-                        std::vector<net::CookieInclusionStatus::WarningReason>{
+      UnorderedElementsAre(
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("lax_by_default"),
+              MatchesCookieAccessResult(
+                  AllOf(net::IsInclude(),
+                        Not(net::HasWarningReason(
                             net::CookieInclusionStatus::WarningReason::
-                                WARN_THIRD_PARTY_PHASEOUT})),
-              _, _, _))));
+                                WARN_THIRD_PARTY_PHASEOUT))),
+                  _, _, _)),
+          MatchesCookieWithAccessResult(
+              net::MatchesCookieWithName("third_party"),
+              MatchesCookieAccessResult(
+                  AllOf(net::IsInclude(),
+                        net::HasExactlyWarningReasonsForTesting(
+                            std::vector<
+                                net::CookieInclusionStatus::WarningReason>{
+                                net::CookieInclusionStatus::WarningReason::
+                                    WARN_THIRD_PARTY_PHASEOUT})),
+                  _, _, _))));
 }
 
 TEST_P(CookieSettingsTest,
@@ -1214,7 +1238,7 @@ TEST_P(CookieSettingsTest,
   settings.set_block_third_party_cookies(false);
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalCookie("cookie", kDomainURL), {}}};
+      {*MakeCanonicalSameSiteNoneCookie("cookie", kDomainURL), {}}};
   net::CookieAccessResultList excluded_cookies = {};
   url::Origin origin = url::Origin::Create(GURL(kDomainURL));
 
@@ -1268,9 +1292,9 @@ TEST_P(CookieSettingsTest,
   }
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalCookie("cookie", kDomainURL), {}}};
+      {*MakeCanonicalSameSiteNoneCookie("cookie", kDomainURL), {}}};
   net::CookieAccessResultList excluded_cookies = {
-      {*MakeCanonicalCookie("excluded_other", kDomainURL),
+      {*MakeCanonicalSameSiteNoneCookie("excluded_other", kDomainURL),
        // The ExclusionReason below is irrelevant, as long as there is one.
        net::CookieAccessResult(net::CookieInclusionStatus(
            net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
@@ -1355,7 +1379,9 @@ TEST_P(CookieSettingsTest,
   }
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalCookie("third_party_but_member", kFPSMemberURL), {}}};
+      {*MakeCanonicalSameSiteNoneCookie("third_party_but_member",
+                                        kFPSMemberURL),
+       {}}};
   net::CookieAccessResultList excluded_cookies = {};
 
   url::Origin origin = url::Origin::Create(GURL(kFPSOwnerURL));
@@ -1418,7 +1444,7 @@ TEST_P(
       {CreateSetting(kFPSOwnerURL, kFPSOwnerURL, CONTENT_SETTING_BLOCK)});
 
   std::unique_ptr<net::CanonicalCookie> cookie =
-      MakeCanonicalCookie("third_party_but_member", kFPSMemberURL);
+      MakeCanonicalSameSiteNoneCookie("third_party_but_member", kFPSMemberURL);
 
   url::Origin top_frame_origin = url::Origin::Create(GURL(kFPSOwnerURL));
 
