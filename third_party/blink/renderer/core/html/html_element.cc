@@ -3168,6 +3168,11 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   if (is_new_auto) {
     CalculateAndAdjustAutoDirectionality(this);
   } else {
+    if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
+      CHECK(RuntimeEnabledFeatures::CSSPseudoDirEnabled());
+      ClearDirAutoInheritsFromParent();
+    }
+
     absl::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;

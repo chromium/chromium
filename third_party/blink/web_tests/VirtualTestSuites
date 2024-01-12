@@ -1170,6 +1170,7 @@
     ],
     "args": ["--disable-blink-features=CSSPseudoDir",
              "--disable-blink-features=HTMLLangNewInheritance",
+             "--disable-blink-features=BdiElementDirInheritance",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Feb 1, 2024"
   },

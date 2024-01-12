@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] directionality of bdi elements: no dir attribute empty in rtl parent
-  assert_true: expected true got false
-Harness: the test ran to completion.
-
