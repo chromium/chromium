@@ -155,6 +155,7 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:elements",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/third_party/material_components_ios",

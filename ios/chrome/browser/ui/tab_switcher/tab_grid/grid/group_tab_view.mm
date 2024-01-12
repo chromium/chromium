@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -35,6 +36,12 @@ const NSInteger kTabGridButtonFontSize = 14;
   if (self) {
     _snapshotFaviconView = [[TopAlignedImageView alloc] init];
     _snapshotFaviconView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    GradientView* gradientView = [[GradientView alloc]
+        initWithTopColor:[[UIColor blackColor] colorWithAlphaComponent:0]
+             bottomColor:[[UIColor blackColor] colorWithAlphaComponent:0.14]];
+    gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_snapshotFaviconView addSubview:gradientView];
 
     _faviconView = [[UIView alloc] init];
     _faviconView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
@@ -69,6 +76,7 @@ const NSInteger kTabGridButtonFontSize = 14;
     [self addSubview:_remainingTabsView];
 
     AddSameConstraints(self, _snapshotFaviconView);
+    AddSameConstraints(_snapshotFaviconView, gradientView);
     AddSameConstraints(self, _faviconView);
     AddSameConstraints(self, _remainingTabsView);
     AddSameCenterConstraints(_faviconView, _remainingTabsLabel);
