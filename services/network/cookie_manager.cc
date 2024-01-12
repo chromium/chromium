@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/process/process.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -291,6 +292,12 @@ void CookieManager::RemoveChangeListener(ListenerRegistration* registration) {
 void CookieManager::CloneInterface(
     mojo::PendingReceiver<mojom::CookieManager> new_interface) {
   AddReceiver(std::move(new_interface));
+}
+
+void CookieManager::SetPreCommitCallbackDelayForTesting(base::TimeDelta delay) {
+  session_cleanup_cookie_store_->SetBeforeCommitCallback(base::BindRepeating(
+      [](base::TimeDelta delay) { base::PlatformThread::Sleep(delay); },
+      delay));
 }
 
 void CookieManager::FlushCookieStore(FlushCookieStoreCallback callback) {

@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -64,11 +65,19 @@ const base::FilePath::CharType kCookieFilename[] = FILE_PATH_LITERAL("Cookies");
 class CookieCryptor : public CookieCryptoDelegate {
  public:
   CookieCryptor();
+
+  // net::CookieCryptoDelegate implementation.
   void Init(base::OnceClosure callback) override;
   bool EncryptString(const std::string& plaintext,
                      std::string* ciphertext) override;
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
+
+  // Obtain a closure that can be called to trigger an initialize. If this
+  // instance has already been destructed then the returned base::OnceClosure
+  // does nothing. This allows tests to pass ownership to the CookieCryptor
+  // while still retaining a weak reference to the Init function.
+  base::OnceClosure GetInitClosure(base::OnceClosure callback);
 
  private:
   void InitComplete();
@@ -78,6 +87,8 @@ class CookieCryptor : public CookieCryptoDelegate {
   std::unique_ptr<crypto::SymmetricKey> key_;
   crypto::Encryptor encryptor_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<CookieCryptor> weak_ptr_factory_{this};
 };
 
 CookieCryptor::CookieCryptor()
@@ -90,6 +101,12 @@ CookieCryptor::CookieCryptor()
   std::string iv("the iv: 16 bytes");
   encryptor_.Init(key_.get(), crypto::Encryptor::CBC, iv);
   DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+base::OnceClosure CookieCryptor::GetInitClosure(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::BindOnce(&CookieCryptor::Init, weak_ptr_factory_.GetWeakPtr(),
+                        std::move(callback));
 }
 
 void CookieCryptor::Init(base::OnceClosure callback) {
@@ -109,7 +126,8 @@ void CookieCryptor::Init(base::OnceClosure callback) {
   initing_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&CookieCryptor::InitComplete, base::Unretained(this)),
+      base::BindOnce(&CookieCryptor::InitComplete,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::Milliseconds(100));
 }
 
@@ -213,15 +231,13 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
               bool restore_old_session_cookies,
               bool use_current_thread,
               bool enable_exclusive_access) {
-    if (crypt_cookies)
-      cookie_crypto_delegate_ = std::make_unique<CookieCryptor>();
-
     store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(kCookieFilename),
         use_current_thread ? base::SingleThreadTaskRunner::GetCurrentDefault()
                            : client_task_runner_,
         background_task_runner_, restore_old_session_cookies,
-        cookie_crypto_delegate_.get(), enable_exclusive_access);
+        crypt_cookies ? std::make_unique<CookieCryptor>() : nullptr,
+        enable_exclusive_access);
   }
 
   void CreateAndLoad(bool crypt_cookies,
@@ -492,6 +508,11 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   AddCookie("A", "B", "www.bbb.com", "/", t);
   DestroyStore();
 
+  auto cookie_crypto_delegate = std::make_unique<CookieCryptor>();
+  base::RunLoop cookie_crypto_loop;
+  auto init_closure =
+      cookie_crypto_delegate->GetInitClosure(cookie_crypto_loop.QuitClosure());
+
   // base::test::TaskEnvironment runs |background_task_runner_| and
   // |client_task_runner_| on the same thread. Therefore, when a
   // |background_task_runner_| task is blocked, |client_task_runner_| tasks
@@ -499,12 +520,11 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   // preventing client tasks to run, use
   // base::SingleThreadTaskRunner::GetCurrentDefault() instead of
   // |client_task_runner_| for this test.
-  auto cookie_crypto_delegate = std::make_unique<CookieCryptor>();
   store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
       temp_dir_.GetPath().Append(kCookieFilename),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       background_task_runner_,
-      /*restore_old_session_cookies=*/false, cookie_crypto_delegate.get(),
+      /*restore_old_session_cookies=*/false, std::move(cookie_crypto_delegate),
       /*enable_exclusive_access=*/false);
 
   // Posting a blocking task to db_thread_ makes sure that the DB thread waits
@@ -524,8 +544,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   // Complete the initialization of the cookie crypto delegate. This ensures
   // that any background tasks from the Load or the LoadCookiesForKey are posted
   // to the background_task_runner_.
-  base::RunLoop cookie_crypto_loop;
-  cookie_crypto_delegate->Init(cookie_crypto_loop.QuitClosure());
+  std::move(init_closure).Run();
   cookie_crypto_loop.Run();
 
   // Post a final blocking task to the background_task_runner_ to ensure no
@@ -1242,8 +1261,8 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   // destroyed store's ops will happen on same runners as the previous
   // instances, so they should complete before the new PersistentCookieStore
   // starts looking at the state on disk.
-  Create(false, false, true /* want current thread to invoke cookie monster */,
-         false);
+  Create(/*crypt_cookies=*/true, false,
+         true /* want current thread to invoke cookie monster */, false);
   cookie_monster =
       std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr);
   ResultSavingCookieCallback<bool> cookie_scheme_callback2;

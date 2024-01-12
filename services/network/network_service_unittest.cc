@@ -1104,13 +1104,15 @@ class NetworkServiceCookieTest
 // SetCookieEncryptionProvider is called with a provider, and
 // enable_encrypted_cookies is on, then the GetEncryptor method is called and
 // the returned Encryptor is used for encryption.
-TEST_P(NetworkServiceCookieTest, SetCookieEncryptionProvider) {
+TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
   const auto cookie_path = base::FilePath(FILE_PATH_LITERAL("Cookies"));
   testing::StrictMock<TestCookieEncryptionProvider> provider;
   std::optional<base::ScopedClosureRunner> maybe_teardown_os_crypt;
 
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+
   if (ShouldSetEncryptionProvider()) {
-    service()->SetCookieEncryptionProvider(provider.BindRemote());
+    params->cookie_encryption_provider = provider.BindRemote();
     if (IsEncryptionEnabled()) {
       EXPECT_CALL(provider, GetEncryptor)
           .WillOnce(
@@ -1133,7 +1135,6 @@ TEST_P(NetworkServiceCookieTest, SetCookieEncryptionProvider) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
   params->enable_encrypted_cookies = IsEncryptionEnabled();
   params->file_paths->data_directory = temp_dir.GetPath();
   params->file_paths->cookie_database_name = cookie_path;

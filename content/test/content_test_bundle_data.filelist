@@ -5835,6 +5835,8 @@ data/cookies/set_cookie.html
 data/cookies/set_cookie.html.mock-http-headers
 data/cookies/set_cookie_from_subframe.html
 data/cookies/set_cookie_from_subresource.html
+data/cookies/set_persistent_cookie.html
+data/cookies/set_persistent_cookie.html.mock-http-headers
 data/coreferencingframe_1.html
 data/coreferencingframe_2.html
 data/corp-cross-origin.html

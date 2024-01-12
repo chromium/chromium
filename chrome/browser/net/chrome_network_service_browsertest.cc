@@ -130,8 +130,7 @@ class ChromeNetworkServiceBrowserTest
 
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   // These test is only valid if crypto is enabled on the platform.
-  net::CookieCryptoDelegate* crypto_delegate =
-      cookie_config::GetCookieCryptoDelegate();
+  auto crypto_delegate = cookie_config::GetCookieCryptoDelegate();
   if (!crypto_delegate) {
     GTEST_SKIP() << "No crypto on this platform.";
   }

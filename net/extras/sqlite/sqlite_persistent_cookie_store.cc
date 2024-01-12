@@ -262,7 +262,7 @@ class SQLitePersistentCookieStore::Backend
           scoped_refptr<base::SequencedTaskRunner> client_task_runner,
           scoped_refptr<base::SequencedTaskRunner> background_task_runner,
           bool restore_old_session_cookies,
-          CookieCryptoDelegate* crypto_delegate,
+          std::unique_ptr<CookieCryptoDelegate> crypto_delegate,
           bool enable_exclusive_access)
       : SQLitePersistentStoreBackendBase(path,
                                          /* histogram_tag = */ "Cookie",
@@ -272,7 +272,7 @@ class SQLitePersistentCookieStore::Backend
                                          std::move(client_task_runner),
                                          enable_exclusive_access),
         restore_old_session_cookies_(restore_old_session_cookies),
-        crypto_(crypto_delegate) {}
+        crypto_(std::move(crypto_delegate)) {}
 
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
@@ -412,8 +412,8 @@ class SQLitePersistentCookieStore::Backend
   // If false, we should filter out session cookies when reading the DB.
   bool restore_old_session_cookies_;
 
-  // Not owned.
-  raw_ptr<CookieCryptoDelegate, DanglingUntriaged> crypto_;
+  // Crypto instance, or nullptr if encryption is disabled.
+  std::unique_ptr<CookieCryptoDelegate> crypto_;
 };
 
 namespace {
@@ -1585,13 +1585,13 @@ SQLitePersistentCookieStore::SQLitePersistentCookieStore(
     const scoped_refptr<base::SequencedTaskRunner>& client_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     bool restore_old_session_cookies,
-    CookieCryptoDelegate* crypto_delegate,
+    std::unique_ptr<CookieCryptoDelegate> crypto_delegate,
     bool enable_exclusive_access)
     : backend_(base::MakeRefCounted<Backend>(path,
                                              client_task_runner,
                                              background_task_runner,
                                              restore_old_session_cookies,
-                                             crypto_delegate,
+                                             std::move(crypto_delegate),
                                              enable_exclusive_access)) {}
 
 void SQLitePersistentCookieStore::DeleteAllInList(

@@ -16,6 +16,7 @@ import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
+import "services/network/public/mojom/cookie_encryption_provider.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
@@ -588,6 +589,13 @@ struct NetworkContextParams {
   // experiment. This field should not be used for other use cases. This will
   // be removed when AFP block list logic is migrated to subresource filter.
   bool afp_block_list_experiment_enabled = false;
+
+  // Sets the cookie encryption provider to be used by this network context if
+  // `enable_encrypted_cookies` is also enabled.
+  // If both are set then the `GetEncryptor` method on the supplied
+  // `cookie_encryption_provider` is called to obtain a valid set of keys for
+  // cookie encryption.
+  pending_remote<CookieEncryptionProvider>? cookie_encryption_provider;
 };
 
 struct NetworkConditions {
@@ -1664,6 +1672,6 @@ interface NetworkContext {
   // doesn't match the corresponding cached certificate.
   FlushCachedClientCertIfNeeded(HostPortPair host, X509Certificate certificate);
 
- // Sets cookie deprecation label.
+  // Sets cookie deprecation label.
   SetCookieDeprecationLabel(string? label);
 };
