@@ -197,6 +197,9 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
 
   static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
+
+  // The SharedImages created here will eventually be transferred to other
+  // processes to have their contents read/written via WebGL for WebXR.
   uint32_t shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
