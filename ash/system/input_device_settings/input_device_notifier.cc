@@ -401,7 +401,6 @@ template <>
 std::vector<ui::InputDevice>
 InputDeviceNotifier<mojom::GraphicsTabletPtr,
                     ui::InputDevice>::GetUpdatedDeviceList() {
-  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
   return ui::DeviceDataManager::GetInstance()->GetGraphicsTabletDevices();
 }
 

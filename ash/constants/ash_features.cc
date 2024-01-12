@@ -2989,7 +2989,7 @@ BASE_FEATURE(kInputMethodKoreanRightAltKeyDownFix,
 // Enables peripheral customization to be split per device.
 BASE_FEATURE(kPeripheralCustomization,
              "PeripheralCustomization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable peripheral notification to notify users when a input device is
 // connected to the user's chromebook for the first time.
