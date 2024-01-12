@@ -18,27 +18,6 @@ from uuid import UUID
 
 # pylint: disable=raise-missing-from
 
-
-class BackwardCompatibilityChecker:
-  """Used for memoization while recursively checking two type definitions for
-  backward-compatibility."""
-
-  def __init__(self):
-    self._cache = {}
-
-  def IsBackwardCompatible(self, new_kind, old_kind):
-    key = (new_kind, old_kind)
-    result = self._cache.get(key)
-    if result is None:
-      # Assume they're compatible at first to effectively ignore recursive
-      # checks between these types, e.g. if both kinds are a struct or union
-      # that references itself in a field.
-      self._cache[key] = True
-      result = new_kind.IsBackwardCompatible(old_kind, self)
-      self._cache[key] = result
-    return result
-
-
 # We use our own version of __repr__ when displaying the AST, as the
 # AST currently doesn't capture which nodes are reference (e.g. to
 # types) and which nodes are definitions. This allows us to e.g. print
@@ -163,10 +142,6 @@ class Kind:
     # breaks these dicts when a pickled Module instance is unpickled and used
     # during a subsequent run of the parser.
     return hash((self.spec, self.parent_kind, self.is_nullable))
-
-  # pylint: disable=unused-argument
-  def IsBackwardCompatible(self, rhs, checker):
-    return self == rhs
 
 
 class ValueKind(Kind):
@@ -559,13 +534,6 @@ class UnionField(Field):
         if self.attributes else False
 
 
-def _IsFieldBackwardCompatible(new_field, old_field, checker):
-  if (new_field.min_version or 0) != (old_field.min_version or 0):
-    return False
-
-  return checker.IsBackwardCompatible(new_field.kind, old_field.kind)
-
-
 class Feature(ReferenceKind):
   """A runtime enabled feature defined from mojom.
 
@@ -669,81 +637,6 @@ class Struct(ReferenceKind):
     for constant in self.constants:
       constant.Stylize(stylizer)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    """This struct is backward-compatible with rhs (older_struct) if and only if
-    all of the following conditions hold:
-      - Any newly added field is tagged with a [MinVersion] attribute specifying
-        a version number greater than all previously used [MinVersion]
-        attributes within the struct.
-      - All fields present in rhs remain present in the new struct,
-        with the same ordinal position, same optional or non-optional status,
-        same (or backward-compatible) type and where applicable, the same
-        [MinVersion] attribute value.
-      - All [MinVersion] attributes must be non-decreasing in ordinal order.
-      - All reference-typed (string, array, map, struct, or union) fields tagged
-        with a [MinVersion] greater than zero must be optional.
-    """
-
-    def buildOrdinalFieldMap(struct):
-      fields_by_ordinal = {}
-      for field in struct.fields:
-        if field.ordinal in fields_by_ordinal:
-          raise Exception('Multiple fields with ordinal %s in struct %s.' %
-                          (field.ordinal, struct.mojom_name))
-        fields_by_ordinal[field.ordinal] = field
-      return fields_by_ordinal
-
-    new_fields = buildOrdinalFieldMap(self)
-    old_fields = buildOrdinalFieldMap(rhs)
-    if len(new_fields) < len(old_fields):
-      # At least one field was removed, which is not OK.
-      raise Exception('Removing struct fields from struct %s is not allowed.' %
-                      (self.mojom_name))
-
-    # If there are N fields, existing ordinal values must exactly cover the
-    # range from 0 to N-1.
-    num_old_ordinals = len(old_fields)
-    max_old_min_version = 0
-    for ordinal in range(num_old_ordinals):
-      new_field = new_fields[ordinal]
-      old_field = old_fields[ordinal]
-      if (old_field.min_version or 0) > max_old_min_version:
-        max_old_min_version = old_field.min_version
-      if not _IsFieldBackwardCompatible(new_field, old_field, checker):
-        # Type or min-version mismatch between old and new versions of the same
-        # ordinal field.
-        raise Exception(
-            'Struct %s field with ordinal value %d have different type'
-            ' or min version, old name %s, new name %s.' %
-            (self.mojom_name, ordinal, old_field.mojom_name,
-             new_field.mojom_name))
-
-    # At this point we know all old fields are intact in the new struct
-    # definition. Now verify that all new fields have a high enough min version
-    # and are appropriately optional where required.
-    num_new_ordinals = len(new_fields)
-    last_min_version = max_old_min_version
-    for ordinal in range(num_old_ordinals, num_new_ordinals):
-      new_field = new_fields[ordinal]
-      min_version = new_field.min_version or 0
-      if min_version <= max_old_min_version:
-        # A new field is being added to an existing version, which is not OK.
-        raise Exception(
-            'Adding new fields to an existing MinVersion is not allowed'
-            ' for struct %s' % (self.mojom_name))
-      if min_version < last_min_version:
-        # The [MinVersion] of a field cannot be lower than the [MinVersion] of
-        # a field with lower ordinal value.
-        raise Exception(
-            'MinVersion of struct %s field %s cannot be lower than MinVersion'
-            ' of preceding fields' % (self.mojom_name, new_field))
-      if IsReferenceKind(new_field.kind) and not IsNullableKind(new_field.kind):
-        # New fields whose type can be nullable MUST be nullable.
-        raise Exception('New struct %s field %s must be nullable' %
-                        (self.mojom_name, new_field))
-
-    return True
-
   @property
   def stable(self):
     return self.attributes.get(ATTRIBUTE_STABLE, False) \
@@ -819,54 +712,6 @@ class Union(ReferenceKind):
     self.name = stylizer.StylizeUnion(self.mojom_name)
     for field in self.fields:
       field.Stylize(stylizer)
-
-  def IsBackwardCompatible(self, rhs, checker):
-    """This union is backward-compatible with rhs (older_union) if and only if
-    all of the following conditions hold:
-      - Any newly added field is tagged with a [MinVersion] attribute specifying
-        a version number greater than all previously used [MinVersion]
-        attributes within the union.
-      - All fields present in rhs remain present in the new union,
-        with the same ordinal value, same optional or non-optional status,
-        same (or backward-compatible) type, and where applicable, the same
-        [MinVersion] attribute value.
-    """
-
-    def buildOrdinalFieldMap(union):
-      fields_by_ordinal = {}
-      for field in union.fields:
-        if field.ordinal in fields_by_ordinal:
-          raise Exception('Multiple fields with ordinal %s in union %s.' %
-                          (field.ordinal, union.mojom_name))
-        fields_by_ordinal[field.ordinal] = field
-      return fields_by_ordinal
-
-    new_fields = buildOrdinalFieldMap(self)
-    old_fields = buildOrdinalFieldMap(rhs)
-    if len(new_fields) < len(old_fields):
-      # At least one field was removed, which is not OK.
-      return False
-
-    max_old_min_version = 0
-    for ordinal, old_field in old_fields.items():
-      new_field = new_fields.get(ordinal)
-      if not new_field:
-        # A field was removed, which is not OK.
-        return False
-      if not _IsFieldBackwardCompatible(new_field, old_field, checker):
-        # An field changed its type or MinVersion, which is not OK.
-        return False
-      old_min_version = old_field.min_version or 0
-      if old_min_version > max_old_min_version:
-        max_old_min_version = old_min_version
-
-    new_ordinals = set(new_fields.keys()) - set(old_fields.keys())
-    for ordinal in new_ordinals:
-      if (new_fields[ordinal].min_version or 0) <= max_old_min_version:
-        # New fields must use a MinVersion greater than any old fields.
-        return False
-
-    return True
 
   @property
   def extensible(self):
@@ -944,10 +789,6 @@ class Array(ReferenceKind):
   def __hash__(self):
     return id(self)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    return (isinstance(rhs, Array) and self.length == rhs.length
-            and checker.IsBackwardCompatible(self.kind, rhs.kind))
-
 
 class Map(ReferenceKind):
   """A map.
@@ -991,11 +832,6 @@ class Map(ReferenceKind):
   def __hash__(self):
     return id(self)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    return (isinstance(rhs, Map)
-            and checker.IsBackwardCompatible(self.key_kind, rhs.key_kind)
-            and checker.IsBackwardCompatible(self.value_kind, rhs.value_kind))
-
 
 class PendingRemote(ReferenceKind):
   Kind.AddSharedProperty('kind')
@@ -1016,10 +852,6 @@ class PendingRemote(ReferenceKind):
 
   def __hash__(self):
     return id(self)
-
-  def IsBackwardCompatible(self, rhs, checker):
-    return (isinstance(rhs, PendingRemote)
-            and checker.IsBackwardCompatible(self.kind, rhs.kind))
 
 
 class PendingReceiver(ReferenceKind):
@@ -1042,10 +874,6 @@ class PendingReceiver(ReferenceKind):
   def __hash__(self):
     return id(self)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    return isinstance(rhs, PendingReceiver) and checker.IsBackwardCompatible(
-        self.kind, rhs.kind)
-
 
 class PendingAssociatedRemote(ReferenceKind):
   Kind.AddSharedProperty('kind')
@@ -1066,11 +894,6 @@ class PendingAssociatedRemote(ReferenceKind):
 
   def __hash__(self):
     return id(self)
-
-  def IsBackwardCompatible(self, rhs, checker):
-    return isinstance(rhs,
-                      PendingAssociatedRemote) and checker.IsBackwardCompatible(
-                          self.kind, rhs.kind)
 
 
 class PendingAssociatedReceiver(ReferenceKind):
@@ -1093,11 +916,6 @@ class PendingAssociatedReceiver(ReferenceKind):
   def __hash__(self):
     return id(self)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    return isinstance(
-        rhs, PendingAssociatedReceiver) and checker.IsBackwardCompatible(
-            self.kind, rhs.kind)
-
 
 class InterfaceRequest(ReferenceKind):
   Kind.AddSharedProperty('kind')
@@ -1117,10 +935,6 @@ class InterfaceRequest(ReferenceKind):
 
   def __hash__(self):
     return id(self)
-
-  def IsBackwardCompatible(self, rhs, checker):
-    return isinstance(rhs, InterfaceRequest) and checker.IsBackwardCompatible(
-        self.kind, rhs.kind)
 
 
 class AssociatedInterfaceRequest(ReferenceKind):
@@ -1143,11 +957,6 @@ class AssociatedInterfaceRequest(ReferenceKind):
 
   def __hash__(self):
     return id(self)
-
-  def IsBackwardCompatible(self, rhs, checker):
-    return isinstance(
-        rhs, AssociatedInterfaceRequest) and checker.IsBackwardCompatible(
-            self.kind, rhs.kind)
 
 
 class Parameter:
@@ -1341,78 +1150,6 @@ class Interface(ReferenceKind):
     for constant in self.constants:
       constant.Stylize(stylizer)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    """This interface is backward-compatible with rhs (older_interface) if and
-    only if all of the following conditions hold:
-      - All defined methods in rhs (when identified by ordinal) have
-        backward-compatible definitions in this interface. For each method this
-        means:
-          - The parameter list is backward-compatible, according to backward-
-            compatibility rules for structs, where each parameter is essentially
-            a struct field.
-          - If the old method definition does not specify a reply message, the
-            new method definition must not specify a reply message.
-          - If the old method definition specifies a reply message, the new
-            method definition must also specify a reply message with a parameter
-            list that is backward-compatible according to backward-compatibility
-            rules for structs.
-      - All newly introduced methods in this interface have a [MinVersion]
-        attribute specifying a version greater than any method in
-        rhs.
-    """
-
-    def buildOrdinalMethodMap(interface):
-      methods_by_ordinal = {}
-      for method in interface.methods:
-        if method.ordinal in methods_by_ordinal:
-          raise Exception('Multiple methods with ordinal %s in interface %s.' %
-                          (method.ordinal, interface.mojom_name))
-        methods_by_ordinal[method.ordinal] = method
-      return methods_by_ordinal
-
-    new_methods = buildOrdinalMethodMap(self)
-    old_methods = buildOrdinalMethodMap(rhs)
-    max_old_min_version = 0
-    for ordinal, old_method in old_methods.items():
-      new_method = new_methods.get(ordinal)
-      if not new_method:
-        # A method was removed, which is not OK.
-        return False
-
-      if not checker.IsBackwardCompatible(new_method.param_struct,
-                                          old_method.param_struct):
-        # The parameter list is not backward-compatible, which is not OK.
-        return False
-
-      if old_method.response_param_struct is None:
-        if new_method.response_param_struct is not None:
-          # A reply was added to a message which didn't have one before, and
-          # this is not OK.
-          return False
-      else:
-        if new_method.response_param_struct is None:
-          # A reply was removed from a message, which is not OK.
-          return False
-        if not checker.IsBackwardCompatible(new_method.response_param_struct,
-                                            old_method.response_param_struct):
-          # The new message's reply is not backward-compatible with the old
-          # message's reply, which is not OK.
-          return False
-
-      if (old_method.min_version or 0) > max_old_min_version:
-        max_old_min_version = old_method.min_version
-
-    # All the old methods are compatible with their new counterparts. Now verify
-    # that newly added methods are properly versioned.
-    new_ordinals = set(new_methods.keys()) - set(old_methods.keys())
-    for ordinal in new_ordinals:
-      new_method = new_methods[ordinal]
-      if (new_method.min_version or 0) <= max_old_min_version:
-        # A method was added to an existing version, which is not OK.
-        return False
-
-    return True
-
   @property
   def service_sandbox(self):
     if not self.attributes:
@@ -1510,11 +1247,6 @@ class AssociatedInterface(ReferenceKind):
   def __hash__(self):
     return id(self)
 
-  def IsBackwardCompatible(self, rhs, checker):
-    return isinstance(rhs,
-                      AssociatedInterface) and checker.IsBackwardCompatible(
-                          self.kind, rhs.kind)
-
 
 class EnumField:
   def __init__(self,
@@ -1600,50 +1332,6 @@ class Enum(ValueKind):
     else:
       prefix = self.module.GetNamespacePrefix()
     return '%s%s' % (prefix, self.mojom_name)
-
-  # pylint: disable=unused-argument
-  def IsBackwardCompatible(self, rhs, checker):
-    """This enum is backward-compatible with rhs (older_enum) if and only if one
-    of the following conditions holds:
-        - Neither enum is [Extensible] and both have the exact same set of valid
-          numeric values. Field names and aliases for the same numeric value do
-          not affect compatibility.
-        - rhs is [Extensible], and for every version defined by
-          rhs, this enum has the exact same set of valid numeric values.
-    """
-
-    def buildVersionFieldMap(enum):
-      fields_by_min_version = {}
-      for field in enum.fields:
-        if field.min_version not in fields_by_min_version:
-          fields_by_min_version[field.min_version] = set()
-        fields_by_min_version[field.min_version].add(field.numeric_value)
-      return fields_by_min_version
-
-    old_fields = buildVersionFieldMap(rhs)
-    new_fields = buildVersionFieldMap(self)
-
-    if new_fields.keys() != old_fields.keys() and not rhs.extensible:
-      raise Exception("Non-extensible enum cannot be modified")
-
-    for min_version, valid_values in old_fields.items():
-      if min_version not in new_fields:
-        raise Exception('New values added to an extensible enum '
-                        'do not specify MinVersion: %s' % new_fields)
-
-      if (new_fields[min_version] != valid_values):
-        if (len(new_fields[min_version]) < len(valid_values)):
-          raise Exception('Removing values for an existing MinVersion %s '
-                          'is not allowed' % min_version)
-
-        raise Exception(
-            'New values don\'t match old values'
-            'for an existing MinVersion %s,'
-            ' please specify MinVersion equal to "Next version" '
-            'in the enum description'
-            ' for the following values:\n%s' %
-            (min_version, new_fields[min_version].difference(valid_values)))
-    return True
 
   def _tuple(self):
     return (self.mojom_name, self.native_only, self.fields, self.attributes,
