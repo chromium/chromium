@@ -288,10 +288,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldTryToUpdateServiceWorkerRegistration(
       const GURL& scope,
       content::BrowserContext* browser_context) override;
-  void UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
-      content::BrowserContext* context,
-      const GURL& script_url,
-      std::vector<std::string>& out_forced_enabled_runtime_features) override;
   bool AllowSharedWorker(const GURL& worker_url,
                          const net::SiteForCookies& site_for_cookies,
                          const absl::optional<url::Origin>& top_frame_origin,

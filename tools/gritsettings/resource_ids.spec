@@ -857,10 +857,6 @@
     "META": {"sizes": {"includes": [30],}},
     "includes": [5960],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd": {
-    "META": {"sizes": {"includes": [10],}},
-    "includes": [5980],
-  },
   "chromeos/resources/chromeos_resources.grd": {
     "includes": [6000],
   },

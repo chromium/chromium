@@ -2617,16 +2617,6 @@ BASE_FEATURE(kStylusBatteryStatus,
              "StylusBatteryStatus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the System Extensions platform.
-BASE_FEATURE(kSystemExtensions,
-             "SystemExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables the managed device health service System Extensions type.
-BASE_FEATURE(kSystemExtensionsManagedDeviceHealthServices,
-             "SystemExtensionsManagedDeviceHealthServices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables using the system input engine for physical typing in
 // Japanese.
 BASE_FEATURE(kSystemJapanesePhysicalTyping,

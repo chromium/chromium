@@ -5860,10 +5860,6 @@ const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";
 
-const char kSystemExtensionsName[] = "ChromeOS System Extensions";
-const char kSystemExtensionsDescription[] =
-    "Enable the ChromeOS System Extension platform.";
-
 const char kEnableServiceWorkersForChromeUntrustedName[] =
     "Enable chrome-untrusted:// Service Workers";
 const char kEnableServiceWorkersForChromeUntrustedDescription[] =

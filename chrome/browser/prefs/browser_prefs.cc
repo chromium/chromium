@@ -955,6 +955,11 @@ const char kSyncedLastTimePasswordCheckCompleted[] =
 // Deprecated 01/2024.
 const char kDownloadBubbleIphSuppression[] = "suppress_download_bubble_iph";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 01/2024.
+const char kPersistedSystemExtensions[] = "system_extensions.persisted";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1344,6 +1349,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 01/2024.
   registry->RegisterBooleanPref(kDownloadBubbleIphSuppression, false);
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kPersistedSystemExtensions);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2571,6 +2581,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 01/2024.
   profile_prefs->ClearPref(kDownloadBubbleIphSuppression);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 01/2024.
+  profile_prefs->ClearPref(kPersistedSystemExtensions);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

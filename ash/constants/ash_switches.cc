@@ -751,10 +751,6 @@ const char kStabilizeTimeDependentViewForTests[] =
 const char kInstallLogFastUploadForTests[] =
     "install-log-fast-upload-for-tests";
 
-// When specified, Chrome OS will install a System Extension from the specified
-// directory. For now, only one extension can be specified.
-const char kInstallSystemExtension[] = "install-system-extension";
-
 // Minimum time the kiosk splash screen will be shown in seconds.
 const char kKioskSplashScreenMinTimeSeconds[] =
     "kiosk-splash-screen-min-time-seconds";

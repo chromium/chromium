@@ -5215,8 +5215,6 @@ static_library("browser") {
       "//ash/webui/status_area_internals",
       "//ash/webui/status_area_internals/mojom:mojom",
       "//ash/webui/system_apps/public:system_web_app_type",
-      "//ash/webui/system_extensions_internals_ui",
-      "//ash/webui/system_extensions_internals_ui/mojom",
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/apps/app_deduplication_service",
@@ -5228,9 +5226,6 @@ static_library("browser") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/ash/smart_reader",
-      "//chrome/browser/ash/system_extensions",
-      "//chrome/browser/ash/system_extensions/api/hid",
-      "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
@@ -5389,10 +5384,6 @@ static_library("browser") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps",
-
-      # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
-      # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
-      "//chrome/browser/ash/system_extensions/api/window_management",
     ]
 
     if (is_chrome_branded) {

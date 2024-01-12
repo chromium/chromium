@@ -35,7 +35,6 @@
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/status_area_internals/status_area_internals_ui.h"
-#include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
@@ -298,7 +297,6 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<smb_dialog::SmbCredentialsDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<smb_dialog::SmbShareDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<SysInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<SystemExtensionsInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<VcTrayTesterUIConfig>());

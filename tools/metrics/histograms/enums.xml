@@ -22071,7 +22071,6 @@ from previous Chrome versions.
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
-  <int value="-959746153" label="SystemExtensions:disabled"/>
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
@@ -23715,7 +23714,6 @@ from previous Chrome versions.
   <int value="-176524053"
       label="VmCameraMicIndicatorsAndNotifications:disabled"/>
   <int value="-176297603" label="ImeTrayHideVoiceButton:disabled"/>
-  <int value="-176163507" label="SystemExtensions:enabled"/>
   <int value="-175696105" label="MessagesForAndroidUpdatePassword:enabled"/>
   <int value="-175692563" label="Vp9kSVCHWDecoding:disabled"/>
   <int value="-175666252" label="Portals:disabled"/>

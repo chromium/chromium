@@ -1,5 +1,0 @@
-include_rules = [
-    "+services/device/public/mojom/hid.mojom.h",
-    "+services/device/public/mojom/hid.mojom-forward.h",
-    "+services/device/hid/hid_service.h",
-]

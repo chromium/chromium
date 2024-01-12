@@ -3373,9 +3373,6 @@ extern const char kCroshSWADescription[];
 extern const char kCrosOnDeviceGrammarCheckName[];
 extern const char kCrosOnDeviceGrammarCheckDescription[];
 
-extern const char kSystemExtensionsName[];
-extern const char kSystemExtensionsDescription[];
-
 extern const char kEnableServiceWorkersForChromeUntrustedName[];
 extern const char kEnableServiceWorkersForChromeUntrustedDescription[];
 

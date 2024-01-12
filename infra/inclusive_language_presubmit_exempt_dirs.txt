@@ -40,7 +40,6 @@ chrome/browser/ash/extensions 1 1
 chrome/browser/ash/ownership 4 2
 chrome/browser/ash/scanning 1 1
 chrome/browser/ash/settings 4 1
-chrome/browser/ash/system_extensions/api/managed_device_health_services 2 1
 chrome/browser/ash/system_web_apps 1 1
 chrome/browser/ash/telemetry_extension 2 1
 chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/editors 1 1
@@ -375,7 +374,6 @@ third_party/blink/renderer/core/layout/inline 2 2
 third_party/blink/renderer/core/permissions_policy 1 1
 third_party/blink/renderer/core/resize_observer 1 1
 third_party/blink/renderer/core/script 1 1
-third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services 2 1
 third_party/blink/renderer/modules/accessibility 5 2
 third_party/blink/renderer/modules/ad_auction 2 1
 third_party/blink/renderer/modules/badging 1 1

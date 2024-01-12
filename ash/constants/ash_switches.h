@@ -243,8 +243,6 @@ extern const char kIgnoreUserProfileMappingForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInstallLogFastUploadForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kInstallSystemExtension[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kKioskSplashScreenMinTimeSeconds[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosAvailabilityIgnore[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromeAdditionalArgs[];

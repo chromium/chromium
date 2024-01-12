@@ -53,11 +53,6 @@ ash_generated_grit("files_internals_resources") {
   deps = [ "//ash/webui/files_internals:build_grd" ]
 }
 
-ash_generated_grit("system_extensions_internals_resources") {
-  source = "$root_gen_dir/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd"
-  deps = [ "//ash/webui/system_extensions_internals_ui:build_grd" ]
-}
-
 # Resources used by chrome-untrusted://demo-mode-app
 ash_generated_grit("demo_mode_app_resources") {
   source =

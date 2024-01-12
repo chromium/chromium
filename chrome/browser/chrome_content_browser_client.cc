@@ -437,8 +437,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/url_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/speech/tts_chromeos.h"
@@ -2955,24 +2953,6 @@ bool ChromeContentBrowserClient::ShouldTryToUpdateServiceWorkerRegistration(
 #endif
 
   return true;
-}
-
-void ChromeContentBrowserClient::
-    UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
-        content::BrowserContext* context,
-        const GURL& script_url,
-        std::vector<std::string>& out_forced_enabled_runtime_features) {
-  DCHECK(context);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* profile = Profile::FromBrowserContext(context);
-  if (!ash::IsSystemExtensionsEnabled(profile))
-    return;
-
-  ash::SystemExtensionsProvider::Get(profile)
-      .UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
-          script_url, out_forced_enabled_runtime_features);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool ChromeContentBrowserClient::AllowSharedWorker(
