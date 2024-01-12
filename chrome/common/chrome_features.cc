@@ -240,6 +240,10 @@ BASE_FEATURE(kDMServerOAuthForChildUser,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kEnableWatermarkView,
+             "EnableWatermarkView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Enables migration of apps that are loaded erroneously but installed
 // correctly by policy in the web app system.
