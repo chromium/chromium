@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {checkTypes}
+ */
+
 import {CHOOSE_ENTRY_PROPERTY} from './choose_entry_const.js';
 
 /**

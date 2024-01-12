@@ -8,10 +8,10 @@ import("//tools/typescript/ts_library.gni")
 js_type_check("closure_compile") {
   testonly = true
   deps = [
-    ":allowed_paths",
     ":dialog_type",
     ":element_object",
     ":files_app_state",
+    ":js_from_ts",
     ":key_modifiers",
     ":metadata_stats_type",
     ":remote_call",
@@ -21,8 +21,9 @@ js_type_check("closure_compile") {
   closure_flags =
       strict_error_checking_closure_args + [
         "language_in=ECMASCRIPT_2020",
-        "js_module_root=./gen/ui",
-        "js_module_root=" + rebase_path("//ui", root_build_dir),
+        "js_module_root=gen/ui/file_manager/integration_tests/tsc/",
+        "js_module_root=" +
+            rebase_path("//ui/file_manager/integration_tests", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
@@ -42,9 +43,6 @@ js_library("remote_call") {
   ]
 }
 
-js_library("allowed_paths") {
-}
-
 js_library("dialog_type") {
 }
 
@@ -52,10 +50,7 @@ js_library("element_object") {
 }
 
 js_library("files_app_state") {
-  deps = [
-    ":allowed_paths",
-    ":dialog_type",
-  ]
+  deps = [ ":dialog_type" ]
 }
 
 js_library("key_modifiers") {
@@ -85,7 +80,6 @@ tsc_folder = "$target_gen_dir/tsc"
 # TODO: Replace allowed_paths, dialog_type, files_app_state, metadata_stats_type
 # and volume_manager_common_volume_type with definitions from Files app.
 js_files = [
-  "allowed_paths.js",
   "dialog_type.js",
   "element_object.js",
   "files_app_state.js",
@@ -155,6 +149,7 @@ js_files = [
 ]
 
 ts_files = [
+  "allowed_paths.ts",
   "file_manager/choose_entry.ts",
   "file_manager/choose_entry_const.ts",
 ]
@@ -190,6 +185,14 @@ ts_library("build_ts") {
   extra_deps = [ ":copy_src" ]
 
   in_files = js_files + ts_files
+}
+
+js_library("js_from_ts") {
+  sources = []
+  foreach(_t, ts_files) {
+    sources += [ "$tsc_folder/" + string_replace(_t, ".ts", ".js") ]
+  }
+  extra_deps = [ ":build_ts" ]
 }
 
 group("build") {

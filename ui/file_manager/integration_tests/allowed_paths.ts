@@ -6,7 +6,6 @@
 /**
  * Paths that can be handled by the dialog opener in native code.
  * @enum {string}
- * @const
  */
 export const AllowedPaths = {
   NATIVE_PATH: 'nativePath',
