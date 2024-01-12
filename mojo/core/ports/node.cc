@@ -274,14 +274,12 @@ int Node::GetUserData(const PortRef& port_ref,
 }
 
 int Node::ClosePort(const PortRef& port_ref) {
-  // The set of pors on a node should be the same when recording vs. replaying,
+  // The set of ports on a node should be the same when recording vs. replaying,
   // so we refuse to close ports when events are disallowed and the calling
   // code runs at non-deterministic points. This will cause ports to leak.
   if (recordreplay::AreEventsDisallowed("Node::ClosePort")) {
     return OK;
   }
-  recordreplay::Assert("[RUN-1307-1539] Node::ClosePort A");
-
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
   NodeName peer_node_name;
   PortName peer_port_name;
@@ -290,7 +288,6 @@ int Node::ClosePort(const PortRef& port_ref) {
   bool was_initialized = false;
   {
     SinglePortLocker locker(&port_ref);
-
     auto* port = locker.port();
     switch (port->state) {
       case Port::kUninitialized:
@@ -339,8 +336,6 @@ int Node::ClosePort(const PortRef& port_ref) {
       }
     }
   }
-
-  recordreplay::Assert("[RUN-1307-1773] Node::ClosePort C");
   return OK;
 }
 
@@ -430,7 +425,16 @@ int Node::GetMessage(const PortRef& port_ref,
 
 int Node::SendUserMessage(const PortRef& port_ref,
                           std::unique_ptr<UserMessageEvent> message) {
-  recordreplay::Assert("[RUN-1307-1773] Node::SendUserMessage");
+  if (recordreplay::IsRecordingOrReplaying("Node::SendUserMessage")) {
+    std::ostringstream ss;
+    ss << port_ref.name() << ",";
+    for (size_t i = 0; i < message->num_ports(); ++i) {
+      ss << message->ports()[i] << ",";
+    }
+    recordreplay::Assert("[RUN-2188-3122] Node::SendUserMessage %s",
+      ss.str().c_str());
+  }
+
   int rv = SendUserMessageInternal(port_ref, &message);
   if (rv != OK) {
     // If send failed, close all carried ports. Note that we're careful not to
@@ -876,9 +880,8 @@ int Node::OnObserveProxy(const PortRef& port_ref,
     }
   }
 
-  if (event_to_forward) {
+  if (event_to_forward)
     delegate_->ForwardEvent(event_target_node, std::move(event_to_forward));
-  }
 
   if (peer_changed) {
     // Re-send ack and/or ack requests, as the previous peer proxy may not have
@@ -940,19 +943,12 @@ int Node::OnObserveProxyAck(const PortRef& port_ref,
 
 int Node::OnObserveClosure(const PortRef& port_ref,
                            std::unique_ptr<ObserveClosureEvent> event) {
-  // https://linear.app/replay/issue/RUN-549
-  recordreplay::Assert("Node::OnObserveClosure Start %lu %lu",
+  recordreplay::Assert("[RUN-549] Node::OnObserveClosure Start %lu %lu",
                        event->port_name().v1, event->port_name().v2);
 
   // OK if the port doesn't exist, as it may have been closed already.
-  if (!port_ref.is_valid()) {
-    // https://linear.app/replay/issue/RUN-549
-    recordreplay::Assert("Node::OnObserveClosure #1");
+  if (!port_ref.is_valid())
     return OK;
-  }
-
-  // https://linear.app/replay/issue/RUN-549
-  recordreplay::Assert("Node::OnObserveClosure #2");
 
   // This message tells the port that it should no longer expect more messages
   // beyond last_sequence_num. This message is forwarded along until we reach
@@ -1242,8 +1238,7 @@ int Node::OnUpdatePreviousPeer(const PortRef& port_ref,
 }
 
 int Node::AddPortWithName(const PortName& port_name, scoped_refptr<Port> port) {
-  // https://linear.app/replay/issue/RUN-549
-  recordreplay::Assert("Node::AddPortWithName %lu %lu %lu %lu",
+  recordreplay::Assert("[RUN-549] Node::AddPortWithName %lu %lu %lu %lu",
                        name_.v1, name_.v2, port_name.v1, port_name.v2);
 
   PortLocker::AssertNoPortsLockedOnCurrentThread();
@@ -1260,8 +1255,7 @@ int Node::AddPortWithName(const PortName& port_name, scoped_refptr<Port> port) {
 }
 
 void Node::ErasePort(const PortName& port_name) {
-  // https://linear.app/replay/issue/RUN-549
-  recordreplay::Assert("Node::ErasePort %lu %lu %lu %lu",
+  recordreplay::Assert("[RUN-549] Node::ErasePort %lu %lu %lu %lu",
                        name_.v1, name_.v2, port_name.v1, port_name.v2);
 
   PortLocker::AssertNoPortsLockedOnCurrentThread();
@@ -1726,9 +1720,8 @@ int Node::BeginProxying(const PortRef& port_ref) {
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
-    if (port->state != Port::kBuffering) {
+    if (port->state != Port::kBuffering)
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
-    }
     port->state = Port::kProxying;
     std::swap(port->control_message_queue, control_message_queue);
   }
@@ -1741,9 +1734,8 @@ int Node::BeginProxying(const PortRef& port_ref) {
   }
 
   int rv = ForwardUserMessagesFromProxy(port_ref);
-  if (rv != OK) {
+  if (rv != OK)
     return rv;
-  }
 
   // Forward any pending acknowledge request.
   MaybeForwardAckRequest(port_ref);
@@ -1752,9 +1744,8 @@ int Node::BeginProxying(const PortRef& port_ref) {
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
-    if (port->state != Port::kProxying) {
+    if (port->state != Port::kProxying)
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
-    }
 
     try_remove_proxy_immediately = port->remove_proxy_on_last_message;
   }
