@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
+#import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -408,7 +409,10 @@ void AuthenticationService::SignOut(
 
   const bool is_managed =
       HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
-  // Get first setup complete value before to stop the sync service.
+  const bool is_migrated_from_syncing =
+      browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
+          identity_manager_, pref_service_);
+  // Get first setup complete value before stopping the sync service.
   const bool is_initial_sync_feature_setup_complete =
       sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 
@@ -422,9 +426,11 @@ void AuthenticationService::SignOut(
   cached_mdm_errors_.clear();
 
   // Browsing data for managed account needs to be cleared only if sync has
-  // started at least once.
+  // started at least once. This also includes the case where a
+  // previously-syncing user was migrated to signed-in.
   if (force_clear_browsing_data ||
-      (is_managed && is_initial_sync_feature_setup_complete)) {
+      (is_managed && is_initial_sync_feature_setup_complete) ||
+      (is_managed && is_migrated_from_syncing)) {
     delegate_->ClearBrowsingData(completion);
   } else if (completion) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

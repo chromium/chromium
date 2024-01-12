@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -386,6 +387,26 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                             migration_successful);
   base::UmaHistogramTimes("Sync.SyncToSigninMigrationTime",
                           base::Time::Now() - start_time);
+}
+
+bool WasPrimaryAccountMigratedFromSyncingToSignedIn(
+    const signin::IdentityManager* identity_manager,
+    const PrefService* pref_service) {
+  // Only signed-in non-syncing users can be in the "migrated" state.
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return false;
+  }
+
+  // Check if the current signed-in account ID matches the migrated account ID.
+  // In the common case where the account was *not* migrated, the migrated
+  // account ID will be empty, and thus not match the current account ID.
+  std::string authenticated_gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  std::string migrated_gaia_id = pref_service->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  return migrated_gaia_id == authenticated_gaia_id;
 }
 
 }  // namespace browser_sync
