@@ -9,11 +9,13 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
@@ -97,7 +99,9 @@ void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
 }
 
 void MahiMenuView::OnSummaryButtonPressed() {
-  // TODO(b/319329379): Create and open the main panel UI.
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+      GetWidget()->GetNativeWindow());
+  chromeos::MahiManager::Get()->OpenMahiPanel(display.id());
 }
 
 BEGIN_METADATA(MahiMenuView, views::View)
