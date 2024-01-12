@@ -3750,13 +3750,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
     return false;
   }
 
-  // Set this before ProcessDied() so observers can tell if the render process
-  // died due to fast shutdown versus another cause.
-  fast_shutdown_started_ = true;
-
-  ChildProcessTerminationInfo info =
-      GetChildTerminationInfo(false /* already_dead */);
-  ProcessDied(info);
+  FastShutdown();
   LogDelayReasonForFastShutdown(DelayShutdownReason::kNoDelay);
   return true;
 }
@@ -4087,21 +4081,7 @@ void RenderProcessHostImpl::Cleanup() {
                 "RenderProcessHostImpl::Cleanup : Exit without full cleanup.",
                 ChromeTrackEvent::kRenderProcessHost, *this);
 
-    // Notify all observers that the process has exited cleanly, even though it
-    // will be destroyed a bit later. Observers shouldn't rely on this process
-    // anymore.
-    // Populates Android-only fields and closes the underlying base::Process.
-    ChildProcessTerminationInfo info =
-        GetChildTerminationInfo(false /* already_dead */);
-    info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
-    info.exit_code = 0;
-
-    // Set this before ProcessDied() so observers treat this process exit as
-    // similar to the fast shutdown case.
-    fast_shutdown_started_ = true;
-
-    // Notify observers using the clean exit info.
-    ProcessDied(info);
+    FastShutdown();
     return;
   }
 
@@ -4995,6 +4975,21 @@ void RenderProcessHostImpl::ProcessDied(
   HistogramController::GetInstance()->NotifyChildDied<RenderProcessHost>(this);
   // This object is not deleted at this point and might be reused later.
   // TODO(darin): clean this up
+}
+
+void RenderProcessHostImpl::FastShutdown() {
+  // Set this before ProcessDied() so observers can know that process died due
+  // to fast shutdown.
+  fast_shutdown_started_ = true;
+
+  // Tell observers that the process exited cleanly, even though it will be
+  // destroyed a little bit later. Observers shouldn't rely on this process
+  // anymore.
+  auto termination_info = GetChildTerminationInfo(/* already_dead=*/false);
+  termination_info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+  termination_info.exit_code = 0;
+
+  ProcessDied(termination_info);
 }
 
 void RenderProcessHostImpl::ResetIPC() {

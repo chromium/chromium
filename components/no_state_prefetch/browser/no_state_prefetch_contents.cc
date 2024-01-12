@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
@@ -419,9 +420,10 @@ bool NoStatePrefetchContents::Matches(
 
 void NoStatePrefetchContents::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  if (status == base::TERMINATION_STATUS_STILL_RUNNING) {
-    // The renderer process is being killed because of the browser/test
-    // shutdown, before the termination notification is received.
+  if (status == base::TERMINATION_STATUS_NORMAL_TERMINATION ||
+      status == base::TERMINATION_STATUS_STILL_RUNNING) {
+    // The renderer process is deliberately terminated (e.g. browser or test
+    // shutdown) before the termination notification is received.
     Destroy(FINAL_STATUS_APP_TERMINATING);
   }
   Destroy(FINAL_STATUS_RENDERER_CRASHED);

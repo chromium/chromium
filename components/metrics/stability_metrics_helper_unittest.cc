@@ -152,7 +152,7 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrashEnableExtensions) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Verifies that "Stability.RendererAbnormalTermination.*" histograms are
+// Verifies that "Stability.RendererAbnormalTermination2.*" histograms are
 // correctly recorded by `LogRendererCrash`.
 TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
   StabilityMetricsHelper helper(prefs());
@@ -186,10 +186,10 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
       base::HistogramTester tester;
       helper.LogRendererCrash(RendererHostedContentType::kExtension, status, 0);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.HostedContentType",
+          "Stability.RendererAbnormalTermination2.HostedContentType",
           RendererHostedContentType::kExtension, 1);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.Extension", status, 1);
+          "Stability.RendererAbnormalTermination2.Extension", status, 1);
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -198,10 +198,10 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
       helper.LogRendererCrash(RendererHostedContentType::kForegroundMainFrame,
                               status, 0);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.HostedContentType",
+          "Stability.RendererAbnormalTermination2.HostedContentType",
           RendererHostedContentType::kForegroundMainFrame, 1);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.ForegroundMainFrame", status,
+          "Stability.RendererAbnormalTermination2.ForegroundMainFrame", status,
           1);
     }
 
@@ -210,10 +210,10 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
       helper.LogRendererCrash(RendererHostedContentType::kForegroundSubframe,
                               status, 0);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.HostedContentType",
+          "Stability.RendererAbnormalTermination2.HostedContentType",
           RendererHostedContentType::kForegroundSubframe, 1);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.ForegroundSubframe", status,
+          "Stability.RendererAbnormalTermination2.ForegroundSubframe", status,
           1);
     }
 
@@ -222,10 +222,10 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
       helper.LogRendererCrash(RendererHostedContentType::kBackgroundFrame,
                               status, 0);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.HostedContentType",
+          "Stability.RendererAbnormalTermination2.HostedContentType",
           RendererHostedContentType::kBackgroundFrame, 1);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.BackgroundFrame", status, 1);
+          "Stability.RendererAbnormalTermination2.BackgroundFrame", status, 1);
     }
 
     {
@@ -233,10 +233,10 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
       helper.LogRendererCrash(RendererHostedContentType::kInactiveFrame, status,
                               0);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.HostedContentType",
+          "Stability.RendererAbnormalTermination2.HostedContentType",
           RendererHostedContentType::kInactiveFrame, 1);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.InactiveFrame", status, 1);
+          "Stability.RendererAbnormalTermination2.InactiveFrame", status, 1);
     }
 
     {
@@ -244,10 +244,10 @@ TEST_F(StabilityMetricsHelperTest, RendererAbnormalTerminationCount) {
       helper.LogRendererCrash(RendererHostedContentType::kNoFrameOrExtension,
                               status, 0);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.HostedContentType",
+          "Stability.RendererAbnormalTermination2.HostedContentType",
           RendererHostedContentType::kNoFrameOrExtension, 1);
       tester.ExpectUniqueSample(
-          "Stability.RendererAbnormalTermination.NoFrameOrExtension", status,
+          "Stability.RendererAbnormalTermination2.NoFrameOrExtension", status,
           1);
     }
   }

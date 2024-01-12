@@ -989,6 +989,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Handle termination of our process.
   void ProcessDied(const ChildProcessTerminationInfo& termination_info);
 
+  // Shutdowns the child process as fast as possible. This is similar to the
+  // public `FastShutdownIfPossible()` method, but doesn't perform any checks
+  // before initiating fast shutdown.
+  void FastShutdown();
+
   // Destroy all objects that can cause methods to be invoked on this object or
   // any other that hang off it.
   void ResetIPC();

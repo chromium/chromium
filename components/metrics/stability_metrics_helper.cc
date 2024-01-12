@@ -78,10 +78,10 @@ void RecordRendererAbnormalTerminationByHostedContentType(
   }
 
   base::UmaHistogramEnumeration(
-      "Stability.RendererAbnormalTermination.HostedContentType",
+      "Stability.RendererAbnormalTermination2.HostedContentType",
       hosted_content_type);
   base::UmaHistogramEnumeration(
-      base::StrCat({"Stability.RendererAbnormalTermination.",
+      base::StrCat({"Stability.RendererAbnormalTermination2.",
                     HostedContentTypeToString(hosted_content_type)}),
       status, base::TERMINATION_STATUS_MAX_ENUM);
 }
