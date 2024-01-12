@@ -66,7 +66,13 @@ TEST(UsbPrinterIdTest, EmptyDeviceId) {
 TEST(UsbPrinterIdTest, SimpleSanityTest) {
   MapType mapping = GetDefaultDeviceId();
   std::vector<uint8_t> buffer = MapToBuffer(mapping);
-  EXPECT_EQ(mapping, BuildDeviceIdMapping(buffer));
+
+  // Output also includes original buffer without the two leading size bytes.
+  MapType expected = mapping;
+  expected["CHROMEOS_RAW_ID"].emplace_back(
+      reinterpret_cast<const char*>(buffer.data()) + 2, buffer.size() - 2);
+
+  EXPECT_EQ(expected, BuildDeviceIdMapping(buffer));
 }
 
 }  // namespace

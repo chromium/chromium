@@ -180,8 +180,8 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                       PpdProvider::CallbackResultCode result,
                       const std::string& ppd_contents) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    PRINTER_LOG(EVENT) << printer.make_and_model()
-                       << " PPD Resolution Result: " << result;
+    PRINTER_LOG(EVENT) << printer.make_and_model() << " PPD Resolution Result: "
+                       << PpdProvider::CallbackResultCodeName(result);
     switch (result) {
       case PpdProvider::SUCCESS:
         DCHECK(!ppd_contents.empty());

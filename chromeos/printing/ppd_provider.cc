@@ -1084,4 +1084,20 @@ scoped_refptr<PpdProvider> PpdProvider::Create(
       std::move(config_cache), std::move(remote_ppd_fetcher));
 }
 
+// static
+std::string_view PpdProvider::CallbackResultCodeName(CallbackResultCode code) {
+  switch (code) {
+    case SUCCESS:
+      return "SUCCESS";
+    case NOT_FOUND:
+      return "NOT_FOUND";
+    case SERVER_ERROR:
+      return "SERVER_ERROR";
+    case INTERNAL_ERROR:
+      return "INTERNAL_ERROR";
+    case PPD_TOO_LARGE:
+      return "PPD_TOO_LARGE";
+  }
+}
+
 }  // namespace chromeos
