@@ -37,6 +37,7 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_id,
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
+  // TODO(b/263253212): add `binding_key_assertion_` to `params` if not empty.
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
       client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
       client_version_, client_channel_, device_id_);
@@ -52,6 +53,12 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
 
 void OAuth2MintAccessTokenFetcherAdapter::CancelRequest() {
   mint_token_flow_.reset();
+}
+
+void OAuth2MintAccessTokenFetcherAdapter::SetBindingKeyAssertion(
+    std::string assertion) {
+  CHECK(!assertion.empty());
+  binding_key_assertion_ = std::move(assertion);
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::

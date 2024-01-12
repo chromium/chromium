@@ -27,13 +27,16 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
+#include "components/signin/internal/identity_manager/token_binding_oauth2_access_token_fetcher.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -259,15 +262,28 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
-    // TODO(b/263253212): use `token_binding_challenge` to generate binding key
-    // assertion and attach it to the new request.
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
-    return std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
+    auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, refresh_token,
         signin::GetSigninScopedDeviceId(client_->GetPrefs()),
         std::string(version_info::GetVersionNumber()),
         std::string(
             version_info::GetChannelString(client_->GetClientChannel())));
+    if (token_binding_challenge.empty()) {
+      return fetcher;
+    }
+    // `fetcher_wrapper` makes `fetcher` wait until a binding key assertion is
+    // generated before sending a network request.
+    auto fetcher_wrapper =
+        std::make_unique<TokenBindingOAuth2AccessTokenFetcher>(
+            std::move(fetcher));
+    token_binding_helper_->GenerateBindingKeyAssertion(
+        account_id, token_binding_challenge,
+        GaiaUrls::GetInstance()->oauth2_issue_token_url(),
+        base::BindOnce(
+            &TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion,
+            fetcher_wrapper->GetWeakPtr()));
+    return fetcher_wrapper;
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   return GaiaAccessTokenFetcher::

@@ -110,6 +110,8 @@ source_set("identity_manager") {
     sources += [
       "token_binding_helper.cc",
       "token_binding_helper.h",
+      "token_binding_oauth2_access_token_fetcher.cc",
+      "token_binding_oauth2_access_token_fetcher.h",
     ]
     deps += [ "//components/unexportable_keys" ]
   }
@@ -216,7 +218,10 @@ source_set("unit_tests") {
   }
 
   if (enable_bound_session_credentials) {
-    sources += [ "token_binding_helper_unittest.cc" ]
+    sources += [
+      "token_binding_helper_unittest.cc",
+      "token_binding_oauth2_access_token_fetcher_unittest.cc",
+    ]
 
     deps += [
       "//components/unexportable_keys",
