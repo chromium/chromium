@@ -11,6 +11,8 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -122,7 +124,7 @@ std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
 }
 
 struct RenderData {
-  std::unique_ptr<uint8_t[]> data_copy;
+  base::HeapArray<uint8_t> data_copy;
   std::unique_ptr<Metafile> metafile;
 };
 
@@ -147,9 +149,9 @@ absl::optional<RenderData> PrepareRenderData(
   // be written by the sender.
   base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
   if (render_data.metafile->ShouldCopySharedMemoryRegionData()) {
-    render_data.data_copy = std::make_unique<uint8_t[]>(data.size());
-    base::ranges::copy(data, render_data.data_copy.get());
-    data = base::span<const uint8_t>(render_data.data_copy.get(), data.size());
+    render_data.data_copy = base::HeapArray<uint8_t>::Uninit(data.size());
+    render_data.data_copy.as_span().copy_from(data);
+    data = render_data.data_copy.as_span();
   }
   if (!render_data.metafile->InitFromData(data)) {
     DLOG(ERROR) << "Failure printing document " << document_cookie
