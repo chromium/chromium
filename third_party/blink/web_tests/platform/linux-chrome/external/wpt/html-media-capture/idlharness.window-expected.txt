@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] HTMLInputElement interface: attribute capture
-  assert_true: The prototype object must have a property "capture" expected true got false
-[FAIL] HTMLInputElement interface: input must inherit property "capture" with the proper type
-  assert_inherits: property "capture" not found in prototype chain
-Harness: the test ran to completion.
-

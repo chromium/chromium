@@ -99,6 +99,10 @@ class BaselineOptimizerTest(BaselineTest):
                 'port_name': 'win-win11',
                 'specifiers': ['Win11', 'Release']
             },
+            'Fake Test Win11-arm64': {
+                'port_name': 'win-win11-arm64',
+                'specifiers': ['Win11-arm64', 'Release']
+            },
             'Fake Test Linux': {
                 'port_name': 'linux',
                 'specifiers': ['Trusty', 'Release']
@@ -133,8 +137,14 @@ class BaselineOptimizerTest(BaselineTest):
         # assertion fails, port configurations are likely changed, and the
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
-            'linux', 'mac-mac10.15', 'mac-mac11', 'mac-mac12', 'mac-mac13',
-            'win-win10.20h2', 'win-win11'
+            'linux',
+            'mac-mac10.15',
+            'mac-mac11',
+            'mac-mac12',
+            'mac-mac13',
+            'win-win10.20h2',
+            'win-win11',
+            'win-win11-arm64',
         ])
 
     def _assert_optimization(self,
@@ -893,6 +903,31 @@ class BaselineOptimizerTest(BaselineTest):
                 'fast/canvas': '1',
             },
             baseline_dirname='fast/canvas')
+
+    def test_preorder_removal_more_favorable(self):
+        # Regression test for crbug.com/1512264
+        self._assert_optimization(
+            {
+                'platform/win11-arm64/slow/canvas': '3',
+                'platform/win10/slow/canvas': '2',
+                'platform/linux/slow/canvas': '1',
+                'platform/win/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/win11-arm64/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+                'platform/win10/virtual/gpu/slow/canvas': '2',
+                'platform/linux/virtual/gpu/slow/canvas': '1',
+            }, {
+                'platform/win11-arm64/slow/canvas':
+                '3',
+                'platform/win10/slow/canvas':
+                '2',
+                'platform/linux/slow/canvas':
+                '1',
+                'platform/win11-arm64/virtual/gpu/slow/canvas':
+                ALL_PASS_TESTHARNESS_RESULT,
+            },
+            baseline_dirname='slow/canvas')
 
 
 class ResultDigestTest(unittest.TestCase):
