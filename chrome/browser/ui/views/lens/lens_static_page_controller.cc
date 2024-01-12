@@ -31,19 +31,17 @@ void LensStaticPageController::OpenStaticPage() {
   gfx::Rect fullscreen_size = gfx::Rect(active_web_contents->GetSize());
   // TODO(crbug/1383279): Refactor screenshot code shared here with code in
   // image_editor::ScreenshotFlow.
-#if BUILDFLAG(IS_MAC)
-  const gfx::NativeView& native_view =
-      active_web_contents->GetContentNativeView();
-  gfx::Image img;
-  bool rval = ui::GrabViewSnapshot(native_view, fullscreen_size, &img);
-  // If |img| is empty, clients should treat it as a canceled action, but
-  // we have a DCHECK for development as we expected this call to succeed.
-  DCHECK(rval);
-  LoadChromeLens(img);
-#else
   ui::GrabSnapshotImageCallback load_url_callback =
       base::BindOnce(&LensStaticPageController::LoadChromeLens,
                      weak_ptr_factory_.GetWeakPtr());
+#if BUILDFLAG(IS_MAC)
+  // TODO: Why is the view captured on the Mac but the window captured on all
+  // other platforms?
+  const gfx::NativeView& native_view =
+      active_web_contents->GetContentNativeView();
+  ui::GrabViewSnapshotAsync(native_view, fullscreen_size,
+                            std::move(load_url_callback));
+#else
   const gfx::NativeWindow& native_window = active_web_contents->GetNativeView();
   ui::GrabWindowSnapshotAsync(native_window, fullscreen_size,
                               std::move(load_url_callback));
