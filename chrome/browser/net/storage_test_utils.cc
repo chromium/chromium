@@ -148,9 +148,14 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame) {
 }
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
-                                   const std::string& origin) {
-  return content::ExecJs(frame,
-                         content::JsReplace(kRequestStorageAccessFor, origin));
+                                   const std::string& origin,
+                                   bool omit_user_gesture) {
+  int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS;
+  if (omit_user_gesture) {
+    options |= content::EXECUTE_SCRIPT_NO_USER_GESTURE;
+  }
+  return content::ExecJs(
+      frame, content::JsReplace(kRequestStorageAccessFor, origin), options);
 }
 
 bool HasStorageAccessForFrame(content::RenderFrameHost* frame) {
