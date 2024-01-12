@@ -1173,6 +1173,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash2) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaOwnsChildAndHiddenDescendantCrash) {
+  RunFormControlsTest(
+      FILE_PATH_LITERAL("aria-owns-child-and-hidden-descendant-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaOwnsFromTextarea) {
   RunRegressionTest(FILE_PATH_LITERAL("aria-owns-from-textarea.html"));
 }

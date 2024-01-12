@@ -2609,6 +2609,7 @@ data/accessibility/event/value-value-changed.html
 data/accessibility/event/visibility-hidden-changed-expected-auralinux.txt
 data/accessibility/event/visibility-hidden-changed-expected-uia-win.txt
 data/accessibility/event/visibility-hidden-changed.html
+data/accessibility/form-controls/aria-owns-child-and-hidden-descendant-crash.html
 data/accessibility/form-controls/bdo-table-cell.html
 data/accessibility/form-controls/contenteditable-descendants-expected-android.txt
 data/accessibility/form-controls/contenteditable-descendants-expected-blink.txt

@@ -741,6 +741,12 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 
   for (AXObject* related : related_sources) {
     if (related) {
+      bool is_valid = related_target
+                          ? IsValidOwnsRelation(related, related_target)
+                          : IsValidOwner(related);
+      if (!is_valid) {
+        continue;
+      }
       owner_ids_to_update_.insert(related->AXObjectID());
       object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
     }
