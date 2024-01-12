@@ -45,7 +45,6 @@
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -410,33 +409,24 @@ void TurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
 }
 
 void TurnSyncOnHelper::CreateNewSignedInProfile() {
-  // Use the same the default search engine in the new profile.
-  search_engines::ChoiceData search_engine_choice_data;
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    search_engine_choice_data =
-        SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
-  }
-
-  base::OnceCallback<void(Profile*)> profile_created_callback = base::BindOnce(
-      &TurnSyncOnHelper::OnNewSignedInProfileCreated, base::Unretained(this),
-      std::move(search_engine_choice_data));
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(!dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
   dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, account_info_.account_id,
-          /*local_profile_name=*/std::u16string(),
-          /*icon_index=*/std::nullopt, std::move(profile_created_callback));
+          /*local_profile_name=*/std::u16string(), /*icon_index=*/std::nullopt,
+          base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
+                         base::Unretained(this)));
 #else
   DCHECK(!profile_->IsMainProfile());
   lacros_sign_in_provider_ =
       std::make_unique<ProfilePickerLacrosSignInProvider>(
           /*hidden_profile=*/false);
   lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
-      account_info_.gaia, std::move(profile_created_callback));
+      account_info_.gaia,
+      base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
+                     base::Unretained(this)));
 #endif
 }
 
@@ -446,9 +436,7 @@ syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
              : nullptr;
 }
 
-void TurnSyncOnHelper::OnNewSignedInProfileCreated(
-    search_engines::ChoiceData search_engine_choice_data,
-    Profile* new_profile) {
+void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
@@ -480,14 +468,6 @@ void TurnSyncOnHelper::OnNewSignedInProfileCreated(
   DCHECK_NE(profile_, new_profile);
   SwitchToProfile(new_profile);
   DCHECK_EQ(profile_, new_profile);
-
-  // The new profile inherits the default search provider and the search
-  // engine choice timestamp from the previous profile.
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
-        *new_profile, search_engine_choice_data);
-  }
 
   if (policy_fetch_tracker_) {
     // Load policy for the just-created profile - once policy has finished
