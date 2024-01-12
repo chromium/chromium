@@ -4060,6 +4060,16 @@ chromium-metrics-reviews@google.com.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.RiskDataLoading.Latency" units="ms"
+    expires_after="2024-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency of risk data loading. It is logged when the loading is
+    completed or timed out.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
     expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>

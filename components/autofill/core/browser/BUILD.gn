@@ -335,6 +335,8 @@ static_library("browser") {
     "metrics/payments/mandatory_reauth_metrics.h",
     "metrics/payments/offers_metrics.cc",
     "metrics/payments/offers_metrics.h",
+    "metrics/payments/risk_data_metrics.cc",
+    "metrics/payments/risk_data_metrics.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
     "metrics/payments/virtual_card_enrollment_metrics.h",
     "metrics/payments/virtual_card_manual_fallback_bubble_metrics.cc",
