@@ -2122,7 +2122,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context);
 
   // Creates a LoginDelegate that asks the user for a username and password.
-  // |web_contents| should not be null when CreateLoginDelegate is called.
+  // |web_contents| can be null if the auth request is coming from a service
+  // worker. If |web_contents| is not null, it is guaranteed to be associated
+  // with the same BrowserContext as |browser_context|.
+  // |browser_context| is always set.
   // |first_auth_attempt| is needed by AwHttpAuthHandler constructor.
   // |auth_required_callback| is used to transfer auth credentials to
   // URLRequest::SetAuth(). The credentials parameter of the callback
@@ -2155,6 +2158,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       WebContents* web_contents,
+      BrowserContext* browser_context,
       const GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame,
       const GURL& url,

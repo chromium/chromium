@@ -771,6 +771,7 @@ std::unique_ptr<content::LoginDelegate>
 AwContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
     const GURL& url,

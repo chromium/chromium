@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -26,6 +27,7 @@ HttpAuthCoordinator::~HttpAuthCoordinator() = default;
 std::unique_ptr<content::LoginDelegate>
 HttpAuthCoordinator::CreateLoginDelegate(
     content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const net::AuthChallengeInfo& auth_info,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
@@ -39,7 +41,7 @@ HttpAuthCoordinator::CreateLoginDelegate(
   Flow* flow = flow_owned.get();
   flows_[flow] = std::move(flow_owned);
 
-  if (!flow->ForwardToExtension()) {
+  if (!flow->ForwardToExtension(browser_context)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&Flow::ShowDialog, flow->GetWeakPtr()));
   }
@@ -97,20 +99,21 @@ void HttpAuthCoordinator::Flow::WrapperDestroyed() {
   coordinator_->FlowFinished(this);
 }
 
-bool HttpAuthCoordinator::Flow::ForwardToExtension() {
+bool HttpAuthCoordinator::Flow::ForwardToExtension(
+    content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If the WebRequest API wants to take a shot at intercepting this, we can
   // return immediately. |continuation| will eventually be invoked if the
   // request isn't cancelled.
   auto* api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
-          web_contents_->GetBrowserContext());
+          browser_context);
   auto continuation = base::BindOnce(&Flow::OnExtensionResponse, GetWeakPtr());
   if (api->MaybeProxyAuthRequest(
-          web_contents_->GetBrowserContext(), auth_info_, response_headers_,
-          request_id_, is_request_for_primary_main_frame_,
-          std::move(continuation),
-          extensions::WebViewGuest::FromWebContents(web_contents_.get()))) {
+          browser_context, auth_info_, response_headers_, request_id_,
+          is_request_for_primary_main_frame_, std::move(continuation),
+          extensions::WebViewGuest::FromWebContents(
+              web_contents_ ? web_contents_.get() : nullptr))) {
     return true;
   }
 #endif

@@ -6610,6 +6610,7 @@ std::unique_ptr<content::LoginDelegate>
 ChromeContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
     const GURL& url,
@@ -6660,8 +6661,9 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   // Once Lacros ships this logic will no longer need to be included in
   // ash-chrome.
   return http_auth_coordinator_->CreateLoginDelegate(
-      web_contents, auth_info, request_id, is_request_for_primary_main_frame,
-      url, response_headers, std::move(auth_required_callback));
+      web_contents, browser_context, auth_info, request_id,
+      is_request_for_primary_main_frame, url, response_headers,
+      std::move(auth_required_callback));
 }
 
 bool ChromeContentBrowserClient::HandleExternalProtocol(

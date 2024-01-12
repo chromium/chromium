@@ -497,6 +497,7 @@ class LoginHandlerDelegate {
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder,
       WebContents::Getter web_contents_getter,
+      content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
       bool is_request_for_primary_main_frame,
       uint32_t process_id,
@@ -512,7 +513,8 @@ class LoginHandlerDelegate {
         url_(url),
         response_headers_(std::move(response_headers)),
         first_auth_attempt_(first_auth_attempt),
-        web_contents_getter_(web_contents_getter) {
+        web_contents_getter_(web_contents_getter),
+        browser_context_(browser_context->GetWeakPtr()) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auth_challenge_responder_.set_disconnect_handler(base::BindOnce(
         &LoginHandlerDelegate::OnRequestCancelled, base::Unretained(this)));
@@ -542,15 +544,19 @@ class LoginHandlerDelegate {
     }
 
     WebContents* web_contents = web_contents_getter_.Run();
-    if (!web_contents) {
+    if (!web_contents || !browser_context_) {
       OnAuthCredentials(std::nullopt);
       return;
+    }
+
+    if (web_contents) {
+      CHECK_EQ(web_contents->GetBrowserContext(), browser_context_.get());
     }
 
     // WeakPtr is not strictly necessary here due to OnRequestCancelled.
     creating_login_delegate_ = true;
     login_delegate_ = GetContentClient()->browser()->CreateLoginDelegate(
-        auth_info_, web_contents, request_id_,
+        auth_info_, web_contents, browser_context_.get(), request_id_,
         is_request_for_primary_main_frame_, url_, response_headers_,
         first_auth_attempt_,
         base::BindOnce(&LoginHandlerDelegate::OnAuthCredentials,
@@ -582,6 +588,7 @@ class LoginHandlerDelegate {
   const scoped_refptr<net::HttpResponseHeaders> response_headers_;
   bool first_auth_attempt_;
   WebContents::Getter web_contents_getter_;
+  base::WeakPtr<BrowserContext> browser_context_;
   std::unique_ptr<LoginDelegate> login_delegate_;
   base::WeakPtrFactory<LoginHandlerDelegate> weak_factory_{this};
 };
@@ -596,7 +603,8 @@ void OnAuthRequiredContinuation(
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder,
-    base::RepeatingCallback<WebContents*(void)> web_contents_getter) {
+    base::RepeatingCallback<WebContents*(void)> web_contents_getter,
+    content::BrowserContext* browser_context) {
   if (!web_contents_getter || !web_contents_getter.Run()) {
     mojo::Remote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder_remote(std::move(auth_challenge_responder));
@@ -605,8 +613,8 @@ void OnAuthRequiredContinuation(
   }
   new LoginHandlerDelegate(
       std::move(auth_challenge_responder), std::move(web_contents_getter),
-      auth_info, is_request_for_primary_main_frame, process_id, request_id, url,
-      head_headers, first_auth_attempt);  // deletes self
+      browser_context, auth_info, is_request_for_primary_main_frame, process_id,
+      request_id, url, head_headers, first_auth_attempt);  // deletes self
 }
 
 // Returns true if the request is the primary main frame navigation.
@@ -2176,7 +2184,7 @@ void StoragePartitionImpl::OnAuthRequired(
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
       auth_info, head_headers, std::move(auth_challenge_responder),
-      web_contents_getter);
+      web_contents_getter, browser_context_);
 }
 
 void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(

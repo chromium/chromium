@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -58,6 +59,7 @@ class HttpAuthCoordinator {
   // Creates an instance of Flow.
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
       const content::GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame,
@@ -102,7 +104,7 @@ class HttpAuthCoordinator {
 
     // Gives the extension subsystem the chance to respond to http auth. Returns
     // true if the extension subsystem is responding.
-    bool ForwardToExtension();
+    bool ForwardToExtension(content::BrowserContext* browser_context);
 
     // Show a dialog to the user.
     void ShowDialog();
