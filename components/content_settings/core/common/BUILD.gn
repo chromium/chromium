@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "content_settings_constraints_unittest.cc",
     "content_settings_metadata_unittest.cc",
     "content_settings_mojom_traits_unittest.cc",
+    "content_settings_partition_key_unittest.cc",
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",
     "content_settings_utils_unittest.cc",

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_PARTITION_KEY_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_PARTITION_KEY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/no_destructor.h"
@@ -40,10 +41,14 @@ class PartitionKey {
       const content::StoragePartitionConfig& config);
 #endif  // BUILDFLAG(IS_IOS)
 
-  // Get the default PartitionKey for tests. If your test uses non-default
-  // StoragePartitions, it should not call this. Instead, call
-  // `content_settings::GetPartitionKey()` with appropriate arguments.
+  // `ContentSettingsPref` needs to create default partition key when loading
+  // the pref.
+  friend class ContentSettingsPref;
+
   static const PartitionKey& GetDefaultForTesting();
+  static PartitionKey CreateForTesting(std::string domain,
+                                       std::string name,
+                                       bool in_memory);
 
   // Content settings partitioning is a work-in-progress. When it is done, for
   // non-ios platforms, the partition key is supposed to be computed from
@@ -53,9 +58,14 @@ class PartitionKey {
   // TODO(b/307193732): Fix all callers and remove this function.
   static const PartitionKey& WipGetDefault();
 
+  // Deserialize a partition key. Return `std::nullopt` if the deserialization
+  // fails.
+  static std::optional<PartitionKey> Deserialize(const std::string& data);
 
   PartitionKey(const PartitionKey& key);
   PartitionKey(PartitionKey&& key);
+  std::strong_ordering operator<=>(const PartitionKey&) const;
+  bool operator==(const PartitionKey&) const;
 
   // When partitioning is enabled, `domain` and `name` are set to the same
   // values as the StoragePartitionConfig.
@@ -66,17 +76,19 @@ class PartitionKey {
 
   bool is_default() const { return domain_.empty(); }
 
+  std::string Serialize() const;
+
  private:
   PartitionKey();
-  PartitionKey(const std::string& domain,
-               const std::string& name,
-               bool in_memory);
+  PartitionKey(std::string domain, std::string name, bool in_memory);
   static const PartitionKey& GetDefaultImpl();
 
   const std::string domain_;
   const std::string name_;
   const bool in_memory_;
 };
+
+std::ostream& operator<<(std::ostream& os, const PartitionKey& key);
 
 }  // namespace content_settings
 
