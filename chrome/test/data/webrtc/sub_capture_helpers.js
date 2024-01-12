@@ -10,11 +10,17 @@
 // Test page management. //
 ///////////////////////////
 
+let track;
+let trackClone;
+let otherCaptureTrack;
+
 let role;
 function setRole(value) {
   role = value;
 }
 
+// Given a URL, set embedded_frame's source to that URL.
+// Return "embedding-done" after embedding is done.
 async function startEmbeddingFrame(url) {
   const waiter = waitForMessage('embedding-done');
   document.getElementById("embedded_frame").src = url;
@@ -22,6 +28,8 @@ async function startEmbeddingFrame(url) {
   return message.messageType;
 }
 
+// Called by the embedded pages participating in the test.
+// Registers listeners for messages from the top-level page.
 function registerEmbeddedListeners() {
   window.addEventListener("message", (event) => {
     const type = event.data.messageType;
@@ -66,6 +74,14 @@ function registerEmbeddedListeners() {
 }
 
 // Allows creating new elements for which new crop-targets may be created.
+//
+// Parameters:
+// * targetFrame: Either "top-level" or "embedded". Determines in which
+//   page the element should be created.
+// * tag: The type of element to be created.
+// * id: The ID which the new element should be assigned.
+//
+// Returns "create-new-element-complete" once done.
 async function createNewElement(targetFrame, tag, id) {
   if (role == targetFrame) {
     const newElement = document.createElement(tag);
@@ -91,6 +107,8 @@ async function createNewElement(targetFrame, tag, id) {
   }
 }
 
+// Produces visual updates in the page, ensuring new frames
+// will be emitted and reducing test flakiness.
 function animate(element) {
   const animationCallback = function() {
     element.innerHTML = parseInt(element.innerHTML) + 1;
@@ -102,6 +120,7 @@ function animate(element) {
 // Main actions from C++ test fixture. //
 /////////////////////////////////////////
 
+// Starts the main capture session.
 async function startCapture() {
   if (track || trackClone) {
     return "error-multiple-captures";
@@ -119,10 +138,14 @@ async function startCapture() {
   }
 }
 
+// Starts a second capture, associated with `otherCaptureTrack`,
+// in the indicated target-frame (top-level / embedded).
+// Returns `${role}-second-capture-success` upon success,
+// `${role}-second-capture-failure` if unsuccessful.
 async function startSecondCapture(targetFrame) {
   if (targetFrame != `${role}`) {
     if (`${role}` != "top-level") {
-      return "error";
+      throw "error";
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
@@ -147,10 +170,14 @@ async function startSecondCapture(targetFrame) {
   }
 }
 
+// Stops a specific capture in a specific frame.
+// * targetFrame: Either "top-level" or "embedded".
+// * targetTrack: "original", "clone" or "second", referencing
+//   `track`, `trackClone` and `otherCaptureTrack`, respectively.
 async function stopCapture(targetFrame, targetTrack) {
   if (targetFrame != `${role}`) {
     if (`${role}` != "top-level") {
-      return "error";
+      throw "error";
     }
 
     const embedded_frame = document.getElementById("embedded_frame");
@@ -302,13 +329,21 @@ async function applySubCapture(target, targetType, targetFrame,
 // Communication with other pages belonging to this page. //
 ////////////////////////////////////////////////////////////
 
+// To facilitate cross-origin communication, an embedded "mailman frame"
+// is used. This "mailman frame" relays messages between (1) the frame which
+// embeds the "mailman" and (2) the main frame of the other tab, which is
+// same-origin with the mailman frame.
 async function setUpMailman(url) {
   const mailman_frame = document.getElementById("mailman_frame");
   mailman_frame.src = url;
 
   window.addEventListener("message", (event) => {
     if (event.data.messageType == "announce-sub-capture-target") {
-      registerRemoteSubCaptureTarget(event.data.target, event.data.index);
+      subCaptureTargets.push(event.data.target);
+      broadcast({
+        messageType: "ack-sub-capture-target",
+        index: event.data.index
+      });
     }
   });
 
@@ -325,6 +360,9 @@ async function setUpMailman(url) {
   return {messageType: "mailman-ready"};
 }
 
+// Return a Promise that will remain pending until a specific event
+// is received, then resolve with the data associated with
+// that event's data field.
 function waitForMessage(expectedMessageType) {
   return new Promise(resolve => {
     const listener = (event) => {
@@ -337,6 +375,7 @@ function waitForMessage(expectedMessageType) {
   });
 }
 
+// Send a message to all other pages participating in this test.
 function broadcast(msg) {
   const mailman_frame = document.getElementById("mailman_frame");
   mailman_frame.contentWindow.postMessage(msg, "*");
@@ -363,6 +402,9 @@ const subCaptureTargets = [];
 
 const EXPECTED_ACKS = 3;
 
+// Given a sub-capture token, announce it to all pages participating
+// in the test, and return a promise which will resolve once all
+// of those pages have acknowledged reception of the token.
 async function makeSubCaptureTargetProxy(subCaptureTarget) {
   subCaptureTargets.push(subCaptureTarget);
 
@@ -396,6 +438,12 @@ async function makeSubCaptureTargetProxy(subCaptureTarget) {
   return acksCompletedPromise;
 }
 
+// The C++ fixture can only pass strings, not the actual JS objects.
+// Therefore, whenever it wishes to refer to a specific sub-capture
+// token, it references it via its index out of all sub-capture tokens
+// produced by the test. This helper converts between the two.
+// For convenience's sake, the special value `"undefined"` is allowed
+// as well, and is converted to `undefined`.
 function getSubCaptureTarget(subCaptureTargetIndex) {
   if (subCaptureTargetIndex == "undefined") {
     return undefined;
@@ -404,9 +452,4 @@ function getSubCaptureTarget(subCaptureTargetIndex) {
     throw "out-of-bounds-error";
   }
   return subCaptureTargets[subCaptureTargetIndex];
-}
-
-function registerRemoteSubCaptureTarget(subCaptureTarget, index) {
-  subCaptureTargets.push(subCaptureTarget);
-  broadcast({messageType: "ack-sub-capture-target", index});
 }

@@ -9,11 +9,6 @@
 
       registerEmbeddedListeners();
 
-      let track;
-      let trackClone;
-
-      let otherCaptureTrack;
-
       function reportEmbeddingSuccess() {
         window.parent.postMessage({messageType: "embedding-done"}, '*');
       }
