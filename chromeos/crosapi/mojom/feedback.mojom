@@ -11,7 +11,7 @@ import "url/mojom/url.mojom";
 // Note: When you add a new value, please add a test case accordingly in:
 // chrome/browser/feedback/show_feedback_page_lacros_browertest.cc.
 //
-// Next MinVersion: 5
+// Next MinVersion: 6
 // Next ID: 9
 //
 [Stable, Extensible]
@@ -29,6 +29,7 @@ enum LacrosFeedbackSource {
   [MinVersion=5] kFeedbackSourceSettingsPerformancePage = 9,
   [MinVersion=5] kFeedbackSourceProfileErrorDialog = 10,
   [MinVersion=5] kFeedbackSourceQuickOffice=11,
+  [MinVersion=6] kFeedbackSourceAI=12,
 };
 
 [Stable]
@@ -54,6 +55,8 @@ struct FeedbackInfo {
 
   // Autofill metadata (e.g. form signatures, last autofill event type, etc).
  [MinVersion=1] mojo_base.mojom.Value? autofill_metadata@6;
+
+ [MinVersion=2] mojo_base.mojom.Value? ai_metadata@7;
 };
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to

@@ -6,6 +6,7 @@
 #include "base/version.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
@@ -122,5 +123,25 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromQuickOffice) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceQuickOffice);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, ShowFeedbackPageFromAI) {
+  base::HistogramTester histogram_tester;
+  std::string unused;
+  auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
+  if (!capabilities || !base::Contains(*capabilities, "crbug/1501057")) {
+    GTEST_SKIP() << "Unsupported feedback source AI for ash.";
+  }
+
+  // AI flow uses the Chrome feedback dialog instead so no new ash window will
+  // be created.
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAI,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/unused,
+                           /*autofill_metadata=*/base::Value::Dict(),
+                           /*ai_metadata=*/base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
