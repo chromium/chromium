@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest, AutoConfigure) {
   EXPECT_EQ(
       feature_engagement::EventConfig(
           "WebUiHelpBubbleTest_trigger",
-          feature_engagement::Comparator(feature_engagement::LESS_THAN, 3),
+          feature_engagement::Comparator(feature_engagement::LESS_THAN, 5),
           feature_engagement::kMaxStoragePeriod,
           feature_engagement::kMaxStoragePeriod),
       config.trigger);

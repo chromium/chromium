@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -31,16 +32,14 @@ extern void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry);
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider()
-    : overwrite_valid_configurations_(
-          user_education::features::IsUserEducationV2()) {
+    : use_v2_behavior_(user_education::features::IsUserEducationV2()) {
   MaybeRegisterChromeFeaturePromos(registry_);
 }
 
 UserEducationConfigurationProvider::UserEducationConfigurationProvider(
     user_education::FeaturePromoRegistry registry_for_testing)
     : registry_(std::move(registry_for_testing)),
-      overwrite_valid_configurations_(
-          user_education::features::IsUserEducationV2()) {}
+      use_v2_behavior_(user_education::features::IsUserEducationV2()) {}
 
 UserEducationConfigurationProvider::~UserEducationConfigurationProvider() =
     default;
@@ -50,12 +49,19 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     feature_engagement::FeatureConfig& config,
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
-
-  // Never override existing configurations unless 2.0 is enabled.
-  if (config.valid && !overwrite_valid_configurations_) {
+  // Determine if a configuration needs to be provided or modified.
+  //
+  // Provide a configuration in v1 if there is no existing config, so that IPH
+  // added after the v2 transition without explicit configuration still work on
+  // browsers without the v2 flag enabled.
+  //
+  // In v2, a configuration is always provided; if one already exists, any
+  // values that mandatory in v2 are overwritten.
+  if (config.valid && !use_v2_behavior_) {
     return false;
   }
 
+  // Features not controlled by FeaturePromoController are ignored.
   if (!registry_.IsFeatureRegistered(feature)) {
     return false;
   }
@@ -69,40 +75,35 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
       promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
                                          PromoSubtype::kActionableAlert;
 
-  switch (promo_spec->promo_type()) {
-    case user_education::FeaturePromoSpecification::PromoType::kToast:
-      // Toasts can always show and do not impact other IPH.
-      config.session_rate.type = feature_engagement::ANY;
-      config.session_rate.value = 0;
-      config.session_rate_impact.type =
-          feature_engagement::SessionRateImpact::Type::NONE;
-      config.session_rate_impact.affected_features.reset();
-      break;
+  // These are baseline session rate values.
+  config.session_rate.type = feature_engagement::ANY;
+  config.session_rate.value = 0;
+  config.session_rate_impact.type =
+      feature_engagement::SessionRateImpact::Type::NONE;
+  config.session_rate_impact.affected_features.reset();
 
+  switch (promo_spec->promo_type()) {
     case user_education::FeaturePromoSpecification::PromoType::kSnooze:
     case user_education::FeaturePromoSpecification::PromoType::kCustomAction:
     case user_education::FeaturePromoSpecification::PromoType::kTutorial:
-      if (is_unlimited) {
-        config.session_rate.type = feature_engagement::ANY;
-        config.session_rate_impact.type =
-            feature_engagement::SessionRateImpact::Type::ALL;
-        config.session_rate_impact.affected_features.reset();
-      } else {
-        // Heavyweight IPH can only show once per session.
+      // Heavyweight promos prevent future low-priority heavyweight promos.
+      config.session_rate_impact.type =
+          feature_engagement::SessionRateImpact::Type::ALL;
+      // Heavyweight IPH can only show once per session. However, in V2,
+      // sessions are controlled by the session policy.
+      if (!is_unlimited && !use_v2_behavior_) {
         config.session_rate.type = feature_engagement::EQUAL;
-        config.session_rate.value = 0;
-        config.session_rate_impact.type =
-            feature_engagement::SessionRateImpact::Type::ALL;
-        config.session_rate_impact.affected_features.reset();
       }
       break;
 
+    case user_education::FeaturePromoSpecification::PromoType::kToast:
     case user_education::FeaturePromoSpecification::PromoType::kLegacy:
+      // Toasts can always show and do not impact other IPH.
+      break;
+
     case user_education::FeaturePromoSpecification::PromoType::kUnspecified:
-      // No configuration is provided for legacy IPH.
-      CHECK(!overwrite_valid_configurations_)
-          << "Legacy promos not allowed in User Education Experience V2.";
-      return false;
+      // Should never get here.
+      NOTREACHED_NORETURN();
   }
 
   // All IPH block all other IPH.
@@ -114,12 +115,12 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   if (config.trigger.name.empty()) {
     config.trigger.name = GetDefaultTriggerName(feature);
   }
-  if (is_unlimited) {
+  if (is_unlimited || use_v2_behavior_) {
     config.trigger.comparator.type = feature_engagement::ANY;
     config.trigger.comparator.value = 0;
   } else {
     config.trigger.comparator.type = feature_engagement::LESS_THAN;
-    config.trigger.comparator.value = 3;
+    config.trigger.comparator.value = 5;
   }
   config.trigger.storage = feature_engagement::kMaxStoragePeriod;
   config.trigger.window = feature_engagement::kMaxStoragePeriod;

@@ -39,7 +39,7 @@ class UserEducationConfigurationProvider
 
  private:
   user_education::FeaturePromoRegistry registry_;
-  const bool overwrite_valid_configurations_;
+  const bool use_v2_behavior_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_

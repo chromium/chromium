@@ -122,8 +122,13 @@ class UserEducationConfigurationProviderTest : public testing::Test {
   }
 
   auto GetDefaultTrigger(const char* name) {
+    const auto trigger =
+        base::FeatureList::IsEnabled(
+            user_education::features::kUserEducationExperienceVersion2)
+            ? kAny
+            : kLessThan5;
     return feature_engagement::EventConfig(
-        name, kLessThan3, feature_engagement::kMaxStoragePeriod,
+        name, trigger, feature_engagement::kMaxStoragePeriod,
         feature_engagement::kMaxStoragePeriod);
   }
 
@@ -145,8 +150,8 @@ class UserEducationConfigurationProviderTest : public testing::Test {
   const feature_engagement::BlockedBy kBlockedByAll;
   const feature_engagement::Comparator kEqualsZero{feature_engagement::EQUAL,
                                                    0};
-  const feature_engagement::Comparator kLessThan3{feature_engagement::LESS_THAN,
-                                                  3};
+  const feature_engagement::Comparator kLessThan5{feature_engagement::LESS_THAN,
+                                                  5};
   const feature_engagement::Comparator kAtLeast7{
       feature_engagement::GREATER_THAN_OR_EQUAL, 7};
   feature_engagement::SessionRateImpact kSessionRateImpactNone;
@@ -375,4 +380,28 @@ TEST_F(UserEducationConfigurationProviderTest, v2_DoesOverwriteValid) {
 
   EXPECT_EQ(GetDefaultTrigger("foo"), config.trigger);
   EXPECT_EQ(GetDefaultUsed("bar"), config.used);
+}
+
+TEST_F(UserEducationConfigurationProviderTest, v1_SessionRate) {
+  SetEnableV2(false);
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
+
+  EXPECT_EQ(feature_engagement::EQUAL, config.session_rate.type);
+  EXPECT_EQ(0U, config.session_rate.value);
+  EXPECT_EQ(feature_engagement::SessionRateImpact::Type::ALL,
+            config.session_rate_impact.type);
+}
+
+TEST_F(UserEducationConfigurationProviderTest, v2_SessionRate) {
+  SetEnableV2(true);
+  feature_engagement::FeatureConfig config;
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kSnoozeIphFeature, config, kKnownFeatures, kKnownGroups));
+
+  EXPECT_EQ(feature_engagement::ANY, config.session_rate.type);
+  EXPECT_EQ(0U, config.session_rate.value);
+  EXPECT_EQ(feature_engagement::SessionRateImpact::Type::ALL,
+            config.session_rate_impact.type);
 }
