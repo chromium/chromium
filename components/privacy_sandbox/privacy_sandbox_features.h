@@ -180,6 +180,14 @@ BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables the trackingProtectionNoticeController to notify the
+// TrackingProtectionOnboardingService when a notice was requested (Message
+// enqueued).
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionNoticeRequestTracking);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

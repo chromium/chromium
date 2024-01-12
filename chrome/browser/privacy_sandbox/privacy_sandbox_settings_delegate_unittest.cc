@@ -47,9 +47,9 @@
 
 namespace {
 
+using ::privacy_sandbox::tracking_protection::
+    TrackingProtectionOnboardingStatus;
 constexpr char kTestEmail[] = "test@test.com";
-
-}  // namespace
 
 class PrivacySandboxSettingsDelegateTest : public testing::Test {
  public:
@@ -528,22 +528,20 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   feature_list()->InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting,
       {{"use_profile_filtering", "true"},
-        {"force_eligible", test_case.force_eligible ? "true" : "false"},
-        {tpcd::experiment::kExclude3PCBlockedName,
-         test_case.exclude_3pc_blocked ? "true" : "false"},
-        {tpcd::experiment::kExcludeNotSeenAdsAPIsNoticeName,
-         test_case.exclude_not_seen_notice ? "true" : "false"},
-        {tpcd::experiment::kExcludeDasherAccountName,
-         test_case.exclude_dasher_account ? "true" : "false"},
-        {tpcd::experiment::kExcludeNewUserName,
-         test_case.exclude_new_user ? "true" : "false"},
-        {tpcd::experiment::kInstallTimeForNewUserName,
-         test_case.install_time_new_user},
+       {"force_eligible", test_case.force_eligible ? "true" : "false"},
+       {tpcd::experiment::kExclude3PCBlockedName,
+        test_case.exclude_3pc_blocked ? "true" : "false"},
+       {tpcd::experiment::kExcludeNotSeenAdsAPIsNoticeName,
+        test_case.exclude_not_seen_notice ? "true" : "false"},
+       {tpcd::experiment::kExcludeDasherAccountName,
+        test_case.exclude_dasher_account ? "true" : "false"},
+       {tpcd::experiment::kExcludeNewUserName,
+        test_case.exclude_new_user ? "true" : "false"},
+       {tpcd::experiment::kInstallTimeForNewUserName,
+        test_case.install_time_new_user},
 #if BUILDFLAG(IS_ANDROID)
-        {
-          tpcd::experiment::kExcludePwaOrTwaInstalledName,
-              test_case.exclude_pwa_twa_installed ? "true" : "false"
-        }
+       {tpcd::experiment::kExcludePwaOrTwaInstalledName,
+        test_case.exclude_pwa_twa_installed ? "true" : "false"}
 #endif
       });
 
@@ -693,37 +691,41 @@ TEST_P(CookieDeprecationLabelAllowedTest, IsClientEligibleChecked) {
 
 TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
   const struct {
-    privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
-        onboarding_status;
+    TrackingProtectionOnboardingStatus onboarding_status;
     bool need_onboarding = false;
     bool expected_allowed;
   } kTestCases[] = {
       {
-          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
-              OnboardingStatus::kIneligible,
+          .onboarding_status = TrackingProtectionOnboardingStatus::kIneligible,
           .expected_allowed = false,
       },
       {
-          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
-              OnboardingStatus::kEligible,
+          .onboarding_status = TrackingProtectionOnboardingStatus::kEligible,
           .need_onboarding = false,
           .expected_allowed = true,
       },
       {
-          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
-              OnboardingStatus::kEligible,
+          .onboarding_status = TrackingProtectionOnboardingStatus::kEligible,
           .need_onboarding = true,
           .expected_allowed = false,
       },
       {
-          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
-              OnboardingStatus::kOnboarded,
+          .onboarding_status = TrackingProtectionOnboardingStatus::kRequested,
           .need_onboarding = false,
           .expected_allowed = true,
       },
       {
-          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
-              OnboardingStatus::kOnboarded,
+          .onboarding_status = TrackingProtectionOnboardingStatus::kRequested,
+          .need_onboarding = true,
+          .expected_allowed = true,
+      },
+      {
+          .onboarding_status = TrackingProtectionOnboardingStatus::kOnboarded,
+          .need_onboarding = false,
+          .expected_allowed = true,
+      },
+      {
+          .onboarding_status = TrackingProtectionOnboardingStatus::kOnboarded,
           .need_onboarding = true,
           .expected_allowed = true,
       },
@@ -749,13 +751,18 @@ TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
     if (disable_3pcs) {
       prefs()->SetInteger(prefs::kTrackingProtectionOnboardingStatus,
                           static_cast<int>(test_case.onboarding_status));
-    } else {
+      EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
+                test_case.expected_allowed);
+    } else if (test_case.onboarding_status !=
+               TrackingProtectionOnboardingStatus::
+                   kRequested)  // Silent Onboarding can never be combined with
+                                // the requested status.
+    {
       prefs()->SetInteger(prefs::kTrackingProtectionSilentOnboardingStatus,
                           static_cast<int>(test_case.onboarding_status));
+      EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
+                test_case.expected_allowed);
     }
-
-    EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
-              test_case.expected_allowed);
 
     feature_list()->Reset();
   }
@@ -852,3 +859,5 @@ INSTANTIATE_TEST_SUITE_P(
     ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
     ::testing::ValuesIn(
         kThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCases));
+
+}  // namespace
