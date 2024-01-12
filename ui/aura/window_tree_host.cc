@@ -53,6 +53,10 @@
 #include "ui/gfx/switches.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace aura {
 
 namespace {
@@ -172,6 +176,9 @@ WindowTreeHost::VideoCaptureLock::VideoCaptureLock(WindowTreeHost* host)
 ////////////////////////////////////////////////////////////////////////////////
 // WindowTreeHost, public:
 
+const char WindowTreeHost::kWindowTreeHostUsesParent[] =
+    "__AURA_WINDOW_TREE_HOST_USE_PARENT_OF_ACCELERATED_WIDGET__";
+
 WindowTreeHost::~WindowTreeHost() {
   DCHECK(!compositor_) << "compositor must be destroyed before root window";
 }
@@ -179,6 +186,11 @@ WindowTreeHost::~WindowTreeHost() {
 // static
 WindowTreeHost* WindowTreeHost::GetForAcceleratedWidget(
     gfx::AcceleratedWidget widget) {
+#if BUILDFLAG(IS_WIN)
+  if (ui::ViewProp::GetValue(widget, kWindowTreeHostUsesParent)) {
+    widget = ::GetParent(widget);
+  }
+#endif  // BUILDFLAG(IS_WIN)
   return reinterpret_cast<WindowTreeHost*>(
       ui::ViewProp::GetValue(widget, kWindowTreeHostForAcceleratedWidget));
 }

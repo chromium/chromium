@@ -125,6 +125,7 @@
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
 #endif
@@ -697,6 +698,12 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         ->delegate()
         ->GetTextInputManager();
   }
+
+#if BUILDFLAG(IS_WIN)
+  LegacyRenderWidgetHostHWND* legacy_render_widget_host_HWND() const {
+    return view_->legacy_render_widget_host_HWND_;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   // Sets the |view| active in TextInputManager with the given |type|. |type|
   // cannot be ui::TEXT_INPUT_TYPE_NONE.
@@ -5411,7 +5418,7 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
 // forwarded, resulting in stuck tooltips. Test that tooltips are cleared.
 TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   // Give the host window an event target, which allows the view to create the
-  // Chrome_RenderWidgetHostHWND window.
+  // LegacyRenderWidgetHostHWND Chrome_RenderWidgetHostHWND window.
   MockWindowEventTarget event_target;
   auto prop_window_target = std::make_unique<ui::ViewProp>(
       parent_view_->GetHostWindowHWND(),
@@ -5422,7 +5429,7 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
   view_->Show();
-  EXPECT_TRUE(view_->UsesNativeWindowFrame());
+  EXPECT_TRUE(legacy_render_widget_host_HWND());
 
   // Simulate a tooltip.
   std::u16string tooltip_text(u"The tooltip!");
@@ -5434,6 +5441,28 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   view_->WasOccluded();
   EXPECT_TRUE(widget_host_->is_hidden());
   EXPECT_EQ(std::u16string(), view_->tooltip_);
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, LegacyRenderWidgetHostHWNDAuraLookup) {
+  // Give the host window an event target, which allows the view to create the
+  // LegacyRenderWidgetHostHWND Chrome_RenderWidgetHostHWND window.
+  MockWindowEventTarget event_target;
+  auto prop_window_target = std::make_unique<ui::ViewProp>(
+      parent_view_->GetHostWindowHWND(),
+      ui::WindowEventTarget::kWin32InputEventTarget,
+      static_cast<ui::WindowEventTarget*>(&event_target));
+
+  // Initialize the view.
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->Show();
+
+  ASSERT_TRUE(legacy_render_widget_host_HWND());
+  HWND hwnd = legacy_render_widget_host_HWND()->hwnd();
+  EXPECT_TRUE(hwnd);
+  auto* window_tree_host = aura::WindowTreeHost::GetForAcceleratedWidget(hwnd);
+  EXPECT_TRUE(window_tree_host);
+  EXPECT_EQ(view_->GetNativeView()->GetHost(), window_tree_host);
 }
 #endif
 

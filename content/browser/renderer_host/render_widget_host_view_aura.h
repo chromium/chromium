@@ -595,8 +595,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // the bounds of the webcontents. It is needed for accessibility and
   // for scrolling to work in legacy drivers for trackpoints/trackpads, etc.
   void UpdateLegacyWin();
-
-  bool UsesNativeWindowFrame() const;
 #endif
 
   ui::InputMethod* GetInputMethod() const;
@@ -742,21 +740,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   CursorVisibilityState cursor_visibility_state_in_renderer_;
 
 #if BUILDFLAG(IS_WIN)
-  // The LegacyRenderWidgetHostHWND class provides a dummy HWND which is used
-  // for accessibility, as the container for windowless plugins like
-  // Flash/Silverlight, etc and for legacy drivers for trackpoints/trackpads,
-  // etc.
-  // The LegacyRenderWidgetHostHWND instance is created during the first call
-  // to RenderWidgetHostViewAura::InternalSetBounds. The instance is destroyed
-  // when the LegacyRenderWidgetHostHWND hwnd is destroyed.
-  raw_ptr<content::LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
+  // Provides a dummy HWND for legacy accessibility tools and drivers.
+  raw_ptr<LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_ = nullptr;
 
-  // Set to true if the legacy_render_widget_host_HWND_ instance was destroyed
-  // by Windows. This could happen if the browser window was destroyed by
-  // DestroyWindow for e.g. This flag helps ensure that we don't try to create
-  // the LegacyRenderWidgetHostHWND instance again as that would be a futile
-  // exercise.
-  bool legacy_window_destroyed_;
+  // Whether Windows destroyed the legacy HWND, e.g. via browser DestroyWindow.
+  // Indicates that recreating the HWND instance again would be futile.
+  bool legacy_window_destroyed_ = false;
 
   // Contains a copy of the last context menu request parameters. Only set when
   // we receive a request to show the context menu on a long press.
