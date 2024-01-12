@@ -264,6 +264,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool mac11_malloc_size_hack_enabled_ = false;
     size_t mac11_malloc_size_hack_usable_size_ = 0;
 #endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
+    size_t ref_count_size = 0;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
     bool zapping_by_free_flags = false;
@@ -273,7 +274,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     TagViolationReportingMode memory_tagging_reporting_mode_ =
         TagViolationReportingMode::kUndefined;
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
-    size_t ref_count_size = 0;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
 #endif
@@ -888,6 +888,26 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
+  // Returns size that should be tagged. Avoiding the previous slot ref count if
+  // it exists to avoid a race (crbug.com/1445816).
+  PA_ALWAYS_INLINE size_t TagSizeForSlot(size_t slot_size) {
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    if (brp_enabled()) {
+      PA_DCHECK(settings.ref_count_size > 0);
+      PA_DCHECK((settings.ref_count_size % internal::kMemTagGranuleSize) == 0);
+    } else {
+      PA_DCHECK(settings.ref_count_size == 0);
+    }
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+    return slot_size - settings.ref_count_size;
+#else  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+    return slot_size;
+#endif
+  }
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
       straighten_larger_slot_span_free_lists_ =
@@ -1442,12 +1462,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
       // slot_span is untagged at this point, so we have to recover its tag
       // again to increment and provide use-after-free mitigations.
-      size_t tag_size = slot_size;
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-      tag_size -= settings.ref_count_size;
-#endif
       void* retagged_slot_start = internal::TagMemoryRangeIncrement(
-          ObjectToTaggedSlotStart(object), tag_size);
+          ObjectToTaggedSlotStart(object), TagSizeForSlot(slot_size));
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
       object = TaggedSlotStartToObject(retagged_slot_start);

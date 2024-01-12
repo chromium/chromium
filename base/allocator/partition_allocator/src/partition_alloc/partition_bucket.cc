@@ -33,6 +33,7 @@
 #include "partition_alloc/partition_direct_map_extent.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
 
@@ -578,26 +579,6 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
   return static_cast<uint8_t>(best_pages);
 }
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
-// Returns size that should be tagged. Avoiding the previous slot ref count if
-// it exists to avoid a race (crbug.com/1445816).
-PA_ALWAYS_INLINE size_t TagSizeForSlot(PartitionRoot* root, size_t slot_size) {
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-  if (root->brp_enabled()) {
-    PA_DCHECK(root->settings.ref_count_size > 0);
-    PA_DCHECK((root->settings.ref_count_size % kMemTagGranuleSize) == 0);
-  } else {
-    PA_DCHECK(root->settings.ref_count_size == 0);
-  }
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
-  return slot_size - root->settings.ref_count_size;
-#else  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-  return slot_size;
-#endif
-}
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
-
 }  // namespace
 
 uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
@@ -985,7 +966,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
   if (PA_LIKELY(use_tagging)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
-    TagMemoryRangeRandomly(return_slot, TagSizeForSlot(root, slot_size));
+    TagMemoryRangeRandomly(return_slot, root->TagSizeForSlot(slot_size));
   }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
@@ -1000,7 +981,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
       // unguessable. They will be returned to the app as is, and the MTE-tag
       // will only change upon calling Free().
       next_slot_ptr =
-          TagMemoryRangeRandomly(next_slot, TagSizeForSlot(root, slot_size));
+          TagMemoryRangeRandomly(next_slot, root->TagSizeForSlot(slot_size));
     } else {
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);

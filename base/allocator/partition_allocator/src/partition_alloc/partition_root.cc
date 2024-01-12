@@ -1030,6 +1030,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
       settings.extras_size += internal::kPartitionCookieSizeAdjustment;
     }
 
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (brp_enabled()) {
       size_t ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       ref_count_size = internal::AlignUpRefCountSizeForMac(ref_count_size);
@@ -1046,6 +1047,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
       EnableMac11MallocSizeHackIfNeeded();
 #endif
     }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
     settings.quarantine_mode =
