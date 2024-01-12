@@ -5871,15 +5871,6 @@ void Document::EnqueueMoveEvent() {
   CHECK(
       RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled());
 
-  auto display_mode = GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
-  bool is_app_window = !(display_mode == mojom::blink::DisplayMode::kBrowser ||
-                         display_mode == mojom::blink::DisplayMode::kUndefined);
-
-  if (!(IsInWebAppScope() && is_app_window) &&
-      !GetFrame()->GetPage()->GetChromeClient().IsPopup()) {
-    return;
-  }
-
   Event* event = Event::Create(event_type_names::kMove);
   event->SetTarget(domWindow());
 
