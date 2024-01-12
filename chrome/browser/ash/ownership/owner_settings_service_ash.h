@@ -114,6 +114,9 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
       const base::Value& value,
       enterprise_management::ChromeDeviceSettingsProto& settings);
 
+  void SetPrivateKeyForTesting(
+      scoped_refptr<ownership::PrivateKey> private_key);
+
  protected:
   OwnerSettingsServiceAsh(
       DeviceSettingsService* device_settings_service,

@@ -911,4 +911,9 @@ void OwnerSettingsServiceAsh::MigrateFeatureFlags(
   feature_flags->clear_switches();
 }
 
+void OwnerSettingsServiceAsh::SetPrivateKeyForTesting(
+    scoped_refptr<ownership::PrivateKey> private_key) {
+  private_key_ = private_key;
+}
+
 }  // namespace ash
