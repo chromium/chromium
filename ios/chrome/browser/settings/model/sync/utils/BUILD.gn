@@ -98,5 +98,6 @@ source_set("eg2_tests") {
     "//ios/web/public/test/http_server",
     "//net",
     "//net:test_support",
+    "//ui/base",
   ]
 }
