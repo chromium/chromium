@@ -10,7 +10,8 @@ template("manifest") {
   output_file = invoker.output_file
   key = invoker.key
   action(target_name) {
-    script = "//chrome/browser/resources/accessibility/tools/generate_manifest.py"
+    script =
+        "//chrome/browser/resources/accessibility/tools/generate_manifest.py"
     inputs = [
       version_file,
       version_script,
@@ -29,5 +30,65 @@ template("manifest") {
       args += [ "--is_manifest_v3=1" ]
     }
     args += rebase_path(sources, root_build_dir)
+  }
+}
+
+template("manifest_variants") {
+  basic_manifest_target_name = "${target_name}__basic_manifest"
+  manifest_targets = [ ":$basic_manifest_target_name" ]
+  manifest(basic_manifest_target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "input_file",
+                             "key",
+                           ])
+    output_file = invoker.output_dir + "/" + invoker.output_name + ".json"
+  }
+
+  if (invoker.make_guest) {
+    guest_manifest_target_name = "${target_name}__guest_manifest"
+    manifest_targets += [ ":$guest_manifest_target_name" ]
+    manifest(guest_manifest_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "input_file",
+                               "key",
+                             ])
+      output_file =
+          invoker.output_dir + "/" + invoker.output_name + "_guest.json"
+      is_guest_manifest = true
+    }
+  }
+  if (invoker.make_v3) {
+    v3_manifest_target_name = "${target_name}__v3_manifest"
+    manifest_targets += [ ":$v3_manifest_target_name" ]
+    manifest(v3_manifest_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "input_file",
+                               "key",
+                             ])
+      output_file = invoker.output_dir + "/" + invoker.output_name + "_v3.json"
+      is_manifest_v3 = true
+    }
+  }
+  if (invoker.make_guest && invoker.make_v3) {
+    guest_v3_manifest_target_name = "${target_name}__guest_v3_manifest"
+    manifest_targets += [ ":$guest_v3_manifest_target_name" ]
+    manifest(guest_v3_manifest_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "input_file",
+                               "key",
+                             ])
+      output_file =
+          invoker.output_dir + "/" + invoker.output_name + "_guest_v3.json"
+      is_guest_manifest = true
+      is_manifest_v3 = true
+    }
+  }
+
+  group(target_name) {
+    deps = manifest_targets
   }
 }
