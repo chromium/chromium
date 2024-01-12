@@ -334,6 +334,8 @@ suite('ShoppingInsightsAppTest', () => {
       await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
       await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
       await shoppingServiceApi.whenCalled('isShoppingListEligible');
+      await shoppingServiceApi.whenCalled(
+          'getPriceTrackingStatusForCurrentUrl');
       await flushTasks();
 
       const section = shoppingInsightsApp.shadowRoot!.querySelector(
@@ -344,5 +346,32 @@ suite('ShoppingInsightsAppTest', () => {
         assertEquals(section.productInfo, productInfo);
       }
     });
+  });
+
+  test('NotShowPriceTrackingWithoutTrackingStatus', async () => {
+    shoppingServiceApi.setResultFor(
+        'isShoppingListEligible', Promise.resolve({eligible: true}));
+    shoppingServiceApi.setResultFor(
+        'getProductInfoForCurrentUrl',
+        Promise.resolve({productInfo: productInfo}));
+    shoppingServiceApi.setResultFor(
+        'getPriceInsightsInfoForCurrentUrl',
+        Promise.resolve({priceInsightsInfo: priceInsights1}));
+    shoppingServiceApi.setResultFor(
+        'getParentBookmarkFolderNameForCurrentUrl',
+        Promise.resolve({name: stringToMojoString16('Parent folder')}));
+
+    const callbackRouter = new PageCallbackRouter();
+    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+
+    document.body.appendChild(shoppingInsightsApp);
+    await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
+    await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
+    await shoppingServiceApi.whenCalled('isShoppingListEligible');
+    await flushTasks();
+
+    const section = shoppingInsightsApp.shadowRoot!.querySelector(
+                        '#priceTrackingSection') as PriceTrackingSection;
+    assertFalse(isVisible(section));
   });
 });

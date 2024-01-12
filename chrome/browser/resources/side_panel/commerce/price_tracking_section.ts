@@ -39,7 +39,7 @@ export class PriceTrackingSection extends PolymerElement {
     return {
       productInfo: Object,
 
-      isProductTracked_: {
+      isProductTracked: {
         type: Boolean,
         value: false,
       },
@@ -48,7 +48,7 @@ export class PriceTrackingSection extends PolymerElement {
 
   productInfo: ProductInfo;
   priceInsightsInfo: PriceInsightsInfo;
-  private isProductTracked_: boolean;
+  isProductTracked: boolean;
   private listenerIds_: number[] = [];
   private toggleAnnotationText_: string;
   private saveLocationStartText_: string;
@@ -78,10 +78,7 @@ export class PriceTrackingSection extends PolymerElement {
                 this.onProductBookmarkMoved(product)),
     );
 
-
-    this.shoppingApi_.getPriceTrackingStatusForCurrentUrl().then(res => {
-      this.updatePriceTrackingSection_(res.tracked);
-    });
+    this.updatePriceTrackingSection_(this.isProductTracked);
   }
 
   private async updatePriceTrackingSection_(tracked: boolean) {
@@ -98,7 +95,7 @@ export class PriceTrackingSection extends PolymerElement {
           loadTimeData.getString('trackPriceSaveDescription');
     }
     this.updateSaveLocationText(this.folderName_);
-    this.isProductTracked_ = tracked;
+    this.isProductTracked = tracked;
   }
 
   private updateSaveLocationText(folderName: string) {
@@ -130,9 +127,9 @@ export class PriceTrackingSection extends PolymerElement {
 
   private onPriceTrackingToggled_() {
     this.shoppingApi_.setPriceTrackingStatusForCurrentUrl(
-        this.isProductTracked_);
+        this.isProductTracked);
     chrome.metricsPrivate.recordEnumerationValue(
-        this.isProductTracked_ ?
+        this.isProductTracked ?
             'Commerce.PriceTracking.PriceInsightsSidePanel.Track' :
             'Commerce.PriceTracking.PriceInsightsSidePanel.Untrack',
         this.priceInsightsInfo.bucket,
@@ -168,12 +165,12 @@ export class PriceTrackingSection extends PolymerElement {
     this.toggleAnnotationText_ = loadTimeData.getString('trackPriceError');
     this.folderName_ = '';
     this.updateSaveLocationText('');
-    this.isProductTracked_ = !attemptedTrack;
+    this.isProductTracked = !attemptedTrack;
   }
 
   private async onProductBookmarkMoved(product: BookmarkProductInfo) {
     if (product.info.clusterId === this.productInfo.clusterId &&
-        this.isProductTracked_) {
+        this.isProductTracked) {
       const {name} =
           await this.shoppingApi_.getParentBookmarkFolderNameForCurrentUrl();
       this.folderName_ = decodeString16(name);

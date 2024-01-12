@@ -112,25 +112,18 @@ suite('PriceTrackingSectionTest', () => {
     test(
         `PriceTracking section rendering when tracked is ${tracked}`,
         async () => {
-          shoppingServiceApi.setResultFor(
-              'getPriceTrackingStatusForCurrentUrl',
-              Promise.resolve({tracked: tracked}));
+          priceTrackingSection.isProductTracked = tracked;
 
           document.body.appendChild(priceTrackingSection);
-          await shoppingServiceApi.whenCalled(
-              'getPriceTrackingStatusForCurrentUrl');
           await flushTasks();
 
           checkPriceTrackingSectionRendering(tracked);
         });
 
     test(`Toggle price tracking when tracked is ${tracked}`, async () => {
-      shoppingServiceApi.setResultFor(
-          'getPriceTrackingStatusForCurrentUrl',
-          Promise.resolve({tracked: tracked}));
+      priceTrackingSection.isProductTracked = tracked;
 
       document.body.appendChild(priceTrackingSection);
-      await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
       await flushTasks();
 
       priceTrackingSection.$.toggle!.click();
@@ -154,12 +147,9 @@ suite('PriceTrackingSectionTest', () => {
     });
 
     test(`Ignore unrealted product tracking status change`, async () => {
-      shoppingServiceApi.setResultFor(
-          'getPriceTrackingStatusForCurrentUrl',
-          Promise.resolve({tracked: tracked}));
+      priceTrackingSection.isProductTracked = tracked;
 
       document.body.appendChild(priceTrackingSection);
-      await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
       await flushTasks();
 
       // Create a unrelated product.
@@ -191,12 +181,9 @@ suite('PriceTrackingSectionTest', () => {
   });
 
   test(`Observe current product tracking status change`, async () => {
-    shoppingServiceApi.setResultFor(
-        'getPriceTrackingStatusForCurrentUrl',
-        Promise.resolve({tracked: false}));
+    priceTrackingSection.isProductTracked = false;
 
     document.body.appendChild(priceTrackingSection);
-    await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
     await flushTasks();
 
     callbackRouterRemote.priceTrackedForBookmark(bookmarkProductInfo);
@@ -209,12 +196,9 @@ suite('PriceTrackingSectionTest', () => {
   });
 
   test(`Trigger bookmark editor`, async () => {
-    shoppingServiceApi.setResultFor(
-        'getPriceTrackingStatusForCurrentUrl',
-        Promise.resolve({tracked: true}));
+    priceTrackingSection.isProductTracked = true;
 
     document.body.appendChild(priceTrackingSection);
-    await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
     await flushTasks();
     checkPriceTrackingSectionRendering(true);
 
@@ -231,12 +215,9 @@ suite('PriceTrackingSectionTest', () => {
   });
 
   test(`Render error message`, async () => {
-    shoppingServiceApi.setResultFor(
-        'getPriceTrackingStatusForCurrentUrl',
-        Promise.resolve({tracked: false}));
+    priceTrackingSection.isProductTracked = false;
 
     document.body.appendChild(priceTrackingSection);
-    await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
     await flushTasks();
 
     callbackRouterRemote.operationFailedForBookmark(bookmarkProductInfo, true);
@@ -265,12 +246,9 @@ suite('PriceTrackingSectionTest', () => {
   });
 
   test(`Observe product bookmark move event`, async () => {
-    shoppingServiceApi.setResultFor(
-        'getPriceTrackingStatusForCurrentUrl',
-        Promise.resolve({tracked: true}));
+    priceTrackingSection.isProductTracked = true;
 
     document.body.appendChild(priceTrackingSection);
-    await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
     await flushTasks();
     checkPriceTrackingSectionRendering(true);
     let expectedAnnotation =

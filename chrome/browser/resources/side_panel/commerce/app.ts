@@ -45,12 +45,17 @@ export class ShoppingInsightsAppElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+      isProductTracked_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   productInfo: ProductInfo;
   priceInsightsInfo: PriceInsightsInfo;
   private isProductTrackable_: boolean;
+  private isProductTracked_: boolean;
   private shoppingApi_: ShoppingServiceApiProxy =
       ShoppingServiceApiProxyImpl.getInstance();
 
@@ -70,8 +75,11 @@ export class ShoppingInsightsAppElement extends PolymerElement {
     this.priceInsightsInfo = priceInsightsInfo;
 
     const {eligible} = await this.shoppingApi_.isShoppingListEligible();
-    this.isProductTrackable_ =
-        eligible && (priceInsightsInfo.clusterId !== BigInt(0));
+    this.shoppingApi_.getPriceTrackingStatusForCurrentUrl().then(res => {
+      this.isProductTracked_ = res.tracked;
+      this.isProductTrackable_ =
+          eligible && (priceInsightsInfo.clusterId !== BigInt(0));
+    });
   }
 
   override connectedCallback() {
