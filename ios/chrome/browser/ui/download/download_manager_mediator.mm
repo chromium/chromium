@@ -68,6 +68,10 @@ base::FilePath DownloadManagerMediator::GetDownloadPath() {
   return download_path_;
 }
 
+UploadTask* DownloadManagerMediator::GetUploadTask() {
+  return upload_task_;
+}
+
 void DownloadManagerMediator::StartDownloading() {
   base::FilePath download_dir;
   if (!GetTempDownloadsDirectory(&download_dir)) {

@@ -58,6 +58,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Returns empty path otherwise (f.e. download is still in progress).
   base::FilePath GetDownloadPath();
 
+  // Returns the current upload task, if any.
+  UploadTask* GetUploadTask();
+
   // Asynchronously starts download operation.
   void StartDownloading();
 

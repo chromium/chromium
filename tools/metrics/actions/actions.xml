@@ -20691,6 +20691,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileDownloadRetryUpload">
+  <owner>qpubert@google.Com</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    User attempted to retry uploading a file after the upload failed.
+  </description>
+</action>
+
 <action name="MobileExitStackView">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
