@@ -15290,6 +15290,8 @@
                 {
                     "name": "EnabledWithSidePanelPinning",
                     "enable_features": [
+                        "IPH_SidePanelGenericMenuFeature",
+                        "IPH_SidePanelGenericPinnableFeature",
                         "ResponsiveToolbar",
                         "SidePanelPinning"
                     ]
