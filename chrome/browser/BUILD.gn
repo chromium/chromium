@@ -2464,6 +2464,7 @@ static_library("browser") {
     "//components/webapps/common:mojo_bindings",
     "//components/webdata/common",
     "//components/webdata_services",
+    "//components/webid",
     "//components/webrtc",
     "//components/webrtc_logging/browser",
     "//components/webrtc_logging/common",

@@ -115,6 +115,24 @@ std::string DataKeyDebugStringVisitor::operator()<net::CanonicalCookie>(
   return debug_string.str();
 }
 
+template <>
+std::string DataKeyDebugStringVisitor::operator()<
+    webid::FederatedIdentityDataModel::DataKey>(
+    const webid::FederatedIdentityDataModel::DataKey&
+        federated_identity_data_key) {
+  std::stringstream debug_string;
+  debug_string << "FederatedIdentityDataKey: ";
+  debug_string << "{relying_party_requester: "
+               << federated_identity_data_key.relying_party_requester();
+  debug_string << " relying_party_embedder: "
+               << federated_identity_data_key.relying_party_embedder();
+  debug_string << " identity_provider: "
+               << federated_identity_data_key.identity_provider();
+  debug_string << " account_id: " << federated_identity_data_key.account_id()
+               << "}";
+  return debug_string.str();
+}
+
 struct DataOwnerDebugStringVisitor {
   template <class T>
   std::string operator()(const T& data_owner);

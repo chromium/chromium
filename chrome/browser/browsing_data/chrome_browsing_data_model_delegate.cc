@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "base/barrier_callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
+#include "chrome/browser/webid/federated_identity_permission_context.h"
+#include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/media_device_salt/media_device_salt_service.h"
@@ -69,6 +72,17 @@ IsolatedWebAppBrowsingDataToDelegateEntries(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
+FlattenDelegateEntries(
+    std::vector<std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>>
+        entries) {
+  std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry> flattened_entries;
+  for (const auto& vec : entries) {
+    flattened_entries.insert(flattened_entries.end(), vec.begin(), vec.end());
+  }
+  return flattened_entries;
+}
+
 }  // namespace
 
 // static
@@ -107,6 +121,13 @@ ChromeBrowsingDataModelDelegate::~ChromeBrowsingDataModelDelegate() = default;
 
 void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
     base::OnceCallback<void(std::vector<DelegateEntry>)> callback) {
+  const auto barrier_callback =
+      base::BarrierCallback<std::vector<DelegateEntry>>(
+          /*num_callbacks=*/2,
+          base::BindOnce(&FlattenDelegateEntries).Then(std::move(callback)));
+
+  GetAllFederatedIdentityDataKeys(barrier_callback, {});
+
 #if !BUILDFLAG(IS_ANDROID)
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (web_app_provider && storage_partition_->GetConfig().is_default()) {
@@ -114,12 +135,12 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
         base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
             .Then(base::BindOnce(
                 &ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys,
-                weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+                weak_ptr_factory_.GetWeakPtr(), barrier_callback)));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  GetAllMediaDeviceSaltDataKeys(std::move(callback), {});
+  GetAllMediaDeviceSaltDataKeys(barrier_callback, {});
 
   // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
 }
@@ -147,6 +168,17 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
             absl::get_if<blink::StorageKey>(&data_key)) {
       RemoveMediaDeviceSalt(*storage_key,
                             dynamic_barrier_closure->CreateCallback());
+    }
+  }
+
+  if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+          StorageType::kFederatedIdentity))) {
+    if (const webid::FederatedIdentityDataModel::DataKey*
+            federated_identity_data_key =
+                absl::get_if<webid::FederatedIdentityDataModel::DataKey>(
+                    &data_key)) {
+      RemoveFederatedIdentityData(*federated_identity_data_key,
+                                  dynamic_barrier_closure->CreateCallback());
     }
   }
 
@@ -181,6 +213,14 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
       CHECK(absl::holds_alternative<blink::StorageKey>(data_key))
           << "Unsupported MediaDeviceSalt DataKey type: " << data_key.index();
       return absl::get<blink::StorageKey>(data_key).origin().host();
+
+    case StorageType::kFederatedIdentity:
+      CHECK(absl::holds_alternative<webid::FederatedIdentityDataModel::DataKey>(
+          data_key))
+          << "Unsupported FederatedIdentity DataKey type: " << data_key.index();
+      return absl::get<webid::FederatedIdentityDataModel::DataKey>(data_key)
+          .relying_party_embedder()
+          .host();
 
     default:
       return absl::nullopt;
@@ -261,6 +301,46 @@ void ChromeBrowsingDataModelDelegate::RemoveMediaDeviceSalt(
           profile_);
   if (service) {
     service->DeleteSalt(storage_key, std::move(callback));
+  } else {
+    std::move(callback).Run();
+  }
+}
+
+void ChromeBrowsingDataModelDelegate::GetAllFederatedIdentityDataKeys(
+    base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
+    std::vector<DelegateEntry> entries) {
+  if (auto* context =
+          FederatedIdentityPermissionContextFactory::GetForProfile(profile_)) {
+    context->GetAllDataKeys(base::BindOnce(
+        &ChromeBrowsingDataModelDelegate::GotAllFederatedIdentityDataKeys,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+        std::move(entries)));
+  } else {
+    std::move(callback).Run(std::move(entries));
+  }
+}
+
+void ChromeBrowsingDataModelDelegate::GotAllFederatedIdentityDataKeys(
+    base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
+    std::vector<DelegateEntry> entries,
+    std::vector<webid::FederatedIdentityDataModel::DataKey> data_keys) {
+  static constexpr uint64_t kFederatedIdentityDataEntrySize = 100;
+  for (const auto& key : data_keys) {
+    entries.emplace_back(key,
+                         static_cast<BrowsingDataModel::StorageType>(
+                             StorageType::kFederatedIdentity),
+                         kFederatedIdentityDataEntrySize);
+  }
+  std::move(callback).Run(std::move(entries));
+}
+
+void ChromeBrowsingDataModelDelegate::RemoveFederatedIdentityData(
+    const webid::FederatedIdentityDataModel::DataKey& data_key,
+    base::OnceClosure callback) {
+  if (auto* context =
+          FederatedIdentityPermissionContextFactory::GetForProfile(profile_)) {
+    context->RemoveFederatedIdentityDataByDataKey(data_key,
+                                                  std::move(callback));
   } else {
     std::move(callback).Run();
   }

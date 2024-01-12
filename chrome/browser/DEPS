@@ -259,6 +259,7 @@ include_rules = [
   "+components/performance_manager/test_support",
   "+components/performance_manager/performance_manager_impl.h",
   "+components/permissions",
+  "+components/webid",
   "+components/pdf/browser",
   "+components/pdf/common",
   "+components/plus_addresses",

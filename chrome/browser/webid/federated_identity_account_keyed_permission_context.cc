@@ -191,3 +191,41 @@ FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
   DCHECK(IsValidObject(object));
   return base::UTF8ToUTF16(*object.FindString(idp_origin_key_));
 }
+
+void FederatedIdentityAccountKeyedPermissionContext::GetAllDataKeys(
+    base::OnceCallback<void(
+        std::vector<webid::FederatedIdentityDataModel::DataKey>)> callback) {
+  auto granted_objects = GetAllGrantedObjects();
+  std::vector<webid::FederatedIdentityDataModel::DataKey> data_keys;
+  for (const auto& obj : granted_objects) {
+    const base::Value::List* accounts = obj->value.FindList(kAccountIdsKey);
+    const std::string* rp_requester_origin =
+        obj->value.FindString(kRpRequesterKey);
+    const std::string* rp_embedder_origin =
+        obj->value.FindString(kRpEmbedderKey);
+    const std::string* idp_origin = obj->value.FindString(idp_origin_key_);
+
+    if (!accounts || accounts->empty()) {
+      continue;
+    }
+
+    CHECK(idp_origin && rp_requester_origin && rp_embedder_origin);
+    for (const auto& account : *accounts) {
+      data_keys.emplace_back(url::Origin::Create(GURL(*rp_requester_origin)),
+                             url::Origin::Create(GURL(*rp_embedder_origin)),
+                             url::Origin::Create(GURL(*idp_origin)),
+                             account.GetString());
+    }
+  }
+  std::move(callback).Run(std::move(data_keys));
+}
+
+void FederatedIdentityAccountKeyedPermissionContext::
+    RemoveFederatedIdentityDataByDataKey(
+        const webid::FederatedIdentityDataModel::DataKey& data_key,
+        base::OnceClosure callback) {
+  RevokePermission(data_key.relying_party_requester(),
+                   data_key.relying_party_embedder(),
+                   data_key.identity_provider(), data_key.account_id());
+  std::move(callback).Run();
+}

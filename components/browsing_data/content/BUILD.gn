@@ -51,6 +51,7 @@ static_library("content") {
     "//components/services/storage",
     "//components/services/storage/privileged/mojom",
     "//components/site_isolation",
+    "//components/webid",
     "//content/public/browser",
     "//net",
   ]

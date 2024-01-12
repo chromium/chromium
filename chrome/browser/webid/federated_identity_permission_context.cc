@@ -93,6 +93,18 @@ void FederatedIdentityPermissionContext::RevokeSharingPermission(
                                      account_id);
 }
 
+void FederatedIdentityPermissionContext::GetAllDataKeys(
+    base::OnceCallback<void(std::vector<DataKey>)> callback) {
+  sharing_context_->GetAllDataKeys(std::move(callback));
+}
+
+void FederatedIdentityPermissionContext::RemoveFederatedIdentityDataByDataKey(
+    const DataKey& data_key,
+    base::OnceClosure callback) {
+  sharing_context_->RemoveFederatedIdentityDataByDataKey(data_key,
+                                                         std::move(callback));
+}
+
 absl::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   return idp_signin_context_->GetSigninStatus(idp_origin);

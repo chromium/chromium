@@ -180,6 +180,15 @@ GetDataOwner::GetOwningOriginOrHost<net::CanonicalCookie>(
   return cookie.DomainWithoutDot();
 }
 
+template <>
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<webid::FederatedIdentityDataModel::DataKey>(
+    const webid::FederatedIdentityDataModel::DataKey& data_key) const {
+  // Getting owning origin or host also handled by GetDataOwner in
+  // ChromeBrowsingDataModelDelegate.
+  return GetOwnerBasedOnScheme(data_key.relying_party_embedder());
+}
+
 // Helper which allows the lifetime management of a deletion action to occur
 // separately from the BrowsingDataModel itself.
 struct StorageRemoverHelper {
@@ -353,6 +362,14 @@ void StorageRemoverHelper::Visitor::operator()<net::CanonicalCookie>(
   } else {
     NOTREACHED();
   }
+}
+
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    webid::FederatedIdentityDataModel::DataKey>(
+    const webid::FederatedIdentityDataModel::DataKey& data_key) {
+  // Storage removal handled by RemoveDataKey in
+  // ChromeBrowsingDataModelDelegate.
 }
 
 void StorageRemoverHelper::RemoveDataKeyEntries(
@@ -562,6 +579,13 @@ absl::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
           [&](const net::CanonicalCookie& cookie) {
             if (cookie.IsThirdPartyPartitioned()) {
               top_level_site = cookie.PartitionKey()->site();
+            }
+          },
+          [&](const webid::FederatedIdentityDataModel::DataKey& data_key) {
+            if (data_key.relying_party_requester() !=
+                data_key.relying_party_embedder()) {
+              top_level_site =
+                  net::SchemefulSite(data_key.relying_party_embedder());
             }
           },
       },

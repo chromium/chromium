@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
+#include "components/webid/federated_identity_data_model.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
@@ -78,7 +79,8 @@ class BrowsingDataModel {
                         content::SessionStorageUsageInfo,
                         net::SharedDictionaryIsolationKey,
                         browsing_data::SharedWorkerInfo,
-                        net::CanonicalCookie
+                        net::CanonicalCookie,
+                        webid::FederatedIdentityDataModel::DataKey
                         // TODO(crbug.com/1271155): Additional backend keys.
                         >
       DataKey;
