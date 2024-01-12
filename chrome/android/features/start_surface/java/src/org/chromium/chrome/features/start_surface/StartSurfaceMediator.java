@@ -431,7 +431,9 @@ class StartSurfaceMediator
                                 onTabSelecting(mTabModelSelector.getCurrentTabId());
                             }
                         };
-                initContextMenuStartPosition();
+                mContextMenuStartPosotion =
+                        ReturnToChromeUtil.calculateContextMenuStartPosition(
+                                mContext.getResources());
             }
             if (mTabModelSelector.getModels().isEmpty()) {
                 TabModelSelectorObserver selectorObserver =

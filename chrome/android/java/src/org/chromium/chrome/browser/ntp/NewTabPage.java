@@ -34,6 +34,7 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
@@ -56,10 +57,13 @@ import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoUtils;
+import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -92,12 +96,14 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -108,6 +114,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -118,7 +125,8 @@ public class NewTabPage
                 TemplateUrlServiceObserver,
                 BrowserControlsStateProvider.Observer,
                 FeedSurfaceDelegate,
-                VoiceRecognitionHandler.Observer {
+                VoiceRecognitionHandler.Observer,
+                ModuleDelegateHost {
     private static final String TAG = "NewTabPage";
 
     // Key for the scroll position data that may be stored in a navigation entry.
@@ -170,6 +178,11 @@ public class NewTabPage
 
     private SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
     private ViewGroup mSingleTabCardContainer;
+    @Nullable private HomeModulesCoordinator mHomeModulesCoordinator;
+    @Nullable private ViewGroup mHomeModulesContainer;
+    private ObservableSupplierImpl<Tab> mMostRecentTabSupplier = new ObservableSupplierImpl<>();
+    @Nullable private Point mContextMenuStartPosition;
+
     private final Activity mActivity;
     @Nullable private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final boolean mIsNtpAsHomeSurfaceEnabled;
@@ -559,10 +572,20 @@ public class NewTabPage
                 mIsTablet,
                 mTabStripHeightSupplier);
 
+        boolean useMagicStack = StartSurfaceConfiguration.useMagicStack();
+        if (useMagicStack) {
+            mContextMenuStartPosition =
+                    ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
+        }
+
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.
         if (mHomeSurfaceTracker != null && mHomeSurfaceTracker.isHomeSurfaceTab(mTab)) {
-            showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
+            if (useMagicStack) {
+                showMagicStackWithHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
+            } else {
+                showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
+            }
             ReturnToChromeUtil.recordHomeSurfaceShown();
         }
 
@@ -1180,6 +1203,23 @@ public class NewTabPage
         }
     }
 
+    /**
+     * Shows the magic stack on the home surface NTP.
+     *
+     * @param mostRecentTab The last shown Tab.
+     */
+    public void showMagicStackWithHomeSurfaceUi(Tab mostRecentTab) {
+        if (mostRecentTab != null && !UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
+            mMostRecentTabSupplier.set(mostRecentTab);
+        }
+
+        if (mHomeModulesCoordinator == null) {
+            initializeMagicStack(mostRecentTab);
+        } else {
+            mHomeModulesCoordinator.show(this::onMagicStackShown);
+        }
+    }
+
     /** Show the module when the current new tab page is been used as the home surface. */
     private void initializeSingleTabCard(Tab mostRecentTab) {
         if (mostRecentTab == null || UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
@@ -1192,7 +1232,7 @@ public class NewTabPage
                                         mNewTabPageLayout.findViewById(
                                                 R.id.tab_switcher_module_container_stub))
                                 .inflate();
-        updateSingleTabCardContainerMargins();
+        updateSingleTabCardContainerMargins(mSingleTabCardContainer);
         mSingleTabSwitcherCoordinator =
                 new SingleTabSwitcherCoordinator(
                         mActivity,
@@ -1212,6 +1252,26 @@ public class NewTabPage
         mSingleTabSwitcherCoordinator.showModule();
     }
 
+    /**
+     * Initializes the magic stack to show home modules on the current new tab page which is used as
+     * the home surface.
+     */
+    private void initializeMagicStack(Tab mostRecentTab) {
+        mHomeModulesContainer =
+                (ViewGroup)
+                        ((ViewStub)
+                                        mNewTabPageLayout.findViewById(
+                                                R.id.home_modules_recycler_view_stub))
+                                .inflate();
+        updateSingleTabCardContainerMargins(mHomeModulesContainer);
+        mHomeModulesCoordinator = new HomeModulesCoordinator(mActivity, this, mNewTabPageLayout);
+        mHomeModulesCoordinator.show(this::onMagicStackShown);
+    }
+
+    private void onMagicStackShown(boolean isVisible) {
+        mHomeModulesContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
     private void onSingleTabCardClicked() {
         mTabModelSelector.getModel(false).closeTab(mTab);
         if (mHomeSurfaceTracker != null) {
@@ -1220,11 +1280,10 @@ public class NewTabPage
     }
 
     /** Updates the margins for the single tab card container based on the type of MV tiles. */
-    private void updateSingleTabCardContainerMargins() {
+    private void updateSingleTabCardContainerMargins(ViewGroup view) {
         if (!mIsNtpAsHomeSurfaceEnabled || mIsSurfacePolishEnabled) return;
 
-        MarginLayoutParams marginLayoutParams =
-                (MarginLayoutParams) mSingleTabCardContainer.getLayoutParams();
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
 
         marginLayoutParams.topMargin =
                 -mNewTabPageLayout
@@ -1269,5 +1328,61 @@ public class NewTabPage
      */
     private boolean isNtpAsHomeSurfaceOnTablet() {
         return mIsNtpAsHomeSurfaceEnabled && mIsTablet;
+    }
+
+    @Override
+    public int getHostSurfaceType() {
+        return HostSurface.NEW_TAB_PAGE;
+    }
+
+    @Override
+    public Point getContextMenuStartPoint() {
+        return mContextMenuStartPosition;
+    }
+
+    @Override
+    public UiConfig getUiConfig() {
+        return mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null;
+    }
+
+    @Override
+    public void onUrlClicked(GURL gurl) {
+        mTab.loadUrl(new LoadUrlParams(gurl));
+    }
+
+    @Override
+    public void onTabSelected(int tabid) {
+        onSingleTabCardClicked();
+    }
+
+    @Override
+    public void onCaptureThumbnailStatusChanged() {
+        mSnapshotSingleTabCardChanged = true;
+    }
+
+    @Override
+    public void customizeSettings() {
+        HomepageManager.getInstance().onMenuClick(mContext);
+    }
+
+    @Override
+    public boolean showScrollableMvt() {
+        return isScrollableMvtEnabled(mContext);
+    }
+
+    @Override
+    public int getStartMargin() {
+        return mContext.getResources()
+                .getDimensionPixelSize(R.dimen.single_tab_card_lateral_margin);
+    }
+
+    @Nullable
+    @Override
+    public Tab getTrackingTab() {
+        if (!mMostRecentTabSupplier.hasValue()) {
+            return null;
+        }
+
+        return mMostRecentTabSupplier.get();
     }
 }

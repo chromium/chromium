@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionCont
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -987,6 +989,32 @@ public final class ReturnToChromeUtil {
                         && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
     }
 
+    /**
+     * Returns the start position of the context menu of a home module.
+     *
+     * @param resources The {@link Resources} instance to load Android resources from.
+     */
+    public static Point calculateContextMenuStartPosition(Resources resources) {
+        // On the single tab module, the x starts from the right of the tab thumbnail.
+        int contextMenuStartX =
+                resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_lateral_margin)
+                        + resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_padding_bottom)
+                        + resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_tab_thumbnail_size);
+        // The y starts from the same height of the tab thumbnail.
+        int contextMenuStartY =
+                resources.getDimensionPixelSize(
+                                org.chromium.chrome.start_surface.R.dimen
+                                        .single_tab_module_padding_top)
+                        * 3;
+        return new Point(contextMenuStartX, contextMenuStartY);
+    }
+
     /** Shows the home surface UI on the given NTP on tablets. */
     static void showHomeSurfaceUiOnNtp(
             Tab ntpTab, Tab lastActiveTab, HomeSurfaceTracker homeSurfaceTracker) {
@@ -1010,7 +1038,11 @@ public final class ReturnToChromeUtil {
         // This cast is now guaranteed to succeed to a non-null value.
         NewTabPage newTabPage = (NewTabPage) nativePage;
         homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(ntpTab, lastActiveTab);
-        newTabPage.showHomeSurfaceUi(lastActiveTab);
+        if (StartSurfaceConfiguration.useMagicStack()) {
+            newTabPage.showMagicStackWithHomeSurfaceUi(lastActiveTab);
+        } else {
+            newTabPage.showHomeSurfaceUi(lastActiveTab);
+        }
     }
 
     // TODO(https://crbug.com/1450578): Removes this histogram once we understand the root cause of
