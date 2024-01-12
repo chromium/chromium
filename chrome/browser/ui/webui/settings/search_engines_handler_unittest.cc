@@ -75,7 +75,7 @@ class SearchEnginesHandlerTestBase : public testing::Test {
         template_url_service, "foo.com", u"foo_com", /*prepopulated_id=*/0,
         /*url=*/std::nullopt);
     AddSearchEngine(template_url_service, "bing",
-                    base::WideToUTF16(TemplateURLPrepopulateData::bing.keyword),
+                    TemplateURLPrepopulateData::bing.keyword,
                     TemplateURLPrepopulateData::bing.id,
                     TemplateURLPrepopulateData::bing.search_url);
 

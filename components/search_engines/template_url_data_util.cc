@@ -5,6 +5,7 @@
 #include "components/search_engines/template_url_data_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -23,6 +24,10 @@ namespace {
 // dereferencing nullptrs.
 base::StringPiece ToStringPiece(const char* str) {
   return str ? base::StringPiece(str) : base::StringPiece();
+}
+
+std::u16string_view ToU16StringView(const char16_t* str) {
+  return str ? std::u16string_view(str) : std::u16string_view();
 }
 
 }  // namespace
@@ -335,12 +340,11 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
   }
 
   std::u16string image_search_branding_label =
-      engine.image_search_branding_label
-          ? base::WideToUTF16(engine.image_search_branding_label)
-          : std::u16string();
+      engine.image_search_branding_label ? engine.image_search_branding_label
+                                         : std::u16string();
 
   return std::make_unique<TemplateURLData>(
-      base::WideToUTF16(engine.name), base::WideToUTF16(engine.keyword),
+      ToU16StringView(engine.name), ToU16StringView(engine.keyword),
       ToStringPiece(engine.search_url), ToStringPiece(engine.suggest_url),
       ToStringPiece(engine.image_url),
       ToStringPiece(engine.image_translate_url),

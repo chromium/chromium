@@ -60,8 +60,8 @@ TemplateURLData& TemplateURLData::operator=(const TemplateURLData& other) =
     default;
 
 TemplateURLData::TemplateURLData(
-    const std::u16string& name,
-    const std::u16string& keyword,
+    std::u16string_view name,
+    std::u16string_view keyword,
     base::StringPiece search_url,
     base::StringPiece suggest_url,
     base::StringPiece image_url,
@@ -129,13 +129,13 @@ TemplateURLData::TemplateURLData(
 
 TemplateURLData::~TemplateURLData() = default;
 
-void TemplateURLData::SetShortName(const std::u16string& short_name) {
+void TemplateURLData::SetShortName(std::u16string_view short_name) {
   // Remove tabs, carriage returns, and the like, as they can corrupt
   // how the short name is displayed.
   short_name_ = base::CollapseWhitespace(short_name, true);
 }
 
-void TemplateURLData::SetKeyword(const std::u16string& keyword) {
+void TemplateURLData::SetKeyword(std::u16string_view keyword) {
   DCHECK(!keyword.empty());
 
   // Case sensitive keyword matching is confusing. As such, we force all

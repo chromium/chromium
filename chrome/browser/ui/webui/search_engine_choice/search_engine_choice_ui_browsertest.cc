@@ -58,8 +58,7 @@ class MockSearchEngineChoiceDialogService
         // engines.
         choice.prepopulate_id = i + 1;
         choice.SetShortName(kShortName);
-        choice.SetKeyword(
-            base::WideToUTF16(TemplateURLPrepopulateData::bing.keyword));
+        choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
         choices.push_back(std::make_unique<TemplateURL>(choice));
       }
       return choices;

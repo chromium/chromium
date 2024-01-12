@@ -259,7 +259,6 @@ def create_get_search_engine_generated_icon_path_function():
     )
 
     utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
-    utils_file.write('#include "base/strings/utf_string_conversions.h"\n')
     utils_file.write('#include "build/branding_buildflags.h"\n')
 
     utils_file.write(
@@ -272,16 +271,16 @@ def create_get_search_engine_generated_icon_path_function():
 
     utils_file.write('constexpr auto kSearchEngineIconPathMap =\n')
     utils_file.write(
-        '\tbase::MakeFixedFlatMap<std::wstring_view, std::string_view>({\n')
+        '\tbase::MakeFixedFlatMap<std::u16string_view, std::string_view>({\n')
 
     for engine_keyword in engine_keyword_to_icon_name:
       engine_name = keyword_to_identifer(engine_keyword)
-      utils_file.write('\t\t{L"' + engine_keyword + '",\n')
+      utils_file.write('\t\t{u"' + engine_keyword + '",\n')
       utils_file.write('\t\t "chrome://theme/IDR_' + engine_name.upper() +
                        '_PNG"},\n')
 
     # Add Google to the map
-    utils_file.write('\t\t{L"google.com",\n')
+    utils_file.write('\t\t{u"google.com",\n')
     utils_file.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
     utils_file.write('\t\t "chrome://theme/IDR_GOOGLE_COM_PNG"\n')
     utils_file.write('#else\n')
@@ -296,11 +295,10 @@ def create_get_search_engine_generated_icon_path_function():
     utils_file.write('std::string_view GetSearchEngineGeneratedIconPath(\n')
     utils_file.write('\t\tconst std::u16string& engine_keyword) {\n')
     utils_file.write(
-        '\tconst base::fixed_flat_map<std::wstring_view, std::string_view,\n')
+        '\tconst base::fixed_flat_map<std::u16string_view, std::string_view,\n')
     utils_file.write(
         '\t\tkSearchEngineIconPathMap.size()>::const_iterator iterator =\n')
-    utils_file.write('\t\t\tkSearchEngineIconPathMap.find(\n')
-    utils_file.write('\t\t\t\tbase::UTF16ToWide(engine_keyword));\n')
+    utils_file.write('\t\t\tkSearchEngineIconPathMap.find(engine_keyword);\n')
     utils_file.write('\treturn iterator == kSearchEngineIconPathMap.cend() ?\n')
     utils_file.write('\t\tstd::string_view() : iterator->second;\n')
     utils_file.write('}\n')
@@ -330,7 +328,6 @@ def generate_get_icon_resource_id_function():
         '#include "components/search_engines/search_engine_choice_utils.h"\n')
     utils_file.write('\n')
     utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
-    utils_file.write('#include "base/strings/utf_string_conversions.h"\n')
     utils_file.write('#include "build/branding_buildflags.h"\n')
     utils_file.write(
         '#include "components/grit/components_scaled_resources.h"\n')
@@ -346,15 +343,15 @@ def generate_get_icon_resource_id_function():
     utils_file.write('namespace {\n\n')
 
     utils_file.write('constexpr auto kSearchEngineResourceIdMap =\n')
-    utils_file.write('\tbase::MakeFixedFlatMap<std::wstring_view, int>({\n')
+    utils_file.write('\tbase::MakeFixedFlatMap<std::u16string_view, int>({\n')
 
     for engine_keyword in engine_keyword_to_icon_name:
       engine_name = keyword_to_identifer(engine_keyword)
-      utils_file.write('\t\t{L"' + engine_keyword + '",\n')
+      utils_file.write('\t\t{u"' + engine_keyword + '",\n')
       utils_file.write('\t\t IDR_' + engine_name.upper() + '_PNG},\n')
 
     # Add Google to the map
-    utils_file.write('\t\t{L"google.com",\n')
+    utils_file.write('\t\t{u"google.com",\n')
     utils_file.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
     utils_file.write('\t\t IDR_GOOGLE_COM_PNG\n')
     utils_file.write('#else\n')
@@ -370,11 +367,10 @@ def generate_get_icon_resource_id_function():
     # Create the function `GetIconResourceId()`.
     utils_file.write(
         'int GetIconResourceId(const std::u16string& engine_keyword) {\n')
-    utils_file.write('\tconst base::fixed_flat_map<std::wstring_view, int,\n')
+    utils_file.write('\tconst base::fixed_flat_map<std::u16string_view, int,\n')
     utils_file.write(
         '\t\tkSearchEngineResourceIdMap.size()>::const_iterator iterator =\n')
-    utils_file.write('\t\t\tkSearchEngineResourceIdMap.find(\n')
-    utils_file.write('\t\t\t\tbase::UTF16ToWide(engine_keyword));\n')
+    utils_file.write('\t\t\tkSearchEngineResourceIdMap.find(engine_keyword);\n')
     utils_file.write(
         '\treturn iterator == kSearchEngineResourceIdMap.cend() ?\n')
     utils_file.write('\t\t-1 : iterator->second;\n')
