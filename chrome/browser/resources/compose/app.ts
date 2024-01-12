@@ -481,6 +481,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       case 'surveyLink':
         this.apiProxy_.openFeedbackSurveyLink();
         break;
+      default:
+        this.apiProxy_.openComposeLearnMorePage();
     }
   }
 
@@ -601,6 +603,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
       default:
         return this.i18n('errorGeneric');
     }
+  }
+
+  private getResultFooterText_(): TrustedHTML {
+    if (this.showOnDeviceDogfoodFooter_()) {
+      return this.i18nAdvanced('dogfoodFooter');
+    }
+    return this.i18nAdvanced('resultFooter');
   }
 
   private saveComposeAppState_() {

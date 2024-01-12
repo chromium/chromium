@@ -28,10 +28,6 @@
   <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog." translateable="false">
     Your text and the content and url of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
   </message>
-  <message name="IDS_COMPOSE_FRE_MAIN_BOTTOM" desc="The bottom main text of the Help me write disclaimer dialog." translateable="false">
-    This is an experimental AI writing aid and won't always get it right.
-    <ph name="BEGIN_LINK">&lt;a href="#" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
     Let's go
   </message>
@@ -82,8 +78,8 @@
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3" desc="Third bullet point example for the placeholder text in the input field.">
     requests like "write a 5-star review for this restaurant"
   </message>
-  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog." translateable="false">
-    Page content and your text are sent to Google, and may be used to improve or develop products.
+  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog.">
+    Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
@@ -164,7 +160,10 @@
     or fill out our
     <ph name="BEGIN_SURVEY_LINK">&lt;a href="#" id="surveyLink" role="button"&gt;</ph>survey<ph name="END_SURVEY_LINK">&lt;/a&gt;</ph>
   </message>
-
+  <message name="IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER" desc="A disclaimer footer text for help me write, that this is experimental and not always right.">
+    This is an experimental AI writing aid and won't always get it right.
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED" desc="A footer indicating that on-device evaluation was used." translateable="false">
     On-device evaluation used.
   </message>
