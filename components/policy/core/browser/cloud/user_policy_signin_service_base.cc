@@ -32,12 +32,8 @@ namespace {
 const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
     em::DeviceRegisterRequest::ANDROID_BROWSER;
 #elif BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1312263): Use em::DeviceRegisterRequest::IOS_BROWSER when
-// supported in the dmserver. The type for Desktop is temporarily used on iOS
-// to allow early testing of the feature before the DMServer can support iOS
-// User Policy.
 const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::BROWSER;
+    em::DeviceRegisterRequest::IOS_BROWSER;
 #else
 const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
     em::DeviceRegisterRequest::BROWSER;
