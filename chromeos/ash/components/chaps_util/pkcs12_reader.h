@@ -13,8 +13,8 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
-#include "crypto/scoped_nss_types.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"

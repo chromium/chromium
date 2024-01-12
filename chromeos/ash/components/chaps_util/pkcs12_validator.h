@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr_cast.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "third_party/boringssl/src/include/openssl/base.h"

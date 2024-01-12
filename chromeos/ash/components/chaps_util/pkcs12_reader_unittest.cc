@@ -19,7 +19,6 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"

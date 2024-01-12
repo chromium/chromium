@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/chaps_util/pkcs12_validator.h"
 
+#include <cert.h>
 #include <stdint.h>
 
 #include <memory>

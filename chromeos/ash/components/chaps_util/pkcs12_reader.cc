@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
+#include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace chromeos {
 
