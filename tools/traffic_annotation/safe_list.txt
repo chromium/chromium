@@ -43,7 +43,6 @@ missing,net/proxy_resolution/proxy_config_service_android.cc
 
 # Desktop platform specific annotations.
 missing,components/optimization_guide/core/model_execution/model_execution_fetcher.cc
-missing,components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.cc
 
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
 missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
