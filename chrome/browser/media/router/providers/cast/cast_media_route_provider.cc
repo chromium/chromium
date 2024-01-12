@@ -124,9 +124,6 @@ std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
         is_supported_audio_codec) {
       compatible_sinks.push_back(sink);
     }
-    RecordSinkRemotingCompatibility(
-        is_supported_model, is_supported_audio_codec, audio_codec,
-        is_supported_video_codec, video_codec.value());
   }
   return compatible_sinks;
 }
