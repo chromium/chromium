@@ -712,22 +712,6 @@ void SplitViewController::AttachToBeSnappedWindow(
   OverviewSession* overview_session = GetOverviewSession();
   RemoveSnappingWindowFromOverviewIfApplicable(overview_session, window);
 
-  const float old_divider_position = divider_position_;
-  // Get the divider position given by `snap_ratio` if exists, or if there is
-  // pre-set `divider_position_`, use it, which can happen during tablet <->
-  // clamshell transition or multi-user transition. If neither `snap_ratio` nor
-  // `divider_position_` exists, calculate the divider position with the default
-  // snap ratio i.e. `chromeos::kDefaultSnapRatio`.
-  // TODO(michelefan): See if it is a valid case to not having `snap_ratio`
-  // while `divider_position` is less than 0.
-  if (absl::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
-      snap_ratio) {
-    divider_position_ = CalculateDividerPosition(snap_position, *snap_ratio);
-  } else if (divider_position_ < 0) {
-    divider_position_ =
-        CalculateDividerPosition(snap_position, chromeos::kDefaultSnapRatio);
-  }
-
   if (state_ == State::kNoSnap) {
     Shell* shell = Shell::Get();
     // Add observers when the split view mode starts.
@@ -825,34 +809,55 @@ void SplitViewController::AttachToBeSnappedWindow(
         std::make_unique<SplitViewDivider>(this, divider_position_);
   }
 
-  // This must be done before we push `divider_position_` to the closest fixed
-  // ratio, since the minimum size will be respected there.
-  const int new_divider_position =
+  base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
+
+  if (!split_view_divider_) {
+    return;
+  }
+
+  // Get the divider position given by `snap_ratio` if exists, or if there is
+  // pre-set `divider_position_`, use it, which can happen during tablet <->
+  // clamshell transition or multi-user transition. If neither `snap_ratio` nor
+  // `divider_position_` exists, calculate the divider position with the default
+  // snap ratio i.e. `chromeos::kDefaultSnapRatio`.
+  // TODO(michelefan): See if it is a valid case to not having `snap_ratio`
+  // while `divider_position` is less than 0.
+  bool do_snap_animation = false;
+  if (absl::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
+      snap_ratio) {
+    divider_position_ = CalculateDividerPosition(snap_position, *snap_ratio);
+    if (other_window && !CanSnapWindow(other_window, 1.f - *snap_ratio)) {
+      // If `other_window` can't fit in the requested snap ratio, show a snap
+      // animation below.
+      do_snap_animation = true;
+    }
+  } else if (divider_position_ < 0) {
+    divider_position_ =
+        CalculateDividerPosition(snap_position, chromeos::kDefaultSnapRatio);
+  }
+
+  const int fixed_divider_position =
       GetClosestFixedDividerPosition(divider_position_);
-  const bool total_size_exceeds_work_area =
-      divider_position_ + kSplitviewDividerShortSideLength +
-          GetMinimumWindowLength(other_window, IsLayoutHorizontal(window)) >
-      GetDividerPositionUpperLimit(root_window_);
-  if (split_view_divider_ && other_window && total_size_exceeds_work_area) {
-    // If `other_window` can't fit in the opposite position, set
-    // `divider_snap_animation_` to Hide then Show, to give off the
-    // impression of bouncing the divider back to `old_divider_position`.
-    // Note the duration is 2 * `kBouncingAnimationOneWayDuration` to
-    // bounce out then in.
+
+  // This must be done before we update `divider_position_` to
+  // `fixed_divider_position`, since the minimum size will be respected there.
+  if (do_snap_animation) {
+    // When `window` is re-snapped, i.e. from 1/2 to 2/3, but `other_window`
+    // can't fit in the requested snap ratio, set `divider_snap_animation_` to
+    // Hide then Show, to give off the impression of bouncing the divider back
+    // to `old_divider_position`. Note the duration is 2 *
+    // `kBouncingAnimationOneWayDuration` to bounce out then in.
     tablet_resize_mode_ = TabletResizeMode::kFast;
     divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
-        this, new_divider_position, old_divider_position,
+        this, /*starting_position=*/divider_position_,
+        /*ending_position=*/fixed_divider_position,
         2 * kBouncingAnimationOneWayDuration, gfx::Tween::FAST_OUT_SLOW_IN_3);
     divider_snap_animation_->Hide();
     divider_snap_animation_->Show();
   }
 
-  if (split_view_divider_) {
-    divider_position_ = new_divider_position;
-    split_view_divider_->UpdateDividerBounds();
-  }
-
-  base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
+  divider_position_ = fixed_divider_position;
+  split_view_divider_->UpdateDividerBounds();
 }
 
 void SplitViewController::SwapWindows() {

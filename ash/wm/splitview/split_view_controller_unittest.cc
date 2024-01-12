@@ -3326,6 +3326,7 @@ TEST_F(SplitViewControllerTest, SelectWindowCannotOneThirdSnap) {
   WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY,
                                  chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary);
+  ASSERT_FALSE(IsDividerAnimating());
   ASSERT_EQ(chromeos::kTwoThirdSnapRatio,
             WindowState::Get(window1.get())->snap_ratio());
   ASSERT_TRUE(WindowState::Get(window1.get())->IsSnapped());
@@ -3334,6 +3335,7 @@ TEST_F(SplitViewControllerTest, SelectWindowCannotOneThirdSnap) {
   // Select `window2`. Test that both windows are maximized and we have exited
   // splitview.
   wm::ActivateWindow(window2.get());
+  ASSERT_FALSE(IsDividerAnimating());
   EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
   EXPECT_TRUE(WindowState::Get(window2.get())->IsMaximized());
   EXPECT_EQ(SplitViewController::State::kNoSnap,
@@ -3347,21 +3349,23 @@ TEST_F(SplitViewControllerTest,
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
-
-  // Snap 2 windows in split view. Set `window2` min length to be 0.4 of
-  // the work area so it can't fit in 1/3 split.
   gfx::Rect work_area_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           window1.get());
   aura::test::TestWindowDelegate* delegate2 =
       static_cast<aura::test::TestWindowDelegate*>(window2->delegate());
+  // Set `window2` min length to be 0.4 of the work area so it can't fit in 1/3
+  // split.
   delegate2->set_minimum_size(
       gfx::Size(work_area_bounds.width() * 0.4f, work_area_bounds.height()));
+
+  // 1 - First test scenario where the secondary window can't fit in 1/3.
+  // Snap `window1` to primary and `window2` to secondary.
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
-  // Try to snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that
-  // the divider and both windows bounce back to 1/2.
+  // Try to snap `window1` to 2/3 primary. Since `window2` can't fit in 1/3
+  // secondary, test that the divider and both windows bounce back to 1/2.
   WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
                                            chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
@@ -3369,11 +3373,33 @@ TEST_F(SplitViewControllerTest,
   SkipDividerSnapAnimation();
   gfx::Rect divider_bounds =
       split_view_divider()->GetDividerBoundsInScreen(/*is_dragging=*/false);
-  ASSERT_EQ(work_area_bounds.width() * 0.5f,
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
             divider_bounds.x() + kSplitviewDividerShortSideLength / 2);
-  ASSERT_EQ(work_area_bounds.width() * 0.5f,
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
             window1->bounds().width() + kSplitviewDividerShortSideLength / 2);
-  ASSERT_EQ(work_area_bounds.width() * 0.5f,
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window2->bounds().width() + kSplitviewDividerShortSideLength / 2);
+
+  // 2 - Second test scenario where the primary window can't fit in 1/3.
+  // Snap `window2` to primary and `window1` to secondary.
+  EndSplitView();
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kSecondary);
+
+  // Try to snap `window1` to 2/3 secondary. Since `window2` can't fit in 1/3
+  // primary, the divider and windows both bounce to 1/2.
+  WindowSnapWMEvent snap_secondary_two_thirds(WM_EVENT_SNAP_SECONDARY,
+                                              chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_secondary_two_thirds);
+  ASSERT_TRUE(IsDividerAnimating());
+  SkipDividerSnapAnimation();
+  divider_bounds =
+      split_view_divider()->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            divider_bounds.x() + kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window1->bounds().width() + kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
             window2->bounds().width() + kSplitviewDividerShortSideLength / 2);
 }
 
@@ -3448,7 +3474,7 @@ TEST_F(SplitViewControllerTest, ResnapASnappedWindowToOppositePosition) {
   event_generator->MoveMouseTo(
       gfx::ToRoundedPoint(item2->target_bounds().CenterPoint()));
   event_generator->ClickLeftButton();
-
+  ASSERT_FALSE(IsDividerAnimating());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
   EXPECT_EQ(
@@ -3463,6 +3489,7 @@ TEST_F(SplitViewControllerTest, ResnapASnappedWindowToOppositePosition) {
   WindowSnapWMEvent snap_secondary_two_thirds(WM_EVENT_SNAP_PRIMARY,
                                               chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_two_thirds);
+  ASSERT_FALSE(IsDividerAnimating());
   EXPECT_NEAR(work_area_bounds.width() * 0.67f,
               split_view_controller()->GetDividerPosition(),
               kSplitviewDividerShortSideLength);
