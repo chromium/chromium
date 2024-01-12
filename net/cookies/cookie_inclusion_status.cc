@@ -128,9 +128,8 @@ void CookieInclusionStatus::MaybeClearThirdPartyPhaseoutReason() {
   if (ExclusionReasonsWithout(
           {EXCLUDE_THIRD_PARTY_PHASEOUT,
            EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}) != 0u) {
-    // TODO(crbug.com/1516673): Once the bug is fixed, also remove
-    // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET.
     RemoveExclusionReason(EXCLUDE_THIRD_PARTY_PHASEOUT);
+    RemoveExclusionReason(EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   }
 }
 

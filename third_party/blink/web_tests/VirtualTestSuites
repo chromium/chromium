@@ -1318,10 +1318,9 @@
     "prefix": "first-party-sets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "http/tests/inspector-protocol/network",
-      "http/tests/inspector-protocol/issues"
+      "http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js"
     ],
-    "args": ["--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}",
+    "args": ["--test-third-party-cookie-phaseout", "--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2024",
     "owners": ["chrome-first-party-sets@chromium.org"]

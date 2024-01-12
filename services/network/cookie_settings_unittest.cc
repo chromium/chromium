@@ -1071,13 +1071,16 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_SitesInFirstPartySets) {
       *cookie, GURL(kFPSMemberURL), net::SiteForCookies(), top_level_origin,
       net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
       GetCookieSettingOverrides(), &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {IsForceThirdPartyCookieBlockingFlagEnabled() ||
-               IsTrackingProtectionEnabledFor3pcd()
-           ? net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT
-           : net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-       net::CookieInclusionStatus::
-           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}));
+  if (IsForceThirdPartyCookieBlockingFlagEnabled() ||
+      IsTrackingProtectionEnabledFor3pcd()) {
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT,
+         net::CookieInclusionStatus::
+             EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}));
+  } else {
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
+  }
 }
 
 TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
@@ -1419,16 +1422,18 @@ TEST_P(CookieSettingsTest,
             net::MatchesCookieWithName("third_party_but_member"),
             MatchesCookieAccessResult(
                 HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                                IsTrackingProtectionEnabledFor3pcd()
-                            ? net::CookieInclusionStatus::
-                                  EXCLUDE_THIRD_PARTY_PHASEOUT
-                            : net::CookieInclusionStatus::
-                                  EXCLUDE_USER_PREFERENCES,
-                        net::CookieInclusionStatus::
-                            EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-                    }),
+                    IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                            IsTrackingProtectionEnabledFor3pcd()
+                        ? std::vector<
+                              net::CookieInclusionStatus::
+                                  ExclusionReason>{net::CookieInclusionStatus::
+                                                       EXCLUDE_THIRD_PARTY_PHASEOUT,
+                                                   net::CookieInclusionStatus::
+                                                       EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}
+                        : std::vector<
+                              net::CookieInclusionStatus::
+                                  ExclusionReason>{net::CookieInclusionStatus::
+                                                       EXCLUDE_USER_PREFERENCES}),
                 _, _, _))));
   }
 }
@@ -1502,16 +1507,18 @@ TEST_P(
             net::MatchesCookieWithName("third_party_but_member"),
             MatchesCookieAccessResult(
                 HasExactlyExclusionReasonsForTesting(
-                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                                IsTrackingProtectionEnabledFor3pcd()
-                            ? net::CookieInclusionStatus::
-                                  EXCLUDE_THIRD_PARTY_PHASEOUT
-                            : net::CookieInclusionStatus::
-                                  EXCLUDE_USER_PREFERENCES,
-                        net::CookieInclusionStatus::
-                            EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-                    }),
+                    IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                            IsTrackingProtectionEnabledFor3pcd()
+                        ? std::vector<
+                              net::CookieInclusionStatus::
+                                  ExclusionReason>{net::CookieInclusionStatus::
+                                                       EXCLUDE_THIRD_PARTY_PHASEOUT,
+                                                   net::CookieInclusionStatus::
+                                                       EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET}
+                        : std::vector<
+                              net::CookieInclusionStatus::
+                                  ExclusionReason>{net::CookieInclusionStatus::
+                                                       EXCLUDE_USER_PREFERENCES}),
                 _, _, _))));
   }
 }

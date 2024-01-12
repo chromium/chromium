@@ -175,15 +175,15 @@ bool CookieSettings::IsCookieAccessible(
               setting_with_metadata.is_explicit_setting())) {
         cookie_inclusion_status->AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+          cookie_inclusion_status->AddExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+        }
       } else {
         cookie_inclusion_status->AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        cookie_inclusion_status->AddExclusionReason(
-            net::CookieInclusionStatus::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
@@ -270,16 +270,16 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+          cookie.access_result.status.AddExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+        }
       } else {
         // User has a explicit setting to block 3pc.
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
@@ -293,16 +293,16 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+          cookie.access_result.status.AddExclusionReason(
+              net::CookieInclusionStatus::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+        }
       } else {
         // User has a explicit setting to block 3pc.
         cookie.access_result.status.AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
-      }
-      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-        cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::
-                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
