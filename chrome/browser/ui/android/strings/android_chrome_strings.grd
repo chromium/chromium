@@ -1910,16 +1910,19 @@ Your Google account may have other forms of browsing history like searches and a
 
       <!-- Download open dialog -->
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
-        Automatically open PDFs?
+        Open PDF?
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm they want to open a downloaded pdf file.">
-        Chrome can automatically open a PDF when you download them.
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TEXT" desc="Message shown on a dialog to ask user to confirm they want to open a downloaded pdf file.">
+        Chrome can open your downloaded PDF
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the download always.">
-        Always open
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the downloaded pdf.">
+        Open
       </message>
-      <message name="IDS_OPEN_DOWNLOAD_DIALOG_JUST_ONCE_TEXT" desc="Text label for the button on the open download dialog for user to just open the current download once.">
-        Just once
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_CANCEL_TEXT" desc="Text label for the button on the open download dialog for user to cancel opening a downloaded pdf.">
+        Cancel
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_AUTO_OPEN_TEXT" desc="Text label for the check box on the open download dialog that allows user to auto-open downloaded PDF files in future.">
+        Automatically open downloaded PDFs in the future
       </message>
       <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
         Automatically open pdf after download

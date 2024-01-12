@@ -6,43 +6,21 @@ package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
 
-import androidx.annotation.IntDef;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog;
+import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog.OpenDownloadDialogEvent;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /** Glues open download dialogs UI code and handles the communication to download native backend. */
 public class OpenDownloadDialogBridge {
-    /**
-     * Events related to the open download dialog, used for UMA reporting. These values are
-     * persisted to logs. Entries should not be renumbered and numeric values should never be
-     * reused.
-     */
-    @IntDef({
-        OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_SHOW,
-        OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN,
-        OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_JUST_ONCE,
-        OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_DISMISS
-    })
-    private @interface OpenDownloadDialogEvent {
-        int OPEN_DOWNLOAD_DIALOG_SHOW = 0;
-        int OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN = 1;
-        int OPEN_DOWNLOAD_DIALOG_JUST_ONCE = 2;
-        int OPEN_DOWNLOAD_DIALOG_DISMISS = 3;
-
-        int COUNT = 4;
-    }
-
     private long mNativeOpenDownloadDialogBridge;
 
     /**
@@ -78,20 +56,23 @@ public class OpenDownloadDialogBridge {
                 .show(
                         activity,
                         ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                        UserPrefs.get(profile).getBoolean(Pref.AUTO_OPEN_PDF_ENABLED),
                         (result) -> {
-                            if (result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                            if (result
+                                    == OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN) {
                                 UserPrefs.get(profile).setBoolean(Pref.AUTO_OPEN_PDF_ENABLED, true);
+                                onConfirmed(guid);
                                 recordOpenDownloadDialogEvent(
                                         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN);
+                            } else if (result
+                                    == OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_JUST_ONCE) {
                                 onConfirmed(guid);
-                            } else if (result == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
                                 recordOpenDownloadDialogEvent(
                                         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_JUST_ONCE);
-                                onConfirmed(guid);
                             } else {
+                                onCancel(guid, windowAndroid);
                                 recordOpenDownloadDialogEvent(
                                         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_DISMISS);
-                                onCancel(guid, windowAndroid);
                             }
                         });
         recordOpenDownloadDialogEvent(OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_SHOW);
