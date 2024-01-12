@@ -3682,6 +3682,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-unrestricted-usb",
+    "owners": [ "deviceapi-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
     "expiry_milestone": 125

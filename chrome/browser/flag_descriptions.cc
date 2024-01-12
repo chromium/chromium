@@ -1569,6 +1569,12 @@ const char kEnablePolicyTestPageDescription[] =
     "When enabled, allows the policy test page to be accessed at "
     "chrome://policy/test.";
 
+const char kEnableUnrestrictedUsbName[] =
+    "Enable Isolated Web Apps to bypass USB restrictions";
+const char kEnableUnrestrictedUsbDescription[] =
+    "When enabled, allows Isolated Web Apps to access blocklisted "
+    "devices and protected interfaces through WebUSB API.";
+
 const char kEnableWasmBaselineName[] = "WebAssembly baseline compiler";
 const char kEnableWasmBaselineDescription[] =
     "Enables WebAssembly baseline compilation and tier up.";

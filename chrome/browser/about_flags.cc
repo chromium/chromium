@@ -10987,6 +10987,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceSigninFlowInProfilePickerDescription,
      kOsMac | kOsWin, FEATURE_VALUE_TYPE(kForceSigninFlowInProfilePicker)},
 
+    {"enable-unrestricted-usb", flag_descriptions::kEnableUnrestrictedUsbName,
+     flag_descriptions::kEnableUnrestrictedUsbDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kUnrestrictedUsb)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

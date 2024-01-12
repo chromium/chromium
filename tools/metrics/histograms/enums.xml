@@ -20088,6 +20088,7 @@ from previous Chrome versions.
   <int value="-1882649050" label="ProfilesReordering:enabled"/>
   <int value="-1882427024" label="IwaControlledFrame:disabled"/>
   <int value="-1882330924" label="NTPArticleSuggestions:enabled"/>
+  <int value="-1880683127" label="UnrestrictedUsb:disabled"/>
   <int value="-1880633355" label="CaptureModeAudioMixing:disabled"/>
   <int value="-1880355454" label="disable-topchrome-md"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
@@ -21597,6 +21598,7 @@ from previous Chrome versions.
   <int value="-1182246276" label="EnableRFC8925:enabled"/>
   <int value="-1182087678"
       label="CrossOriginOpenerPolicyAccessReporting:disabled"/>
+  <int value="-1181840496" label="UnrestrictedUsb:enabled"/>
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
   <int value="-1178536416" label="PasswordManagerRedesign:disabled"/>
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>

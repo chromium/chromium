@@ -877,6 +877,9 @@ extern const char kExperimentalWebAssemblyJSPIDescription[];
 extern const char kEnablePolicyTestPageName[];
 extern const char kEnablePolicyTestPageDescription[];
 
+extern const char kEnableUnrestrictedUsbName[];
+extern const char kEnableUnrestrictedUsbDescription[];
+
 extern const char kEnableWasmBaselineName[];
 extern const char kEnableWasmBaselineDescription[];
 
