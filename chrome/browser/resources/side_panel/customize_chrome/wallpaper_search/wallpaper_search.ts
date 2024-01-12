@@ -154,6 +154,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
             loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled'),
       },
       inspirationGroups_: Object,
+      inspirationToggleIcon_: {
+        type: String,
+        computed: 'computeInspirationToggleIcon_(openInspirations_)',
+      },
+      openInspirations_: Boolean,
       resultsDescriptors_: Object,
       results_: Object,
       selectedFeedbackOption_: {
@@ -203,7 +208,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private history_: WallpaperSearchResult[] = [];
   private inspirationGroups_: InspirationGroup[]|null;
   private inspirationCardEnabled_: boolean;
+  private inspirationToggleIcon_: string;
   private loading_: boolean;
+  private openInspirations_: boolean|undefined = false;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultDescriptors|null = null;
   private resultsPromises_: Array<Promise<
@@ -253,6 +260,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
             (history: WallpaperSearchResult[]) => {
               this.history_ = history;
               this.emptyHistoryContainers_ = this.calculateEmptyTiles(history);
+              this.openInspirations_ = !this.shouldShowHistory_();
             });
     this.wallpaperSearchHandler_.updateHistory();
     this.loadingUiResizeObserver_ = new ResizeObserver(() => {
@@ -312,6 +320,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           callToAction: this.i18n('ok'),
         };
     }
+  }
+
+  private computeInspirationToggleIcon_(): string {
+    return this.openInspirations_ ? 'collapse-carets' : 'expand-carets';
   }
 
   private expandCategoryForDescriptorA_(label: string) {
@@ -553,6 +565,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToHistoryImage(
         e.model.item.id, e.model.item.descriptors ?? {});
+  }
+
+  private onInspirationToggleClick_() {
+    this.openInspirations_ = !this.openInspirations_;
   }
 
   private onInspirationImageClick_(e: DomRepeatEvent<Inspiration>) {

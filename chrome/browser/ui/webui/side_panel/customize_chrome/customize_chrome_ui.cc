@@ -205,7 +205,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchHistoryResultLabelC",
        IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_C},
       {"wallpaperSearchHistoryResultLabelBC",
-       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C}};
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C},
+      {"showInspirationCardToggle",
+       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_CARD_TOGGLE_TITLE}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(

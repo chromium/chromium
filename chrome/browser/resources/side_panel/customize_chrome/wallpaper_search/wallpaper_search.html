@@ -269,6 +269,18 @@
     margin-bottom: 8px;
     margin-top: 8px;
   }
+
+  #inspirationToggle {
+    --cr-icon-button-size: 16px;
+  }
+
+  .collapse-carets {
+    --cr-icon-image: url(icons/collapse_carets.svg);
+  }
+
+  .expand-carets {
+    --cr-icon-image: url(icons/expand_carets.svg);
+  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
@@ -424,22 +436,30 @@
   <div class="sp-card" id="inspirationCard">
     <sp-heading hide-back-button>
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
+      <cr-icon-button id="inspirationToggle" class$="[[inspirationToggleIcon_]]"
+          aria-label="$i18n{showInspirationCardToggle}"
+          title="$i18n{showInspirationCardToggle}" slot="buttons"
+          on-click="onInspirationToggleClick_">
+      </cr-icon-button>
     </sp-heading>
-    <div class="inspirations-content">
-      <template is="dom-repeat" items="[[inspirationGroups_]]">
-        <div class="inspiration-title">[[item.descriptors.subject]]</div>
-        <cr-grid columns="3" disable-arrow-navigation>
-          <template is="dom-repeat" items="[[item.inspirations]]">
-            <div class="tile result" on-click="onInspirationImageClick_"
-                tabindex="0" role="button">
-              <div class="image-container">
-              <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]"></img>
+    <iron-collapse opened="[[openInspirations_]]">
+      <div class="inspirations-content">
+        <template is="dom-repeat" items="[[inspirationGroups_]]">
+          <div class="inspiration-title">[[item.descriptors.subject]]</div>
+          <cr-grid columns="3" disable-arrow-navigation>
+            <template is="dom-repeat" items="[[item.inspirations]]">
+              <div class="tile result" on-click="onInspirationImageClick_"
+                  tabindex="0" role="button">
+                <div class="image-container">
+                  <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]">
+                  </img>
+                </div>
               </div>
-            </div>
-          </template>
-        </cr-grid>
-      </template>
-    </div>
+            </template>
+          </cr-grid>
+        </template>
+      </div>
+    </iron-collapse>
   </div>
 </template>
 <hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">

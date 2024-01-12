@@ -15,9 +15,11 @@ import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chr
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -1606,6 +1608,63 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           'https://example.com/foo_1.png',
           handler.getArgs('setBackgroundToInspirationImage')[0][1].url);
+    });
+
+    test('inspiration card toggles on click', async () => {
+      createWallpaperSearchElement();
+      await flushTasks();
+
+      const ironCollapse =
+          $$<IronCollapseElement>(wallpaperSearchElement, 'iron-collapse')!;
+      assertFalse(ironCollapse.opened);
+      assertEquals(
+          'expand-carets',
+          wallpaperSearchElement.shadowRoot!
+              .querySelector('#inspirationToggle')!.className);
+
+      $$<CrIconButtonElement>(
+          wallpaperSearchElement, '#inspirationToggle')!.click();
+
+      assertTrue(ironCollapse.opened);
+      assertEquals(
+          'collapse-carets',
+          wallpaperSearchElement.shadowRoot!
+              .querySelector('#inspirationToggle')!.className);
+
+      $$<CrIconButtonElement>(
+          wallpaperSearchElement, '#inspirationToggle')!.click();
+
+      assertFalse(ironCollapse.opened);
+      assertEquals(
+          'expand-carets',
+          wallpaperSearchElement.shadowRoot!
+              .querySelector('#inspirationToggle')!.className);
+    });
+
+    test('inspiration card collapsible reacts to history updates', async () => {
+      createWallpaperSearchElement();
+      await flushTasks();
+
+      // Card collapsed when the element is created.
+      const ironCollapse =
+          $$<IronCollapseElement>(wallpaperSearchElement, 'iron-collapse')!;
+      assertFalse(ironCollapse.opened);
+
+      // Card opens if there is no history.
+      wallpaperSearchCallbackRouterRemote.setHistory([]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      assertTrue(ironCollapse.opened);
+
+      // Card collapses if there is history.
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      assertTrue(!!$$(wallpaperSearchElement, '#historyCard .tile.result'));
+      assertFalse(ironCollapse.opened);
     });
   });
 });

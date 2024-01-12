@@ -8005,6 +8005,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_DISCLAIMER" desc="Disclaimer text used for the Create theme with AI feature.">
         This is an experimental AI feature and won't always get it right.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_CARD_TOGGLE_TITLE"  desc="Accessibility title for the toggle used to hide/show wallpaper search's inspiration.">
+        Toggle Inspiration
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">
