@@ -2413,7 +2413,7 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }
 
-TEST_F(BackupRefPtrTest, VectorExperimental) {
+TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
   // Allocate a slot so that a slot span doesn't get decommitted from memory,
   // while we allocate/deallocate/access the tested slot below.
   void* sentinel = allocator_.root()->Alloc(sizeof(unsigned int), "");
@@ -2434,9 +2434,9 @@ TEST_F(BackupRefPtrTest, VectorExperimental) {
     EXPECT_EQ(kQuarantined4Bytes, *ptr);
 #endif
   }
-  // raw_ptr with VectorExperimental, BRP is expected to be off.
+  // raw_ptr with DisableBRP, BRP is expected to be off.
   {
-    raw_ptr<unsigned int, DanglingUntriaged | VectorExperimental> ptr =
+    raw_ptr<unsigned int, DanglingUntriaged | RawPtrTraits::kDisableBRP> ptr =
         static_cast<unsigned int*>(
             allocator_.root()->Alloc(sizeof(unsigned int), ""));
     *ptr = 0;

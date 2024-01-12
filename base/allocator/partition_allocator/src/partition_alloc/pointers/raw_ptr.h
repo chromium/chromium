@@ -105,10 +105,10 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowPtrArithmetic instead.
   kAllowPtrArithmetic = (1 << 3),
 
-  // This pointer has BRP disabled for Vector-related raw_ptrs.
+  // This pointer has BRP disabled for experimental rewrites of containers.
   //
-  // Don't use directly, use VectorExperimental instead.
-  kVectorExperimental = (1 << 4),
+  // Don't use directly.
+  kDisableBRP = (1 << 4),
 
   // Uninitialized pointers are discouraged and disabled by default.
   //
@@ -130,9 +130,8 @@ enum class RawPtrTraits : unsigned {
   // Test only.
   kDummyForTest = (1 << 11),
 
-  kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kVectorExperimental | kAllowUninitialized |
-             kUseCountingImplForTest | kDummyForTest,
+  kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic | kDisableBRP |
+             kAllowUninitialized | kUseCountingImplForTest | kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -227,9 +226,9 @@ using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
     /*AllowDangling=*/partition_alloc::internal::ContainsFlags(
         Traits,
         RawPtrTraits::kMayDangle),
-    /*VectorExperimental=*/partition_alloc::internal::ContainsFlags(
+    /*DisableBRP=*/partition_alloc::internal::ContainsFlags(
         Traits,
-        RawPtrTraits::kVectorExperimental)>;
+        RawPtrTraits::kDisableBRP)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 template <RawPtrTraits Traits>
@@ -1082,8 +1081,7 @@ constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
 // will be replaced by DanglingUntriaged where necessary.
 // Update: The alias now temporarily disables BRP. This is due to performance
 // issues. BRP will be re-enabled once the issues are identified and handled.
-constexpr inline auto VectorExperimental =
-    base::RawPtrTraits::kVectorExperimental;
+constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
 
 // Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
 // in Mocked method signatures as the macros don't allow commas within.
