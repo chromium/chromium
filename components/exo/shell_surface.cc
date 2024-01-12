@@ -1083,18 +1083,13 @@ void ShellSurface::UpdateLayerSurfaceRange(
     layer->SetOldestAcceptableFallback(
         viz::SurfaceId(frame_sink_id_, current_lsi));
   } else {
-    viz::SurfaceId surface_id(frame_sink_id_, current_lsi);
-    // Update the surface only when the surface id changes, which indicates that
-    // the change needs to be synchronized due to size change or scale change.
-    if (!layer->GetSurfaceId() || *layer->GetSurfaceId() != surface_id) {
-      // `current_lsi` has caught up to `layer`. Allow the shell_surface to
-      // modify the surface layer bounds, clear the oldest fallback and disable
-      // stretch.
-      layer->SetShowSurface(surface_id, layer->bounds().size(), SK_ColorWHITE,
-                            cc::DeadlinePolicy::UseDefaultDeadline(),
-                            false /* stretch_content_to_fill_bounds */);
-      layer->SetOldestAcceptableFallback(viz::SurfaceId{});
-    }
+    // `current_lsi` has caught up to `layer`. Allow the shell_surface to modify
+    // the surface layer bounds, clear the oldest fallback and disable stretch.
+    layer->SetShowSurface(viz::SurfaceId(frame_sink_id_, current_lsi),
+                          layer->bounds().size(), SK_ColorWHITE,
+                          cc::DeadlinePolicy::UseDefaultDeadline(),
+                          false /* stretch_content_to_fill_bounds */);
+    layer->SetOldestAcceptableFallback(viz::SurfaceId{});
   }
 }
 
