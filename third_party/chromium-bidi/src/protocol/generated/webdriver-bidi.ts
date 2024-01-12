@@ -793,7 +793,7 @@ export namespace Network {
     secure: boolean;
     sameSite: Network.SameSite;
     expiry?: JsUint;
-  };
+  } & Extensible;
 }
 export namespace Network {
   export type CookieHeader = {

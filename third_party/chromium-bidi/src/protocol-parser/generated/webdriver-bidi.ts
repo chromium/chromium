@@ -950,17 +950,19 @@ export namespace Network {
 }
 export namespace Network {
   export const CookieSchema = z.lazy(() =>
-    z.object({
-      name: z.string(),
-      value: Network.BytesValueSchema,
-      domain: z.string(),
-      path: z.string(),
-      size: JsUintSchema,
-      httpOnly: z.boolean(),
-      secure: z.boolean(),
-      sameSite: Network.SameSiteSchema,
-      expiry: JsUintSchema.optional(),
-    })
+    z
+      .object({
+        name: z.string(),
+        value: Network.BytesValueSchema,
+        domain: z.string(),
+        path: z.string(),
+        size: JsUintSchema,
+        httpOnly: z.boolean(),
+        secure: z.boolean(),
+        sameSite: Network.SameSiteSchema,
+        expiry: JsUintSchema.optional(),
+      })
+      .and(ExtensibleSchema)
   );
 }
 export namespace Network {
