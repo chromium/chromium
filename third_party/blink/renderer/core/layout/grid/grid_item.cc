@@ -408,7 +408,8 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
-GridItems::GridItems(const GridItems& other) {
+GridItems::GridItems(const GridItems& other)
+    : first_subgridded_item_index_(other.first_subgridded_item_index_) {
   item_data_.ReserveInitialCapacity(other.item_data_.size());
   for (const auto& grid_item : other.item_data_) {
     item_data_.emplace_back(std::make_unique<GridItemData>(*grid_item));
@@ -419,21 +420,6 @@ void GridItems::Append(GridItems* other) {
   item_data_.reserve(item_data_.size() + other->item_data_.size());
   for (auto& grid_item : other->item_data_)
     item_data_.emplace_back(std::move(grid_item));
-}
-
-void GridItems::RemoveSubgriddedItems() {
-  wtf_size_t new_item_count = 0;
-  for (const auto& grid_item : item_data_) {
-    if (grid_item->is_subgridded_to_parent_grid)
-      break;
-    ++new_item_count;
-  }
-
-#if DCHECK_IS_ON()
-  for (wtf_size_t i = new_item_count; i < item_data_.size(); ++i)
-    DCHECK(item_data_[i]->is_subgridded_to_parent_grid);
-#endif
-  item_data_.Shrink(new_item_count);
 }
 
 void GridItems::SortByOrderProperty() {

@@ -262,7 +262,7 @@ class CORE_EXPORT GridItems {
   using GridItemDataVector = Vector<std::unique_ptr<GridItemData>, 16>;
 
   template <bool is_const>
-  class IteratorBase {
+  class Iterator {
     STACK_ALLOCATED();
 
    public:
@@ -274,23 +274,23 @@ class CORE_EXPORT GridItems {
                                   const GridItemDataVector*,
                                   GridItemDataVector*>::type;
 
-    IteratorBase(GridItemDataVectorPtr item_data, wtf_size_t current_index)
+    Iterator(GridItemDataVectorPtr item_data, wtf_size_t current_index)
         : current_index_(current_index), item_data_(item_data) {
       DCHECK(item_data_);
       DCHECK_LE(current_index_, item_data_->size());
     }
 
-    bool operator!=(const IteratorBase& other) {
+    bool operator!=(const Iterator& other) {
       return current_index_ != other.current_index_ ||
              item_data_ != other.item_data_;
     }
 
-    IteratorBase& operator++() {
+    Iterator& operator++() {
       ++current_index_;
       return *this;
     }
 
-    IteratorBase operator++(int) {
+    Iterator operator++(int) {
       auto current_iterator = *this;
       ++current_index_;
       return current_iterator;
@@ -308,8 +308,21 @@ class CORE_EXPORT GridItems {
     GridItemDataVectorPtr item_data_;
   };
 
-  typedef IteratorBase<false> Iterator;
-  typedef IteratorBase<true> ConstIterator;
+  template <bool is_const>
+  class Range {
+    STACK_ALLOCATED();
+
+   public:
+    Range(Iterator<is_const>&& begin, Iterator<is_const>&& end)
+        : begin_(std::move(begin)), end_(std::move(end)) {}
+
+    Iterator<is_const> begin() const { return begin_; }
+    Iterator<is_const> end() const { return end_; }
+
+   private:
+    Iterator<is_const> begin_;
+    Iterator<is_const> end_;
+  };
 
   GridItems() = default;
   GridItems(GridItems&&) = default;
@@ -321,20 +334,35 @@ class CORE_EXPORT GridItems {
     return *this = GridItems(other);
   }
 
-  Iterator begin() { return {&item_data_, 0}; }
-  Iterator end() { return {&item_data_, item_data_.size()}; }
+  Iterator<false> begin() { return {&item_data_, 0}; }
+  Iterator<false> end() { return {&item_data_, first_subgridded_item_index_}; }
 
-  ConstIterator begin() const { return {&item_data_, 0}; }
-  ConstIterator end() const { return {&item_data_, item_data_.size()}; }
+  Range<false> IncludeSubgriddedItems() {
+    return {begin(), /* end */ {&item_data_, item_data_.size()}};
+  }
+
+  Iterator<true> begin() const { return {&item_data_, 0}; }
+  Iterator<true> end() const {
+    return {&item_data_, first_subgridded_item_index_};
+  }
+
+  Range<true> IncludeSubgriddedItems() const {
+    return {begin(), /* end */ {&item_data_, item_data_.size()}};
+  }
 
   bool IsEmpty() const { return item_data_.empty(); }
   wtf_size_t Size() const { return item_data_.size(); }
 
   void Append(GridItems* other);
-  void RemoveSubgriddedItems();
   void SortByOrderProperty();
 
   void Append(std::unique_ptr<GridItemData>&& new_item_data) {
+    if (!new_item_data->is_subgridded_to_parent_grid) {
+      // Subgridded items are appended after non-subgridded ones; keep moving
+      // `first_subgridded_item_index_` while we append non-subgridded items.
+      DCHECK_EQ(first_subgridded_item_index_, item_data_.size());
+      ++first_subgridded_item_index_;
+    }
     item_data_.emplace_back(std::move(new_item_data));
   }
 
@@ -348,6 +376,9 @@ class CORE_EXPORT GridItems {
   }
 
  private:
+  // End index used to iterate over the non-subgridded items of the collection.
+  wtf_size_t first_subgridded_item_index_{0};
+
   // Grid items are rearranged in order-modified document order since
   // auto-placement and painting rely on it later in the algorithm.
   GridItemDataVector item_data_;

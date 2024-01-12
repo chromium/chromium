@@ -95,7 +95,7 @@ void CacheGridItemsProperties(const GridLayoutTrackCollection& track_collection,
   GridItemDataPtrVector grid_items_spanning_multiple_ranges;
   const auto track_direction = track_collection.Direction();
 
-  for (auto& grid_item : *grid_items) {
+  for (auto& grid_item : grid_items->IncludeSubgriddedItems()) {
     if (!grid_item.MustCachePlacementIndices(track_direction)) {
       continue;
     }
@@ -194,7 +194,7 @@ void CacheGridItemsProperties(const GridLayoutTrackCollection& track_collection,
 }
 
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
-  for (const auto& grid_item : grid_items) {
+  for (const auto& grid_item : grid_items.IncludeSubgriddedItems()) {
     if (grid_item.is_sizing_dependent_on_block_size)
       return true;
   }
@@ -234,9 +234,6 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
                            ? BuildGridSizingTreeIgnoringChildren()
                            : BuildGridSizingTree(&oof_children);
     ComputeGridGeometry(grid_sizing_tree, &intrinsic_block_size);
-
-    // Subgridded items must be laid out by their parent.
-    grid_sizing_tree.TreeRootData().grid_items.RemoveSubgriddedItems();
   }
 
   Vector<EBreakBetween> row_break_between;
@@ -585,7 +582,7 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
                                        : row_start_offset);
 
     bool must_create_baselines = false;
-    for (auto& grid_item : sizing_node.grid_items) {
+    for (auto& grid_item : sizing_node.grid_items.IncludeSubgriddedItems()) {
       if (grid_item.IsConsideredForSizing(track_direction)) {
         must_create_baselines |= grid_item.IsBaselineSpecified(track_direction);
       }
@@ -1561,9 +1558,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
-  auto& sizing_data = sizing_subtree.SubtreeRootData();
-  auto& track_collection =
-      sizing_data.layout_data.SizingCollection(track_direction);
+  auto& track_collection = sizing_subtree.SizingCollection(track_direction);
 
   if (!track_collection.HasBaselines()) {
     return;
@@ -1572,7 +1567,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   track_collection.ResetBaselines();
 
-  for (auto& grid_item : sizing_data.grid_items) {
+  for (auto& grid_item : sizing_subtree.GridItems().IncludeSubgriddedItems()) {
     if (!grid_item.IsBaselineSpecified(track_direction) ||
         !grid_item.IsConsideredForSizing(track_direction)) {
       continue;
@@ -1735,26 +1730,22 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
     const absl::optional<GridTrackSizingDirection>& opt_track_direction) const {
   DCHECK(sizing_subtree);
 
-  auto& sizing_node = sizing_subtree.SubtreeRootData();
+  auto& grid_items = sizing_subtree.GridItems();
+  auto& layout_data = sizing_subtree.LayoutData();
 
   auto InitAndCacheTrackSizes = [&](GridTrackSizingDirection track_direction) {
-    InitializeTrackCollection(opt_subgrid_data, track_direction,
-                              &sizing_node.layout_data);
+    InitializeTrackCollection(opt_subgrid_data, track_direction, &layout_data);
 
-    if (sizing_node.layout_data.HasSubgriddedAxis(track_direction)) {
+    if (layout_data.HasSubgriddedAxis(track_direction)) {
       const auto& track_collection = (track_direction == kForColumns)
-                                         ? sizing_node.layout_data.Columns()
-                                         : sizing_node.layout_data.Rows();
-      for (auto& grid_item : sizing_node.grid_items) {
-        if (grid_item.is_subgridded_to_parent_grid) {
-          break;
-        }
+                                         ? layout_data.Columns()
+                                         : layout_data.Rows();
+      for (auto& grid_item : grid_items) {
         grid_item.ComputeSetIndices(track_collection);
       }
     } else {
-      auto& track_collection =
-          sizing_node.layout_data.SizingCollection(track_direction);
-      CacheGridItemsProperties(track_collection, &sizing_node.grid_items);
+      auto& track_collection = layout_data.SizingCollection(track_direction);
+      CacheGridItemsProperties(track_collection, &grid_items);
 
       const bool is_for_columns = track_direction == kForColumns;
       const auto start_border_scrollbar_padding =
@@ -1826,16 +1817,12 @@ Vector<BlockSizeDependentGridItem> BlockSizeDependentGridItems(
   Vector<BlockSizeDependentGridItem> dependent_items;
   dependent_items.ReserveInitialCapacity(grid_items.Size());
 
+  // TODO(ethavar): We need to take into account the block size dependent
+  // subgridded items that might change its contribution size in a nested
+  // subgrid's standalone axis, but doing so implies a more refined change.
+  // We'll revisit this issue in a later patch, in the meantime we simply
+  // want to skip over subgridded items to avoid DCHECKs.
   for (const auto& grid_item : grid_items) {
-    if (grid_item.is_subgridded_to_parent_grid) {
-      // TODO(ethavar): We need to take into account the block size dependent
-      // subgridded items that might change its contribution size in a nested
-      // subgrid's standalone axis, but doing so implies a more refined change.
-      // We'll revisit this issue in a later patch, in the meantime we simply
-      // want to skip over subgridded items to avoid DCHECKs.
-      break;
-    }
-
     if (!grid_item.is_sizing_dependent_on_block_size)
       continue;
 
@@ -1916,8 +1903,7 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
     bool* opt_needs_additional_pass) const {
   DCHECK(sizing_subtree);
 
-  auto& [grid_items, layout_data, subtree_size] =
-      sizing_subtree.SubtreeRootData();
+  auto& layout_data = sizing_subtree.LayoutData();
 
   const bool is_for_columns = track_direction == kForColumns;
   const bool has_non_definite_track =
@@ -1947,8 +1933,8 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
       auto& track_collection = layout_data.SizingCollection(track_direction);
 
       if (needs_to_check_block_size_dependent_grid_items) {
-        block_size_dependent_grid_items =
-            BlockSizeDependentGridItems(grid_items, track_collection);
+        block_size_dependent_grid_items = BlockSizeDependentGridItems(
+            sizing_subtree.GridItems(), track_collection);
       }
 
       auto first_set_geometry = ComputeFirstSetGeometry(
@@ -1986,14 +1972,16 @@ namespace {
 // the `MinMaxSizes` cache from their respective `GridNode`.
 void InvalidateCachedMinMaxSizes(const GridNode& subgrid,
                                  const GridSizingSubtree& sizing_subtree) {
-  auto& [grid_items, layout_data, subtree_size] =
-      sizing_subtree.SubtreeRootData();
-
   subgrid.InvalidateCachedMinMaxSizes();
 
+  // Exit early if this subtree doesn't have nested subgrids.
   auto next_subgrid_subtree = sizing_subtree.FirstChild();
-  for (const auto& grid_item : grid_items) {
-    if (grid_item.is_subgridded_to_parent_grid || !grid_item.IsSubgrid()) {
+  if (!next_subgrid_subtree) {
+    return;
+  }
+
+  for (const auto& grid_item : sizing_subtree.GridItems()) {
+    if (!grid_item.IsSubgrid()) {
       continue;
     }
 
@@ -2091,18 +2079,16 @@ void GridLayoutAlgorithm::ForEachSubgrid(
     const GridSizingSubtree& sizing_subtree,
     const CallbackFunc& callback_func,
     bool should_compute_min_max_sizes) const {
-  auto& [grid_items, layout_data, subtree_size] =
-      sizing_subtree.SubtreeRootData();
-
-  // If we know this subtree doesn't have nested subgrids we can exit early
-  // instead of iterating over every grid item looking for them.
-  if (subtree_size == 1) {
+  // Exit early if this subtree doesn't have nested subgrids.
+  auto next_subgrid_subtree = sizing_subtree.FirstChild();
+  if (!next_subgrid_subtree) {
     return;
   }
 
-  auto next_subgrid_subtree = sizing_subtree.FirstChild();
-  for (const auto& grid_item : grid_items) {
-    if (grid_item.is_subgridded_to_parent_grid || !grid_item.IsSubgrid()) {
+  const auto& layout_data = sizing_subtree.LayoutData();
+
+  for (const auto& grid_item : sizing_subtree.GridItems()) {
+    if (!grid_item.IsSubgrid()) {
       continue;
     }
 
@@ -2733,14 +2719,13 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
-  auto& sizing_data = sizing_subtree.SubtreeRootData();
-  auto& track_collection =
-      sizing_data.layout_data.SizingCollection(track_direction);
+  auto& grid_items = sizing_subtree.GridItems();
+  auto& track_collection = sizing_subtree.SizingCollection(track_direction);
 
   GridItemDataPtrVector reordered_grid_items;
-  reordered_grid_items.ReserveInitialCapacity(sizing_data.grid_items.Size());
+  reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
 
-  for (auto& grid_item : sizing_data.grid_items) {
+  for (auto& grid_item : grid_items.IncludeSubgriddedItems()) {
     if (!grid_item.IsSpanningIntrinsicTrack(track_direction)) {
       continue;
     }
@@ -2958,11 +2943,8 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
-  auto& sizing_data = sizing_subtree.SubtreeRootData();
-  auto& track_collection =
-      sizing_data.layout_data.SizingCollection(track_direction);
-
-  LayoutUnit free_space =
+  auto& track_collection = sizing_subtree.SizingCollection(track_direction);
+  const LayoutUnit free_space =
       DetermineFreeSpace(sizing_constraint, track_collection);
 
   // If the free space is zero or if sizing the grid container under a
@@ -3079,7 +3061,8 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
     //   - For each grid item that crosses a flexible track, the result of
     //   finding the size of an fr using all the grid tracks that the item
     //   crosses and a space to fill of the item’s max-content contribution.
-    for (auto& grid_item : sizing_data.grid_items) {
+    for (auto& grid_item :
+         sizing_subtree.GridItems().IncludeSubgriddedItems()) {
       if (grid_item.IsConsideredForSizing(track_direction) &&
           grid_item.IsSpanningFlexibleTrack(track_direction)) {
         double grid_item_fr_size =
