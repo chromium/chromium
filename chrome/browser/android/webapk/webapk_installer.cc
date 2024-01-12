@@ -134,11 +134,10 @@ WebApkInstaller::~WebApkInstaller() {
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
                                    content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
-                                   const SkBitmap& primary_icon,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+  installer->InstallAsync(web_contents, shortcut_info,
                           std::move(finish_callback));
 }
 
@@ -156,10 +155,8 @@ void WebApkInstaller::InstallAsyncForTesting(
     WebApkInstaller* installer,
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
     FinishCallback callback) {
-  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
-                          std::move(callback));
+  installer->InstallAsync(web_contents, shortcut_info, std::move(callback));
 }
 
 // static
@@ -219,11 +216,9 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
   if (task_type_ == WebApkInstaller::INSTALL) {
     webapk::TrackRequestTokenDuration(install_duration_timer_->Elapsed(),
                                       package_name);
-    base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-        gfx::ConvertToJavaBitmap(install_primary_icon_);
     Java_WebApkInstaller_installWebApkAsync(
         env, java_ref_, java_webapk_package, webapk_version_, java_title,
-        java_token, source_, java_primary_icon);
+        java_token, webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
   } else {
     Java_WebApkInstaller_updateAsync(env, java_ref_, java_webapk_package,
                                      webapk_version_, java_title, java_token);
@@ -274,17 +269,14 @@ void WebApkInstaller::CreateJavaRef() {
 
 void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
-                                   const SkBitmap& primary_icon,
                                    FinishCallback finish_callback) {
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 
   web_contents_ = web_contents->GetWeakPtr();
   install_shortcut_info_ =
       std::make_unique<webapps::ShortcutInfo>(shortcut_info);
-  install_primary_icon_ = primary_icon;
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
-  source_ = install_shortcut_info_->source;
   manifest_url_ = install_shortcut_info_->manifest_url;
   task_type_ = INSTALL;
 

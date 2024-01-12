@@ -272,7 +272,6 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
   // WebAPKs should always use the raw icon for the launcher whether or not
   // that icon is maskable.
   primary_icon_ = raw_primary_icon_;
-  shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
   observer_->OnDataAvailable(shortcut_info_, primary_icon_,
                              AddToHomescreenParams::AppType::WEBAPK,
                              installable_status_code_);

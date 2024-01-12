@@ -92,21 +92,6 @@ class WebApkInstallService : public KeyedService {
                          bool relax_updates,
                          const std::string& webapk_package_name);
 
-  // Called once the install scheduled from the service completed or failed.
-  // Triggers the callback to propagate the |WebApkInstallResult| to the
-  // scheduling Client.
-  void OnFinishedInstallWithProto(
-      const GURL& manifest_id,
-      const GURL& url,
-      const std::u16string& short_name,
-      const SkBitmap& primary_icon,
-      bool is_primary_icon_maskable,
-      webapps::ShortcutInfo::Source source,
-      ServiceInstallFinishCallback done_callback,
-      webapps::WebApkInstallResult result,
-      bool relax_updates,
-      const std::string& webapk_package_name);
-
   // Removes current notifications about an ongoing install and adds a
   // installed-notification if the installation was successful.
   void HandleFinishInstallNotifications(
@@ -115,7 +100,6 @@ class WebApkInstallService : public KeyedService {
       const std::u16string& short_name,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable,
-      webapps::ShortcutInfo::Source source,
       webapps::WebApkInstallResult result,
       const std::string& webapk_package_name);
 

@@ -73,7 +73,6 @@ class WebApkInstaller {
   static void InstallAsync(content::BrowserContext* context,
                            content::WebContents* web_contents,
                            const webapps::ShortcutInfo& shortcut_info,
-                           const SkBitmap& primary_icon,
                            FinishCallback finish_callback);
 
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
@@ -89,7 +88,6 @@ class WebApkInstaller {
   static void InstallAsyncForTesting(WebApkInstaller* installer,
                                      content::WebContents* web_contents,
                                      const webapps::ShortcutInfo& shortcut_info,
-                                     const SkBitmap& primary_icon,
                                      FinishCallback callback);
 
   // Calls the private function |UpdateAsync| for testing.
@@ -157,7 +155,6 @@ class WebApkInstaller {
   // install completed or failed.
   void InstallAsync(content::WebContents* web_contents,
                     const webapps::ShortcutInfo& shortcut_info,
-                    const SkBitmap& primary_icon,
                     FinishCallback finish_callback);
 
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
@@ -218,14 +215,10 @@ class WebApkInstaller {
   // the WebApkInstallCoordinatorService.
   std::unique_ptr<webapps::ShortcutInfo> install_shortcut_info_;
 
-  SkBitmap install_primary_icon_;
-
   std::u16string short_name_;
 
   // WebAPK server URL.
   GURL server_url_;
-
-  webapps::ShortcutInfo::Source source_;
 
   GURL manifest_url_;
 

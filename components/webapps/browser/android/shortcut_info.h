@@ -74,16 +74,17 @@ struct ShortcutInfo {
     SOURCE_UNKNOWN = 0,
     SOURCE_ADD_TO_HOMESCREEN_DEPRECATED = 1,
 
-    // Used for legacy PWAs added via the banner.
-    SOURCE_APP_BANNER = 2,
+    // SOURCE_APP_BANNER = 2, (deprecated)
+
     SOURCE_BOOKMARK_NAVIGATOR_WIDGET = 3,
+
     // unused
     // SOURCE_BOOKMARK_SHORTCUT_WIDGET = 4,
 
     // Used for legacy and WebAPKs launched from a notification.
     SOURCE_NOTIFICATION = 5,
 
-    // Used for WebAPKs added via the menu item.
+    // Used for WebAPKs.
     SOURCE_ADD_TO_HOMESCREEN_PWA = 6,
 
     // Used for legacy PWAs added via the menu item.
@@ -96,13 +97,13 @@ struct ShortcutInfo {
     SOURCE_EXTERNAL_INTENT = 9,
 
     // Used for WebAPK PWAs added via the banner.
-    SOURCE_APP_BANNER_WEBAPK = 10,
+    // SOURCE_APP_BANNER_WEBAPK = 10, (deprecated)
 
     // Used for WebAPK PWAs whose install source info was lost.
     SOURCE_WEBAPK_UNKNOWN = 11,
 
     // Used for Trusted Web Activities launched from third party Android apps.
-    SOURCE_TRUSTED_WEB_ACTIVITY = 12,
+    // SOURCE_TRUSTED_WEB_ACTIVITY = 12, (deprecated)
 
     // Used for WebAPK intents received as a result of text sharing events.
     SOURCE_WEBAPK_SHARE_TARGET = 13,
@@ -118,9 +119,9 @@ struct ShortcutInfo {
 
     // Used for WebAPKs added by the Chrome Android service after the
     // install was requested by another app.
-    SOURCE_CHROME_SERVICE = 16,
+    // SOURCE_CHROME_SERVICE = 16, (deprecated)
 
-    SOURCE_INSTALL_RETRY = 17,
+    // SOURCE_INSTALL_RETRY = 17, (deprecated)
 
     SOURCE_COUNT = 18
   };
@@ -143,9 +144,6 @@ struct ShortcutInfo {
   // Update the display mode based on whether the web app is webapk_compatible.
   void UpdateDisplayMode(bool webapk_compatible);
 
-  // Updates the source of the shortcut.
-  void UpdateSource(const Source source);
-
   // Returns a vector of icons including |best_primary_icon_url|,
   // |splash_image_url| and |best_shortcut_icon_urls| if they are not empty
   std::vector<WebappIcon> GetWebApkIcons();
@@ -161,7 +159,6 @@ struct ShortcutInfo {
   blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kBrowser;
   device::mojom::ScreenOrientationLockType orientation =
       device::mojom::ScreenOrientationLockType::DEFAULT;
-  Source source = SOURCE_ADD_TO_HOMESCREEN_SHORTCUT;
   absl::optional<SkColor> theme_color;
   absl::optional<SkColor> background_color;
   int ideal_splash_image_size_in_px = 0;

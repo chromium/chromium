@@ -112,7 +112,7 @@ class WebApkInstallerRunner {
 
     // WebApkInstaller owns itself.
     WebApkInstaller::InstallAsyncForTesting(
-        installer.release(), web_contents, info, SkBitmap(),
+        installer.release(), web_contents, info,
         base::BindOnce(&WebApkInstallerRunner::OnCompleted,
                        base::Unretained(this)));
 

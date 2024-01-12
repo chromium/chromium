@@ -138,7 +138,6 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
   if (metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED ||
       metadata.mobile_capable == mojom::WebPageMobileCapable::ENABLED_APPLE) {
     display = blink::mojom::DisplayMode::kStandalone;
-    UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_STANDALONE);
   }
 }
 
@@ -192,7 +191,6 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
   if (display == DisplayMode::kStandalone ||
       display == DisplayMode::kFullscreen ||
       display == DisplayMode::kMinimalUi) {
-    source = SOURCE_ADD_TO_HOMESCREEN_STANDALONE;
     // Set the orientation based on the manifest value, or ignore if the display
     // mode is different from 'standalone', 'fullscreen' or 'minimal-ui'.
     if (manifest.orientation !=
@@ -316,10 +314,6 @@ void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
       display = DisplayMode::kBrowser;
     }
   }
-}
-
-void ShortcutInfo::UpdateSource(const Source new_source) {
-  source = new_source;
 }
 
 }  // namespace webapps
