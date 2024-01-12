@@ -6,7 +6,15 @@
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+
+namespace {
+
+/// The time delta for a user to be considered as a new user.
+constexpr base::TimeDelta kNewUserTimeDelta = base::Days(7);
+
+}  // namespace
 
 ToolbarType DefaultSelectedOmniboxPosition() {
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
@@ -28,6 +36,11 @@ bool ShouldShowOmniboxPositionChoiceIPHPromo(PrefService* pref_service) {
       kBottomOmniboxPromoAppLaunch, kBottomOmniboxPromoParam);
   if (feature_param == kBottomOmniboxPromoParamForced) {
     return true;
+  }
+
+  // Don't show the promo to new users.
+  if (IsFirstRunRecent(kNewUserTimeDelta)) {
+    return false;
   }
 
   return !pref_service->GetUserPrefValue(prefs::kBottomOmnibox);

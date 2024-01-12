@@ -34,6 +34,7 @@ NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
+NSString* const kFirstRunRecency = @"FirstRunRecency";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
     @"ForceExperienceForDeviceSwitcher";
 NSString* const kSafetyCheckUpdateChromeStateOverride =
@@ -205,6 +206,15 @@ std::optional<int> GetSafetyCheckWeakPasswordsCount() {
   }
 
   return weakPasswordsCount;
+}
+
+std::optional<int> GetFirstRunRecency() {
+  int first_run_recency =
+      [[NSUserDefaults standardUserDefaults] integerForKey:kFirstRunRecency];
+  if (first_run_recency == 0) {
+    return std::nullopt;
+  }
+  return first_run_recency;
 }
 
 std::optional<int> GetSafetyCheckReusedPasswordsCount() {

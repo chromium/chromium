@@ -123,6 +123,9 @@ std::optional<int> GetSafetyCheckReusedPasswordsCount();
 // (Magic Stack) module.
 std::optional<int> GetSafetyCheckCompromisedPasswordsCount();
 
+// Returns the forced number of days since first run.
+std::optional<int> GetFirstRunRecency();
+
 // Returns the selected device segment the user wants to simulate as a string;
 // the string should either be nil or one of the options from synthetic trial
 // "Segmentation_DeviceSwitcher."

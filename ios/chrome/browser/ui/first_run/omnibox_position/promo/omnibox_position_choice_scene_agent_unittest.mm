@@ -9,6 +9,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,6 +21,40 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+
+namespace {
+
+/// FirstRunRecency key, should match the one in `system_flags`.
+NSString* kFirstRunRecencyKey = @"FirstRunRecency";
+
+/// Simulates a first run state for an existing user.
+void ForceExistingUser() {
+  FirstRun::RemoveSentinel();
+  base::File::Error file_error;
+  startup_metric_utils::FirstRunSentinelCreationResult sentinel_created =
+      FirstRun::CreateSentinel(&file_error);
+  ASSERT_EQ(sentinel_created,
+            startup_metric_utils::FirstRunSentinelCreationResult::kSuccess);
+  FirstRun::LoadSentinelInfo();
+  FirstRun::ClearStateForTesting();
+  FirstRun::IsChromeFirstRun();
+  // Set first run recency to a value considered as an existing user.
+  [[NSUserDefaults standardUserDefaults] setInteger:100
+                                             forKey:kFirstRunRecencyKey];
+}
+
+/// Simulates a first run state for a new user.
+void ForceNewUser() {
+  if (FirstRun::RemoveSentinel()) {
+    FirstRun::LoadSentinelInfo();
+    FirstRun::ClearStateForTesting();
+    FirstRun::IsChromeFirstRun();
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kFirstRunRecencyKey];
+  }
+}
+
+}  // namespace
 
 class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
  protected:
@@ -45,7 +80,11 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
   }
 
-  void TearDown() override { PlatformTest::TearDown(); }
+  void TearDown() override {
+    PlatformTest::TearDown();
+    // Clear first run sentinel and user default.
+    ForceNewUser();
+  }
 
  protected:
   OmniboxPositionChoiceSceneAgent* agent_;
@@ -65,6 +104,8 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestPromoRegistration) {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return;
   }
+  ForceExistingUser();
+
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForContinuousDisplay(promos_manager::Promo::OmniboxPosition))
@@ -79,12 +120,16 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestPromoRegistration) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
-// Tests that the promo does not get registered when the conditions aren't met.
-TEST_F(OmniboxPositionChoiceSceneAgentTest, TestNoPromoRegistration) {
+// Tests that the promo does not get registered when there is an existing
+// preferred omnibox position.
+TEST_F(OmniboxPositionChoiceSceneAgentTest,
+       TestNoPromoRegistrationExistingPosition) {
   // OmniboxPositionChoice is only available on phones.
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return;
   }
+  ForceExistingUser();
+
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForContinuousDisplay(promos_manager::Promo::OmniboxPosition))
@@ -99,12 +144,34 @@ TEST_F(OmniboxPositionChoiceSceneAgentTest, TestNoPromoRegistration) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
+// Tests that the promo does not get registered for new users.
+TEST_F(OmniboxPositionChoiceSceneAgentTest, TestNoPromoRegistrationNewUser) {
+  // OmniboxPositionChoice is only available on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
+  }
+
+  EXPECT_CALL(
+      *promos_manager_.get(),
+      RegisterPromoForContinuousDisplay(promos_manager::Promo::OmniboxPosition))
+      .Times(0);
+  EXPECT_CALL(*promos_manager_.get(),
+              DeregisterPromo(promos_manager::Promo::OmniboxPosition))
+      .Times(1);
+
+  // The promo should not register for new users.
+  ForceNewUser();
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
 // Tests that the promo derigisters when a preferred omnibox position is set.
 TEST_F(OmniboxPositionChoiceSceneAgentTest, TestDeregistration) {
   // OmniboxPositionChoice is only available on phones.
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return;
   }
+  ForceExistingUser();
+
   scene_state_.UIEnabled = YES;
   EXPECT_CALL(
       *promos_manager_.get(),
