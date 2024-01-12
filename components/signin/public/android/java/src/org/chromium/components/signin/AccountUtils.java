@@ -97,6 +97,20 @@ public class AccountUtils {
     }
 
     /**
+     * Finds the first {@link CoreAccountInfo} of the given {@param coreAccountInfos} whose Gaia ID
+     * equals the given {@param accountGaiaId}; null if there is no match.
+     */
+    public static @Nullable CoreAccountInfo findCoreAccountInfoByGaiaId(
+            final List<CoreAccountInfo> coreAccountInfos, String accountGaiaId) {
+        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
+            if (coreAccountInfo.getGaiaId().equals(accountGaiaId)) {
+                return coreAccountInfo;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the cached list of accounts from the given {@link Promise}.
      * If the cache is not yet populated, return an empty list.
      * TODO(crbug.com/1462264): Replace usage with getCoreAccountInfosIfFulfilledOrEmpty().

@@ -15,11 +15,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -47,6 +49,10 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
@@ -54,10 +60,13 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.common.ContentProcessInfo;
 
 import java.io.File;
@@ -76,6 +85,7 @@ import java.util.concurrent.CountDownLatch;
         shadows = {ChromeBackupAgentTest.BackupManagerShadow.class})
 public class ChromeBackupAgentTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
+    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     /** Shadow to allow counting of dataChanged calls. */
     @Implements(BackupManager.class)
@@ -104,12 +114,14 @@ public class ChromeBackupAgentTest {
     @Mock private ChromeBackupAgentImpl.Natives mChromeBackupAgentJniMock;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private Profile mProfile;
+    @Mock private SigninManager mSigninManager;
 
     private ChromeBackupAgentImpl mAgent;
     private AsyncInitTaskRunner mTaskRunner;
 
     private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("user1", "gaia_id_user1");
+            CoreAccountInfo.createFromEmailAndGaiaId(
+                    "user1", FakeAccountManagerFacade.toGaiaId("user1"));
 
     private static final String PREFERENCE_KEY_NOT_BACKED_UP = "not_backed_up";
     private static int sBackupValuesCount = 8;
@@ -163,6 +175,25 @@ public class ChromeBackupAgentTest {
         IdentityServicesProvider.setInstanceForTests(identityServicesProvider);
         when(identityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SYNC)).thenReturn(null);
+        when(identityServicesProvider.getSigninManager(any())).thenReturn(mSigninManager);
+        doAnswer(
+                        (invocation) -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
+                .when(mSigninManager)
+                .runAfterOperationInProgress(any());
+
+        doAnswer(
+                        (invocation) -> {
+                            SigninManager.SignInCallback callback = invocation.getArgument(2);
+                            callback.onSignInComplete();
+                            callback.onPrefsCommitted();
+                            return null;
+                        })
+                .when(mSigninManager)
+                .signin(eq(mAccountInfo), anyInt(), any());
 
         // Mock initializing the browser
         doReturn(true).when(mAgent).initializeBrowser();
@@ -531,7 +562,8 @@ public class ChromeBackupAgentTest {
         assertThat(prefs.getInt(ChromeBackupAgentImpl.BACKUP_FAILURE_COUNT, 0), equalTo(0));
     }
 
-    private BackupDataInput createMockBackupData() throws IOException {
+    private BackupDataInput createMockBackupData(boolean hasSyncingUser, boolean hasSignedInUser)
+            throws IOException {
         // Mock the backup data
         BackupDataInput backupData = mock(BackupDataInput.class);
 
@@ -546,8 +578,10 @@ public class ChromeBackupAgentTest {
         };
         byte[] accountSettingsPrefBytes =
                 ApiCompatibilityUtils.getBytesUtf8(sAccountSettingsPrefValue);
-        byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
-        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        String syncingUserEmail = hasSyncingUser ? mAccountInfo.getEmail() : "";
+        byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(syncingUserEmail);
+        String signedInUserGaiaId = hasSignedInUser ? mAccountInfo.getGaiaId() : "";
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(signedInUserGaiaId);
         final byte[][] values = {
             {0}, {1}, accountSettingsPrefBytes, {1}, {23, 42}, unameBytes, uidBytes
         };
@@ -602,13 +636,14 @@ public class ChromeBackupAgentTest {
     }
 
     /**
-     * Test method for {@link ChromeBackupAgent#onRestore}.
-     *
-     * @throws IOException
+     * Test method for {@link ChromeBackupAgent#onRestore}. The feature flag for restoring signed-in
+     * only state is disabled and the backup contains the previously syncing user only.
      */
     @Test
-    public void testOnRestore_normal() throws IOException {
-        BackupDataInput backupData = createMockBackupData();
+    @DisableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
+    public void testOnRestore_normal_withSyncingUser_signInRestoreDisabled() throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ false);
         mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
 
         try (ParcelFileDescriptor newState =
@@ -633,17 +668,168 @@ public class ChromeBackupAgentTest {
         assertThat(
                 ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
+
+        // Test that the account is recorded to trigger the sign-in & sync flow later.
+        assertTrue(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+        assertThat(
+                prefs.getString(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, ""),
+                equalTo(mAccountInfo.getEmail()));
+
+        // Test that the sign-in is not triggered immediately.
+        verify(mSigninManager, never()).signin(eq(mAccountInfo), anyInt(), any());
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The feature flag for restoring signed-in
+     * only state is enabled, and the backup contains the previously signed-in user only.
+     */
+    @Test
+    @EnableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
+    public void testOnRestore_normal_withSignedInUser_signedInRestoreEnabled() throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ false, /* hasSignedInUser= */ true);
+        mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            // Do a restore.
+            mAgent.onRestore(backupData, 0, newState);
+        }
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
+
+        // Test that the status of the restore has been recorded.
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
+
+        // Test that the account is not recorded to trigger the sign-in & sync flow later.
+        assertFalse(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+
+        // Test that sign-in is triggered for the given account.
+        verify(mSigninManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .signin(eq(mAccountInfo), anyInt(), any());
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The feature flag for restoring signed-in
+     * only state is enabled and the backup contains a record for the previously singed-in user and
+     * another for the syncing user.
+     */
+    @Test
+    @EnableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
+    public void testOnRestore_normal_withSignedInAndSyncingUser_signedInRestoreEnabled()
+            throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ true);
+        mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            // Do a restore.
+            mAgent.onRestore(backupData, 0, newState);
+        }
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
+
+        // Test that the status of the restore has been recorded.
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
+
+        // Test that the account is recorded to trigger the sign-in & sync flow later.
+        assertTrue(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+        assertThat(
+                prefs.getString(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, ""),
+                equalTo(mAccountInfo.getEmail()));
+
+        // Test that the sign-in is not triggered immediately.
+        verify(mSigninManager, never()).signin(eq(mAccountInfo), anyInt(), any());
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The feature flag for restoring signed-in
+     * only state is disabled and the backup contains a record for the previously singed-in user and
+     * another for the syncing user.
+     */
+    @Test
+    @DisableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
+    public void testOnRestore_normal_withSignedInAndSyncingUser_signedInRestoreDisabled()
+            throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ true);
+        mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            // Do a restore.
+            mAgent.onRestore(backupData, 0, newState);
+        }
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
+
+        // Test that the status of the restore has been recorded.
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
+
+        // Test that the account is recorded to trigger the sign-in & sync flow later.
+        assertTrue(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+        assertThat(
+                prefs.getString(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, ""),
+                equalTo(mAccountInfo.getEmail()));
+
+        // Test that the sign-in is not triggered immediately.
+        verify(mSigninManager, never()).signin(eq(mAccountInfo), anyInt(), any());
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The feature flag for restoring signed-in
+     * only state is enabled and the backup contains a record for the previously syncing user only.
+     */
+    @Test
+    @EnableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
+    public void testOnRestore_normal_withSyncingUser_signedInRestoreEnabled() throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ false);
+        mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            // Do a restore.
+            mAgent.onRestore(backupData, 0, newState);
+        }
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
+
+        // Test that the status of the restore has been recorded.
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
+
+        // Test that the account is recorded to trigger the sign-in & sync flow later.
+        assertTrue(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+        assertThat(
+                prefs.getString(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, ""),
+                equalTo(mAccountInfo.getEmail()));
+
+        // Test that the sign-in is not triggered immediately.
+        verify(mSigninManager, never()).signin(eq(mAccountInfo), anyInt(), any());
     }
 
     /**
      * Test method for {@link ChromeBackupAgent#onRestore} for a user that doesn't exist on the
-     * device
-     *
-     * @throws IOException
+     * device. The feature flag for restoring signed-in only state is disabled.
      */
     @Test
-    public void testOnRestore_badUser() throws IOException {
-        BackupDataInput backupData = createMockBackupData();
+    @EnableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
+    public void testOnRestore_badUser_signedInRestoreDisabled() throws IOException {
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ true);
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
@@ -662,16 +848,21 @@ public class ChromeBackupAgentTest {
         assertThat(
                 ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN));
+
+        // Test that the sign-in is not triggered immediately.
+        verify(mSigninManager, never()).signin(eq(mAccountInfo), anyInt(), any());
+
+        // Test that the account is recorded to trigger the sign-in & sync flow later.
+        assertFalse(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
     }
 
     /**
      * Test method for {@link ChromeBackupAgent#onRestore} for browser startup failure
-     *
-     * @throws IOException
      */
     @Test
     public void testOnRestore_browserStartupFails() throws IOException {
-        BackupDataInput backupData = createMockBackupData();
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ true);
         doReturn(false).when(mAgent).initializeBrowser();
 
         try (ParcelFileDescriptor newState =
@@ -691,12 +882,11 @@ public class ChromeBackupAgentTest {
 
     /**
      * Test method for {@link ChromeBackupAgent#onRestore} for browser startup failure
-     *
-     * @throws IOException
      */
     @Test
     public void testOnRestore_afterFirstRun() throws IOException {
-        BackupDataInput backupData = createMockBackupData();
+        BackupDataInput backupData =
+                createMockBackupData(/* hasSyncingUser= */ true, /* hasSignedInUser= */ true);
         FirstRunStatus.setFirstRunFlowComplete(true);
 
         try (ParcelFileDescriptor newState =
