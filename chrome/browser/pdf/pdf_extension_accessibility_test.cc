@@ -78,7 +78,8 @@ namespace {
 using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 
-std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
+std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree,
+                                     bool skip_status_and_banner) {
   // Create a string representation of the tree starting with the kPdfRoot
   // object.
   std::string ax_tree_dump;
@@ -94,8 +95,8 @@ std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
 
     // Exclude the status node and its wrapper node from `ax_tree_dump` if they
     // exist in the tree. Tests don't expect them to be included in the dump.
-    if (node.role == ax::mojom::Role::kBanner ||
-        node.role == ax::mojom::Role::kStatus) {
+    if (skip_status_and_banner && (node.role == ax::mojom::Role::kBanner ||
+                                   node.role == ax::mojom::Role::kStatus)) {
       continue;
     }
 
@@ -161,6 +162,40 @@ constexpr char kExpectedPDFAXTree[] =
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
 
+#if BUILDFLAG(IS_LINUX)
+constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
+    "pdfRoot 'PDF document containing 1 page'\n"
+    "  banner\n"
+    "    status 'This PDF is inaccessible. Text extracted, powered by Google "
+    "AI'\n"
+    "  region 'Page 1'\n"
+    "    paragraph\n"
+    "      region\n"
+    "        banner\n"
+    "          staticText 'Start of extracted text'\n"
+    "        staticText 'Hello, world!'\n"
+    "          inlineTextBox 'Hello, world! '\n"
+    "        contentInfo\n"
+    "          staticText 'End of extracted text'\n";
+
+constexpr char kExpectedHelloWorldPDFAXTreeWithoutOcrResults[] =
+    "pdfRoot 'PDF document containing 1 page'\n"
+    "  banner\n"
+    "    status 'This PDF is inaccessible. Open context menu and turn on "
+    "\"extract text from PDF\"'\n"
+    "  region 'Page 1'\n"
+    "    paragraph\n"
+    "      image 'Unlabeled image'\n";
+
+constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
+    "pdfRoot 'PDF document containing 1 page'\n"
+    "  banner\n"
+    "    status 'This PDF is inaccessible. No text extracted'\n"
+    "  region 'Page 1'\n"
+    "    paragraph\n"
+    "      image 'Unlabeled image'\n";
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace
 
 // Using ASSERT_TRUE deliberately instead of ASSERT_EQ or ASSERT_STREQ
@@ -223,7 +258,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                                                 "1 First Section\r\n");
   ui::AXTreeUpdate ax_tree =
       GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-  std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
 
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
@@ -243,7 +279,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
-  std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
@@ -259,7 +296,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                                                 "1 First Section\r\n");
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
-  std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
@@ -275,7 +313,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                                                 "1 First Section\r\n");
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
-  std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
@@ -1286,4 +1325,119 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_EnsureScreenAIInitializes) {
   EXPECT_EQ(screen_ai::ScreenAIInstallState::State::kReady,
             screen_ai::ScreenAIInstallState::GetInstance()->get_state());
 }
+
+// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(THREAD_SANITIZER)
+#define MAYBE_HelloWorld DISABLED_HelloWorld
+#else
+#define MAYBE_HelloWorld HelloWorld
+#endif
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_HelloWorld) {
+  ScreenAIInstallStateObserver observer;
+
+  // Turn on PDF OCR by setting its pref to be true.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive));
+
+  observer.WaitForReady();
+  EXPECT_EQ(screen_ai::ScreenAIInstallState::State::kReady,
+            screen_ai::ScreenAIInstallState::GetInstance()->get_state());
+
+  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/hello-world-in-image.pdf")));
+
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(contents);
+  const std::string completed_message =
+      l10n_util::GetStringUTF8(IDS_PDF_OCR_COMPLETED);
+  WaitForAccessibilityTreeToContainNodeWithName(contents, completed_message);
+
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/false);
+
+  ASSERT_MULTILINE_STREQ(kExpectedHelloWorldPDFAXTreeWithOcrResults,
+                         ax_tree_dump);
+}
+
+// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(THREAD_SANITIZER)
+#define MAYBE_FeatureNotificationWhenOff DISABLED_FeatureNotificationWhenOff
+#else
+#define MAYBE_FeatureNotificationWhenOff FeatureNotificationWhenOff
+#endif
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
+                       MAYBE_FeatureNotificationWhenOff) {
+  ScreenAIInstallStateObserver observer;
+
+  // Turn off PDF OCR by setting its pref to be false.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, false);
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive));
+
+  observer.WaitForReady();
+  EXPECT_EQ(screen_ai::ScreenAIInstallState::State::kReady,
+            screen_ai::ScreenAIInstallState::GetInstance()->get_state());
+
+  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/hello-world-in-image.pdf")));
+
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(contents);
+  const std::string feature_notification =
+      l10n_util::GetStringUTF8(IDS_PDF_OCR_FEATURE_ALERT);
+  WaitForAccessibilityTreeToContainNodeWithName(contents, feature_notification);
+
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/false);
+
+  ASSERT_MULTILINE_STREQ(kExpectedHelloWorldPDFAXTreeWithoutOcrResults,
+                         ax_tree_dump);
+}
+
+// TODO(crbug.com/1516559): Add a fake library for sanitizer tests.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(THREAD_SANITIZER)
+#define MAYBE_NoOcrResultOnBlankImagePdf DISABLED_NoOcrResultOnBlankImagePdf
+#else
+#define MAYBE_NoOcrResultOnBlankImagePdf NoOcrResultOnBlankImagePdf
+#endif
+IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
+                       MAYBE_NoOcrResultOnBlankImagePdf) {
+  ScreenAIInstallStateObserver observer;
+
+  // Turn on PDF OCR by setting its pref to be false.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive));
+
+  observer.WaitForReady();
+  EXPECT_EQ(screen_ai::ScreenAIInstallState::State::kReady,
+            screen_ai::ScreenAIInstallState::GetInstance()->get_state());
+
+  EXPECT_TRUE(LoadPdf(
+      embedded_test_server()->GetURL("/pdf/accessibility/blank_image.pdf")));
+
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(contents);
+  // "/pdf/accessibility/blank_image.pdf" has a blank image.
+  const std::string no_ocr_result_notification =
+      l10n_util::GetStringUTF8(IDS_PDF_OCR_NO_RESULT);
+  WaitForAccessibilityTreeToContainNodeWithName(contents,
+                                                no_ocr_result_notification);
+
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/false);
+
+  ASSERT_MULTILINE_STREQ(kExpectedBlankPDFAXTreeWithPdfOcr, ax_tree_dump);
+}
+
 #endif  // BUILDFLAG(IS_LINUX)
