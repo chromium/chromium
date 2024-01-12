@@ -37,6 +37,9 @@ class CanvasColorCache;
 class CanvasImageSource;
 class Color;
 class Image;
+class Mesh2DVertexBuffer;
+class Mesh2DUVBuffer;
+class Mesh2DIndexBuffer;
 class OffscreenCanvas;
 class Path2D;
 class TextMetrics;
@@ -213,6 +216,18 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   CanvasPattern* createPattern(CanvasImageSource*,
                                const String& repetition_type,
                                ExceptionState&);
+
+  Mesh2DVertexBuffer* createMesh2DVertexBuffer(NotShared<DOMFloat32Array>,
+                                               ExceptionState&);
+  Mesh2DUVBuffer* createMesh2DUVBuffer(NotShared<DOMFloat32Array>,
+                                       ExceptionState&);
+  Mesh2DIndexBuffer* createMesh2DIndexBuffer(NotShared<DOMUint16Array>,
+                                             ExceptionState&);
+  void drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
+                const Mesh2DUVBuffer* uv_buffer,
+                const Mesh2DIndexBuffer* index_buffer,
+                const V8CanvasImageSource* image,
+                ExceptionState&);
 
   ImageData* createImageData(ImageData*, ExceptionState&) const;
   ImageData* createImageData(int sw, int sh, ExceptionState&) const;

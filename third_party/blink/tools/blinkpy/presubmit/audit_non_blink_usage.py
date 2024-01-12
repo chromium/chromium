@@ -345,6 +345,7 @@ _CONFIG = [
             'cc::RecordPaintCanvas',
             'cc::PaintShader',
             'cc::PaintWorkletInput',
+            'cc::RefCountedBuffer',
             'cc::NodeId',
             'cc::NodeInfo',
             'cc::UsePaintCache',

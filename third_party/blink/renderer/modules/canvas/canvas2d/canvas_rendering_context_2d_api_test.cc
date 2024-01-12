@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 
 #include <memory>
@@ -27,7 +28,11 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "ui/accessibility/ax_mode.h"
 
 using testing::Mock;
@@ -668,6 +673,200 @@ TEST_F(CanvasRenderingContext2DAPITest,
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSensitiveOps());
   EXPECT_TRUE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
+}
+
+using testing::ElementsAre;
+using testing::IsNull;
+using testing::Pointee;
+
+MATCHER_P(Mesh2dBufferIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.GetBuffer()->data(), result_listener);
+}
+
+NotShared<DOMFloat32Array> CreateFloat32Array(std::vector<float> array) {
+  return NotShared<DOMFloat32Array>(
+      DOMFloat32Array::Create(array.data(), array.size()));
+}
+
+NotShared<DOMUint16Array> CreateUint16Array(std::vector<uint16_t> array) {
+  return NotShared<DOMUint16Array>(
+      DOMUint16Array::Create(array.data(), array.size()));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer0Floats) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(CreateFloat32Array({}),
+                                                    exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer1Float) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(CreateFloat32Array({101}),
+                                                    exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer2Floats) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(
+                  CreateFloat32Array({101, 102}), exception_state),
+              Pointee(Mesh2dBufferIs(ElementsAre(SkPoint(101, 102)))));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer3Floats) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(
+                  CreateFloat32Array({101, 102, 103}), exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer4Floats) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(
+                  CreateFloat32Array({101, 102, 103, 104}), exception_state),
+              Pointee(Mesh2dBufferIs(
+                  ElementsAre(SkPoint(101, 102), SkPoint(103, 104)))));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer0Floats) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DUVBuffer(CreateFloat32Array({}),
+                                                exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer1Float) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DUVBuffer(CreateFloat32Array({101}),
+                                                exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer2Floats) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DUVBuffer(CreateFloat32Array({101, 102}),
+                                                exception_state),
+              Pointee(Mesh2dBufferIs(ElementsAre(SkPoint(101, 102)))));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer3Floats) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DUVBuffer(
+                  CreateFloat32Array({101, 102, 103}), exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer4Floats) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DUVBuffer(
+                  CreateFloat32Array({101, 102, 103, 104}), exception_state),
+              Pointee(Mesh2dBufferIs(
+                  ElementsAre(SkPoint(101, 102), SkPoint(103, 104)))));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer0Uints) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({}),
+                                                   exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer1Uint) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({1}),
+                                                   exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer2Uints) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({1, 2}),
+                                                   exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer3Uints) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({1, 2, 3}),
+                                                   exception_state),
+              Pointee(Mesh2dBufferIs(ElementsAre(1, 2, 3))));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer4Uints) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(
+                  CreateUint16Array({1, 2, 3, 4}), exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer5Uints) {
+  CreateContext(kNonOpaque);
+  DummyExceptionStateForTesting exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(
+                  CreateUint16Array({1, 2, 3, 4, 5}), exception_state),
+              IsNull());
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer6Uints) {
+  CreateContext(kNonOpaque);
+  NonThrowableExceptionState exception_state;
+  EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(
+                  CreateUint16Array({1, 2, 3, 4, 5, 6}), exception_state),
+              Pointee(Mesh2dBufferIs(ElementsAre(1, 2, 3, 4, 5, 6))));
+}
+
+TEST_F(CanvasRenderingContext2DAPITest, DrawMesh) {
+  CreateContext(kNonOpaque);
+  CanvasRenderingContext2D* ctx = Context2D();
+  V8CanvasImageSource* image_source =
+      MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
+
+  DummyExceptionStateForTesting exception_state;
+  const auto* vert_buffer = ctx->createMesh2DVertexBuffer(
+      CreateFloat32Array({0, 0, 100, 0, 100, 100}), exception_state);
+  ASSERT_NE(vert_buffer, nullptr);
+
+  const auto* uv_buffer = ctx->createMesh2DUVBuffer(
+      CreateFloat32Array({0, 0, 1, 0, 1, 1}), exception_state);
+  ASSERT_NE(uv_buffer, nullptr);
+
+  const auto* index_buffer = ctx->createMesh2DIndexBuffer(
+      CreateUint16Array({0, 1, 2}), exception_state);
+  ASSERT_NE(index_buffer, nullptr);
+
+  ASSERT_FALSE(exception_state.HadException());
+
+  // valid call
+  ctx->drawMesh(vert_buffer, uv_buffer, index_buffer, image_source,
+                exception_state);
+  EXPECT_FALSE(exception_state.HadException());
 }
 
 }  // namespace blink

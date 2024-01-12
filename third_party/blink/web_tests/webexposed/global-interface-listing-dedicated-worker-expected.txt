@@ -1286,6 +1286,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface MediaSourceHandle
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface Mesh2DIndexBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface Mesh2DUVBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface Mesh2DVertexBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1

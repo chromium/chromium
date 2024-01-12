@@ -6,16 +6,20 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <memory>
+#include <type_traits>
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
@@ -41,6 +45,9 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -2035,6 +2042,85 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   pattern->SetExecutionContext(
       identifiability_study_helper_.execution_context());
   return pattern;
+}
+
+namespace {
+
+scoped_refptr<cc::RefCountedBuffer<SkPoint>> MakeSkPointBuffer(
+    NotShared<DOMFloat32Array> array,
+    ExceptionState& exception_state,
+    const char* msg) {
+  if ((array->length() == 0) || (array->length() % 2)) {
+    exception_state.ThrowRangeError(msg);
+    return nullptr;
+  }
+
+  static_assert(std::is_trivially_copyable<SkPoint>::value);
+  static_assert(sizeof(SkPoint) == sizeof(float) * 2);
+
+  const size_t size = array->length() / 2;
+  std::vector<SkPoint> skpoints(size);
+  std::memcpy(skpoints.data(), array->Data(), size * sizeof(SkPoint));
+
+  return base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+      std::move(skpoints));
+}
+
+}  // namespace
+
+Mesh2DVertexBuffer* BaseRenderingContext2D::createMesh2DVertexBuffer(
+    NotShared<DOMFloat32Array> array,
+    ExceptionState& exception_state) {
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> buffer = MakeSkPointBuffer(
+      array, exception_state,
+      "The vertex buffer must contain a non-zero, even number of floats.");
+
+  return buffer ? MakeGarbageCollected<Mesh2DVertexBuffer>(std::move(buffer))
+                : nullptr;
+}
+
+Mesh2DUVBuffer* BaseRenderingContext2D::createMesh2DUVBuffer(
+    NotShared<DOMFloat32Array> array,
+    ExceptionState& exception_state) {
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> buffer = MakeSkPointBuffer(
+      array, exception_state,
+      "The UV buffer must contain a non-zero, even number of floats.");
+
+  return buffer ? MakeGarbageCollected<Mesh2DUVBuffer>(std::move(buffer))
+                : nullptr;
+}
+
+Mesh2DIndexBuffer* BaseRenderingContext2D::createMesh2DIndexBuffer(
+    NotShared<DOMUint16Array> array,
+    ExceptionState& exception_state) {
+  if ((array->length() == 0) || (array->length() % 3)) {
+    exception_state.ThrowRangeError(
+        "The index buffer must contain a non-zero, multiple of three number of "
+        "uints.");
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<Mesh2DIndexBuffer>(
+      base::MakeRefCounted<cc::RefCountedBuffer<uint16_t>>(
+          std::vector<uint16_t>(array->Data(),
+                                array->Data() + array->length())));
+}
+
+void BaseRenderingContext2D::drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
+                                      const Mesh2DUVBuffer* uv_buffer,
+                                      const Mesh2DIndexBuffer* index_buffer,
+                                      const V8CanvasImageSource* image,
+                                      ExceptionState& exception_state) {
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> vertex_data =
+      vertex_buffer->GetBuffer();
+  CHECK_NE(vertex_data, nullptr);
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> uv_data = uv_buffer->GetBuffer();
+  CHECK_NE(uv_data, nullptr);
+  scoped_refptr<cc::RefCountedBuffer<uint16_t>> index_data =
+      index_buffer->GetBuffer();
+  CHECK_NE(index_data, nullptr);
+
+  // TODO(fmalita): impl
 }
 
 bool BaseRenderingContext2D::ComputeDirtyRect(const gfx::RectF& local_rect,

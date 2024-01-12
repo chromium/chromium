@@ -78,6 +78,7 @@ cc_component("paint") {
     "raw_memory_transfer_cache_entry.h",
     "record_paint_canvas.cc",
     "record_paint_canvas.h",
+    "refcounted_buffer.h",
     "render_surface_filters.cc",
     "render_surface_filters.h",
     "scoped_raster_flags.cc",

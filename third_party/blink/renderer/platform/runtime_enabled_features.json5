@@ -567,6 +567,11 @@
       base_feature: "none",
     },
     {
+      name: "Canvas2dMesh",
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "Canvas2dScrollPathIntoView",
       status: "experimental",
       base_feature: "none",
