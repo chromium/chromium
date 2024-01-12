@@ -732,6 +732,10 @@ bool EnablePruneOldTransferCacheEntries() {
          base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
 }
 
+bool IsCanvasOopRasterizationEnabled() {
+  return base::FeatureList::IsEnabled(kCanvasOopRasterization);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool IsAImageReaderEnabled() {
   // Device Hammer_Energy_2 seems to be very crash with image reader during

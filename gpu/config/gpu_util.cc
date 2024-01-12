@@ -258,8 +258,9 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
 
   // Canvas OOP Rasterization on platforms that are not fully enabled is
   // controlled by a finch experiment.
-  if (!base::FeatureList::IsEnabled(features::kCanvasOopRasterization))
+  if (!features::IsCanvasOopRasterizationEnabled()) {
     return kGpuFeatureStatusDisabled;
+  }
 
   return kGpuFeatureStatusEnabled;
 }
