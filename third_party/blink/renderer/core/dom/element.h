@@ -149,8 +149,10 @@ enum class ElementFlags {
   kContainsFullScreenElement = 1 << 3,
   kIsInTopLayer = 1 << 4,
   kContainsPersistentVideo = 1 << 5,
+  kIsEligibleForElementCapture = 1 << 6,
+  kHasCheckedElementCaptureEligibility = 1 << 7,
 
-  kNumberOfElementFlags = 6,  // Size of bitfield used to store the flags.
+  kNumberOfElementFlags = 8,  // Size of bitfield used to store the flags.
 };
 
 enum class ShadowRootType;
@@ -702,6 +704,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // returns the non-empty `id` which it previously provided.
   // Otherwise, returns a nullptr.
   const RestrictionTargetId* GetRestrictionTargetId() const;
+
+  // Set whether the element is eligible for element level capture. This is
+  // based on how the element is painted. Should only be called if the element
+  // has a RestrictionTargetId.
+  void SetIsEligibleForElementCapture(bool value);
 
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 

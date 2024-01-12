@@ -5061,6 +5061,53 @@ const RestrictionTargetId* Element::GetRestrictionTargetId() const {
                        : nullptr;
 }
 
+void Element::SetIsEligibleForElementCapture(bool value) {
+  CHECK(GetRestrictionTargetId());
+
+  const bool has_checked =
+      HasElementFlag(ElementFlags::kHasCheckedElementCaptureEligibility);
+  if (!has_checked) {
+    SetElementFlag(ElementFlags::kHasCheckedElementCaptureEligibility, true);
+  }
+
+  ConsoleMessage* console_message = nullptr;
+  if (has_checked) {
+    const bool old_value =
+        !HasRareData() ||
+        HasElementFlag(ElementFlags::kIsEligibleForElementCapture);
+
+    if (value != old_value) {
+      console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kInfo,
+          String::Format("restrictTo(): Element %s restriction eligibility. "
+                         "For eligibility conditions, see "
+                         "https://screen-share.github.io/element-capture/"
+                         "#elements-eligible-for-restriction",
+                         value ? "gained" : "lost"));
+    }
+  } else {
+    // We want to issue a different log message if the element is not eligible
+    // when first painted.
+    if (!value) {
+      console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "restrictTo(): Element is not eligible for restriction. For "
+          "eligibility conditions, see "
+          "https://screen-share.github.io/element-capture/"
+          "#elements-eligible-for-restriction");
+    }
+  }
+
+  if (console_message) {
+    console_message->SetNodes(GetDocument().GetFrame(), {this->GetDomNodeId()});
+    GetDocument().AddConsoleMessage(console_message);
+  }
+
+  return SetElementFlag(ElementFlags::kIsEligibleForElementCapture, value);
+}
+
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {
   DCHECK(definition);
   DCHECK(!GetCustomElementDefinition());

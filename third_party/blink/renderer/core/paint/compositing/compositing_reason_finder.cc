@@ -387,7 +387,9 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (element && element->GetRestrictionTargetId()) {
-    if (IsEligibleForElementCapture(object)) {
+    const bool is_eligible = IsEligibleForElementCapture(object);
+    element->SetIsEligibleForElementCapture(is_eligible);
+    if (is_eligible) {
       reasons |= CompositingReason::kElementCapture;
     }
   }
