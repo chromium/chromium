@@ -79,7 +79,7 @@ function getInputKeys(keyEvent: KeyEvent): string[] {
   // TODO(yyhyyh@): Remove the condition when it's fixed in backend.
   if (keyEvent.keyDisplay !== undefined && keyEvent.keyDisplay.length !== 0 &&
       !inputKeysArray.includes(keyEvent.keyDisplay.toLowerCase())) {
-    inputKeysArray.push(keyEvent.keyDisplay.toLowerCase());
+    inputKeysArray.push(keyEvent.keyDisplay);
   } else {
     // If no regular key to display, remove the extra '+'.
     inputKeysArray.splice(inputKeysArray.length - 1, 1);
