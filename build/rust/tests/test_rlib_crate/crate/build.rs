@@ -40,7 +40,14 @@ fn main() {
     }
 
     // Some tests as to whether we're properly emulating various cargo features.
-    assert!(Path::new(&env::var_os("CARGO_MANIFEST_DIR").unwrap()).join("build.rs").exists());
+    let cargo_manifest_dir = &env::var_os("CARGO_MANIFEST_DIR").unwrap();
+    let manifest_dir_path = Path::new(cargo_manifest_dir);
+    assert!(
+        !manifest_dir_path.is_absolute(),
+        "CARGO_MANIFEST_DIR={} should be relative path for build cache sharing.",
+        manifest_dir_path.display()
+    );
+    assert!(manifest_dir_path.join("build.rs").exists());
     assert!(Path::new("build.rs").exists());
     assert!(Path::new(&env::var_os("OUT_DIR").unwrap()).exists());
     // Confirm the following env var is set, but do not attempt to validate content
