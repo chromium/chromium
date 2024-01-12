@@ -453,12 +453,7 @@ public abstract class CronetEngine {
             return setConnectionMigrationOptions(connectionMigrationOptionsBuilder.build());
         }
 
-        /**
-         * Build a {@link CronetEngine} using this builder's configuration.
-         *
-         * @return constructed {@link CronetEngine}.
-         */
-        public CronetEngine build() {
+        protected ExperimentalCronetEngine buildExperimental() {
             int implLevel = getImplementationApiLevel();
             if (implLevel != -1 && implLevel < getMaximumApiLevel()) {
                 Log.w(
@@ -471,6 +466,15 @@ public abstract class CronetEngine {
             }
 
             return mBuilderDelegate.build();
+        }
+
+        /**
+         * Build a {@link CronetEngine} using this builder's configuration.
+         *
+         * @return constructed {@link CronetEngine}.
+         */
+        public CronetEngine build() {
+            return buildExperimental();
         }
 
         /**
