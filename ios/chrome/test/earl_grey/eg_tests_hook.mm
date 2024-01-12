@@ -12,6 +12,7 @@
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -177,6 +178,10 @@ void RunTestsIfPresent() {
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No delays for eg tests.
   return base::Seconds(0);
+}
+
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return std::make_unique<drive::TestDriveService>();
 }
 
 }  // namespace tests_hook

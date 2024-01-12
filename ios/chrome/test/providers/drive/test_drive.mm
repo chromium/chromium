@@ -4,7 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/drive/drive_api.h"
 
-#import "ios/chrome/test/providers/drive/test_drive_service.h"
+#import "ios/chrome/browser/drive/model/test_drive_service.h"
 
 namespace ios::provider {
 

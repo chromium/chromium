@@ -4,14 +4,8 @@
 
 source_set("drive") {
   testonly = true
-  sources = [
-    "test_drive.mm",
-    "test_drive_service.h",
-    "test_drive_service.mm",
-  ]
+  sources = [ "test_drive.mm" ]
   deps = [
-    "//base",
-    "//ios/chrome/browser/drive/model:drive_service",
     "//ios/chrome/browser/drive/model:test_support",
     "//ios/public/provider/chrome/browser/drive:drive_api",
   ]

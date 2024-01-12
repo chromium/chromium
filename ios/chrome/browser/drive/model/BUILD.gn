@@ -85,6 +85,7 @@ source_set("drive_service_factory") {
     ":drive_service",
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
@@ -97,8 +98,14 @@ source_set("test_support") {
   sources = [
     "test_drive_file_uploader.h",
     "test_drive_file_uploader.mm",
+    "test_drive_service.h",
+    "test_drive_service.mm",
   ]
-  public_deps = [ ":drive_file_uploader" ]
+  public_deps = [
+    ":drive_file_uploader",
+    ":drive_service",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

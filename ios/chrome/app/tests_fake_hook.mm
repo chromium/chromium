@@ -71,4 +71,8 @@ base::TimeDelta PasswordCheckMinimumDuration() {
   return base::Seconds(3);
 }
 
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
+  return nullptr;
+}
+
 }  // namespace tests_hook

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_configuration.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -39,6 +40,12 @@ DriveServiceFactory::~DriveServiceFactory() = default;
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  std::unique_ptr<DriveService> overridden_drive_service =
+      tests_hook::GetOverriddenDriveService();
+  if (overridden_drive_service) {
+    return overridden_drive_service;
+  }
+
   ApplicationContext* application_context = GetApplicationContext();
   drive::DriveServiceConfiguration configuration{};
   configuration.sso_service = application_context->GetSSOService();

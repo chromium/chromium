@@ -11,6 +11,9 @@ class PrefService;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
 class SystemIdentityManager;
+namespace drive {
+class DriveService;
+}
 namespace policy {
 class ConfigurationPolicyProvider;
 }
@@ -117,6 +120,10 @@ void RunTestsIfPresent();
 // fast and making it flicker. Test targets do not have an artificial minimum
 // duration as it can make test flaky.
 base::TimeDelta PasswordCheckMinimumDuration();
+
+// Returns a Drive service instance that should be used in EG tests. The real
+// instance will be used if this hook returns a nullptr.
+std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
 
 }  // namespace tests_hook
 
