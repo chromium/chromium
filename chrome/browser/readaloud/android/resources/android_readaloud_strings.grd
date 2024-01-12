@@ -178,7 +178,7 @@
         Close player.
       </message>
       <message name="IDS_READALOUD_PLAYER_NAME" desc="Name of the Read Aloud player for accessiblity.">
-        “Listen to this page” player.
+        “Listen to this page” player
       </message>
       <message name="IDS_READALOUD_PLAYER_OPENED_AT_FULL_HEIGHT" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet expands to its full height.">
         “Listen to this page” player opened at full height.
@@ -222,23 +222,35 @@
       <message name="IDS_READALOUD_EXPANDED_PLAYBACK_ERROR_DESCRIPTION" desc="Description message displayed in the expanded player when an error occured during 'Listen to this page' playback.">
         Unfortunately, playback is unavailable for this page at this time. Please try again later.
       </message>
-       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
+      <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
       </message>
        <message name="IDS_READALOUD_VOICE_MENU_TITLE" desc="Voice menu title in options menu.">
         Voice
       </message>
-       <message name="IDS_READALOUD_TRANSLATE_MENU_TITLE" desc="Translate menu title in options menu.">
+      <message name="IDS_READALOUD_TRANSLATE_MENU_TITLE" desc="Translate menu title in options menu.">
         Translate
       </message>
        <message name="IDS_READALOUD_HIGHLIGHT_TOGGLE_NAME" desc="Highlight toggle name in options menu.">
         Highlight text &amp; auto scroll
       </message>
-       <message name="IDS_READALOUD_OPTIONS_MENU_TITLE" desc="Options menu title.">
+      <message name="IDS_READALOUD_OPTIONS_MENU_TITLE" desc="Options menu title.">
         Options
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_TITLE" desc="Playback speed menu title.">
+        Playback Speed
       </message>
       <message name="IDS_READALOUD_SEEK_BAR" desc="Accessibility string for the 'seekbar'.">
         Scrub Playback
+      </message>
+      <message name="IDS_READALOUD_OPTIONS_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
+        Options menu
+      </message>
+      <message name="IDS_READALOUD_VOICE_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
+        Voice menu
+      </message>
+      <message name="IDS_READALOUD_SPEED_MENU_DESCRIPTION" desc="Accessibility string announced when the playback speed menu is opened.">
+        Playback speed menu
       </message>
     </messages>
   </release>

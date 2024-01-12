@@ -119,6 +119,14 @@ class VoiceMenuSheetContent extends MenuSheetContent {
         }
     }
 
+    // BottomSheetContent
+    @Override
+    public int getSheetContentDescriptionStringId() {
+        // "Voice menu"
+        // Automatically appended: "Swipe down to close."
+        return R.string.readaloud_voice_menu_description;
+    }
+
     private void onItemSelected(int itemId) {
         if (mInteractionHandler == null) {
             return;

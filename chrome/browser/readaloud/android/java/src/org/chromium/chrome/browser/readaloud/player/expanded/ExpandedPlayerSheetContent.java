@@ -300,7 +300,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // "Read Aloud player."
+        // "'Listen to this page' player."
         // Automatically appended: "Swipe down to close."
         return R.string.readaloud_player_name;
     }
