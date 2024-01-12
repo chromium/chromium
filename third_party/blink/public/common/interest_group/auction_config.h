@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -323,6 +324,9 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   bool IsDirectFromSellerSignalsValid(
       const absl::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals) const;
+
+  // Serializes the configuration in a manner suitable for sending to devtools.
+  base::Value::Dict SerializeForDevtools() const;
 
   // Seller running the auction.
   url::Origin seller;
