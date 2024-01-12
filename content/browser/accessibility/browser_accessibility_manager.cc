@@ -995,6 +995,9 @@ void BrowserAccessibilityManager::ScrollToMakeVisible(
   base::RecordAction(
       base::UserMetricsAction("Accessibility.NativeApi.ScrollToMakeVisible"));
 
+  base::UmaHistogramBoolean("Accessibility.ScreenReader.ScrollToImage",
+                            node.GetRole() == ax::mojom::Role::kImage);
+
   ui::AXActionData action_data;
   action_data.target_node_id = node.GetId();
   action_data.action = ax::mojom::Action::kScrollToMakeVisible;

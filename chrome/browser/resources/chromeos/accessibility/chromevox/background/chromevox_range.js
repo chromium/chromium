@@ -326,6 +326,11 @@ export class ChromeVoxRange {
 
     const start = this.current_.start.node;
     start.makeVisible();
+
+    chrome.metricsPrivate.recordBoolean(
+        'Accessibility.ScreenReader.ScrollToImage',
+        start.role === RoleType.IMAGE);
+
     start.setAccessibilityFocus();
 
     const root = AutomationUtil.getTopLevelRoot(start);

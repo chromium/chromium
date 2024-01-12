@@ -2391,6 +2391,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenReader.ScrollToImage" enum="Boolean"
+    expires_after="2024-12-07">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the result of a scroll to make visible accessibility action is
+    performed on an image node. This roughly corresponds to accessibility focus
+    on an image. Logged from ChromeVox (ChromeOS) and
+    BrowserAccessibilityManager (non-ChromeOS).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
     expires_after="2024-08-07">
   <owner>evliu@google.com</owner>
