@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Animator, STANDARD_EASING} from './animator.js';
+import {Animator, EMPHASIZED_DECELERATE, STANDARD_EASING} from './animator.js';
 
 export class ComposeAppAnimator extends Animator {
   transitionOutSubmitFooter(bodyHeight: number, footerHeight: number):
@@ -66,9 +66,40 @@ export class ComposeAppAnimator extends Animator {
     return this.fadeIn('#loading', {delay: 100, duration: 100});
   }
 
-  transitionToFinalOutput(): Animation[] {
+  transitionFromLoadingToCompleteResult(loadingHeight: number): Animation[] {
+    const resultsHeight = this.getElement('#resultContainer').offsetHeight;
+    return [
+      this.fadeOutAndHide('#loading', 'block', {duration: 100}),
+      this.fadeIn('#resultContainer', {duration: 100}),
+
+      /* Transition loading height to the full result height, and hide
+       * scrollbars while this happens. */
+      this.maintainStyles('#body', {overflow: 'hidden'}, {duration: 400}),
+      this.animate(
+          '#resultContainer',
+          [
+            {height: `${loadingHeight}px`},
+            {height: `${resultsHeight}px`},
+          ],
+          {duration: 400, easing: STANDARD_EASING}),
+
+      this.slideIn('#resultOptions', -32, {duration: 400}),
+      this.fadeIn('#resultOptions', {delay: 200, duration: 200}),
+
+      this.slideIn(
+          '#resultContainer .result-text', -16,
+          {delay: 100, duration: 400, easing: EMPHASIZED_DECELERATE}),
+      this.fadeIn('#resultContainer .result-text', {delay: 100, duration: 300}),
+
+      this.slideIn(
+          '#resultFooter', -130,
+          {duration: 400, easing: EMPHASIZED_DECELERATE}),
+      this.fadeIn('#resultFooter', {delay: 100, duration: 100}),
+    ].flat();
+  }
+
+  transitionFromPartialToCompleteResult(): Animation[] {
     return this.fadeIn(
-        '#resultOptions, #resultFooter',
-        {delay: 100, duration: 100, fill: 'backwards'});
+        '#resultOptions, #resultFooter', {delay: 100, duration: 100});
   }
 }

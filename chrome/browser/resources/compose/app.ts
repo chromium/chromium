@@ -155,6 +155,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       submitted_: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
       undoEnabled_: {
         type: Boolean,
@@ -492,6 +493,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private compose_(inputEdited: boolean = false) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
+    this.$.body.scrollTop = 0;
     this.loading_ = true;
     this.animator_.transitionInLoading();
     this.response_ = undefined;
@@ -503,6 +505,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private rewrite_(style: StyleModifiers|null) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
+    this.$.body.scrollTop = 0;
     this.loading_ = true;
     this.response_ = undefined;
     this.partialResponse_ = undefined;
@@ -512,11 +515,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private composeResponseReceived_(response: ComposeResponse) {
     this.response_ = response;
+    const loadingHeight = this.$.loading.offsetHeight;
     this.loading_ = false;
     this.undoEnabled_ = response.undoAvailable;
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     if (this.partialResponse_) {
-      this.animator_.transitionToFinalOutput();
+      this.animator_.transitionFromPartialToCompleteResult();
+    } else {
+      this.animator_.transitionFromLoadingToCompleteResult(loadingHeight);
     }
     this.partialResponse_ = undefined;
 
@@ -525,13 +531,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.$.textarea.focusEditButton();
         break;
       case TriggerElement.REFRESH:
-        this.$.refreshButton.focus();
+        this.$.refreshButton.focus({preventScroll: true});
         break;
       case TriggerElement.LENGTH:
-        this.$.lengthMenu.focus();
+        this.$.lengthMenu.focus({preventScroll: true});
         break;
       case TriggerElement.TONE:
-        this.$.toneMenu.focus();
+        this.$.toneMenu.focus({preventScroll: true});
     }
   }
 

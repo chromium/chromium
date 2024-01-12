@@ -148,8 +148,9 @@
     --scrollbar-width_: 4px;
     box-sizing: border-box;
     grid-area: body;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-areas: "textarea" "bodyContent";
+    grid-auto-columns: 100%;
     gap: 8px;
     max-height: 220px;
     overflow: auto;
@@ -162,6 +163,11 @@
     #body {
       --results-background_: rgb(60, 64, 67);
     }
+  }
+
+  :host(:not([submitted_])) #body {
+    /* Non-submitted dialog has no bodyContent. */
+    grid-template-areas: "textarea";
   }
 
   :host-context([chrome-refresh-2023]) #body {
@@ -204,18 +210,27 @@
     background: var(--color-compose-dialog-scrollbar-thumb);
   }
 
-  :host([loadingIndicatorShown_]) #bodyAndFooter {
+  :host([loading-indicator-shown_]) #bodyAndFooter {
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
     height: 136px;
   }
 
-  :host([loadingIndicatorShown_]) #body {
+  :host([loading-indicator-shown_]) #body {
     /* When loading, the heights of contents within #body are in flux due to
      * animations. Force the entire #body to be visible to prevent scrollbars
      * from flickering, and remove scrollbar width from padding. */
     overflow: visible;
     padding-inline-end: 20px;
+  }
+
+  #textarea {
+    grid-area: textarea;
+  }
+
+  #loading,
+  .result-container {
+    grid-area: bodyContent;
   }
 
   #loading {
@@ -230,6 +245,7 @@
   .result-container {
     border-radius: 8px;
     padding: 16px;
+    box-sizing: border-box;
     background: var(--results-background_);
     color: var(--cr-primary-text-color);
     font-size: 12px;
