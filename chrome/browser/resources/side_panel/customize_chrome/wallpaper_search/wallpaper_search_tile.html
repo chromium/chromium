@@ -1,5 +1,8 @@
 <style>
   :host {
+    background: linear-gradient(131deg,
+        var(--color-sys-gradient-primary) 12.23%,
+        var(--color-sys-gradient-tertiary) 89.37%);
     display: block;
     height: 100%;
     width: 100%;
@@ -9,48 +12,86 @@
     height: 100%;
     width: 100%;
   }
+
+  #dark {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      background: linear-gradient(131deg,
+          var(--color-sys-gradient-tertiary) 12.23%,
+          var(--color-sys-gradient-primary) 89.37%);
+    }
+
+    #light {
+      display: none;
+    }
+
+    #dark {
+      display: block;
+    }
+  }
 </style>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <g>
-    <rect class="background" width="128" height="128" fill="url(#background)">
-    </rect>
-    <ellipse cx="35.6959" cy="18.3056" rx="35.6959" ry="18.3056"
-        transform="matrix(-0.864094 -0.503331 -0.503331 0.864094 142.941 104.145)"
-        fill="var(--color-sys-ai-illustration-shape-surface1)">
-    </ellipse>
-    <path d="M93.6689 117.807C76.6339 107.884 66.9494 92.7578 72.038 84.0219L56.8353 110.121C51.7467 118.857 61.4311 133.983 78.4662 143.906C95.5012 153.829 113.436 154.791 118.525 146.055L133.727 119.956C128.639 128.692 110.704 127.729 93.6689 117.807Z"
-        fill="url(#ovoidBottom)"></path>
-    <path d="M120.387 65.6841L104.519 26.2922L136.549 -9.91814L152.417 29.4738L120.387 65.6841Z"
-        fill="url(#cubeRight)"></path>
-    <path d="M63.4832 15.3564L104.517 26.2974L136.547 -9.91291L95.5132 -20.8539L63.4832 15.3564Z"
-        fill="var(--color-sys-ai-illustration-shape-surface1)"></path>
-    <path d="M104.518 26.2946L120.385 65.6866L79.3513 54.7456L63.4836 15.3536L104.518 26.2946Z"
-        fill="var(--color-sys-ai-illustration-shape-surface2)"></path>
-    <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M5.0637 47.8259L2.00111 44.8916L-22.9543 70.9376L-22.9453 70.9462C-26.1261 74.5051 -28.0181 79.2309 -27.9081 84.3795C-27.6986 94.1831 -20.3022 102.145 -10.8577 103.342C-9.25816 112.727 -0.987121 119.776 8.81656 119.566C13.9651 119.456 18.6058 117.364 22.0255 114.034L22.0343 114.042L38.5464 96.8086C38.568 96.7862 38.5896 96.7637 38.6111 96.7412L46.9897 87.9963L43.9272 85.062C43.9939 84.3324 44.0203 83.5915 44.0043 82.8416C43.7948 73.0377 36.3981 65.0755 26.9533 63.8788C25.354 54.4938 17.0828 47.4441 7.27891 47.6539C6.52899 47.67 5.78986 47.7281 5.0637 47.8259Z"
-        fill="url(#flowerBottom)"></path>
-    <path d="M12.7049 39.2473C3.3206 40.8474 -3.72848 49.1185 -3.51896 58.9219C-3.30943 68.7255 4.08695 76.6876 13.5314 77.8845C15.131 87.2693 23.402 94.3186 33.2057 94.1088C43.0091 93.899 50.9712 86.5028 52.1687 77.0587C61.5534 75.4589 68.6029 67.1877 68.3934 57.384C68.1839 47.5801 60.7872 39.6179 51.3424 38.4212C49.7431 29.0362 41.4719 21.9865 31.668 22.1963C21.8643 22.4061 13.902 29.8027 12.7049 39.2473Z"
-        fill="var(--color-sys-ai-illustration-shape-surface2)"></path>
-  </g>
+<svg id="light" width="154" height="154" viewBox="0 0 154 154" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="43.5416" cy="22.329" rx="43.5416" ry="22.329" transform="matrix(-0.864094 -0.503331 -0.503331 0.864094 174.269 126.832)"
+      fill="var(--color-sys-ai-illustration-shape-surface1)"></ellipse>
+  <path d="M114.168 143.505C93.3886 131.401 81.5756 112.95 87.7827 102.294L69.2385 134.13C63.0314 144.786 74.8444 163.236 95.6236 175.34C116.403 187.444 138.28 188.618 144.487 177.962L163.031 146.126C156.824 156.782 134.947 155.608 114.168 143.505Z"
+      fill="url(#ovoidBottomLight)"></path>
+  <path d="M146.758 79.9175L127.402 31.8674L166.472 -12.3016L185.828 35.7484L146.758 79.9175Z"
+      fill="url(#cubeRightLight)"></path>
+  <path d="M77.3485 18.5215L127.402 31.8672L166.472 -12.3018L116.419 -25.6476L77.3485 18.5215Z"
+      fill="var(--color-sys-ai-illustration-shape-surface1)"></path>
+  <path d="M127.401 31.8674L146.757 79.9174L96.7033 66.5716L77.348 18.5216L127.401 31.8674Z"
+      fill="var(--color-sys-ai-illustration-shape-surface2)"></path>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M-7.90683 65.2558L-28.0873 86.3182L-28.0764 86.3286C-31.9566 90.6697 -34.2646 96.4345 -34.1303 102.715C-33.8747 114.673 -24.8527 124.385 -13.3324 125.845C-11.3813 137.293 -1.29234 145.891 10.6661 145.636C16.9465 145.501 22.6073 142.949 26.7787 138.887L26.7895 138.897L57.2299 107.126L53.4939 103.547C53.5752 102.657 53.6074 101.753 53.5879 100.839C53.3323 88.8803 44.3098 79.168 32.7892 77.7083C30.8384 66.2605 20.7492 57.6614 8.7905 57.9173C7.87602 57.9368 6.97468 58.0077 6.08915 58.127L2.35314 54.5474L-7.90683 65.2558Z"
+      fill="url(#flowerBottomLight)"></path>
+  <path d="M15.408 47.6671C3.96105 49.619 -4.63736 59.7079 -4.38179 71.666C-4.12621 83.6244 4.89584 93.3365 16.4161 94.7965C18.3672 106.244 28.4562 114.843 40.4147 114.587C52.3727 114.331 62.0849 105.309 63.5456 93.7891C74.993 91.8378 83.592 81.7486 83.3364 69.7901C83.0808 57.8314 74.0584 48.1192 62.5377 46.6595C60.5869 35.2117 50.4978 26.6126 38.539 26.8684C26.5806 27.1243 16.8682 36.1467 15.408 47.6671Z"
+      fill="var(--color-sys-ai-illustration-shape-surface2)"></path>
   <defs>
-    <linearGradient id="background" x1="16.3902" y1="14.8293" x2="120.976"
-        y2="106.927" gradientUnits="userSpaceOnUse">
-      <stop stop-color="var(--color-sys-gradient-primary)"></stop>
-      <stop offset="1" stop-color="var(--color-sys-gradient-tertiary)"></stop>
-    </linearGradient>
-    <linearGradient id="ovoidBottom" x1="110.605" y1="108.796" x2="77.9995"
-        y2="130.649" gradientUnits="userSpaceOnUse">
+    <linearGradient id="ovoidBottomLight" x1="134.826" y1="132.513" x2="95.0544"
+        y2="159.17" gradientUnits="userSpaceOnUse">
       <stop stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-start)"></stop>
       <stop offset="0.980117" stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-end)"></stop>
     </linearGradient>
-    <linearGradient id="cubeRight" x1="112.021" y1="54.5865" x2="105.331"
-        y2="17.694" gradientUnits="userSpaceOnUse">
+    <linearGradient id="cubeRightLight" x1="136.553" y1="66.3807" x2="128.393"
+        y2="21.3795" gradientUnits="userSpaceOnUse">
       <stop stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-start)"></stop>
       <stop offset="0.980117" stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-end)"></stop>
     </linearGradient>
-    <linearGradient id="flowerBottom" x1="21.4633" y1="56.8688" x2="14.9877"
-        y2="101.99" gradientUnits="userSpaceOnUse">
+    <linearGradient id="flowerBottomLight" x1="26.0926" y1="69.1576" x2="18.1937" y2="124.196" gradientUnits="userSpaceOnUse">
+      <stop stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-start)"></stop>
+      <stop offset="0.980117" stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-end)"></stop>
+    </linearGradient>
+  </defs>
+</svg>
+
+<svg id="dark" width="154" height="154" viewBox="0 0 154 154" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="43.5416" cy="22.329" rx="43.5416" ry="22.329" transform="matrix(-0.864094 -0.503331 -0.503331 0.864094 174.269 126.832)"
+      fill="var(--color-sys-ai-illustration-shape-surface1)"></ellipse>
+  <path d="M114.168 143.505C93.3886 131.401 81.5756 112.95 87.7827 102.294L69.2385 134.13C63.0314 144.786 74.8444 163.236 95.6236 175.34C116.403 187.444 138.28 188.618 144.487 177.962L163.031 146.126C156.824 156.782 134.947 155.608 114.168 143.505Z"
+      fill="url(#ovoidBottomDark)"></path>
+  <path d="M146.758 79.9175L127.402 31.8674L166.472 -12.3016L185.828 35.7484L146.758 79.9175Z"
+      fill="url(#cubeRightDark)"></path>
+  <path d="M77.3485 18.5215L127.402 31.8672L166.472 -12.3018L116.419 -25.6476L77.3485 18.5215Z"
+      fill="var(--color-sys-ai-illustration-shape-surface1)"></path>
+  <path d="M127.401 31.8674L146.757 79.9174L96.7033 66.5716L77.348 18.5216L127.401 31.8674Z"
+      fill="var(--color-sys-ai-illustration-shape-surface2)"></path>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M-7.90622 65.2558L-28.0866 86.3182L-28.0758 86.3286C-31.956 90.6697 -34.2639 96.4345 -34.1297 102.715C-33.8741 114.673 -24.8521 124.385 -13.3318 125.845C-11.3807 137.293 -1.29173 145.891 10.6667 145.636C16.9471 145.501 22.6079 142.949 26.7793 138.887L26.7901 138.897L57.2305 107.126L53.4945 103.547C53.5758 102.657 53.608 101.753 53.5885 100.839C53.3329 88.8803 44.3104 79.168 32.7898 77.7083C30.839 66.2605 20.7498 57.6614 8.79111 57.9173C7.87663 57.9368 6.97529 58.0077 6.08976 58.127L2.35375 54.5474L-7.90622 65.2558Z"
+      fill="url(#flowerBottomDark)"></path>
+  <path d="M15.4087 47.6671C3.96178 49.619 -4.63663 59.7079 -4.38106 71.666C-4.12548 83.6244 4.89657 93.3365 16.4169 94.7965C18.368 106.244 28.4569 114.843 40.4154 114.587C52.3735 114.331 62.0856 105.309 63.5463 93.7891C74.9938 91.8378 83.5927 81.7486 83.3371 69.7901C83.0815 57.8314 74.0591 48.1192 62.5384 46.6595C60.5876 35.2117 50.4985 26.6126 38.5398 26.8684C26.5813 27.1243 16.869 36.1467 15.4087 47.6671Z"
+      fill="var(--color-sys-ai-illustration-shape-surface2)"></path>
+  <defs>
+    <linearGradient id="ovoidBottomDark" x1="134.826" y1="132.513" x2="95.0544" y2="159.17" gradientUnits="userSpaceOnUse">
+      <stop stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-start)"></stop>
+      <stop offset="0.980117" stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-end)"></stop>
+    </linearGradient>
+    <linearGradient id="cubeRightDark" x1="136.553" y1="66.3807" x2="128.393" y2="21.3795" gradientUnits="userSpaceOnUse">
+      <stop stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-start)"></stop>
+      <stop offset="0.980117" stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-end)"></stop>
+    </linearGradient>
+    <linearGradient id="flowerBottomDark" x1="26.0932" y1="69.1576" x2="18.1943" y2="124.196" gradientUnits="userSpaceOnUse">
       <stop stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-start)"></stop>
       <stop offset="0.980117" stop-color="var(--color-sys-ai-illustration-shape-surface-gradient-end)"></stop>
     </linearGradient>

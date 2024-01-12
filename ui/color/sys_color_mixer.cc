@@ -334,11 +334,11 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
 
   // AI.
   mixer[kColorSysAiIllustrationShapeSurface1] = {
-      dark_mode ? ui::kColorRefPrimary50 : ui::kColorRefPrimary70};
+      dark_mode ? ui::kColorRefPrimary40 : ui::kColorRefPrimary70};
   mixer[kColorSysAiIllustrationShapeSurface2] = {
-      dark_mode ? ui::kColorRefPrimary25 : ui::kColorRefPrimary95};
+      dark_mode ? ui::kColorRefPrimary50 : ui::kColorRefPrimary95};
   mixer[kColorSysAiIllustrationShapeSurfaceGradientStart] = {
-      dark_mode ? ui::kColorRefSecondary30 : ui::kColorRefSecondary90};
+      dark_mode ? ui::kColorRefPrimary30 : ui::kColorRefSecondary90};
   mixer[kColorSysAiIllustrationShapeSurfaceGradientEnd] = {
       dark_mode ? ui::kColorRefPrimary40 : ui::kColorRefPrimary80};
 

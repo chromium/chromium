@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 #include <vector>
+
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -62,7 +64,7 @@ using side_panel::customize_chrome::mojom::UserFeedback;
 
 namespace {
 
-const char kDescriptorsBaseUrl[] =
+const char kGstaticBaseURL[] =
     "https://www.gstatic.com/chrome-wallpaper-search/";
 // Calculate new dimensions given the width and height that will make the
 // smaller dimension equal to goal_size but keep the current aspect ratio.
@@ -132,8 +134,13 @@ WallpaperSearchHandler::WallpaperSearchHandler(
 }
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
-  auto backround_id =
-      wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory();
+  absl::optional<base::Token> background_id;
+  if (history_entry_) {
+    background_id =
+        wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory(
+            *history_entry_);
+  }
+
   if (!log_entries_.empty()) {
     auto& [log_entry, render_time] = log_entries_.back();
     auto* quality =
@@ -144,10 +151,10 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
       quality->set_complete_latency_ms(
           (base::Time::Now() - *render_time).InMilliseconds());
     }
-    if (backround_id.has_value() &&
-        base::Contains(wallpaper_search_results_, *backround_id)) {
+    if (background_id.has_value() &&
+        base::Contains(wallpaper_search_results_, *background_id)) {
       auto* image_quality =
-          std::get<0>(wallpaper_search_results_[*backround_id]);
+          std::get<0>(wallpaper_search_results_[*background_id]);
       if (image_quality) {
         image_quality->set_selected(true);
       }
@@ -206,23 +213,82 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
-      GURL(base::StrCat({kDescriptorsBaseUrl, "descriptors_en-US.json"}));
+      GURL(base::StrCat({kGstaticBaseURL, "descriptors_en-US.json"}));
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
-  simple_url_loader_ = network::SimpleURLLoader::Create(
+  descriptors_simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
-  simple_url_loader_->DownloadToString(
+  descriptors_simple_url_loader_->DownloadToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&WallpaperSearchHandler::OnDescriptorsRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       1024 * 1024);
 }
 
+void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
+  callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
+
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler_image",
+                                          R"(
+        semantics {
+          sender: "Customize Chrome"
+          description:
+            "This service downloads example images for Customize "
+            "Chrome's Wallpaper Search. "
+          trigger:
+            "Opening Customize Chrome on the Desktop NTP, "
+            "if Google is the default search provider "
+            "and the user is signed in."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2024-01-10"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by signing out or "
+            "selecting a non-Google default search engine in Chrome "
+            "settings under 'Search Engine'."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+          }
+        })");
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url =
+      GURL(base::StrCat({kGstaticBaseURL, "inspirations.json"}));
+  resource_request->request_initiator =
+      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+
+  inspirations_simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  inspirations_simple_url_loader_->SetRetryOptions(
+      /*max_retries=*/3,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+  inspirations_simple_url_loader_->DownloadToString(
+      profile_->GetURLLoaderFactory().get(),
+      base::BindOnce(&WallpaperSearchHandler::OnInspirationsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      1024 * 1024);
+}
+
 void WallpaperSearchHandler::GetWallpaperSearchResults(
-    const std::string& descriptor_a,
-    const absl::optional<std::string>& descriptor_b,
-    const absl::optional<std::string>& descriptor_c,
-    side_panel::customize_chrome::mojom::DescriptorDValuePtr descriptor_d_value,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr
+        result_descriptors,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
@@ -242,20 +308,21 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
   }
   optimization_guide::proto::WallpaperSearchRequest request;
   auto& descriptors = *request.mutable_descriptors();
-  descriptors.set_descriptor_a(descriptor_a);
-  if (descriptor_b.has_value()) {
-    descriptors.set_descriptor_b(*descriptor_b);
+  CHECK(result_descriptors->subject);
+  descriptors.set_descriptor_a(*result_descriptors->subject);
+  if (result_descriptors->style.has_value()) {
+    descriptors.set_descriptor_b(*result_descriptors->style);
   }
-  if (descriptor_c.has_value()) {
-    descriptors.set_descriptor_c(*descriptor_c);
+  if (result_descriptors->mood.has_value()) {
+    descriptors.set_descriptor_c(*result_descriptors->mood);
   }
-  if (descriptor_d_value) {
-    if (descriptor_d_value->is_color()) {
+  if (result_descriptors->color) {
+    if (result_descriptors->color->is_color()) {
       descriptors.set_descriptor_d(
-          skia::SkColorToHexString(descriptor_d_value->get_color()));
-    } else if (descriptor_d_value->is_hue()) {
+          skia::SkColorToHexString(result_descriptors->color->get_color()));
+    } else if (result_descriptors->color->is_hue()) {
       descriptors.set_descriptor_d(skia::SkColorToHexString(
-          HueToSkColor(descriptor_d_value->get_hue())));
+          HueToSkColor(result_descriptors->color->get_hue())));
     }
   }
   optimization_guide_keyed_service->ExecuteModel(
@@ -268,7 +335,8 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
 }
 
 void WallpaperSearchHandler::SetBackgroundToHistoryImage(
-    const base::Token& result_id) {
+    const base::Token& result_id,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(
@@ -276,16 +344,18 @@ void WallpaperSearchHandler::SetBackgroundToHistoryImage(
           profile_->GetPath().AppendASCII(
               result_id.ToString() +
               chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
-      base::BindOnce(&WallpaperSearchHandler::DecodeHistoryImage,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
-                                    weak_ptr_factory_.GetWeakPtr(), result_id,
-                                    base::ElapsedTimer())));
+      base::BindOnce(
+          &WallpaperSearchHandler::DecodeHistoryImage,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
+                         weak_ptr_factory_.GetWeakPtr(), result_id,
+                         base::ElapsedTimer(), std::move(descriptors))));
 }
 
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id,
-    double time) {
+    double time,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors) {
   CHECK(base::Contains(wallpaper_search_results_, result_id));
   auto& [image_quality, render_time, bitmap] =
       wallpaper_search_results_[result_id];
@@ -296,6 +366,14 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
           (base::Time::FromMillisecondsSinceUnixEpoch(time) - *render_time)
               .InMilliseconds());
     }
+  }
+  history_entry_ = std::make_unique<HistoryEntry>(result_id);
+  history_entry_->subject = descriptors->subject;
+  if (descriptors->style) {
+    history_entry_->style = descriptors->style;
+  }
+  if (descriptors->mood) {
+    history_entry_->mood = descriptors->mood;
   }
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
       result_id, bitmap, base::ElapsedTimer());
@@ -316,7 +394,7 @@ void WallpaperSearchHandler::UpdateHistory() {
         base::BindOnce(
             &ReadFile,
             profile_->GetPath().AppendASCII(
-                entry.ToString() +
+                entry.id.ToString() +
                 chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
         base::BindOnce(&WallpaperSearchHandler::DecodeHistoryImage,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -327,7 +405,7 @@ void WallpaperSearchHandler::UpdateHistory() {
                              std::move(barrier).Run(
                                  std::pair(image.AsBitmap(), id));
                            },
-                           barrier, entry)));
+                           barrier, entry.id)));
   }
 }
 
@@ -407,7 +485,8 @@ void WallpaperSearchHandler::OnDescriptorsRetrieved(
     std::unique_ptr<std::string> response_body) {
   if (!response_body) {
     // Network errors (i.e. the server did not provide a response).
-    DVLOG(1) << "Request failed with error: " << simple_url_loader_->NetError();
+    DVLOG(1) << "Request failed with error: "
+             << descriptors_simple_url_loader_->NetError();
     std::move(callback).Run(nullptr);
     return;
   }
@@ -485,7 +564,7 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
           side_panel::customize_chrome::mojom::DescriptorB::New();
       mojo_descriptor_b->label = *label;
       mojo_descriptor_b->image_path =
-          base::StrCat({kDescriptorsBaseUrl, *image_path});
+          base::StrCat({kGstaticBaseURL, *image_path});
       mojo_descriptor_b_list.push_back(std::move(mojo_descriptor_b));
     }
   }
@@ -501,7 +580,7 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
 }
 
 void WallpaperSearchHandler::OnHistoryDecoded(
-    std::vector<base::Token> history,
+    std::vector<HistoryEntry> history,
     std::vector<std::pair<SkBitmap, base::Token>> results) {
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       thumbnails;
@@ -510,7 +589,7 @@ void WallpaperSearchHandler::OnHistoryDecoded(
   // O(n^2) but there should never be more than 6 in each vector.
   for (const auto& entry : history) {
     for (auto& [bitmap, id] : results) {
-      if (entry == id) {
+      if (entry.id == id) {
         auto dimensions =
             CalculateResizeDimensions(bitmap.width(), bitmap.height(), 100);
         SkBitmap small_bitmap = skia::ImageOperations::Resize(
@@ -525,6 +604,17 @@ void WallpaperSearchHandler::OnHistoryDecoded(
               side_panel::customize_chrome::mojom::WallpaperSearchResult::New();
           thumbnail->image = base::Base64Encode(encoded);
           thumbnail->id = std::move(id);
+          if (entry.subject) {
+            thumbnail->descriptors =
+                side_panel::customize_chrome::mojom::ResultDescriptors::New();
+            thumbnail->descriptors->subject = *entry.subject;
+            if (entry.style) {
+              thumbnail->descriptors->style = *entry.style;
+            }
+            if (entry.mood) {
+              thumbnail->descriptors->mood = *entry.mood;
+            }
+          }
           thumbnails.push_back(std::move(thumbnail));
         }
         break;
@@ -534,9 +624,92 @@ void WallpaperSearchHandler::OnHistoryDecoded(
   client_->SetHistory(std::move(thumbnails));
 }
 
-void WallpaperSearchHandler::SelectHistoryImage(const base::Token& id,
-                                                base::ElapsedTimer timer,
-                                                const gfx::Image& image) {
+void WallpaperSearchHandler::OnInspirationsRetrieved(
+    GetInspirationsCallback callback,
+    std::unique_ptr<std::string> response_body) {
+  if (!response_body) {
+    // Network errors (i.e. the server did not provide a response).
+    DVLOG(1) << "Request failed with error: "
+             << inspirations_simple_url_loader_->NetError();
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::string response;
+  response.swap(*response_body);
+  // The response may start with . Ignore this.
+  const char kXSSIResponsePreamble[] = ")]}'";
+  if (base::StartsWith(response, kXSSIResponsePreamble,
+                       base::CompareCase::SENSITIVE)) {
+    response = response.substr(strlen(kXSSIResponsePreamble));
+  }
+  data_decoder_->ParseJson(
+      response,
+      base::BindOnce(&WallpaperSearchHandler::OnInspirationsJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WallpaperSearchHandler::OnInspirationsJsonParsed(
+    GetInspirationsCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value() || !result->is_dict()) {
+    DVLOG(1) << "Parsing JSON failed: " << result.error();
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  const base::Value::List* inspiration_a =
+      result->GetDict().FindList("inspiration_a");
+  if (!inspiration_a) {
+    DVLOG(1) << "Parsing JSON failed: no valid inspirations.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
+      mojo_inspiration_a_list;
+  if (inspiration_a) {
+    for (const auto& inspiration : *inspiration_a) {
+      const base::Value::Dict& inspiration_a_dict = inspiration.GetDict();
+      auto* background_image =
+          inspiration_a_dict.FindString("background_image");
+      auto* thumbnail_image = inspiration_a_dict.FindString("thumbnail_image");
+      if (!background_image || !thumbnail_image) {
+        continue;
+      }
+      auto mojo_inspiration_a =
+          side_panel::customize_chrome::mojom::Inspiration::New();
+      mojo_inspiration_a->background_url =
+          GURL(base::StrCat({kGstaticBaseURL, *background_image}));
+      mojo_inspiration_a->thumbnail_url =
+          GURL(base::StrCat({kGstaticBaseURL, *thumbnail_image}));
+      mojo_inspiration_a_list.push_back(std::move(mojo_inspiration_a));
+    }
+  }
+
+  if (!mojo_inspiration_a_list.empty()) {
+    auto mojo_inspirations =
+        side_panel::customize_chrome::mojom::Inspirations::New();
+    mojo_inspirations->inspiration_a = std::move(mojo_inspiration_a_list);
+    std::move(callback).Run(std::move(mojo_inspirations));
+  }
+}
+
+void WallpaperSearchHandler::SelectHistoryImage(
+    const base::Token& id,
+    base::ElapsedTimer timer,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors,
+    const gfx::Image& image) {
+  history_entry_ = std::make_unique<HistoryEntry>(id);
+  if (descriptors->subject) {
+    history_entry_->subject = descriptors->subject;
+  }
+  if (descriptors->style) {
+    history_entry_->style = descriptors->style;
+  }
+  if (descriptors->mood) {
+    history_entry_->mood = descriptors->mood;
+  }
   wallpaper_search_background_manager_->SelectHistoryImage(id, image,
                                                            std::move(timer));
 }

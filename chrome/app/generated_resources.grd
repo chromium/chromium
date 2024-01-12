@@ -7738,6 +7738,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE" desc="The label for the hue slider in the customization menu on the New Tab Page that allows a user to pick a color for their theme">
         Color picker
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_TITLE" translateable="false" desc="The tooltip for the delete button in the hue slider that unselects the currently selected hue.">
+        Unselect
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_A11Y_LABEL" translateable="false" desc="The accessibility label for the delete button in the hue slider that unselects the currently selected hue.">
+        Unselect color
+      </message>
       <message name="IDS_NTP_THEME_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that their theme is managed when they try selecting a theme on the New Tab Page.">
         Theme is set by your Organization
       </message>
@@ -7894,9 +7900,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" desc="Header for the wallpaper search section for showing past themes." >
         Your recent AI themes
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE" desc="Title for each tile button in the wallpaper search section for showing past themes.">
-        Recent AI theme <ph name="TILE_INDEX">$1<ex>2</ex></ph>
-      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION" desc="The description of the message displayed by wallpaper search when the browser is offline.">
         Check your internet and try again.
       </message>
@@ -7936,26 +7939,50 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA" desc="Call to action displayed when wallpaper search fails that asks user to try again.">
         Try again
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_NO_DESCRIPTOR" translateable="false" desc="Accessibility label for a wallpaper search history result, with only the index.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph>
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL" translateable="false" desc="Accessibility label for a wallpaper search history result, with only descriptor A.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_B" translateable="false" desc="Accessibility label for a wallpaper search history result, with descriptors A and B.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_C" translateable="false" desc="Accessibility label for a wallpaper search history result, with descriptors A and C.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, with <ph name="MOOD">$3</ph> mood.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" translateable="false" desc="Accessibility label for a wallpaper search history result, with descriptors A, B, and C.">
+        Recent AI theme <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style, with <ph name="MOOD">$4</ph> mood.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL" desc="Accessibility label for a wallpaper search result, with only descriptor A.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B" desc="Accessibility label for a wallpaper search result, with descriptors A and B.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, in <ph name="B">$3</ph> style
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_C" desc="Accessibility label for a wallpaper search result, with descriptors A and C.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, with <ph name="C">$3</ph> mood.
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, with <ph name="MOOD">$3</ph> mood.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search result, with descriptors A, B, and C.">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, in <ph name="B">$3</ph> style, with <ph name="C">$4</ph> mood.
+        Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style, with <ph name="MOOD">$4</ph> mood.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL" desc="Label for the Create theme with AI dropdown for selecting subject of the image.">
         Subject
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_DEFAULT_OPTION_LABEL" translateable="false" desc="Label for the option that a user can pick to unselect a previously selected subject. Also serves as a heading and label for the whole dropdown.">
+        Choose a subject
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_LABEL" desc="Label for the Create theme with AI dropdown for selecting mood of the image.">
         Mood
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DEFAULT_OPTION_LABEL" translateable="false" desc="Label for the option that a user can pick to unselect a previously selected mood. Also serves as a heading and label for the whole dropdown.">
+        Choose a mood
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_LABEL" desc="Label for the Create theme with AI dropdown for selecting style of the image.">
         Style
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_DEFAULT_OPTION_LABEL" translateable="false" desc="Label for the option that a user can pick to unselect a previously selected style. Also serves as a heading and label for the whole dropdown.">
+        Choose a style
       </message>
       <message name="IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about creating themes with AI.">
         Learn more about creating themes with AI.
@@ -7968,6 +7995,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER"  desc="Header for the wallpaper search section for showing example results.">
         Inspiration
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_LOADING_A11Y_MESSAGE" translateable="false" desc="Accessibility string read to screen reader users that images are being created.">
+        Generating...
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUCCESS_A11Y_MESSAGE" translateable="false" desc="Accessibility string read to screen reader users that images are being created.">
+        Generated <ph name="COUNT">$1<ex>2</ex></ph> images
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_DISCLAIMER" translateable="false" desc="Disclaimer text used for the Create theme with AI feature.">
+        This is an experimental AI feature and won't always get it right.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MEADOW_INSPIRATION_TITLE" translateable="false" desc="Title for the wallpaper search's Meadow inspiration.">
+        Meadow, Oil Painting, Intellectual, Yellow
       </message>
 
       <!-- NTP Modules -->

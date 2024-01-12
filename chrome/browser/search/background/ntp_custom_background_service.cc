@@ -385,17 +385,6 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) &&
-      base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(&ReadFileToString, path),
-        base::BindOnce(&NtpCustomBackgroundService::ProcessLocalImageData,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
@@ -626,6 +615,18 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   pref_service_->ClearPref(prefs::kNtpCustomBackgroundLocalToDeviceId);
   NotifyAboutBackgrounds();
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    base::FilePath path = profile_->GetPath().AppendASCII(
+        chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(&ReadFileToString, path),
+        base::BindOnce(&NtpCustomBackgroundService::ProcessLocalImageData,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(

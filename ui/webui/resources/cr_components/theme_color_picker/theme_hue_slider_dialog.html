@@ -18,6 +18,12 @@
     z-index: 999;
   }
 
+  @media (forced-colors: active) {
+    dialog {
+      border: solid 1px Highlight;
+    }
+  }
+
   #header {
     display: flex;
     align-items: center;
@@ -50,6 +56,13 @@
     margin-block-end: 12px;
     padding: 0;
     width: 100%;
+  }
+
+  @media (forced-colors: active) {
+    cr-slider {
+      --cr-slider-ripple-color: Highlight;
+      forced-color-adjust: none;
+    }
   }
 
   cr-slider:focus-visible {
@@ -90,6 +103,7 @@
 <dialog id="dialog">
   <div id="header">
     <h2 id="title">[[i18n('hueSliderTitle')]]</h2>
+    <slot name="headerSuffix"></slot>
     <cr-icon-button id="close" class="icon-clear"
         aria-label$="[[i18n('close')]]"
         title$="[[i18n('close')]]"

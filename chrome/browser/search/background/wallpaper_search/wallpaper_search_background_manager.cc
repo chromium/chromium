@@ -30,6 +30,9 @@
 namespace {
 
 const char kWallpaperSearchHistoryId[] = "id";
+const char kWallpaperSearchHistoryMood[] = "mood";
+const char kWallpaperSearchHistoryStyle[] = "style";
+const char kWallpaperSearchHistorySubject[] = "subject";
 
 void WriteFileToPath(const std::string& data, const base::FilePath& path) {
   base::WriteFile(path, base::as_bytes(base::make_span(data)));
@@ -47,12 +50,29 @@ void DeleteWallpaperSearchImage(const std::string& id,
 absl::optional<HistoryEntry> GetHistoryEntryFromPrefValue(
     const base::Value& pref_value) {
   if (pref_value.is_dict()) {
+    const base::Value::Dict& pref_dict = pref_value.GetDict();
     const std::string* id_string =
-        pref_value.GetDict().FindString(kWallpaperSearchHistoryId);
+        pref_dict.FindString(kWallpaperSearchHistoryId);
     if (id_string) {
       absl::optional<base::Token> id = base::Token::FromString(*id_string);
       if (id.has_value()) {
-        return HistoryEntry(*id);
+        HistoryEntry history_entry = HistoryEntry(*id);
+        const std::string* subject_string =
+            pref_dict.FindString(kWallpaperSearchHistorySubject);
+        if (subject_string) {
+          history_entry.subject = *subject_string;
+        }
+        const std::string* style_string =
+            pref_dict.FindString(kWallpaperSearchHistoryStyle);
+        if (style_string) {
+          history_entry.style = *style_string;
+        }
+        const std::string* mood_string =
+            pref_dict.FindString(kWallpaperSearchHistoryMood);
+        if (mood_string) {
+          history_entry.mood = *mood_string;
+        }
+        return history_entry;
       }
     }
   }
@@ -60,8 +80,19 @@ absl::optional<HistoryEntry> GetHistoryEntryFromPrefValue(
 }
 
 base::Value::Dict GetHistoryEntryDict(const HistoryEntry& history_entry) {
-  return base::Value::Dict().Set(kWallpaperSearchHistoryId,
-                                 history_entry.id.ToString());
+  base::Value::Dict history_entry_dict = base::Value::Dict().Set(
+      kWallpaperSearchHistoryId, history_entry.id.ToString());
+  if (history_entry.subject) {
+    history_entry_dict.Set(kWallpaperSearchHistorySubject,
+                           *history_entry.subject);
+  }
+  if (history_entry.style) {
+    history_entry_dict.Set(kWallpaperSearchHistoryStyle, *history_entry.style);
+  }
+  if (history_entry.mood) {
+    history_entry_dict.Set(kWallpaperSearchHistoryMood, *history_entry.mood);
+  }
+  return history_entry_dict;
 }
 
 }  // namespace
@@ -123,14 +154,14 @@ WallpaperSearchBackgroundManager::WallpaperSearchBackgroundManager(
 
 WallpaperSearchBackgroundManager::~WallpaperSearchBackgroundManager() = default;
 
-std::vector<base::Token> WallpaperSearchBackgroundManager::GetHistory() {
+std::vector<HistoryEntry> WallpaperSearchBackgroundManager::GetHistory() {
   auto& history_list =
       pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
-  std::vector<base::Token> history;
+  std::vector<HistoryEntry> history;
   for (auto& entry : history_list) {
     const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
     if (entry_obj) {
-      history.push_back(entry_obj->id);
+      history.push_back(*entry_obj);
     }
   }
   return history;
@@ -182,56 +213,59 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
                   chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
           base::BindOnce(&WallpaperSearchBackgroundManager::
                              SetBackgroundToLocalResourceWithId,
-                         weak_ptr_factory_.GetWeakPtr(), id, std::move(timer)));
+                         weak_ptr_factory_.GetWeakPtr(), id, std::move(timer),
+                         bitmap));
+    } else {
+      ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
+          gfx::Image::CreateFrom1xBitmap(bitmap));
     }
-
-    ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
-        gfx::Image::CreateFrom1xBitmap(bitmap));
   }
 }
 
 absl::optional<base::Token>
-WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
+WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
+    const HistoryEntry& history_entry) {
   absl::optional<CustomBackground> current_theme =
       ntp_custom_background_service_->GetCustomBackground();
   if (current_theme.has_value() &&
-      current_theme->local_background_id.has_value()) {
-    HistoryEntry background_history_obj =
-        HistoryEntry(*current_theme->local_background_id);
-    std::string background_id_str = background_history_obj.id.ToString();
+      current_theme->local_background_id.has_value() &&
+      current_theme->local_background_id->ToString() ==
+          history_entry.id.ToString()) {
     const base::Value::List& current_history =
         pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
     base::Value::List new_history =
-        base::Value::List().Append(GetHistoryEntryDict(background_history_obj));
+        base::Value::List().Append(GetHistoryEntryDict(history_entry));
     // Add each value in |current_history| to |new_history| until
     // |new_history| reaches the max size of 6. Do not append the
     // value if it is the same as the id of |current_theme|.
     for (const auto& value : current_history) {
       const auto value_obj = GetHistoryEntryFromPrefValue(value);
       if (value_obj) {
-        const std::string id_str = value_obj->id.ToString();
-        if (id_str != background_id_str) {
+        if (value_obj.value() != history_entry) {
           if (new_history.size() >= 6) {
             // Delete values that will no longer be in the history.
-            DeleteWallpaperSearchImage(id_str, profile_->GetPath());
+            DeleteWallpaperSearchImage(value_obj->id.ToString(),
+                                       profile_->GetPath());
           } else {
-            new_history.Append(
-                base::Value::Dict().Set(kWallpaperSearchHistoryId, id_str));
+            new_history.Append(GetHistoryEntryDict(value_obj.value()));
           }
         }
       }
     }
     pref_service_->SetList(prefs::kNtpWallpaperSearchHistory,
                            std::move(new_history));
-    return current_theme->local_background_id;
+    return history_entry.id;
   }
   return absl::nullopt;
 }
 
 void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
     const base::Token& id,
-    base::ElapsedTimer timer) {
+    base::ElapsedTimer timer,
+    const SkBitmap& bitmap) {
   ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(id);
+  ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
+      gfx::Image::CreateFrom1xBitmap(bitmap));
   UmaHistogramMediumTimes(
       "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
       timer.Elapsed());
