@@ -67,6 +67,9 @@ class PersonalizationAppAmbientProviderImpl
   void ShouldShowTimeOfDayBanner(
       ShouldShowTimeOfDayBannerCallback callback) override;
   void HandleTimeOfDayBannerDismissed() override;
+  void IsGeolocationEnabledForSystemServices(
+      IsGeolocationEnabledForSystemServicesCallback callback) override;
+  void EnableGeolocationForSystemServices() override;
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();
@@ -81,6 +84,11 @@ class PersonalizationAppAmbientProviderImpl
   friend class PersonalizationAppAmbientProviderImplTest;
 
   bool IsAmbientModeEnabled();
+
+  bool IsGeolocationEnabledForSystemServices();
+
+  // Notify webUI the current state of system geolocation permission.
+  void NotifyGeolocationPermissionChanged();
 
   AmbientUiSettings GetCurrentUiSettings() const;
 

@@ -69,6 +69,11 @@ class MockPersonalizationAppAmbientProvider
               (ShouldShowTimeOfDayBannerCallback callback),
               (override));
   MOCK_METHOD(void, HandleTimeOfDayBannerDismissed, (), (override));
+  MOCK_METHOD(void, EnableGeolocationForSystemServices, (), (override));
+  MOCK_METHOD(void,
+              IsGeolocationEnabledForSystemServices,
+              (IsGeolocationEnabledForSystemServicesCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppKeyboardBacklightProvider

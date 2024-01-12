@@ -156,6 +156,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"tooltipAutoColorMode", IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE},
       {"geolocationWarningTextForWallpaper",
        IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER},
+      {"geolocationWarningTextForWeather",
+       IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER},
       {"systemGeolocationDialogTitle",
        IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_TITLE},
       {"systemGeolocationDialogBody",

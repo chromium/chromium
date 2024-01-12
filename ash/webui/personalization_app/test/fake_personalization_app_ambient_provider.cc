@@ -33,4 +33,15 @@ void FakePersonalizationAppAmbientProvider::ShouldShowTimeOfDayBanner(
   std::move(callback).Run(features::IsTimeOfDayScreenSaverEnabled());
 }
 
+void FakePersonalizationAppAmbientProvider::
+    IsGeolocationEnabledForSystemServices(
+        IsGeolocationEnabledForSystemServicesCallback callback) {
+  std::move(callback).Run(geolocation_enabled_for_system);
+}
+
+void FakePersonalizationAppAmbientProvider::
+    EnableGeolocationForSystemServices() {
+  geolocation_enabled_for_system = true;
+}
+
 }  // namespace ash::personalization_app

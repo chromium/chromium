@@ -66,6 +66,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
   ];
 
   shouldShowBanner: boolean = true;
+  geolocationEnabled: boolean = true;
 
   previews: Url[] = [
     {url: 'http://preview0'},
@@ -89,6 +90,8 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'fetchSettingsAndAlbums',
       'shouldShowTimeOfDayBanner',
       'handleTimeOfDayBannerDismissed',
+      'isGeolocationEnabledForSystemServices',
+      'enableGeolocationForSystemServices',
     ]);
   }
 
@@ -160,5 +163,16 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   handleTimeOfDayBannerDismissed(): void {
     this.methodCalled('handleTimeOfDayBannerDismissed');
+  }
+
+  isGeolocationEnabledForSystemServices():
+      Promise<{geolocationEnabled: boolean}> {
+    this.methodCalled('isGeolocationEnabledForSystemServices');
+    return Promise.resolve({geolocationEnabled: this.geolocationEnabled});
+  }
+
+  enableGeolocationForSystemServices() {
+    this.geolocationEnabled = true;
+    this.methodCalled('enableGeolocationForSystemServices');
   }
 }

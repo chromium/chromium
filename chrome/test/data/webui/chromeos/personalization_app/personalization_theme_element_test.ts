@@ -6,7 +6,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, SetGeolocationPermissionEnabledAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -249,7 +249,7 @@ suite('PersonalizationThemeTest', function() {
     confirmButton.click();
     const action = await personalizationStore.waitForAction(
                        ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
-        SetGeolocationPermissionEnabledAction;
+        SetGeolocationPermissionEnabledActionForTheme;
 
     // Check the geolocation permission value has updated.
     assertTrue(action.enabled);

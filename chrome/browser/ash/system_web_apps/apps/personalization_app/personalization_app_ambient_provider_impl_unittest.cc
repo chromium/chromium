@@ -6,15 +6,19 @@
 
 #include <memory>
 #include <vector>
+
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -97,6 +101,10 @@ class TestAmbientObserver
     ambient_ui_visibility_ = visibility;
   }
 
+  void OnGeolocationPermissionForSystemServicesChanged(bool enabled) override {
+    geolocation_permission_enabled_ = enabled;
+  }
+
   mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
   pending_remote() {
     if (ambient_observer_receiver_.is_bound()) {
@@ -142,6 +150,11 @@ class TestAmbientObserver
     return previews_;
   }
 
+  bool is_geolocation_enabled() {
+    ambient_observer_receiver_.FlushForTesting();
+    return geolocation_permission_enabled_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientObserver>
       ambient_observer_receiver_{this};
@@ -155,6 +168,7 @@ class TestAmbientObserver
       ash::AmbientModeTemperatureUnit::kFahrenheit;
   ash::AmbientUiVisibility ambient_ui_visibility_ =
       ash::AmbientUiVisibility::kClosed;
+  bool geolocation_permission_enabled_ = true;
   std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums_;
   std::vector<GURL> previews_;
 };
@@ -272,6 +286,11 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return test_ambient_observer_.previews();
   }
 
+  bool ObservedGeolocationPermissionEnabled() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.is_geolocation_enabled();
+  }
+
   std::optional<ash::AmbientSettings>& settings() {
     return ambient_provider_->settings_;
   }
@@ -279,6 +298,18 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   void SetEnabledPref(bool enabled) {
     profile()->GetPrefs()->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled,
                                       enabled);
+  }
+
+  void SetGeolocationPref(bool enabled) {
+    GeolocationAccessLevel level;
+    if (enabled) {
+      level = GeolocationAccessLevel::kOnlyAllowedForSystem;
+    } else {
+      level = GeolocationAccessLevel::kDisallowed;
+    }
+
+    profile()->GetPrefs()->SetInteger(ash::prefs::kUserGeolocationAccessLevel,
+                                      static_cast<int>(level));
   }
 
   void SetAmbientTheme(mojom::AmbientTheme ambient_theme) {
@@ -602,6 +633,16 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   Shell::Get()->ambient_controller()->ambient_ui_model()->SetUiVisibility(
       ash::AmbientUiVisibility::kPreview);
   EXPECT_EQ(ash::AmbientUiVisibility::kPreview, ObservedAmbientUiVisibility());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       ShouldCallOnGeolocationPermissionForSystemServicesChanged) {
+  SetAmbientObserver();
+  EXPECT_TRUE(ObservedGeolocationPermissionEnabled());
+  SetGeolocationPref(/*enabled=*/false);
+  EXPECT_FALSE(ObservedGeolocationPermissionEnabled());
+  SetGeolocationPref(/*enabled=*/true);
+  EXPECT_TRUE(ObservedGeolocationPermissionEnabled());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {

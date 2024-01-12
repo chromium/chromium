@@ -22,12 +22,14 @@ export enum AmbientActionName {
   SET_TOPIC_SOURCE = 'set_topic_source',
   SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
   SET_SHOULD_SHOW_TIME_OF_DAY_BANNER = 'set_should_show_time_of_day_banner',
+  SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
 }
 
-export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
-    SetAmbientModeEnabledAction|SetAmbientThemeAction|SetPreviewsAction|
-    SetScreenSaverDurationAction|SetTopicSourceAction|SetTemperatureUnitAction|
-    SetAmbientUiVisibilityAction|SetShouldShowTimeOfDayBannerAction;
+export type AmbientActions =
+    SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
+    SetAmbientThemeAction|SetPreviewsAction|SetScreenSaverDurationAction|
+    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction|
+    SetShouldShowTimeOfDayBannerAction|SetGeolocationPermissionEnabledAction;
 
 export interface SetAlbumsAction extends Action {
   name: AmbientActionName.SET_ALBUMS;
@@ -85,6 +87,11 @@ export interface SetAmbientUiVisibilityAction extends Action {
 export interface SetShouldShowTimeOfDayBannerAction extends Action {
   name: AmbientActionName.SET_SHOULD_SHOW_TIME_OF_DAY_BANNER;
   shouldShowTimeOfDayBanner: boolean;
+}
+
+export interface SetGeolocationPermissionEnabledAction extends Action {
+  name: AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED;
+  enabled: boolean;
 }
 
 
@@ -166,4 +173,9 @@ export function setShouldShowTimeOfDayBannerAction(
     name: AmbientActionName.SET_SHOULD_SHOW_TIME_OF_DAY_BANNER,
     shouldShowTimeOfDayBanner,
   };
+}
+
+export function setGeolocationPermissionEnabledAction(enabled: boolean):
+    SetGeolocationPermissionEnabledAction {
+  return {name: AmbientActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
 }
