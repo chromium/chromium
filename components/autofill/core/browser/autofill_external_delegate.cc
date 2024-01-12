@@ -1033,25 +1033,30 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position,
     AutofillSuggestionTriggerSource trigger_source) {
-  const AutofillField* autofill_trigger_field;
-  if (autofill_trigger_field = GetQueriedAutofillField();
-      !autofill_trigger_field) {
-    return;
+  if (const AutofillField* autofill_trigger_field = GetQueriedAutofillField()) {
+    // We target only the triggering field type in the field-by-field filling
+    // case.
+    // Note that, we only use
+    // `last_field_types_to_fill_for_address_form_section_` to know the current
+    // filling granularity. The exact type is not important, what matters here
+    // is that the user targeted one ONE field, i.e, field-by-field filling.
+    last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
+                                                           ->section] = {
+        *suggestion.field_by_field_filling_type_used};
+    // Record the metric ONLY if field-by-field filling is triggered by the
+    // granular filling feature (on a field classified as address).
+    // The only other scenario when field-by-field filling can be triggered here
+    // is when the user triggers autofill from the context menu for a field
+    // which is unclassified or which is classified as a field that does not
+    // match the user intent (for example, the user triggers address manual
+    // fallback on a credit card field). So the metric needs to be recorded only
+    // if the field is classified as an address.
+    if (IsAddressType(autofill_trigger_field->Type().GetStorableType())) {
+      autofill_metrics::LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
+    }
   }
 
-  // Record the metric ONLY if field-by-field filling is triggered by the
-  // granular filling feature.
-  // The only other scenario when field-by-field filling can be triggered here
-  // is when the user triggers autofill from the context menu for a field which
-  // is unclassified or which is classified as a field that does not match the
-  // user intent (for example, the user triggers address manual fallback on a
-  // credit card field).
-  // So the metric needs to be recorded only if the field is classified as an
-  // address.
-  if (IsAddressType(autofill_trigger_field->server_type())) {
-    autofill_metrics::LogFillingMethodUsed(
-        autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
-  }
   // Only log the field-by-field filling type used if it was accepted from
   // a suggestion in a subpopup. The root popup can have field-by-field
   // suggestions after a field-by-field suggestion was accepted from a
@@ -1067,13 +1072,8 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   // and potentially remove/add new ones.
   if (position.sub_popup_level > 0) {
     autofill_metrics::LogFieldByFieldFillingFieldUsed(
-        *(suggestion.field_by_field_filling_type_used));
+        *suggestion.field_by_field_filling_type_used);
   }
-  // We target only the triggering field type in the field-by-field filling
-  // case.
-  last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
-                                                         ->section] = {
-      autofill_trigger_field->Type().GetStorableType()};
 
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
       profile, manager_->app_locale(),

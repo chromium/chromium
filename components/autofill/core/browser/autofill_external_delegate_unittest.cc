@@ -1350,25 +1350,25 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
   base::HistogramTester histogram_tester;
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-
+  // When the user chooses to fill a specific field, we only log this metric for
+  // fields that were classified as address. This is because otherwise the user
+  // had not choice but to select field-by-field filling.
   if (params.target_metric ==
       autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling) {
+    get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+    external_delegate().DidAcceptSuggestion(suggestion,
+                                            SuggestionPosition{.row = 0});
     // An unclassified field should not produce this metric.
     histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
                                         params.target_metric, 0);
 
-    FieldPrediction prediction;
-    prediction.set_type(FieldType::NAME_FIRST);
-    get_triggering_autofill_field()->set_server_predictions({prediction});
-
+    get_triggering_autofill_field()->SetTypeTo(AutofillType(NAME_FIRST));
     // Now the field is classified as an address field and should produce the
     // metric.
-    external_delegate().DidAcceptSuggestion(suggestion,
-                                            SuggestionPosition{.row = 0});
   }
 
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
   histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
                                       params.target_metric, 1);
 }
