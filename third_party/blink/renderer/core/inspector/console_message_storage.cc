@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -44,8 +45,7 @@ const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
     case mojom::ConsoleMessageSource::kRecommendation:
       return "Recommendation";
   }
-  LOG(FATAL) << "Unreachable code.";
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<TracedValue> MessageTracedValue(ConsoleMessage* message) {

@@ -4,6 +4,8 @@
 
 #include "content/public/browser/console_message.h"
 
+#include "base/notreached.h"
+
 namespace content {
 
 logging::LogSeverity ConsoleMessageLevelToLogSeverity(
@@ -56,8 +58,7 @@ const char* MessageSourceToString(blink::mojom::ConsoleMessageSource source) {
     case blink::mojom::ConsoleMessageSource::kRecommendation:
       return "Recommendation";
   }
-  LOG(FATAL) << "Unreachable code.";
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace content

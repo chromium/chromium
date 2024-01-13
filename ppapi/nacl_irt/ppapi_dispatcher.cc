@@ -10,8 +10,10 @@
 #include <set>
 
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -154,10 +156,8 @@ bool PpapiDispatcher::Send(IPC::Message* msg) {
 void PpapiDispatcher::OnMsgInitializeNaClDispatcher(
     const PpapiNaClPluginArgs& args) {
   static bool command_line_and_logging_initialized = false;
-  if (command_line_and_logging_initialized) {
-    LOG(FATAL) << "InitializeNaClDispatcher must be called once per plugin.";
-    return;
-  }
+  CHECK(!command_line_and_logging_initialized)
+      << "InitializeNaClDispatcher must be called once per plugin.";
 
   command_line_and_logging_initialized = true;
   base::CommandLine::Init(0, NULL);
