@@ -458,9 +458,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // resizing.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
-  // Ends overview if the divider position is outside the fixed positions.
-  void MaybeEndOverviewOnWindowResize(aura::Window* window);
-
   // Returns the closest fixed location to `divider_position`.
   int GetClosestFixedDividerPosition(int divider_position);
 

@@ -165,15 +165,28 @@ void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   presentation_time_recorder_.reset();
 
   // TODO(sophiewen): Only used by metrics. See if we can remove this.
-  auto* split_view_controller =
-      SplitViewController::Get(window->GetRootWindow());
-  split_view_controller->NotifyWindowResized();
-
-  if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
-    split_view_controller->MaybeEndOverviewOnWindowResize(window);
-  }
+  aura::Window* root_window = window->GetRootWindow();
+  SplitViewController::Get(root_window)->NotifyWindowResized();
 
   is_resizing_ = false;
+
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    return;
+  }
+
+  // When `FasterSplitScreenOrSnapGroup` is disabled, end overview if the
+  // divider position is outside the fixed positions.
+  const int work_area_length = GetDividerPositionUpperLimit(root_window);
+
+  const int window_length =
+      GetWindowLength(window, IsLayoutHorizontal(root_window));
+  if (window_length < work_area_length * chromeos::kOneThirdSnapRatio ||
+      window_length > work_area_length * chromeos::kTwoThirdSnapRatio) {
+    WindowState::Get(window)->Maximize();
+    // `EndOverview()` will destroy `this`.
+    Shell::Get()->overview_controller()->EndOverview(
+        OverviewEndAction::kSplitView);
+  }
 }
 
 void SplitViewOverviewSession::OnWindowBoundsChanged(

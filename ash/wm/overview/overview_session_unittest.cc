@@ -8145,6 +8145,50 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
   EXPECT_EQ(window2->bounds().width(), screen_width);
 }
 
+TEST_F(SplitViewOverviewSessionTest, ResizePastFixedDividerPositions) {
+  const gfx::Rect bounds(400, 400);
+  std::unique_ptr<aura::Window> window1(CreateTestWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateTestWindow(bounds));
+
+  // Start overview and drag to snap `window1` in split view.
+  ToggleOverview();
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  const gfx::Point start_point(window1->GetBoundsInScreen().right_center());
+  auto* generator = GetEventGenerator();
+  generator->set_current_screen_location(start_point);
+
+  // Resize the window to less than 1/3 of the work area.
+  const int work_area_length(GetWorkAreaInScreen(window1.get()).width());
+  int window_length = 200;
+  ASSERT_LT(window_length, work_area_length * chromeos::kOneThirdSnapRatio);
+  split_view_divider()->StartResizeWithDivider(
+      GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());
+  split_view_divider()->EndResizeWithDivider(
+      gfx::Point(window_length, start_point.y()));
+
+  // We remain in overview and the divider will be animated to 1/2.
+  EXPECT_TRUE(GetOverviewController()->InOverviewSession());
+  SkipDividerSnapAnimation();
+  EXPECT_NEAR(
+      GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint().x(),
+      work_area_length * chromeos::kOneThirdSnapRatio, 1.f);
+
+  // Resize the window to greater than 2/3 of the work area.
+  window_length = 600;
+  ASSERT_GT(window_length, work_area_length * chromeos::kTwoThirdSnapRatio);
+  split_view_divider()->StartResizeWithDivider(
+      GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());
+  split_view_divider()->EndResizeWithDivider(
+      gfx::Point(window_length, start_point.y()));
+
+  // We remain in overview and the divider will be animated to 1/2.
+  EXPECT_TRUE(GetOverviewController()->InOverviewSession());
+  SkipDividerSnapAnimation();
+  EXPECT_NEAR(
+      GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint().x(),
+      work_area_length * chromeos::kTwoThirdSnapRatio, 1.f);
+}
+
 // Test snapped window bounds with adjustment for the minimum size of a window.
 TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
   const gfx::Rect bounds(400, 400);
@@ -9004,6 +9048,44 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+}
+
+TEST_F(SplitViewOverviewSessionInClamshellTest,
+       ResizePastFixedDividerPositions) {
+  const gfx::Rect bounds(400, 400);
+  std::unique_ptr<aura::Window> window1(
+      CreateWindowWithHitTestComponent(HTRIGHT, bounds));
+  std::unique_ptr<aura::Window> window2(
+      CreateWindowWithHitTestComponent(HTRIGHT, bounds));
+
+  // Start overview and drag to snap `window1` in split view.
+  ToggleOverview();
+  DragWindowTo(GetOverviewItemForWindow(window1.get()), gfx::PointF(0, 0));
+  EXPECT_TRUE(RootWindowController::ForWindow(window1.get())
+                  ->split_view_overview_session());
+
+  const gfx::Point start_point(window1->GetBoundsInScreen().right_center());
+  auto* generator = GetEventGenerator();
+  generator->set_current_screen_location(start_point);
+
+  // Resize the window to less than 1/3 of the work area. Test we end overview.
+  const int work_area_length(GetWorkAreaInScreen(window1.get()).width());
+  int window_length = 200;
+  ASSERT_LT(window_length, work_area_length * chromeos::kOneThirdSnapRatio);
+  generator->DragMouseTo(gfx::Point(window_length, start_point.y()));
+  EXPECT_FALSE(GetOverviewController()->InOverviewSession());
+
+  // Start overview and snap `window1` in split view again.
+  ToggleOverview();
+  DragWindowTo(GetOverviewItemForWindow(window1.get()), gfx::PointF(0, 0));
+
+  // Resize the window to greater than 2/3 of the work area. Test we end
+  // overview.
+  window_length = 600;
+  ASSERT_GT(window_length, work_area_length * chromeos::kTwoThirdSnapRatio);
+  generator->set_current_screen_location(start_point);
+  generator->DragMouseTo(gfx::Point(window_length, start_point.y()));
+  EXPECT_FALSE(GetOverviewController()->InOverviewSession());
 }
 
 // Test overview exit animation histograms when you drag to snap two windows on

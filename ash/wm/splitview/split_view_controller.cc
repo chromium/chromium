@@ -1814,16 +1814,6 @@ void SplitViewController::NotifyWindowSwapped() {
     observer.OnSplitViewWindowSwapped();
 }
 
-void SplitViewController::MaybeEndOverviewOnWindowResize(aura::Window* window) {
-  const int divider_upper_limit(GetDividerPositionUpperLimit(root_window_));
-  if (divider_position_ < divider_upper_limit * chromeos::kOneThirdSnapRatio ||
-      divider_position_ > divider_upper_limit * chromeos::kTwoThirdSnapRatio) {
-    Shell::Get()->overview_controller()->EndOverview(
-        OverviewEndAction::kSplitView);
-    WindowState::Get(window)->Maximize();
-  }
-}
-
 void SplitViewController::CreateSplitViewDividerInClamshell() {
   CHECK(InClamshellSplitViewMode());
   divider_position_ = GetClosestFixedDividerPosition(divider_position_);
