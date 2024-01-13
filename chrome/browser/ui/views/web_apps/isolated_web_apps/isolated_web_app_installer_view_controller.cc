@@ -104,9 +104,7 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   void operator()(InstallabilityChecker::BundleInvalid invalid) {
     LOG(ERROR) << "Isolated Web App bundle installability check failed: "
                << invalid.error;
-    model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
-        /*is_error=*/true, IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
-        IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE));
+    model_->SetDialog(IsolatedWebAppInstallerModel::BundleInvalidDialog{});
     controller_->OnModelChanged();
   }
 
@@ -269,15 +267,10 @@ bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
 bool IsolatedWebAppInstallerViewController::OnAccept() {
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
-      IsolatedWebAppInstallerModel::LinkInfo learn_more_link = {
-          IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
+      model_->SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
           base::BindRepeating(&IsolatedWebAppInstallerViewController::
                                   OnShowMetadataLearnMoreClicked,
-                              base::Unretained(this))};
-      model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
-          /*is_error=*/false, IDS_IWA_INSTALLER_CONFIRM_TITLE,
-          IDS_IWA_INSTALLER_CONFIRM_SUBTITLE, learn_more_link,
-          IDS_IWA_INSTALLER_CONFIRM_CONTINUE));
+                              base::Unretained(this))});
       OnModelChanged();
       return false;
     }
@@ -321,7 +314,7 @@ void IsolatedWebAppInstallerViewController::Close() {
 void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
   if (enabled) {
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
-    model_->SetDialogContent(absl::nullopt);
+    model_->SetDialog(absl::nullopt);
     if (!installability_checker_) {
       callback_delayer_ = std::make_unique<CallbackDelayer>(
           kGetMetadataMinimumDelay, kProgressBarPausePercentage,
@@ -340,7 +333,7 @@ void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
     // complete and blocks the IWA from launching.
     if (model_->step() < IsolatedWebAppInstallerModel::Step::kInstall) {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kDisabled);
-      model_->SetDialogContent(std::nullopt);
+      model_->SetDialog(std::nullopt);
       installability_checker_.reset();
     }
   }
@@ -376,10 +369,7 @@ void IsolatedWebAppInstallerViewController::OnInstallComplete(
   if (result.has_value()) {
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstallSuccess);
   } else {
-    model_->SetDialogContent(IsolatedWebAppInstallerModel::DialogContent(
-        /*is_error=*/true, IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
-        IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE,
-        /*details_link=*/std::nullopt, IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY));
+    model_->SetDialog(IsolatedWebAppInstallerModel::InstallationFailedDialog{});
   }
   OnModelChanged();
 }
@@ -420,7 +410,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
       model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
-      model_->SetDialogContent(std::nullopt);
+      model_->SetDialog(std::nullopt);
       OnModelChanged();
 
       callback_delayer_ = std::make_unique<CallbackDelayer>(
@@ -442,7 +432,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
     case IsolatedWebAppInstallerModel::Step::kInstall:
       // A child dialog on the install screen means the installation failed.
       // Accepting the dialog corresponds to the Retry button.
-      model_->SetDialogContent(std::nullopt);
+      model_->SetDialog(std::nullopt);
       installability_checker_.reset();
       pref_observer_->Reset();
       Start(base::DoNothing(), std::move(completion_callback_));
@@ -494,8 +484,8 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       break;
   }
 
-  if (model_->has_dialog_content()) {
-    view_->ShowDialog(model_->dialog_content());
+  if (model_->has_dialog()) {
+    view_->ShowDialog(model_->dialog());
   }
 }
 

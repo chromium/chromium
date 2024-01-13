@@ -73,7 +73,7 @@ class IsolatedWebAppInstallerView : public views::View {
       const SignedWebBundleMetadata& bundle_metadata) = 0;
 
   virtual void ShowDialog(
-      const IsolatedWebAppInstallerModel::DialogContent& dialog_content) = 0;
+      const IsolatedWebAppInstallerModel::Dialog& dialog) = 0;
 };
 
 }  // namespace web_app

@@ -45,13 +45,12 @@
 namespace web_app {
 namespace {
 
-using DialogContent = IsolatedWebAppInstallerModel::DialogContent;
 using Step = IsolatedWebAppInstallerModel::Step;
 
 struct TestParam {
   std::string test_suffix;
   Step step;
-  absl::optional<DialogContent> dialog = absl::nullopt;
+  absl::optional<IsolatedWebAppInstallerModel::Dialog> dialog = absl::nullopt;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
 };
@@ -64,27 +63,15 @@ const TestParam kTestParam[] = {
     {.test_suffix = "Success", .step = Step::kInstallSuccess},
     {.test_suffix = "InvalidBundle",
      .step = Step::kGetMetadata,
-     .dialog = DialogContent(
-         /*is_error=*/true,
-         IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
-         IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE)},
+     .dialog = IsolatedWebAppInstallerModel::BundleInvalidDialog{}},
     {.test_suffix = "ConfirmInstall",
      .step = Step::kShowMetadata,
-     .dialog = DialogContent(
-         /*is_error=*/false,
-         IDS_IWA_INSTALLER_CONFIRM_TITLE,
-         IDS_IWA_INSTALLER_CONFIRM_SUBTITLE,
-         std::make_pair(IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
-                        base::DoNothing()),
-         IDS_IWA_INSTALLER_CONFIRM_CONTINUE)},
+     .dialog =
+         IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
+             base::DoNothing()}},
     {.test_suffix = "InstallationError",
      .step = Step::kInstall,
-     .dialog = DialogContent(
-         /*is_error=*/true,
-         IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
-         IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE,
-         /*details_link=*/absl::nullopt,
-         IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY)},
+     .dialog = IsolatedWebAppInstallerModel::InstallationFailedDialog{}},
 };
 
 SignedWebBundleMetadata CreateTestMetadata() {
@@ -254,7 +241,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
     controller.Show();
 
     if (GetParam().dialog.has_value()) {
-      model.SetDialogContent(GetParam().dialog);
+      model.SetDialog(GetParam().dialog);
       controller.OnModelChanged();
     }
   }

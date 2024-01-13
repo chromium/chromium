@@ -75,7 +75,7 @@ using ::testing::Field;
 using ::testing::IgnoreResult;
 using ::testing::Invoke;
 using ::testing::Property;
-using DialogContent = IsolatedWebAppInstallerModel::DialogContent;
+using ::testing::VariantWith;
 
 constexpr base::StringPiece kIconPath = "/icon.png";
 
@@ -85,14 +85,6 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
             Property("app_name", &SignedWebBundleMetadata::app_name, app_name),
             Property("version", &SignedWebBundleMetadata::version,
                      base::Version(version))),
-      arg, result_listener);
-}
-
-MATCHER_P3(WithContents, is_error, message_id, details_id, "") {
-  return ExplainMatchResult(
-      AllOf(Field("is_error", &DialogContent::is_error, is_error),
-            Field("message_id", &DialogContent::message, message_id),
-            Field("details_id", &DialogContent::details, details_id)),
       arg, result_listener);
 }
 
@@ -115,11 +107,6 @@ SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
   return SignedWebBundleMetadata::CreateForTesting(
       url_info, DevModeBundle(base::FilePath()), app_name,
       base::Version(version), IconBitmaps());
-}
-
-IsolatedWebAppInstallerModel::DialogContent CreateDummyDialog() {
-  return IsolatedWebAppInstallerModel::DialogContent(
-      /*is_error=*/false, /*message=*/0, /*details=*/0);
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
@@ -166,11 +153,10 @@ class MockView : public IsolatedWebAppInstallerView {
               ShowInstallSuccessScreen,
               (const SignedWebBundleMetadata& bundle_metadata),
               (override));
-  MOCK_METHOD(
-      void,
-      ShowDialog,
-      (const IsolatedWebAppInstallerModel::DialogContent& dialog_content),
-      (override));
+  MOCK_METHOD(void,
+              ShowDialog,
+              (const IsolatedWebAppInstallerModel::Dialog& dialog),
+              (override));
 };
 
 // Fake pref observer that mimics the behavior of an actual observer. i.e.
@@ -339,10 +325,10 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowGetMetadataScreen()).Times(Exactly(2));
-  EXPECT_CALL(view,
-              ShowDialog(WithContents(
-                  /*is_error=*/true, IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
-                  IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE)))
+  EXPECT_CALL(
+      view,
+      ShowDialog(
+          VariantWith<IsolatedWebAppInstallerModel::BundleInvalidDialog>(_)))
       .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
   controller.Start(base::DoNothing(), base::DoNothing());
@@ -367,9 +353,11 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, ShowMetadataScreen(metadata));
-  EXPECT_CALL(view, ShowDialog(WithContents(
-                        /*is_error=*/false, IDS_IWA_INSTALLER_CONFIRM_TITLE,
-                        IDS_IWA_INSTALLER_CONFIRM_SUBTITLE)))
+  EXPECT_CALL(
+      view,
+      ShowDialog(
+          VariantWith<IsolatedWebAppInstallerModel::ConfirmInstallationDialog>(
+              _)))
       .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
   controller.OnAccept();
@@ -390,7 +378,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
-  model.SetDialogContent(CreateDummyDialog());
+  model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
+      base::DoNothing()});
 
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, ShowInstallScreen(metadata))
@@ -420,7 +409,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
-  model.SetDialogContent(CreateDummyDialog());
+  model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
+      base::DoNothing()});
 
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, UpdateInstallProgress(_)).Times(AnyNumber());
@@ -453,7 +443,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
       IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
-  model.SetDialogContent(CreateDummyDialog());
+  model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
+      base::DoNothing()});
 
   EXPECT_CALL(view, UpdateInstallProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowInstallScreen(metadata));
@@ -490,15 +481,17 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(IsolatedWebAppInstallerModel::Step::kShowMetadata);
-  model.SetDialogContent(CreateDummyDialog());
+  model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
+      base::DoNothing()});
 
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, UpdateInstallProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowInstallScreen(metadata)).Times(Exactly(2));
-  EXPECT_CALL(view,
-              ShowDialog(WithContents(
-                  /*is_error=*/true, IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
-                  IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE)))
+  EXPECT_CALL(
+      view,
+      ShowDialog(
+          VariantWith<IsolatedWebAppInstallerModel::InstallationFailedDialog>(
+              _)))
       .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
   controller.OnChildDialogAccepted();
@@ -524,7 +517,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
-  model.SetDialogContent(CreateDummyDialog());
+  model.SetDialog(IsolatedWebAppInstallerModel::InstallationFailedDialog{});
 
   base::test::TestFuture<void> callback;
   EXPECT_CALL(view, ShowGetMetadataScreen())
