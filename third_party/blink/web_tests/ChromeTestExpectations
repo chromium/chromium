@@ -464,7 +464,6 @@ crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-grammar-e
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/display-lock/css-content-visibility/content-visibility-event-sender-001.html [ Timeout ]
-crbug.com/1499775 wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/hid/requestDevice/sandboxed_iframe.https.window.html [ Timeout ]
 crbug.com/1499775 wpt_internal/infrastructure/printing-reftest-pages.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 wpt_internal/infrastructure/printing-set-size.html [ Failure ]  # Reftest image failure
@@ -480,7 +479,6 @@ crbug.com/1499775 wpt_internal/presentation/presentation-reconnect.https.html [ 
 crbug.com/1499775 wpt_internal/presentation/presentation-start-error.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/presentation/presentation-start.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/presentation/presentationconnectionavailableevent-ctor-mock.https.html [ Timeout ]
-crbug.com/1499775 wpt_internal/soft-navigation-heuristics/browser-initiated-popstate.tentative.html [ Timeout ]
 crbug.com/1499775 wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Skip Timeout ]
 crbug.com/1499775 wpt_internal/storage-access-api/storage-access-origin-trial.sub.https.window.html [ Timeout ]
 crbug.com/1499775 wpt_internal/webusb/usbDevice-iframe.https.html [ Timeout ]
