@@ -694,6 +694,12 @@ const char kFormFactor[] = "form-factor";
 // Sets the throttle fps for compositor frame submission.
 const char kFrameThrottleFps[] = "frame-throttle-fps";
 
+// Switch name for "glanceables-v2-key" flag and its expected hashed value.
+const char kGlanceablesKeyExpectedHash[] =
+    "\x52\xde\x04\xda\xef\x3a\xde\xe2\x90\x68\xa1\x5c\x36\xd5\x6b\x1d\xb8\x11"
+    "\xe2\xcb";
+const char kGlanceablesKeySwitch[] = "glanceables-key";
+
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
 const char kGuestSession[] = "bwsi";

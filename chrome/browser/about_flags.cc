@@ -2953,6 +2953,7 @@ constexpr char kTimeOfDayWallpaperForcedAutoScheduleInternalName[] =
 constexpr char kTimeOfDayScreenSaverInternalName[] = "time-of-day-screen-saver";
 constexpr char kTimeOfDayDlcInternalName[] = "time-of-day-dlc";
 constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
+constexpr char kGlanceablesV2KeyName[] = "glanceables-v2-key";
 constexpr char kGlanceablesV2CalendarViewInternalName[] =
     "glanceables-v2-calendar-view";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -5856,6 +5857,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kGlanceablesV2InternalName, flag_descriptions::kGlanceablesV2Name,
      flag_descriptions::kGlanceablesV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGlanceablesV2)},
+    {kGlanceablesV2KeyName, flag_descriptions::kGlanceablesV2Name,
+     flag_descriptions::kGlanceablesV2Description, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kGlanceablesKeySwitch, "")},
     {kGlanceablesV2CalendarViewInternalName,
      flag_descriptions::kGlanceablesV2CalendarViewName,
      flag_descriptions::kGlanceablesV2CalendarViewDescription, kOsCrOS,
