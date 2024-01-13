@@ -48,13 +48,13 @@ class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
   std::vector<TaskRunnerTimer<AnotherHeapObject>> std_vec_of_timers_;
   ^
 ./forbidden_fields.h:39:3: note: [blink-gc] TaskRunnerTimer field 'optional_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
-  absl::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer_;
+  std::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer_;
   ^
 ./forbidden_fields.h:40:3: note: [blink-gc] TaskRunnerTimer field 'optional_timer2_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   std::optional<TaskRunnerTimer<AnotherHeapObject>> optional_timer2_;
   ^
 ./forbidden_fields.h:41:3: note: [blink-gc] From part object field 'optional_embedded_object_' here:
-  absl::optional<SecondLevelPartObject> optional_embedded_object_;
+  std::optional<SecondLevelPartObject> optional_embedded_object_;
   ^
 ./forbidden_fields.h:17:3: note: [blink-gc] TaskRunnerTimer field 'timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
   TaskRunnerTimer<SecondLevelPartObject> timer_;
