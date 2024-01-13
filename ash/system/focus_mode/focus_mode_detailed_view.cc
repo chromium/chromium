@@ -83,7 +83,7 @@ constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
 constexpr auto kTimerCountdownViewInsets = gfx::Insets::TLBR(0, 24, 12, 16);
 
 // Task view constants.
-constexpr auto kTaskViewContainerInsets = gfx::Insets::TLBR(0, 24, 22, 24);
+constexpr auto kTaskViewContainerInsets = gfx::Insets::TLBR(4, 24, 22, 24);
 constexpr auto kTaskViewHeaderInsets = gfx::Insets::VH(18, 0);
 
 // Feedback button constants.
