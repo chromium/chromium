@@ -101,14 +101,14 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
       IsolatedWebAppInstallerViewController& controller)
       : model_(model), controller_(controller) {}
 
-  void operator()(InstallabilityChecker::BundleInvalid invalid) {
+  void operator()(const InstallabilityChecker::BundleInvalid& invalid) {
     LOG(ERROR) << "Isolated Web App bundle installability check failed: "
                << invalid.error;
     model_->SetDialog(IsolatedWebAppInstallerModel::BundleInvalidDialog{});
     controller_->OnModelChanged();
   }
 
-  void operator()(InstallabilityChecker::BundleInstallable installable) {
+  void operator()(const InstallabilityChecker::BundleInstallable& installable) {
     if (!installable.metadata.icons().empty()) {
       // Get the last icon from |any|, size doesn't matter since Shelf will
       // rescale the icon anyway.
@@ -124,17 +124,25 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
     controller_->OnModelChanged();
   }
 
-  void operator()(InstallabilityChecker::BundleUpdatable) {
+  void operator()(const InstallabilityChecker::BundleUpdatable& updatable) {
     // TODO(crbug.com/1479140): Handle updates
     controller_->Close();
   }
 
-  void operator()(InstallabilityChecker::BundleOutdated) {
-    // TODO(crbug.com/1479140): Show "outdated" error message
-    controller_->Close();
+  void operator()(const InstallabilityChecker::BundleOutdated& outdated) {
+    if (outdated.metadata.version() == outdated.installed_version) {
+      model_->SetDialog(
+          IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
+              outdated.metadata.app_name(), outdated.installed_version});
+    } else {
+      model_->SetDialog(IsolatedWebAppInstallerModel::BundleOutdatedDialog{
+          outdated.metadata.app_name(), outdated.metadata.version(),
+          outdated.installed_version});
+    }
+    controller_->OnModelChanged();
   }
 
-  void operator()(InstallabilityChecker::ProfileShutdown) {
+  void operator()(const InstallabilityChecker::ProfileShutdown&) {
     controller_->Close();
   }
 

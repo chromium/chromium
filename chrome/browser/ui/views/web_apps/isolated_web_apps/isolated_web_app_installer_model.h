@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_MODEL_H_
 
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 
@@ -24,6 +27,22 @@ class IsolatedWebAppInstallerModel {
   };
 
   struct BundleInvalidDialog {};
+  struct BundleAlreadyInstalledDialog {
+    std::u16string bundle_name;
+    base::Version installed_version;
+  };
+  struct BundleOutdatedDialog {
+    BundleOutdatedDialog(const std::u16string& bundle_name,
+                         const base::Version& bundle_version,
+                         const base::Version& installed_version);
+    BundleOutdatedDialog(const BundleOutdatedDialog&);
+    BundleOutdatedDialog& operator=(const BundleOutdatedDialog&);
+    ~BundleOutdatedDialog();
+
+    std::u16string bundle_name;
+    base::Version bundle_version;
+    base::Version installed_version;
+  };
   struct ConfirmInstallationDialog {
     explicit ConfirmInstallationDialog(
         const base::RepeatingClosure& learn_more_callback);
@@ -36,6 +55,8 @@ class IsolatedWebAppInstallerModel {
   struct InstallationFailedDialog {};
 
   using Dialog = absl::variant<BundleInvalidDialog,
+                               BundleAlreadyInstalledDialog,
+                               BundleOutdatedDialog,
                                ConfirmInstallationDialog,
                                InstallationFailedDialog>;
 

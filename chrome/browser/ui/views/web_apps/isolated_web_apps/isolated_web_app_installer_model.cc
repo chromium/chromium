@@ -5,11 +5,28 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 
 namespace web_app {
+
+IsolatedWebAppInstallerModel::BundleOutdatedDialog::BundleOutdatedDialog(
+    const std::u16string& bundle_name,
+    const base::Version& bundle_version,
+    const base::Version& installed_version)
+    : bundle_name(bundle_name),
+      bundle_version(bundle_version),
+      installed_version(installed_version) {}
+IsolatedWebAppInstallerModel::BundleOutdatedDialog::BundleOutdatedDialog(
+    const BundleOutdatedDialog&) = default;
+IsolatedWebAppInstallerModel::BundleOutdatedDialog&
+IsolatedWebAppInstallerModel::BundleOutdatedDialog::operator=(
+    const IsolatedWebAppInstallerModel::BundleOutdatedDialog&) = default;
+IsolatedWebAppInstallerModel::BundleOutdatedDialog::~BundleOutdatedDialog() =
+    default;
 
 IsolatedWebAppInstallerModel::ConfirmInstallationDialog::
     ConfirmInstallationDialog(const base::RepeatingClosure& learn_more_callback)

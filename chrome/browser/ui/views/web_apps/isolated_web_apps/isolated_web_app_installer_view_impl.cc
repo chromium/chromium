@@ -488,6 +488,43 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
                                            ui::kColorAlertMediumSeverityIcon),
                 /*ok_label=*/std::nullopt);
           },
+          [this](
+              const IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog&
+                  already_installed_dialog) {
+            std::string installed_version =
+                already_installed_dialog.installed_version.GetString();
+            auto subtitle = ui::DialogModelLabel::CreateWithReplacements(
+                IDS_IWA_INSTALLER_ALREADY_INSTALLED_SUBTITLE,
+                {
+                    ui::DialogModelLabel::CreatePlainText(
+                        already_installed_dialog.bundle_name),
+                    ui::DialogModelLabel::CreatePlainText(
+                        base::UTF8ToUTF16(installed_version)),
+                });
+            ShowDialog(
+                IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE, subtitle,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                /*ok_label=*/std::nullopt);
+          },
+          [this](const IsolatedWebAppInstallerModel::BundleOutdatedDialog&
+                     bundle_outdated_dialog) {
+            std::string installed_version =
+                bundle_outdated_dialog.installed_version.GetString();
+            auto subtitle = ui::DialogModelLabel::CreateWithReplacements(
+                IDS_IWA_INSTALLER_BUNDLE_OUTDATED_SUBTITLE,
+                {
+                    ui::DialogModelLabel::CreatePlainText(
+                        bundle_outdated_dialog.bundle_name),
+                    ui::DialogModelLabel::CreatePlainText(
+                        base::UTF8ToUTF16(installed_version)),
+                });
+            ShowDialog(
+                IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE, subtitle,
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                /*ok_label=*/std::nullopt);
+          },
           [this](const IsolatedWebAppInstallerModel::ConfirmInstallationDialog&
                      confirm_installation_dialog) {
             auto subtitle = ui::DialogModelLabel::CreateWithReplacement(

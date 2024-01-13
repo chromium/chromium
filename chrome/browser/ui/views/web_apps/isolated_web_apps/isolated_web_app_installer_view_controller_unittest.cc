@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
@@ -329,6 +330,42 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       view,
       ShowDialog(
           VariantWith<IsolatedWebAppInstallerModel::BundleInvalidDialog>(_)))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.Start(base::DoNothing(), base::DoNothing());
+
+  EXPECT_TRUE(callback.Wait());
+  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kGetMetadata);
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       OutdatedBundleShowsErrorDialog) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info, "1.0");
+
+  AddDummyIsolatedAppToRegistry(
+      profile(), url_info.origin().GetURL(), "app",
+      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+                            base::Version("2.0")));
+
+  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  auto pref_observer =
+      std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true);
+  IsolatedWebAppInstallerViewController controller(
+      profile(), fake_provider(), &model, std::move(pref_observer));
+  testing::StrictMock<MockView> view;
+  controller.SetViewForTesting(&view);
+
+  model.SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
+  EXPECT_CALL(view, ShowGetMetadataScreen()).Times(Exactly(2));
+  EXPECT_CALL(
+      view,
+      ShowDialog(
+          VariantWith<IsolatedWebAppInstallerModel::BundleOutdatedDialog>(_)))
       .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
   controller.Start(base::DoNothing(), base::DoNothing());
