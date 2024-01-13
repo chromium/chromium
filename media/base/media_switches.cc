@@ -288,9 +288,6 @@ const char kCastMirroringTargetPlayoutDelay[] =
     "cast-mirroring-target-playout-delay";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-const char kDisableUseSharedImagesForPepperVideo[] =
-    "disable-use-shared-images-for-pepper-video";
-
 }  // namespace switches
 
 namespace media {
@@ -1655,12 +1652,6 @@ BASE_FEATURE(kVideoDecodeBatching,
 // feature is enabled (the default), then we'll use the window bounds.
 BASE_FEATURE(kUseWindowBoundsForPip,
              "UseWindowBoundsForPip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Use SharedImages instead of legacy mailboxes to copy VideoFrames to for
-// pepper video decode.
-BASE_FEATURE(kUseSharedImagesForPepperVideo,
-             "UseSharedImagesForPepperVideo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables FFmpeg allow lists for supported codecs / containers.

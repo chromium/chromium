@@ -960,6 +960,10 @@ const char kDownloadBubbleIphSuppression[] = "suppress_download_bubble_iph";
 const char kPersistedSystemExtensions[] = "system_extensions.persisted";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 01/2024.
+const char kPPAPISharedImagesForVideoDecoderAllowed[] =
+    "policy.ppapi_shared_images_for_video_decoder_allowed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1070,6 +1074,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 12/2023.
   registry->RegisterStringPref(kPrivacyBudgetReportedReidBlocks, std::string());
+
+  // Deprecated 01/2024.
+  registry->RegisterBooleanPref(kPPAPISharedImagesForVideoDecoderAllowed, true);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2214,6 +2221,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 12/2023.
   local_state->ClearPref(kPrivacyBudgetReportedReidBlocks);
+
+  // Added 01/2024.
+  local_state->ClearPref(kPPAPISharedImagesForVideoDecoderAllowed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

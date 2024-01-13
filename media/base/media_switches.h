@@ -150,8 +150,6 @@ MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
 MEDIA_EXPORT extern const char kCastMirroringTargetPlayoutDelay[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-MEDIA_EXPORT extern const char kDisableUseSharedImagesForPepperVideo[];
-
 }  // namespace switches
 
 namespace media {
@@ -487,8 +485,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kFuchsiaMediacodecVideoEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoDecodeBatching);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseWindowBoundsForPip);
-
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSharedImagesForPepperVideo);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFFmpegAllowLists);
 

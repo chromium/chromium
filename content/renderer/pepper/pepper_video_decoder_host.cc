@@ -49,18 +49,7 @@ namespace content {
 namespace {
 
 bool UseSharedImagesForPepperVideo() {
-  CHECK(base::CommandLine::ForCurrentProcess());
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableUseSharedImagesForPepperVideo)) {
-    LOG(WARNING) << "UseSharedImagesForPepperVideo: Disabled by policy";
-    return false;
-  }
-
-  const bool enabled =
-      base::FeatureList::IsEnabled(media::kUseSharedImagesForPepperVideo);
-  LOG(WARNING) << "UseSharedImagesForPepperVideo: feature controlled: "
-               << enabled;
-  return enabled;
+  return true;
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
