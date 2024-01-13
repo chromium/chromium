@@ -143,6 +143,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-14-x64-rel",
+    description_html = "Run chromium tests on Android 14 emulators.",
+    mirrors = [
+        "ci/android-14-x64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-14-x64-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-arm-compile-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],

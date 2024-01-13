@@ -572,6 +572,19 @@
           'gtest_tests': 'android_13_emulator_gtests',
         }
       },
+      'android-14-x64-rel': {
+        'mixins': [
+          '14-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_14_emulator_gtests',
+        }
+      },
       'android-arm64-proguard-rel': {
         'additional_compile_targets': [
           'all',

@@ -176,6 +176,7 @@ targets.mixin(
 
 targets.mixin(
     name = "14-x64-emulator",
+    description = "Run with android_34_google_apis_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
     ],
