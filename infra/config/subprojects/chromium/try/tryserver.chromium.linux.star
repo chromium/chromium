@@ -417,7 +417,7 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
@@ -432,16 +432,8 @@ try_.orchestrator_builder(
             "partial_code_coverage_instrumentation",
         ],
     ),
-    compilator = "linux-wayland-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-wayland-rel-compilator",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    ssd = True,
-    siso_enabled = True,
 )
 
 try_.builder(
