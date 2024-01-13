@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
-#include "chrome/browser/ui/views/media_preview/camera_preview/camera_selector_combobox_model.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/view_tracker.h"
 
 // Acts as a middle man between the ViewController and the Mediator.
@@ -29,7 +29,7 @@ class CameraCoordinator {
   // Invoked from the ViewController when a combobox selection has been made.
   void OnVideoSourceChanged(std::optional<size_t> selected_index);
 
-  const CameraSelectorComboboxModel& GetComboboxModelForTest() const {
+  const ui::SimpleComboboxModel& GetComboboxModelForTest() const {
     return combobox_model_;
   }
 
@@ -44,9 +44,12 @@ class CameraCoordinator {
 
   CameraMediator camera_mediator_;
   views::ViewTracker camera_view_tracker_;
-  CameraSelectorComboboxModel combobox_model_;
+  ui::SimpleComboboxModel combobox_model_;
   std::string active_device_id_;
   base::flat_set<std::string> eligible_camera_ids_;
+  // This list must be kept in sync with the `combobox_model_` so that indices
+  // align.
+  std::vector<media::VideoCaptureDeviceInfo> eligible_device_infos_;
   std::optional<CameraViewController> camera_view_controller_;
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };

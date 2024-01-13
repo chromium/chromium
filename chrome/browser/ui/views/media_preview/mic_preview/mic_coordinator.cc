@@ -14,28 +14,13 @@
 #include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace {
-
-// Find system default device name if exist.
-const std::optional<std::string> GetDefaultMicName(
-    const std::vector<media::AudioDeviceDescription>& device_infos) {
-  const auto& system_default_device_it = base::ranges::find(
-      device_infos, media::AudioDeviceDescription::kDefaultDeviceId,
-      &media::AudioDeviceDescription::unique_id);
-  return system_default_device_it == device_infos.end()
-             ? std::nullopt
-             : std::optional<std::string>(
-                   system_default_device_it->device_name);
-}
-
-}  // namespace
-
 MicCoordinator::MicCoordinator(views::View& parent_view,
                                bool needs_borders,
                                const std::vector<std::string>& eligible_mic_ids)
     : mic_mediator_(
           base::BindRepeating(&MicCoordinator::OnAudioSourceInfosReceived,
                               base::Unretained(this))),
+      combobox_model_({}),
       eligible_mic_ids_(eligible_mic_ids) {
   auto* mic_view = parent_view.AddChildView(std::make_unique<MediaView>());
   mic_view_tracker_.SetView(mic_view);
@@ -63,12 +48,7 @@ void MicCoordinator::OnAudioSourceInfosReceived(
     return;
   }
 
-  const std::optional<std::string> system_default_device_name =
-      GetDefaultMicName(device_infos);
-
-  std::vector<AudioSourceInfo> relevant_device_infos;
-  relevant_device_infos.reserve(device_infos.size() -
-                                system_default_device_name.has_value());
+  eligible_device_infos_.clear();
 
   for (const auto& device_info : device_infos) {
     if (device_info.unique_id ==
@@ -79,18 +59,14 @@ void MicCoordinator::OnAudioSourceInfosReceived(
         !eligible_mic_ids_.contains(device_info.unique_id)) {
       continue;
     }
-    bool is_default =
-        system_default_device_name &&
-        device_info.device_name == system_default_device_name.value();
-    relevant_device_infos.emplace_back(device_info, is_default);
+    eligible_device_infos_.emplace_back(device_info);
   }
 
-  if (relevant_device_infos.empty()) {
+  if (eligible_device_infos_.empty()) {
     active_device_id_.clear();
     audio_stream_coordinator_->Stop();
   }
-  mic_view_controller_->UpdateAudioSourceInfos(
-      std::move(relevant_device_infos));
+  mic_view_controller_->UpdateAudioSourceInfos(eligible_device_infos_);
 }
 
 void MicCoordinator::OnAudioSourceChanged(
@@ -99,13 +75,12 @@ void MicCoordinator::OnAudioSourceChanged(
     return;
   }
 
-  const auto& device_info =
-      combobox_model_.GetDeviceInfoAt(selected_index.value());
-  if (active_device_id_ == device_info.id) {
+  const auto& device_info = eligible_device_infos_.at(selected_index.value());
+  if (active_device_id_ == device_info.unique_id) {
     return;
   }
 
-  active_device_id_ = device_info.id;
+  active_device_id_ = device_info.unique_id;
   mic_mediator_.GetAudioInputDeviceFormats(
       active_device_id_,
       base::BindOnce(&MicCoordinator::ConnectAudioStream,

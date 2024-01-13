@@ -78,7 +78,7 @@ class CameraCoordinatorTest : public TestWithBrowserView {
                          /*eligible_camera_ids=*/eligible_camera_ids);
   }
 
-  const CameraSelectorComboboxModel& GetComboboxModel() const {
+  const ui::SimpleComboboxModel& GetComboboxModel() const {
     return coordinator_->GetComboboxModelForTest();
   }
 

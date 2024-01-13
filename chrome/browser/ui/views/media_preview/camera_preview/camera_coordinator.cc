@@ -20,6 +20,7 @@ CameraCoordinator::CameraCoordinator(
     : camera_mediator_(
           base::BindRepeating(&CameraCoordinator::OnVideoSourceInfosReceived,
                               base::Unretained(this))),
+      combobox_model_({}),
       eligible_camera_ids_(eligible_camera_ids) {
   auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
@@ -52,22 +53,21 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
     return;
   }
 
-  std::vector<VideoSourceInfo> relevant_device_infos;
+  eligible_device_infos_.clear();
   for (const auto& device_info : device_infos) {
     if (!eligible_camera_ids_.empty() &&
         !eligible_camera_ids_.contains(device_info.descriptor.device_id)) {
       continue;
     }
 
-    relevant_device_infos.emplace_back(device_info);
+    eligible_device_infos_.emplace_back(device_info);
   }
 
-  if (relevant_device_infos.empty()) {
+  if (eligible_device_infos_.empty()) {
     active_device_id_.clear();
     video_stream_coordinator_->Stop();
   }
-  camera_view_controller_->UpdateVideoSourceInfos(
-      std::move(relevant_device_infos));
+  camera_view_controller_->UpdateVideoSourceInfos(eligible_device_infos_);
 }
 
 void CameraCoordinator::OnVideoSourceChanged(
@@ -76,15 +76,14 @@ void CameraCoordinator::OnVideoSourceChanged(
     return;
   }
 
-  const auto& device_info =
-      combobox_model_.GetDeviceInfoAt(selected_index.value());
-  if (active_device_id_ == device_info.id) {
+  const auto& device_info = eligible_device_infos_.at(selected_index.value());
+  if (active_device_id_ == device_info.descriptor.device_id) {
     return;
   }
 
-  active_device_id_ = device_info.id;
+  active_device_id_ = device_info.descriptor.device_id;
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
-  camera_mediator_.BindVideoSource(device_info.id,
+  camera_mediator_.BindVideoSource(active_device_id_,
                                    video_source.BindNewPipeAndPassReceiver());
   video_stream_coordinator_->ConnectToDevice(std::move(video_source),
                                              device_info.supported_formats);

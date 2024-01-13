@@ -4754,8 +4754,6 @@ static_library("ui") {
       "views/media_preview/camera_preview/camera_coordinator.h",
       "views/media_preview/camera_preview/camera_mediator.cc",
       "views/media_preview/camera_preview/camera_mediator.h",
-      "views/media_preview/camera_preview/camera_selector_combobox_model.cc",
-      "views/media_preview/camera_preview/camera_selector_combobox_model.h",
       "views/media_preview/camera_preview/camera_view_controller.cc",
       "views/media_preview/camera_preview/camera_view_controller.h",
       "views/media_preview/camera_preview/video_stream_coordinator.cc",
@@ -4776,8 +4774,6 @@ static_library("ui") {
       "views/media_preview/mic_preview/mic_coordinator.h",
       "views/media_preview/mic_preview/mic_mediator.cc",
       "views/media_preview/mic_preview/mic_mediator.h",
-      "views/media_preview/mic_preview/mic_selector_combobox_model.cc",
-      "views/media_preview/mic_preview/mic_selector_combobox_model.h",
       "views/media_preview/mic_preview/mic_view_controller.cc",
       "views/media_preview/mic_preview/mic_view_controller.h",
     ]

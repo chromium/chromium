@@ -6,16 +6,39 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/views/media_preview/camera_preview/camera_selector_combobox_model.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
+#include "media/capture/video/video_capture_device_info.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_combobox_model.h"
+
+namespace {
+std::vector<ui::SimpleComboboxModel::Item> GetComboboxItems(
+    const std::vector<media::VideoCaptureDeviceInfo>& video_source_infos) {
+  if (video_source_infos.empty()) {
+    return {ui::SimpleComboboxModel::Item{l10n_util::GetStringUTF16(
+        IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND_COMBOBOX)}};
+  }
+
+  std::vector<ui::SimpleComboboxModel::Item> items;
+  items.reserve(video_source_infos.size());
+  for (const auto& info : video_source_infos) {
+    items.emplace_back(
+        /*text=*/base::UTF8ToUTF16(info.descriptor.GetNameAndModel()));
+  }
+  return items;
+}
+}  // namespace
 
 CameraViewController::CameraViewController(
     MediaView& base_view,
     bool needs_borders,
-    CameraSelectorComboboxModel& combobox_model,
+    ui::SimpleComboboxModel& combobox_model,
     MediaViewControllerBase::SourceChangeCallback callback)
     : combobox_model_(combobox_model) {
+  // Initialize the combobox model.
+  combobox_model_->UpdateItemList(GetComboboxItems({}));
+
   const auto& combobox_accessible_name =
       l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_CAMERA_ACCESSIBLE_NAME);
   const auto& no_device_connected_label_text =
@@ -33,8 +56,9 @@ MediaView& CameraViewController::GetLiveFeedContainer() {
 }
 
 void CameraViewController::UpdateVideoSourceInfos(
-    std::vector<VideoSourceInfo> video_source_infos) {
+    const std::vector<media::VideoCaptureDeviceInfo>& video_source_infos) {
   auto video_source_info_count = video_source_infos.size();
-  combobox_model_->UpdateDeviceList(std::move(video_source_infos));
+
+  combobox_model_->UpdateItemList(GetComboboxItems(video_source_infos));
   base_controller_->OnDeviceListChanged(video_source_info_count);
 }
