@@ -53,7 +53,7 @@ build_webui("build") {
     "reimaging_calibration_failed_page.ts",
     "reimaging_calibration_run_page.ts",
     "reimaging_calibration_setup_page.ts",
-    "reimaging_device_information_page.js",
+    "reimaging_device_information_page.ts",
     "reimaging_firmware_update_page.js",
     "reimaging_provisioning_page.js",
     "repair_component_chip.js",
