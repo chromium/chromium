@@ -9348,10 +9348,12 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, HorizontalMaximizeTest) {
   ToggleOverview();
   split_view_controller()->SnapWindow(snapped_window.get(),
                                       SnapPosition::kPrimary);
+  ASSERT_FALSE(split_view_controller()->IsDividerAnimating());
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   ui::test::EventGenerator(Shell::GetPrimaryRootWindow(), snapped_window.get())
       .DoubleClickLeftButton();
+  ASSERT_FALSE(split_view_controller()->IsDividerAnimating());
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
