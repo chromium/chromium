@@ -86,10 +86,6 @@ BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 
-// Cache prelinking information on Android.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnCachePaaSK);
-
 // Don't publish prelinking information if Chrome is running in a work profile
 // on Android.
 COMPONENT_EXPORT(DEVICE_FIDO)

@@ -469,12 +469,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 GetSyncDataIfRegistered() {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnCachePaaSK)) {
-    return internal::CacheResult(GetSyncDataIfRegisteredInternal(),
-                                 g_browser_process->local_state());
-  } else {
-    return GetSyncDataIfRegisteredInternal();
-  }
+  return internal::CacheResult(GetSyncDataIfRegisteredInternal(),
+                               g_browser_process->local_state());
 }
 
 }  // namespace authenticator
