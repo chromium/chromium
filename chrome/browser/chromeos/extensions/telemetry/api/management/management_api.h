@@ -59,6 +59,19 @@ class OsManagementSetAudioGainFunction : public ManagementApiFunctionBase {
   void OnResult();
 };
 
+class OsManagementSetAudioVolumeFunction : public ManagementApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.management.setAudioVolume",
+                             OS_MANAGEMENT_SETAUDIOVOLUME)
+
+ private:
+  ~OsManagementSetAudioVolumeFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(bool is_success);
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_MANAGEMENT_MANAGEMENT_API_H_

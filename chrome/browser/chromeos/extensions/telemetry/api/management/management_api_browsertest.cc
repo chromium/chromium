@@ -98,4 +98,26 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
     )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
+                       SetAudioVolume) {
+  {
+    auto fake_service_impl = std::make_unique<FakeTelemetryManagementService>();
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function setAudioVolume() {
+        const result = await chrome.os.management.setAudioVolume({
+          nodeId: 1,
+          volume: 100,
+          isMuted: false,
+        });
+        chrome.test.assertTrue(result);
+        chrome.test.succeed();
+      }
+    ]);
+    )");
+}
+
 }  // namespace chromeos

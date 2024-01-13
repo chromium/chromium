@@ -76,4 +76,24 @@ void OsManagementSetAudioGainFunction::OnResult() {
   Respond(NoArguments());
 }
 
+// OsManagementSetAudioVolumeFunction ------------------------------------------
+
+void OsManagementSetAudioVolumeFunction::RunIfAllowed() {
+  // Clamping |volume| to [0, 100] is done in Telemetry Extension Service
+  // `TelemetryManagementServiceAsh::SetAudioVolume`.
+  const auto params = GetParams<cx_manage::SetAudioVolume::Params>();
+  if (!params) {
+    return;
+  }
+
+  auto cb = base::BindOnce(&OsManagementSetAudioVolumeFunction::OnResult, this);
+  GetRemoteService()->SetAudioVolume(
+      params.value().args.node_id, params.value().args.volume,
+      params.value().args.is_muted, std::move(cb));
+}
+
+void OsManagementSetAudioVolumeFunction::OnResult(bool is_success) {
+  Respond(WithArguments(is_success));
+}
+
 }  // namespace chromeos

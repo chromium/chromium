@@ -653,6 +653,21 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function setAudioVolume() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.management.setAudioVolume(
+              {
+                nodeId: 1,
+                volume: 100,
+                isMuted: false,
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.management.setAudioVolume. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
     ];
 
     chrome.test.runTests([
