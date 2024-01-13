@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleMediator.java",
     "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleProperties.java",
@@ -16,6 +17,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:base_shared_preferences_java",
+    "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -64,6 +66,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",

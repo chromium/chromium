@@ -20,6 +20,8 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.test.filters.SmallTest;
 
@@ -44,6 +46,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -93,6 +97,7 @@ public class PriceChangeModuleMediatorUnitTest {
     @Mock private Bitmap mFaviconBitmap;
     @Mock private Bitmap mProductImageBitmap;
     @Mock private ImageFetcher mImageFetcher;
+    @Mock private ModuleDelegate mModuleDelegate;
 
     private PriceChangeModuleMediator mMediator;
     private SharedPreferencesManager mSharedPreferenceManager;
@@ -129,7 +134,8 @@ public class PriceChangeModuleMediatorUnitTest {
                         mProfile,
                         mTabModelSelector,
                         mFaviconHelper,
-                        mImageFetcher);
+                        mImageFetcher,
+                        mModuleDelegate);
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
 
         Map<String, Boolean> featureOverride = new HashMap<>();
@@ -181,6 +187,7 @@ public class PriceChangeModuleMediatorUnitTest {
         assertEquals(
                 PREVIOUS_PRICE,
                 mModel.get(PriceChangeModuleProperties.MODULE_PREVIOUS_PRICE_STRING));
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.PRICE_CHANGE), eq(mModel));
 
         // Mock return value of FaviconHelper.
         ArgumentCaptor<FaviconImageCallback> faviconCallbackCaptor =
@@ -204,6 +211,11 @@ public class PriceChangeModuleMediatorUnitTest {
         assertEquals(
                 mProductImageBitmap,
                 mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP));
+
+        // Check onClickListener setup.
+        OnClickListener listener = mModel.get(PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER);
+        listener.onClick(mock(View.class));
+        verify(mModuleDelegate).onTabClicked(eq(123), eq(ModuleType.PRICE_CHANGE));
     }
 
     @Test
@@ -224,6 +236,27 @@ public class PriceChangeModuleMediatorUnitTest {
 
         // Favicon should be setup as default bitmap.
         assertNotNull(mModel.get(PriceChangeModuleProperties.MODULE_FAVICON_BITMAP));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowModule_NoData() {
+        doReturn(true).when(mService).isInitialized();
+
+        mMediator.showModule();
+
+        ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
+        dataCallbackCaptor.getValue().onResult(new ArrayList<>());
+        verify(mService, times(0)).initialize(any(Set.class));
+        verify(mModuleDelegate).onDataFetchFailed(eq(ModuleType.PRICE_CHANGE));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetModuleType() {
+        assertEquals(ModuleType.PRICE_CHANGE, mMediator.getModuleType());
     }
 
     public void showModuleWithInitializedService() {

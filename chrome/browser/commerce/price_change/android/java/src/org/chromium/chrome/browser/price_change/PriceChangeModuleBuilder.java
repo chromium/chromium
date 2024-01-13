@@ -1,0 +1,65 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.price_change;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** {@link ModuleProviderBuilder} that builds the price change module. */
+public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
+    private final Context mContext;
+    private final Profile mProfile;
+    private final TabModelSelector mTabModelSelector;
+
+    /** Pass in the dependencies needed to build {@link PriceChangeModuleCoordinator}. */
+    public PriceChangeModuleBuilder(
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull TabModelSelector tabModelSelector) {
+        mContext = context;
+        mProfile = profile;
+        mTabModelSelector = tabModelSelector;
+    }
+
+    /** Build {@link ModuleProvider} for the price change module. */
+    @Override
+    public boolean build(
+            @NonNull ModuleDelegate moduleDelegate, @NonNull Callback<ModuleProvider> callback) {
+        PriceChangeModuleCoordinator coordinator =
+                new PriceChangeModuleCoordinator(
+                        mContext, mProfile, mTabModelSelector, moduleDelegate);
+        callback.onResult(coordinator);
+        return true;
+    }
+
+    /** Create view for the price change module. */
+    @Override
+    public ViewGroup createView(@NonNull ViewGroup parentView) {
+        return (ViewGroup)
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.price_change_module_layout, parentView, false);
+    }
+
+    /** Bind the property model for the price change module. */
+    @Override
+    public void bind(
+            @NonNull PropertyModel model,
+            @NonNull ViewGroup view,
+            @NonNull PropertyKey propertyKey) {
+        PriceChangeModuleViewBinder.bind(model, view, propertyKey);
+    }
+}

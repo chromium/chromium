@@ -14,6 +14,8 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,6 +44,8 @@ public class PriceChangeModuleMediator {
     private final int mFaviconSize;
     private final Profile mProfile;
     private final ImageFetcher mImageFetcher;
+    private final ModuleDelegate mModuleDelegate;
+    private final @ModuleType int mModuleType;
 
     PriceChangeModuleMediator(
             Context context,
@@ -49,7 +53,8 @@ public class PriceChangeModuleMediator {
             Profile profile,
             TabModelSelector tabModelSelector,
             FaviconHelper faviconHelper,
-            ImageFetcher imageFetcher) {
+            ImageFetcher imageFetcher,
+            ModuleDelegate moduleDelegate) {
         mContext = context;
         mModel = model;
         mProfile = profile;
@@ -58,6 +63,8 @@ public class PriceChangeModuleMediator {
         mTabModelSelector = tabModelSelector;
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mImageFetcher = imageFetcher;
+        mModuleDelegate = moduleDelegate;
+        mModuleType = ModuleType.PRICE_CHANGE;
     }
 
     /** Show the price change module. */
@@ -78,8 +85,10 @@ public class PriceChangeModuleMediator {
         mShoppingPersistedTabDataService.getAllShoppingPersistedTabDataWithPriceDrop(
                 res -> {
                     if (res.size() == 0) {
+                        mModuleDelegate.onDataFetchFailed(mModuleType);
                         return;
                     }
+                    Tab tab = res.get(0).getTab();
                     ShoppingPersistedTabData data = res.get(0).getData();
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_TITLE,
@@ -99,12 +108,18 @@ public class PriceChangeModuleMediator {
                             data.getPriceDrop().previousPrice);
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_DOMAIN_STRING,
-                            UrlUtilities.getDomainAndRegistry(
-                                    res.get(0).getTab().getUrl().getSpec(), false));
+                            UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false));
+                    mModel.set(
+                            PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER,
+                            v -> mModuleDelegate.onTabClicked(tab.getId(), mModuleType));
+
+                    // No need to wait for image and favicon ready to notify that the module is
+                    // ready.
+                    mModuleDelegate.onDataReady(mModuleType, mModel);
 
                     mFaviconHelper.getLocalFaviconImageForURL(
                             mProfile,
-                            res.get(0).getTab().getUrl(),
+                            tab.getUrl(),
                             mFaviconSize,
                             (image, iconUrl) -> {
                                 if (image != null) {
@@ -140,5 +155,9 @@ public class PriceChangeModuleMediator {
                                         image);
                             });
                 });
+    }
+
+    int getModuleType() {
+        return mModuleType;
     }
 }

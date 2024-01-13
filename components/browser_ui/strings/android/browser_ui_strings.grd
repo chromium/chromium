@@ -1125,6 +1125,9 @@
          =1 {Price drop on your open tabs}
         other {Price drops on your open tabs}}
       </message>
+      <message name="IDS_PRICE_CHANGE_MODULE_CONTEXT_MENU_ITEM" desc="The string that is going to be part of the context menu item string to hide the price drop card.">
+        price drop card
+      </message>
 
       <!-- Magic stack strings -->
       <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_MODULE" desc="The context menu item to hide a module.">
