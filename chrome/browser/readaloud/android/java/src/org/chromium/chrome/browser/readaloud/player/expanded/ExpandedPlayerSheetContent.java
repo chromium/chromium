@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -86,6 +87,20 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+
+        mSeekBar.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityEvent(
+                            View host, AccessibilityEvent event) {
+                        // Drop progress announcements that repeatedly interrupt playback.
+                        if (event.getEventType()
+                                == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                            return;
+                        }
+                        super.onInitializeAccessibilityEvent(host, event);
+                    }
+                });
 
         // Apply dynamic colors.
         Colors.setBottomSheetContentBackground(mContentView);
