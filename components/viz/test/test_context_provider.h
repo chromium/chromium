@@ -98,6 +98,15 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label) override;
+
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,

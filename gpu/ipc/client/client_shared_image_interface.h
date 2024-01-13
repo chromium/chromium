@@ -96,6 +96,19 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       uint32_t usage,
       base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
+
+  // Used by the software compositor only. |useage| must be
+  // gpu::SHARED_IMAGE_USAGE_CPU_WRITE. Call client_shared_image->Map() later to
+  // get the shared memory mapping.
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label) override;
+
   // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
   // single planar eg. RGB BufferFormats. Please use the equivalent method above
   // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.

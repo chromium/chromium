@@ -5,10 +5,12 @@
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 
 #include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -24,6 +26,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -502,6 +505,60 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(mailbox);
+}
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::StringPiece debug_label) {
+  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK_EQ(usage, gpu::SHARED_IMAGE_USAGE_CPU_WRITE);
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  CHECK(!format.PrefersExternalSampler());
+#endif
+
+  gfx::BufferFormat buffer_format =
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
+  const size_t buffer_size =
+      gfx::BufferSizeForBufferFormat(size, buffer_format);
+  auto shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+  CHECK(shared_memory_region.IsValid());
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::SHARED_MEMORY_BUFFER;
+  handle.offset = 0;
+  handle.stride = static_cast<int32_t>(
+      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
+  handle.region = std::move(shared_memory_region);
+
+  GpuMemoryBufferHandleInfo handle_info = GpuMemoryBufferHandleInfo(
+      handle.Clone(), format, size, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  {
+    base::AutoLock lock(lock_);
+    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
+    // Note: we enqueue the task under the lock to guarantee monotonicity of
+    // the release ids as seen by the service. Unretained is safe because
+    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
+    // time, cancelling tasks, before |this| is destroyed.
+    ScheduleGpuTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::
+                           CreateSharedImageWithBufferOnGpuThread,
+                       base::Unretained(this), mailbox, format, size,
+                       color_space, surface_origin, alpha_type, usage,
+                       std::move(handle), std::string(debug_label), sync_token),
+        {});
+  }
+
+  return base::MakeRefCounted<ClientSharedImage>(mailbox,
+                                                 std::move(handle_info));
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(

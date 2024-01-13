@@ -4662,7 +4662,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // For software compositing, shared memory will be allocated and the
   // UIResource will be copied into it.
   base::MappedReadOnlyRegion shm;
-  base::WritableSharedMemoryMapping mapping;
+  base::WritableSharedMemoryMapping shared_mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
   viz::SharedBitmapId shared_bitmap_id;
   bool overlay_candidate = false;
   bool use_shared_image =
@@ -4692,29 +4693,15 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto* sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 
-    const size_t buffer_size = gfx::BufferSizeForBufferFormat(
-        upload_size, gfx::BufferFormat::RGBA_8888);
-    auto shared_memory_region =
-        base::UnsafeSharedMemoryRegion::Create(buffer_size);
-    mapping = shared_memory_region.Map();
-    CHECK(shared_memory_region.IsValid() && mapping.IsValid());
-
-    gfx::GpuMemoryBufferHandle handle;
-    handle.type = gfx::SHARED_MEMORY_BUFFER;
-    handle.offset = 0;
-    handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
-        upload_size.width(), gfx::BufferFormat::RGBA_8888, 0));
-    handle.region = std::move(shared_memory_region);
-
     client_shared_image = sii->CreateSharedImage(
         format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
-        std::move(handle));
+        kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource");
     CHECK(client_shared_image);
-    shared_bitmap_id = client_shared_image->mailbox();
+    scoped_mapping = client_shared_image->Map();
+    CHECK(scoped_mapping);
   } else {
     shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
-    mapping = std::move(shm.mapping);
+    shared_mapping = std::move(shm.mapping);
     shared_bitmap_id = viz::SharedBitmap::GenerateId();
   }
 
@@ -4737,8 +4724,10 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
 
-      sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
-          dst_info, mapping.memory(), dst_info.minRowBytes());
+      void* pixels =
+          scoped_mapping ? scoped_mapping->Memory(0) : shared_mapping.memory();
+      sk_sp<SkSurface> surface =
+          SkSurfaces::WrapPixels(dst_info, pixels, dst_info.minRowBytes());
       surface->getCanvas()->writePixels(
           src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
           bitmap.row_bytes(), 0, 0);
@@ -4774,8 +4763,10 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      scaled_surface = SkSurfaces::WrapPixels(dst_info, mapping.memory(),
-                                              dst_info.minRowBytes());
+      void* pixels =
+          scoped_mapping ? scoped_mapping->Memory(0) : shared_mapping.memory();
+      scaled_surface =
+          SkSurfaces::WrapPixels(dst_info, pixels, dst_info.minRowBytes());
       CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();
@@ -4823,7 +4814,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto* sii = layer_tree_frame_sink_->shared_image_interface();
     gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
     transferable = viz::TransferableResource::MakeSoftware(
-        shared_bitmap_id, sync_token, upload_size, format,
+        client_shared_image->mailbox(), sync_token, upload_size, format,
         viz::TransferableResource::ResourceSource::kUI);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
@@ -4847,7 +4838,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   data.format = format;
   if (!use_shared_image) {
     data.shared_bitmap_id = shared_bitmap_id;
-    data.shared_mapping = std::move(mapping);
+    data.shared_mapping = std::move(shared_mapping);
   }
   data.shared_image = std::move(client_shared_image);
   data.resource_id_for_export = id;

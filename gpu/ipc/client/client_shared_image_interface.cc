@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -196,6 +197,47 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       AddMailbox(proxy_->CreateSharedImage(
           format, size, color_space, surface_origin, alpha_type, usage,
           debug_label, std::move(buffer_handle))));
+}
+
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::StringPiece debug_label) {
+  DCHECK(gpu::IsValidClientUsage(usage)) << usage;
+  DCHECK_EQ(usage, gpu::SHARED_IMAGE_USAGE_CPU_WRITE);
+  DCHECK(viz::HasEquivalentBufferFormat(format)) << format.ToString();
+  CHECK(!format.IsLegacyMultiplanar()) << format.ToString();
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  CHECK(!format.PrefersExternalSampler()) << format.ToString();
+#endif
+
+  gfx::BufferFormat buffer_format =
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
+  const size_t buffer_size =
+      gfx::BufferSizeForBufferFormat(size, buffer_format);
+  auto shared_memory_region =
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+  CHECK(shared_memory_region.IsValid());
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::SHARED_MEMORY_BUFFER;
+  handle.offset = 0;
+  handle.stride = static_cast<int32_t>(
+      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
+  handle.region = std::move(shared_memory_region);
+
+  GpuMemoryBufferHandleInfo handle_info = GpuMemoryBufferHandleInfo(
+      handle.Clone(), format, size, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
+                                           surface_origin, alpha_type, usage,
+                                           debug_label, std::move(handle))),
+      std::move(handle_info));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(

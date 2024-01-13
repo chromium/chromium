@@ -181,6 +181,7 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
     if (shared_image) {
       auto* sii = layer_tree_frame_sink->shared_image_interface();
       if (sii) {
+        scoped_mapping.reset();
         sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
       }
     } else {
@@ -193,12 +194,20 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-    pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid,
-                                         shared_mapping.guid(), importance);
+    if (shared_image) {
+      scoped_mapping->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
+                                   importance);
+    } else {
+      pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid,
+                                           shared_mapping.guid(), importance);
+    }
   }
 
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
+  // Used for SharedImage.
   base::WritableSharedMemoryMapping shared_mapping;
+  // Used for SharedBitmap
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
 };
 
 bool HeadsUpDisplayLayerImpl::WillDraw(
@@ -339,29 +348,14 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       if (!pool_resource.software_backing()) {
         auto backing = std::make_unique<HudSoftwareBacking>();
         backing->layer_tree_frame_sink = layer_tree_frame_sink;
-
-        const size_t buffer_size = gfx::BufferSizeForBufferFormat(
-            pool_resource.size(), gfx::BufferFormat::BGRA_8888);
-        auto shared_memory_region =
-            base::UnsafeSharedMemoryRegion::Create(buffer_size);
-        backing->shared_mapping = shared_memory_region.Map();
-        CHECK(shared_memory_region.IsValid() &&
-              backing->shared_mapping.IsValid());
-
-        gfx::GpuMemoryBufferHandle handle;
-        handle.type = gfx::SHARED_MEMORY_BUFFER;
-        handle.offset = 0;
-        handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
-            pool_resource.size().width(), gfx::BufferFormat::BGRA_8888, 0));
-        handle.region = std::move(shared_memory_region);
-
         backing->shared_image = sii->CreateSharedImage(
             pool_resource.format(), pool_resource.size(),
             pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
             kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
-            "HeadsUpDisplayLayer", std::move(handle));
+            "HeadsUpDisplayLayer");
         CHECK(backing->shared_image);
-
+        backing->scoped_mapping = backing->shared_image->Map();
+        CHECK(backing->scoped_mapping);
         pool_resource.set_software_backing(std::move(backing));
       }
 
@@ -460,8 +454,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
-        info, backing->shared_mapping.memory(), info.minRowBytes(), &props);
+    void* pixels = backing->scoped_mapping ? backing->scoped_mapping->Memory(0)
+                                           : backing->shared_mapping.memory();
+    sk_sp<SkSurface> surface =
+        SkSurfaces::WrapPixels(info, pixels, info.minRowBytes(), &props);
 
     SkiaPaintCanvas canvas(surface->getCanvas());
     DrawHudContents(&canvas);

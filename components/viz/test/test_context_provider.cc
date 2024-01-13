@@ -265,6 +265,21 @@ TestSharedImageInterface::CreateSharedImage(
 }
 
 scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
+                                            const gfx::Size& size,
+                                            const gfx::ColorSpace& color_space,
+                                            GrSurfaceOrigin surface_origin,
+                                            SkAlphaType alpha_type,
+                                            uint32_t usage,
+                                            base::StringPiece debug_label) {
+  base::AutoLock locked(lock_);
+  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  shared_images_.insert(mailbox);
+  most_recent_size_ = size;
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
+}
+
+scoped_refptr<gpu::ClientSharedImage>
 TestSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
