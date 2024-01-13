@@ -297,7 +297,7 @@ command line, you can use `iossim`. For example, to run a debug build of
 `Chromium`:
 
 ```shell
-$ out/Debug-iphonesimulator/iossim out/Debug-iphonesimulator/Chromium.app
+$ out/Debug-iphonesimulator/iossim -i out/Debug-iphonesimulator/Chromium.app
 ```
 
 From Xcode 9 on, `iossim` no longer automatically launches the Simulator. This must now
@@ -310,7 +310,7 @@ Arguments needed to be passed to the test application through `iossim`, such as
 `--gtest_filter=SomeTest.FooBar` should be passed through the `-c` flag:
 
 ```shell
-$ out/Debug-iphonesimulator/iossim \
+$ out/Debug-iphonesimulator/iossim -i \
     -c "--gtest_filter=SomeTest.FooBar --gtest_repeat=3" \
     out/Debug-iphonesimulator/base_unittests.app
 ```
@@ -322,7 +322,7 @@ XCTest bundle that is injected into the target application. Therefore you must
 also pass in the test bundle:
 
 ```shell
-$ out/Debug-iphonesimulator/iossim \
+$ out/Debug-iphonesimulator/iossim -i \
     out/Debug-iphonesimulator/ios_chrome_ui_egtests.app \
     out/Debug-iphonesimulator/ios_chrome_ui_egtests.app/PlugIns/ios_chrome_ui_egtests_module.xctest
 ```
@@ -357,7 +357,7 @@ For example, to run the tests on a simulated iPhone 6s running iOS 10.0,
 you would invoke `iossim` like this.
 
 ```shell
-$ out/Debug-iphonesimulator/iossim -d 'iPhone 6s' -s '10.0' \
+$ out/Debug-iphonesimulator/iossim -i -d 'iPhone 6s' -s '10.0' \
     out/Debug-iphonesimulator/base_unittests.app
 ```
 
