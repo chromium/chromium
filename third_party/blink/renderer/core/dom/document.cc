@@ -373,6 +373,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+#include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
+#endif
+
 #ifndef NDEBUG
 using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
 static WeakDocumentSet& LiveDocumentSet();
@@ -1584,6 +1588,29 @@ void Document::SetContent(const String& content) {
   open();
   parser_->Append(content);
   close();
+}
+
+using AllowState = blink::Document::DeclarativeShadowRootAllowState;
+void Document::SetContentFromDOMParser(const String& content) {
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+  if (RuntimeEnabledFeatures::DOMParserUsesHTMLFastPathParserEnabled() &&
+      contentType() == "text/html" && IsA<HTMLDocument>(this)) {
+    auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
+    const bool include_shadow_roots =
+        declarative_shadow_root_allow_state_ == AllowState::kAllow;
+    if (TryParsingHTMLFragment(content, *this, *body, *body,
+                               kAllowScriptingContent, include_shadow_roots,
+                               nullptr)) {
+      auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
+      auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
+      html->AppendChild(head);
+      html->AppendChild(body);
+      AppendChild(html);
+      return;
+    }
+  }
+#endif
+  SetContent(content);
 }
 
 String Document::SuggestedMIMEType() const {
@@ -7433,7 +7460,6 @@ DOMWindow* Document::defaultView() const {
   return dom_window_;
 }
 
-using AllowState = blink::Document::DeclarativeShadowRootAllowState;
 AllowState Document::GetDeclarativeShadowRootAllowState() const {
   return declarative_shadow_root_allow_state_;
 }

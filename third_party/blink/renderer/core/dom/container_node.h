@@ -335,8 +335,8 @@ class CORE_EXPORT ContainerNode : public Node {
     kNonElementRemoved,
     kAllChildrenRemoved,
     kTextChanged,
-    // When the parser builds a DocumentFragment (because of inner/outer-html)
-    // a single ChildrenChange event is sent at the end.
+    // When the parser builds nodes (because of inner/outer-html or
+    // parseFromString) a single ChildrenChange event is sent at the end.
     kFinishedBuildingDocumentFragmentTree,
   };
   enum class ChildrenChangeSource : uint8_t { kAPI, kParser };

@@ -500,6 +500,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void SetContent(const String&);
 
+  // DOMParser::parseFromString() calls to this. Does the same thing as
+  // `setContent()`, but may use the fast path parser.
+  void SetContentFromDOMParser(const String&);
+
   String SuggestedMIMEType() const;
   void SetMimeType(const AtomicString&);
   AtomicString contentType() const;  // DOM 4 document.contentType

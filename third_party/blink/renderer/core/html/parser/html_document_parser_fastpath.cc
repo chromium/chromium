@@ -113,6 +113,7 @@ uint32_t TagnameHash(const String& s) {
 #define SUPPORTED_TAGS(V) \
   V(A)                    \
   V(B)                    \
+  V(Body)                 \
   V(Br)                   \
   V(Button)               \
   V(Div)                  \
@@ -216,10 +217,8 @@ class HTMLFastPathParser {
   static_assert(std::is_same_v<Char, UChar> || std::is_same_v<Char, LChar>);
 
  public:
-  HTMLFastPathParser(Span source,
-                     Document& document,
-                     DocumentFragment& fragment)
-      : source_(source), document_(document), fragment_(fragment) {}
+  HTMLFastPathParser(Span source, Document& document, ContainerNode& root_node)
+      : source_(source), document_(document), root_node_(root_node) {}
 
   bool Run(Element& context_element) {
     QualifiedName context_tag = context_element.TagQName();
@@ -270,7 +269,7 @@ class HTMLFastPathParser {
  private:
   Span source_;
   Document& document_;
-  DocumentFragment& fragment_;
+  ContainerNode& root_node_;
 
   const Char* const end_ = source_.data() + source_.size();
   const Char* pos_ = source_.data();
@@ -377,6 +376,16 @@ class HTMLFastPathParser {
       static constexpr const char tagname[] = "b";
       static HTMLElement* Create(Document& document) {
         return MakeGarbageCollected<HTMLElement>(html_names::kBTag, document);
+      }
+    };
+
+    struct Body : ContainerTag<HTMLBodyElement, PermittedParents::kSpecial> {
+      static constexpr const char tagname[] = "body";
+      static HTMLElement* Create(Document& document) {
+        // Body is only supported as an element for adding children, and not
+        // a node that is created by this code.
+        CHECK(false);
+        return nullptr;
       }
     };
 
@@ -488,7 +497,7 @@ class HTMLFastPathParser {
 
   template <class ParentTag>
   void ParseCompleteInput() {
-    ParseChildren<ParentTag>(&fragment_);
+    ParseChildren<ParentTag>(&root_node_);
     if (pos_ != end_) {
       Fail(HtmlFastPathResult::kFailedDidntReachEndOfInput);
     }
@@ -1415,19 +1424,19 @@ void LogFastPathUnsupportedTagTypeDetails(uint32_t type_mask,
 template <class Char>
 bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
                                 Document& document,
-                                DocumentFragment& fragment,
+                                ContainerNode& root_node,
                                 Element& context_element,
                                 bool* failed_because_unsupported_tag) {
   base::ElapsedTimer parse_timer;
   int number_of_bytes_parsed;
-  HTMLFastPathParser<Char> parser{source, document, fragment};
+  HTMLFastPathParser<Char> parser{source, document, root_node};
   const bool success = parser.Run(context_element);
   LogFastPathResult(parser.parse_result());
   number_of_bytes_parsed = parser.NumberOfBytesParsed();
   // The time needed to parse is typically < 1ms (even at the 99%).
   if (success) {
     if (parser.bulk_insert_notify()) {
-      fragment.ParserFinishedBuildingDocumentFragment();
+      root_node.ParserFinishedBuildingDocumentFragment();
     }
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.HTMLFastPathParser.SuccessfulParseTime2", parse_timer.Elapsed(),
@@ -1470,7 +1479,7 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
 
 bool TryParsingHTMLFragment(const String& source,
                             Document& document,
-                            DocumentFragment& fragment,
+                            ContainerNode& parent,
                             Element& context_element,
                             ParserContentPolicy policy,
                             bool include_shadow_roots,
@@ -1480,10 +1489,10 @@ bool TryParsingHTMLFragment(const String& source,
     return false;
   }
   return source.Is8Bit() ? TryParsingHTMLFragmentImpl<LChar>(
-                               source.Span8(), document, fragment,
+                               source.Span8(), document, parent,
                                context_element, failed_because_unsupported_tag)
                          : TryParsingHTMLFragmentImpl<UChar>(
-                               source.Span16(), document, fragment,
+                               source.Span16(), document, parent,
                                context_element, failed_because_unsupported_tag);
 }
 

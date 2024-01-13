@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class ContainerNode;
 class Document;
 class DocumentFragment;
 class Element;
@@ -20,7 +21,7 @@ class Element;
 CORE_EXPORT bool TryParsingHTMLFragment(
     const String& source,
     Document& document,
-    DocumentFragment& fragment,
+    ContainerNode& root_node,
     Element& context_element,
     ParserContentPolicy policy,
     bool include_shadow_roots,
