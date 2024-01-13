@@ -1471,6 +1471,44 @@ suite('WallpaperSearchTest', () => {
           metrics.count(
               'NewTabPage.WallpaperSearch.Status', WallpaperSearchStatus.kOk));
     });
+
+    test('clicking inspiration tile sets metric', async () => {
+      loadTimeData.overrideValues(
+          {wallpaperSearchInspirationCardEnabled: true});
+
+      createWallpaperSearchElement(
+          /*descriptors=*/ null, /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+
+      const result =
+          $$(wallpaperSearchElement, '#inspirationCard .tile.result');
+      assertTrue(!!result);
+      (result as HTMLElement).click();
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction
+                  .WALLPAPER_SEARCH_INSPIRATION_THEME_SELECTED));
+    });
   });
 
   suite('Inspiration', () => {

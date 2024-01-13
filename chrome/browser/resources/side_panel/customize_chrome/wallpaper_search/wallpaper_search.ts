@@ -572,6 +572,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private onInspirationImageClick_(e: DomRepeatEvent<Inspiration>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_INSPIRATION_THEME_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToInspirationImage(
         e.model.item.id, e.model.item.backgroundUrl);
   }
