@@ -146,6 +146,7 @@ js2gtest("accessibility_tests") {
     "rect_util_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",
+    "string_util_test.js",
     "tree_walker_test.js",
   ]
 

@@ -17,7 +17,6 @@ import {LocalStorage} from '../../../common/local_storage.js';
 import {StringUtil} from '../../../common/string_util.js';
 import {Msgs} from '../../common/msgs.js';
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
-import {ChromeVoxState} from '../chromevox_state.js';
 import {TtsInterface} from '../tts_interface.js';
 
 import {TypingEchoState} from './typing_echo.js';
@@ -352,6 +351,12 @@ export class ChromeVoxEditableTextBase {
       evtEnd = evt.start;
     }
 
+    // Precompute the length of prefix and suffix of values.
+    const commonPrefixLen =
+        StringUtil.longestCommonPrefixLength(evtValue, value);
+    const commonSuffixLen =
+        StringUtil.longestCommonSuffixLength(evtValue, value);
+
     // Now see if the previous selection (if any) was deleted
     // and any new text was inserted at that character position.
     // This would handle pasting and entering text by typing, both from
@@ -359,8 +364,7 @@ export class ChromeVoxEditableTextBase {
     let prefixLen = prev.start;
     let suffixLen = len - prev.end;
     if (newLen >= prefixLen + suffixLen + (evtEnd - evt.start) &&
-        evtValue.substr(0, prefixLen) === value.substr(0, prefixLen) &&
-        evtValue.substr(newLen - suffixLen) === value.substr(prev.end)) {
+        commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
       this.describeTextChangedHelper(
           prev, evt, prefixLen, suffixLen, autocompleteSuffix, personality);
       return;
@@ -373,11 +377,9 @@ export class ChromeVoxEditableTextBase {
     prefixLen = evt.start;
     suffixLen = newLen - evtEnd;
     if (prev.start === prev.end && evt.start === evtEnd &&
-        evtValue.substr(0, prefixLen) === value.substr(0, prefixLen) &&
-        evtValue.substr(newLen - suffixLen) === value.substr(len - suffixLen)) {
+        commonPrefixLen >= prefixLen && commonSuffixLen >= suffixLen) {
       // Forward deletions causes reading of the character immediately to the
-      // right of the caret or the deleted text depending on the iBeam cursor
-      // setting.
+      // right of the caret.
       if (prev.start === evt.start && prev.end === evt.end) {
         this.speak(evt.value[evt.start], evt.triggeredByUser);
       } else {
@@ -400,21 +402,21 @@ export class ChromeVoxEditableTextBase {
         ((evtValue.length + 1) === value.length)) {
       // The user added text either to the beginning or the end.
       if (evtValue.length > value.length) {
-        if (evtValue.startsWith(value)) {
+        if (commonPrefixLen === value.length) {
           this.speak(
               evtValue[evtValue.length - 1], evt.triggeredByUser, personality);
           return;
-        } else if (evtValue.indexOf(value) === 1) {
+        } else if (commonSuffixLen === value.length) {
           this.speak(evtValue[0], evt.triggeredByUser, personality);
           return;
         }
       }
       // The user deleted text either from the beginning or the end.
       if (evtValue.length < value.length) {
-        if (value.startsWith(evtValue)) {
+        if (commonPrefixLen === evtValue.length) {
           this.speak(value[value.length - 1], evt.triggeredByUser, personality);
           return;
-        } else if (value.indexOf(evtValue) === 1) {
+        } else if (commonSuffixLen === evtValue.length) {
           this.speak(value[0], evt.triggeredByUser, personality);
           return;
         }
@@ -440,7 +442,7 @@ export class ChromeVoxEditableTextBase {
 
     // Otherwise, look for the common prefix and suffix, but back up so
     // that we can speak complete words, to be minimally confusing.
-    prefixLen = 0;
+    prefixLen = commonPrefixLen;
     while (prefixLen < len && prefixLen < newLen &&
            value[prefixLen] === evtValue[prefixLen]) {
       prefixLen++;
@@ -449,6 +451,8 @@ export class ChromeVoxEditableTextBase {
       prefixLen--;
     }
 
+    // For suffix, commonSuffixLen is not used because suffix here won't overlap
+    // with prefix, and also we need to consider |autocompleteSuffix|.
     suffixLen = 0;
     while (suffixLen < (len - prefixLen) && suffixLen < (newLen - prefixLen) &&
            value[len - suffixLen - 1] === evtValue[newLen - suffixLen - 1]) {
