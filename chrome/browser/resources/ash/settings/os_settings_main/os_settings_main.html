@@ -7,6 +7,13 @@
     display: none;
   }
 
+  /* TODO(b/286076764) Remove this once the revamp is cleaned up. In the revamp,
+   * overscroll is not necessary because only one category is shown at a time.
+   */
+  :host-context(body.revamp-wayfinding-enabled) #overscroll {
+    display: none;
+  }
+
   #noSearchResults {
     margin-top: 80px;
     text-align: center;
