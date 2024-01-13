@@ -322,12 +322,6 @@ try_.orchestrator_builder(
     ],
     compilator = "linux-wayland-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    tryjob = try_.job(),
     use_clang_coverage = True,
 )
 
@@ -335,7 +329,6 @@ try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     ssd = True,
-    main_list_view = "try",
     siso_enabled = True,
 )
 
