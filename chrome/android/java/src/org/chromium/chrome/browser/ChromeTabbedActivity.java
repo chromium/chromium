@@ -2264,8 +2264,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mWindowId,
                             taskId,
                             taskMap);
-            assert !MultiWindowUtils.isMultiInstanceApi31Enabled() || assignedIndex == mWindowId
-                    : message;
+
+            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+                boolean indicesMatch = assignedIndex == mWindowId;
+                assert indicesMatch : message;
+                if (!indicesMatch) {
+                    Log.i(TAG_MULTI_INSTANCE, message);
+                }
+            }
+
             mMultiInstanceManager.initialize(assignedIndex, taskId);
         }
 
@@ -2522,6 +2529,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
             // Activity is recreated after destruction. |windowId| must not be valid in this case.
             assert windowId == INVALID_WINDOW_ID;
+            Log.i(TAG_MULTI_INSTANCE, "Retrieved windowId from saved instance state.");
             mWindowId = savedInstanceState.getInt(WINDOW_INDEX, 0);
         } else if (mMultiInstanceManager != null) {
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task

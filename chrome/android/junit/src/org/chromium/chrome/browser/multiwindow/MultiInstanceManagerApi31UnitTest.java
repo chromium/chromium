@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -270,7 +271,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         @Override
-        protected Set<Integer> getAllChromeTasks() {
+        protected Set<Integer> getAllChromeTasks(List<AppTask> allTasks) {
             return mAppTasks;
         }
 

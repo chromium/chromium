@@ -5,6 +5,11 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -13,9 +18,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +76,13 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             for (int i = 0; i < mSelectors.size(); i++) {
                 if (mSelectors.get(i) == assignedSelector) {
                     Pair res = Pair.create(i, assignedSelector);
-                    Log.i(TAG_MULTI_INSTANCE, "Returning existing selector with index: " + res);
+                    Log.i(
+                            TAG_MULTI_INSTANCE,
+                            "Returning existing selector with index: "
+                                    + res
+                                    + ". Requested index: "
+                                    + index);
+                    assertIndicesMatch(index, i, "Activity already mapped; ");
                     return res;
                 }
             }
@@ -79,6 +92,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                     "TabModelSelector is assigned to an Activity but has no index.");
         }
 
+        int originalIndex = index;
         if (mSelectors.get(index) != null) {
             for (int i = 0; i < mSelectors.size(); i++) {
                 if (mSelectors.get(i) == null) {
@@ -102,7 +116,61 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
         Pair res = Pair.create(index, selector);
         Log.i(TAG_MULTI_INSTANCE, "Returning new selector with index: " + res);
+        assertIndicesMatch(originalIndex, index, "Index in use; ");
         return res;
+    }
+
+    private void assertIndicesMatch(int requestedIndex, int returnedIndex, String type) {
+        if (requestedIndex == returnedIndex
+                || !BuildConfig.ENABLE_ASSERTS
+                || BuildConfig.IS_FOR_TEST
+                || VERSION.SDK_INT < VERSION_CODES.Q) {
+            return;
+        }
+
+        TabModelSelector selectorAtRequestedIndex = mSelectors.get(requestedIndex);
+        Activity activityAtRequestedIndex = null;
+        for (Activity activity : mAssignments.keySet()) {
+            if (mAssignments.get(activity).equals(selectorAtRequestedIndex)) {
+                activityAtRequestedIndex = activity;
+                break;
+            }
+        }
+
+        String message =
+                type
+                        + "Requested "
+                        + requestedIndex
+                        + " and returned "
+                        + returnedIndex
+                        + " activity: "
+                        + activityAtRequestedIndex;
+        if (activityAtRequestedIndex != null) {
+            message +=
+                    " ApplicationStatus activity state: "
+                            + ApplicationStatus.getStateForActivity(activityAtRequestedIndex)
+                            + " activity task Id: "
+                            + activityAtRequestedIndex.getTaskId()
+                            + " activity is finishing? "
+                            + activityAtRequestedIndex.isFinishing()
+                            + " tasks: [";
+            ActivityManager activityManager =
+                    (ActivityManager)
+                            activityAtRequestedIndex.getSystemService(Context.ACTIVITY_SERVICE);
+            for (AppTask task : activityManager.getAppTasks()) {
+                ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+                if (info != null) {
+                    message += info.taskId + " - " + info.baseActivity + "; ";
+                } else {
+                    message += "null ";
+                }
+            }
+
+            message += "]";
+        }
+
+        assert requestedIndex == returnedIndex : message;
+        Log.i(TAG_MULTI_INSTANCE, message);
     }
 
     @Override
