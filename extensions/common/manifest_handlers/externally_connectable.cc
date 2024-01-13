@@ -29,6 +29,9 @@ const char kErrorInvalidId[] = "Invalid ID '*'";
 const char kErrorNothingSpecified[] =
     "'externally_connectable' specifies neither 'matches' nor 'ids'; "
     "nothing will be able to connect";
+const char kErrorUnusedAcceptsTlsChannelId[] =
+    "'externally_connectable' specifies 'accepts_tls_channel_id' but not "
+    "'matches'; 'accepts_tls_channel_id' has no efect";
 }  // namespace externally_connectable_errors
 
 namespace keys = extensions::manifest_keys;
@@ -129,7 +132,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
     }
   }
 
-  if (!externally_connectable->matches && !externally_connectable->ids) {
+  if (!all_ids && matches.is_empty() && ids.empty()) {
     install_warnings->emplace_back(
         externally_connectable_errors::kErrorNothingSpecified,
         keys::kExternallyConnectable);
@@ -137,6 +140,14 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
 
   bool accepts_tls_channel_id =
       externally_connectable->accepts_tls_channel_id.value_or(false);
+
+  if (externally_connectable->accepts_tls_channel_id && matches.is_empty()) {
+    accepts_tls_channel_id = false;
+    install_warnings->emplace_back(
+        externally_connectable_errors::kErrorUnusedAcceptsTlsChannelId,
+        keys::kExternallyConnectable);
+  }
+
   return base::WrapUnique(new ExternallyConnectableInfo(
       std::move(matches), ids, all_ids, accepts_tls_channel_id));
 }

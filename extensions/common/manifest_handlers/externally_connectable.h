@@ -26,6 +26,7 @@ extern const char kErrorInvalid[];
 extern const char kErrorInvalidMatchPattern[];
 extern const char kErrorInvalidId[];
 extern const char kErrorNothingSpecified[];
+extern const char kErrorUnusedAcceptsTlsChannelId[];
 }  // namespace externally_connectable_errors
 
 // Parses the externally_connectable manifest entry.

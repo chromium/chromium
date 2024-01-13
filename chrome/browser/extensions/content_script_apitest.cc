@@ -49,6 +49,8 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1266,8 +1268,17 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, Messaging) {
       "content_scripts/other_extensions/message_echoer_allows_by_default")));
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "content_scripts/other_extensions/message_echoer_allows")));
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
-      "content_scripts/other_extensions/message_echoer_denies")));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII(
+          "content_scripts/other_extensions/message_echoer_denies"),
+      {.ignore_manifest_warnings = true});
+  ASSERT_TRUE(extension);
+  std::vector<InstallWarning> expected_warnings;
+  expected_warnings.emplace_back(
+      manifest_errors::kManifestV2IsDeprecatedWarning);
+  expected_warnings.emplace_back(
+      externally_connectable_errors::kErrorNothingSpecified);
+  EXPECT_EQ(extension->install_warnings(), expected_warnings);
   ASSERT_TRUE(RunExtensionTest("content_scripts/messaging")) << message_;
 }
 

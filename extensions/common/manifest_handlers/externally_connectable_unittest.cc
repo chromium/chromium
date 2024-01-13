@@ -269,8 +269,21 @@ TEST_F(ExternallyConnectableTest, TLD) {
 }
 
 TEST_F(ExternallyConnectableTest, WarningNothingSpecified) {
+  LoadAndExpectWarning("externally_connectable_empty_ids.json",
+                       errors::kErrorNothingSpecified);
+  LoadAndExpectWarning("externally_connectable_empty_matches.json",
+                       errors::kErrorNothingSpecified);
   LoadAndExpectWarning("externally_connectable_nothing_specified.json",
                        errors::kErrorNothingSpecified);
+}
+
+TEST_F(ExternallyConnectableTest, WarningUnusedAcceptsTlsChannelId) {
+  std::vector<std::string> expected_warnings;
+  expected_warnings.emplace_back(errors::kErrorNothingSpecified);
+  expected_warnings.emplace_back(errors::kErrorUnusedAcceptsTlsChannelId);
+  LoadAndExpectWarnings(
+      "externally_connectable_accepts_tls_channel_id_without_matches.json",
+      expected_warnings);
 }
 
 // Tests that the deprecated externally_connectable.all_urls permission doesn't
