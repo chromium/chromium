@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
@@ -67,6 +68,17 @@
 #endif
 
 namespace {
+
+// StepUiType enumerates the different types of UI that can be displayed.
+enum class StepUIType {
+  NONE,
+  // A Chromium captive dialog.
+  DIALOG,
+  // A Google Password Manager bubble.
+  BUBBLE,
+  // A top-level window.
+  WINDOW,
+};
 
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {
@@ -362,6 +374,21 @@ bool IsChromeImplemented(device::AuthenticatorType type) {
   }
 }
 
+StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
+  switch (step) {
+    case AuthenticatorRequestDialogModel::Step::kClosed:
+    case AuthenticatorRequestDialogModel::Step::kNotStarted:
+    case AuthenticatorRequestDialogModel::Step::kConditionalMediation:
+      return StepUIType::NONE;
+
+    case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
+      return StepUIType::WINDOW;
+
+    default:
+      return StepUIType::DIALOG;
+  }
+}
+
 }  // namespace
 
 AuthenticatorRequestDialogModel::EphemeralState::EphemeralState() = default;
@@ -426,6 +453,10 @@ void AuthenticatorRequestDialogModel::HideDialog() {
   SetCurrentStep(Step::kNotStarted);
 }
 
+bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
+  return step_ui_type(current_step_) != StepUIType::DIALOG;
+}
+
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
     bool use_conditional_mediation) {
@@ -480,7 +511,6 @@ void AuthenticatorRequestDialogModel::StartOver() {
     observer.OnStartOver();
   }
 
-  current_step_ = Step::kNotStarted;
   SetCurrentStep(Step::kMechanismSelection);
 }
 
@@ -761,6 +791,10 @@ void AuthenticatorRequestDialogModel::OnCableConnectingTimerComplete() {
       current_step_ == Step::kCableV2Connecting) {
     SetCurrentStep(Step::kCableV2Connected);
   }
+}
+
+void AuthenticatorRequestDialogModel::OnRecoverSecurityDomainClosed() {
+  // TODO(enclave): implement this.
 }
 
 void AuthenticatorRequestDialogModel::StartPhonePairing() {
@@ -1397,6 +1431,11 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
                      : Step::kAttestationPermissionRequest);
 }
 
+content::RenderFrameHost* AuthenticatorRequestDialogModel::GetRenderFrameHost()
+    const {
+  return content::RenderFrameHost::FromID(frame_host_id_);
+}
+
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     absl::optional<bool> extension_is_v2,
     std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
@@ -1591,20 +1630,34 @@ void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
     return;
   }
 
+  const StepUIType previous_ui_type = step_ui_type(current_step_);
   current_step_ = step;
 
   // Reset state related to automatically advancing the state.
   cable_connecting_sheet_timer_.Stop();
   cable_connecting_ready_to_advance_ = false;
 
-  if (should_dialog_be_closed()) {
-    // The dialog will close itself.
-    showing_dialog_ = false;
-  } else {
-    auto* web_contents = GetWebContents();
-    if (!showing_dialog_ && web_contents) {
-      ShowAuthenticatorRequestDialog(web_contents, this);
-      showing_dialog_ = true;
+  const StepUIType ui_type = step_ui_type(current_step_);
+  auto* const web_contents = GetWebContents();
+  if (previous_ui_type != ui_type && web_contents) {
+    // The UI observes `OnStepTransition` and updates automatically.
+    switch (ui_type) {
+      case StepUIType::NONE:
+        // Any UI will close itself.
+        break;
+
+      case StepUIType::DIALOG:
+        ShowAuthenticatorRequestDialog(web_contents, this);
+        break;
+
+      case StepUIType::BUBBLE:
+        // TODO(enclave): build this.
+        // ShowAuthenticatorRequestBubble(web_contents, this);
+        break;
+
+      case StepUIType::WINDOW:
+        ShowAuthenticatorRequestWindow(this);
+        break;
     }
   }
 

@@ -691,6 +691,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
       };
+    } else if (name == "recover_security_domain") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
     } else {
       NOTREACHED();
     }
@@ -755,5 +758,10 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_make_credential_qr_without_usb) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_recover_security_domain) {
   ShowAndVerifyUi();
 }

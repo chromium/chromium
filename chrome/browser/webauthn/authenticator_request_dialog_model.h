@@ -158,6 +158,7 @@ class AuthenticatorRequestDialogModel
     kEnterpriseAttestationPermissionRequest,
 
     kCreatePasskey,
+    kRecoverSecurityDomain,
   };
 
   // Implemented by the dialog to observe this model and show the UI panels
@@ -280,14 +281,11 @@ class AuthenticatorRequestDialogModel
            current_step() == Step::kClosed;
   }
 
-  // Returns whether the visible dialog should be closed. This usually means
-  // that the request has finished, or that we are in a step that does not
-  // involve showing UI.
-  bool should_dialog_be_closed() const {
-    return current_step() == Step::kClosed ||
-           current_step() == Step::kNotStarted ||
-           current_step() == Step::kConditionalMediation;
-  }
+  // Returns whether the visible dialog should be closed. This means
+  // that either the request has finished, or that the current step
+  // has no UI, or a different style of UI.
+  bool should_dialog_be_closed() const;
+
   const TransportAvailabilityInfo* transport_availability() const {
     return &transport_availability_;
   }
@@ -355,6 +353,9 @@ class AuthenticatorRequestDialogModel
 
   // Called when `cable_connecting_sheet_timer_` completes.
   void OnCableConnectingTimerComplete();
+
+  // Called when a user closes the MagicArch window.
+  void OnRecoverSecurityDomainClosed();
 
   // StartPhonePairing triggers the display of a QR code for pairing a new
   // phone.
@@ -618,6 +619,8 @@ class AuthenticatorRequestDialogModel
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
 
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
   const std::vector<device::DiscoverableCredentialMetadata>& creds() {
     return ephemeral_state_.creds_;
   }
@@ -851,9 +854,6 @@ class AuthenticatorRequestDialogModel
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-
-  // True if the modal dialog is being shown right now.
-  bool showing_dialog_ = false;
 
   // True if this request should display credentials on the password autofill
   // prompt instead of the page-modal, regular UI.
