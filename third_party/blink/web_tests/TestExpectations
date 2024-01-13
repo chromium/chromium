@@ -2621,8 +2621,6 @@ crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/long-animation-frame/te
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-landscape-001-print.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-portrait-001-print.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-square-001-print.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/css-contain/content-visibility/content-visibility-with-popover-top-layer-005.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-005.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
