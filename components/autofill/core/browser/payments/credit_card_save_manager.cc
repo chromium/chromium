@@ -539,23 +539,26 @@ bool CreditCardSaveManager::
       is_upload_save
           ? base::NumberToString(card_save_candidate_.instrument_id())
           : card_save_candidate_.guid();
-  CvcStorageStrikeDatabase::BlockedReason reason =
-      CvcStorageStrikeDatabase::kUnknown;
-  bool should_block = cvc_storage_strike_db->ShouldBlockFeature(id, &reason);
-  if (should_block) {
-    if (reason == CvcStorageStrikeDatabase::kMaxStrikeLimitReached) {
+
+  CvcStorageStrikeDatabase::StrikeDatabaseDecision decision =
+      cvc_storage_strike_db->GetStrikeDatabaseDecision(id);
+
+  switch (decision) {
+    case CvcStorageStrikeDatabase::kDoNotBlock:
+      return false;
+    case CvcStorageStrikeDatabase::kMaxStrikeLimitReached:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save,
           /*is_reshow=*/false);
-    } else if (reason == CvcStorageStrikeDatabase::kRequiredDelayNotPassed) {
+      return true;
+    case CvcStorageStrikeDatabase::kRequiredDelayNotPassed:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownRequiredDelay,
           is_upload_save,
           /*is_reshow=*/false);
-    }
+      return true;
   }
-  return should_block;
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

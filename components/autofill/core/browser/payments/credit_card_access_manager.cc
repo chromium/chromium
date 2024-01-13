@@ -982,8 +982,6 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
     return false;
   }
 
-  // If the strike limit was reached for the FIDO opt-in dialog, we should not
-  // offer it.
   if (auto* strike_database =
           GetOrCreateFidoAuthenticator()
               ->GetOrCreateFidoAuthenticationStrikeDatabase();

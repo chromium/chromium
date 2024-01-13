@@ -29,26 +29,37 @@ static const char kSharedId[] = "shared_id";
 // be loaded once per browser session.
 class StrikeDatabaseIntegratorBase {
  public:
-  // Reason why the feature should be blocked.
-  enum BlockedReason {
-    // Unknown reason, default value.
-    kUnknown = 0,
-    // Feature not offered due to max strike limit has been reached.
+  // The StrikeDatabase's decision on whether the feature should be blocked or
+  // not, and if so, why.
+  enum StrikeDatabaseDecision {
+    // The feature should not be blocked.
+    kDoNotBlock = 0,
+    // Block feature: The maximum strike limit has been reached.
     kMaxStrikeLimitReached = 1,
-    // Feature not offered due to required delay since last strike has not
-    // passed yet.
+    // Block feature: Not enough time has passed since the last strike.
     kRequiredDelayNotPassed = 2,
   };
 
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();
 
+  // Returns the StrikeDatabase's decision on whether a particular feature
+  // should be blocked (not offered) for the given `id`.
+  StrikeDatabaseDecision GetStrikeDatabaseDecision(const std::string& id) const;
+
+  // Returns the StrikeDatabase's decision on whether a particular feature
+  // should be blocked (not offered).
+  StrikeDatabaseDecision GetStrikeDatabaseDecision() const;
+
   // Returns whether a particular feature should be blocked (not offered) for
-  // the given |id|. The |blocked_reason|, if provided, will be populated with
-  // the reason why the feature should be blocked.
-  bool ShouldBlockFeature(const std::string& id,
-                          BlockedReason* blocked_reason = nullptr) const;
-  bool ShouldBlockFeature(BlockedReason* blocked_reason = nullptr) const;
+  // the given `id`. Same as calling `GetStrikeDatabaseDecision`, where a result
+  // of `kDoNotBlock` returns false.
+  bool ShouldBlockFeature(const std::string& id) const;
+
+  // Returns whether a particular feature should be blocked (not offered). Same
+  // as calling `GetStrikeDatabaseDecision`, where a result of `kDoNotBlock`
+  // returns false.
+  bool ShouldBlockFeature() const;
 
   // Increments in-memory cache and updates underlying ProtoDatabase.
   int AddStrike(const std::string& id = kSharedId);

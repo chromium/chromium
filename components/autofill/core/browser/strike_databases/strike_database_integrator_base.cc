@@ -25,42 +25,43 @@ StrikeDatabaseIntegratorBase::StrikeDatabaseIntegratorBase(
 
 StrikeDatabaseIntegratorBase::~StrikeDatabaseIntegratorBase() = default;
 
-bool StrikeDatabaseIntegratorBase::ShouldBlockFeature(
-    const std::string& id,
-    BlockedReason* blocked_reason) const {
+StrikeDatabaseIntegratorBase::StrikeDatabaseDecision
+StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision(
+    const std::string& id) const {
   CheckIdUniqueness(id);
 
-  // Returns whether or not strike count for |id| has reached the strike limit
+  // Returns whether or not strike count for `id` has reached the strike limit
   // set by GetMaxStrikesLimit().
   if (GetStrikes(id) >= GetMaxStrikesLimit()) {
-    if (blocked_reason) {
-      *blocked_reason = BlockedReason::kMaxStrikeLimitReached;
-    }
-
-    return true;
+    return StrikeDatabaseDecision::kMaxStrikeLimitReached;
   }
 
-  // Returns whether or not |GetRequiredDelaySinceLastStrike()| has passed since
-  // the last strike was logged for candidate with |id|. Note that some features
+  // Returns whether or not `GetRequiredDelaySinceLastStrike()` has passed since
+  // the last strike was logged for candidate with `id`. Note that some features
   // don't specify a required delay.
   if (GetRequiredDelaySinceLastStrike().has_value() &&
       (AutofillClock::Now() -
        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
            strike_database_->GetLastUpdatedTimestamp(GetKey(id))))) <
           GetRequiredDelaySinceLastStrike()) {
-    if (blocked_reason) {
-      *blocked_reason = BlockedReason::kRequiredDelayNotPassed;
-    }
-
-    return true;
+    return StrikeDatabaseDecision::kRequiredDelayNotPassed;
   }
 
-  return false;
+  return StrikeDatabaseDecision::kDoNotBlock;
+}
+
+StrikeDatabaseIntegratorBase::StrikeDatabaseDecision
+StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision() const {
+  return GetStrikeDatabaseDecision(kSharedId);
 }
 
 bool StrikeDatabaseIntegratorBase::ShouldBlockFeature(
-    BlockedReason* blocked_reason) const {
-  return ShouldBlockFeature(kSharedId, blocked_reason);
+    const std::string& id) const {
+  return GetStrikeDatabaseDecision(id) != StrikeDatabaseDecision::kDoNotBlock;
+}
+
+bool StrikeDatabaseIntegratorBase::ShouldBlockFeature() const {
+  return GetStrikeDatabaseDecision() != StrikeDatabaseDecision::kDoNotBlock;
 }
 
 int StrikeDatabaseIntegratorBase::AddStrike(const std::string& id) {

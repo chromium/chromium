@@ -92,7 +92,6 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
     return false;
   }
 
-  // Don't show the prompt if max strike count was reached.
   if (GetLocalCardMigrationStrikeDatabase()->ShouldBlockFeature()) {
     switch (credit_card_import_type_) {
       case FormDataImporter::CreditCardImportType::kLocalCard:
