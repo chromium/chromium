@@ -814,7 +814,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1615433306336820465">Manage sign-in data stored on your security key</translation>
 <translation id="1616206807336925449">This extension requires no special permissions.</translation>
 <translation id="1616298854599875024">Unable to import extension '<ph name="IMPORT_NAME" />' because it is not a shared module</translation>
-<translation id="161654560322394775">Image <ph name="INDEX" /> of <ph name="A" />, in <ph name="B" /> style, with <ph name="C" /> mood.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Checking this data with your organisation's security policies…}=1{Checking this file with your organisation's security policies…}other{Checking these files with your organisation's security policies…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Help Centre</translation>
@@ -4218,7 +4217,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Kiosk and signage device enrolment</translation>
-<translation id="4252141040239557279">Image <ph name="INDEX" /> of <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth is disabled</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Tab content shared</translation>
 <translation id="4253168017788158739">Note</translation>
@@ -8461,7 +8459,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7657090467145778067">Small savings</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them at any time.</translation>
 <translation id="7658239707568436148">Cancel</translation>
-<translation id="7658727964021657194">Recent AI theme <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Exit Incognito mode anyway?</translation>
 <translation id="7659336857671800422">Take the privacy guide</translation>
 <translation id="7659584679870740384">You are not authorised to use this device. Please contact the administrator for sign-in permission.</translation>
@@ -8788,7 +8785,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="789722939441020330">Don't allow sites to automatically download multiple files</translation>
 <translation id="7897900149154324287">In the future, make sure that you eject your removable device in the Files app before unplugging it. Otherwise, you might lose data.</translation>
 <translation id="7898725031477653577">Always translate</translation>
-<translation id="7899324822972399722">Image <ph name="INDEX" /> of <ph name="A" />, in <ph name="B" /> style</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Looking for browser components? Visit</translation>
 <translation id="7903429136755645827">Click to customise your game controls</translation>
@@ -9069,7 +9065,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8098616321286360457">Network connection required</translation>
 <translation id="8100230553590752325">Use saved passwords on any device</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selected. Press 'Search' plus 'Space' to unselect.</translation>
-<translation id="8100725874569949614">Image <ph name="INDEX" /> of <ph name="A" />, with <ph name="C" /> mood.</translation>
 <translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8101987792947961127">Powerwash required on next reboot</translation>

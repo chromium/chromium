@@ -814,7 +814,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1615433306336820465">Hantera inloggningsuppgifter som sparats på säkerhetsnyckeln</translation>
 <translation id="1616206807336925449">Det här tillägget kräver inga särskilda behörigheter.</translation>
 <translation id="1616298854599875024">Det gick inte att importera tillägget <ph name="IMPORT_NAME" /> eftersom det inte är en delad modul</translation>
-<translation id="161654560322394775">Bild <ph name="INDEX" /> av <ph name="A" />, i <ph name="B" />-stil, med <ph name="C" />-stämning.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Data kontrolleras utifrån organisationens säkerhetspolicy …}=1{Filen kontrolleras utifrån organisationens säkerhetspolicy …}other{Filerna kontrolleras utifrån organisationens säkerhetspolicy …}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Hjälpc&amp;enter</translation>
@@ -4218,7 +4217,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4251377547188244181">Registrering av kiosk- och skyltningsenhet</translation>
-<translation id="4252141040239557279">Bild <ph name="INDEX" /> av <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth har inaktiverats</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – innehållet på fliken delas</translation>
 <translation id="4253168017788158739">Kommentar</translation>
@@ -8461,7 +8459,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7657090467145778067">Små besparingar</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Annan aktivitet<ph name="END_LINK_GOOGLE" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
-<translation id="7658727964021657194">Senaste AI-tema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Vill du stänga inkognitoläget ändå?</translation>
 <translation id="7659336857671800422">Ta del av integritetsguiden</translation>
 <translation id="7659584679870740384">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in.</translation>
@@ -8788,7 +8785,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="789722939441020330">Tillåt inte att webbplatser laddar ned flera filer samtidigt</translation>
 <translation id="7897900149154324287">Tänk på att mata ut löstagbara enheter i appen Filer innan du kopplar loss dem. Annars kan det hända att data förloras.</translation>
 <translation id="7898725031477653577">Översätt alltid</translation>
-<translation id="7899324822972399722">Bild <ph name="INDEX" /> av <ph name="A" /> i <ph name="B" />-stil</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Letar du efter webbläsarens komponenter? Besök</translation>
 <translation id="7903429136755645827">Klicka för att anpassa dina spelkontroller</translation>
@@ -9069,7 +9065,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8098616321286360457">En nätverksanslutning krävs</translation>
 <translation id="8100230553590752325">Använd sparade lösenord på vilken enhet som helst</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> har markerats. Avmarkera genom att trycka på Sök och mellanslagstangenten.</translation>
-<translation id="8100725874569949614">Bild <ph name="INDEX" /> av <ph name="A" />, med <ph name="C" />-stämning.</translation>
 <translation id="8101409298456377967">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Anpassad färg</translation>
 <translation id="8101987792947961127">Powerwash krävs vid nästa omstart</translation>

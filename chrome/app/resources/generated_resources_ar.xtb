@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">يمكنك إدارة بيانات تسجيل الدخول المخزّنة على مفتاح الأمان.</translation>
 <translation id="1616206807336925449">لا تتطلب هذه الإضافة أذونات خاصة.</translation>
 <translation id="1616298854599875024">تعذَّر استيراد الإضافة "<ph name="IMPORT_NAME" />" لأنها ليست وحدة مشتركة.</translation>
-<translation id="161654560322394775">الصورة <ph name="INDEX" /> من أصل <ph name="A" />، بنمط "<ph name="B" />" وبأجواء "<ph name="C" />"</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{جارِ التحقُّق من توافق هذه البيانات مع سياسات أمان مؤسستك...}=1{جارِ التحقُّق من توافق هذا الملف مع سياسات أمان مؤسستك...}two{جارِ التحقُّق من توافق هذين الملفين مع سياسات أمان مؤسستك...}few{جارِ التحقُّق من توافق هذه الملفات مع سياسات أمان مؤسستك...}many{جارِ التحقُّق من توافق هذه الملفات مع سياسات أمان مؤسستك...}other{جارِ التحقُّق من توافق هذه الملفات مع سياسات أمان مؤسستك...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">مركز المساعدة</translation>
@@ -4205,7 +4204,6 @@
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4250680216510889253">لا</translation>
 <translation id="4251377547188244181">تسجيل الجهاز في وضع الكشك واللوحات الرقمية</translation>
-<translation id="4252141040239557279">الصورة <ph name="INDEX" /> من أصل <ph name="A" /></translation>
 <translation id="4252899949534773101">البلوتوث غير مُفعَّل</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - تمت مشاركة محتوى علامة التبويب</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
@@ -8455,7 +8453,6 @@
 <translation id="7657090467145778067">تم إخلاء جزء صغير من مساحة التخزين</translation>
 <translation id="7657218410916651670">‏قد يتم حفظ <ph name="BEGIN_LINK_GOOGLE" />بيانات الأنشطة الأخرى<ph name="END_LINK_GOOGLE" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
-<translation id="7658727964021657194">المظهر رقم <ph name="TILE_INDEX" /> المُنشأ بالذكاء الاصطناعي مؤخرًا</translation>
 <translation id="7659154729610375585">هل تريد الخروج من وضع التصفُّح المتخفي على أي حال؟</translation>
 <translation id="7659336857671800422">الاطّلاع على دليل الخصوصية</translation>
 <translation id="7659584679870740384">لا يصرح لك باستخدام هذا الجهاز. يُرجى الاتصال بالمسؤول، للحصول على إذن تسجيل الدخول.</translation>
@@ -8782,7 +8779,6 @@
 <translation id="789722939441020330">عدم السماح للمواقع الإلكترونية بتنزيل عدّة ملفات تلقائيًا</translation>
 <translation id="7897900149154324287">في المستقبل، تأكد من إخراج الجهاز القابل للإزالة في تطبيق الملفات قبل فصله؛ وإلا قد تفقد بيانات.</translation>
 <translation id="7898725031477653577">ترجمة اللغة دومًا</translation>
-<translation id="7899324822972399722">الصورة <ph name="INDEX" /> من أصل <ph name="A" />، بنمط "<ph name="B" />"</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">هل تبحث عن مكوِّنات المتصفِّح؟ انتقِل إلى</translation>
 <translation id="7903429136755645827">انقر هنا لتخصيص عناصر التحكُّم في الألعاب.</translation>
@@ -9063,7 +9059,6 @@
 <translation id="8098616321286360457">يجب أن يتوفّر اتصال بالشبكة</translation>
 <translation id="8100230553590752325">استخدام كلمات المرور المحفوظة على أي جهاز</translation>
 <translation id="810068641062493918">تم اختيار <ph name="LANGUAGE" />. يُرجى الضغط على مفتاح "البحث" ومفتاح "المسافة" لإلغاء الاختيار.</translation>
-<translation id="8100725874569949614">الصورة <ph name="INDEX" /> من أصل <ph name="A" />، وبأجواء "<ph name="C" />"</translation>
 <translation id="8101409298456377967">يمكنك إنشاء كلمات المرور الخاصة بحسابك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">لون مخصص</translation>
 <translation id="8101987792947961127">‏يتطلب إجراء Powerwash بعد عملية إعادة التشغيل التالية</translation>

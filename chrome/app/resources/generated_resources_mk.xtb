@@ -815,7 +815,6 @@
 <translation id="1615433306336820465">Управувајте со податоците за најавување зачувани на вашиот безбедносен клуч</translation>
 <translation id="1616206807336925449">Оваа наставка не бара специјални дозволи.</translation>
 <translation id="1616298854599875024">Екстензијата „<ph name="IMPORT_NAME" />" не може да се увезе бидејќи не е споделен модул</translation>
-<translation id="161654560322394775">Слика <ph name="INDEX" /> од <ph name="A" />, во <ph name="B" /> стил, со <ph name="C" /> расположение.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Ги проверуваме податоциве согласно безбедносните правила на организацијата…}=1{Ја проверуваме датотекава согласно безбедносните правила на организацијата…}one{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}other{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Центар за п&amp;омош</translation>
@@ -4219,7 +4218,6 @@
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистрирација на киоск или уред за сигнализација</translation>
-<translation id="4252141040239557279">Слика <ph name="INDEX" /> од <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth е оневозможен</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - содржината на картичката е споделена</translation>
 <translation id="4253168017788158739">Забелешка</translation>
@@ -8463,7 +8461,6 @@
 <translation id="7657090467145778067">Мали заштеди</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Други форми на активност<ph name="END_LINK_GOOGLE" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="7658239707568436148">Откажи</translation>
-<translation id="7658727964021657194">Неодамнешна AI-тема: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Сепак да се излезе од режимот „Инкогнито“?</translation>
 <translation id="7659336857671800422">Прегледајте го водичот за приватност</translation>
 <translation id="7659584679870740384">Немате дозвола да го користите овој уред. Контактирајте го администраторот за дозвола за пријавување.</translation>
@@ -8790,7 +8787,6 @@
 <translation id="789722939441020330">Не им дозволувај на сајтовите автоматски да преземаат повеќе датотеки</translation>
 <translation id="7897900149154324287">Во иднина, погрижете се да го извадите преносливиот уред во апликацијата Датотеки пред да го исклучите. Во спротивно, може да изгубите податоци.</translation>
 <translation id="7898725031477653577">Секогаш преведувај</translation>
-<translation id="7899324822972399722">Слика <ph name="INDEX" /> од <ph name="A" />, во <ph name="B" /> стил</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Барате компоненти на прелистувач? Оди</translation>
 <translation id="7903429136755645827">Кликнете за да ги приспособите контролите за игри</translation>
@@ -9070,7 +9066,6 @@
 <translation id="8098616321286360457">Потребна е мрежна врска</translation>
 <translation id="8100230553590752325">Користење зачувани лозинки на кој било уред</translation>
 <translation id="810068641062493918">Избран е <ph name="LANGUAGE" />. Притиснете „Пребарувај“ и Space за да го поништите изборот.</translation>
-<translation id="8100725874569949614">Слика <ph name="INDEX" /> од <ph name="A" />, со <ph name="C" /> расположение.</translation>
 <translation id="8101409298456377967">Создавајте, зачувувајте и управувајте со лозинки за лесно најавување на сајтови и апликации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Приспособена боја</translation>
 <translation id="8101987792947961127">Потребно е фабричко ресетирање на следното рестартирање</translation>

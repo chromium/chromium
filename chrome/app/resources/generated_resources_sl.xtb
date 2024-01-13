@@ -817,7 +817,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1615433306336820465">Upravljanje podatkov za prijavo, shranjenih v varnostnem ključu.</translation>
 <translation id="1616206807336925449">Za to razširitev so potrebna posebna dovoljenja.</translation>
 <translation id="1616298854599875024">Razširitve »<ph name="IMPORT_NAME" />« ni mogoče uvoziti, ker ni modul v skupni rabi.</translation>
-<translation id="161654560322394775">Slika <ph name="INDEX" /> od <ph name="A" /> v slogu »<ph name="B" />« in z razpoloženjem »<ph name="C" />«.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Preverjamo, ali so ti podatki v skladu z varnostnimi pravilniki organizacije …}=1{Preverjamo, ali je ta datoteka v skladu z varnostnimi pravilniki organizacije …}one{Preverjamo, ali so te datoteke v skladu z varnostnimi pravilniki organizacije …}two{Preverjamo, ali so te datoteke v skladu z varnostnimi pravilniki organizacije …}few{Preverjamo, ali so te datoteke v skladu z varnostnimi pravilniki organizacije …}other{Preverjamo, ali so te datoteke v skladu z varnostnimi pravilniki organizacije …}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Center za pomoč</translation>
@@ -4221,7 +4220,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Včlanitev naprave za kiosk ali reklamne napise</translation>
-<translation id="4252141040239557279">Slika <ph name="INDEX" /> od <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth je onemogočen</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – vsebina zavihka deljena z drugimi</translation>
 <translation id="4253168017788158739">Opomba</translation>
@@ -8472,7 +8470,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7657090467145778067">Majhni prihranki</translation>
 <translation id="7657218410916651670">Ko ste prijavljeni, se v računu Google morda shranjujejo <ph name="BEGIN_LINK_GOOGLE" />druge oblike dejavnosti<ph name="END_LINK_GOOGLE" />. Izbrišete jih lahko kadar koli.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
-<translation id="7658727964021657194">Nedavna tema z umetno inteligenco <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Ali želite vseeno zapustiti anonimni način?</translation>
 <translation id="7659336857671800422">Zaženite vodnika po zasebnosti</translation>
 <translation id="7659584679870740384">Nimate dovoljenja za uporabo te naprave. Za dovoljenje za prijavo se obrnite na skrbnika.</translation>
@@ -8799,7 +8796,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="789722939441020330">Spletnim mestom ni dovoljeno samodejno prenašanje več datotek.</translation>
 <translation id="7897900149154324287">Preden odklopite izmenljive naprave, jih v aplikaciji Datoteke izvrzite, sicer lahko izgubite podatke.</translation>
 <translation id="7898725031477653577">Vedno prevedi</translation>
-<translation id="7899324822972399722">Slika <ph name="INDEX" /> od <ph name="A" /> v slogu »<ph name="B" />«</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7903290522161827520">Ali iščete komponente brskalnika? Obiščite</translation>
 <translation id="7903429136755645827">Kliknite, če želite prilagoditi kontrolnike za igro.</translation>
@@ -9080,7 +9076,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8098616321286360457">Potrebna je omrežna povezava</translation>
 <translation id="8100230553590752325">Uporaba shranjenih gesel v kateri koli napravi</translation>
 <translation id="810068641062493918">Izbran je jezik <ph name="LANGUAGE" />. Pritisnite tipko za iskanje in preslednico, če želite preklicati izbiro.</translation>
-<translation id="8100725874569949614">Slika <ph name="INDEX" /> od <ph name="A" /> z razpoloženjem »<ph name="C" />«.</translation>
 <translation id="8101409298456377967">Ustvarite, shranite in upravljajte gesla, tako da se lahko preprosto prijavite na spletnih mestih in v aplikacijah. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Barva po meri</translation>
 <translation id="8101987792947961127">Pri naslednjem zagonu je treba izvesti Powerwash</translation>

@@ -811,7 +811,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1615433306336820465">Dhibiti data ya kuingia katika akaunti iliyohifadhiwa kwenye ufunguo wako wa usalama</translation>
 <translation id="1616206807336925449">Kiendelezi hiki hakihitaji ruhusa maalum.</translation>
 <translation id="1616298854599875024">Imeshindwa kupakia kiendelezi "<ph name="IMPORT_NAME" />" kwa sababu si sehemu iliyoshirikiwa</translation>
-<translation id="161654560322394775">Picha <ph name="INDEX" /> kati ya <ph name="A" />, katika muundo wa <ph name="B" />, na hali ya <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Inakagua data hii kwa kutumia sera za usalama za shirika lako...}=1{Inakagua faili hii kwa kutumia sera za usalama za shirika lako...}other{Inakagua faili hizi kwa kutumia sera za usalama za shirika lako...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Kituo cha Usaidizi</translation>
@@ -4213,7 +4212,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4250229828105606438">Picha ya skrini</translation>
 <translation id="4250680216510889253">La</translation>
 <translation id="4251377547188244181">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali</translation>
-<translation id="4252141040239557279">Picha <ph name="INDEX" /> kati ya <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth imezimwa</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Maudhui ya kichupo yameshirikiwa</translation>
 <translation id="4253168017788158739">Dokezo</translation>
@@ -8456,7 +8454,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7657090467145778067">Nafasi ndogo iliyookolewa na kiokoa hifadhi</translation>
 <translation id="7657218410916651670">Huenda <ph name="BEGIN_LINK_GOOGLE" />Aina nyingine za shughuli<ph name="END_LINK_GOOGLE" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
 <translation id="7658239707568436148">Ghairi</translation>
-<translation id="7658727964021657194">Mandhari ya hivi karibuni yaliyotayarishwa kwa AI <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Ungependa kufunga hali fiche?</translation>
 <translation id="7659336857671800422">Kagua Mwongozo wa Faragha</translation>
 <translation id="7659584679870740384">Huruhusiwi kukitimia kifaa hiki. Tafadhali wasiliana na msimamizi kwa ruhusa ya kuingia katika akaunti.</translation>
@@ -8784,7 +8781,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="789722939441020330">Usiruhusu tovuti zipakue faili nyingi kiotomatiki</translation>
 <translation id="7897900149154324287">Siku zijazo, hakikisha kuwa umeondoa kifaa chako kinachoweza kuondolewa katika programu ya Faili kabla ya kukichomoa. Vinginevyo, huenda ukapoteza data.</translation>
 <translation id="7898725031477653577">Tafsiri kila wakati</translation>
-<translation id="7899324822972399722">Picha <ph name="INDEX" /> kati ya <ph name="A" />, katika muundo wa <ph name="B" /></translation>
 <translation id="7901405293566323524">Kitovu cha Simu</translation>
 <translation id="7903290522161827520">Je, unatafuta vipengele vya kivinjari? Tembelea</translation>
 <translation id="7903429136755645827">Bofya ili kuweka mapendeleo ya vidhibiti vya mchezo wako</translation>
@@ -9065,7 +9061,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8098616321286360457">Unahitaji muunganisho wa mtandao</translation>
 <translation id="8100230553590752325">Tumia manenosiri yaliyohifadhiwa kwenye kifaa chochote</translation>
 <translation id="810068641062493918">Umechagua <ph name="LANGUAGE" />. Bonyeza vitufe vya 'Search' na 'Space' ili uache kuchagua.</translation>
-<translation id="8100725874569949614">Picha <ph name="INDEX" /> kati ya <ph name="A" />, na hisia <ph name="C" />.</translation>
 <translation id="8101409298456377967">Tunga, hifadhi na udhibiti manenosiri yako ili uweze kuingia katika akaunti kwenye tovuti na programu kwa urahisi. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Rangi maalum</translation>
 <translation id="8101987792947961127">Powerwash inahitajika kwenye kuwasha kunakofuata</translation>

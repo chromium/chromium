@@ -355,6 +355,7 @@
 <translation id="1264337193001759725">ქსელის UI ჟურნალები ხელმისაწვდომია აქ: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">თქვენი აპები და პარამეტრები სინქრონიზებული იქნება თქვენს ყველა ChromeOS Flex მოწყობილობასთან, რომელზეც შესული ხართ თქვენი Google ანგარიშით. ბრაუზერის სინქრონიზაციის ვარიანტების სანახავად გადადით <ph name="LINK_BEGIN" />Chrome-ის პარამეტრებზე<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">თარგმანის ენა:</translation>
+<translation id="1267649802567297774">გენერირებულია სურათი <ph name="INDEX" /> თემაზე „<ph name="SUBJECT" />“, გამოყენებული სტილია „<ph name="STYLE" />“, ხოლო განწყობა — „<ph name="MOOD" />“.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />მხარდაჭერილი ბმულების<ph name="END_LINK" /> გახსნა</translation>
@@ -811,7 +812,6 @@
 <translation id="1615433306336820465">მართეთ თქვენს უსაფრთხოების გასაღებზე შენახული სისტემაში შესვლის მონაცემები</translation>
 <translation id="1616206807336925449">ეს გაფართოება არ მოითხოვს სპეციალურ უფლებებს.</translation>
 <translation id="1616298854599875024">გაფართოების „<ph name="IMPORT_NAME" />“ იმპორტირება ვერ მოხერხდა, რადგან ის არ არის გაზიარებული მოდული</translation>
-<translation id="161654560322394775">სურათი <ph name="INDEX" /> / <ph name="A" />-დან, <ph name="B" /> სტილში, <ph name="C" /> განწყობით.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{მიმდინარეობს ამ მონაცემების თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება...}=1{მიმდინარეობს ამ ფაილის თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება...}other{მიმდინარეობს ამ ფაილების თქვენი ორგანიზაციის უსაფრთხოების წესებთან შესაბამისობის შემოწმება...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" /> / <ph name="MAX_CHARACTER_COUNT" />-დან</translation>
 <translation id="1618268899808219593">დახმარ&amp;ების ცენტრი</translation>
@@ -4203,7 +4203,6 @@
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="4250680216510889253">არა</translation>
 <translation id="4251377547188244181">მოწყობილობა-ჯიხურის ან მიმთითებელი მოწყობილობის რეგისტრაცია</translation>
-<translation id="4252141040239557279">სურათი <ph name="INDEX" /> / <ph name="A" />-დან</translation>
 <translation id="4252899949534773101">Bluetooth გათიშულია</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> — ჩანართის შიგთავსი გაზიარებულია</translation>
 <translation id="4253168017788158739">შენიშვნა</translation>
@@ -4485,6 +4484,7 @@
 <translation id="4471354919263203780">მიმდინარეობს მეტყველების ამოცნობის ფაილების ჩამოტვირთვა... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">სურვილისამებრ, შეგიძლიათ თქვენი Google ანგარიშის უპირატესი ენის (<ph name="NEW_LOCALE_FROM_GAIA" />) გამოყენება</translation>
 <translation id="447252321002412580">შეუწყვეთ ხელი Chrome-ის ფუნქციებისა და წარმადობის გაუმჯობესებას</translation>
+<translation id="4472533928615930332">გენერირებულია სურათი <ph name="INDEX" /> თემაზე „<ph name="SUBJECT" />“, გამოყენებული სტილია „<ph name="STYLE" />“</translation>
 <translation id="4472575034687746823">დაწყება</translation>
 <translation id="4473996011558324141">სავარაუდო დრო</translation>
 <translation id="4474155171896946103">ყველა ჩანართის სანიშნეებში დამატება…</translation>
@@ -7002,6 +7002,7 @@
 <translation id="6509207748479174212">მედია-ლიცენზია</translation>
 <translation id="6511607461419653612">გადატვირთეთ თქვენი Chromebook და ცადეთ ხელახლა</translation>
 <translation id="6511827214781912955">გირჩევთ, წაშალოთ <ph name="FILENAME" />, რათა ამ მოწყობილობის სხვა მომხმარებლებმა თქვენი პაროლები ვერ ნახონ</translation>
+<translation id="6512759338201777379">გენერირებულია სურათი <ph name="INDEX" /> თემაზე „<ph name="SUBJECT" />“, გამოყენებულია განწყობა „<ph name="MOOD" />“.</translation>
 <translation id="6513247462497316522">თუ თქვენ არ ხართ დაკავშირებული სხვა ქსელთან, Google Chrome გამოიყენებს მობილურ მონაცემებს.</translation>
 <translation id="6514010653036109809">ხელმისაწვდომი მოწყობილობა:</translation>
 <translation id="6514565641373682518">ამ გვერდზე გამოირთო მაუსის კურსორი.</translation>
@@ -7025,6 +7026,7 @@
 <translation id="6528179044667508675">არ შემაწუხოთ</translation>
 <translation id="652937045869844725">ცადეთ მესამე მხარის ქუქი-ჩანაწერების დაშვება, რაც ნიშნავს, რომ ნაკლებად იქნებით დაცული, თუმცა საიტის ფუნქციები უფრო დიდი ალბათობით იმუშავებს</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
+<translation id="6530030995840538405">გენერირებულია სურათი <ph name="INDEX" /> თემაზე „<ph name="SUBJECT" />“.</translation>
 <translation id="6530186581263215931">ეს პარამეტრები იძულებით არის გააქტიურებული თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6530267432324197764">პროფილს მართავს <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">სახიფათო ფაილის შენარჩუნება</translation>
@@ -8443,7 +8445,6 @@
 <translation id="7657090467145778067">მცირე დანაზოგი</translation>
 <translation id="7657218410916651670">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK_GOOGLE" />სხვა ტიპის აქტივობა<ph name="END_LINK_GOOGLE" />, როცა შესული ხართ სისტემაში. აღნიშნულის წაშლა ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
-<translation id="7658727964021657194">ხელოვნური ინტელექტით შექმნილი ბოლოდროინდელი თემა <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">მაინც გსურთ ინკოგნიტო რეჟიმიდან გასვლა?</translation>
 <translation id="7659336857671800422">კონფიდენციალურობის სახელმძღვანელოს გაცნობა</translation>
 <translation id="7659584679870740384">თქვენ არ გაქვთ ამ მოწყობილობის გამოყენების უფლება. სისტემაში შესვლის ნებართვის მოსაპოვებლად, გთხოვთ, დაუკავშირდეთ ადმინისტრატორს.</translation>
@@ -8770,7 +8771,6 @@
 <translation id="789722939441020330">საიტებისთვის რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის აკრძალვა</translation>
 <translation id="7897900149154324287">მომავალში აუცილებლად გათიშეთ პორტატიული მოწყობილობა ფაილების პროგრამიდან, სანამ გამოაერთებთ მას. წინააღმდეგ შემთხვევაში, შესაძლოა, დაკარგოთ მონაცემები.</translation>
 <translation id="7898725031477653577">ყოველთვის თარგმნე</translation>
-<translation id="7899324822972399722">სურათი <ph name="INDEX" /> / <ph name="A" />, <ph name="B" /> სტილი</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">ბრაუზერის კომპონენტებს ეძებთ? მოინახულეთ</translation>
 <translation id="7903429136755645827">დააწკაპუნეთ თამაშის მართვის საშუალებების მოსარგებად</translation>
@@ -9050,7 +9050,6 @@
 <translation id="8098616321286360457">საჭიროა ქსელთან კავშირი</translation>
 <translation id="8100230553590752325">გამოიყენეთ შენახული პაროლები ნებისმიერ მოწყობილობაზე</translation>
 <translation id="810068641062493918">არჩეულია <ph name="LANGUAGE" />. არჩევანის გასაუქმებლად დააჭირეთ Search-სა და შორისს.</translation>
-<translation id="8100725874569949614">სურათი <ph name="INDEX" /> / <ph name="A" />-დან, <ph name="C" /> განწყობით.</translation>
 <translation id="8101409298456377967">შექმენით, შეინახეთ და მართეთ თქვენი პაროლები, რომ მარტივად შეხვიდეთ საიტებსა და აპებში. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">მორგებული ფერი</translation>
 <translation id="8101987792947961127">შემდეგი ჩატვირთვის დროს საჭიროა შესრულდეს განახლება</translation>

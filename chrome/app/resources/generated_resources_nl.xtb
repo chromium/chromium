@@ -355,6 +355,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1264337193001759725">Als je netwerk-UI-logboeken wilt bekijken, ga je naar: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS Flex-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
 <translation id="126710816202626562">Doeltaal:</translation>
+<translation id="1267649802567297774">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, in de stijl <ph name="STYLE" />, met de stemming <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Ondersteunde links<ph name="END_LINK" /> openen</translation>
@@ -811,7 +812,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1615433306336820465">Inloggegevens beheren die op je beveiligingssleutel zijn opgeslagen</translation>
 <translation id="1616206807336925449">De extensie vereist geen speciale rechten.</translation>
 <translation id="1616298854599875024">Kan '<ph name="IMPORT_NAME" />' niet importeren, omdat dit geen gedeelde module is</translation>
-<translation id="161654560322394775">Afbeelding <ph name="INDEX" /> van <ph name="A" />, in stijl <ph name="B" />, met stemming <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Deze gegevens controleren op basis van het beveiligingsbeleid van je organisatie…}=1{Dit bestand controleren op basis van het beveiligingsbeleid van je organisatie…}other{Deze bestanden controleren op basis van het beveiligingsbeleid van je organisatie…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">H&amp;elpcentrum</translation>
@@ -4202,7 +4202,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nee</translation>
 <translation id="4251377547188244181">Apparaatinschrijving voor kiosken en digitale borden</translation>
-<translation id="4252141040239557279">Afbeelding <ph name="INDEX" /> van <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth staat uit</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: content van tabblad gedeeld</translation>
 <translation id="4253168017788158739">Opmerking</translation>
@@ -4484,6 +4483,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4471354919263203780">Bestanden voor spraakherkenning downloaden... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Je kunt de voorkeurstaal van je Google-account gebruiken (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Help de functies en prestaties van Chrome verbeteren</translation>
+<translation id="4472533928615930332">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, in de stijl <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4473996011558324141">tijd wordt geschat</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
@@ -6996,6 +6996,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6509207748479174212">Medialicentie</translation>
 <translation id="6511607461419653612">Start je Chromebook opnieuw op en probeer het nog een keer</translation>
 <translation id="6511827214781912955">Overweeg <ph name="FILENAME" /> te verwijderen, zodat anderen die dit apparaat gebruiken je wachtwoorden niet kunnen zien.</translation>
+<translation id="6512759338201777379">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, met de stemming <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome maakt gebruik van mobiele data als je geen verbinding hebt met een ander netwerk.</translation>
 <translation id="6514010653036109809">Beschikbaar apparaat:</translation>
 <translation id="6514565641373682518">Deze pagina heeft je cursor uitgezet.</translation>
@@ -7019,6 +7020,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6528179044667508675">Niet storen</translation>
 <translation id="652937045869844725">Sta cookies van derden toe. Dit betekent dat je minder bescherming hebt, maar dat sitefuncties waarschijnlijk wel werken.</translation>
 <translation id="652948702951888897">Chrome-geschiedenis</translation>
+<translation id="6530030995840538405">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd</translation>
 <translation id="6530186581263215931">Deze instellingen worden door je beheerder afgedwongen</translation>
 <translation id="6530267432324197764">Profiel beheerd door <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Gevaarlijk bestand behouden</translation>
@@ -8437,7 +8439,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7657090467145778067">Kleine besparingen</translation>
 <translation id="7657218410916651670">Er kunnen <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
-<translation id="7658727964021657194">Recent AI-thema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Incognitomodus toch afsluiten?</translation>
 <translation id="7659336857671800422">Privacygids doorlopen</translation>
 <translation id="7659584679870740384">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de beheerder voor toestemming om in te loggen.</translation>
@@ -8762,7 +8763,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="789722939441020330">Niet toestaan dat sites automatisch meerdere bestanden downloaden</translation>
 <translation id="7897900149154324287">Zorg ervoor dat je je verwijderbare apparaat voortaan in de app Bestanden uitwerpt voordat je deze loskoppelt, anders kun je gegevens verliezen.</translation>
 <translation id="7898725031477653577">Altijd vertalen</translation>
-<translation id="7899324822972399722">Afbeelding <ph name="INDEX" /> van <ph name="A" />, in de stijl <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Zoek je browsercomponenten? Ga naar</translation>
 <translation id="7903429136755645827">Klik om je gamebediening aan te passen</translation>
@@ -9043,7 +9043,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8098616321286360457">Netwerkverbinding vereist</translation>
 <translation id="8100230553590752325">Opgeslagen wachtwoorden gebruiken op elk apparaat</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> is geselecteerd. Druk op Zoeken en de spatiebalk om te deselecteren.</translation>
-<translation id="8100725874569949614">Afbeelding <ph name="INDEX" /> van <ph name="A" />, met stemming <ph name="C" />.</translation>
 <translation id="8101409298456377967">Maak, bewaar en beheer je wachtwoorden zodat je makkelijk kunt inloggen bij sites en apps. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Aangepaste kleur</translation>
 <translation id="8101987792947961127">Powerwash vereist bij volgende keer opnieuw opstarten</translation>

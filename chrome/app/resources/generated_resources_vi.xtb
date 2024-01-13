@@ -814,7 +814,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1615433306336820465">Quản lý dữ liệu đăng nhập lưu trữ trên khoá bảo mật của bạn</translation>
 <translation id="1616206807336925449">Tiện ích này không yêu cầu quyền đặc biệt.</translation>
 <translation id="1616298854599875024">Không thể nhập tiện ích "<ph name="IMPORT_NAME" />" do tiện ích này không phải là mô-đun được chia sẻ</translation>
-<translation id="161654560322394775">Hình ảnh <ph name="INDEX" /> về <ph name="A" />, theo kiểu <ph name="B" />, mang tâm trạng <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Đang kiểm tra để xem dữ liệu này có tuân theo các chính sách bảo mật của tổ chức bạn hay không...}=1{Đang kiểm tra để xem tệp này có tuân theo các chính sách bảo mật của tổ chức bạn hay không...}other{Đang kiểm tra để xem những tệp này có tuân theo các chính sách bảo mật của tổ chức bạn hay không...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Trung tâm trợ g&amp;iúp</translation>
@@ -4218,7 +4217,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4250680216510889253">Không</translation>
 <translation id="4251377547188244181">Đăng ký thiết bị kiosk hoặc bảng hiệu</translation>
-<translation id="4252141040239557279">Hình ảnh <ph name="INDEX" /> về <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth đã bị tắt</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Đã chia sẻ nội dung thẻ</translation>
 <translation id="4253168017788158739">Lưu ý</translation>
@@ -8463,7 +8461,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7657090467145778067">Mức tiết kiệm nhỏ</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Các hình thức hoạt động khác<ph name="END_LINK_GOOGLE" /> có thể được lưu trong Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="7658239707568436148">Hủy</translation>
-<translation id="7658727964021657194">Giao diện AI gần đây <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Vẫn thoát khỏi chế độ Ẩn danh?</translation>
 <translation id="7659336857671800422">Xem Hướng dẫn về quyền riêng tư</translation>
 <translation id="7659584679870740384">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập.</translation>
@@ -8790,7 +8787,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="789722939441020330">Không cho phép trang web tự động tải nhiều tệp xuống</translation>
 <translation id="7897900149154324287">Trong tương lai, đảm bảo rằng bạn đã ngắt kết nối thiết bị di động của mình trong ứng dụng Tệp trước khi tháo thiết bị. Nếu không, bạn có thể mất dữ liệu.</translation>
 <translation id="7898725031477653577">Luôn dịch</translation>
-<translation id="7899324822972399722">Hình ảnh <ph name="INDEX" /> về <ph name="A" />, theo kiểu <ph name="B" /></translation>
 <translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>
 <translation id="7903290522161827520">Bạn đang tìm các thành phần trình duyệt? Hãy truy cập</translation>
 <translation id="7903429136755645827">Nhấp để tùy chỉnh các nút điều khiển trong trò chơi</translation>
@@ -9071,7 +9067,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8098616321286360457">Cần kết nối mạng</translation>
 <translation id="8100230553590752325">Sử dụng mật khẩu đã lưu trên mọi thiết bị</translation>
 <translation id="810068641062493918">Đã chọn <ph name="LANGUAGE" />. Hãy nhấn phím Tìm kiếm + Phím cách để bỏ chọn.</translation>
-<translation id="8100725874569949614">Hình ảnh <ph name="INDEX" /> về <ph name="A" />, mang tâm trạng <ph name="C" />.</translation>
 <translation id="8101409298456377967">Tạo, lưu và quản lý mật khẩu để bạn có thể dễ dàng đăng nhập vào các trang web và ứng dụng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Màu tùy chỉnh</translation>
 <translation id="8101987792947961127">Yêu cầu Powerwash trong lần khởi động lại tiếp theo</translation>

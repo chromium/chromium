@@ -815,7 +815,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1615433306336820465">Administrer logindata, der er gemt på din sikkerhedsnøgle</translation>
 <translation id="1616206807336925449">Denne udvidelse kræver ikke nogen særlige tilladelser.</translation>
 <translation id="1616298854599875024">Udvidelsen "<ph name="IMPORT_NAME" />" kan ikke importeres, da den ikke er delt</translation>
-<translation id="161654560322394775">Billede <ph name="INDEX" /> af <ph name="A" /> i stilen <ph name="B" /> med stemningen <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Tjekker disse data i henhold til din organisations sikkerhedspolitikker...}=1{Tjekker denne fil i henhold til din organisations sikkerhedspolitikker...}one{Tjekker denne fil i henhold til din organisations sikkerhedspolitikker...}other{Tjekker disse filer i henhold til din organisations sikkerhedspolitikker...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Hjælp</translation>
@@ -4219,7 +4218,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4251377547188244181">Tilmelding af enhed til terminal- og signeringstilstand</translation>
-<translation id="4252141040239557279">Billede <ph name="INDEX" /> af <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth er deaktiveret</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – faneindholdet deles</translation>
 <translation id="4253168017788158739">Note</translation>
@@ -8464,7 +8462,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7657090467145778067">Små hukommelsesbesparelser</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Andre former for aktivitet<ph name="END_LINK_GOOGLE" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="7658239707568436148">Annuller</translation>
-<translation id="7658727964021657194">Seneste AI-tema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Vil du afslutte inkognitotilstand alligevel?</translation>
 <translation id="7659336857671800422">Kig nærmere på Privatlivsguide</translation>
 <translation id="7659584679870740384">Du har ikke tilladelse til at bruge denne enhed. Kontakt administratoren for at få tilladelse til at logge ind.</translation>
@@ -8790,7 +8787,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="789722939441020330">Tillad ikke, at websites automatisk downloader flere filer</translation>
 <translation id="7897900149154324287">For fremtiden skal du sørge for at skubbe din flytbare enhed ud i appen Filer, før du kobler den fra. Hvis ikke du gør dette, kan du risikere at miste data.</translation>
 <translation id="7898725031477653577">Oversæt altid</translation>
-<translation id="7899324822972399722">Billede <ph name="INDEX" /> af <ph name="A" /> i stilen <ph name="B" /></translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
 <translation id="7903290522161827520">Leder du efter browserkomponenter? Gå til</translation>
 <translation id="7903429136755645827">Klik for at tilpasse dine spilindstillinger</translation>
@@ -9071,7 +9067,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8098616321286360457">En netværksforbindelse er påkrævet</translation>
 <translation id="8100230553590752325">Brug gemte adgangskoder på alle enheder</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> er valgt. Tryk på søgetasten og mellemrumstasten på samme tid for at fjerne markeringen.</translation>
-<translation id="8100725874569949614">Billede <ph name="INDEX" /> af <ph name="A" /> med stemningen <ph name="C" />.</translation>
 <translation id="8101409298456377967">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Tilpasset farve</translation>
 <translation id="8101987792947961127">Powerwash er påkrævet ved næste genstart</translation>

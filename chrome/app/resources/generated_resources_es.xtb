@@ -811,7 +811,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1615433306336820465">Gestiona los datos de inicio de sesión almacenados en tu llave de seguridad</translation>
 <translation id="1616206807336925449">Esta extensión no requiere permisos especiales.</translation>
 <translation id="1616298854599875024">No se ha podido importar la extensión "<ph name="IMPORT_NAME" />" porque no es un módulo compartido</translation>
-<translation id="161654560322394775">Imagen <ph name="INDEX" /> de <ph name="A" /> con el estilo <ph name="B" /> y el estado de ánimo <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Comprobando que estos datos cumplan las políticas de seguridad de tu organización…}=1{Comprobando que este archivo cumpla las políticas de seguridad de tu organización…}other{Comprobando que estos archivos cumplan las políticas de seguridad de tu organización…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entro de ayuda</translation>
@@ -4203,7 +4202,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Registro de dispositivo de kiosco y señalización</translation>
-<translation id="4252141040239557279">Imagen <ph name="INDEX" /> de <ph name="A" /></translation>
 <translation id="4252899949534773101">El Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: contenido de la pestaña compartido</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -8445,7 +8443,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7657090467145778067">Ahorro reducido</translation>
 <translation id="7657218410916651670">Es posible que <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlas cuando quieras.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7658727964021657194">Tema reciente generado por IA <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">¿Salir del modo Incógnito de todas formas?</translation>
 <translation id="7659336857671800422">Consultar la guía de privacidad</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Ponte en contacto con el administrador para obtener permiso de inicio de sesión.</translation>
@@ -8772,7 +8769,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de expulsar tu dispositivo extraíble en la aplicación Archivos antes de desconectarlo. De lo contrario, podrías perder datos.</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
-<translation id="7899324822972399722">Imagen <ph name="INDEX" /> de <ph name="A" /> con el estilo <ph name="B" />.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">¿Buscas componentes del navegador? Visita</translation>
 <translation id="7903429136755645827">Haz clic para personalizar los controles de juegos</translation>
@@ -9053,7 +9049,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8098616321286360457">Se necesita una conexión de red</translation>
 <translation id="8100230553590752325">Usa tus contraseñas guardadas en cualquier dispositivo</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Pulsa Buscar y la barra espaciadora para deseleccionar el idioma.</translation>
-<translation id="8100725874569949614">Imagen <ph name="INDEX" /> de <ph name="A" /> con el estado de ánimo <ph name="C" />.</translation>
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>

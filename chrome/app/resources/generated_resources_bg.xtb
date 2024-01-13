@@ -811,7 +811,6 @@
 <translation id="1615433306336820465">Управление на данните за вход, съхранявани в ключа ви за сигурност</translation>
 <translation id="1616206807336925449">Това разширение не изисква специални разрешения.</translation>
 <translation id="1616298854599875024">Разширението <ph name="IMPORT_NAME" /> не може да бъде импортирано, защото не е споделен модул</translation>
-<translation id="161654560322394775">Изображение <ph name="INDEX" /> от <ph name="A" /> в стил „<ph name="B" />“ и настроение „<ph name="C" />“.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Тези данни се проверяват за съответствие с правилата за сигурност на организацията ви...}=1{Този файл се проверява за съответствие с правилата за сигурност на организацията ви...}other{Тези файлове се проверяват за съответствие с правилата за сигурност на организацията ви...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">П&amp;омощен център</translation>
@@ -4215,7 +4214,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистриране на устройство за павилионен режим или режим за дигитални знаци и надписи</translation>
-<translation id="4252141040239557279">Изображение <ph name="INDEX" /> от <ph name="A" /></translation>
 <translation id="4252899949534773101">Функцията за Bluetooth е деактивирана</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – съдържанието на раздела се споделя</translation>
 <translation id="4253168017788158739">Забележка</translation>
@@ -8459,7 +8457,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7657090467145778067">Малка икономия</translation>
 <translation id="7657218410916651670">Възможно е <ph name="BEGIN_LINK_GOOGLE" />други видове активност<ph name="END_LINK_GOOGLE" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="7658239707568436148">Отказ</translation>
-<translation id="7658727964021657194">Наскоро създадена от AI тема <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Да се излезе ли от режим „инкогнито“ въпреки това?</translation>
 <translation id="7659336857671800422">Преглед на ръководството за поверителност</translation>
 <translation id="7659584679870740384">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете с администратора.</translation>
@@ -8786,7 +8783,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="789722939441020330">Да не се разрешава на сайтовете да изтеглят автоматично няколко файла</translation>
 <translation id="7897900149154324287">В бъдеще изваждайте премахващото се устройство от приложението Файлове, преди да го изключите. В противен случай може да загубите данни.</translation>
 <translation id="7898725031477653577">Винаги да се превежда</translation>
-<translation id="7899324822972399722">Изображение <ph name="INDEX" /> от <ph name="A" /> в стил „<ph name="B" />“</translation>
 <translation id="7901405293566323524">Център за телефоните</translation>
 <translation id="7903290522161827520">Търсите компонентите на браузъра? Посетете</translation>
 <translation id="7903429136755645827">Кликнете, за да персонализирате контролите си за игри</translation>
@@ -9067,7 +9063,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8098616321286360457">Изисква се връзка с мрежата</translation>
 <translation id="8100230553590752325">Използване на запазените пароли на всяко устройство</translation>
 <translation id="810068641062493918">Избрахте „<ph name="LANGUAGE" />“. За отмяна на избора натиснете клавиша „търсене“ + интервал.</translation>
-<translation id="8100725874569949614">Изображение <ph name="INDEX" /> от <ph name="A" /> в настроение „<ph name="C" />“.</translation>
 <translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Персонализиран цвят</translation>
 <translation id="8101987792947961127">При следващото рестартиране се изисква Powerwash</translation>

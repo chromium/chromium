@@ -809,7 +809,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1615433306336820465">Elektron kalitingizda saqlangan kirish maʼlumotlarini boshqarish</translation>
 <translation id="1616206807336925449">Bu kengaytmaga maxsus ruxsatlarni talab qilmaydi.</translation>
 <translation id="1616298854599875024">Umumiy modul hisoblanmagan <ph name="IMPORT_NAME" /> kengaytmasini import qilib bo‘lmadi</translation>
-<translation id="161654560322394775">Rasm <ph name="INDEX" />/<ph name="A" />, uslub: <ph name="B" />, kayfiyat: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Bu maʼlumotlar tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...}=1{Bu fayl tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...}other{Bu fayllar tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">&amp;Yordam markazi</translation>
@@ -4205,7 +4204,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4250229828105606438">Skrinshot</translation>
 <translation id="4250680216510889253">Yo‘q</translation>
 <translation id="4251377547188244181">Kiosk va reklama paneli qurilmasini qayd qilish</translation>
-<translation id="4252141040239557279">Rasm <ph name="INDEX" />/<ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth yoqilmagan</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – varaqni ko‘rishga ruxsat berildi</translation>
 <translation id="4253168017788158739">Eslatma</translation>
@@ -8447,7 +8445,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7657090467145778067">Kichik tejash</translation>
 <translation id="7657218410916651670">Google hisobingizga kirganingizda <ph name="BEGIN_LINK_GOOGLE" />boshqa shakldagi harakatlaringiz<ph name="END_LINK_GOOGLE" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
-<translation id="7658727964021657194">Oxirgi AI mavzusi <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Inkognito rejimidan baribir chiqilsinmi?</translation>
 <translation id="7659336857671800422">Maxfiylik qoʻllanmasini boshlash</translation>
 <translation id="7659584679870740384">Bu qurilmadan foydalanishga ruxsatingiz yo‘q. Qurilma administratori bilan bog‘laning.</translation>
@@ -8773,7 +8770,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="789722939441020330">Saytlarga bir nechta faylni avtomatik yuklashni taqiqlash</translation>
 <translation id="7897900149154324287">Kelgusida, olinadigan qurilmani chiqarib olishdan oldin uni Fayllar ilovasida chiqarishni unutmang. Aks holda, ma’lumotlar o‘chib ketishi mumkin.</translation>
 <translation id="7898725031477653577">Har doim tarjima qilinsin</translation>
-<translation id="7899324822972399722">Rasm <ph name="INDEX" />/<ph name="A" />, uslub: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Brauzer komponentlarini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="7903429136755645827">Oʻyin boshqaruvlarini moslashtirish uchun bosing</translation>
@@ -9053,7 +9049,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8098616321286360457">Internet aloqasi kerak</translation>
 <translation id="8100230553590752325">Saqlangan parollardan istalgan qurilmada foydalanish</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> tanlandi. Bekor qilish uchun Qidiruv va Boʻshliq tugmalarini bosing.</translation>
-<translation id="8100725874569949614">Rasm <ph name="INDEX" />/<ph name="A" />, kayfiyat: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Sayt va ilovalarga osongina kirish uchun parollaringizni yarating, saqlang va boshqaring. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Maxsus rang</translation>
 <translation id="8101987792947961127">Qurilmani keyingi marta qayta ishga tushirishda Powerwash amali bajarilishi kerak</translation>

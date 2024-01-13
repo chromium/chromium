@@ -811,7 +811,6 @@
 <translation id="1615433306336820465">จัดการข้อมูลการลงชื่อเข้าใช้ที่เก็บไว้ในคีย์ความปลอดภัย</translation>
 <translation id="1616206807336925449">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
 <translation id="1616298854599875024">นำเข้าส่วนขยาย "<ph name="IMPORT_NAME" />" ไม่ได้เนื่องจากไม่ใช่โมดูลที่แชร์</translation>
-<translation id="161654560322394775">รูปภาพที่ <ph name="INDEX" /> จาก <ph name="A" /> ในรูปแบบ <ph name="B" /> โดยมีอารมณ์ <ph name="C" /></translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{กำลังตรวจสอบข้อมูลนี้กับนโยบายความปลอดภัยขององค์กร...}=1{กำลังตรวจสอบไฟล์นี้กับนโยบายความปลอดภัยขององค์กร...}other{กำลังตรวจสอบไฟล์นี้กับนโยบายความปลอดภัยขององค์กร...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ศู&amp;นย์ช่วยเหลือ</translation>
@@ -4203,7 +4202,6 @@
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4250680216510889253">ไม่</translation>
 <translation id="4251377547188244181">การลงทะเบียนอุปกรณ์คีออสก์และป้าย</translation>
-<translation id="4252141040239557279">รูปภาพที่ <ph name="INDEX" /> จาก <ph name="A" /></translation>
 <translation id="4252899949534773101">บลูทูธปิดอยู่</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - แชร์เนื้อหาในแท็บอยู่</translation>
 <translation id="4253168017788158739">หมายเหตุ</translation>
@@ -8441,7 +8439,6 @@
 <translation id="7657090467145778067">ประหยัดหน่วยความจำได้น้อย</translation>
 <translation id="7657218410916651670">ระบบอาจบันทึก<ph name="BEGIN_LINK_GOOGLE" />กิจกรรมรูปแบบอื่น<ph name="END_LINK_GOOGLE" />ในบัญชี Google เมื่อคุณลงชื่อเข้าใช้ คุณลบข้อมูลนี้ได้ทุกเมื่อ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
-<translation id="7658727964021657194">ธีม AI ล่าสุด <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ต้องการออกจากโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="7659336857671800422">ดูคู่มือความเป็นส่วนตัว</translation>
 <translation id="7659584679870740384">คุณไม่ได้รับอนุญาตให้ใช้อุปกรณ์นี้ โปรดติดต่อผู้ดูแลระบบเพื่อขออนุญาตลงชื่อเข้าใช้</translation>
@@ -8768,7 +8765,6 @@
 <translation id="789722939441020330">ไม่อนุญาตให้เว็บไซต์ดาวน์โหลดหลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="7897900149154324287">ในอนาคต โปรดตรวจสอบว่าได้ยกเลิกการเชื่อมต่ออุปกรณ์แบบถอดออกได้ในแอป Files ก่อนที่จะถอดปลั๊ก มิฉะนั้นคุณอาจสูญเสียข้อมูล</translation>
 <translation id="7898725031477653577">แปลทุกครั้ง</translation>
-<translation id="7899324822972399722">รูปภาพที่ <ph name="INDEX" /> จาก <ph name="A" /> ในรูปแบบ <ph name="B" /></translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7903290522161827520">หากต้องการดูคอมโพเนนต์ของเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="7903429136755645827">คลิกเพื่อปรับแต่งการควบคุมเกม</translation>
@@ -9049,7 +9045,6 @@
 <translation id="8098616321286360457">ต้องมีการเชื่อมต่อเครือข่าย</translation>
 <translation id="8100230553590752325">ใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้</translation>
 <translation id="810068641062493918">เลือกภาษา<ph name="LANGUAGE" />อยู่ กดแป้นค้นหากับแป้นเว้นวรรคเพื่อยกเลิกการเลือก</translation>
-<translation id="8100725874569949614">รูปภาพที่ <ph name="INDEX" /> จาก <ph name="A" /> โดยมีอารมณ์ <ph name="C" /></translation>
 <translation id="8101409298456377967">สร้าง บันทึก และจัดการรหัสผ่านเพื่อจะได้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">สีที่กำหนดเอง</translation>
 <translation id="8101987792947961127">ต้องใช้ Powerwash ในการรีบูตครั้งถัดไป</translation>

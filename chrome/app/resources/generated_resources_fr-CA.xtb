@@ -356,6 +356,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1264337193001759725">Pour afficher les journaux de l'IU réseau, consultez cette page : <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Vos applications et vos paramètres seront synchronisés sur tous les appareils Chrome OS Flex sur lesquels vous êtes connecté avec votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Langue de la traduction :</translation>
+<translation id="1267649802567297774">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, dans le style <ph name="STYLE" />, avec l'ambiance <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1272508081857842302">Ouverture des <ph name="BEGIN_LINK" />liens compatibles<ph name="END_LINK" /></translation>
@@ -812,7 +813,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1615433306336820465">Gérez les données de connexion stockées sur votre clé de sécurité</translation>
 <translation id="1616206807336925449">Cette extension fonctionne sans autorisation spéciale.</translation>
 <translation id="1616298854599875024">Impossible d'importer l'extension « <ph name="IMPORT_NAME" /> », car il ne s'agit pas d'un module partagé</translation>
-<translation id="161654560322394775">Image : <ph name="INDEX" /> sur <ph name="A" />, dans le style <ph name="B" />, avec une humeur <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Vérification de la conformité de ces données aux politiques de sécurité de votre organisation en cours…}=1{Vérification de la conformité de ce fichier aux politiques de sécurité de votre organisation en cours…}one{Vérification de la conformité de ce fichier aux politiques de sécurité de votre organisation en cours…}other{Vérification de la conformité de ces fichiers aux politiques de sécurité de votre organisation en cours…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Centre d'aide</translation>
@@ -4206,7 +4206,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251377547188244181">Inscription d'appareil Kiosk et d'affichage</translation>
-<translation id="4252141040239557279">Image : <ph name="INDEX" /> sur <ph name="A" /></translation>
 <translation id="4252899949534773101">Le Bluetooth est désactivé</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Partage du contenu de l'onglet</translation>
 <translation id="4253168017788158739">Remarque</translation>
@@ -4488,6 +4487,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale en cours… <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Vous pouvez utiliser la langue préférée de votre compte Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
+<translation id="4472533928615930332">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, dans le style <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4473996011558324141">Estimation du temps en cours…</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
@@ -7005,6 +7005,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6509207748479174212">Licence multimédia</translation>
 <translation id="6511607461419653612">Redémarrez votre Chromebook et réessayez</translation>
 <translation id="6511827214781912955">Envisagez de supprimer <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
+<translation id="6512759338201777379">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, avec l'ambiance <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Si vous n'êtes pas connecté à un autre réseau, Google Chrome va utiliser un service de données mobiles.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
 <translation id="6514565641373682518">Cette page a désactivé le curseur de votre souris.</translation>
@@ -7028,6 +7029,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6528179044667508675">Ne pas déranger</translation>
 <translation id="652937045869844725">Essayez d'autoriser les témoins tiers, ce qui signifie moins de protection, mais les fonctionnalités du site sont plus susceptibles de fonctionner</translation>
 <translation id="652948702951888897">Historique de Google Chrome</translation>
+<translation id="6530030995840538405">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée</translation>
 <translation id="6530186581263215931">Ces paramètres sont imposés par votre administrateur</translation>
 <translation id="6530267432324197764">Profil géré par <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Conserver le fichier dangereux</translation>
@@ -8449,7 +8451,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7657090467145778067">Petites économies</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />D'autres formes d'activités<ph name="END_LINK_GOOGLE" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="7658239707568436148">Annuler</translation>
-<translation id="7658727964021657194">Thème d'IA récent <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Quitter le mode de navigation privée quand même?</translation>
 <translation id="7659336857671800422">Passer en revue le guide sur la confidentialité</translation>
 <translation id="7659584679870740384">Vous n'êtes pas autorisé(e) à utiliser cet appareil. Pour obtenir l'autorisation de vous y connecter, veuillez communiquer avec l'administrateur.</translation>
@@ -8776,7 +8777,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre périphérique amovible dans l'application Fichiers avant de le débrancher. Sinon, vous risquez de perdre des données.</translation>
 <translation id="7898725031477653577">Toujours traduire</translation>
-<translation id="7899324822972399722">Image : <ph name="INDEX" /> sur <ph name="A" />, dans le style <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Vous recherchez les composants du navigateur? Consultez</translation>
 <translation id="7903429136755645827">Cliquez pour personnaliser vos commandes de jeu</translation>
@@ -9056,7 +9056,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8098616321286360457">Connexion réseau requise</translation>
 <translation id="8100230553590752325">Utilisez des mots de passe enregistrés sur n'importe quel appareil</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour désélectionner cette langue.</translation>
-<translation id="8100725874569949614">Image : <ph name="INDEX" /> sur <ph name="A" />, avec une humeur <ph name="C" />.</translation>
 <translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applications. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8101987792947961127">Réinitialisation « Powerwash » nécessaire au prochain démarrage</translation>

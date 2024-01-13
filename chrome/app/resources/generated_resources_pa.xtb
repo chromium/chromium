@@ -815,7 +815,6 @@
 <translation id="1615433306336820465">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ 'ਤੇ ਸਟੋਰ ਕੀਤੇ ਸਾਈਨ-ਇਨ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1616206807336925449">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਕੋਈ ਖ਼ਾਸ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਉਂਕਿ ਇਹ ਇੱਕ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਮਾਡਿਊਲ ਨਹੀਂ ਹੈ</translation>
-<translation id="161654560322394775"><ph name="C" /> ਮਿਜ਼ਾਜ ਦੇ ਨਾਲ <ph name="B" /> ਸਟਾਈਲ ਵਿੱਚ <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਸ ਡਾਟੇ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}=1{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਸ ਫ਼ਾਈਲ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}other{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ਸ&amp;ਹਾਇਤਾ ਕੇਂਦਰ</translation>
@@ -4220,7 +4219,6 @@
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="4250680216510889253">ਨਹੀਂ</translation>
 <translation id="4251377547188244181">ਕਿਓਸਕ ਅਤੇ ਸਾਈਨੇਜ ਡੀਵਾਈਸ ਨੂੰ ਦਰਜ ਕਰਨਾ</translation>
-<translation id="4252141040239557279"><ph name="A" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਚਿੱਤਰ</translation>
 <translation id="4252899949534773101">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ਟੈਬ ਸਮੱਗਰੀ ਸਾਂਝੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="4253168017788158739">ਨੋਟ</translation>
@@ -8465,7 +8463,6 @@
 <translation id="7657090467145778067">ਥੋੜ੍ਹੀਆਂ ਬਚਤਾਂ</translation>
 <translation id="7657218410916651670">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GOOGLE" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK_GOOGLE" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
-<translation id="7658727964021657194">ਹਾਲੀਆ ਬਣਾਇਆ ਗਿਆ AI ਥੀਮ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ਕੀ ਫਿਰ ਵੀ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="7659336857671800422">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="7659584679870740384">ਤੁਸੀਂ ਇਹ ਡੀਵਾਈਸ ਵਰਤਣ ਲਈ ਅਧਿਕਾਰਿਤ ਨਹੀਂ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਲਈ ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -8791,7 +8788,6 @@
 <translation id="789722939441020330">ਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="7897900149154324287">ਭਵਿੱਖ ਵਿੱਚ, ਆਪਣੀ ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਨੂੰ ਫ਼ਾਈਲਾਂ ਐਪ ਵਿੱਚ ਇਸਨੂੰ ਅਨਪਲੱਗ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੱਢਣਾ ਪੱਕਾ ਕਰੋ । ਨਹੀਂ ਤਾਂ, ਤੁੁਹਾਡਾ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7898725031477653577">ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
-<translation id="7899324822972399722"><ph name="B" /> ਸਟਾਈਲ ਵਿੱਚ, <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" /></translation>
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7903290522161827520">ਕੀ ਬ੍ਰਾਊਜ਼ਰ ਤੱਤਾਂ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
 <translation id="7903429136755645827">ਆਪਣੀ ਗੇਮ ਦੇ ਕੰਟਰੋਲਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -9071,7 +9067,6 @@
 <translation id="8098616321286360457">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="8100230553590752325">ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ। ਅਣਚੁਣਿਆ ਕਰਨ ਲਈ Search ਦੇ ਨਾਲ Space ਨੂੰ ਦਬਾਓ।</translation>
-<translation id="8100725874569949614"><ph name="C" /> ਮਿਜ਼ਾਜ ਦੇ ਨਾਲ, <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" />.</translation>
 <translation id="8101409298456377967">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਬਣਾਓ, ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਆਸਾਨੀ ਨਾਲ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ਵਿਉਂਤਿਆ ਰੰਗ</translation>
 <translation id="8101987792947961127">ਅਗਲੇ ਰੀਬੂਟ 'ਤੇ ਪਾਵਰਵਾਸ਼ ਲੁੜੀਂਦਾ</translation>

@@ -357,6 +357,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1264337193001759725">Aby zobaczyć dzienniki UI sieci, otwórz tę stronę: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Twoje aplikacje i ustawienia będą synchronizować się na wszystkich urządzeniach z ChromeOS Flex, na których zalogujesz się na swoje konto Google. Opcje synchronizacji przeglądarki znajdziesz w <ph name="LINK_BEGIN" />ustawieniach Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Język tłumaczenia:</translation>
+<translation id="1267649802567297774">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" />, nastrój: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1272508081857842302">Otwieranie <ph name="BEGIN_LINK" />obsługiwanych linków<ph name="END_LINK" /></translation>
@@ -813,7 +814,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1615433306336820465">Zarządzaj danymi logowania zapisanymi na kluczu bezpieczeństwa</translation>
 <translation id="1616206807336925449">To rozszerzenie nie wymaga specjalnych uprawnień.</translation>
 <translation id="1616298854599875024">Nie można zaimportować rozszerzenia „<ph name="IMPORT_NAME" />”, ponieważ nie jest to moduł udostępniany</translation>
-<translation id="161654560322394775">Zdjęcie <ph name="INDEX" /> z <ph name="A" />, styl: <ph name="B" />, nastrój: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sprawdzam zgodność danych z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}=1{Sprawdzam zgodność pliku z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}few{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}many{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}other{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entrum pomocy</translation>
@@ -4185,7 +4185,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4250680216510889253">Nie</translation>
 <translation id="4251377547188244181">Trwa rejestrowanie urządzenia w trybie kiosku i tablicy informacyjnej</translation>
-<translation id="4252141040239557279">Obraz <ph name="INDEX" /> z <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth jest wyłączony</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – udostępniono zawartość karty</translation>
 <translation id="4253168017788158739">Notatka</translation>
@@ -4467,6 +4466,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4471354919263203780">Pobieram pliki rozpoznawania mowy... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Możesz używać preferowanego języka konta Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
+<translation id="4472533928615930332">Wygenerowany obraz nr <ph name="INDEX" /> – temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4473996011558324141">szacuję czas</translation>
 <translation id="4474155171896946103">Dodaj wszystkie karty do zakładek...</translation>
@@ -6983,6 +6983,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6509207748479174212">Licencja na multimedia</translation>
 <translation id="6511607461419653612">Uruchom ponownie Chromebooka i spróbuj jeszcze raz</translation>
 <translation id="6511827214781912955">Zastanów się, czy nie usunąć pliku <ph name="FILENAME" />, aby Twoich haseł nie zobaczyły inne osoby korzystające z tego urządzenia</translation>
+<translation id="6512759338201777379">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, nastrój: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome będzie używać komórkowej transmisji danych, jeśli nie jest dostępne połączenie z inną siecią.</translation>
 <translation id="6514010653036109809">Dostępne urządzenie:</translation>
 <translation id="6514565641373682518">Ta strona wyłączyła kursor myszy.</translation>
@@ -7006,6 +7007,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6528179044667508675">Nie przeszkadzać</translation>
 <translation id="652937045869844725">Spróbuj zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
 <translation id="652948702951888897">Historia Chrome</translation>
+<translation id="6530030995840538405">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Te ustawienia są wymuszone przez administratora</translation>
 <translation id="6530267432324197764">Profilem zarządza <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Zachowaj niebezpieczny plik</translation>
@@ -8427,7 +8429,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7657090467145778067">Niewielka oszczędność</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Inne formy aktywności<ph name="END_LINK_GOOGLE" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
-<translation id="7658727964021657194">Ostatni motyw AI: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Zamknąć tryb incognito mimo to?</translation>
 <translation id="7659336857671800422">Zapoznaj się z Przewodnikiem po prywatności</translation>
 <translation id="7659584679870740384">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego administratorem.</translation>
@@ -8754,7 +8755,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>
 <translation id="7897900149154324287">W przyszłości pamiętaj, by przed odłączeniem urządzenia wymiennego wysunąć je w aplikacji Pliki. W przeciwnym razie możesz stracić dane.</translation>
 <translation id="7898725031477653577">Zawsze tłumacz</translation>
-<translation id="7899324822972399722">Obraz <ph name="INDEX" /> z <ph name="A" />, styl: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Szukasz komponentów przeglądarki? Wejdź na</translation>
 <translation id="7903429136755645827">Kliknij, aby dostosować elementy sterujące gry</translation>
@@ -9035,7 +9035,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8098616321286360457">Wymagane połączenie sieciowe</translation>
 <translation id="8100230553590752325">Korzystaj z zapisanych haseł na dowolnym urządzeniu</translation>
 <translation id="810068641062493918">Wybrano: <ph name="LANGUAGE" />. Aby usunąć wybór języka, naciśnij Wyszukaj i spację.</translation>
-<translation id="8100725874569949614">Zdjęcie <ph name="INDEX" /> z <ph name="A" />, nastrój: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Kolor niestandardowy</translation>
 <translation id="8101987792947961127">Przy następnym uruchomieniu trzeba wykonać Powerwash</translation>

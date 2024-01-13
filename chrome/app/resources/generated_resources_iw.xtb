@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">ניהול פרטי הכניסה המאוחסנים במפתח האבטחה</translation>
 <translation id="1616206807336925449">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה.</translation>
 <translation id="1616298854599875024">לא ניתן לייבא את התוסף "<ph name="IMPORT_NAME" />" כי הוא לא מודול משותף</translation>
-<translation id="161654560322394775">תמונה <ph name="INDEX" /> של <ph name="A" />, בסגנון <ph name="B" />, באווירה <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{המערכת בודקת אם הנתונים האלה מצייתים למדיניות האבטחה של הארגון שלך...}=1{המערכת בודקת אם הקובץ הזה מציית למדיניות האבטחה של הארגון שלך...}one{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}two{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}other{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}}</translation>
 <translation id="1618102204889321535"><ph name="MAX_CHARACTER_COUNT" />/<ph name="CURRENT_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">מרכז עזרה</translation>
@@ -4218,7 +4217,6 @@
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4250680216510889253">לא</translation>
 <translation id="4251377547188244181">רישום של מכשיר שילוט וקיוסק</translation>
-<translation id="4252141040239557279">תמונה <ph name="INDEX" /> של <ph name="A" /></translation>
 <translation id="4252899949534773101">‏Bluetooth מושבת</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - תוכן הכרטיסייה שותף</translation>
 <translation id="4253168017788158739">הערה</translation>
@@ -8466,7 +8464,6 @@
 <translation id="7657090467145778067">חיסכון של נפח קטן</translation>
 <translation id="7657218410916651670">‏<ph name="BEGIN_LINK_GOOGLE" />סוגי פעילות אחרים<ph name="END_LINK_GOOGLE" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="7658239707568436148">ביטול</translation>
-<translation id="7658727964021657194">‏עיצוב אחרון שנוצר באמצעות AI‏ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">לצאת מהמצב האנונימי בכל זאת?</translation>
 <translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7659584679870740384">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם מנהל המערכת כדי לקבל הרשאה לכניסה.</translation>
@@ -8792,7 +8789,6 @@
 <translation id="789722939441020330">לא לאפשר לאתרים להוריד באופן אוטומטי קבצים מרובים</translation>
 <translation id="7897900149154324287">בעתיד, יש להקפיד ללחוץ על סמל הניתוק עבור ההתקן הנשלף דרך אפליקציית 'קבצים' לפני שמנתקים אותו פיזית. אם לא עושים זאת, אפשר לאבד נתונים.</translation>
 <translation id="7898725031477653577">ברצוני לקבל תרגום תמיד</translation>
-<translation id="7899324822972399722">תמונה <ph name="INDEX" /> של <ph name="A" />, בסגנון <ph name="B" /></translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7903290522161827520">רוצה לאתר את רכיבי הדפדפן? יש לעבור לכתובת</translation>
 <translation id="7903429136755645827">ניתן ללחוץ כדי להתאים אישית את פקדי המשחקים</translation>
@@ -9075,7 +9071,6 @@
 <translation id="8098616321286360457">נדרש חיבור לאינטרנט</translation>
 <translation id="8100230553590752325">שימוש בסיסמאות השמורות בכל מכשיר</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> נבחרה. כדי לבטל את הבחירה, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
-<translation id="8100725874569949614">תמונה <ph name="INDEX" /> של <ph name="A" />, באווירה <ph name="C" />.</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">צבע מותאם אישית</translation>
 <translation id="8101987792947961127">‏יש לבצע Powerwash באתחול הבא</translation>

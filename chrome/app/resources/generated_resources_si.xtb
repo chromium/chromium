@@ -358,6 +358,7 @@
 <translation id="1264337193001759725">ජාල UI ලොග බැලීමට, බලන්න: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">ඔබගේ යෙදුම් සහ සැකසීම් ඔබ ඔබගේ Google ගිණුම සමග පුරා ඇති සියලු ChromeOS Flex උපාංග හරහා සමමුහුර්ත වනු ඇත. බ්‍රවුසර සමමුහුර්ත විකල්ප සඳහා, <ph name="LINK_BEGIN" />Chrome සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
 <translation id="126710816202626562">පරිවර්තන භාශාව:</translation>
+<translation id="1267649802567297774"><ph name="MOOD" /> මනෝභාවය සමග <ph name="STYLE" /> විලාසය තුළ <ph name="SUBJECT" /> න් <ph name="INDEX" /> ජනිත රූපය.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />සහාය දක්වන සබැඳි<ph name="END_LINK" /> විවෘත කිරීම</translation>
@@ -811,7 +812,6 @@
 <translation id="1615433306336820465">ඔබගේ ආරක්ෂක යතුරේ ගබඩා කර ඇති පුරනය-වීමේ දත්ත කළමනාකරණය කරන්න</translation>
 <translation id="1616206807336925449">මෙම දිගුවට කිසිඳු විශේෂිත බලතලයක් අවශ්‍ය නොවේ.</translation>
 <translation id="1616298854599875024">බෙදා ගත් මොඩියුලයක් නොවන බැවින් "<ph name="IMPORT_NAME" />" දිගුව ආයාත කළ නොහැකිය</translation>
-<translation id="161654560322394775">රූප <ph name="A" /> කින් <ph name="INDEX" />, <ph name="B" /> විලාසයෙන්, <ph name="C" /> මනෝභාවය සමග.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{මෙම දත්ත ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්ති සමඟ පරීක්ෂා කිරීම...}=1{මෙම ගොනුව ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්ති සමඟ පරීක්ෂා කිරීම...}one{මෙම ගොනු ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්ති සමඟ පරීක්ෂා කිරීම...}other{මෙම ගොනු ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්ති සමඟ පරීක්ෂා කිරීම...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">උපකාර මධ්‍යස්ථානය</translation>
@@ -4208,7 +4208,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4250229828105606438">තිරරූපය</translation>
 <translation id="4250680216510889253">නැත</translation>
 <translation id="4251377547188244181">කියෝස්ක් සහ සයිනේජ් උපාංග ලියාපදිංචි කිරීම</translation>
-<translation id="4252141040239557279"><ph name="A" />කින් <ph name="INDEX" /> රූපය</translation>
 <translation id="4252899949534773101">බ්ලූටූත් අබලයි</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ටැබ අන්තර්ගතය බෙදා ගත්</translation>
 <translation id="4253168017788158739">සටහන</translation>
@@ -4490,6 +4489,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4471354919263203780">කථන හැඳුනුම් ‍ගොනු බාගනිමින්... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">ඔබට ඔබ කැමති Google ගිණුම් භාෂාව (<ph name="NEW_LOCALE_FROM_GAIA" />) භාවිතා කළ හැක</translation>
 <translation id="447252321002412580">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උපකාරී වේ</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> විලාසය තුළ <ph name="SUBJECT" /> න් <ph name="INDEX" /> රූපය ජනිතයි</translation>
 <translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4473996011558324141">කාලය ඇස්තමේන්තු කිරීම</translation>
 <translation id="4474155171896946103">සියලු ටැබ් පිටු සලකුණු කරන්න...</translation>
@@ -7008,6 +7008,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6509207748479174212">මාධ්‍ය බලපත්‍රය</translation>
 <translation id="6511607461419653612">ඔබේ Chromebook යළි අරඹා නැවත උත්සාහ කරන්න</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> මකා දැමීමට සලකා බලන්න, එවිට මෙම උපාංගය භාවිතා කරන අනෙක් අයට ඔබේ මුරපද දැකිය නොහැක</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> මනෝභාවය සමග <ph name="SUBJECT" /> න් <ph name="INDEX" /> ජනිත රූපය.</translation>
 <translation id="6513247462497316522">ඔබ වෙනත් ජාලයකට සබැඳී නැති නම්, Google Chrome ජංගම දත්ත භාවිතා කරනු ඇත.</translation>
 <translation id="6514010653036109809">ලබා ගත හැකි උපාංගය:</translation>
 <translation id="6514565641373682518">මෙම පිටුව ඔබේ මවුස කර්සරය අක්‍රිය කර තිබේ.</translation>
@@ -7029,6 +7030,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6528179044667508675">බාධා නොකරන්න</translation>
 <translation id="652937045869844725">තෙවන පාර්ශ්ව කුකීස්වලට ඉඩ දීමට උත්සාහ කරන්න, එයින් අඩු ආරක්ෂණයක් අදහස් වන නමුත් අඩවි විශේෂාංග වැඩ කිරීමට වැඩි ඉඩක් ඇත</translation>
 <translation id="652948702951888897">Chrome ඉතිහාසය</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> න් <ph name="INDEX" /> ජනිත රූපය</translation>
 <translation id="6530186581263215931">මෙම සැකසුම් ඔබේ පරිපාලක විසින් බලාත්මක කොට ඇත.</translation>
 <translation id="6530267432324197764">පැතිකඩ <ph name="MANAGER" /> විසින් කළමනාකරණය කරයි</translation>
 <translation id="6531282281159901044">අනතුරුදායක ගොනුව තබා ගන්න</translation>
@@ -8450,7 +8452,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7657090467145778067">කුඩා ඉතුරුම්</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK_GOOGLE" /> ඔබ පුරන විට ඔබගේ Google ගිණුමේ සුරැකිය හැකිය. ඔබට ඕනෑම වේලාවක ඒවා මැකිය හැකිය.</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
-<translation id="7658727964021657194">මෑත AI තේමාව <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">කෙසේ වුවත් අප්‍රසිද්ධ ප්‍රකාරයෙන් ඉවත් වන්නද?</translation>
 <translation id="7659336857671800422">පෞද්ගලිකත්ව මාර්ගෝපදේශය සිදු කරන්න</translation>
 <translation id="7659584679870740384">ඔබට මෙම උපාංගය භාවිතා කිරීමට අවසර නැත. කරුණාකර පුරනය වීමේ අවසර සඳහා පරිපාලක අමතන්න.</translation>
@@ -8776,7 +8777,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="789722939441020330">බහුවිධ ගොනු ස්වයංක්‍රියව බාගැනීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="7897900149154324287">අනාගතයේදී, Files යෙදුමෙහි ප්ලග් එක ඉවත් කිරීමට පෙර ඔබේ ඉවත් කළ හැකි උපාංගය ඉවත් කිරීමට මතක තබා ගන්න. එසේ නැතහොත් ඔබට දත්ත අහිමි වනු ඇත.</translation>
 <translation id="7898725031477653577">සැමවිටම පරිවර්තනය කරන්න</translation>
-<translation id="7899324822972399722"><ph name="A" /> න් <ph name="INDEX" /> වන රූපය, <ph name="B" /> විලාසයෙන්</translation>
 <translation id="7901405293566323524">දුරකථන මධ්‍යස්ථානය</translation>
 <translation id="7903290522161827520">බ්‍රවුසර සංරචක සඳහා සොයන්නේද? පිවිසෙන්න</translation>
 <translation id="7903429136755645827">ඔබගේ ක්‍රීඩා පාලන අභිරුචිකරණය කිරීමට ක්ලික් කරන්න</translation>
@@ -9056,7 +9056,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8098616321286360457">ජාල සබැඳුමක් අවශ්‍යයි</translation>
 <translation id="8100230553590752325">ඕනෑම උපාංගයක සුරකින ලද මුරපද භාවිතා කරන්න</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> තෝරා ඇත. තේරීම ඉවත් කිරීමට සෙවීම සහ ඉඩ යතුර ඔබන්න.</translation>
-<translation id="8100725874569949614"><ph name="A" /> කින් <ph name="INDEX" /> වන රූපය, <ph name="C" /> මනෝභාවය සමග.</translation>
 <translation id="8101409298456377967">ඔබට පහසුවෙන් අඩවි සහ යෙදුම්වලට පිරීමට හැකි වන පරිදි ඔබගේ මුරපද තනන්න, සුරකින්න සහ කළමනාකරණය කරන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">අභිරුචි වර්ණය</translation>
 <translation id="8101987792947961127">ඊළඟ පණගැන්වීමේදී Powerwash අවශ්‍යයි</translation>

@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">നെറ്റ്‌വർക്ക് UI ലോഗുകൾ കാണാൻ, ഇനിപ്പറയുന്നത് കാണുക: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന എല്ലാ ChromeOS Flex ഉപകരണങ്ങളിലും നിങ്ങളുടെ ആപ്പുകളും ക്രമീകരണവും സമന്വയിപ്പിക്കും. ബ്രൗസർ സമന്വയിപ്പിക്കൽ ഓപ്‌ഷനുകൾക്ക് <ph name="LINK_BEGIN" />Chrome ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="126710816202626562">വിവർത്തന ഭാഷ:</translation>
+<translation id="1267649802567297774"><ph name="STYLE" /> സ്റ്റൈലിലും <ph name="MOOD" /> മൂഡിലും <ph name="SUBJECT" /> എന്ന വിഷയവുമായി ബന്ധപ്പെട്ട <ph name="INDEX" />-ാമത്തെ ചിത്രം സൃഷ്ടിച്ചു.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />പിന്തുണാ ലിങ്കുകൾ<ph name="END_LINK" /> തുറക്കുന്നു</translation>
@@ -810,7 +811,6 @@
 <translation id="1615433306336820465">നിങ്ങളുടെ സുരക്ഷാ കീയിൽ സംഭരിച്ചിട്ടുള്ള സൈൻ ഇൻ ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
 <translation id="1616206807336925449">ഈ വിപുലീകരണത്തിന് പ്രത്യേക അനുമതികളൊന്നും ആവശ്യമില്ല.</translation>
 <translation id="1616298854599875024">വിപുലീകരണം "<ph name="IMPORT_NAME" /> ഒരു പങ്കിട്ട മൊഡ്യൂൾ അല്ലാത്തതിനാൽ ഇമ്പോർട്ട് ചെയ്യാനാവില്ല</translation>
-<translation id="161654560322394775"><ph name="A" /> ചിത്രങ്ങളിൽ <ph name="INDEX" />-ാമത്തേത്, <ph name="B" /> സ്റ്റൈൽ, <ph name="C" /> മൂഡ്.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ഈ ഡാറ്റ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോയെന്ന് പരിശോധിക്കുന്നു...}=1{ഈ ഫയൽ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോയെന്ന് പരിശോധിക്കുന്നു...}other{ഈ ഫയലുകൾ നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോയെന്ന് പരിശോധിക്കുന്നു...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">സഹായ കേന്ദ്രം</translation>
@@ -4201,7 +4201,6 @@
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4250680216510889253">ഇല്ല</translation>
 <translation id="4251377547188244181">കിയോസ്‌ക്, സൈനേജ് ഉപകരണ എൻറോൾമെന്റ്</translation>
-<translation id="4252141040239557279"><ph name="A" />-ൽ <ph name="INDEX" />-ാമത്തെ ചിത്രം</translation>
 <translation id="4252899949534773101">Bluetooth പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ടാബ് ഉള്ളടക്കം പങ്കിട്ടു</translation>
 <translation id="4253168017788158739">കുറിപ്പ്</translation>
@@ -4483,6 +4482,7 @@
 <translation id="4471354919263203780">സംഭാഷണം തിരിച്ചറിയൽ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">നിങ്ങൾ മുൻഗണന നൽകുന്ന Google Account ഭാഷ (<ph name="NEW_LOCALE_FROM_GAIA" />) ഉപയോഗിക്കാം</translation>
 <translation id="447252321002412580">Chrome-ന്റെ ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> സ്റ്റൈലിൽ <ph name="SUBJECT" /> എന്ന വിഷയവുമായി ബന്ധപ്പെട്ട <ph name="INDEX" />-ാമത്തെ ചിത്രം സൃഷ്ടിച്ചു</translation>
 <translation id="4472575034687746823">ആരംഭിക്കാം</translation>
 <translation id="4473996011558324141">സമയം കണക്കാക്കുന്നു</translation>
 <translation id="4474155171896946103">എല്ലാ ടാബുകളും ബുക്ക്‌മാര്‍‌ക്ക് ചെയ്യുക...</translation>
@@ -7002,6 +7002,7 @@
 <translation id="6509207748479174212">മീഡിയ ലൈസൻസ്</translation>
 <translation id="6511607461419653612">നിങ്ങളുടെ Chromebook റീസ്‌റ്റാർട്ട് ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="6511827214781912955">ഈ ഉപകരണം ഉപയോഗിക്കുന്ന മറ്റ് ആളുകൾ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുന്നത് തടയാൻ <ph name="FILENAME" /> ഇല്ലാതാക്കുന്നത് പരിഗണിക്കുക</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> മൂഡിൽ <ph name="SUBJECT" /> എന്ന വിഷയവുമായി ബന്ധപ്പെട്ട <ph name="INDEX" />-ാമത്തെ ചിത്രം സൃഷ്ടിച്ചു.</translation>
 <translation id="6513247462497316522">മറ്റൊരു നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ലെങ്കിൽ Google Chrome മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="6514010653036109809">ലഭ്യമായ ഉപകരണം:</translation>
 <translation id="6514565641373682518">ഈ പേജ് നിങ്ങളുടെ മൗസ് കഴ്‌സർ അപ്രാപ്‌തമാക്കി.</translation>
@@ -7025,6 +7026,7 @@
 <translation id="6528179044667508675">ശല്യപ്പെടുത്തരുത്</translation>
 <translation id="652937045869844725">മൂന്നാം കക്ഷി കുക്കികളെ അനുവദിക്കാൻ ശ്രമിക്കുക, അതിനർത്ഥം സംരക്ഷണം കുറവായിരിക്കും, എന്നാൽ സൈറ്റ് ഫീച്ചറുകൾ പ്രവർത്തിക്കാൻ കൂടുതൽ സാധ്യതയുണ്ട് എന്നാണ്</translation>
 <translation id="652948702951888897">Chrome ചരിത്രം</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> എന്ന വിഷയവുമായി ബന്ധപ്പെട്ട <ph name="INDEX" />-ാമത്തെ ചിത്രം സൃഷ്ടിച്ചു</translation>
 <translation id="6530186581263215931">ഈ ക്രമീകരണം നടപ്പിലാക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററാണ്</translation>
 <translation id="6530267432324197764">പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
 <translation id="6531282281159901044">അപകടകരമായ ഫയൽ സൂക്ഷിക്കുക</translation>
@@ -8444,7 +8446,6 @@
 <translation id="7657090467145778067">ചെറിയ ലാഭിക്കൽ</translation>
 <translation id="7657218410916651670">നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK_GOOGLE" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റി<ph name="END_LINK_GOOGLE" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. അവ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇല്ലാതാക്കാം.</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
-<translation id="7658727964021657194">സമീപകാല AI തീം <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">അദൃശ്യ മോഡിൽ നിന്ന് എന്തായാലും പുറത്തുകടക്കണോ?</translation>
 <translation id="7659336857671800422">സ്വകാര്യതാ ഗൈഡ് അവലോകനം ചെയ്യുക</translation>
 <translation id="7659584679870740384">ഈ ഉപകരണം ഉപയോഗിക്കാൻ നിങ്ങൾക്ക് അനുമതിയില്ല. സൈൻ ഇൻ അനുമതിയ്‌ക്കായി അഡ്‌മിനിസ്‌ട്രേറ്ററെ ബന്ധപ്പെടുക.</translation>
@@ -8771,7 +8772,6 @@
 <translation id="789722939441020330">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="7897900149154324287">ഭാവിയിൽ, Files ആപ്പിലെ നിങ്ങളുടെ നീക്കം ചെയ്യാനാവുന്ന ഉപകരണം അൺപ്ലഗ് ചെയ്യുന്നതിനുമുമ്പ് അത് ഒഴിവാക്കിയെന്ന് ഉറപ്പാക്കുക. അല്ലെങ്കിൽ, നിങ്ങൾക്ക് ഡാറ്റ നഷ്‌ടമാകാനിടയുണ്ട്.</translation>
 <translation id="7898725031477653577">എല്ലായ്പ്പോഴും വിവർത്തനം ചെയ്യുക</translation>
-<translation id="7899324822972399722"><ph name="A" /> ചിത്രങ്ങളിൽ <ph name="INDEX" />-ാമത്തേത്, <ph name="B" /> സ്റ്റൈൽ</translation>
 <translation id="7901405293566323524">ഫോൺ ഹബ്</translation>
 <translation id="7903290522161827520">ബ്രൗസർ കമ്പോണന്റുകൾ തിരയുകയാണോ? ഇവിടെ സന്ദർശിക്കൂ</translation>
 <translation id="7903429136755645827">നിങ്ങളുടെ ഗെയിം നിയന്ത്രണങ്ങൾ ഇഷ്ടാനുസൃതമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
@@ -9052,7 +9052,6 @@
 <translation id="8098616321286360457">നെറ്റ്‌വർക്ക് കണക്ഷൻ ആവശ്യമാണ്</translation>
 <translation id="8100230553590752325">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഏത് ഉപകരണത്തിലും ഉപയോഗിക്കൂ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> തിരഞ്ഞെടുത്തു. തിരഞ്ഞെടുത്തത് മാറ്റാൻ Search+space അമര്‍ത്തുക.</translation>
-<translation id="8100725874569949614"><ph name="A" /> ചിത്രങ്ങളിൽ <ph name="INDEX" />-ാമത്തേത്, <ph name="C" /> മൂഡ്.</translation>
 <translation id="8101409298456377967">സൈറ്റുകളിലേക്കും ആപ്പുകളിലേക്കും എളുപ്പത്തിൽ സൈൻ ഇൻ ചെയ്യുന്നതിന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ സൃഷ്‌ടിക്കുക, സംരക്ഷിക്കുക, മാനേജ് ചെയ്യുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ഇഷ്‌ടാനുസൃത വർണം</translation>
 <translation id="8101987792947961127">അടുത്ത റീബൂട്ടിൽ പവർവാഷ് ആവശ്യമാണ്</translation>

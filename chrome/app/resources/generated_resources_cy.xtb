@@ -817,7 +817,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1615433306336820465">Rheoli data mewngofnodi sydd wedi'u storio ar eich allwedd ddiogelwch</translation>
 <translation id="1616206807336925449">Nid oes angen caniatadau arbennig ar gyfer yr estyniad hwn.</translation>
 <translation id="1616298854599875024">Methu â mewnforio'r estyniad "<ph name="IMPORT_NAME" />" gan nad yw'n fodiwl a rennir</translation>
-<translation id="161654560322394775">Llun <ph name="INDEX" /> o <ph name="A" />, mewn arddull <ph name="B" />, gyda hwyl <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Wrthi'n cadarnhau'r data hyn gyda pholisïau diogelwch eich sefydliad...}=1{Wrthi'n cadarnhau'r ffeil hon gyda pholisïau diogelwch eich sefydliad...}two{Wrthi'n cadarnhau'r ffeiliau hyn gyda pholisïau diogelwch eich sefydliad...}few{Wrthi'n cadarnhau'r ffeiliau hyn gyda pholisïau diogelwch eich sefydliad...}many{Wrthi'n cadarnhau'r ffeiliau hyn gyda pholisïau diogelwch eich sefydliad...}other{Wrthi'n cadarnhau'r ffeiliau hyn gyda pholisïau diogelwch eich sefydliad...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;anolfan Gymorth</translation>
@@ -4221,7 +4220,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4250680216510889253">Na</translation>
 <translation id="4251377547188244181">Cofrestru dyfais ciosg neu arwyddion</translation>
-<translation id="4252141040239557279">Llun <ph name="INDEX" /> o <ph name="A" /></translation>
 <translation id="4252899949534773101">Mae Bluetooth wedi'i analluogi</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Rhannwyd cynnwys y tab</translation>
 <translation id="4253168017788158739">Nodyn</translation>
@@ -8471,7 +8469,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7657090467145778067">Arbedion bach</translation>
 <translation id="7657218410916651670">Gall <ph name="BEGIN_LINK_GOOGLE" />mathau eraill o weithgarwch<ph name="END_LINK_GOOGLE" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.</translation>
 <translation id="7658239707568436148">Canslo</translation>
-<translation id="7658727964021657194">Thema AI ddiweddar <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Gadael y modd Anhysbys beth bynnag?</translation>
 <translation id="7659336857671800422">Cymryd y Canllaw Preifatrwydd</translation>
 <translation id="7659584679870740384">Nid oes gennych awdurdod i ddefnyddio'r ddyfais hon. Cysylltwch â'r gweinyddwr i gael caniatâd mewngofnodi.</translation>
@@ -8798,7 +8795,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="789722939441020330">Peidio â chaniatáu i wefannau lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="7897900149154324287">Yn y dyfodol, gwnewch yn siŵr eich bod yn tynnu eich dyfais y gellir ei thynnu yn yr ap Files cyn ei dad-blygio. Fel arall, mae'n bosib y byddwch yn colli data.</translation>
 <translation id="7898725031477653577">Cyfieithu Bob Amser</translation>
-<translation id="7899324822972399722">Llun <ph name="INDEX" /> o <ph name="A" />, yn yr arddull <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Chwilio am gydrannau porwr? Ewch i</translation>
 <translation id="7903429136755645827">Cliciwch i addasu eich rheolyddion gêm</translation>
@@ -9078,7 +9074,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8098616321286360457">Mae angen cysylltiad rhwydwaith</translation>
 <translation id="8100230553590752325">Defnyddiwch gyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais</translation>
 <translation id="810068641062493918">Mae <ph name="LANGUAGE" /> wedi'i dewis. Pwyswch Search a Space i ddad-ddewis.</translation>
-<translation id="8100725874569949614">Llun <ph name="INDEX" /> o <ph name="A" />, gyda hwyl <ph name="C" />.</translation>
 <translation id="8101409298456377967">Creu, cadw a rheoli eich cyfrineiriau fel y gallwch fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Lliw personol</translation>
 <translation id="8101987792947961127">Mae angen Powerwash ar yr ailgychwyn nesaf</translation>

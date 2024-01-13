@@ -360,6 +360,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1264337193001759725">Norėdami peržiūrėti tinklo NS žurnalus žr. <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Programos ir nustatymai bus sinchronizuojami visuose „ChromeOS Flex“ įrenginiuose, kuriuose esate prisijungę naudodami „Google“ paskyrą. Norėdami pasiekti naršyklės sinchronizavimo parinktis, eikite į <ph name="LINK_BEGIN" />„Chrome“ nustatymų skiltį<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Vertimo kalba:</translation>
+<translation id="1267649802567297774">Sugeneruotas <ph name="INDEX" /> vaizdas iš <ph name="SUBJECT" /> <ph name="STYLE" /> stiliumi su nuotaika <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16 k.</translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Palaikomų nuorodų<ph name="END_LINK" /> atidarymas</translation>
@@ -817,7 +818,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1615433306336820465">Tvarkyti saugos rakte saugomus prisijungimo duomenis</translation>
 <translation id="1616206807336925449">Šiam plėtiniui nereikalingi jokie specialūs leidimai.</translation>
 <translation id="1616298854599875024">Nepavyko importuoti plėtinio „<ph name="IMPORT_NAME" />“, nes tai nėra bendrinamas modulis</translation>
-<translation id="161654560322394775"><ph name="INDEX" /> vaizdas iš <ph name="A" /> <ph name="B" /> stiliumi su <ph name="C" /> nuotaika.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Tikrinami šie duomenys pagal jūsų organizacijos saugos politiką...}=1{Tikrinamas šis failas pagal jūsų organizacijos saugos politiką...}one{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}few{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}many{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}other{Tikrinami šie failai pagal jūsų organizacijos saugos politiką...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" /> iš <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">P&amp;agalbos centras</translation>
@@ -4221,7 +4221,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Viešojo terminalo ir ženklų įrenginio registracija</translation>
-<translation id="4252141040239557279"><ph name="INDEX" /> vaizdas iš <ph name="A" /></translation>
 <translation id="4252899949534773101">„Bluetooth“ išjungtas</translation>
 <translation id="4252996741873942488">„<ph name="WINDOW_TITLE" />“ – bendrinamas skirtuko turinys</translation>
 <translation id="4253168017788158739">Pastaba</translation>
@@ -4503,6 +4502,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4471354919263203780">Atsisiunčiami kalbos atpažinimo failai... <ph name="PERCENT" /> proc.</translation>
 <translation id="4472298120638043495">Galite naudoti pageidaujamą „Google“ paskyros kalbą (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
+<translation id="4472533928615930332">Sugeneruotas <ph name="INDEX" /> vaizdas iš <ph name="SUBJECT" /> <ph name="STYLE" /> stiliumi</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
 <translation id="4473996011558324141">numatytas laikas</translation>
 <translation id="4474155171896946103">Pažymėti visus skirtukus...</translation>
@@ -7022,6 +7022,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6509207748479174212">Medijos licencija</translation>
 <translation id="6511607461419653612">Paleiskite „Chromebook“ iš naujo ir bandykite dar kartą</translation>
 <translation id="6511827214781912955">Apsvarstykite galimybę ištrinti „<ph name="FILENAME" />“, kad kiti šį įrenginį naudojantys asmenys negalėtų peržiūrėti jūsų slaptažodžių</translation>
+<translation id="6512759338201777379">Sugeneruotas <ph name="INDEX" /> vaizdas iš <ph name="SUBJECT" /> su nuotaika <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Jei nesate prisijungę prie kito tinklo, „Google Chrome“ naudos mobiliuosius duomenis.</translation>
 <translation id="6514010653036109809">Pasiekiami įrenginiai:</translation>
 <translation id="6514565641373682518">Šiame puslapyje neleidžiamas pelės žymeklis.</translation>
@@ -7045,6 +7046,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6528179044667508675">Netrukdyti</translation>
 <translation id="652937045869844725">Pabandykite leisti trečiųjų šalių slapukus, o tai reiškia, kad turėsite mažiau apsaugos, bet labiau tikėtina, kad svetainės funkcijos veiks</translation>
 <translation id="652948702951888897">„Chrome“ istorija</translation>
+<translation id="6530030995840538405">Sugeneruotas <ph name="INDEX" /> vaizdas iš <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Šiuos nustatymus įgalina jūsų administratorius</translation>
 <translation id="6530267432324197764">Profilį tvarko <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Palikti pavojingą failą</translation>
@@ -8471,7 +8473,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7657090467145778067">Nedaug sutaupoma</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Kitos veiklos formos<ph name="END_LINK_GOOGLE" /> gali būti išsaugotos jūsų „Google“ paskyroje, kai esate prisijungę. Galite bet kada jas ištrinti.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
-<translation id="7658727964021657194">Naujausia DI tema „<ph name="TILE_INDEX" />“</translation>
 <translation id="7659154729610375585">Vis tiek išeiti iš inkognito režimo?</translation>
 <translation id="7659336857671800422">Naudoti privatumo vadovą</translation>
 <translation id="7659584679870740384">Neturite leidimo naudoti šį įrenginį. Susisiekite su administratoriumi, kad gautumėte leidimą prisijungti.</translation>
@@ -8798,7 +8799,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="789722939441020330">Neleisti svetainėms automatiškai atsisiųsti kelių failų</translation>
 <translation id="7897900149154324287">Ateityje būtinai prieš atjungdami keičiamąjį įrenginį išimkite jį naudodami Failų programą. Kitaip galite prarasti duomenis.</translation>
 <translation id="7898725031477653577">Visada versti</translation>
-<translation id="7899324822972399722"><ph name="INDEX" /> vaizdas iš <ph name="A" /> <ph name="B" /> stiliumi</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Ieškote naršyklės komponentų? Apsilankykite adresu</translation>
 <translation id="7903429136755645827">Spustelėkite, jei norite tinkinti žaidimų valdiklius</translation>
@@ -9079,7 +9079,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8098616321286360457">Būtina prisijungti prie tinklo</translation>
 <translation id="8100230553590752325">Išsaugotų slaptažodžių naudojimas bet kuriame įrenginyje</translation>
 <translation id="810068641062493918">Pasirinkta: <ph name="LANGUAGE" />. Paspauskite paieškos ir tarpo klavišus, kad atšauktumėte pasirinkimą.</translation>
-<translation id="8100725874569949614"><ph name="INDEX" /> vaizdas iš <ph name="A" /> su <ph name="C" /> nuotaika.</translation>
 <translation id="8101409298456377967">Kurkite, saugokite ir tvarkykite slaptažodžius, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Tinkinta spalva</translation>
 <translation id="8101987792947961127">Kitą kartą įkeliant operacinę sistemą iš naujo būtina paleisti „Powerwash“</translation>

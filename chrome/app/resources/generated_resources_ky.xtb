@@ -814,7 +814,6 @@
 <translation id="1615433306336820465">Коопсуздук ачкычыңызга сакталган аккаунтка кирүү дайындарын башкаруу</translation>
 <translation id="1616206807336925449">Бул кеңейтүү атайын уруксаттарды талап кылбайт.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" кеңейтүүсү импорттолбой жатат, анткени ал бөлүшүлгөн модуль эмес</translation>
-<translation id="161654560322394775"><ph name="A" /> ичинен <ph name="INDEX" />-сүрөт, стиль: <ph name="B" />, маанай: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Бул маалымат уюмуңуздун коопсуздук эрежелерин бузгандыгы текшерилүүдө...}=1{Бул файл уюмуңуздун коопсуздук эрежелерин бузгандыгы текшерилүүдө...}other{Бул файлдар уюмуңуздун коопсуздук эрежелерин бузгандыгы текшерилүүдө...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Ж&amp;ардам борбору</translation>
@@ -4218,7 +4217,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4250680216510889253">Жок</translation>
 <translation id="4251377547188244181">Киоскту жана белгилөөчү түзмөктү каттоо</translation>
-<translation id="4252141040239557279"><ph name="A" /> ичинен <ph name="INDEX" />-сүрөт</translation>
 <translation id="4252899949534773101">Bluetooth өчүрүлдү</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Өтмөктүн мазмуну бөлүшүлүүдө</translation>
 <translation id="4253168017788158739">Эскертме</translation>
@@ -8460,7 +8458,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7657090467145778067">Чакан үнөмдөөлөр</translation>
 <translation id="7657218410916651670">Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK_GOOGLE" />башка аракеттер<ph name="END_LINK_GOOGLE" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта жок кылсаңыз болот.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
-<translation id="7658727964021657194">ЖИ жакында түзгөн тема: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Жашыруун режимден баары бир чыгасызбы?</translation>
 <translation id="7659336857671800422">Купуялык жетектемеси менен таанышыңыз</translation>
 <translation id="7659584679870740384">Бул түзмөктү пайдаланууга уруксатыңыз жок. Кирүүгө уруксат алуу үчүн администраторго кайрылыңыз.</translation>
@@ -8787,7 +8784,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="789722939441020330">Сайттар бир нече файлды автоматтык түрдө жүктөп ала албасын</translation>
 <translation id="7897900149154324287">Кийинки жолу тышкы дискти түзмөктөн сууруп алаардан мурун, аны Файлдар колдонмосунан чыгарыңыз. Болбосо, дайындарды жоготуп алышыңыз мүмкүн.</translation>
 <translation id="7898725031477653577">Ар дайым которуу</translation>
-<translation id="7899324822972399722"><ph name="A" /> ичинен <ph name="INDEX" />-сүрөт, стиль: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Cерепчинин компоненттерин издеп жатасызбы? Төмөнкүгө өтүңүз:</translation>
 <translation id="7903429136755645827">Оюндун башкаруу элементтерин ыңгайлаштыруу үчүн басыңыз</translation>
@@ -9067,7 +9063,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8098616321286360457">Тармакка туташуу талап кылынат</translation>
 <translation id="8100230553590752325">Сакталган сырсөздөрдү каалаган түзмөктө колдонуңуз</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> тандалды. Тандоодон чыгаруу үчүн "Издөө" жана боштук баскычын басыңыз.</translation>
-<translation id="8100725874569949614"><ph name="A" /> ичинен <ph name="INDEX" />-сүрөт, маанай: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрдү түзүп, сактап жана башкарыңыз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Жеке түс</translation>
 <translation id="8101987792947961127">Жууп салуу аракети кийинки жолу кайра жүктөөдө т</translation>

@@ -1343,7 +1343,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3665100783276035932">A maioria dos sites vai funcionar conforme o esperado</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
-<translation id="3671117652518853176">Quando essa opção estiver desativada, a confirmação poderá ser solicitada ocasionalmente para fins de segurança</translation>
+<translation id="3671117652518853176">Quando essa opção estiver desativada, a verificação poderá ser solicitada ocasionalmente para fins de segurança</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
 <translation id="3672568546897166916">Erro em <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Equipamentos de rede</translation>
@@ -1388,7 +1388,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3740319564441798148">Ônibus e trens de longa distância</translation>
 <translation id="3740447166056383374">Revise antes de copiar os arquivos</translation>
 <translation id="374325029554577103">Eletrônicos para atividade física</translation>
-<translation id="3743765582345153106">Sempre confirmar ao usar o preenchimento automático</translation>
+<translation id="3743765582345153106">Sempre verificar ao usar o preenchimento automático</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3744212718085287312">Aumentar a segurança usando um cartão virtual na próxima vez?</translation>
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>

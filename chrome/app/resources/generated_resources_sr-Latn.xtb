@@ -357,6 +357,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1264337193001759725">Da biste pregledali evidencije mreže korisničkog interfejsa: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Aplikacije i podešavanja će se sinhronizovati na svim Chrome OS Flex uređajima na kojima ste prijavljeni pomoću svog Google naloga. Opcije sinhronizacije pregledača pronađite u <ph name="LINK_BEGIN" />podešavanjima Chrome-a<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Jezik na koji se prevodi:</translation>
+<translation id="1267649802567297774">Generisana je <ph name="INDEX" />. slika od <ph name="SUBJECT" />, u stilu <ph name="STYLE" />, sa raspoloženjem <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1272508081857842302">Otvaranje <ph name="BEGIN_LINK" />podržanih linkova<ph name="END_LINK" /></translation>
@@ -810,7 +811,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1615433306336820465">Upravljajte podacima za prijavljivanje sačuvanim na bezbednosnom ključu</translation>
 <translation id="1616206807336925449">Ovaj dodatak ne zahteva nikakve specijalne dozvole.</translation>
 <translation id="1616298854599875024">Uvoz dodatka „<ph name="IMPORT_NAME" />“ nije uspeo zato što nije deljeni modul</translation>
-<translation id="161654560322394775"><ph name="INDEX" />. slika od <ph name="A" />, u stilu <ph name="B" />, sa raspoloženjem <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Proverava se da li su podaci u skladu sa bezbednosnim smernicama organizacije...}=1{Proverava se da li je datoteka u skladu sa bezbednosnim smernicama organizacije...}one{Proverava se da li su datoteke u skladu sa bezbednosnim smernicama organizacije...}few{Proverava se da li su datoteke u skladu sa bezbednosnim smernicama organizacije...}other{Proverava se da li su datoteke u skladu sa bezbednosnim smernicama organizacije...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entar za pomoć</translation>
@@ -4201,7 +4201,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Registracija kioska i uređaja za prijavljivanje</translation>
-<translation id="4252141040239557279"><ph name="INDEX" />. slika od <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth je onemogućen</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Deli se sadržaj kartice</translation>
 <translation id="4253168017788158739">Napomena</translation>
@@ -4483,6 +4482,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4471354919263203780">Preuzimaju se datoteke za prepoznavanje govora... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Možete da koristite željeni jezik Google naloga (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
+<translation id="4472533928615930332">Generisana je <ph name="INDEX" />. slika od <ph name="SUBJECT" />, u stilu <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4473996011558324141">procenjuje se vreme</translation>
 <translation id="4474155171896946103">Obeleži sve kartice...</translation>
@@ -7000,6 +7000,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6509207748479174212">Licenca za medije</translation>
 <translation id="6511607461419653612">Restartujte Chromebook i probajte ponovo</translation>
 <translation id="6511827214781912955">Razmislite o tome da izbrišete <ph name="FILENAME" /> da drugi koji koriste ovaj uređaj ne bi mogli da vide vaše lozinke</translation>
+<translation id="6512759338201777379">Generisana je <ph name="INDEX" />. slika od <ph name="SUBJECT" />, sa raspoloženjem <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome će koristiti mobilne podatke ako niste povezani sa drugom mrežom.</translation>
 <translation id="6514010653036109809">Dostupan uređaj:</translation>
 <translation id="6514565641373682518">Ova stranica je onemogućila kursor.</translation>
@@ -7023,6 +7024,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6528179044667508675">Ne uznemiravaj</translation>
 <translation id="652937045869844725">Probajte da dozvolite kolačiće treće strane, što znači slabiju zaštitu, ali veću verovatnoću da će funkcije sajta raditi</translation>
 <translation id="652948702951888897">Istorija Chrome-a</translation>
+<translation id="6530030995840538405">Generisana je <ph name="INDEX" />. slika od <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Administrator primenjuje ova podešavanja</translation>
 <translation id="6530267432324197764">Profilom upravlja <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Zadrži opasnu datoteku</translation>
@@ -8447,7 +8449,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7657090467145778067">Male uštede</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Drugi oblici aktivnosti<ph name="END_LINK_GOOGLE" /> mogu da se sačuvaju na Google nalogu kada ste prijavljeni. Možete da ih izbrišete u bilo kom trenutku.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
-<translation id="7658727964021657194">Nedavna AI tema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Želite da ipak izađete iz režima bez arhiviranja?</translation>
 <translation id="7659336857671800422">Pregledajte vodič za privatnost</translation>
 <translation id="7659584679870740384">Nemate ovlašćenje za korišćenje ovog uređaja. Kontaktirajte administratora da biste dobili dozvolu za prijavljivanje.</translation>
@@ -8774,7 +8775,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="789722939441020330">Ne dozvoljavaj sajtovima da automatski preuzimaju više fajlova</translation>
 <translation id="7897900149154324287">Ubuduće obavezno izbacite prenosivi uređaj u aplikaciji Datoteke pre nego što ga isključite. U suprotnom, možete da izgubite podatke.</translation>
 <translation id="7898725031477653577">Uvek prevodi</translation>
-<translation id="7899324822972399722"><ph name="INDEX" />. slika od <ph name="A" />, u stilu <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Tražite komponente pregledača? Posetite</translation>
 <translation id="7903429136755645827">Kliknite da biste prilagodili kontrole za igre</translation>
@@ -9055,7 +9055,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8098616321286360457">Mrežna veza je obavezna</translation>
 <translation id="8100230553590752325">Koristite sačuvane lozinke na bilo kom uređaju</translation>
 <translation id="810068641062493918">Izabran je <ph name="LANGUAGE" />. Da biste poništili izbor, pritisnite taster za pretragu i razmak.</translation>
-<translation id="8100725874569949614"><ph name="INDEX" />. slika od <ph name="A" />, sa raspoloženjem <ph name="C" />.</translation>
 <translation id="8101409298456377967">Pravite i čuvajte lozinke i upravljajte njima da biste se lako prijavljivali na sajtove i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8101987792947961127">Powerwash je obavezan pri sledećem ponovnom pokretanju</translation>

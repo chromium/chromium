@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">तुमच्या सिक्युरिटी कीवर स्टोअर केलेला साइन इन डेटा व्यवस्थापित करा</translation>
 <translation id="1616206807336925449">या एक्स्टेंशनला कोणत्याही विशिष्ट परवानग्यांची आवश्यकता नाही.</translation>
 <translation id="1616298854599875024">एक्स्टेंशन "<ph name="IMPORT_NAME" />" इंपोर्ट करू शकत नाही कारण ते शेअर केलेले मॉड्युल नाही</translation>
-<translation id="161654560322394775"><ph name="B" /> शैलीमध्ये, <ph name="C" /> मूड असलेली <ph name="A" /> पैकी <ph name="INDEX" /> इमेज.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{हा डेटा तुमच्या संस्थेच्या सुरक्षितता धोरणांनुसार तपासत आहे...}=1{ही फाइल तुमच्या संस्थेच्या सुरक्षितता धोरणांनुसार तपासत आहे...}other{या फाइल तुमच्या संस्थेच्या सुरक्षितता धोरणांनुसार तपासत आहे...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">म&amp;दत केंद्र</translation>
@@ -4215,7 +4214,6 @@
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4250680216510889253">नाही</translation>
 <translation id="4251377547188244181">कियोस्क आणि सिन्येज डिव्हाइसची नोंदणी करणे</translation>
-<translation id="4252141040239557279"><ph name="A" /> पैकी <ph name="INDEX" /> इमेज</translation>
 <translation id="4252899949534773101">ब्लूटूथ बंद केले आहे</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - टॅब आशय शेअर केली</translation>
 <translation id="4253168017788158739">टीप</translation>
@@ -8459,7 +8457,6 @@
 <translation id="7657090467145778067">कमी बचती</translation>
 <translation id="7657218410916651670">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK_GOOGLE" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK_GOOGLE" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
-<translation id="7658727964021657194">अलीकडील AI थीम <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">गुप्त मोडमधून तरीही बाहेर पडायचे आहे का?</translation>
 <translation id="7659336857671800422">गोपनीयता मार्गदर्शक पहा</translation>
 <translation id="7659584679870740384">तुम्ही हे डिव्हाइस वापरण्यासाठी प्राधिकृत नाही. कृपया साइन इन करण्याच्या परवानगीसाठी ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -8784,7 +8781,6 @@
 <translation id="789722939441020330">साइटना एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती देऊ नका</translation>
 <translation id="7897900149154324287">भविष्यात, तुम्ही फाइल ॲप मधील तुमचा काढण्यायोग्य डिव्हाइस अनप्लग करण्यापूर्वी तो निष्कासित करण्याचे सुनिश्चित करा. अन्यथा, तुम्ही डेटा गमावू शकता.</translation>
 <translation id="7898725031477653577">नेहमी भाषांतर करा</translation>
-<translation id="7899324822972399722"><ph name="B" /> शैलीमधील <ph name="A" /> पैकी <ph name="INDEX" /> इमेज</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7903290522161827520">ब्राउझरचे घटक शोधत आहात का? भेट द्या</translation>
 <translation id="7903429136755645827">तुमची गेम नियंत्रणे कस्टमाइझ करण्यासाठी क्लिक करा</translation>
@@ -9065,7 +9061,6 @@
 <translation id="8098616321286360457">नेटवर्क कनेक्शन आवश्यक आहे</translation>
 <translation id="8100230553590752325">कोणत्याही डिव्हाइसवर सेव्ह केलेले पासवर्ड वापरा</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> निवडली. निवड रद्द करण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
-<translation id="8100725874569949614"><ph name="C" /> मूड असलेल्या, <ph name="A" /> पैकी <ph name="INDEX" /> इमेज.</translation>
 <translation id="8101409298456377967">तुमचे पासवर्ड तयार, सेव्ह आणि व्यवस्थापित करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजरीत्या साइन इन करू शकाल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">रंग कस्टमाइझ करा</translation>
 <translation id="8101987792947961127">पुढील रीबूटवर Powerwash आवश्यक</translation>

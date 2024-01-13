@@ -358,6 +358,7 @@
 <translation id="1264337193001759725">ನೆಟ್‌ವರ್ಕ್ UI ಲಾಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಇಲ್ಲಿ ನೋಡಿ: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ ChromeOS Flex ಸಾಧನಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ಬ್ರೌಸರ್ ಸಿಂಕ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ, <ph name="LINK_BEGIN" />Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="126710816202626562">ಅನುವಾದ ಭಾಷೆ:</translation>
+<translation id="1267649802567297774"><ph name="SUBJECT" /> ನ ರಚಿಸಲಾದ ಚಿತ್ರ <ph name="INDEX" />, <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿದೆ, <ph name="MOOD" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳನ್ನು<ph name="END_LINK" /> ತೆರೆಯುವುದು</translation>
@@ -816,7 +817,6 @@
 <translation id="1615433306336820465">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1616206807336925449">ಈ ವಿಸ್ತರಣೆಗೆ ಯಾವುದೇ ವಿಶೇಷ ಅನುಮತಿಗಳ ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ವಿಸ್ತರಣೆಯು ಹಂಚಿಕೊಂಡ ಮಾಡ್ಯೂಲ್ ಆಗಿಲ್ಲದಿರುವ ಕಾರಣ ಅದನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="161654560322394775"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" />, <ph name="B" /> ಶೈಲಿಯಲ್ಲಿದೆ, <ph name="C" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}=1{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಫೈಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}one{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಫೈಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}other{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಫೈಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ಸ&amp;ಹಾಯ ಕೇಂದ್ರ</translation>
@@ -4212,7 +4212,6 @@
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="4250680216510889253">ಇಲ್ಲ</translation>
 <translation id="4251377547188244181">ಕಿಯೋಸ್ಕ್ ಮತ್ತು ಸೈನೇಜ್ ಸಾಧನಗಳ ನೋಂದಣಿ</translation>
-<translation id="4252141040239557279"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" /></translation>
 <translation id="4252899949534773101">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ಟ್ಯಾಬ್ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="4253168017788158739">ಟಿಪ್ಪಣಿ</translation>
@@ -4494,6 +4493,7 @@
 <translation id="4471354919263203780">ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">ನಿಮ್ಮ ಆದ್ಯತೆಯ Google ಖಾತೆಯ ಭಾಷೆಯನ್ನು ನೀವು ಬಳಸಬಹುದು (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು ಹಾಗೂ ಕೆಲಸ ನಿರ್ವಹಣೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
+<translation id="4472533928615930332"><ph name="SUBJECT" /> ನ <ph name="INDEX" /> ಚಿತ್ರವನ್ನು <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4473996011558324141">ಸಮಯವನ್ನು ಅಂದಾಜು ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4474155171896946103">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡು...</translation>
@@ -7013,6 +7013,7 @@
 <translation id="6509207748479174212">ಮಾಧ್ಯಮ ಪರವಾನಗಿ</translation>
 <translation id="6511607461419653612">ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> ಅನ್ನು ಅಳಿಸಲು ಪರಿಗಣಿಸಿ, ಆದ್ದರಿಂದ ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಇತರರು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೋಡಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="6512759338201777379"><ph name="SUBJECT" /> ನ ರಚಿಸಲಾದ ಚಿತ್ರ <ph name="INDEX" />, <ph name="MOOD" /> ಮೂಡ್‌ ಹೊಂದಿದೆ.</translation>
 <translation id="6513247462497316522">ನೀವು ಇನ್ನೊಂದು ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಹೊಂದಿರದಿದ್ದರೆ Google Chrome ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="6514010653036109809">ಲಭ್ಯವಿರುವ ಸಾಧನ:</translation>
 <translation id="6514565641373682518">ಈ ಪುಟವು ನಿಮ್ಮ ಮೌಸ್ ಕರ್ಸರ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿದೆ.</translation>
@@ -7036,6 +7037,7 @@
 <translation id="6528179044667508675">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="652937045869844725">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ, ಇದು ನಿಮ್ಮ ಸೈಟ್‌ನ ಸುರಕ್ಷತೆಯು ರಾಜಿ ಮಾಡಿಕೊಂಡರೂ ಸಹ ಸೈಟ್‌ನ ಫೀಚರ್‌ಗಳು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ</translation>
 <translation id="652948702951888897">Chrome ಇತಿಹಾಸ</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> ನ <ph name="INDEX" /> ಚಿತ್ರ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6530186581263215931">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಜಾರಿಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> ಅವರು ಪ್ರೊಫೈಲ್ ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="6531282281159901044">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸು</translation>
@@ -8458,7 +8460,6 @@
 <translation id="7657090467145778067">ಸಣ್ಣ ಉಳಿತಾಯಗಳು</translation>
 <translation id="7657218410916651670">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="BEGIN_LINK_GOOGLE" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK_GOOGLE" /> ಉಳಿಸಬಹುದು. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಅಳಿಸಬಹುದು.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
-<translation id="7658727964021657194">ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ಹೇಗಾದರೂ ಅಜ್ಞಾತ ಮೋಡ್‌ ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
 <translation id="7659336857671800422">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7659584679870740384">ನೀವು ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ಪ್ರಮಾಣಿತರಾಗಿಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -8784,7 +8785,6 @@
 <translation id="789722939441020330">ಅನೇಕ ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7897900149154324287">ಇನ್ನು ಮುಂದೆ, ನಿಮ್ಮ ತೆಗೆದುಹಾಕುವಂತಹ ಸಾಧನಗಳನ್ನು ಹೊರತೆಗೆಯುವ ಮೊದಲು ಅದನ್ನು ಇಜೆಕ್ಟ್ ಮಾಡಲು ಖಚಿತವಾಗಿರಿ. ಇಲ್ಲದಿದ್ದರೆ, ನೀವು ಡೇಟಾವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="7898725031477653577">ಯಾವಾಗಲೂ ಅನುವಾದಿಸು</translation>
-<translation id="7899324822972399722"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" />, <ph name="B" /> ಶೈಲಿಯಲ್ಲಿದೆ</translation>
 <translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
 <translation id="7903290522161827520">ಬ್ರೌಸರ್ ಕಾಂಪೊನೆಂಟ್‌ಗಳಿಗಾಗಿ ಹುಡುಕುತ್ತಿರುವಿರಾ? ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="7903429136755645827">ನಿಮ್ಮ ಗೇಮ್ ನಿಯಂತ್ರಣಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
@@ -9062,7 +9062,6 @@
 <translation id="8098616321286360457">ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8100230553590752325">ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಆಯ್ಕೆ ರದ್ದುಮಾಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
-<translation id="8100725874569949614"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" />, <ph name="C" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="8101409298456377967">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಉಳಿಸಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ಕಸ್ಟಮ್ ಬಣ್ಣ</translation>
 <translation id="8101987792947961127">ಮುಂದಿನ ರೀಬೂಟ್‌ನಲ್ಲಿ ಪವರ್‌ವಾಷ್ ಅಗತ್ಯವಿದೆ</translation>

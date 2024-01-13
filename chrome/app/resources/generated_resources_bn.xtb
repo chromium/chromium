@@ -358,6 +358,7 @@
 <translation id="1264337193001759725">নেটওয়ার্ক UI লগ দেখতে, এখানে দেখুন: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">আপনার Google অ্যাকাউন্ট দিয়ে সাইন-ইন করা সব ChromeOS Flex ডিভাইসে আপনার অ্যাপ এবং সেটিংস সিঙ্ক হয়ে যাবে। ব্রাউজারে উপলভ্য সিঙ্ক করার বিকল্পের জন্য, <ph name="LINK_BEGIN" />Chrome সেটিংসে যান<ph name="LINK_END" />।</translation>
 <translation id="126710816202626562">অনুবাদের ভাষা:</translation>
+<translation id="1267649802567297774"><ph name="MOOD" /> মুড সহ <ph name="STYLE" /> স্টাইলে <ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি।</translation>
 <translation id="126768002343224824">১৬x</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />কাজ করে এমন লিঙ্ক<ph name="END_LINK" /> খোলা হচ্ছে</translation>
@@ -815,7 +816,6 @@
 <translation id="1615433306336820465">আপনার 'নিরাপত্তা কী'-তে সেভ করা সাইন-ইন ডেটা ম্যানেজ করুন</translation>
 <translation id="1616206807336925449">এই এক্সটেনশনটির কোনও বিশেষ অনুমতির প্রয়োজন নেই।</translation>
 <translation id="1616298854599875024">এটি একটি শেয়ার করা মডিউল না হওয়ার কারণে <ph name="IMPORT_NAME" /> এক্সটেনশন ইমপোর্ট করা যাচ্ছে না</translation>
-<translation id="161654560322394775"><ph name="A" />-এর <ph name="INDEX" /> নম্বর ছবি, <ph name="B" /> স্টাইলে <ph name="C" /> মুড সহ।</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে এই ডেটা চেক করা হচ্ছে…}=1{আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে এই ফাইল চেক করা হচ্ছে…}one{আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে এই ফাইলগুলি চেক করা হচ্ছে…}other{আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে এই ফাইলগুলি চেক করা হচ্ছে…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">সহায়তা কেন্দ্র</translation>
@@ -4219,7 +4219,6 @@
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4250680216510889253">না</translation>
 <translation id="4251377547188244181">'কিয়স্ক' ও 'সাইনেজ' মোডে ডিভাইস এনরোলমেন্ট</translation>
-<translation id="4252141040239557279"><ph name="A" />-এর <ph name="INDEX" /> নম্বর ছবি</translation>
 <translation id="4252899949534773101">ব্লুটুথ বন্ধ করা আছে</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ট্যাব কন্টেন্ট শেয়ার করা হয়েছে</translation>
 <translation id="4253168017788158739">টিকা</translation>
@@ -4501,6 +4500,7 @@
 <translation id="4471354919263203780">স্পিচ শনাক্তকরণ ফাইল ডাউনলোড করা হচ্ছে... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">আপনার পছন্দের Google অ্যাকাউন্টের ভাষা ব্যবহার করতে পারেন (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome-এর বৈশিষ্ট্য এবং পারফরম্যান্স আরও ভালো করতে সাহায্য করুন</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> স্টাইলে <ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি</translation>
 <translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4473996011558324141">সময় অনুমান করা হচ্ছে</translation>
 <translation id="4474155171896946103">সব কটি ট্যাব বুকমার্ক করুন...</translation>
@@ -7022,6 +7022,7 @@
 <translation id="6509207748479174212">মিডিয়া লাইসেন্স</translation>
 <translation id="6511607461419653612">আপনার Chromebook রিস্টার্ট করে আবার চেষ্টা করুন</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> মুছে ফেলার বিষয়টি বিবেচনা করুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারে</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> মুড সহ <ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি।</translation>
 <translation id="6513247462497316522">যদি আপনি অন্য নেটওয়ার্কের সাথে সংযুক্ত না থাকেন তাহলে Google Chrome মোবাইল ডেটা ব্যবহার করবে৷</translation>
 <translation id="6514010653036109809">উপলব্ধ ডিভাইস:</translation>
 <translation id="6514565641373682518">এই পৃষ্ঠাটি আপনার মাউস কার্সরকে অক্ষম করেছে৷</translation>
@@ -7045,6 +7046,7 @@
 <translation id="6528179044667508675">বিরক্ত করবে না</translation>
 <translation id="652937045869844725">থার্ড-পার্টি কুকিকে অনুমতি দিয়ে দেখুন। এর মানে হল সাইটের ফিচার কাজ করবে কিন্তু আপনার সুরক্ষা কম হয়ে যাবে</translation>
 <translation id="652948702951888897">Chrome ইতিহাস</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি</translation>
 <translation id="6530186581263215931">আপনার অ্যাডমিনিস্ট্রেটর এই সেটিংস প্রয়োগ করেন</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" />-এর মাধ্যমে প্রোফাইল ম্যানেজ করা হয়</translation>
 <translation id="6531282281159901044">বিপজ্জনক ফাইল রাখুন</translation>
@@ -8467,7 +8469,6 @@
 <translation id="7657090467145778067">কম পরিমাণে সেভ করা</translation>
 <translation id="7657218410916651670">আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK_GOOGLE" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK_GOOGLE" /> আপনার Google অ্যাকাউন্টে হয়ত সেভ হয়ে যাবে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
-<translation id="7658727964021657194">সাম্প্রতিক AI থিম <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">যাই হোক, ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসতে চান?</translation>
 <translation id="7659336857671800422">গোপনীয়তা সংক্রান্ত গাইডে যান</translation>
 <translation id="7659584679870740384">আপনার কাছে এই ডিভাইস ব্যবহারের অনুমতি নেই৷ অনুগ্রহ করে সাইন-ইন করার অনুমতির জন্য অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন৷</translation>
@@ -8793,7 +8794,6 @@
 <translation id="789722939441020330">অটোমেটিক একাধিক ফাইল ডাউনলোড করার অনুমতি দেয় না</translation>
 <translation id="7897900149154324287">ভবিষ্যতে, আপনার সরানো যাবে এমন ডিভাইসটিকে আনপ্লাগ করার আগে ফাইল অ্যাপ থেকে এটি যে বের করে নেওয়া হয়েছে সেই বিষয়ে নিশ্চিত হয়ে নিন। অন্যথায় আপনি ডেটা হারাতে পারেন।</translation>
 <translation id="7898725031477653577">সর্বদা অনুবাদ করুন</translation>
-<translation id="7899324822972399722"><ph name="A" />-এর <ph name="INDEX" /> নম্বর ছবি, <ph name="B" /> স্টাইলে</translation>
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7903290522161827520">ব্রাউজার কম্পোনেন্ট খুঁজছেন? দেখুন</translation>
 <translation id="7903429136755645827">গেমের কন্ট্রোল কাস্টমাইজ করতে ক্লিক করুন</translation>
@@ -9074,7 +9074,6 @@
 <translation id="8098616321286360457">নেটওয়ার্ক কানেকশন প্রয়োজন</translation>
 <translation id="8100230553590752325">যেকোনও ডিভাইসে সেভ করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> বেছে নেওয়া হয়েছে। টিক চিহ্ন সরিয়ে দিতে Search ও Space বোতাম প্রেস করুন।</translation>
-<translation id="8100725874569949614"><ph name="A" />-এর <ph name="INDEX" /> নম্বর ছবি, <ph name="C" /> মুড সহ।</translation>
 <translation id="8101409298456377967">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">কাস্টম রঙ</translation>
 <translation id="8101987792947961127">পরবর্তী রিবুটে পাওয়ারওয়াশ প্রয়োজন</translation>

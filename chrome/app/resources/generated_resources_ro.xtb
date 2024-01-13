@@ -812,7 +812,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1615433306336820465">Gestionează datele de conectare stocate pe cheia de securitate</translation>
 <translation id="1616206807336925449">Această extensie nu necesită permisiuni speciale.</translation>
 <translation id="1616298854599875024">Nu se poate importa extensia „<ph name="IMPORT_NAME" />”, deoarece nu este un modul folosit în comun</translation>
-<translation id="161654560322394775">Imaginea <ph name="INDEX" /> din <ph name="A" />, în stil <ph name="B" />, cu starea de spirit <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Se verifică datele în conformitate cu politicile de securitate ale organizației...}=1{Se verifică fișierul în conformitate cu politicile de securitate ale organizației...}few{Se verifică fișierele în conformitate cu politicile de securitate ale organizației...}other{Se verifică fișierele în conformitate cu politicile de securitate ale organizației...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entrul de ajutor</translation>
@@ -4204,7 +4203,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4250680216510889253">Nu</translation>
 <translation id="4251377547188244181">Înregistrarea dispozitivului chioșc și pentru semne</translation>
-<translation id="4252141040239557279">Imaginea <ph name="INDEX" /> din <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth este dezactivat</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – se permite accesul la conținutul filei</translation>
 <translation id="4253168017788158739">Notă</translation>
@@ -8448,7 +8446,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7657090467145778067">Economii mici de memorie</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Alte tipuri de activități<ph name="END_LINK_GOOGLE" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="7658239707568436148">Anulează</translation>
-<translation id="7658727964021657194">Tema recentă <ph name="TILE_INDEX" />, creată cu AI</translation>
 <translation id="7659154729610375585">Ieși oricum din modul incognito?</translation>
 <translation id="7659336857671800422">Consultă Ghidul privind confidențialitatea</translation>
 <translation id="7659584679870740384">Nu ești autorizat(ă) să folosești acest dispozitiv. Contactează administratorul pentru permisiunea de conectare.</translation>
@@ -8775,7 +8772,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="789722939441020330">Nu permite site-urilor să descarce automat mai multe fișiere</translation>
 <translation id="7897900149154324287">Pe viitor, asigurați-vă că eliminați dispozitivul amovibil din aplicația Fișiere înainte să îl deconectați. În caz contrar, este posibil să pierdeți date.</translation>
 <translation id="7898725031477653577">Tradu întotdeauna</translation>
-<translation id="7899324822972399722">Imaginea <ph name="INDEX" /> din <ph name="A" />, în stil <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Cauți componentele browserului? Accesează</translation>
 <translation id="7903429136755645827">Dă clic pentru a personaliza comenzile jocului</translation>
@@ -9056,7 +9052,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8098616321286360457">Este necesară o conexiune la rețea</translation>
 <translation id="8100230553590752325">Folosește parolele salvate pe orice dispozitiv</translation>
 <translation id="810068641062493918">S-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a deselecta.</translation>
-<translation id="8100725874569949614">Imaginea <ph name="INDEX" /> din <ph name="A" />, cu starea de spirit <ph name="C" />.</translation>
 <translation id="8101409298456377967">Creează, salvează și gestionează parolele ca să te poți conecta cu ușurință la site-uri și aplicații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Culoare personalizată</translation>
 <translation id="8101987792947961127">Este necesară lansarea Powerwash la următoarea repornire</translation>

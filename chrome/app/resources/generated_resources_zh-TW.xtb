@@ -811,7 +811,6 @@
 <translation id="1615433306336820465">管理儲存在安全金鑰上的登入資料</translation>
 <translation id="1616206807336925449">這個擴充功能不需要特殊權限。</translation>
 <translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充功能不是共用模組，因此無法匯入</translation>
-<translation id="161654560322394775"><ph name="A" />的第 <ph name="INDEX" /> 張圖片，樣式為<ph name="B" />，情境為<ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在檢查這項資料是否符合貴機構的安全性政策...}=1{正在檢查這個檔案是否符合貴機構的安全性政策...}other{正在檢查這些檔案是否符合貴機構的安全性政策...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">說明中心(&amp;E)</translation>
@@ -4202,7 +4201,6 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251377547188244181">註冊資訊站或看板裝置</translation>
-<translation id="4252141040239557279"><ph name="A" />的第 <ph name="INDEX" /> 張圖片</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享分頁內容</translation>
 <translation id="4253168017788158739">附註</translation>
@@ -8440,7 +8438,6 @@
 <translation id="7657090467145778067">節省量：小</translation>
 <translation id="7657218410916651670">在你登入後，<ph name="BEGIN_LINK_GOOGLE" />其他形式的活動<ph name="END_LINK_GOOGLE" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7658727964021657194">最近使用的 AI 主題：<ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">確定要結束無痕模式嗎？</translation>
 <translation id="7659336857671800422">查看隱私權指南</translation>
 <translation id="7659584679870740384">您未獲得授權，無法使用這個裝置。如需登入權限，請與管理員聯絡。</translation>
@@ -8767,7 +8764,6 @@
 <translation id="789722939441020330">禁止網站自動下載多個檔案</translation>
 <translation id="7897900149154324287">往後請務必先從「檔案」應用程式中退出卸除式裝置再拔出，以免遺失資料。</translation>
 <translation id="7898725031477653577">一律翻譯</translation>
-<translation id="7899324822972399722"><ph name="A" />的第 <ph name="INDEX" /> 張圖片，樣式為<ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器元件嗎？請前往</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
@@ -9048,7 +9044,6 @@
 <translation id="8098616321286360457">需要網路連線</translation>
 <translation id="8100230553590752325">在任何裝置上都能使用已儲存的密碼</translation>
 <translation id="810068641062493918">已選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可取消選取。</translation>
-<translation id="8100725874569949614"><ph name="A" />的第 <ph name="INDEX" /> 張圖片，情境為<ph name="C" />。</translation>
 <translation id="8101409298456377967">設定、儲存及管理密碼，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>

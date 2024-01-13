@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">నెట్‌వర్క్ UI లాగ్‌లను చూడటానికి, ఈ లింక్‌ను చూడండి: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">మీరు మీ Google ఖాతాతో సైన్ ఇన్ చేసిన ChromeOS Flex పరికరాలు అన్నిటిలోనూ మీ యాప్‌లు, సెట్టింగ్‌లు సింక్ చేయబడతాయి. బ్రౌజర్ సింక్ ఆప్షన్‌ల కోసం, <ph name="LINK_BEGIN" />Chrome సెట్టింగ్‌లకు<ph name="LINK_END" /> వెళ్లండి.</translation>
 <translation id="126710816202626562">అనువాద భాష:</translation>
+<translation id="1267649802567297774"><ph name="SUBJECT" />‌కు సంబంధించి <ph name="STYLE" /> స్టయిల్‌లో, <ph name="MOOD" /> మూడ్‌తో <ph name="INDEX" />వ ఇమేజ్ జెనరేట్ చేయబడింది.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">ఆపు</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />సపోర్ట్ చేయబడిన లింక్‌ల<ph name="END_LINK" />ను తెరుస్తోంది</translation>
@@ -814,7 +815,6 @@
 <translation id="1615433306336820465">మీ సెక్యూరిటీ కీలో స్టోర్ చేసి ఉన్న సైన్-ఇన్ డేటాను మేనేజ్ చేయండి</translation>
 <translation id="1616206807336925449">ఈ ఎక్స్‌టెన్షన్‌కు ప్రత్యేక అనుమతులు ఏవీ అవసరం లేదు.</translation>
 <translation id="1616298854599875024">ఇది షేర్ చేసిన మాడ్యూల్ కానందున ఎక్స్‌టెన్షన్ "<ph name="IMPORT_NAME" />"ను దిగుమతి చేయడం సాధ్యపడలేదు</translation>
-<translation id="161654560322394775"><ph name="B" /> స్టయిల్‌లో, <ph name="C" /> మూడ్‌తో <ph name="A" />‌లో <ph name="INDEX" />వ ఇమేజ్.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{మీ సంస్థకు చెందిన భద్రతా పాలసీలతో ఈ డేటాను చెక్ చేస్తోంది...}=1{మీ సంస్థకు చెందిన భద్రతా పాలసీలతో ఈ ఫైల్‌ను చెక్ చేస్తోంది...}other{మీ సంస్థకు చెందిన భద్రతా పాలసీలతో ఈ ఫైల్స్‌ను చెక్ చేస్తోంది...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">స&amp;హాయ కేంద్రం</translation>
@@ -4216,7 +4216,6 @@
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4250680216510889253">లేదు</translation>
 <translation id="4251377547188244181">కియోస్క్, సంకేత చిహ్నాల పరికరంలో ఎన్‌రోల్‌మెంట్</translation>
-<translation id="4252141040239557279"><ph name="A" />లో <ph name="INDEX" />వ ఇమేజ్</translation>
 <translation id="4252899949534773101">బ్లూటూత్ నిలిపివేయబడింది</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ట్యాబ్ కంటెంట్ షేర్ చేయబడింది</translation>
 <translation id="4253168017788158739">గమనిక</translation>
@@ -4498,6 +4497,7 @@
 <translation id="4471354919263203780">స్పీచ్ రికగ్నిషన్ ఫైళ్లు డౌన్‌లోడ్ అవుతున్నాయి... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">మీరు ఇప్పుడు మీ ప్రాధాన్య Google ఖాతా భాష (<ph name="NEW_LOCALE_FROM_GAIA" />)ను ఉపయోగించవచ్చు</translation>
 <translation id="447252321002412580">Chrome ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
+<translation id="4472533928615930332"><ph name="SUBJECT" />‌కు సంబంధించి, <ph name="STYLE" /> స్టయిల్‌లో <ph name="INDEX" />వ ఇమేజ్ జెనరేట్ చేయబడింది</translation>
 <translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4473996011558324141">అంచనా సమయం</translation>
 <translation id="4474155171896946103">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయండి...</translation>
@@ -7016,6 +7016,7 @@
 <translation id="6509207748479174212">మీడియా లైసెన్స్</translation>
 <translation id="6511607461419653612">మీ Chromebookను రీస్టార్ట్ చేసి, మళ్ళీ ట్రై చేయండి</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />‌ను తొలగించడం గురించి ఆలోచించండి, తద్వారా ఈ పరికరాన్ని ఉపయోగించే ఇతర వ్యక్తులు మీ పాస్‌వర్డ్‌లను చూడలేరు</translation>
+<translation id="6512759338201777379"><ph name="SUBJECT" />‌కు సంబంధించి, <ph name="MOOD" /> మూడ్‌తో <ph name="INDEX" />వ ఇమేజ్ జెనరేట్ చేయబడింది.</translation>
 <translation id="6513247462497316522">మీరు మరొక నెట్‌వర్క్‌కు కనెక్ట్ అయ్యి ఉండకపోతే, Google Chrome మొబైల్ డేటాను ఉపయోగిస్తుంది.</translation>
 <translation id="6514010653036109809">అందుబాటులో ఉన్న పరికరం:</translation>
 <translation id="6514565641373682518">ఈ పేజీ మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
@@ -7039,6 +7040,7 @@
 <translation id="6528179044667508675">అంతరాయం వద్దు</translation>
 <translation id="652937045869844725">థర్డ్-పార్టీ కుక్కీలను అనుమతించడానికి ట్రై చేయండి, అంటే తక్కువ రక్షణ ఉంటుంది కానీ సైట్ ఫీచర్‌లు పని చేసే అవకాశం ఎక్కువగా ఉంటుంది</translation>
 <translation id="652948702951888897">Chrome హిస్టరీ</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" />‌కు సంబంధించి, <ph name="INDEX" />వ ఇమేజ్ జెనరేట్ చేయబడింది</translation>
 <translation id="6530186581263215931">ఈ సెట్టింగ్‌లు మీ నిర్వాహకుడి ద్వారా అమలు చేయబడ్డాయి</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> ప్రొఫైల్‌ను మేనేజ్ చేస్తోంది</translation>
 <translation id="6531282281159901044">అపాయకరమైన ఫైల్‌ను అలాగే ఉంచు</translation>
@@ -8459,7 +8461,6 @@
 <translation id="7657090467145778067">తక్కువ మెమరీ సేవింగ్స్</translation>
 <translation id="7657218410916651670">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK_GOOGLE" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK_GOOGLE" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
-<translation id="7658727964021657194">ఇటీవలి AI రూపం <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ఏదేమైనా అజ్ఞాత మోడ్ నుండి నిష్క్రమించాలా?</translation>
 <translation id="7659336857671800422">గోప్యతా గైడ్‌ను ఉపయోగించండి</translation>
 <translation id="7659584679870740384">ఈ పరికరాన్ని ఉపయోగించడానికి మీకు అధికారం లేదు. దయచేసి సైన్-ఇన్ అనుమతి కోసం నిర్వాహకుడిని సంప్రదించండి.</translation>
@@ -8785,7 +8786,6 @@
 <translation id="789722939441020330">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="7897900149154324287">భవిష్యత్తులో, మీ తీసివేయదగిన పరికరాన్ని అన్‌ప్లగ్ చేయడానికి ముందు ఫైల్స్ యాప్‌‌లో దాన్ని ఎజెక్ట్ చేయడం మర్చిపోవద్దు. లేదంటే, మీరు డేటాను కోల్పోయే అవకాశం ఉంటుంది.</translation>
 <translation id="7898725031477653577">ఎల్లప్పుడూ అనువదించు</translation>
-<translation id="7899324822972399722"><ph name="B" /> స్టయిల్‌లో, <ph name="A" />‌లో <ph name="INDEX" />వ ఇమేజ్</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
 <translation id="7903290522161827520">బ్రౌజర్ భాగాల కోసం వెతుకుతున్నారా? సందర్శించండి</translation>
 <translation id="7903429136755645827">మీ గేమ్ కంట్రోల్స్‌ను అనుకూలంగా మార్చడానికి క్లిక్ చేయండి</translation>
@@ -9063,7 +9063,6 @@
 <translation id="8098616321286360457">నెట్‌వర్క్ కనెక్షన్ అవసరం</translation>
 <translation id="8100230553590752325">ఏ పరికరంలో అయినా సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ఎంచుకోబడింది. ఎంపిక రద్దు చేయడానికి 'Search + Space'ను నొక్కండి.</translation>
-<translation id="8100725874569949614"><ph name="C" /> మూడ్‌తో, <ph name="A" />‌లో <ph name="INDEX" />వ ఇమేజ్.</translation>
 <translation id="8101409298456377967">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">అనుకూల రంగు</translation>
 <translation id="8101987792947961127">తర్వాత రీబూట్‌లో పవర్‌వాష్ అవసరం</translation>

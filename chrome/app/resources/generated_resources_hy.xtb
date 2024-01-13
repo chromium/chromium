@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">Կառավարեք մուտքի տվյալները, որոնք պահված են ձեր անվտանգության բանալու վրա</translation>
 <translation id="1616206807336925449">Տվյալ ընդլայնումը չի պահանջում հատուկ թույլտվություն:</translation>
 <translation id="1616298854599875024">Անհնար է ներմուծել «<ph name="IMPORT_NAME" />» ընդլայնումը, քանի որ այն ընդհանուր մոդուլ չէ</translation>
-<translation id="161654560322394775"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" />, <ph name="B" /> ոճով, <ph name="C" /> տրամադրությամբ։</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Ստուգվում է՝ արդյոք տվյալները համապատասխանում են ձեր կազմակերպության կանոններին…}=1{Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության կանոններին…}one{Ստուգվում է՝ արդյոք ֆայլերը համապատասխանում են ձեր կազմակերպության կանոններին…}other{Ստուգվում է՝ արդյոք ֆայլերը համապատասխանում են ձեր կազմակերպության կանոններին…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Օ&amp;գնության կենտրոն</translation>
@@ -4201,7 +4200,6 @@
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="4250680216510889253">Ոչ</translation>
 <translation id="4251377547188244181">Սարքի գրանցում կրպակի և ցուցանակի ռեժիմում</translation>
-<translation id="4252141040239557279"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" /></translation>
 <translation id="4252899949534773101">Bluetooth-ն անջատված է</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Ներդիրի բովանդակությունը հրապարակվում է</translation>
 <translation id="4253168017788158739">Նշում</translation>
@@ -8442,7 +8440,6 @@
 <translation id="7657090467145778067">Փոքր տնտեսում</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Այլ գործողություններ<ph name="END_LINK_GOOGLE" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
-<translation id="7658727964021657194">Արհեստական բանականության օգնությամբ վերջերս ստեղծված թեմա <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Միևնույն է փակե՞լ ինկոգնիտո ռեժիմը։</translation>
 <translation id="7659336857671800422">Ուսումնասիրեք ուղեցույցը</translation>
 <translation id="7659584679870740384">Դուք այս սարքից օգտվելու իրավունք չունեք: Մուտք գործելու թույլտվության համար դիմեք սարքի ադմինիստրատորին:</translation>
@@ -8768,7 +8765,6 @@
 <translation id="789722939441020330">Թույլ չտալ կայքերին ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
 <translation id="7897900149154324287">Հետագայում չմոռանաք՝ նախքան կրիչն անջատելը օգտագործել Ֆայլեր հավելվածի «Հանել» կոճակը: Հակառակ դեպքում տվյալները կարող են կորել:</translation>
 <translation id="7898725031477653577">Միշտ թարգմանել</translation>
-<translation id="7899324822972399722"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" />, <ph name="B" /> ոճով</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Դիտարկիչի բաղադրիչնե՞րն եք փնտրում։ Անցեք</translation>
 <translation id="7903429136755645827">Սեղմեք՝ խաղի կառավարման տարրերը կարգավորելու համար</translation>
@@ -9048,7 +9044,6 @@
 <translation id="8098616321286360457">Պահանջվում է ինտերնետ կապ</translation>
 <translation id="8100230553590752325">Օգտագործեք պահված գաղտնաբառերը ցանկացած սարքում</translation>
 <translation id="810068641062493918">Ընտրվել է <ph name="LANGUAGE" /> լեզուն։ Չեղարկելու համար սեղմեք «Որոնում» + բացատ։</translation>
-<translation id="8100725874569949614"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" />, <ph name="C" /> տրամադրությամբ։</translation>
 <translation id="8101409298456377967">Ստեղծեք, պահեք և կառավարեք ձեր գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Հատուկ գույն</translation>
 <translation id="8101987792947961127">Հաջորդ վերաբեռնման ժամանակ հարկավոր է կատարել Powerwash</translation>

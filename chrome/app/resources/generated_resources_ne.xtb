@@ -353,6 +353,7 @@
 <translation id="1264337193001759725">नेटवर्कका UI लगहरू हेर्न यहाँ जानुहोस्: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">तपाईंले आफ्नो Google खातामार्फत साइन इन गरेका ChromeOS Flex चल्ने डिभाइसहरूमा तपाईंका एप तथा सेटिङ सिंक हुने छन्। तपाईं ब्राउजरका सिंकसम्बन्धी विकल्पहरू हेर्न चाहनुहुन्छ भने <ph name="LINK_BEGIN" />Chrome का सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
 <translation id="126710816202626562">अनुवाद भाषा:</translation>
+<translation id="1267649802567297774"><ph name="STYLE" /> शैली र <ph name="MOOD" /> मुड भएको <ph name="SUBJECT" /> को सिर्जना गरिएको फोटो <ph name="INDEX" />।</translation>
 <translation id="126768002343224824">१६ गुणा</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />खोल्न मिल्ने लिंकहरू<ph name="END_LINK" /> खोल्ने तरिका</translation>
@@ -808,7 +809,6 @@
 <translation id="1615433306336820465">तपाईंको सुरक्षा साँचोमा भण्डारण गरिएको साइन इन डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1616206807336925449">यस विस्तारलाई  कुनै विशेष अनुमति आवश्यक पर्दैन।</translation>
 <translation id="1616298854599875024">विस्तार "<ph name="IMPORT_NAME" />" कुनै साझेदारी गरिएको मोड्युल नभएका कारण यसलाई आयात गर्न सकिएन</translation>
-<translation id="161654560322394775"><ph name="A" /> मध्ये <ph name="B" /> शैली र <ph name="C" /> मुड भएको <ph name="INDEX" /> औँ फोटो।</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{यो डेटा तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...}=1{यो फाइल तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...}other{यी फाइलहरू तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छन् कि छैनन् भनी जाँच गर्दै...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">मद्द&amp;त केन्द्र</translation>
@@ -4200,7 +4200,6 @@
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4250680216510889253">होइन</translation>
 <translation id="4251377547188244181">किअस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया</translation>
-<translation id="4252141040239557279"><ph name="A" /> मध्ये <ph name="INDEX" /> औँ फोटो</translation>
 <translation id="4252899949534773101">ब्लुटुथ असक्षम पारिएको छ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ट्याबको सामग्री आदन-प्रदान गरिएको छ</translation>
 <translation id="4253168017788158739">नोट</translation>
@@ -4482,6 +4481,7 @@
 <translation id="4471354919263203780">वाक् पहिचान गर्न प्रयोग गरिने फाइलहरू डाउनलोड गरिँदै... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">तपाईं आफ्नो रोजाइको भाषा (<ph name="NEW_LOCALE_FROM_GAIA" />) मा Google खाता प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="447252321002412580">Chrome का सुविधा तथा कार्यसम्पादन सुधार्न मद्दत गर्नुहोस्</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> शैली भएको <ph name="SUBJECT" /> को सिर्जना गरिएको फोटो <ph name="INDEX" /></translation>
 <translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
 <translation id="4473996011558324141">समय अनुमान गरिँदै छ</translation>
 <translation id="4474155171896946103">सबै ट्याबहरूलाई बुकमार्क गर्नुहोस्...</translation>
@@ -6998,6 +6998,7 @@
 <translation id="6509207748479174212">मिडियाको इजाजत पत्र</translation>
 <translation id="6511607461419653612">आफ्नो Chromebook रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6511827214781912955">यो डिभाइस प्रयोग गर्ने अरू मान्छेले तपाईंका पासवर्ड देख्न नसकून भन्नाका लागि <ph name="FILENAME" /> मेटाउनुहोस्</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> भएको <ph name="SUBJECT" /> को सिर्जना गरिएको फोटो <ph name="INDEX" />।</translation>
 <translation id="6513247462497316522">यदि तपाइँ अर्को सञ्जालमा जडित हुनुहुन्न भने Google Chrome ले मोबाइल लगत प्रयोग गर्ने छ।</translation>
 <translation id="6514010653036109809">उपलब्ध यन्त्र:</translation>
 <translation id="6514565641373682518">यस पृष्ठले तपाइँको माउस कर्सरलाई असक्षम गरेको छ।</translation>
@@ -7021,6 +7022,7 @@
 <translation id="6528179044667508675">बाधा नगर्नुहोस्</translation>
 <translation id="652937045869844725">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुहोस्। यसको अर्थ सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले काम गर्न सक्छन्</translation>
 <translation id="652948702951888897">Chrome को इतिहास</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> को सिर्जना गरिएको फोटो <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">यी सेटिङहरू तपाईंका प्रशासकले लागू गर्नुहुन्छ</translation>
 <translation id="6530267432324197764">प्रोफाइल व्यवस्थापक: <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">खतरनाक फाइल राख्नुहोस्</translation>
@@ -8440,7 +8442,6 @@
 <translation id="7657090467145778067">साना बचतहरू</translation>
 <translation id="7657218410916651670">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK_GOOGLE" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK_GOOGLE" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
-<translation id="7658727964021657194">हालसालै AI प्रयोग गरी सिर्जना गरिएको थिम <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">जे भए पनि इन्कोग्निटो मोडबाट बाहिरिने हो?</translation>
 <translation id="7659336857671800422">गोपनीयतासम्बन्धी मार्गदर्शन प्राप्त गर्नुहोस्</translation>
 <translation id="7659584679870740384">तपाईंलाई यो डिभाइस प्रयोग गर्ने अधिकार छैन। कृपया साइन-इन अनुमतिको लागि प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -8767,7 +8768,6 @@
 <translation id="789722939441020330">साइटहरूलाई एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति नदिइयोस्</translation>
 <translation id="7897900149154324287">भविष्यमा, तपाईंको हटाउन सकिने यन्त्रलाई अनप्लग गर्नुभन्दा अगाडि यसलाई फाइलहरू एपमा निश्चित रूपमा निकाल्नुहोस्।</translation>
 <translation id="7898725031477653577">सधैं अनुवाद गर्नुहोस्</translation>
-<translation id="7899324822972399722"><ph name="A" /> मध्ये <ph name="B" /> शैली भएको <ph name="INDEX" /> औँ फोटो</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7903290522161827520">ब्राउजरका कम्पोनेन्टहरू खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
 <translation id="7903429136755645827">आफ्ना गेम कन्ट्रोलहरू कस्टमाइज गर्न क्लिक गर्नुहोस्</translation>
@@ -9047,7 +9047,6 @@
 <translation id="8098616321286360457">इन्टरनेट चाहिन्छ</translation>
 <translation id="8100230553590752325">कुनै पनि डिभाइसमा सेभ गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चयन गरियो। चयन गरिएको भाषा नचलाउन 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
-<translation id="8100725874569949614"><ph name="A" /> मध्ये <ph name="C" /> मुड भएको <ph name="INDEX" /> औँ फोटो।</translation>
 <translation id="8101409298456377967">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">आफूले रोजेको रङ</translation>
 <translation id="8101987792947961127">अर्को रिबुटमा पावरवास आवश्यक छ</translation>

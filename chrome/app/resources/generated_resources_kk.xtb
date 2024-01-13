@@ -808,7 +808,6 @@
 <translation id="1615433306336820465">Қауіпсіздік кілтінде сақталған кіру деректерін басқаруға болады.</translation>
 <translation id="1616206807336925449">Бұл кеңейтім арнайы рұқсаттарды қажет етпейді.</translation>
 <translation id="1616298854599875024">Бөлісілмеген модуль болғандықтан, "<ph name="IMPORT_NAME" />" кеңейтімін импорттау мүмкін емес.</translation>
-<translation id="161654560322394775">Стилі "<ph name="B" />", көңіл-күйі "<ph name="C" />" <ph name="INDEX" />/<ph name="A" /> сурет.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Бұл деректің ұйымның қауіпсіздік саясаттарына сәйкес келетіні тексерілуде...}=1{Бұл файлдың ұйымның қауіпсіздік саясаттарына сәйкес келетіні тексерілуде...}other{Бұл файлдардың ұйымның қауіпсіздік саясаттарына сәйкес келетіні тексерілуде...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">А&amp;нықтама орталығы</translation>
@@ -4200,7 +4199,6 @@
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4250680216510889253">Жоқ</translation>
 <translation id="4251377547188244181">Құрылғыны киоск режимінде немесе цифрлық тақтада тіркеу</translation>
-<translation id="4252141040239557279"><ph name="INDEX" />/<ph name="A" /> сурет</translation>
 <translation id="4252899949534773101">Bluetooth өшірілді</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – қойынды контенті бөлісілген</translation>
 <translation id="4253168017788158739">Ескертпе</translation>
@@ -8437,7 +8435,6 @@
 <translation id="7657090467145778067">Үнем мөлшері аз</translation>
 <translation id="7657218410916651670">Аккаунтқа кірген кезде, <ph name="BEGIN_LINK_GOOGLE" />әрекеттің басқа түрлері<ph name="END_LINK_GOOGLE" /> Google аккаунтыңызға сақталуы мүмкін. Оларды кез келген уақытта жоя аласыз.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
-<translation id="7658727964021657194">Соңғы AI тақырыбы: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Бәрібір инкогнито режимінен шығу керек пе?</translation>
 <translation id="7659336857671800422">Құпиялық нұсқаулығын көріп шығу</translation>
 <translation id="7659584679870740384">Бұл құрылғыны пайдалану рұқсатыңыз жоқ. Кіру рұқсатын алу үшін әкімшіге хабарласыңыз.</translation>
@@ -8764,7 +8761,6 @@
 <translation id="789722939441020330">Сайттардың бірнеше файлды автоматты түрде жүктеп алуына рұқсат бермеу</translation>
 <translation id="7897900149154324287">Келешекте алынбалы құрылғыңызды шығарудың алдында оны Файлдар қолданбасынан босатыңыз. Болмаса деректеріңіз жоғалуы мүмкін.</translation>
 <translation id="7898725031477653577">Әрқашан аудару</translation>
-<translation id="7899324822972399722">Стилі "<ph name="B" />" <ph name="INDEX" />/<ph name="A" /> сурет</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Браузер компоненттерін іздеп жатырсыз ба? Келесіге бетке өтіңіз:</translation>
 <translation id="7903429136755645827">Ойынның басқару элементтерін реттеу үшін басыңыз</translation>
@@ -9044,7 +9040,6 @@
 <translation id="8098616321286360457">Желі байланысы қажет</translation>
 <translation id="8100230553590752325">Кез келген құрылғыда сақталған құпия сөздерді пайдалану</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> таңдалды. Құсбелгісін алып тастау үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
-<translation id="8100725874569949614">Көңіл-күйі "<ph name="C" />" <ph name="INDEX" />/<ph name="A" /> сурет.</translation>
 <translation id="8101409298456377967">Сайттар мен қолданбаларға оңай кіру үшін құпия сөздер жасаңыз, сақтаңыз және басқарыңыз. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Арнаулы түс</translation>
 <translation id="8101987792947961127">Келесі қайта жүктеу кезінде Powerwash қажет</translation>

@@ -807,7 +807,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1615433306336820465">Təhlükəsizlik açarında saxlanılan giriş datasını idarə edin</translation>
 <translation id="1616206807336925449">Bu artırma xüsusi icazələr tələb etmir.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" artırmasını import etmək olmur, çünki o paylaşılmış modul deyil</translation>
-<translation id="161654560322394775"><ph name="C" /> əhvalı ilə <ph name="B" /> üslubunda <ph name="INDEX" /> indeksli <ph name="A" /> şəkli.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Bu data təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...}=1{Bu fayl təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...}other{Bu fayllar təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Yardım mərkəzi</translation>
@@ -4200,7 +4199,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4250680216510889253">Yox</translation>
 <translation id="4251377547188244181">Köşk və işarə cihazının qeydiyyatı</translation>
-<translation id="4252141040239557279"><ph name="INDEX" /> indeksli <ph name="A" /> şəkli</translation>
 <translation id="4252899949534773101">Bluetooth deaktivdir</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Panel məzmunu paylaşıldı</translation>
 <translation id="4253168017788158739">Qeyd</translation>
@@ -8439,7 +8437,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7657090467145778067">Kiçik qənaət</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Digər fəaliyyət formaları<ph name="END_LINK_GOOGLE" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
-<translation id="7658727964021657194">Son AI teması: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">İstənilən halda Anonim rejimdən çıxılsın?</translation>
 <translation id="7659336857671800422">Məxfilik Bələdçisini əldə edin</translation>
 <translation id="7659584679870740384">Bu cihazı istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün administrator ilə əlaqə saxlayın.</translation>
@@ -8766,7 +8763,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="789722939441020330">Saytlara çoxsaylı faylları avtomatik endirmək icazəsi verməyin</translation>
 <translation id="7897900149154324287">Gələcəkdə, Fayllar tətbiqindəki çıxarıla bilən cihazınızı ayırmadan öncə əlaqəsini kəsin. Əks halda data itirə bilərsiniz.</translation>
 <translation id="7898725031477653577">Həmişə tərcümə edin</translation>
-<translation id="7899324822972399722"><ph name="B" /> üslubunda <ph name="INDEX" /> indeksli <ph name="A" /> şəkli</translation>
 <translation id="7901405293566323524">Telefon Habı</translation>
 <translation id="7903290522161827520">Brauzer komponentləri axtarırsınız? Ziyarət edin</translation>
 <translation id="7903429136755645827">Oyun nəzarətlərinizi fərdiləşdirmək üçün klikləyin</translation>
@@ -9046,7 +9042,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8098616321286360457">Şəbəkə bağlantısı tələb olunur</translation>
 <translation id="8100230553590752325">İstənilən cihazda saxlanmış parolları istifadə edin</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seçilib. Seçimi ləğv etmək üçün Axtarış və Boşluq seçiminə basın.</translation>
-<translation id="8100725874569949614"><ph name="C" /> əhvalı ilə <ph name="INDEX" /> indeksli <ph name="A" /> şəkli.</translation>
 <translation id="8101409298456377967">Saytlara və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yaradın, saxlayın və idarə edin/ <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Fərdi rəng</translation>
 <translation id="8101987792947961127">Növbəti yenidən yüklənmə zamanı zavod sıfırlaması tələb olunur</translation>

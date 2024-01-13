@@ -356,6 +356,7 @@
 <translation id="1264337193001759725">የአውታረ መረብ ዩአይ ምዝግብ ማስታወሻዎችን ለማየት ይህን ይመልከቱ፦ <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">የእርስዎ መተግበሪያዎች እና ቅንብሮች በGoogle መለያዎ በገቡባቸው ሁሉም የChromeOS Flex መሣሪያዎች ላይ ይሰምራሉ። ለአሳሽ ስምረት አማራጮች ወደ <ph name="LINK_BEGIN" />የChrome ቅንብሮች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="126710816202626562">የትርጉም ቋንቋ፦</translation>
+<translation id="1267649802567297774">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">አቁም</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />የሚደገፉ አገናኞች<ph name="END_LINK" />ን በመክፈት ላይ</translation>
@@ -812,7 +813,6 @@
 <translation id="1615433306336820465">በእርስዎ የደህንነት ቁልፍ ላይ የተከማቸ የመለያ መግቢያ ውሂብን ያቀናብሩ</translation>
 <translation id="1616206807336925449">ይህ ቅጥያ ምንም ልዩ ፈቃዶችን አይፈልግም።</translation>
 <translation id="1616298854599875024">የ«<ph name="IMPORT_NAME" />» ቅጥያ የተጋራ ሞዱል ስላልሆነ እሱን ማስመጣት አልተቻለም</translation>
-<translation id="161654560322394775">ምስል <ph name="INDEX" /> የ<ph name="A" />፣ በ<ph name="B" /> ቅጥ፣ ከ<ph name="C" /> ስሜት ጋር።</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ይህን ውሂብ በድርጅትዎ የደህንነት መመሪያዎች መሠረት በመፈተሽ ላይ...}=1{ይህን ፋይል በድርጅትዎ የደህንነት መመሪያዎች መሠረት በመፈተሽ ላይ...}one{እነዚህን ፋይሎች በድርጅትዎ የደህንነት መመሪያዎች መሠረት በመፈተሽ ላይ...}other{እነዚህን ፋይሎች በድርጅትዎ የደህንነት መመሪያዎች መሠረት በመፈተሽ ላይ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">የእገዛ ማዕከል</translation>
@@ -4210,7 +4210,6 @@
 <translation id="4250229828105606438">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="4250680216510889253">አይ</translation>
 <translation id="4251377547188244181">የኪዮስክ እና የምልክት ቋንቋ መሣሪያ ምዝገባ</translation>
-<translation id="4252141040239557279">ምስል <ph name="INDEX" /> የ<ph name="A" /></translation>
 <translation id="4252899949534773101">ብሉቱዝ ተሰናክሏል</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - የትር ይዘት ተጋርቷል</translation>
 <translation id="4253168017788158739">ማስታወሻ</translation>
@@ -4492,6 +4491,7 @@
 <translation id="4471354919263203780">የንግግር ማወቂያ ፋይሎችን በማውረድ ላይ... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">እርስዎ የሚመርጡትን የGoogle መለያ ቋንቋ መጠቀም ይችላሉ (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
+<translation id="4472533928615930332">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4473996011558324141">ጊዜ መገመት</translation>
 <translation id="4474155171896946103">ለሁሉም ትሮች ዕልባት አብጅ...</translation>
@@ -7009,6 +7009,7 @@
 <translation id="6509207748479174212">የማህደረ መረጃ ፈቃድ</translation>
 <translation id="6511607461419653612">የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ</translation>
 <translation id="6511827214781912955">ይህን መሣሪያ የሚጠቀሙ ሌሎች የእርስዎን የይለፍ ቃላት ማየት እንዳይችሉ <ph name="FILENAME" />ን መሰረዝን ያስቡበት</translation>
+<translation id="6512759338201777379">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" />፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="6513247462497316522">ከሌላ አውታረ መረብ ጋር ካልተገናኙ Google Chrome የተንቀሳቃሽ ውሂብን ይጠቀማል።</translation>
 <translation id="6514010653036109809">የሚገኝ መሣሪያ፦</translation>
 <translation id="6514565641373682518">ይህ ገፅ የመዳፊት ጠቋሚዎን አሰናክሏል።</translation>
@@ -7032,6 +7033,7 @@
 <translation id="6528179044667508675">አትረብሽ</translation>
 <translation id="652937045869844725">የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ያነሰ ጥበቃ ነው ማለት ነው ነገር ግን የጣቢያ ባህሪያት የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
 <translation id="652948702951888897">የChrome ታሪክ</translation>
+<translation id="6530030995840538405">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">እነዚህ ቅንብሮች በአስተዳዳሪዎ ነው የሚፈጸሙት</translation>
 <translation id="6530267432324197764">በ<ph name="MANAGER" /> የሚተዳደር መገለጫ</translation>
 <translation id="6531282281159901044">አደገኛ ፋይልን አስቀምጥ</translation>
@@ -8454,7 +8456,6 @@
 <translation id="7657090467145778067">ትንንሽ ቁጠባዎች</translation>
 <translation id="7657218410916651670">በመለያ ሲገቡ <ph name="BEGIN_LINK_GOOGLE" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK_GOOGLE" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
 <translation id="7658239707568436148">ይቅር</translation>
-<translation id="7658727964021657194">የቅርብ ጊዜ AI ገጽታ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ለማንኛውም ማንነት ከማያሳውቅ ሁነታ ይውጡ?</translation>
 <translation id="7659336857671800422">የግላዊነት መመሪያውን ውሰድ</translation>
 <translation id="7659584679870740384">ይህን መሣሪያ ለመጠቀም ስልጣን አልተሰጠዎትም። የመግባት ፍቃድ ለማግኘት አስተዳዳሪውን ያነጋግሩ።</translation>
@@ -8781,7 +8782,6 @@
 <translation id="789722939441020330">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር እንዲያወርዱ አይፍቀዱ</translation>
 <translation id="7897900149154324287">ለወደፊቱ የሚነቀል መሳሪያዎን ከመንቀልዎ በፊት በፋይሎች መተግበሪያው ውስጥ ማላቀቅዎን እርግጠኛ ይኑ። ያለበለዚያ የተወሰነ ውሂብ ሊጠፋብዎ ይችላል።</translation>
 <translation id="7898725031477653577">ሁል ጊዜ ተርጉም</translation>
-<translation id="7899324822972399722">ምስል <ph name="INDEX" /> የ<ph name="A" />፣ በ<ph name="B" /> ቅጥ</translation>
 <translation id="7901405293566323524">የስልክ መገናኛ</translation>
 <translation id="7903290522161827520">የአሳሽ ክፍሎችን እየፈለጉ ነው? ይጎብኙ</translation>
 <translation id="7903429136755645827">የእርስዎ የጨዋታ መቆጣጠሪያዎችን ለማበጀት ጠቅ ያድርጉ</translation>
@@ -9067,7 +9067,6 @@ nil</translation>
 <translation id="8098616321286360457">የአውታረ መረብ ግንኙነት ያስፈልጋል</translation>
 <translation id="8100230553590752325">በማንኛውም መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን ይጠቀሙ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ተመርጧል። ላለመምረጥ ፍለጋን እና ክፍተትን ይጫኑ</translation>
-<translation id="8100725874569949614">ምስል <ph name="INDEX" /> የ<ph name="A" />፣ ከ<ph name="C" /> ስሜት ጋር።</translation>
 <translation id="8101409298456377967">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች መግባት እንዲችሉ የይለፍ ቃላትዎን ይፍጠሩ፣ ያስቀምጡ እና ያቀናብሩ <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ብጁ ቀለም</translation>
 <translation id="8101987792947961127">በቀጣዩ ዳግም ማስነሳት ላይ Powerwash  ያስፈልጋል</translation>

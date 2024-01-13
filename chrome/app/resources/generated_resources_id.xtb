@@ -814,7 +814,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1615433306336820465">Mengelola data login yang disimpan di kunci keamanan Anda</translation>
 <translation id="1616206807336925449">Ekstensi ini tidak memerlukan izin khusus.</translation>
 <translation id="1616298854599875024">Tidak dapat mengimpor ekstensi "<ph name="IMPORT_NAME" />" karena bukan modul yang dibagikan</translation>
-<translation id="161654560322394775">Gambar <ph name="INDEX" /> dari <ph name="A" />, dalam gaya <ph name="B" />, dengan mood <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Memeriksa data ini dengan kebijakan keamanan organisasi Anda ...}=1{Memeriksa file ini dengan kebijakan keamanan organisasi Anda ...}other{Memeriksa file ini dengan kebijakan keamanan organisasi Anda ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Pusat Bantuan</translation>
@@ -4218,7 +4217,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Tidak</translation>
 <translation id="4251377547188244181">Pendaftaran perangkat kios dan reklame</translation>
-<translation id="4252141040239557279">Gambar <ph name="INDEX" /> dari <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth dinonaktifkan</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Konten tab dibagikan</translation>
 <translation id="4253168017788158739">Catatan</translation>
@@ -8460,7 +8458,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7657090467145778067">Penghematan kecil</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Bentuk aktivitas lainnya<ph name="END_LINK_GOOGLE" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="7658239707568436148">Batal</translation>
-<translation id="7658727964021657194">Tema AI terbaru <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Tetap keluar dari mode Samaran?</translation>
 <translation id="7659336857671800422">Lihat Panduan Privasi</translation>
 <translation id="7659584679870740384">Anda tidak diizinkan untuk menggunakan perangkat ini. Untuk izin masuk, hubungi administrator perangkat.</translation>
@@ -8787,7 +8784,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="789722939441020330">Jangan izinkan situs mendownload beberapa file secara otomatis</translation>
 <translation id="7897900149154324287">Di masa mendatang, pastikan untuk mengeluarkan perangkat yang dapat dilepas di aplikasi File sebelum mencabutnya. Jika tidak, Anda mungkin kehilangan data.</translation>
 <translation id="7898725031477653577">Selalu terjemahkan</translation>
-<translation id="7899324822972399722">Gambar <ph name="INDEX" /> dari <ph name="A" />, dalam gaya <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Mencari komponen browser? Buka</translation>
 <translation id="7903429136755645827">Klik untuk menyesuaikan kontrol game Anda</translation>
@@ -9068,7 +9064,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8098616321286360457">Perlu koneksi jaringan</translation>
 <translation id="8100230553590752325">Gunakan sandi tersimpan di semua perangkat</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> dipilih. Tekan tombol Penelusuran dan Spasi untuk membatalkan pilihan.</translation>
-<translation id="8100725874569949614">Gambar <ph name="INDEX" /> dari <ph name="A" />, dengan mood <ph name="C" />.</translation>
 <translation id="8101409298456377967">Buat, simpan, dan kelola sandi Anda agar Anda dapat mudah login ke situs dan aplikasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Warna khusus</translation>
 <translation id="8101987792947961127">Perlu Powerwash saat mulai ulang berikutnya</translation>

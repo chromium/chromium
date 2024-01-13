@@ -811,7 +811,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1615433306336820465">Güvenlik anahtarınızda depolanan oturum açma verilerini yönetin</translation>
 <translation id="1616206807336925449">Bu uzantı herhangi bir özel izin gerektirmiyor.</translation>
 <translation id="1616298854599875024">Paylaşılan bir modül olmadığından "<ph name="IMPORT_NAME" />" uzantısı içe aktarılamıyor</translation>
-<translation id="161654560322394775"><ph name="B" /> stilini ve <ph name="C" /> ruh halini içeren <ph name="A" /> resimden <ph name="INDEX" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Bu verilerin, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...}=1{Bu dosyanın, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...}other{Bu dosyaların, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Y&amp;ardım Merkezi</translation>
@@ -4201,7 +4200,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4250680216510889253">Hayır</translation>
 <translation id="4251377547188244181">Kiosk ve tabela cihaz kaydı</translation>
-<translation id="4252141040239557279"><ph name="A" /> içinde <ph name="INDEX" />. resim</translation>
 <translation id="4252899949534773101">Bluetooth devre dışı</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Sekme içeriği paylaşılıyor</translation>
 <translation id="4253168017788158739">Notlar</translation>
@@ -8443,7 +8441,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7657090467145778067">Küçük tasarruf</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Diğer etkinlik biçimleri<ph name="END_LINK_GOOGLE" />, oturum açtığınızda Google Hesabı'nıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.</translation>
 <translation id="7658239707568436148">İptal</translation>
-<translation id="7658727964021657194">Son yapay zeka teması <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Yine de Gizli moddan çıkılsın mı?</translation>
 <translation id="7659336857671800422">Gizlilik Kılavuzu'na göz at</translation>
 <translation id="7659584679870740384">Bu cihazı kullanma yetkiniz yok. Oturum açma izni almak için lütfen yöneticiyle iletişim kurun.</translation>
@@ -8770,7 +8767,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="789722939441020330">Sitelerin birden fazla dosyayı otomatik olarak indirmesine izin verme</translation>
 <translation id="7897900149154324287">Gelecekte, kaldırılabilir cihazınızı yerinden sökmeden önce cihazı Dosyalar uygulamasından çıkardığınızdan emin olun. Aksi halde veri kaybedebilirsiniz.</translation>
 <translation id="7898725031477653577">Her zaman çevir</translation>
-<translation id="7899324822972399722"><ph name="B" /> stilini içeren <ph name="A" /> resimden <ph name="INDEX" />.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Tarayıcı bileşenlerini mi arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="7903429136755645827">Oyun denetimlerinizi özelleştirmek için tıklayın</translation>
@@ -9051,7 +9047,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8098616321286360457">Ağ bağlantısı gerekiyor</translation>
 <translation id="8100230553590752325">Kayıtlı şifrelerinizi herhangi bir cihazda kullanın</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seçildi. Seçimi kaldırmak için Arama'ya ve Boşluk çubuğuna basın.</translation>
-<translation id="8100725874569949614"><ph name="C" /> ruh halini içeren <ph name="A" /> resimden <ph name="INDEX" />.</translation>
 <translation id="8101409298456377967">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifrelerinizi oluşturun, kaydedin ve yönetin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Özel renk</translation>
 <translation id="8101987792947961127">Gelecek yeniden başlatmada Powerwash gerekli</translation>

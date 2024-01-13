@@ -355,6 +355,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1264337193001759725">Wenn du Netzwerk-UI-Protokolle ansehen möchtest, gehe zu: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Deine Apps und Einstellungen werden auf allen Chrome OS Flex-Geräten synchronisiert, auf denen du mit deinem Google-Konto angemeldet bist. Die Optionen zur Browsersynchronisation findest du in den <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Zielsprache:</translation>
+<translation id="1267649802567297774">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> im Stil „<ph name="STYLE" />“ und mit der Stimmung „<ph name="MOOD" />“.</translation>
 <translation id="126768002343224824">16-fach</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Unterstützte Links<ph name="END_LINK" /> öffnen</translation>
@@ -808,7 +809,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1615433306336820465">Auf deinem Sicherheitsschlüssel gespeicherte Anmeldedaten verwalten</translation>
 <translation id="1616206807336925449">Diese Erweiterung erfordert keine speziellen Berechtigungen.</translation>
 <translation id="1616298854599875024">Die Erweiterung "<ph name="IMPORT_NAME" />" konnte nicht importiert werden, da es sich nicht um ein freigegebenes Modul handelt</translation>
-<translation id="161654560322394775">Bild <ph name="INDEX" /> von <ph name="A" /> im Stil „<ph name="B" />“ und mit der Stimmung „<ph name="C" />“.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Diese Daten werden auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…}=1{Diese Datei wird auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…}other{Diese Dateien werden auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">H&amp;ilfe</translation>
@@ -4200,7 +4200,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nein</translation>
 <translation id="4251377547188244181">Gerät wird für Kioske und digitale Beschilderung registriert</translation>
-<translation id="4252141040239557279">Bild <ph name="INDEX" /> von <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth ist deaktiviert</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Tabinhalte geteilt</translation>
 <translation id="4253168017788158739">Notiz</translation>
@@ -4482,6 +4481,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4471354919263203780">Spracherkennungsdateien werden heruntergeladen... <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Du kannst deine bevorzugte Sprache für dein Google-Konto verwenden (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
+<translation id="4472533928615930332">Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> wurde im Stil „<ph name="STYLE" />“ generiert</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4473996011558324141">Zeit wird geschätzt</translation>
 <translation id="4474155171896946103">Alle Tabs als Lesezeichen speichern...</translation>
@@ -6996,6 +6996,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6509207748479174212">Medienlizenz</translation>
 <translation id="6511607461419653612">Starte Chromebook neu und versuche es noch einmal</translation>
 <translation id="6511827214781912955">Du kannst „<ph name="FILENAME" />“ löschen, damit andere Nutzer dieses Geräts deine Passwörter nicht sehen können</translation>
+<translation id="6512759338201777379">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> mit der Stimmung „<ph name="MOOD" />“</translation>
 <translation id="6513247462497316522">Google Chrome verwendet Mobilfunk, wenn du nicht mit einem anderen Netzwerk verbunden bist.</translation>
 <translation id="6514010653036109809">Verfügbares Gerät:</translation>
 <translation id="6514565641373682518">Diese Seite hat den Cursor deaktiviert.</translation>
@@ -7019,6 +7020,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6528179044667508675">Nicht stören</translation>
 <translation id="652937045869844725">Versuche, Drittanbieter-Cookies zuzulassen. Das bedeutet zwar weniger Schutz, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites richtig funktionieren.</translation>
 <translation id="652948702951888897">Chrome-Verlauf</translation>
+<translation id="6530030995840538405">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Diese Einstellungen werden von deinem Administrator erzwungen</translation>
 <translation id="6530267432324197764">Profil wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="6531282281159901044">Schädliche Datei beibehalten</translation>
@@ -8439,7 +8441,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7657090467145778067">Geringe Einsparungen</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Andere Arten von Aktivitäten<ph name="END_LINK_GOOGLE" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
-<translation id="7658727964021657194">Zuletzt generiertes KI-Design <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Inkognitomodus trotzdem beenden?</translation>
 <translation id="7659336857671800422">Datenschutz-Leitfaden durchgehen</translation>
 <translation id="7659584679870740384">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Administrator um eine Anmeldeberechtigung.</translation>
@@ -8766,7 +8767,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="789722939441020330">Websites dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="7897900149154324287">Wirf dein externes Gerät in Zukunft über die Dateien-App aus, bevor du die Verbindung trennst. Sonst könnte es zu einem Datenverlust kommen.</translation>
 <translation id="7898725031477653577">Immer übersetzen</translation>
-<translation id="7899324822972399722">Bild <ph name="INDEX" /> von <ph name="A" /> im Stil „<ph name="B" />“</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Suchst du die Browser-Komponenten? Gehe zu</translation>
 <translation id="7903429136755645827">Zum Anpassen der Spielsteuerung klicken</translation>
@@ -9047,7 +9047,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8098616321286360457">Netzwerkverbindung erforderlich</translation>
 <translation id="8100230553590752325">Gespeicherte Passwörter auf beliebigen Geräten verwenden</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ausgewählt. Drücke zum Aufheben der Auswahl die Suchtaste + Leertaste.</translation>
-<translation id="8100725874569949614">Bild <ph name="INDEX" /> von <ph name="A" /> mit der Stimmung „<ph name="C" />“.</translation>
 <translation id="8101409298456377967">Hier kannst du Passwörter erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>

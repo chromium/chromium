@@ -808,7 +808,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1615433306336820465">Menaxho të dhënat e identifikimit të ruajtura në çelësin tënd të sigurisë</translation>
 <translation id="1616206807336925449">Kjo shtesë nuk kërkon leje të veçanta.</translation>
 <translation id="1616298854599875024">Importimi i shtesës "<ph name="IMPORT_NAME" />" është i pamundur, sepse nuk është një modul i ndarë.</translation>
-<translation id="161654560322394775">Imazhi <ph name="INDEX" /> nga <ph name="A" />, në stilin "<ph name="B" />", me atmosferë "<ph name="C" />".</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Po kontrollon këto të dhëna me politikat e sigurisë së organizatës sate...}=1{Po kontrollon këtë skedar me politikat e sigurisë së organizatës sate...}other{Po kontrollon këta skedarë me politikat e sigurisë së organizatës sate...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Qendra e n&amp;dihmës</translation>
@@ -4201,7 +4200,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="4250680216510889253">Jo</translation>
 <translation id="4251377547188244181">Regjistrimi i kioskës dhe pajisjes sinjalizuese</translation>
-<translation id="4252141040239557279">Imazhi <ph name="INDEX" /> nga <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth-i është çaktivizuar</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - përmbajtja e skedës është ndarë</translation>
 <translation id="4253168017788158739">Shënim</translation>
@@ -8442,7 +8440,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7657090467145778067">Kursime të vogla</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Forma të tjera aktiviteti<ph name="END_LINK_GOOGLE" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="7658239707568436148">Anulo</translation>
-<translation id="7658727964021657194">Tema e fundit me IA: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Të dilet gjithsesi nga modaliteti "i fshehtë"?</translation>
 <translation id="7659336857671800422">Shiko udhëzuesin e privatësisë</translation>
 <translation id="7659584679870740384">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për të marrë leje për identifikim.</translation>
@@ -8768,7 +8765,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="789722939441020330">Mos lejo që sajtet të shkarkojnë automatikisht disa skedarë</translation>
 <translation id="7897900149154324287">Në të ardhmen, sigurohu që ta nxjerrësh pajisjen e lëvizshme në aplikacionin "Skedarët" para se ta heqësh. Në rast të kundërt, mund të humbasësh të dhëna.</translation>
 <translation id="7898725031477653577">Përkthe gjithmonë</translation>
-<translation id="7899324822972399722">Imazhi <ph name="INDEX" /> nga <ph name="A" />, në stilin "<ph name="B" />"</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Po kërkon për komponentët e shfletuesit? Vizito</translation>
 <translation id="7903429136755645827">Kliko për të personalizuar kontrollet e lojës</translation>
@@ -9048,7 +9044,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8098616321286360457">Nevojitet lidhje me rrjetin</translation>
 <translation id="8100230553590752325">Përdor fjalëkalimet e ruajtura në çdo pajisje</translation>
 <translation id="810068641062493918">U zgjodh <ph name="LANGUAGE" />. Shtyp "Kërko" plus "Hapësirë" për ta anuluar zgjedhjen.</translation>
-<translation id="8100725874569949614">Imazhi <ph name="INDEX" /> nga <ph name="A" />, me atmosferë "<ph name="C" />".</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Ngjyra e personalizuar</translation>
 <translation id="8101987792947961127">Kërkohet Powerwash me rindezjen e ardhshme</translation>

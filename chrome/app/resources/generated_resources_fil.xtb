@@ -358,6 +358,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1264337193001759725">Para makita ang mga log ng UI ng network, tingnan ang: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Magsi-sync ang iyong mga app at setting sa lahat ng ChromeOS Flex device kung saan ka naka-sign in gamit ang Google account mo. Para sa mga opsyon sa pag-sync ng browser, pumunta sa <ph name="LINK_BEGIN" />mga setting ng Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Wika ng pagsasalin</translation>
+<translation id="1267649802567297774">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" />, sa istilong <ph name="STYLE" />, na may mood na <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1272508081857842302">Pagbubukas ng <ph name="BEGIN_LINK" />mga sinusuportahang link<ph name="END_LINK" /></translation>
@@ -815,7 +816,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1615433306336820465">Pamahalaan ang data sa pag-sign in na naka-store sa iyong security key</translation>
 <translation id="1616206807336925449">Hindi nangangailangan ang extension na ito ng mga espesyal na pahintulot.</translation>
 <translation id="1616298854599875024">Hindi ma-import ang extension na "<ph name="IMPORT_NAME" />" dahil hindi ito nakabahaging module</translation>
-<translation id="161654560322394775">Larawan <ph name="INDEX" /> sa <ph name="A" />, sa istilong <ph name="B" />, na may mood na <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sinusuri ang data na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}=1{Sinusuri ang file na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}one{Sinusuri ang mga file na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}other{Sinusuri ang mga file na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Help Center</translation>
@@ -4219,7 +4219,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Hindi</translation>
 <translation id="4251377547188244181">Pag-enroll ng kiosk at signage device</translation>
-<translation id="4252141040239557279">Larawan <ph name="INDEX" /> sa <ph name="A" /></translation>
 <translation id="4252899949534773101">Naka-disable ang Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Nakabahagi ang content ng tab</translation>
 <translation id="4253168017788158739">Tala</translation>
@@ -4501,6 +4500,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4471354919263203780">Dina-download ang mga file ng pagkilala sa speech... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Puwede mong gamitin ang iyong gustong wika ng Google Account (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Tumulong sa pagpapahusay sa mga feature at performance ng Chrome</translation>
+<translation id="4472533928615930332">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" />, sa istilong <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4473996011558324141">tinatantya ang oras</translation>
 <translation id="4474155171896946103">I-bookmark ang lahat ng tab...</translation>
@@ -7019,6 +7019,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6509207748479174212">Lisensya ng media</translation>
 <translation id="6511607461419653612">I-restart ang iyong Chromebook at subukan ulit</translation>
 <translation id="6511827214781912955">Pag-isipang i-delete ang <ph name="FILENAME" />, para hindi makita ng iba pang gumagamit ng device na ito ang iyong mga password</translation>
+<translation id="6512759338201777379">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" />, na may mood na <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Gagamit ang Google Chrome ng data ng mobile kung hindi ka nakakonekta sa isa pang network.</translation>
 <translation id="6514010653036109809">Available na device:</translation>
 <translation id="6514565641373682518">Hindi pinagana ng pahinang ito ang cursor ng iyong mouse.</translation>
@@ -7042,6 +7043,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6528179044667508675">Wag istorbohin</translation>
 <translation id="652937045869844725">Subukang payagan ang third-party na cookies, na nangangahulugan na mas mahina ang proteksyon pero mas malamang na gumana ang mga feature ng site</translation>
 <translation id="652948702951888897">History sa Chrome</translation>
+<translation id="6530030995840538405">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Ipinapatupad ng iyong administrator ang mga setting na ito</translation>
 <translation id="6530267432324197764">Pinapamahalaan ng <ph name="MANAGER" /> ang profile</translation>
 <translation id="6531282281159901044">Panatilihin ang mapanganib na file</translation>
@@ -8464,7 +8466,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7657090467145778067">Maliliit na natipid</translation>
 <translation id="7657218410916651670">Posibleng ma-save ang <ph name="BEGIN_LINK_GOOGLE" />iba pang anyo ng aktibidad<ph name="END_LINK_GOOGLE" /> sa iyong Google Account kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
-<translation id="7658727964021657194">Kamakailang AI theme <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Umalis pa rin sa Incognito mode?</translation>
 <translation id="7659336857671800422">Gamitin ang Gabay sa Privacy</translation>
 <translation id="7659584679870740384">Wala kang pahintulot na gamitin ang device na ito. Mangyaring makipag-ugnayan sa administrator upang makakuha ng pahintulot sa pag-sign in.</translation>
@@ -8791,7 +8792,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="789722939441020330">Huwag payagan ang mga site na awtomatikong mag-download ng maraming file</translation>
 <translation id="7897900149154324287">Sa hinaharap, tiyaking i-eject ang iyong naaalis na device sa Files app bago ito i-unplug. Kung hindi, maaari kang mawalan ng data.</translation>
 <translation id="7898725031477653577">Palaging i-translate</translation>
-<translation id="7899324822972399722">Larawan <ph name="INDEX" /> sa <ph name="A" />, sa istilong <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Hinahanap ang mga bahagi ng browser? Bisitahin ang</translation>
 <translation id="7903429136755645827">I-click para i-customize ang iyong mga kontrol ng laro</translation>
@@ -9072,7 +9072,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8098616321286360457">Kailangan ng koneksyon sa network</translation>
 <translation id="8100230553590752325">Gumamit ng mga naka-save na password sa anumang device</translation>
 <translation id="810068641062493918">Pinili ang <ph name="LANGUAGE" />. Pindutin ang Search at Space para i-unselect.</translation>
-<translation id="8100725874569949614">Larawan <ph name="INDEX" /> sa <ph name="A" />, na may mood na <ph name="C" />.</translation>
 <translation id="8101409298456377967">Gawin, i-save, at pamahalaan ang iyong mga password para madali kang makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Custom na kulay</translation>
 <translation id="8101987792947961127">Kinakailangan ng Powerwash sa susunod na reboot</translation>

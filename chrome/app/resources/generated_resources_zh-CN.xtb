@@ -806,7 +806,6 @@
 <translation id="1615433306336820465">管理您的安全密钥上存储的登录数据</translation>
 <translation id="1616206807336925449">此扩展程序无需任何特殊权限。</translation>
 <translation id="1616298854599875024">无法导入扩展程序“<ph name="IMPORT_NAME" />”，因为它不是共享模块</translation>
-<translation id="161654560322394775"><ph name="A" />的第 <ph name="INDEX" /> 张图片，样式是<ph name="B" />，情感基调是<ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在检查此数据是否符合贵组织的安全政策…}=1{正在检查这个文件是否符合贵组织的安全政策…}other{正在检查这些文件是否符合贵组织的安全政策…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">帮助中心(&amp;E)</translation>
@@ -4194,7 +4193,6 @@
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251377547188244181">自助服务终端和数字标牌设备注册</translation>
-<translation id="4252141040239557279"><ph name="A" />的第 <ph name="INDEX" /> 张图片</translation>
 <translation id="4252899949534773101">已停用蓝牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享标签页内容</translation>
 <translation id="4253168017788158739">备注</translation>
@@ -8433,7 +8431,6 @@
 <translation id="7657090467145778067">节省少量内存</translation>
 <translation id="7657218410916651670">当您登录后，系统可能会将<ph name="BEGIN_LINK_GOOGLE" />其他形式的活动记录<ph name="END_LINK_GOOGLE" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7658727964021657194">近期搜索的 AI 主题 <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">仍要退出无痕模式？</translation>
 <translation id="7659336857671800422">查看隐私保护指南</translation>
 <translation id="7659584679870740384">您无权使用此设备。请向管理员申请登录权限。</translation>
@@ -8760,7 +8757,6 @@
 <translation id="789722939441020330">不允许网站自动下载多个文件</translation>
 <translation id="7897900149154324287">日后在拔下您的可移动设备之前，请务必先使用“文件”菜单将其弹出。否则，您的数据可能会丢失。</translation>
 <translation id="7898725031477653577">一律翻译</translation>
-<translation id="7899324822972399722"><ph name="A" />的第 <ph name="INDEX" /> 张图片，样式是<ph name="B" /></translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7903290522161827520">想要查看浏览器组件？请访问</translation>
 <translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
@@ -9041,7 +9037,6 @@
 <translation id="8098616321286360457">需要连接网络</translation>
 <translation id="8100230553590752325">在任意设备上使用保存的密码</translation>
 <translation id="810068641062493918">已选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可取消选择。</translation>
-<translation id="8100725874569949614"><ph name="A" />的第 <ph name="INDEX" /> 张图片，情感基调是<ph name="C" />。</translation>
 <translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自定义颜色</translation>
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>

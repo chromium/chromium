@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">Да бисте прегледали евиденције мреже корисничког интерфејса: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Апликације и подешавања ће се синхронизовати на свим Chrome OS Flex уређајима на којима сте пријављени помоћу свог Google налога. Опције синхронизације прегледача пронађите у <ph name="LINK_BEGIN" />подешавањима Chrome-а<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Језик на који се преводи:</translation>
+<translation id="1267649802567297774">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, у стилу <ph name="STYLE" />, са расположењем <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1272508081857842302">Отварање <ph name="BEGIN_LINK" />подржаних линкова<ph name="END_LINK" /></translation>
@@ -810,7 +811,6 @@
 <translation id="1615433306336820465">Управљајте подацима за пријављивање сачуваним на безбедносном кључу</translation>
 <translation id="1616206807336925449">Овај додатак не захтева никакве специјалне дозволе.</translation>
 <translation id="1616298854599875024">Увоз додатка „<ph name="IMPORT_NAME" />“ није успео зато што није дељени модул</translation>
-<translation id="161654560322394775"><ph name="INDEX" />. слика од <ph name="A" />, у стилу <ph name="B" />, са расположењем <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Проверава се да ли су подаци у складу са безбедносним смерницама организације...}=1{Проверава се да ли је датотека у складу са безбедносним смерницама организације...}one{Проверава се да ли су датотеке у складу са безбедносним смерницама организације...}few{Проверава се да ли су датотеке у складу са безбедносним смерницама организације...}other{Проверава се да ли су датотеке у складу са безбедносним смерницама организације...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Ц&amp;ентар за помоћ</translation>
@@ -4201,7 +4201,6 @@
 <translation id="4250229828105606438">Снимак екрана</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистрација киоска и уређаја за пријављивање</translation>
-<translation id="4252141040239557279"><ph name="INDEX" />. слика од <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth је онемогућен</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Дели се садржај картице</translation>
 <translation id="4253168017788158739">Напомена</translation>
@@ -4483,6 +4482,7 @@
 <translation id="4471354919263203780">Преузимају се датотеке за препознавање говора... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Можете да користите жељени језик Google налога (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
+<translation id="4472533928615930332">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, у стилу <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4473996011558324141">процењује се време</translation>
 <translation id="4474155171896946103">Обележи све картице...</translation>
@@ -7000,6 +7000,7 @@
 <translation id="6509207748479174212">Лиценца за медије</translation>
 <translation id="6511607461419653612">Рестартујте Chromebook и пробајте поново</translation>
 <translation id="6511827214781912955">Размислите о томе да избришете <ph name="FILENAME" /> да други који користе овај уређај не би могли да виде ваше лозинке</translation>
+<translation id="6512759338201777379">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, са расположењем <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome ће користити мобилне податке ако нисте повезани са другом мрежом.</translation>
 <translation id="6514010653036109809">Доступан уређај:</translation>
 <translation id="6514565641373682518">Ова страница је онемогућила курсор.</translation>
@@ -7023,6 +7024,7 @@
 <translation id="6528179044667508675">Не узнемиравај</translation>
 <translation id="652937045869844725">Пробајте да дозволите колачиће треће стране, што значи слабију заштиту, али већу вероватноћу да ће функције сајта радити</translation>
 <translation id="652948702951888897">Историја Chrome-а</translation>
+<translation id="6530030995840538405">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Администратор примењује ова подешавања</translation>
 <translation id="6530267432324197764">Профилом управља <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Задржи опасну датотеку</translation>
@@ -8447,7 +8449,6 @@
 <translation id="7657090467145778067">Мале уштеде</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Други облици активности<ph name="END_LINK_GOOGLE" /> могу да се сачувају на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.</translation>
 <translation id="7658239707568436148">Откажи</translation>
-<translation id="7658727964021657194">Недавна AI тема <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Желите да ипак изађете из режима без архивирања?</translation>
 <translation id="7659336857671800422">Прегледајте водич за приватност</translation>
 <translation id="7659584679870740384">Немате овлашћење за коришћење овог уређаја. Контактирајте администратора да бисте добили дозволу за пријављивање.</translation>
@@ -8774,7 +8775,6 @@
 <translation id="789722939441020330">Не дозвољавај сајтовима да аутоматски преузимају више фајлова</translation>
 <translation id="7897900149154324287">Убудуће обавезно избаците преносиви уређај у апликацији Датотеке пре него што га искључите. У супротном, можете да изгубите податке.</translation>
 <translation id="7898725031477653577">Увек преводи</translation>
-<translation id="7899324822972399722"><ph name="INDEX" />. слика од <ph name="A" />, у стилу <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Тражите компоненте прегледача? Посетите</translation>
 <translation id="7903429136755645827">Кликните да бисте прилагодили контроле за игре</translation>
@@ -9055,7 +9055,6 @@
 <translation id="8098616321286360457">Мрежна веза је обавезна</translation>
 <translation id="8100230553590752325">Користите сачуване лозинке на било ком уређају</translation>
 <translation id="810068641062493918">Изабран је <ph name="LANGUAGE" />. Да бисте поништили избор, притисните тастер за претрагу и размак.</translation>
-<translation id="8100725874569949614"><ph name="INDEX" />. слика од <ph name="A" />, са расположењем <ph name="C" />.</translation>
 <translation id="8101409298456377967">Правите и чувајте лозинке и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Прилагођена боја</translation>
 <translation id="8101987792947961127">Powerwash је обавезан при следећем поновном покретању</translation>

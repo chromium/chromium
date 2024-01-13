@@ -814,7 +814,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1615433306336820465">Turvavõtmele salvestatud sisselogimisandmete haldamine</translation>
 <translation id="1616206807336925449">Selle laienduse jaoks pole erilube vaja.</translation>
 <translation id="1616298854599875024">Laiendust „<ph name="IMPORT_NAME" />” ei saa importida, kuna see pole jagatud moodul</translation>
-<translation id="161654560322394775">Pilt <ph name="INDEX" />/<ph name="A" />; stiil: <ph name="B" />; meeleolu: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Neid andmeid kontrollitakse kooskõlas teie organisatsiooni turvaeeskirjadega …}=1{Seda faili kontrollitakse kooskõlas teie organisatsiooni turvaeeskirjadega …}other{Neid faile kontrollitakse kooskõlas teie organisatsiooni turvaeeskirjadega …}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">A&amp;bikeskus</translation>
@@ -4209,7 +4208,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4250680216510889253">Ei</translation>
 <translation id="4251377547188244181">Kioski- ja teabeseadmete registreerimine</translation>
-<translation id="4252141040239557279">Pilt <ph name="INDEX" />/<ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth on keelatud</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – vahelehe sisu on jagatud</translation>
 <translation id="4253168017788158739">Märkus</translation>
@@ -8451,7 +8449,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7657090467145778067">Vähene sääst</translation>
 <translation id="7657218410916651670">Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK_GOOGLE" />muud tegevused<ph name="END_LINK_GOOGLE" /> teie Google'i kontole salvestada. Saate need alati kustutada.</translation>
 <translation id="7658239707568436148">Tühista</translation>
-<translation id="7658727964021657194">Hiljutine AI teema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Kas väljuda ikka inkognito režiimist?</translation>
 <translation id="7659336857671800422">Vaadake privaatsusjuhendit</translation>
 <translation id="7659584679870740384">Teil ei ole seadme kasutamiseks volitust. Sisselogimisloa saamiseks võtke ühendust administraatoriga.</translation>
@@ -8778,7 +8775,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="789722939441020330">Ära luba saitidel automaatselt mitut faili alla laadida</translation>
 <translation id="7897900149154324287">Edaspidi eraldage eemaldatav seade kõigepealt rakenduses Failid ja alles seejärel eemaldage seade ise. Muidu võivad andmed kaduma minna.</translation>
 <translation id="7898725031477653577">Tõlgi alati</translation>
-<translation id="7899324822972399722">Pilt <ph name="INDEX" />/<ph name="A" />; stiil: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Kas otsite brauseri komponente? Külastage saiti</translation>
 <translation id="7903429136755645827">Klõpsake, et mängu juhtnuppe kohandada</translation>
@@ -9059,7 +9055,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8098616321286360457">Vaja on võrguühendust</translation>
 <translation id="8100230553590752325">Kasutage salvestatud paroole mis tahes seadmes</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> on valitud. Valiku tühistamiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
-<translation id="8100725874569949614">Pilt <ph name="INDEX" />/<ph name="A" />; meeleolu: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Looge, salvestage ja hallake oma paroole, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Kohandatud värv</translation>
 <translation id="8101987792947961127">Järgmisel taaskäivitusel nõutakse Powerwashi</translation>

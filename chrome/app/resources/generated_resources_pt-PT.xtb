@@ -355,6 +355,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1264337193001759725">Para ver registos da IU da rede, consulte: <ph name="DEVICE_LOG_LINK" />.</translation>
 <translation id="1265279736024499987">As suas apps e definições serão sincronizadas em todos os dispositivos com ChromeOS Flex nos quais tenha sessão iniciada com a Conta Google. Para ver as opções de sincronização do navegador, aceda às <ph name="LINK_BEGIN" />definições do Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Idioma de tradução:</translation>
+<translation id="1267649802567297774">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada, no estilo <ph name="STYLE" />, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1272508081857842302">Abertura de <ph name="BEGIN_LINK" />links suportados<ph name="END_LINK" /></translation>
@@ -811,7 +812,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1615433306336820465">Faça a gestão dos dados de início de sessão armazenados na sua chave de segurança</translation>
 <translation id="1616206807336925449">Esta extensão não requer autorizações especiais.</translation>
 <translation id="1616298854599875024">Não é possível importar a extensão "<ph name="IMPORT_NAME" />" porque não é um módulo partilhado.</translation>
-<translation id="161654560322394775">Imagem <ph name="INDEX" /> de <ph name="A" />, no estilo <ph name="B" />, com o estado de espírito <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{A verificar estes dados com as políticas de segurança da sua entidade…}=1{A verificar este ficheiro com as políticas de segurança da sua entidade…}other{A verificar estes ficheiros com as políticas de segurança da sua entidade…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entro de Ajuda</translation>
@@ -4204,7 +4204,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4250229828105606438">Captura de ecrã</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4251377547188244181">Inscrição de dispositivo no modo quiosque e sinalização</translation>
-<translation id="4252141040239557279">Imagem <ph name="INDEX" /> de <ph name="A" /></translation>
 <translation id="4252899949534773101">O Bluetooth está desativado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – conteúdo do separador partilhado</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -4486,6 +4485,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4471354919263203780">A transferir ficheiros de reconhecimento de voz… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Pode usar o idioma preferido da sua Conta Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
+<translation id="4472533928615930332">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada, no estilo <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Começar</translation>
 <translation id="4473996011558324141">tempo estimado</translation>
 <translation id="4474155171896946103">Adicionar todos os separadores aos marcadores...</translation>
@@ -7004,6 +7004,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6509207748479174212">Licença de multimédia</translation>
 <translation id="6511607461419653612">Reinicie o Chromebook e tente novamente</translation>
 <translation id="6511827214781912955">Considere eliminar o ficheiro <ph name="FILENAME" /> para que os outros utilizadores deste dispositivo não possam ver as suas palavras-passe</translation>
+<translation id="6512759338201777379">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">O Google Chrome irá utilizar dados móveis se não estiver ligado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo disponível:</translation>
 <translation id="6514565641373682518">Esta página desativou o cursor do rato.</translation>
@@ -7027,6 +7028,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6528179044667508675">Não incomodar</translation>
 <translation id="652937045869844725">Experimente permitir os cookies de terceiros, o que significa que tem menos proteção, mas é mais provável que as funcionalidades do site funcionem</translation>
 <translation id="652948702951888897">Histórico do Chrome</translation>
+<translation id="6530030995840538405">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada</translation>
 <translation id="6530186581263215931">Estas definições são aplicadas pelo seu administrador</translation>
 <translation id="6530267432324197764">Perfil gerido por <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Manter ficheiro perigoso</translation>
@@ -8447,7 +8449,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7657090467145778067">Pequenas poupanças</translation>
 <translation id="7657218410916651670">Podem ser guardadas <ph name="BEGIN_LINK_GOOGLE" />outras formas de atividade<ph name="END_LINK_GOOGLE" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7658727964021657194">Tema de IA recente <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Quer sair do Modo de navegação anónima mesmo assim?</translation>
 <translation id="7659336857671800422">Iniciar guia de privacidade</translation>
 <translation id="7659584679870740384">Não está autorizado a utilizar este dispositivo. Contacte o gestor para obter autorização de início de sessão.</translation>
@@ -8774,7 +8775,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="789722939441020330">Não permitir que os sites transfiram automaticamente vários ficheiros</translation>
 <translation id="7897900149154324287">De futuro, não se esqueça de ejetar o dispositivo amovível na aplicação Ficheiros antes de o desligar. Caso contrário, pode perder dados.</translation>
 <translation id="7898725031477653577">Traduzir sempre</translation>
-<translation id="7899324822972399722">Imagem <ph name="INDEX" /> de <ph name="A" />, no estilo <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Está à procura dos componentes do navegador? Visite</translation>
 <translation id="7903429136755645827">Clicar para personalizar os controlos de jogos</translation>
@@ -9055,7 +9055,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8098616321286360457">É necessária uma ligação de rede</translation>
 <translation id="8100230553590752325">Use palavras-passe guardadas em qualquer dispositivo</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selecionado. Prima Pesquisar e a tecla de espaço para desmarcar.</translation>
-<translation id="8100725874569949614">Imagem <ph name="INDEX" /> de <ph name="A" />, com o estado de espírito <ph name="C" />.</translation>
 <translation id="8101409298456377967">Crie, guarde e faça a gestão das suas palavras-passe para poder iniciar sessão facilmente nos sites e apps. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Cor personalizada</translation>
 <translation id="8101987792947961127">Powerwash necessário no próximo reinício</translation>

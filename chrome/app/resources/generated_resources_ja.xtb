@@ -355,6 +355,7 @@
 <translation id="1264337193001759725">ネットワークの UI ログを表示するには、<ph name="DEVICE_LOG_LINK" /> をご確認ください</translation>
 <translation id="1265279736024499987">Google アカウントでログインしているすべての ChromeOS Flex デバイス間で、アプリや設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="126710816202626562">翻訳言語:</translation>
+<translation id="1267649802567297774">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="126768002343224824">16 倍</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />対応リンク<ph name="END_LINK" />を開く</translation>
@@ -811,7 +812,6 @@
 <translation id="1615433306336820465">セキュリティ キーに保存されているログインデータを管理します</translation>
 <translation id="1616206807336925449">この拡張機能は特別な権限を必要としません。</translation>
 <translation id="1616298854599875024">拡張機能「<ph name="IMPORT_NAME" />」は、共有モジュールではないためインポートできません</translation>
-<translation id="161654560322394775">画像 <ph name="INDEX" />/<ph name="A" />、スタイル: <ph name="B" />、ムード: <ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{組織のセキュリティ ポリシーに沿ってこのデータをチェックしています...}=1{組織のセキュリティ ポリシーに沿ってこのファイルをチェックしています...}other{組織のセキュリティ ポリシーに沿ってこれらのファイルをチェックしています...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" /> / <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ヘルプセンター(&amp;E)</translation>
@@ -4088,7 +4088,7 @@
 <translation id="414800391140809654">では次のサイトの閲覧時にあなたの情報を使用できます:</translation>
 <translation id="4148195018520464922">ログインを特定のユーザーに制限できます。制限すると、ログイン画面から [ユーザーを追加] オプションが削除されます。現在のユーザーを削除することもできます。</translation>
 <translation id="4148957013307229264">インストール中...</translation>
-<translation id="4150201353443180367">表示</translation>
+<translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4150417452770391330">カメラを接続</translation>
 <translation id="4150569944729499860">画面のコンテキスト</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
@@ -4196,7 +4196,6 @@
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4250680216510889253">いいえ</translation>
 <translation id="4251377547188244181">キオスクとサイネージ デバイスの登録</translation>
-<translation id="4252141040239557279">画像 <ph name="INDEX" />/<ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth が無効です</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - タブのコンテンツが共有されています</translation>
 <translation id="4253168017788158739">メモ</translation>
@@ -4477,6 +4476,7 @@
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Google アカウントの言語（<ph name="NEW_LOCALE_FROM_GAIA" />）を使用できます</translation>
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
+<translation id="4472533928615930332">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">始める</translation>
 <translation id="4473996011558324141">所要時間の目安</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
@@ -6992,6 +6992,7 @@
 <translation id="6509207748479174212">メディア ライセンス</translation>
 <translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
+<translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
 <translation id="6514010653036109809">接続可能なデバイス:</translation>
 <translation id="6514565641373682518">このページではマウスカーソルが無効になります。</translation>
@@ -7015,6 +7016,7 @@
 <translation id="6528179044667508675">サイレント</translation>
 <translation id="652937045869844725">サードパーティ Cookie を許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="652948702951888897">Chrome 履歴</translation>
+<translation id="6530030995840538405">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">管理者が行った設定です</translation>
 <translation id="6530267432324197764">プロフィールは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="6531282281159901044">危険なファイルを保存</translation>
@@ -8432,7 +8434,6 @@
 <translation id="7657090467145778067">少量の節約</translation>
 <translation id="7657218410916651670">ログイン中は Google アカウントに<ph name="BEGIN_LINK_GOOGLE" />その他のアクティビティ<ph name="END_LINK_GOOGLE" />が保存される可能性があります。これらのデータはいつでも削除できます。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
-<translation id="7658727964021657194">最近の AI テーマ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">シークレット モードを終了してもよろしいですか？</translation>
 <translation id="7659336857671800422">プライバシー ガイドを開始</translation>
 <translation id="7659584679870740384">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
@@ -8758,7 +8759,6 @@
 <translation id="789722939441020330">サイトに複数のファイルの自動ダウンロードを許可しない</translation>
 <translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
 <translation id="7898725031477653577">常に翻訳する</translation>
-<translation id="7899324822972399722">画像 <ph name="INDEX" />/<ph name="A" />、スタイル: <ph name="B" /></translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7903290522161827520">ブラウザ コンポーネントをお探しですか？次にアクセスしてください</translation>
 <translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
@@ -9039,7 +9039,6 @@
 <translation id="8098616321286360457">ネットワーク接続が必要です</translation>
 <translation id="8100230553590752325">保存したパスワードを他のデバイスで使用</translation>
 <translation id="810068641062493918">「<ph name="LANGUAGE" />」が選択されています。選択を解除するには検索+Space キーを押してください。</translation>
-<translation id="8100725874569949614">画像 <ph name="INDEX" />/<ph name="A" />、ムード: <ph name="C" />。</translation>
 <translation id="8101409298456377967">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>

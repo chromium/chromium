@@ -812,7 +812,6 @@
 <translation id="1615433306336820465">مدیریت داده‌های ورود به سیستم ذخیره‌شده در کلید ایمنی</translation>
 <translation id="1616206807336925449">این برنامه افزودنی به مجوز خاصی نیاز ندارد.</translation>
 <translation id="1616298854599875024">نمی‌توان افزونه «<ph name="IMPORT_NAME" />» را وارد کرد زیرا مدول هم‌رسانی‌شده‌ای نیست.</translation>
-<translation id="161654560322394775">تصویر <ph name="INDEX" /> از <ph name="A" />، در سبک <ph name="B" />، با حال‌وهوای <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{درحال بررسی این داده‌ها با خط‌مشی‌های امنیتی سازمانتان…}=1{درحال بررسی این فایل با خط‌مشی‌های امنیتی سازمانتان…}one{درحال بررسی این فایل‌ها با خط‌مشی‌های امنیتی سازمانتان…}other{درحال بررسی این فایل‌ها با خط‌مشی‌های امنیتی سازمانتان…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">مرکز را&amp;هنمایی</translation>
@@ -4215,7 +4214,6 @@
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4250680216510889253">نه</translation>
 <translation id="4251377547188244181">ثبت‌نام دستگاه کیوسک و تابلوی دیجیتال</translation>
-<translation id="4252141040239557279">تصویر <ph name="INDEX" /> از <ph name="A" /></translation>
 <translation id="4252899949534773101">بلوتوث غیرفعال است</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - محتوای برگه به اشتراک گذاشته شده است</translation>
 <translation id="4253168017788158739">یادداشت</translation>
@@ -8460,7 +8458,6 @@
 <translation id="7657090467145778067">صرفه‌جویی‌های کم</translation>
 <translation id="7657218410916651670">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="7658239707568436148">لغو</translation>
-<translation id="7658727964021657194">زمینه جدید با هوش مصنوعی <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">درهرصورت از «حالت ناشناس» خارج می‌شوید؟</translation>
 <translation id="7659336857671800422">مشاهده «راهنمای حریم خصوصی»</translation>
 <translation id="7659584679870740384">مجاز به استفاده از این دستگاه نیستید. لطفاً برای دریافت اجازه ورود به سیستم با سرپرست تماس بگیرید.</translation>
@@ -8786,7 +8783,6 @@
 <translation id="789722939441020330">به سایت‌ها اجازه داده نشود چند فایل را به‌طور خودکار بارگیری کنند</translation>
 <translation id="7897900149154324287">‏در آینده، مطمئن شوید که قبل از جدا کردن دستگاه قابل حملتان، آن را در برنامه Files خارج کنید. در غیر این صورت ممکن است داده‌هایتان را از دست بدهید.</translation>
 <translation id="7898725031477653577">همیشه ترجمه شود</translation>
-<translation id="7899324822972399722">تصویر <ph name="INDEX" /> از <ph name="A" />، در سبک <ph name="B" /></translation>
 <translation id="7901405293566323524">مرکز تلفن</translation>
 <translation id="7903290522161827520">به‌دنبال مؤلفه‌های مرورگر هستید؟ از این پیوند استفاده کنید:</translation>
 <translation id="7903429136755645827">برای سفارشی کردن کنترل‌های بازی، کلیک کنید</translation>
@@ -9067,7 +9063,6 @@
 <translation id="8098616321286360457">اتصال به شبکه لازم است</translation>
 <translation id="8100230553590752325">استفاده از گذرواژه‌های ذخیره‌شده در هر دستگاهی</translation>
 <translation id="810068641062493918">‏<ph name="LANGUAGE" /> انتخاب شد. برای لغو انتخاب، Search (جستجو) را به‌همراه Space فشار دهید.</translation>
-<translation id="8100725874569949614">تصویر <ph name="INDEX" /> از<ph name="A" />، با حال‌وهوای <ph name="C" />.</translation>
 <translation id="8101409298456377967">گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">رنگ سفارشی</translation>
 <translation id="8101987792947961127">در راه‌اندازی مجدد بعدی پاکسازی لازم است</translation>
