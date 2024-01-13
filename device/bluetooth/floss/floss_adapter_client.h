@@ -267,6 +267,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       ResponseCallback<device::BluetoothDevice::UUIDList> callback,
       FlossDeviceId device);
 
+  // Triggers SDP to fetch UUIDs of a device.
+  virtual void FetchRemoteUuids(ResponseCallback<bool> callback,
+                                FlossDeviceId device);
+
   virtual void GetRemoteVendorProductInfo(
       ResponseCallback<VendorProductInfo> callback,
       FlossDeviceId device);

@@ -90,6 +90,7 @@ inline constexpr char kGetRemoteVendorProductInfo[] =
     "GetRemoteVendorProductInfo";
 inline constexpr char kGetConnectionState[] = "GetConnectionState";
 inline constexpr char kGetRemoteUuids[] = "GetRemoteUuids";
+inline constexpr char kFetchRemoteUuids[] = "FetchRemoteUuids";
 inline constexpr char kGetBondState[] = "GetBondState";
 inline constexpr char kConnectAllEnabledProfiles[] =
     "ConnectAllEnabledProfiles";
