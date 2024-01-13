@@ -690,6 +690,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private shouldShowHistory_(): boolean {
     return this.history_.length > 0;
   }
+
+  private shouldShowInspiration_(): boolean {
+    return !!this.inspirationGroups_ && this.inspirationGroups_.length > 0;
+  }
 }
 
 declare global {

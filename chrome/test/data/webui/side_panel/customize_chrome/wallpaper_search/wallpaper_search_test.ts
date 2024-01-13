@@ -1704,5 +1704,40 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!$$(wallpaperSearchElement, '#historyCard .tile.result'));
       assertFalse(ironCollapse.opened);
     });
+
+    test('inspiration card hides if inspiration is empty', async () => {
+      createWallpaperSearchElement();
+      await flushTasks();
+
+      const inspirationCard = $$(wallpaperSearchElement, '#inspirationCard');
+      assertTrue(!!inspirationCard);
+      assertTrue((inspirationCard as HTMLElement).hidden);
+    });
+
+    test('inspiration card shows if inspiration is not empty', async () => {
+      createWallpaperSearchElement(
+          /*descriptors=*/ null, /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+
+      const inspirationCard = $$(wallpaperSearchElement, '#inspirationCard');
+      assertTrue(!!inspirationCard);
+      assertFalse((inspirationCard as HTMLElement).hidden);
+    });
   });
 });
