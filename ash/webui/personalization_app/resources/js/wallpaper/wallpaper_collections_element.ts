@@ -225,7 +225,10 @@ function getSeaPenTile(): SeaPenTile {
     id: kSeaPenId,
     name: 'Sea Pen',
     type: TileType.SEA_PEN,
-    preview: [{url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg'}],
+    preview: [{
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+    }],
   };
 }
 

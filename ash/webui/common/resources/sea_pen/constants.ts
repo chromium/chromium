@@ -45,7 +45,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A radiant <${SeaPenTemplateChip.kFlowerColor}> <${
           SeaPenTemplateChip.kFlowerType}> in bloom`,
       preview: [{
-        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_flower.jpg',
       }],
       options: new Map([
         [
@@ -138,7 +139,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A close-up image of <${SeaPenTemplateChip.kMineralName}> with <${
           SeaPenTemplateChip.kMineralColor}> hues`,
       preview: [{
-        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_mineral.jpg',
       }],
       options: new Map([
         [
@@ -287,7 +289,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A <${SeaPenTemplateChip.kLandscapeBiome}> landscape with <${
           SeaPenTemplateChip.kLandscapeLighting}> lighting`,
       preview: [{
-        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_landscape.jpg',
       }],
       options: new Map([
         [
@@ -372,7 +375,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `Otherworldly <${SeaPenTemplateChip.kScifiFeature}> in <${
           SeaPenTemplateChip.kScifiColor}> colors`,
       preview: [{
-        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_scifi.jpg',
       }],
       options: new Map([
         [
@@ -469,7 +473,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A painting of a <${SeaPenTemplateChip.kArtFeature}> in the <${
           SeaPenTemplateChip.kArtMovement}> style`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
       }],
       options: new Map([
         [
@@ -627,7 +632,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kCharactersSubjects}> on a <${
           SeaPenTemplateChip.kCharactersBackground}> background`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
       }],
       options: new Map([
         [
@@ -1097,7 +1103,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `<${SeaPenTemplateChip.kTerrainFeature}> in shades of <${
           SeaPenTemplateChip.kTerrainColor}>`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
       }],
       options: new Map([
         [
@@ -1199,7 +1206,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kCuriousFeature}> with <${
           SeaPenTemplateChip.kCuriousSubject}>`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_curious.jpg',
       }],
       options: new Map([
         [
@@ -1378,7 +1386,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kDreamscapesMaterial}> in <${
           SeaPenTemplateChip.kDreamscapesColors}>`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
       }],
       options: new Map([
         [
@@ -1568,7 +1577,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `Translucent <${SeaPenTemplateChip.kTranslucentItem}> in <${
           SeaPenTemplateChip.kTranslucentColor}>`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_translucent.jpg',
       }],
       options: new Map([
         [
@@ -1768,7 +1778,8 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
   if (isSeaPenTextInputEnabled()) {
     templates.push({
       preview: [{
-        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
+        url:
+            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
       }],
       title: 'Freeform',
       text: 'Freeform',
