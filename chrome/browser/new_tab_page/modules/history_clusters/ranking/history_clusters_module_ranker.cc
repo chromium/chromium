@@ -31,7 +31,7 @@ HistoryClustersModuleRanker::HistoryClustersModuleRanker(
       threshold_param_((float)GetFieldTrialParamByFeatureAsDouble(
           ntp_features::kNtpHistoryClustersModule,
           ntp_features::kNtpHistoryClustersModuleScoreThresholdParam,
-          -1.0)) {
+          0)) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (model_provider) {
     model_handler_ = std::make_unique<HistoryClustersModuleRankingModelHandler>(
@@ -147,7 +147,7 @@ void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
 
   // Filter clusters by model score.
   for (size_t i = 0; i < clusters.size(); i++) {
-    if (outputs[i] > threshold_param_) {
+    if (outputs[i] <= threshold_param_) {
       clusters_with_scores.emplace_back(std::move(clusters[i]),
                                         std::move(ranking_signals->at(i)),
                                         outputs[i]);
