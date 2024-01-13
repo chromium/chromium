@@ -230,6 +230,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1406812885827747674">Permitir desta vez</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1408787208417187241">Agrafo triplo na parte superior</translation>
+<translation id="1410365862999780287">As outras pessoas que usam este dispositivo não veem a sua atividade, por isso pode navegar de forma mais privada. Esta ação não altera a forma como os dados são recolhidos pelos Websites que visita nem os serviços que usam, incluindo o Google. As transferências, os marcadores e os itens da Lista de leitura são guardados.</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413407968866574823">Jogos de ação e plataformas</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
@@ -273,7 +274,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1476595624592550506">Altere a palavra-passe</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
-<translation id="1484632730438126438">A entrada é demasiado curta. Escreva, pelo menos, 3 palavras.</translation>
 <translation id="1492194039220927094">Push das políticas:</translation>
 <translation id="14938948731065592">Periféricos de computador</translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
@@ -689,6 +689,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">O acesso à Internet está bloqueado</translation>
 <translation id="2293443924986248631">Quando ativados, os sites não podem utilizar cookies que monitorizam o utilizador na Web. As funcionalidades em alguns sites podem falhar.</translation>
+<translation id="2295831393422400053">Ative a definição Melhorar as pesquisas e a navegação para usar a funcionalidade Ajuda-me a escrever</translation>
 <translation id="2300306941146563769">Não carregado</translation>
 <translation id="230286397113210245">Botão Abrir janela de navegação anónima; ative para abrir uma nova janela de navegação anónima para navegar em privado</translation>
 <translation id="2312234273148520048">Condimentos e molhos</translation>
@@ -750,6 +751,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perfuração quádrupla à direita</translation>
 <translation id="2441854154602066476">Métodos de pagamento disponíveis para preenchimento com o toque. Teclado oculto.</translation>
+<translation id="2442865686365739754">O Chrome <ph name="BEGIN_EMPHASIS" />não irá guardar<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />O seu histórico de navegação
+            <ph name="LIST_ITEM" />Os cookies e os dados de sites
+            <ph name="LIST_ITEM" />As informações introduzidas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Periféricos ligados a este dispositivo quanto tem sessão iniciada</translation>
 <translation id="2450021089947420533">Percursos</translation>
 <translation id="2456755709261364512">A bateria tem de estar carregada acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -793,6 +800,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2535585790302968248">Abra um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar endereço</translation>
+<translation id="2537931901612099523">As outras pessoas que usam este dispositivo não veem a sua atividade, por isso pode navegar de forma mais privada. Esta ação não altera a forma como os dados são recolhidos pelos Websites que visita nem os serviços que usam, incluindo o Google. As transferências e os marcadores são guardados.</translation>
 <translation id="2539524384386349900">Detetar</translation>
 <translation id="2541219929084442027">As páginas que visualizar em separadores de navegação anónima não são memorizadas no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisas depois de fechar todos os separadores de navegação anónima. Todos os ficheiros transferidos ou os marcadores criados são guardados.</translation>
 <translation id="2542106216580219892">Surf</translation>
@@ -1462,7 +1470,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
-<translation id="3877877650871124156">A entrada é demasiado longa. Encurte-a e tente novamente.</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3883500545751229739">anúncios intrusivos</translation>
 <translation id="3884278016824448484">Identificador do dispositivo em conflito</translation>
@@ -1706,6 +1713,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4333295216031073611">Lista de compras</translation>
 <translation id="4333561522337981382">Gerir janelas em todos os seus ecrãs</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
+<translation id="4336913590841287350">Esta política ainda não é suportada como uma Política do Utilizador no iOS.</translation>
 <translation id="4340575312453649552">Uma vez que este anúncio utiliza demasiados recursos para o seu dispositivo, o Chrome removeu-o.</translation>
 <translation id="4340810192899866471">Importar de JSON</translation>
 <translation id="4340982228985273705">Este computador não é detetado como sendo gerido pela empresa, por isso, a política apenas pode instalar automaticamente extensões alojadas na Web Store do Chrome. O URL de atualização da Web Store do Chrome é "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2232,6 +2240,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nenhum site bloqueado}=1{1 site bloqueado}other{# sites bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar-lhe notificações.</translation>
 <translation id="5430298929874300616">Remover marcador</translation>
+<translation id="5434798570900738152">O Chromium <ph name="BEGIN_EMPHASIS" />não irá guardar<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />O seu histórico de navegação
+            <ph name="LIST_ITEM" />Os cookies e os dados de sites
+            <ph name="LIST_ITEM" />As informações introduzidas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> quer controlar e reprogramar os seus dispositivos MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Ordem inversa, com orientação para cima</translation>
 <translation id="5447235695608032700">Permita que o site <ph name="SITE" /> use as informações que guardou sobre si</translation>
@@ -2471,6 +2485,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5925040402342933574">Disco ótico (semibrilho)</translation>
 <translation id="5926982310317673627">Ginásios</translation>
 <translation id="5928444777041341328">Casa e jardim</translation>
+<translation id="5930147475897662863">Ative esta definição para usar a funcionalidade Ajuda-me a escrever</translation>
 <translation id="5932224571077948991">O site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicione um cartão virtual</translation>
@@ -2573,7 +2588,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Saiba mais sobre a Navegação anónima no Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Continuar a permitir</translation>
 <translation id="6133984428121856852">A extensão do ficheiro está vazia ou tem um formato incorreto.</translation>
-<translation id="6139769382153674477">Algo correu mal. Tem sessão iniciada?</translation>
 <translation id="6139975341602920272">17 x 22 pol.</translation>
 <translation id="6146055958333702838">Verifique os cabos e reinicie todos os routers, modems ou outros
     dispositivos de rede que possa estar a utilizar.</translation>
@@ -3119,6 +3133,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7192537357091279678">Unidades e armazenamento do computador</translation>
 <translation id="7193661028827781021">Referência</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195852673246414183">Depois de ativar esta definição, regresse a este separador para começar a escrever</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">O administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para abrir um novo separador de navegação anónima para navegar em privado</translation>
@@ -3696,6 +3711,7 @@ Detalhes adicionais:
 <translation id="8286036467436129157">Iniciar Sessão</translation>
 <translation id="8286799286781881307">As aplicações autorizadas pelo seu administrador podem capturar todos os ecrãs ligados ao dispositivo. Estas informações podem ser processadas localmente ou carregadas para os servidores da sua organização.</translation>
 <translation id="8287123726498397887">Envelope (pré-impresso)</translation>
+<translation id="8288320283441806607">Para usar esta funcionalidade, ative a opção Melhorar as pesquisas e a navegação</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
 <translation id="8289355894181816810">Se não tiver a certeza do que isto significa, contacte o gestor de rede.</translation>
 <translation id="8292520987784410870">Validar sempre?</translation>
@@ -4018,6 +4034,7 @@ Detalhes adicionais:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legislação e governo</translation>
 <translation id="8954252855949068147">Vestuário</translation>
+<translation id="8956124158020778855">Depois de ativar esta definição, regresse a este separador para começar a escrever.</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Aceda às definições do site</translation>

@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų.</translation>
 <translation id="2790501146643349491">Įjungus neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis. Išjungus neseniai uždarytose svetainėse negalima baigti siųsti ar gauti duomenų.</translation>
 <translation id="2822354292072154809">Ar tikrai norite iš naujo nustatyti visus „<ph name="CHOSEN_OBJECT_NAME" />“ svetainės leidimus?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Pateikti užklausą dėl rodinio versijos mobiliesiems</translation>
 <translation id="2870560284913253234">Svetainė</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
@@ -347,10 +348,12 @@
 <translation id="6746124502594467657">Perkelti žemyn</translation>
 <translation id="6749077623962119521">Iš naujo nustatyti leidimus?</translation>
 <translation id="6766622839693428701">Perbraukite žemyn, kad uždarytumėte.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> Iš „<ph name="FROM_DEVICE" />“</translation>
 <translation id="6787751205395685251">Pasirinkite <ph name="SITE_NAME" /> parinktį</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6818926723028410516">Pasirinkite elementus</translation>
 <translation id="6864395892908308021">Šis įrenginys negali nuskaityti ALR</translation>
+<translation id="6867014948848323204">Iš „<ph name="FROM_DEVICE" />“</translation>
 <translation id="6912998170423641340">Neleisti svetainėms skaityti teksto ir vaizdų iš iškarpinės</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6950072572526089586">Svetainė, kurioje lankotės, gali išsaugoti informaciją apie jūsų atliktus veiksmus, kad galėtų veikti taip, kaip numatyta, pvz., kad liktumėte prisijungę prie svetainės arba galėtumėte išsaugoti prekes pirkinių krepšelyje. Dažnai svetainės laikinai išsaugo šią informaciją įrenginyje.</translation>
@@ -399,6 +402,7 @@
 <translation id="7667547420449112975">Nuostabusis Ozo šalies burtininkas</translation>
 <translation id="7684642910516280563">Neleisti svetainei naudoti trečiųjų šalių slapukų</translation>
 <translation id="7719367874908701697">Puslapio mastelis</translation>
+<translation id="7770832849480336015">Slėpti „<ph name="TITLE_OF_MODULE" />“</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>

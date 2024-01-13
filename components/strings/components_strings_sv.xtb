@@ -272,7 +272,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1476595624592550506">Ändra lösenordet</translation>
 <translation id="1482879811280872320">Cykling</translation>
 <translation id="1483493594462132177">Skicka</translation>
-<translation id="1484632730438126438">Det här är för kort. Skriv minst tre ord.</translation>
 <translation id="1492194039220927094">Skicka principer:</translation>
 <translation id="14938948731065592">Datorkringutrustning</translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
@@ -1458,7 +1457,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3872834068356954457">Vetenskap</translation>
 <translation id="3875783148670536197">Visa hur man gör</translation>
-<translation id="3877877650871124156">Det här är för långt. Korta ned och försök igen.</translation>
 <translation id="3881478300875776315">Visa färre rader</translation>
 <translation id="3883500545751229739">påträngande annonser</translation>
 <translation id="3884278016824448484">Motstridiga enhetsidentifierare</translation>
@@ -2567,7 +2565,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Läs mer om inkognitoläge i Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Fortsätt bevilja behörigheten</translation>
 <translation id="6133984428121856852">Filnamnstillägg saknas eller har fel format.</translation>
-<translation id="6139769382153674477">Något gick fel. Är du inloggad?</translation>
 <translation id="6139975341602920272">17 x 22 tum</translation>
 <translation id="6146055958333702838">Kontrollera kablar och starta om routrar, modem och andra nätverksenheter
     som används.</translation>

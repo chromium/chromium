@@ -272,7 +272,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1476595624592550506">Şifrenizi değiştirin</translation>
 <translation id="1482879811280872320">Bisiklet</translation>
 <translation id="1483493594462132177">Gönder</translation>
-<translation id="1484632730438126438">Giriş çok kısa. En az 3 kelime yazın.</translation>
 <translation id="1492194039220927094">Politikalar aktarılabilir:</translation>
 <translation id="14938948731065592">Bilgisayar çevre birimleri</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
@@ -1458,7 +1457,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3872834068356954457">Bilim</translation>
 <translation id="3875783148670536197">Nasıl Yapıldığını Göster</translation>
-<translation id="3877877650871124156">Giriş çok uzun. Metni kısaltıp tekrar deneyin.</translation>
 <translation id="3881478300875776315">Daha az satır göster</translation>
 <translation id="3883500545751229739">araya giren reklamlar</translation>
 <translation id="3884278016824448484">Çakışan cihaz tanımlayıcısı</translation>
@@ -2567,7 +2565,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome'daki Gizli mod hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">İzin vermeye devam et</translation>
 <translation id="6133984428121856852">Dosya uzantısı boş veya bozuk.</translation>
-<translation id="6139769382153674477">Bir hata oluştu. Oturum açtınız mı?</translation>
 <translation id="6139975341602920272">17 x 22 inç</translation>
 <translation id="6146055958333702838">Kabloları kontrol edin ve kullandığınız yönlendiricileri, modemleri
     veya diğer ağ cihazlarını yeniden başlatın.</translation>

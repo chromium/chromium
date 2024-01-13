@@ -457,7 +457,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1348966090521113558">Aðgengisstillingar músar</translation>
 <translation id="1350962700620017446">„<ph name="EXTENSION_NAME" />“ vill finna og fá aðgang að skjalaskönnum.</translation>
 <translation id="1352834119074414157">Þessi pakki kann að vera bilaður eða í hættu. Lokaðu þessum glugga og sæktu pakkann aftur</translation>
-<translation id="1353275871123211385">Til að nota barnalæsingar á borð við samþykki forrita og takmörkun á skjátíma þarf barn að vera með Google reikning í umsjá foreldris. Hægt er að bæta skólareikningi við síðar fyrir verkfæri á borð við Google Classroom.</translation>
+<translation id="1353275871123211385">Til að nota barnalæsingar á borð við samþykki forrita og takmörkun á skjátíma þarf barn að vera með Google-reikning í umsjá foreldris. Hægt er að bæta skólareikningi við síðar fyrir verkfæri á borð við Google Classroom.</translation>
 <translation id="135389172849514421">Virkar án nettengingar</translation>
 <translation id="1353980523955420967">PPD-skráin finnst ekki. Gættu þess að Chromebook tölvan sé nettengd og reyndu aftur.</translation>
 <translation id="1354045473509304750">Halda áfram að nota <ph name="HOST" /> til að nota og færa myndavélina</translation>
@@ -1382,7 +1382,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="2033758234986231162">Ekki er hægt að halda tengingu við símann þinn. Gakktu úr skugga um að síminn sé nálægt þér, ólæstur og með kveikt á Bluetooth og Wi-Fi.</translation>
 <translation id="2034346955588403444">Bæta við öðru Wi-Fi neti</translation>
 <translation id="203574396658008164">Virkja glósur af lásskjá</translation>
-<translation id="2037445849770872822">Eftirlit er sett upp fyrir þennan Google reikning. Til að setja upp fleiri barnalæsingar skaltu velja „Halda áfram“.
+<translation id="2037445849770872822">Eftirlit er sett upp fyrir þennan Google-reikning. Til að setja upp fleiri barnalæsingar skaltu velja „Halda áfram“.
 
 Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki gildi í þessu tæki.
 
@@ -3422,7 +3422,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="362266093274784978">{COUNT,plural, =1{forrit}one{# forrit}other{# forrit}}</translation>
 <translation id="362333465072914957">Bíður eftir útgáfu vottorðs frá útgefanda</translation>
 <translation id="3623598555687153298">Þetta eyðir <ph name="TOTAL_USAGE" /> af gögnum sem vefsvæði sem eru birt geyma</translation>
-<translation id="3624567683873126087">Opnaðu tækið og skráðu þig inn á Google reikning</translation>
+<translation id="3624567683873126087">Opnaðu tækið og skráðu þig inn á Google-reikning</translation>
 <translation id="3624583033347146597">Veldu stillingar fyrir fótspor frá þriðja aðila</translation>
 <translation id="3625481642044239431">Ógild skrá valin. Reyndu aftur.</translation>
 <translation id="3626296069957678981">Til að hlaða þessa Chromebook tölvu skaltu nota samhæfa rafhlöðu frá Dell.</translation>
@@ -3794,7 +3794,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Láta nýlegan feril hjálparans fylgja með Sherlog. Upplýsingar um hver þú ert, staðsetning þín og upplýsingar um villuleit gætu fylgt með. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Bæta möppu við</translation>
-<translation id="3894770151966614831">Færa á Google reikning?</translation>
+<translation id="3894770151966614831">Færa á Google-reikning?</translation>
 <translation id="3894983081771074056">Virkni lyklaborðs og músar, tungumálastillingar og fleira</translation>
 <translation id="3895076768659607631">&amp;Stjórna leitarvélum...</translation>
 <translation id="3895090224522145010">Kerberos-notandanafn</translation>
@@ -6120,7 +6120,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
 <translation id="5759397201362801675">Veldu stemningu</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> getur lesið skjöl sem þú sendir til prentunar í gegnum <ph name="APP_NAME" />.</translation>
-<translation id="5762787084360227629">Sláðu inn upplýsingar um Google reikning</translation>
+<translation id="5762787084360227629">Sláðu inn upplýsingar um Google-reikning</translation>
 <translation id="5763751966069581670">Engin USB-tæki fundust</translation>
 <translation id="5764483294734785780">&amp;Vista hljóð sem...</translation>
 <translation id="57646104491463491">Dagsetning breytingar</translation>
@@ -7754,7 +7754,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7038710352229712897">Bæta við öðrum Google reikningi fyrir <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Aðgangur að USB-tækjum frá <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Innskráning með Microsoft-snjallkorti</translation>
-<translation id="7039951224110875196">Búa til Google reikning fyrir barn</translation>
+<translation id="7039951224110875196">Búa til Google-reikning fyrir barn</translation>
 <translation id="7039968672732182060">Chromebook-tölvan þín fær ekki öryggisuppfærslur lengur. Tími til kominn að fá nýjustu öryggis- og hugbúnaðaruppfærslurnar. Skilmálar tilboðs gilda.</translation>
 <translation id="7041405817194720353">Fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> í viðbót</translation>
 <translation id="7042116641003232070">Má vista gögn í tækinu þínu</translation>

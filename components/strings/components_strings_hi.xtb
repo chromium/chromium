@@ -251,6 +251,7 @@
 <translation id="1434317006812369578">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. सुरक्षित ब्राउज़िंग ने हाल ही में <ph name="BEGIN_LINK" /><ph name="SITE" /> पर मैलवेयर होने का पता<ph name="END_LINK" /> लगाया है, जो उस साइट में एम्बेड है जिसे आपको ब्राउज़ करना है.</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
+<translation id="1441816242347931036">जारी रखने के लिए खोलें</translation>
 <translation id="1442386063175183758">दायां गेट फ़ोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
 <translation id="1446396933673057385">विश्वसनीयता के लिए दी गई सलाह की जांच करना</translation>
@@ -272,7 +273,6 @@
 <translation id="1476595624592550506">अपना पासवर्ड बदलें</translation>
 <translation id="1482879811280872320">साइकलिंग</translation>
 <translation id="1483493594462132177">भेजें</translation>
-<translation id="1484632730438126438">यह बहुत छोटा है. इसमें कम से कम तीन शब्द लिखें.</translation>
 <translation id="1492194039220927094">नीतियां भेजें:</translation>
 <translation id="14938948731065592">कंप्यूटर के सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह)</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
@@ -702,6 +702,7 @@
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
 <translation id="2328955282645810595">निर्माण और पावर टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
+<translation id="2337044517221264923">फिर से लिखना शुरू करें</translation>
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
 <translation id="2340549657492527534">रेप्टाइल और एम्फ़ीबियन</translation>
@@ -1179,6 +1180,7 @@
 <translation id="334438173029876234">स्केटबोर्डिंग इक्विपमेंट</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
+<translation id="335809815767823">एक्सपोर्ट की गईं</translation>
 <translation id="3359565626472459400">शादी</translation>
 <translation id="3360103848165129075">पैसे चुकाने की हैंडलर शीट</translation>
 <translation id="3360313521703038580">ईकोलॉजी और एनवायरमेंट</translation>
@@ -1333,6 +1335,7 @@
 <translation id="3632892046558972264">स्क्रीन शेयर करना रोका गया</translation>
 <translation id="3634530185120165534">ट्रे 5</translation>
 <translation id="3634567936866541746">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. खातों को सुरक्षित करने के लिए, Chrome का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
+<translation id="3638102297696182302">‘लिखने में मेरी मदद करें’ सुविधा को फिर से शुरू करें. खोलने के लिए, टैप करें और Enter दबाएं</translation>
 <translation id="3642196846309122856">अपनी फ़ाइलें फिर से डाउनलोड करने की कोशिश करें</translation>
 <translation id="3642638418806704195">ऐप्लिकेशन:</translation>
 <translation id="3646643500201740985">विज्ञापन की परफ़ॉर्मेंस का आकलन करना</translation>
@@ -1458,7 +1461,6 @@
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
-<translation id="3877877650871124156">यह बहुत लंबा है. इसे छोटा करें और फिर से कोशिश करें.</translation>
 <translation id="3881478300875776315">कम लाइनें दिखाएं</translation>
 <translation id="3883500545751229739">परेशान करने वाले विज्ञापन</translation>
 <translation id="3884278016824448484">विरोधाभासी डिवाइस पहचानकर्ता</translation>
@@ -1518,6 +1520,7 @@
 <translation id="4014895360827978999">व्यापारी सेवाएं और पेमेंट सिस्टम</translation>
 <translation id="4018819349042761761">सार्वजनिक पासकोड</translation>
 <translation id="4023431997072828269">यह फ़ॉर्म किसी ऐसे इंटरनेट कनेक्शन की मदद से सबमिट किया जा रहा है जो सुरक्षित नहीं है, इसलिए आपकी जानकारी दूसरे लोग भी देख सकेंगे.</translation>
+<translation id="4025325634010721551">नीतियों को फिर से लोड किया गया</translation>
 <translation id="4030383055268325496">&amp;जोड़ना वापस लाएं</translation>
 <translation id="4030545038933060179">इस सेटिंग के चालू होने पर, आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, यहां विषयों की सूची दिखती है</translation>
 <translation id="4031179711345676612">माइक्रोफ़ोन की अनुमति है</translation>
@@ -1825,6 +1828,7 @@
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">पैसे चुकाने पर कैशबैक मिलेगा</translation>
 <translation id="4631881646528206880">वर्चुअल कार्ड रजिस्टर करना</translation>
+<translation id="4635278307999235413">Admin console को डेटा भेजा जा रहा है</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4638670630777875591">Chromium में गुप्त मोड</translation>
 <translation id="464342062220857295">खोज सुविधाएं</translation>
@@ -2567,7 +2571,6 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome में गुप्त मोड की सुविधा के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">अनुमति देना जारी रखें</translation>
 <translation id="6133984428121856852">फ़ाइल एक्सटेंशन खाली है या खराब है.</translation>
-<translation id="6139769382153674477">कोई गड़बड़ी हुई. क्या आपने साइन इन किया हुआ है?</translation>
 <translation id="6139975341602920272">17 x 22 इंच</translation>
 <translation id="6146055958333702838">सभी केबल जांचें और आपके उपयोग किए जा रहे सभी राउटर, मॉडेम या अन्य नेटवर्क
     डिवाइस को 'फिर चालू करें'.</translation>
@@ -3739,6 +3742,7 @@
 <translation id="8381674639488873545">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में साफ़ तौर पर न बताया जाए. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">आम तौर पर <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> से <ph name="VM_NAME" /> पर क्लिपबोर्ड डेटा शेयर करने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है</translation>
+<translation id="8392783408127179588">नीतियां फिर से लोड हो रही हैं</translation>
 <translation id="8396522675989118466">यह <ph name="SIDE_OF_CARD" /> मौजूद <ph name="NUMBER_OF_DIGITS" />-अंकों का कोड है</translation>
 <translation id="8398335999901363925">टच करके भरी जाने वाली पेमेंट के तरीकों की सूची, पूरी स्क्रीन पर खुली है.</translation>
 <translation id="8398446215576328011">लागू नीतियों को वापस लाएं</translation>
@@ -4159,6 +4163,7 @@
 <translation id="936602727769022409">आप अपने Google खाते का ऐक्सेस खो सकते हैं. क्रोमियम आपको इसी समय अपना पासवर्ड बदलने का सुझाव देता है. आपको साइन इन करने को कहा जाएगा.</translation>
 <translation id="937457230470581909">चिड़ियाघर, अक्वेरियम, और अभयारण्य</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />किस डेटा का इस्तेमाल किया जाता है:<ph name="END_BOLD" /> आपके विज्ञापन के विषय, आपके हाल ही के ब्राउज़िंग इतिहास और इस डिवाइस पर Chrome का इस्तेमाल करके विज़िट की गई साइटों की सूची पर आधारित होते हैं.</translation>
+<translation id="937885410143139026">Admin console को डेटा भेजा गया</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="940053046584497293">यात्रा और परिवहन</translation>
 <translation id="944540589955480312">अपने Google खाते में सेव किए गए पासवर्ड और पासकी इस्तेमाल करें</translation>

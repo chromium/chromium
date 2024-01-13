@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3803696231112616155">ఈ సైట్‌కు అనువాదం అందించే సూచన</translation>
+<translation id="3808311849069021992">సెర్చ్ ఇంజిన్ వివరాలను చూడండి</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
 <translation id="3818045793209708987">ఈ ప్యాకేజీని ట్రాక్ చేయడం ఆపివేయబడింది</translation>
 <translation id="3818293389945649617">తరువాతది కనుగొనండి</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="5235389474593199952">హిస్టరీని దాచండి</translation>
 <translation id="5238301240406177137">ఖాతాలో సేవ్ చేయండి</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="5245322853195994030">సింక్‌ను రద్దు చేయండి</translation>
 <translation id="5248640482715684545">ఈ సైట్ మరొక యాప్‌ను తెరవడానికి ట్రై చేస్తోంది.</translation>
 <translation id="5256661381001734217">ఈ సైట్ యాప్‌ను తెరవడానికి ట్రై చేస్తోంది.  ఇది మిమ్మల్ని అజ్ఞాత మోడ్ నుండి బయటకు తీసుకువెళుతుంది.</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="5386314158584363703">మీరు ఫాలో అయ్యే సైట్‌లు మీకు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5388358297987318779">చిత్రాన్ని తెరువు</translation>
+<translation id="5395707839134961196">సెర్చ్ ఇంజిన్ వివరాలను దాచి ఉంచండి</translation>
 <translation id="5396950905475481456">ఫ్యామిలీ మెంబర్‌లను ఆహ్వానించండి</translation>
 <translation id="5407969256130905701">మార్పులను విస్మరించు</translation>
 <translation id="5414763847370083940">ఏదైనా సైట్‌లో ధర తగ్గితే మీకు అలర్ట్ వస్తుంది.</translation>
@@ -1034,6 +1037,7 @@
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6453018583485750254">ఎప్పటికీ చెక్ రన్ చేయవద్దు.</translation>
 <translation id="6459307836338400162">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్<ph name="END_LINK" />‌, <ph name="BEGIN_LINK" />Google సర్వీస్‌లు<ph name="END_LINK" /> రెండింటినీ చూడండి.</translation>
+<translation id="6459411599807878608">వివరాలు దాచబడ్డాయి</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">కొత్త అజ్ఞాత ట్యాబ్‌లో తెరువు</translation>
 <translation id="6464397691496239022">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి.
@@ -1286,6 +1290,7 @@
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />‌ను ఎంచుకోవడం ద్వారా మీ మొత్తం బ్రౌజింగ్ హిస్టరీని మీరు యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="78146569776629510">డౌన్‌లోడ్‌లు</translation>
 <translation id="7839985698273989086">ఆఫ్‌లైన్ పేజీ</translation>
+<translation id="7839994177130598711">మీ ఫ్యామిలీ మెంబర్‌లు, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="7840771868269352570">మీరు ఎంచుకున్న అంశాలు తీసివేయబడతాయి.</translation>
 <translation id="7845466610722898">చదవాల్సిన లిస్ట్‌ను చూడండి</translation>
 <translation id="784551991304901159">కంటెంట్‌ను చూడటానికి, మెనూ నుండి 'ఆన్ చేయండి'ని ఎంచుకోండి</translation>

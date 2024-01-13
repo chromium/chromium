@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803696231112616155">यो साइट अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
+<translation id="3808311849069021992">सर्च इन्जिनसम्बन्धी विवरणहरू देखाइऊन्</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3818045793209708987">यो प्याकेज ट्र्याक गर्न छाडिएको छ</translation>
 <translation id="3818293389945649617">अर्को भेट्टाउनुहोस्</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5235389474593199952">हिस्ट्री लुकाइयोस्</translation>
 <translation id="5238301240406177137">खातामा सेभ गर्नुहोस्</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मा साइन इन गर्दा तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="5245322853195994030">सिंक गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="5248640482715684545">यो साइटले अर्को एप खोल्ने प्रयास गरिरहेको छ।</translation>
 <translation id="5256661381001734217">यो साइटले बारम्बार एउटा एप खोल्ने प्रयास गरिरहेको छ।  यसले तपाईंलाई इन्कोग्निटो मोडमा लैजाने छ।</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
 <translation id="5386314158584363703">तपाईं यहाँ गई आफूले फलो गरेका साइटहरू भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="5388358297987318779">छवि खोल्नुहोस्</translation>
+<translation id="5395707839134961196">सर्च इन्जिनसम्बन्धी विवरणहरू लुकाइऊन्</translation>
 <translation id="5396950905475481456">परिवार सदस्यहरूलाई निम्तो गर्नुहोस्</translation>
 <translation id="5407969256130905701">परिवर्तनहरू खारेज गर्नुहोस्</translation>
 <translation id="5414763847370083940">कुनै साइटमा यो उत्पादनको मूल्य घटेका खण्डमा तपाईंलाई अलर्ट पठाइने छ।</translation>
@@ -1034,6 +1037,7 @@
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6453018583485750254">कहिल्यै पनि जाँच गरिएको छैन।</translation>
 <translation id="6459307836338400162">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक<ph name="END_LINK" /> तथा <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक दुवै खण्ड हेर्नुहोस्।</translation>
+<translation id="6459411599807878608">विवरणहरू लुकाइएका छन्</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">नयाँ इन्कोग्निटो ट्याबमा खोल्नुहोस्</translation>
 <translation id="6464397691496239022">साइटहरूले तपाईंलाई राम्रो ब्राउजिङको अनुभव प्रदान गर्न कुकीहरूको प्रयोग गर्न सक्छन्। उदाहरणको लागि साइटहरूले कुकीहरूको प्रयोग गरी तपाईंलाई साइन इन अवस्थामै राख्न वा तपाईंको किनमेलको कार्टमा भएका वस्तुहरू सम्झन सक्छन्।
@@ -1286,6 +1290,7 @@
 <translation id="7812377703891978671">तपाईं <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> चयन गरी आफ्नो सबै ब्राउजिङ हिस्ट्री हेर्न तथा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="78146569776629510">डाउनलोड गरिएका सामग्रीहरू</translation>
 <translation id="7839985698273989086">अफलाइन पृष्ठ</translation>
+<translation id="7839994177130598711">तपाईंका परिवारका सदस्य अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मा साइन इन गर्न तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="7840771868269352570">तपाईंले चयन गर्नुभएका वस्तुहरू हटाइने छन्।</translation>
 <translation id="7845466610722898">पछि पढ्न सेभ गरिएका वेबपेजको सूची देखाइयोस्</translation>
 <translation id="784551991304901159">तपाईं सामग्री हेर्न चाहनुहुन्छ भने मेनुबाट "अन गर्नुहोस्" चयन गर्नुहोस्</translation>

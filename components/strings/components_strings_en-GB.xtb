@@ -272,7 +272,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1476595624592550506">Change your password</translation>
 <translation id="1482879811280872320">Cycling</translation>
 <translation id="1483493594462132177">Send</translation>
-<translation id="1484632730438126438">This is too short. Write at least three words.</translation>
 <translation id="1492194039220927094">Policies push:</translation>
 <translation id="14938948731065592">Computer peripherals</translation>
 <translation id="1495677929897281669">Back to tab</translation>
@@ -1458,7 +1457,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3858860766373142691">Name</translation>
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
-<translation id="3877877650871124156">This is too long. Shorten and try again.</translation>
 <translation id="3881478300875776315">Show fewer lines</translation>
 <translation id="3883500545751229739">intrusive ads</translation>
 <translation id="3884278016824448484">Conflicting device identifier</translation>
@@ -2567,7 +2565,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Learn more about Incognito in Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Continue allowing</translation>
 <translation id="6133984428121856852">File extension is empty or malformed.</translation>
-<translation id="6139769382153674477">Something went wrong. Are you signed in?</translation>
 <translation id="6139975341602920272">17 in x 22 in</translation>
 <translation id="6146055958333702838">Check any cables and reboot any routers, modems or other network
     devices you may be using.</translation>

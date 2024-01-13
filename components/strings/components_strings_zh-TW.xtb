@@ -272,7 +272,6 @@
 <translation id="1476595624592550506">變更你的密碼</translation>
 <translation id="1482879811280872320">單車運動</translation>
 <translation id="1483493594462132177">傳送</translation>
-<translation id="1484632730438126438">輸入的內容太短，內容至少要有 3 個字。</translation>
 <translation id="1492194039220927094">政策通知推送：</translation>
 <translation id="14938948731065592">電腦周邊設備</translation>
 <translation id="1495677929897281669">返回分頁</translation>
@@ -1457,7 +1456,6 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示操作說明</translation>
-<translation id="3877877650871124156">輸入的內容過長。請縮短內容，然後再試一次。</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
 <translation id="3883500545751229739">侵入式廣告</translation>
 <translation id="3884278016824448484">裝置 ID 發生衝突</translation>
@@ -2566,7 +2564,6 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />進一步瞭解 Chrome 無痕模式<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">允許繼續存取</translation>
 <translation id="6133984428121856852">副檔名空白或格式錯誤。</translation>
-<translation id="6139769382153674477">發生錯誤，請確認是否已登入帳戶。</translation>
 <translation id="6139975341602920272">17 x 22 吋</translation>
 <translation id="6146055958333702838">檢查您的網路線是否穩固連接。重新啟動您可能正在使用的任何路由器、
     數據機或其他網路裝置。</translation>

@@ -220,6 +220,7 @@
 <translation id="1166596238782048887"><ph name="DESK_TITLE" /> ಡೆಸ್ಕ್‌ಗೆ <ph name="TAB_TITLE" /> ಸೇರಿದೆ</translation>
 <translation id="1167262726334064738">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಒಂದನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತಿದೆ...</translation>
+<translation id="1168704243733734901"><ph name="SUBJECT" /> ನ ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" />, <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿದೆ, <ph name="MOOD" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="116896278675803795">ಆಯ್ಕೆಮಾಡಿದ ವಿಷಯವನ್ನು ಹೊಂದಿಸಲು ಭಾಷೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1169266963600477608">ಗೇಮ್‌ನ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡಿದೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೀಗೆ ಹೇಳುತ್ತಾರೆ: "<ph name="CUSTOM_MESSAGE" />"</translation>
@@ -299,6 +300,7 @@
 <translation id="1218015446623563536">Linux ಅಳಿಸಿ</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />ಈ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಅಂದಾಜಿಸುವಲ್ಲಿ ಸಹಾಯ ಮಾಡಲು, Google ನ ಸ್ಥಳ ಸೇವೆಯು ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳಂತಹ ಮೂಲಗಳನ್ನು ಬಳಸುತ್ತದೆ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ಈ ಸಾಧನದಲ್ಲಿ ಮುಖ್ಯ ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಸ್ಥಳವನ್ನು ಆಫ್ ಮಾಡಬಹುದು. ನೀವು ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಥಳಕ್ಕಾಗಿ ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳ ಬಳಕೆಯನ್ನು ಸಹ ಆಫ್‌ ಮಾಡಬಹುದು.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1219134100826635117">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="122082903575839559">ಪ್ರಮಾಣಪತ್ರ ಸಹಿ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="1221024147024329929">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD2</translation>
 <translation id="1221825588892235038">ಆಯ್ಕೆ ಮಾತ್ರ</translation>
@@ -359,6 +361,7 @@
 <translation id="1264337193001759725">ನೆಟ್‌ವರ್ಕ್ UI ಲಾಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಇಲ್ಲಿ ನೋಡಿ: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ ChromeOS Flex ಸಾಧನಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ಬ್ರೌಸರ್ ಸಿಂಕ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ, <ph name="LINK_BEGIN" />Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="126710816202626562">ಅನುವಾದ ಭಾಷೆ:</translation>
+<translation id="1267649802567297774"><ph name="SUBJECT" /> ನ ರಚಿಸಲಾದ ಚಿತ್ರ <ph name="INDEX" />, <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿದೆ, <ph name="MOOD" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳನ್ನು<ph name="END_LINK" /> ತೆರೆಯುವುದು</translation>
@@ -1334,6 +1337,7 @@
 <translation id="1999115740519098545">ಸ್ಟಾರ್ಟ್‌ಅಪ್‌ನಲ್ಲಿ</translation>
 <translation id="2002109485265116295">ನೈಜ ಸಮಯ</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ಡೇಟಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಮೊದಲು ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
+<translation id="2004413981947727241">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಿ</translation>
 <translation id="2004697686368036666">ಫೀಚರ್‌ಗಳು ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="2005199804247617997">ಇತರ ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="2006638907958895361">ಲಿಂಕ್‌ ಅನ್ನು <ph name="APP" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -1650,6 +1654,7 @@
 <translation id="2242687258748107519">ಫೈಲ್ ಮಾಹಿತಿ</translation>
 <translation id="2243452222143104807">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್</translation>
 <translation id="2243934210752059021">ಹುಡುಕಾಟ ಮಾಡಿ + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">ಐಟಂಗಳನ್ನು ಅಕ್ಷರದ ಮೂಲಕ ಸರಿಸಲು ಬಾಣದ ಕೀಲಿಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="2246129643805925002">ನಿಮಗೆ ಇತ್ತೀಚಿನ ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು ಭದ್ರತಾ ಸುಧಾರಣೆಗಳನ್ನು ನೀಡಲು, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತದೆ. ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್ ಆದ್ಯತೆಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="2246549592927364792">Google ನಿಂದ ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯುವುದೇ?</translation>
@@ -2049,6 +2054,7 @@
 <translation id="2521427645491031107">ಆ್ಯಪ್‌ಗಳ ಸಿಂಕ್ ಅನ್ನು ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸೆಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2521835766824839541">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2521854691574443804">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತಾ ನೀತಿಗಳ ಜೊತೆಗೆ <ph name="FILE_NAME" /> ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="252277619743753687">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="2523184218357549926">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URLಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="2526590354069164005">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
@@ -2721,6 +2727,7 @@
 <translation id="3031532026314193077">ಬಲ ಕ್ಲಿಕ್ ಮಾಡಲು ಟಚ್‌ಪ್ಯಾಡ್ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="3031557471081358569">ಆಮದು ಮಾಡಲು ಐಟಂಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
 <translation id="3032204772252313646">ಸ್ವಯಂಚಾಲಿತ ಶೀರ್ಷಿಕೆಗಳು</translation>
+<translation id="3032272345862007156">ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" /></translation>
 <translation id="3033348223765101500">ನಿಮ್ಮ ಡೇಟಾ ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="3036327949511794916">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು ಹಿಂತಿರುಗಿಸುವ ಗಡುವು ಮೀರಿದೆ.</translation>
 <translation id="3036546437875325427">ಫ್ಲ್ಯಾಶ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -3769,6 +3776,7 @@
 <translation id="3874164307099183178">Google Assistant ಆನ್ ಮಾಡಿ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ಅನ್ನು ಹೊಸ ಬ್ರೌಸರ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಹೊಂದಿಸಲಾಗಿದೆ. ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ಸಹ ತೆರೆಯುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> ಖಾತೆಯ ಅಡಿಯಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿರುವ <ph name="USER_NAME" /> ಅವರ ಸಾಧನಕ್ಕಾಗಿ Nearby ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು.</translation>
+<translation id="3878445208930547646">ಈ ಸೈಟ್‌ನಿಂದ ಕಾಪಿ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3879748587602334249">ಡೌನ್‌ಲೋಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="3880513902716032002">ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳು ಪ್ರಿಲೋಡ್ ಆಗುತ್ತವೆ</translation>
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> ಮತ್ತು <ph name="MERCHANT_NAME_2" /> ಗಾಗಿ ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -4517,6 +4525,7 @@
 <translation id="4471354919263203780">ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">ನಿಮ್ಮ ಆದ್ಯತೆಯ Google ಖಾತೆಯ ಭಾಷೆಯನ್ನು ನೀವು ಬಳಸಬಹುದು (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು ಹಾಗೂ ಕೆಲಸ ನಿರ್ವಹಣೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
+<translation id="4472533928615930332"><ph name="SUBJECT" /> ನ <ph name="INDEX" /> ಚಿತ್ರವನ್ನು <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4473996011558324141">ಸಮಯವನ್ನು ಅಂದಾಜು ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4474155171896946103">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡು...</translation>
@@ -5298,6 +5307,7 @@
 <translation id="5094176498302660097">Files ಅಥವಾ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿರುವ ಈ ಆ್ಯಪ್ ಬಳಸಿಕೊಂಡು ನೀವು ಬೆಂಬಲಿತ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು. ಈ ಆ್ಯಪ್ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಯಾವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬೇಕು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂಬುದರ ಕುರಿತು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">ಸಹಕರಿಸುವ ಸ್ಥಳೀಯ ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ಸಂವಹಿಸಿ</translation>
 <translation id="5095507226704905004">ಫೈಲ್ ಇನ್ನು ಮುಂದೆ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲದ ಕಾರಣ ಅದನ್ನು ಕಾಪಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="5095848221827496531">ಆಯ್ಕೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ವಿಫಲವಾಗಿದೆ: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">ಸ್ಥಳವನ್ನು ಬಳಸುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5097349930204431044">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ನೀವು ಏನು ಇಷ್ಟಪಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ಧರಿಸಬಹುದು ಮತ್ತು ನೀವು ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿದಾಗ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸಬಹುದು.</translation>
@@ -5550,6 +5560,7 @@
 <translation id="5297005732522718715">ಟೆಥರಿಂಗ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="5297082477358294722">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಲಾಗಿದೆ. ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="SAVED_PASSWORDS_STORE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="5297946558563358707">ಬೇರೊಬ್ಬರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ನೋಡಿದಾಗ, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಗೌಪ್ಯತೆ ಕಣ್ಣಿನ ಐಕಾನ್ ಅನ್ನು ತೋರಿಸಿ</translation>
+<translation id="5297984209202974345"><ph name="SUBJECT" /> ನ ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" />, <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿದೆ</translation>
 <translation id="5298219193514155779">ಇವರಿಂದ ಥೀಮ್ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="5298315677001348398">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮುಂದುವರಿಯಲು ಮತ್ತು ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಲು ಈ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಅನುಮತಿಸಲು ನೀವು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="5299109548848736476">ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ</translation>
@@ -6637,6 +6648,7 @@
 <translation id="6164393601566177235">ಸೈಟ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6164832038898943453">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಭಾಷಾಂತರಿಸಲು ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="6165850999903769629">ChromeOS ನಲ್ಲಿನ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಈಗ Chrome ನ ಬದಲಿಗೆ ತಮ್ಮದೇ ಆದ ಆ್ಯಪ್ ವಿಂಡೋಗಳಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="6166185671393271715">Chrome ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
 <translation id="6166659775803431">ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲಿ</translation>
 <translation id="6169040057125497443">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
@@ -7051,6 +7063,7 @@
 <translation id="6508261954199872201">ಅಪ್ಲಿಕೇಶನ್: <ph name="APP_NAME" /></translation>
 <translation id="6511607461419653612">ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> ಅನ್ನು ಅಳಿಸಲು ಪರಿಗಣಿಸಿ, ಆದ್ದರಿಂದ ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಇತರರು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೋಡಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="6512759338201777379"><ph name="SUBJECT" /> ನ ರಚಿಸಲಾದ ಚಿತ್ರ <ph name="INDEX" />, <ph name="MOOD" /> ಮೂಡ್‌ ಹೊಂದಿದೆ.</translation>
 <translation id="6513247462497316522">ನೀವು ಇನ್ನೊಂದು ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಹೊಂದಿರದಿದ್ದರೆ Google Chrome ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="6514010653036109809">ಲಭ್ಯವಿರುವ ಸಾಧನ:</translation>
 <translation id="6514565641373682518">ಈ ಪುಟವು ನಿಮ್ಮ ಮೌಸ್ ಕರ್ಸರ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿದೆ.</translation>
@@ -7074,6 +7087,7 @@
 <translation id="6528179044667508675">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="652937045869844725">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ, ಇದು ನಿಮ್ಮ ಸೈಟ್‌ನ ಸುರಕ್ಷತೆಯು ರಾಜಿ ಮಾಡಿಕೊಂಡರೂ ಸಹ ಸೈಟ್‌ನ ಫೀಚರ್‌ಗಳು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ</translation>
 <translation id="652948702951888897">Chrome ಇತಿಹಾಸ</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> ನ <ph name="INDEX" /> ಚಿತ್ರ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6530186581263215931">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಜಾರಿಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> ಅವರು ಪ್ರೊಫೈಲ್ ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="6531282281159901044">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸು</translation>
@@ -7381,6 +7395,7 @@
 <translation id="6776729248872343918">ಶೀಘ್ರ ಜೋಡಿಯಾಗಿಸುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6777817260680419853">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6777845730143344223">Passpoint ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="6778660707554364320"><ph name="APP" /> ಈಗ ಆ್ಯಪ್‌ನಂತೆ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="6779092717724412415">ಈ ರೀತಿಯ ಹೈಲೈಟ್ ರಚಿಸಲು, ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="6779348349813025131">Google Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6779447100905857289">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳು</translation>
@@ -8032,9 +8047,11 @@
 <translation id="7284307451964417957">{DAYS,plural, =1{ಈ ಸಾಧನವನ್ನು 1 ದಿನಕ್ಕಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಮುಂದಿನ ಬಾರಿ ನೀವು ಕೋಡ್ ಇಲ್ಲದೆಯೇ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. ಇದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}one{ಈ ಸಾಧನವನ್ನು {DAYS} ದಿನಗಳಿಗಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಮುಂದಿನ ಬಾರಿ ನೀವು ಕೋಡ್ ಇಲ್ಲದೆಯೇ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. ಇದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}other{ಈ ಸಾಧನವನ್ನು {DAYS} ದಿನಗಳಿಗಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಮುಂದಿನ ಬಾರಿ ನೀವು ಕೋಡ್ ಇಲ್ಲದೆಯೇ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. ಇದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}}</translation>
 <translation id="7284411326658527427">ಪ್ರತಿಯೊಬ್ಬ ವ್ಯಕ್ತಿಯು ತಮ್ಮ ಖಾತೆಯನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು ಮತ್ತು ಡೇಟಾವನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸಬಹುದು.</translation>
 <translation id="7286867818472074330">ಪಾಸ್‌ಕೀಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="7286908876112207905">ಈ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಈ ಸೈಟ್‌ನಲ್ಲಿ ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7287143125007575591">ಆ್ಯಕ್ಸೆಸ್ ನೀರಾಕರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7287411021188441799">ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
+<translation id="7288761372977133974"><ph name="SUBJECT" /> ನ ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">ನೀವು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="7289303553784750393">ನೀವು ಆನ್‌ಲೈನ್‌ ಆಗಿದ್ದರೂ ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ನೀವು <ph name="SITE_ETLD_PLUS_ONE" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಇತರ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು F6 ಒತ್ತಿರಿ</translation>
@@ -8505,6 +8522,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{1 ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ}one{{COUNT} ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ}other{{COUNT} ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7650677314924139716">ಪ್ರಸ್ತುತ ಡೇಟಾ ಬಳಕೆಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ವೈ-ಫೈ ಮಾತ್ರ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="7650920359639954963">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ: <ph name="REASON" /></translation>
+<translation id="7651400349472467012">ಇನ್‌ಸ್ಟಂಟ್ ಹಾಟ್‌ಸ್ಪಾಟ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="7651784568388208829">ಫೋನ್ ಹಬ್ ಕಾರ್ಯ ಮುಂದುವರಿಕೆ</translation>
 <translation id="765293928828334535">ಈ ವೆಬ್‌ಸೈಟ್‌ನಿಂದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7652954539215530680">ಪಿನ್ ರಚಿಸಿ</translation>
@@ -8513,6 +8531,7 @@
 <translation id="7657090467145778067">ಸಣ್ಣ ಉಳಿತಾಯಗಳು</translation>
 <translation id="7657218410916651670">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="BEGIN_LINK_GOOGLE" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK_GOOGLE" /> ಉಳಿಸಬಹುದು. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಅಳಿಸಬಹುದು.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7658395071164441475">ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ <ph name="USER_EMAIL" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.</translation>
 <translation id="7659154729610375585">ಹೇಗಾದರೂ ಅಜ್ಞಾತ ಮೋಡ್‌ ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
 <translation id="7659336857671800422">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7659584679870740384">ನೀವು ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ಪ್ರಮಾಣಿತರಾಗಿಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -8751,6 +8770,7 @@
 <translation id="7824665136384946951">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದೆ</translation>
 <translation id="7824864914877854148">ದೋಷದ ಕಾರಣದಿಂದಾಗಿ ಬ್ಯಾಕಪ್ ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ</translation>
 <translation id="782590969421016895">ಪ್ರಸ್ತುತ ಪುಟಗಳನ್ನು ಬಳಸಿ</translation>
+<translation id="7826039927887234077"><ph name="SUBJECT" /> ನ ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" />, <ph name="MOOD" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="7826174860695147464">ಪಾರಂಪರಿಕ ಬ್ರೌಸರ್ ಬೆಂಬಲ (LBS) - ಇಂಟರ್ನಲ್‌ಗಳು</translation>
 <translation id="7826249772873145665">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7826254698725248775">ಸಾಧನದ ಗುರುತಿನಲ್ಲಿ ಸಂಘರ್ಷವಿದೆ.</translation>
@@ -10488,6 +10508,7 @@
 <translation id="9153274276370926498">LaCrOS ಸಿಸ್ಟಂ ಮಾಹಿತಿ</translation>
 <translation id="9153367754133725216">ಲಾಂಚರ್ ಮತ್ತು ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳಲ್ಲಿ ಹೊಸ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಕಂಟೆಂಟ್‌ಗಾಗಿ ಸಲಹೆಗಳನ್ನು ನೋಡಿ. ನೀವು ChromeOS ಗೆ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು, ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಮತ್ತು ಬಳಕೆಯ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಲು ಆಯ್ಕೆಮಾಡಿದರೆ ಮಾತ್ರ, ಸಲಹೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಅಂಕಿಅಂಶಗಳನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="9154194610265714752">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="9155344700756733162">ಬಣ್ಣವನ್ನು ಆಯ್ಕೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="9157096865782046368">0.8 ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="9157697743260533322">ಎಲ್ಲ ಬಳಕೆದಾರರಿಗೆ ಸ್ವಯಂಚಾಲಿತ ನವೀಕರಣಗಳನ್ನು ಹೊಂದಿಸುವುದು ವಿಫಲವಾಗಿದೆ (ಪ್ರೀಫ್ಲೈಟ್ ಲಾಂಚ್ ದೋಷ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">ಪ್ರಿಂಟರ್‌ನ ಡೋರ್ ತೆರೆದಿದೆ</translation>

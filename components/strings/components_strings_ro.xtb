@@ -272,7 +272,6 @@
 <translation id="1476595624592550506">Schimbă parola</translation>
 <translation id="1482879811280872320">Ciclism</translation>
 <translation id="1483493594462132177">Trimite</translation>
-<translation id="1484632730438126438">Este prea scurt. Scrie cel puțin 3 cuvinte.</translation>
 <translation id="1492194039220927094">Notificări pentru politici:</translation>
 <translation id="14938948731065592">Periferice pentru computere</translation>
 <translation id="1495677929897281669">Înpoi la filă</translation>
@@ -1458,7 +1457,6 @@
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3872834068356954457">Știință</translation>
 <translation id="3875783148670536197">Arată-mi cum</translation>
-<translation id="3877877650871124156">Textul este prea lung. Scurtează-l și încearcă din nou.</translation>
 <translation id="3881478300875776315">Afișează mai puține rânduri</translation>
 <translation id="3883500545751229739">anunțuri deranjante</translation>
 <translation id="3884278016824448484">Identificator de gadget în conflict</translation>
@@ -2567,7 +2565,6 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Află mai multe despre modul incognito în Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Permite în continuare</translation>
 <translation id="6133984428121856852">Extensia de fișier este goală sau incorectă.</translation>
-<translation id="6139769382153674477">A apărut o eroare. Te-ai conectat?</translation>
 <translation id="6139975341602920272">17 x 22 in</translation>
 <translation id="6146055958333702838">Verifică toate cablurile și repornește routerele, modemurile sau alte
     dispozitive de rețea pe care le folosești.</translation>

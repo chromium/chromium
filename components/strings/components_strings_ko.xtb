@@ -273,7 +273,6 @@
 <translation id="1476595624592550506">비밀번호 변경</translation>
 <translation id="1482879811280872320">사이클</translation>
 <translation id="1483493594462132177">보내기</translation>
-<translation id="1484632730438126438">너무 짧습니다. 단어를 3개 이상 사용하세요.</translation>
 <translation id="1492194039220927094">정책 푸시:</translation>
 <translation id="14938948731065592">컴퓨터 주변기기</translation>
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
@@ -1462,7 +1461,6 @@
 <translation id="3858860766373142691">이름</translation>
 <translation id="3872834068356954457">과학</translation>
 <translation id="3875783148670536197">방법 보기</translation>
-<translation id="3877877650871124156">너무 깁니다. 내용을 줄여 다시 시도하세요.</translation>
 <translation id="3881478300875776315">자막 접기</translation>
 <translation id="3883500545751229739">방해가 되는 광고</translation>
 <translation id="3884278016824448484">기기 식별자 충돌</translation>
@@ -2573,7 +2571,6 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">계속 허용</translation>
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
-<translation id="6139769382153674477">문제가 발생했습니다. 로그인하셨나요?</translation>
 <translation id="6139975341602920272">17x22인치</translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
     재부팅하시기 바랍니다.</translation>

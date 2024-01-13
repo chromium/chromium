@@ -272,7 +272,6 @@
 <translation id="1476595624592550506">Смените пароль</translation>
 <translation id="1482879811280872320">Езда на велосипеде</translation>
 <translation id="1483493594462132177">Отправить</translation>
-<translation id="1484632730438126438">Запрос слишком короткий. Введите не менее трех слов.</translation>
 <translation id="1492194039220927094">Обновление правил:</translation>
 <translation id="14938948731065592">Периферийные устройства компьютера</translation>
 <translation id="1495677929897281669">Вернуться на вкладку</translation>
@@ -1457,7 +1456,6 @@
 <translation id="3858860766373142691">Название</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Показать</translation>
-<translation id="3877877650871124156">Запрос слишком длинный. Сократите его и попробуйте ещё раз.</translation>
 <translation id="3881478300875776315">Показать меньше строк</translation>
 <translation id="3883500545751229739">навязчивая реклама</translation>
 <translation id="3884278016824448484">Конфликт идентификаторов устройств</translation>
@@ -2566,7 +2564,6 @@
 <translation id="6132161237766805930">Подробнее <ph name="BEGIN_LINK" />о режиме инкогнито в Chrome<ph name="END_LINK" />…</translation>
 <translation id="6133320744616005677">Оставить разрешение</translation>
 <translation id="6133984428121856852">Расширение имени файла не указано или имеет неверный формат.</translation>
-<translation id="6139769382153674477">Что-то пошло не так. Вы вошли в аккаунт?</translation>
 <translation id="6139975341602920272">17 x 22 дюйма</translation>
 <translation id="6146055958333702838">Проверьте соединение кабелей, перезагрузите маршрутизаторы, модемы и другие
     сетевые устройства.</translation>

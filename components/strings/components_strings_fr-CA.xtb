@@ -251,6 +251,7 @@
 <translation id="1434317006812369578">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google. La Navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de visiter.</translation>
 <translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436185428532214179">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
+<translation id="1441816242347931036">Ouvrir pour continuer</translation>
 <translation id="1442386063175183758">Pli du volet droit</translation>
 <translation id="1442987760062738829">Perforer</translation>
 <translation id="1446396933673057385">Contrôle de la fiabilité</translation>
@@ -272,7 +273,6 @@
 <translation id="1476595624592550506">Modifiez votre mot de passe</translation>
 <translation id="1482879811280872320">Cyclisme</translation>
 <translation id="1483493594462132177">Envoi</translation>
-<translation id="1484632730438126438">Entrée trop courte. Écrivez au moins trois mots.</translation>
 <translation id="1492194039220927094">Notifications poussées des politiques :</translation>
 <translation id="14938948731065592">Périphériques pour ordinateur</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
@@ -701,6 +701,7 @@
 <translation id="2328651992442742497">Autorisée (par défaut)</translation>
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2337044517221264923">Rédaction de CV</translation>
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
 <translation id="2340549657492527534">Reptiles et amphibiens</translation>
@@ -1179,6 +1180,7 @@
 <translation id="334438173029876234">Équipement de planche à roulettes</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
+<translation id="335809815767823">Exportées</translation>
 <translation id="3359565626472459400">Mariage</translation>
 <translation id="3360103848165129075">Feuille du module de traitement du paiement</translation>
 <translation id="3360313521703038580">Écologie et environnement</translation>
@@ -1333,6 +1335,7 @@
 <translation id="3632892046558972264">Partage d'écran interrompu</translation>
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez d'entrer votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
+<translation id="3638102297696182302">Aide à la rédaction de CV. Appuyez sur Tabulation et sur Entrée pour ouvrir</translation>
 <translation id="3642196846309122856">Réessayez de télécharger vos fichiers</translation>
 <translation id="3642638418806704195">Application :</translation>
 <translation id="3646643500201740985">Mesurer la performance d'une annonce</translation>
@@ -1458,7 +1461,6 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Afficher la marche à suivre</translation>
-<translation id="3877877650871124156">Entrée trop longue. Raccourcissez-la et réessayez.</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3883500545751229739">annonces intrusives</translation>
 <translation id="3884278016824448484">Identifiant de périphérique en conflit</translation>
@@ -1518,6 +1520,7 @@
 <translation id="4014895360827978999">Services commerciaux et systèmes de paiement</translation>
 <translation id="4018819349042761761">Clé publique</translation>
 <translation id="4023431997072828269">Comme ce formulaire est envoyé à l'aide d'une connexion qui n'est pas sécurisée, vos données pourraient être visibles par d'autres utilisateurs.</translation>
+<translation id="4025325634010721551">Politiques actualisées</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4030545038933060179">Lorsque cette option est activée, une liste de sujets apparaît ici en fonction de votre historique de navigation récent</translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
@@ -1825,6 +1828,7 @@
 <translation id="4629370161347991046">A4 x 6</translation>
 <translation id="4631649115723685955">Avec remise en argent</translation>
 <translation id="4631881646528206880">Inscription de la carte virtuelle</translation>
+<translation id="4635278307999235413">Envoi de données à la console d'administrateur en cours…</translation>
 <translation id="4636930964841734540">Renseignements</translation>
 <translation id="4638670630777875591">Navigation privée dans Chromium</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
@@ -2567,7 +2571,6 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Continuer l'autorisation</translation>
 <translation id="6133984428121856852">L'extension de fichier est vide ou malformée.</translation>
-<translation id="6139769382153674477">Un problème est survenu. Êtes-vous connecté?</translation>
 <translation id="6139975341602920272">17 po x 22 po</translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
     ou tout autre périphérique réseau utilisé.</translation>
@@ -3739,6 +3742,7 @@ Détails supplémentaires :
 <translation id="8381674639488873545">Ces frais peuvent être facturés une seule fois ou de manière récurrente et peuvent être cachés. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Prix habituel : <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698">La politique de l'administrateur bloque le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>
+<translation id="8392783408127179588">Actualisation des politiques en cours…</translation>
 <translation id="8396522675989118466">Il s'agit du code à <ph name="NUMBER_OF_DIGITS" /> chiffres qui se trouve au <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Les modes de paiement accessibles à remplir au toucher sont ouverts à la pleine hauteur.</translation>
 <translation id="8398446215576328011">Rétablir les politiques appliquées</translation>
@@ -4158,6 +4162,7 @@ Détails supplémentaires :
 <translation id="936602727769022409">Vous risquez de perdre l'accès à votre compte Google. Chromium recommande de modifier votre mot de passe immédiatement. Vous serez invité à vous connecter.</translation>
 <translation id="937457230470581909">Zoos, aquariums et réserves naturelles</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> Vos sujets d'annonces sont basés sur votre historique de navigation récent, soit une liste des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
+<translation id="937885410143139026">Données envoyées à la console d'administrateur</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940053046584497293">Voyages et transports</translation>
 <translation id="944540589955480312">Utiliser les mots de passe et les clés d'accès enregistrés dans votre compte Google</translation>

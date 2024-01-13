@@ -529,6 +529,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803696231112616155">Offrir de traduire ce site</translation>
+<translation id="3808311849069021992">Afficher les détails du moteur de recherche</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3818045793209708987">Arrêt du suivi de ce colis</translation>
 <translation id="3818293389945649617">Rechercher le suivant</translation>
@@ -802,6 +803,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5235389474593199952">Masquer Historique</translation>
 <translation id="5238301240406177137">Enregistrer dans le compte</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> peut désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'il utilise le gestionnaire de mots de passe Google pour se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
 <translation id="5248640482715684545">Ce site essaie d'ouvrir une autre application.</translation>
 <translation id="5256661381001734217">Ce site essaie d'ouvrir une application.  Vous serez redirigé en dehors de la Navigation privée.</translation>
@@ -821,6 +823,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
 <translation id="5386314158584363703">Vous trouverez les sites que vous suivez ici</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
+<translation id="5395707839134961196">Masquer les détails du moteur de recherche</translation>
 <translation id="5396950905475481456">Inviter des membres de la famille</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur n'importe quel site.</translation>
@@ -1034,6 +1037,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6453018583485750254">La vérification n'a jamais été effectuée.</translation>
 <translation id="6459307836338400162">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Détails masqués</translation>
 <translation id="646394917185284261">Fichiers</translation>
 <translation id="6464071786529933911">Ouvrir ds nv ong nav priv</translation>
 <translation id="6464397691496239022">Les sites peuvent utiliser des témoins afin d'améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats.
@@ -1286,6 +1290,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7812377703891978671">Vous pouvez accéder à tout votre historique de navigation en sélectionnant <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Téléchargements</translation>
 <translation id="7839985698273989086">Page hors ligne</translation>
+<translation id="7839994177130598711">Les membres de votre famille peuvent désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'ils utilisent le gestionnaire de mots de passe Google pour se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="784551991304901159">Pour afficher du contenu, sélectionnez Activer dans le menu</translation>

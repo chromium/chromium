@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
+<translation id="3808311849069021992">সার্চ ইঞ্জিনের বিবরণ দেখুন</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="3818045793209708987">এই প্যাকেজটি ট্র্যাক করা বন্ধ করা হয়েছে</translation>
 <translation id="3818293389945649617">পরবর্তী স্ট্রিং খুঁজুন</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5235389474593199952">'ইতিহাস' বিকল্পটি লুকান</translation>
 <translation id="5238301240406177137">অ্যাকাউন্টে সেভ করুন</translation>
+<translation id="5238596603078743134">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="5245322853195994030">সিঙ্ক বাতিল করুন</translation>
 <translation id="5248640482715684545">এই সাইটটি অন্য একটি অ্যাপ্লিকেশন খোলার চেষ্টা করছে।</translation>
 <translation id="5256661381001734217">এই সাইট অ্যাপ্লিকেশন খোলার জন্য চেষ্টা করছে।  এটি করলে আপনাকে 'ছদ্মবেশী মোড' ছেড়ে বেরিয়ে যেতে হবে।</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5386314158584363703">আপনার ফলো করা সাইট এখানে দেখতে পাবেন</translation>
 <translation id="5388358297987318779">ছবি খুলুন</translation>
+<translation id="5395707839134961196">সার্চ ইঞ্জিনের বিবরণ লুকান</translation>
 <translation id="5396950905475481456">পরিবারের সদস্যদের আমন্ত্রণ জানান</translation>
 <translation id="5407969256130905701">পরিবর্তনগুলি বাতিল করুন</translation>
 <translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
@@ -1035,6 +1038,7 @@
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6453018583485750254">কখনও চেক করা হয়নি।</translation>
 <translation id="6459307836338400162">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক<ph name="END_LINK" /> এবং <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> উভয় বিকল্প দেখুন।</translation>
+<translation id="6459411599807878608">বিবরণ লুকানো আছে</translation>
 <translation id="646394917185284261">ফাইল</translation>
 <translation id="6464071786529933911">নতুন ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="6464397691496239022">আপনি যাতে সাইন-ইন হয়ে থাকতে পারেন তার ব্যবস্থা করা বা শপিং কার্টে আপনার বেছে নেওয়া আইটেমগুলি মনে রাখার মতো আপনার ব্রাউজিং অভিজ্ঞতা আরও ভাল করার জন্য সাইট কুকি ব্যবহার করতে পারবে।
@@ -1287,6 +1291,7 @@
 <translation id="7812377703891978671">আপনি নিজের সব ব্রাউজিং ইতিহাস <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> বোতাম বেছে নেওয়ার মাধ্যমে অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="78146569776629510">ডাউনলোড</translation>
 <translation id="7839985698273989086">অফলাইন পৃষ্ঠা</translation>
+<translation id="7839994177130598711">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় আপনার পরিবারের সদস্যরা এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="7840771868269352570">আপনার বেছে নেওয়া আইটেমগুলি সরানো হবে।</translation>
 <translation id="7845466610722898">পড়ার তালিকা দেখান</translation>
 <translation id="784551991304901159">কন্টেন্ট দেখার জন্য, 'মেনু থেকে চালু করুন' বিকল্প বেছে নিন</translation>

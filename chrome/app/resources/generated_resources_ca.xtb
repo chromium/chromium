@@ -2067,6 +2067,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2540449034743108469">Prem Inicia per escoltar les activitats de les extensions</translation>
 <translation id="2540651571961486573">S'ha produït un error. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Vols optimitzar l'emissió en pantalla completa?</translation>
+<translation id="2541343621592284735">La càmera i el micròfon no es permeten</translation>
 <translation id="2541706104884128042">S'ha establert l'hora de dormir nova</translation>
 <translation id="2542050502251273923">Estableix el nivell de depuració del gestor de connexions a la xarxa i altres serveis mitjançant ff_debug.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran a aquesta aplicació. <ph name="MANAGE_LINK" />}other{Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran a aquestes aplicacions. <ph name="MANAGE_LINK" />}}</translation>
@@ -3138,6 +3139,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3406605057700382950">&amp;Mostra la Barra d'adreces d'interès</translation>
 <translation id="3407392651057365886">Es precarreguen més pàgines. És possible que les pàgines estiguin precarregades mitjançant els servidors de Google quan altres llocs web ho sol·licitin.</translation>
 <translation id="3407967630066378878">Per configurar una empremta digital, fes que el teu fill o filla toqui el sensor d'empremtes digitals que hi ha al costat esquerre d'aquest <ph name="DEVICE_TYPE" />. Les dades de la seva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3408555740610481810">Càmera i micròfon en ús</translation>
 <translation id="3409513286451883969">&amp;Tradueix la selecció a <ph name="LANGUAGE" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Ves directament a la selecció</translation>
@@ -3398,6 +3400,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3617062258679844578">Per fer clic, toca el ratolí tàctil en lloc de prémer-lo</translation>
 <translation id="3617891479562106823">Els fons de pantalla no estan disponibles. Torna-ho a provar més tard.</translation>
 <translation id="3618286417582819036">S'ha produït un error</translation>
+<translation id="3618647122592024084">A partir d'ara, <ph name="RECIPIENT_NAME" /> podrà utilitzar el teu nom d'usuari i la teva contrasenya quan utilitzi el gestor de contrasenyes de Google. Demana-li que vagi a <ph name="WEBSITE" /> per iniciar-hi la sessió.</translation>
 <translation id="3619115746895587757">Caputxino</translation>
 <translation id="3619294456800709762">Els llocs web poden entrar automàticament al mode d'imatge sobre imatge</translation>
 <translation id="3620136223548713675">Geolocalització</translation>
@@ -7897,6 +7900,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7189965711416741966">S'ha afegit l'empremta digital.</translation>
 <translation id="7191063546666816478">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i en <ph name="NUMBER_OF_OTHER_APPS" /> aplicacions més.</translation>
 <translation id="7191159667348037">Impressora desconeguda (USB)</translation>
+<translation id="7191632649590906354">Ara, els membres de la família poden utilitzar el teu nom d'usuari i la teva contrasenya quan facin servir el gestor de contrasenyes de Google. Demana'ls que vagin a <ph name="WEBSITE" /> per iniciar-hi la sessió.</translation>
 <translation id="7193051357671784796">La teva organització ha afegit aquesta aplicació. Reinicia-la perquè s'acabi d'instal·lar.</translation>
 <translation id="7193374945610105795">No hi ha cap contrasenya desada per a <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envia suggeriments sobre els grups suggerits</translation>
@@ -8704,6 +8708,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="779308894558717334">Verd clar</translation>
 <translation id="7793098747275782155">Blau fosc</translation>
 <translation id="7796453472368605346">Diacrítics</translation>
+<translation id="7797037459724039462">Prat, pintura a l'oli, intel·lectual, groc</translation>
 <translation id="7797571222998226653">Desactivat</translation>
 <translation id="7798504574384119986">Mostra els permisos web</translation>
 <translation id="7798844538707273832">S'ha bloquejat automàticament <ph name="PERMISSION" /></translation>

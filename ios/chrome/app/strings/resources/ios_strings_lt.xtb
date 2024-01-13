@@ -369,6 +369,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="288655811176831528">Uždaryti skirtuką</translation>
 <translation id="288902476966286676">Grąžinti siuntėjui</translation>
 <translation id="2890171748217283516">Svetainės, kurias stebite, saugomos jūsų „Google“ paskyroje. Jas galite tvarkyti „Discover“ nustatymuose.</translation>
+<translation id="2895084600668778673">Peržiūrėti visus automatinio pildymo duomenis</translation>
 <translation id="2898963176829412617">Naujas aplankas...</translation>
 <translation id="2902684821701498619">Pridėti prie skaitymo sąrašo</translation>
 <translation id="2905479111267140204">Turite pakartotinai naudojamų slaptažodžių (iš viso: <ph name="NUMBER_OF_PASSWORDS" />), dėl kurių gali kilti saugos pavojus.</translation>
@@ -529,6 +530,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803696231112616155">Siūlyti versti šią svetainę</translation>
+<translation id="3808311849069021992">Rodyti išsamią paieškos variklio informaciją</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3818045793209708987">Šio siuntinio stebėjimas sustabdytas</translation>
 <translation id="3818293389945649617">Rasti kitą</translation>
@@ -802,6 +804,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5235389474593199952">Slėpti istoriją</translation>
 <translation id="5238301240406177137">Išsaugoti paskyroje</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Atšaukti sinchronizavimą</translation>
 <translation id="5248640482715684545">Ši svetainė bando atidaryti kitą programą.</translation>
 <translation id="5256661381001734217">Ši svetainė bando atidaryti programą.  Išjungsite inkognito režimą.</translation>
@@ -821,6 +824,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5360976571138293719">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyje <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Čia rasite stebimas svetaines</translation>
 <translation id="5388358297987318779">Atidaryti vaizdą</translation>
+<translation id="5395707839134961196">Slėpti išsamią paieškos variklio informaciją</translation>
 <translation id="5396950905475481456">Šeimos grupės narių pakvietimas</translation>
 <translation id="5407969256130905701">Atmesti pakeitimus</translation>
 <translation id="5414763847370083940">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą.</translation>
@@ -1034,6 +1038,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6453018583485750254">Niekada netikrinti.</translation>
 <translation id="6459307836338400162">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK" />„Sinchronizavimas“<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Išsami informacija paslėpta</translation>
 <translation id="646394917185284261">Failai</translation>
 <translation id="6464071786529933911">Atid. nauj. ink. skirtuk.</translation>
 <translation id="6464397691496239022">Svetainės gali naudoti slapukus, kad pagerintų naršymo kokybę, pvz., kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės.
@@ -1286,6 +1291,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7812377703891978671">Visą naršymo istoriją galite pasiekti pasirinkdami „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Atsisiuntimai</translation>
 <translation id="7839985698273989086">Neprisijungus pasiekiamas puslapis</translation>
+<translation id="7839994177130598711">Šeimos grupės nariai dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Pasirinkti elementai bus pašalinti.</translation>
 <translation id="7845466610722898">Rodyti skaitymo sąrašą</translation>
 <translation id="784551991304901159">Jei norite peržiūrėti turinį, meniu pasirinkite „Įjungti“</translation>
