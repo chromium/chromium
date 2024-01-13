@@ -931,6 +931,8 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     expect_has_alpha = other_args and other_args.get('has_alpha', False)
 
+    has_present_swap_chain_event_with_has_alpha = False
+
     # Verify expectations through captured trace events.
     for event in event_iterator:
       if event.category != category:
@@ -939,10 +941,19 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         continue
 
       got_has_alpha = event.args.get('has_alpha', None)
-      if got_has_alpha is not None and expect_has_alpha != got_has_alpha:
-        self.fail(
-            'Expected events with name %s with has_alpha expected %s, got %s' %
-            (_PRESENT_SWAP_CHAIN_EVENT_NAME, expect_has_alpha, got_has_alpha))
+      if got_has_alpha is not None:
+        has_present_swap_chain_event_with_has_alpha = True
+
+        if expect_has_alpha != got_has_alpha:
+          self.fail(
+              f'Expected events with name {_PRESENT_SWAP_CHAIN_EVENT_NAME} with'
+              f' has_alpha expected {expect_has_alpha}, got {got_has_alpha}')
+
+    # It's also considered a failure if we did not see the expected event.
+    if not has_present_swap_chain_event_with_has_alpha:
+      self.fail(
+          f'Expected events with name {_PRESENT_SWAP_CHAIN_EVENT_NAME} and '
+          'has_alpha value, but were not found')
 
   def _EvaluateSuccess_CheckWebGLCanvasCapture(self, category: str,
                                                event_iterator: Iterator,
