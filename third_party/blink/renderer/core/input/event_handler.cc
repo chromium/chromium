@@ -179,10 +179,6 @@ gfx::Point DetermineHotSpot(const Image& image,
 // Returns whether the hit element contains a title and isn't a SVGUseElement or
 // part of an SVGUseElement.
 bool HasTitleAndNotSVGUseElement(const HitTestResult& hovered_node_result) {
-  // TODO(crbug.com/1473774): Remove flag check if no issues arise.
-  if (!RuntimeEnabledFeatures::SkipShadowHostWhenHoveringForTooltipEnabled()) {
-    return false;
-  }
   Node* inner_node = hovered_node_result.InnerNode();
   if (!inner_node) {
     return false;
