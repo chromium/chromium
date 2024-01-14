@@ -866,7 +866,9 @@ void HarfBuzzShaper::ShapeSegment(
         text_, shape_start, shape_end, *adjusted_font, font_description,
         {.is_horizontal = HB_DIRECTION_IS_HORIZONTAL(direction),
          .apply_start = range_data->options.han_kerning_start &&
-                        range_data->start == shape_start},
+                        range_data->start == shape_start,
+         .apply_end = range_data->options.han_kerning_end &&
+                      range_data->end == shape_end},
         &range_data->font_features);
 
     if (!ShapeRange(range_data->buffer, range_data->font_features,

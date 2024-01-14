@@ -46,6 +46,7 @@ class PLATFORM_EXPORT HanKerning {
   struct Options {
     bool is_horizontal = true;
     bool apply_start = false;
+    bool apply_end = false;
   };
 
   HanKerning(const String& text,
@@ -104,6 +105,8 @@ class PLATFORM_EXPORT HanKerning {
   // font. `CharType` depends on fonts, so it may not be `kOpen` even when this
   // function returns `true`.
   static bool MaybeOpen(UChar ch);
+  // Same as `MaybeOpen` but for `kClose`.
+  static bool MaybeClose(UChar ch);
 
  private:
   static CharType GetCharType(UChar ch, const FontData& font_data);

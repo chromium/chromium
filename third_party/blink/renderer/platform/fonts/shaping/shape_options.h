@@ -14,6 +14,7 @@ namespace blink {
 //
 struct PLATFORM_EXPORT ShapeOptions {
   bool han_kerning_start = false;
+  bool han_kerning_end = false;
 };
 
 }  // namespace blink

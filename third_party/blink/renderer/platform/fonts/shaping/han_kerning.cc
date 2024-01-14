@@ -135,6 +135,11 @@ bool HanKerning::MaybeOpen(UChar ch) {
   return type == CharType::kOpen || type == CharType::kOpenQuote;
 }
 
+bool HanKerning::MaybeClose(UChar ch) {
+  const CharType type = Character::GetHanKerningCharType(ch);
+  return type == CharType::kClose || type == CharType::kCloseQuote;
+}
+
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
@@ -177,7 +182,7 @@ void HanKerning::Compute(const String& text,
   // Compute for the first character.
   Vector<wtf_size_t, 32> indices;
   CharType last_type;
-  if (options.apply_start) {
+  if (UNLIKELY(options.apply_start)) {
     indices.push_back(start);
     last_type = GetCharType(text[start], font_data);
   } else if (start) {
@@ -194,7 +199,9 @@ void HanKerning::Compute(const String& text,
   if (font_data.has_contextual_spacing) {
     // The `chws` feature can handle charcters in a run.
     // Compute the end edge if there are following runs.
-    if (end < text.length()) {
+    if (UNLIKELY(options.apply_end)) {
+      indices.push_back(end - 1);
+    } else if (end < text.length()) {
       if (end - 1 > start) {
         last_type = GetCharType(text[end - 1], font_data);
       }
@@ -218,7 +225,9 @@ void HanKerning::Compute(const String& text,
     }
 
     // Compute for the last character.
-    if (end < text.length()) {
+    if (UNLIKELY(options.apply_end)) {
+      indices.push_back(end - 1);
+    } else if (end < text.length()) {
       type = GetCharType(text[end], font_data);
       if (ShouldKernLast(type, last_type)) {
         indices.push_back(end - 1);
