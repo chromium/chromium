@@ -211,6 +211,13 @@ BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// When enabled, Chrome will trigger 3DS authentication during a virtual card
+// retrieval if a challenge is required, 3DS authentication is available for
+// the card, and FIDO is not.
+BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
+             "AutofillEnableVcn3dsAuthentication",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the vcn enroll screen will present a loading spinner while
 // enrolling the card to the server and present a confirmation screen with the
 // result when completed.

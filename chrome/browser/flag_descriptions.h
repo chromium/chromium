@@ -345,6 +345,9 @@ extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
 
+extern const char kAutofillEnableVcn3dsAuthenticationName[];
+extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
+
 extern const char kAutofillEnableNewSaveCardBubbleUiName[];
 extern const char kAutofillEnableNewSaveCardBubbleUiDescription[];
 

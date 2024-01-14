@@ -591,6 +591,13 @@ const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =
     "autofill flows (for example, downstream and upstream), and from the "
     "settings page.";
 
+const char kAutofillEnableVcn3dsAuthenticationName[] =
+    "Enable 3DS authentication for virtual cards";
+const char kAutofillEnableVcn3dsAuthenticationDescription[] =
+    "When enabled, Chrome will trigger 3DS authentication during a virtual "
+    "card retrieval if a challenge is required, 3DS authentication is "
+    "available for the card, and FIDO is not.";
+
 const char kAutofillEnableNewSaveCardBubbleUiName[] =
     "Update UI messaging and banner image for credit card upload save";
 const char kAutofillEnableNewSaveCardBubbleUiDescription[] =

@@ -693,6 +693,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "autofill-enable-vcn-3ds-authentication",
+    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "autofill-enable-vcn-enroll-loading-and-confirmation",
     "owners": [ "kavitasoni@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 127

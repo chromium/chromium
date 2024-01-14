@@ -11043,6 +11043,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUnrestrictedUsbDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kUnrestrictedUsb)},
 
+    {"autofill-enable-vcn-3ds-authentication",
+     flag_descriptions::kAutofillEnableVcn3dsAuthenticationName,
+     flag_descriptions::kAutofillEnableVcn3dsAuthenticationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableVcn3dsAuthentication)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

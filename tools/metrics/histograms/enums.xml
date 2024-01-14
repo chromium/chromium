@@ -25275,6 +25275,7 @@ from previous Chrome versions.
   <int value="547170394"
       label="OmniboxAlternateMatchDescriptionSeparator:disabled"/>
   <int value="547654419" label="CrOSEnforceSystemAecAgc:enabled"/>
+  <int value="548028412" label="AutofillEnableVcn3dsAuthentication:enabled"/>
   <int value="548503129" label="ImpulseScrollAnimations:enabled"/>
   <int value="548618823" label="SyncAndroidPromosWithSingleButton:enabled"/>
   <int value="549168649"
@@ -28513,6 +28514,7 @@ from previous Chrome versions.
   <int value="2066508701" label="WebViewOriginTrials:disabled"/>
   <int value="2066848656" label="CrOSLateBootAudioHFPSwb:disabled"/>
   <int value="2067136444" label="AudioPeripheralVolumeGranularity:disabled"/>
+  <int value="2067243161" label="AutofillEnableVcn3dsAuthentication:disabled"/>
   <int value="2067634730" label="LsdPermissionPrompt:disabled"/>
   <int value="2067735898" label="WebVrAutopresentFromIntent:enabled"/>
   <int value="2067903732"
