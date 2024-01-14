@@ -160,7 +160,7 @@ Vær opmærksom på følgende:
 <translation id="6815466750807582739">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
 
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
-<translation id="6851982868877411675">Åbn Chrome-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chrome.</translation>
+<translation id="6851982868877411675">Åbn Chrome-indstillingerne i iOS, tryk på "Standardapp til browsing", og vælg Chrome.</translation>
 <translation id="6916015246697034114">Søg med stemmen i Chrome</translation>
 <translation id="6964931465519938134">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="6975725306479268850">Vælg Chrome for Autofyld</translation>
@@ -180,7 +180,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7275945473750112644">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chrome-data ryddet fra denne enhed</translation>
 <translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
-<translation id="7501046334262221972">Du kan gøre Chrome til din standardbrowser ved at åbne Indstillinger. Tryk på Standardbrowserapp, og vælg derefter Chrome.</translation>
+<translation id="7501046334262221972">Du kan gøre Chrome til din standardbrowser ved at åbne Indstillinger. Tryk på Standardapp til browsing, og vælg derefter Chrome.</translation>
 <translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
 <translation id="7581063337314642333">Gå til fanegitteret i Chrome</translation>
 <translation id="7662994914830945754">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
@@ -211,7 +211,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8459495907675268833">De valgte data er fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="850555388806794946">Sådan gør du Chrome til din standardbrowser:
   1. Åbn Indstillinger
-  2. Tryk på Standardbrowserapp
+  2. Tryk på Standardapp til browsing
   3. Vælg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8577978202917232774">Forslagene er baseret på browseraktiviteten på dine andre enheder. Log ind i Chrome på alle dine enheder for at få forslag.</translation>
