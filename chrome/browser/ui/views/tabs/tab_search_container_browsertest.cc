@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -171,4 +172,72 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   ASSERT_TRUE(
       tab_search_container()->expansion_animation_for_testing()->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       PRE_LogsSuccessWhenButtonClicked) {
+  EnableOptGuide();
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsSuccessWhenButtonClicked) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+
+  TabOrganizationService* service =
+      tab_search_container()->tab_organization_service_for_testing();
+
+  service->OnTriggerOccured(browser());
+
+  tab_search_container()->OnOrganizeButtonClicked();
+
+  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
+                                      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       PRE_LogsFailureWhenButtonDismissed) {
+  EnableOptGuide();
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsFailureWhenButtonDismissed) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+
+  TabOrganizationService* service =
+      tab_search_container()->tab_organization_service_for_testing();
+
+  service->OnTriggerOccured(browser());
+
+  tab_search_container()->OnOrganizeButtonDismissed();
+
+  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
+                                      false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       PRE_LogsFailureWhenButtonTimeout) {
+  EnableOptGuide();
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsFailureWhenButtonTimeout) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->expansion_animation_for_testing()->Reset(1);
+
+  TabOrganizationService* service =
+      tab_search_container()->tab_organization_service_for_testing();
+
+  service->OnTriggerOccured(browser());
+
+  tab_search_container()->OnOrganizeButtonTimeout();
+
+  histogram_tester.ExpectUniqueSample("Tab.Organization.Proactive.Clicked",
+                                      false, 1);
 }

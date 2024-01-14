@@ -1576,6 +1576,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
       TabOrganizationService* const service =
           TabOrganizationServiceFactory::GetForProfile(profile_);
+      CHECK(service);
+      UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
+      UMA_HISTOGRAM_BOOLEAN("Tab.Organization.TabContextMenu.Clicked", true);
+
       service->ResetSessionForBrowser(browser, GetWebContentsAt(context_index));
       service->OnUserInvokedFeature(browser);
       break;

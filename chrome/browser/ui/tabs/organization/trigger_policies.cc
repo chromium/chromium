@@ -101,7 +101,7 @@ bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
   if (current_time > cycle_start_time_ + period) {
     cycle_start_time_ += period;
     best_score = absl::nullopt;
-    base::UmaHistogramBoolean("TabOrganization.Trigger.TriggeredInPeriod",
+    base::UmaHistogramBoolean("Tab.Organization.Trigger.TriggeredInPeriod",
                               has_triggered_);
     has_triggered_ = false;
   }

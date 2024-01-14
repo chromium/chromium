@@ -23,7 +23,7 @@ TabOrganization::TabOrganization(
     TabDatas tab_datas,
     std::vector<std::u16string> names,
     absl::variant<size_t, std::u16string> current_name,
-    absl::optional<UserChoice> choice)
+    UserChoice choice)
     : names_(names),
       current_name_(current_name),
       choice_(choice),
@@ -132,9 +132,9 @@ void TabOrganization::SetFeedback(
 
 // TODO(1469128) Add UKM/UMA Logging on user accept.
 void TabOrganization::Accept() {
-  CHECK(!choice_.has_value());
+  CHECK(choice_ == UserChoice::kNoChoice);
   CHECK(IsValidForOrganizing());
-  choice_ = UserChoice::ACCEPTED;
+  choice_ = UserChoice::kAccepted;
 
   CHECK(tab_datas_.size() > 0);
   TabStripModel* tab_strip_model = tab_datas_[0]->original_tab_strip_model();
@@ -204,10 +204,9 @@ void TabOrganization::Accept() {
   }
 }
 
-// TODO(1469128) Add UKM/UMA Logging on user reject.
 void TabOrganization::Reject() {
-  CHECK(!choice_.has_value());
-  choice_ = UserChoice::REJECTED;
+  CHECK(choice_ == UserChoice::kNoChoice);
+  choice_ = UserChoice::kRejected;
 
   NotifyObserversOfUpdate();
 }

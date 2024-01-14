@@ -21,6 +21,13 @@ enum class SuggestedTabStripOrganizationReason {
   RESUMING_FROM_STANDBY = 7,
 };
 
+enum class TabOrganizationEntryPoint {
+  NONE = 0,
+  PROACTIVE = 1,
+  TAB_CONTEXT_MENU = 2,
+  THREE_DOT_MENU = 3,
+};
+
 void LogTabStripOrganizationUKM(const TabStripModel* model,
                                 SuggestedTabStripOrganizationReason reason);
 
