@@ -2082,6 +2082,7 @@
 <translation id="2540449034743108469">የቅጥያ እርምጃዎችን  ለማዳመጥ «ጀምር» የሚለውን ይጫኑ</translation>
 <translation id="2540651571961486573">የሆነ ችግር ተፈጥሯል። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="2541002089857695151">ሙሉ ማያ ገጽን መውሰድ ይትባ?</translation>
+<translation id="2541343621592284735">ካሜራ እና ማይክሮፎን አይፈቀዱም</translation>
 <translation id="2541706104884128042">አዲስ የመኝታ ሰዓት ተቀናብሯል</translation>
 <translation id="2542050502251273923">ff_debugን በመጠቀም የአውታረ መረብ ግንኙነት አስተዳዳሪ ስህተት ማረሚያ ደረጃን እና ሌሎች አገልግሎቶችን ያቀናብራል።</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{ለ«<ph name="APP_NAME" />» የሚፈቅዷቸው ፈቃዶች ለዚህ መተግበሪያም ይፈቀዳሉ። <ph name="MANAGE_LINK" />}one{ለ«<ph name="APP_NAME" />» የሚፈቅዷቸው ፈቃዶች ለዚህ መተግበሪያም ይፈቀዳሉ። <ph name="MANAGE_LINK" />}other{ለ«<ph name="APP_NAME" />» የሚፈቅዷቸው ፈቃዶች ለእነዚህ መተግበሪያዎችም ይፈቀዳሉ። <ph name="MANAGE_LINK" />}}</translation>
@@ -3154,6 +3155,7 @@
 <translation id="3406605057700382950">&amp;የዕልባቶች አሞሌ አሳይ</translation>
 <translation id="3407392651057365886">ተጨማሪ ገጾች ቅድሚያ ይጫናሉ። ገጾች በሌሎች ጣቢያዎች ሲጠየቁ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
 <translation id="3407967630066378878">የጣት አሻራን ለማዋቀር ከዚህ <ph name="DEVICE_TYPE" /> በግራ-እጅ በኩል የሚገኘውን የጣት አሻራ ዳሳሽ ልጅዎ እንዲነኩት ያድርጉ። የልጅዎ የጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
+<translation id="3408555740610481810">ካሜራ እና ማይክሮፎን በጥቅም ላይ ናቸው</translation>
 <translation id="3409513286451883969">&amp;ምርጫዎችን ወደ <ph name="LANGUAGE" /> ይተርጉሙ</translation>
 <translation id="3409785640040772790">ካርታዎች</translation>
 <translation id="3412265149091626468">ወደ ተመረጠው ዝለል</translation>
@@ -3414,6 +3416,7 @@
 <translation id="3617062258679844578">ጠቅ ለማድረግ የመዳሰሻ ሰሌዳዎን ጫን ከማለት ይልቅ መታ ያድርጉ</translation>
 <translation id="3617891479562106823">ዳራዎች አይገኙም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="3618286417582819036">ይቅርታ፣ ስህተት ተከስቷል</translation>
+<translation id="3618647122592024084">Google የይለፍ ቃል አስተዳዳሪን ሲጠቀሙ አሁን <ph name="RECIPIENT_NAME" /> የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል መጠቀም ይችላል። በመለያ ለመግባት ወደ <ph name="WEBSITE" /> እንዲሄዱ ይንገሯቸው።</translation>
 <translation id="3619115746895587757">ካፑቺኖ</translation>
 <translation id="3619294456800709762">ጣቢያዎች በራስ-ሰር ስዕል-ላይ-ስዕል መግባት ይችላሉ</translation>
 <translation id="3620136223548713675">ጂዮ አካባቢ</translation>
@@ -7923,6 +7926,7 @@
 <translation id="7189965711416741966">የጣት አሻራ ታክሏል።</translation>
 <translation id="7191063546666816478">አንዳንድ የሚደገፉ አገናኞች አሁንም በ<ph name="APP_NAME" />፣ <ph name="APP_NAME_2" />፣ <ph name="APP_NAME_3" /> እና በ<ph name="NUMBER_OF_OTHER_APPS" /> ሌሎች መተግበሪያዎች ውስጥ ይከፈታሉ።</translation>
 <translation id="7191159667348037">ያልታወቀ አታሚ (ዩኤስቢ)</translation>
+<translation id="7191632649590906354">አሁን የእርስዎ የቤተሰብ አባላት Google የይለፍ ቃል አስተዳዳሪን ሲጠቀሙ የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል መጠቀም ይችላሉ። በመለያ ለመግባት ወደ <ph name="WEBSITE" /> እንዲሄዱ ይንገሯቸው።</translation>
 <translation id="7193051357671784796">ይህ መተግበሪያ በድርጅትዎ ነው የታከለው። የመተግበሪያውን ጭነት ለመጨረስ ዳግም ያስጀምሩት።</translation>
 <translation id="7193374945610105795">ለ<ph name="ORIGIN" /> ምንም የይለፍ ቃላት አልተቀመጡም</translation>
 <translation id="7193663868864659844">ለተጠቆሙ ቡድኖች ግብረመልስ ይላኩ።</translation>
@@ -8734,6 +8738,7 @@
 <translation id="779308894558717334">ፈካ ያለ አረንጓዴ</translation>
 <translation id="7793098747275782155">ጠቆር ያለ ሰማያዊ</translation>
 <translation id="7796453472368605346">የንባብ ምልክቶች</translation>
+<translation id="7797037459724039462">ሜዳ፣ የዘይት የቀለም ስዕል፣ አእምሯዊ፣ ቢጫ</translation>
 <translation id="7797571222998226653">ጠፍቷል</translation>
 <translation id="7798504574384119986">የድር ፈቃዶችን ተመልከት</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> በራስ-ሰር ታግዷል</translation>

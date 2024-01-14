@@ -230,6 +230,7 @@
 <translation id="1406812885827747674">በዚህ ጊዜ ፍቀድ</translation>
 <translation id="1407135791313364759">ሁሉንም ክፈት</translation>
 <translation id="1408787208417187241">ሦስቴ ከላይ በስቴፕለር ምታ</translation>
+<translation id="1410365862999780287">ይህን መሳሪያ የሚጠቀሙ ሌሎች የእርስዎን እንቅስቃሴ ማየት አይችሉም፣ ስለዚህ የበለጠ በግል ማሰስ ይችላሉ። ይህ እርስዎ በሚጎበኟቸው ድረ ገጾች እና፣ Googleን ጨምሮ እነሱ በሚጠቀሙባቸው አገልግሎቶች መረጃ እንዴት እንደሚሰበሰብ አይቀይረውም። ውርዶች፣ ዕልባቶች እና የንባብ ዝርዝር ንጥሎች ይቀመጣሉ።</translation>
 <translation id="1410941016594047814">ኢንቫይት ፖስታ</translation>
 <translation id="1413407968866574823">የእርምጃ እና መሰረተ ስርዓት ጨዋታዎች</translation>
 <translation id="1413809658975081374">የግላዊነት ስህተት</translation>
@@ -688,6 +689,7 @@
 <translation id="2289385804009217824">ከርክም</translation>
 <translation id="2292556288342944218">የእርስዎ የበየነመረብ መዳረሻ ታግዷል</translation>
 <translation id="2293443924986248631">ሲበራ ጣቢያዎች እርስዎን በመላው ድር ላይ የሚከታተሉ ኩኪዎችን መጠቀም አይችሉም። በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊሰበሩ ይችላሉ።</translation>
+<translation id="2295831393422400053">እንድጽፍ አግዘኝን ለመጠቀም ፍለጋዎችን እና የተሻለ አሰሳን ቅንብርን ያብሩ</translation>
 <translation id="2300306941146563769">አልተሰቀለም</translation>
 <translation id="230286397113210245">ማንነትን የማያሳውቅ መስኮት አዝራርን ይክፈቱ፣ በግል እንዲያስሱ አዲስ ማንነትን የማያሳውቅ መስኮት ለመክፈት ያግብሩ</translation>
 <translation id="2312234273148520048">ማጣፈጫዎች እና ቅመሞች</translation>
@@ -749,6 +751,12 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ሁሉንም የ<ph name="PROTOCOL" /> አገናኞች እንዲከፍት ይፈቀድለት?</translation>
 <translation id="2438874542388153331">በቀኝ በኩል አራቴ ብሳ</translation>
 <translation id="2441854154602066476">በንክኪ ለመሞላት የሚገኙ የመክፈያ ዘዴዎች። ቁልፍ ሰሌዳ ተደብቋል።</translation>
+<translation id="2442865686365739754">Chrome የሚከተሉትን <ph name="BEGIN_EMPHASIS" />አያስቀምጥም<ph name="END_EMPHASIS" />፦
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />የአሰሳ ታሪክዎ
+            <ph name="LIST_ITEM" />ኩኪዎች እና የጣቢያ ውሂብ
+            <ph name="LIST_ITEM" />በቅጾች ውስጥ የገባ መረጃ
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">እርስዎ በመለያ ገብተው ሳለ ተቀጥላዎች ከዚህ መሣሪያ ጋር ተያይዘዋል</translation>
 <translation id="2450021089947420533">ጉዞዎች</translation>
 <translation id="2456755709261364512">ባትሪዎ ከ<ph name="REQUIRED_BATTERY_PRECENT" />% በላይ ኃይል መሙላት አለበት</translation>
@@ -792,6 +800,7 @@
 <translation id="2535585790302968248">በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትርን ክፈት</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
 <translation id="2536110899380797252">አድራሻ ያክሉ</translation>
+<translation id="2537931901612099523">ይህን መሳሪያ የሚጠቀሙ ሌሎች የእርስዎን እንቅስቃሴ ማየት አይችሉም፣ ስለዚህ የበለጠ በግል ማሰስ ይችላሉ። ይህ እርስዎ በሚጎበኟቸው ድረ ገጾች እና፣ Googleን ጨምሮ እነሱ በሚጠቀሙባቸው አገልግሎቶች መረጃ እንዴት እንደሚሰበሰብ አይቀይረውም። ውርዶች እና ዕልባቶች ይቀመጣሉ።</translation>
 <translation id="2539524384386349900">አግኝ</translation>
 <translation id="2541219929084442027">ማንነትን በማያሳውቅ ትሮች ውስጥ የሚያዩዋቸው ገጾች ሁሉንም ማንነት የማያሳውቁ ትሮችዎን ከዘጉ በኋላ በአሳሽዎ ታሪክ፣ የኩኪ ማከማቻ፣ ወይም የፍለጋ ታሪክ ውስጥ አይቀመጡም። ማንነት በማያስውቅ ሁነታ መሥራት የሌሎች ሰዎች፣ አገልጋዮች፣ ሶፍትዌሮች ወይም ከጀርባዎ በቆሙ የሌሎች ሰዎች ባህሪ ላይ ለውጥ አያመጣም።</translation>
 <translation id="2542106216580219892">ሰርፊንግ</translation>
@@ -1703,6 +1712,7 @@
 <translation id="4333295216031073611">የሚገዙ ነገሮች ዝርዝር</translation>
 <translation id="4333561522337981382">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ማስተዳደር</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ነገ ጊዜው ያበቃል}one{በ# ቀን ውስጥ ጊዜው ያበቃል}other{በ# ቀናት ውስጥ ጊዜው ያበቃል}}</translation>
+<translation id="4336913590841287350">ይህ መመሪያ በiOS ላይ እንደ ተጠቃሚ መመሪያ ገና አልተደገፈም።</translation>
 <translation id="4340575312453649552">ይህ ማስታወቂያ ለመሣሪያዎ በጣም ብዙ ሀብቶችን ተጠቅሟል፣ ስለዚህ Chrome አስወግደውታል።</translation>
 <translation id="4340810192899866471">ከJSON አምጣ</translation>
 <translation id="4340982228985273705">ይህ ኮምፒውተር እንደ በድርጅት የሚተዳደር ሆኖ አይታይም፣ ስለዚህ መመሪያ በChrome የድር ማከማቻ ላይ የሚስተናገዱ ቅጥያዎችን ብቻ በራስ-ሰር ነው መጫን የሚችለው። የChrome ድር ማከማቻው ዝማኔ ዩአርኤል «<ph name="CWS_UPDATE_URL" />» ነው።</translation>
@@ -2229,6 +2239,12 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ምንም ጣቢያዎች አላገዱም}=1{1 ጣቢያ አግዷል}one{# ጣቢያ አግዷል}other{# ጣቢያዎች አግደዋል}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
 <translation id="5430298929874300616">ዕልባት አስወግድ</translation>
+<translation id="5434798570900738152">Chromium የሚከተሉትን<ph name="BEGIN_EMPHASIS" />አያስቀምጥም<ph name="END_EMPHASIS" />፦
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />የአሰሳ ታሪክዎ
+            <ph name="LIST_ITEM" />ኩኪዎች እና የጣቢያ ውሂብ
+            <ph name="LIST_ITEM" />በቅጾች ውስጥ የገባው መረጃ
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> የእርስዎን MIDI መሣሪያዎች (SysEx) መቆጣጠር እና ዳግም ፕሮግራም ማድረግ ይፈልጋል</translation>
 <translation id="5443468954631487277">ተቃራኒ ቅደም-ተከተል ፊቱ ወደ ላይ</translation>
 <translation id="5447235695608032700">ስለ እርስዎ ያስቀመጡትን መረጃ እንዲጠቀም <ph name="SITE" /> ለሚለው ይፍቀዱ</translation>
@@ -2468,6 +2484,7 @@
 <translation id="5925040402342933574">ኦፕቲካል ዲስክ (በግማሽ አንጸባራቂ)</translation>
 <translation id="5926982310317673627">ጂሞች እና የጤና ክበቦች</translation>
 <translation id="5928444777041341328">ቤት እና የአትክልት ስፍራ</translation>
+<translation id="5930147475897662863">እንድጽፍ አግዘኝን ለመጠቀም ይህን ቅንብር ያብሩ</translation>
 <translation id="5932224571077948991">ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል</translation>
 <translation id="5937560539988385583">ገፅ ተተርጉሟል</translation>
 <translation id="5938153366081463283">ምናባዊ ካርድ ያክሉ</translation>
@@ -3115,6 +3132,7 @@
 <translation id="7192537357091279678">የኮምፒውተር አንጻፊዎች እና ማከማቻዎች</translation>
 <translation id="7193661028827781021">ዋቢ</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195852673246414183">ይህን ቅንብር ካበሩት በኋላ፣ መጻፍ ለመጀመር ወደዚህ ትር ይመለሱ</translation>
 <translation id="7199278868241956094">ኦፊኮ</translation>
 <translation id="7201591969684833065">የእርስዎ አስተዳዳሪ እነዚህን መመልከት ይችላል፦</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑና ከዚያ በግል እንዲያስሱ አዲስ ማንነት የማያሳውቅ ትርን ለመክፈት አስገባን ይጫኑ</translation>
@@ -3693,6 +3711,7 @@
 <translation id="8286036467436129157">ግባ</translation>
 <translation id="8286799286781881307">በእርስዎ አስተዳዳሪ ፈቃድ የተሰጣቸው መተግበሪያዎች ከመሣሪያዎ ጋር የተያያዙትን ሁሉም ማያ ገጾች መቅረጽ ይችላሉ። ይህ መረጃ በአካባቢያዊ ሊሰናዳ ወይም ወደ ድርጅትዎ አገልጋዮች ሊሰቀል ይችላል።</translation>
 <translation id="8287123726498397887">ፖስታ (ቀድሞ የታተመ)</translation>
+<translation id="8288320283441806607">ይህንን ባህሪ ለመጠቀም፣ ፍለጋዎችን እና የተሻለ አሰሳን ያብሩ</translation>
 <translation id="8288807391153049143">የእውቅና ማረጋገጫን አሳይ</translation>
 <translation id="8289355894181816810">ይሄ ምን ማለት እንደሆነ እርግጠኛ ካልሆኑ የአውታረ መረብ አስተዳዳሪዎን ያግኙ።</translation>
 <translation id="8292520987784410870">ሁልጊዜ አረጋግጥ?</translation>
@@ -4015,6 +4034,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">ህግ እና መንግስት</translation>
 <translation id="8954252855949068147">አልባሳት</translation>
+<translation id="8956124158020778855">ይህን ቅንብር ካበሩት በኋላ፣ መጻፍ ለመጀመር ወደዚህ ትር ይመለሱ።</translation>
 <translation id="8957210676456822347">የተያዥ መግቢያ ፈቀዳ</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">ወደ የጣቢያ ቅንብሮች ይሂዱ</translation>

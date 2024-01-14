@@ -268,12 +268,15 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> yra jūsų kodas, skirtas <ph name="EMBEDDED_ORIGIN" />, norint tęsti veiklą adresu <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Rodyti daugiau</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Įveskite tris ar daugiau žodžių, kad gautumėte pagalbos rašydami</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Valymo paslaugų teikėjai</translation>
 <translation id="1475299637784133125">Ieškote naršyklės versijos? Apsilankykite adresu</translation>
 <translation id="1476595624592550506">Pakeiskite slaptažodį</translation>
 <translation id="1482879811280872320">Važiavimas dviračiu</translation>
 <translation id="1483493594462132177">Siųsti</translation>
+<translation id="1484449009683144042">Tai yra eksperimentinė DI rašymo priemonė, kuri ne visada pateiks tinkamą atsakymą.
+    <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Politikos gavimas:</translation>
 <translation id="14938948731065592">Kompiuterių išoriniai įrenginiai</translation>
 <translation id="1495677929897281669">Atgal į skirtuką</translation>
@@ -419,6 +422,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> „Chrome“ nustato dominančias temas, kai naršote. Temų etiketės nustatomos iš anksto ir apima tokias temas kaip menas ir pramogos, apsipirkimas ir sportas. Vėliau svetainė, kurioje lankotės, gali prašyti „Chrome“ informacijos apie kelias temas (bet ne naršymo istorijos), kad galėtų suasmeninti jums rodomus skelbimus.</translation>
 <translation id="1746113442205726301">Sukti vaizdą pagal Y ašį</translation>
 <translation id="1746531169546376413">0 laipsnių</translation>
+<translation id="1748225549612934682">Sutrumpinkite tekstą, kad gautumėte pagalbos rašydami</translation>
 <translation id="1751544761369730824">Ištrinti svetainę <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">8 pašto dėžutė</translation>
 <translation id="1753068535428855445">Pažinčių ir asmeniniai skelbimai</translation>
@@ -872,6 +876,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2677696497921480781">Gimtadieniai ir vardadieniai</translation>
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2678468611080193228">Pabandykite laikinai leisti trečiųjų šalių slapukus, o tai reiškia, kad turėsite mažiau apsaugos, bet labiau tikėtina, kad svetainės funkcijos veiks</translation>
+<translation id="2686919536310834199">Siųsti atsiliepimą apie funkciją „Padėkite man rašyti“.</translation>
 <translation id="2687555958734450033">Geriausias dydis</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Taip, tęsti</translation>
@@ -2050,6 +2055,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="503498442187459473"><ph name="HOST" /> nori naudoti kamerą ir mikrofoną</translation>
 <translation id="5035135400558156732">Sodininkystė</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">Prisijunkite dar kartą, tada sugrįžkite į šį skirtuką ir gaukite pagalbos rašydami</translation>
 <translation id="5039762155821394373">Šrifto dydis</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5040262127954254034">Privatumas</translation>
@@ -2467,6 +2473,8 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5903264686717710770">Pavadinimas:</translation>
 <translation id="5904360430676679685">Šeima ir santykiai</translation>
+<translation id="5907669856855422186">Jūsų teksto ir puslapio turinys siunčiami „Google“ ir gali būti naudojami siekiant patobulinti šią funkciją.
+  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinchronizuota)</translation>
 <translation id="5910140988253729859">Anuliuoti automatinį pildymą</translation>
 <translation id="5911020115933784199">Renginiai ir sąrašai</translation>
