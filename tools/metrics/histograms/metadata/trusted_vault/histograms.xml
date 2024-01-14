@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SecurityDomainId">
+  <variant name=".ChromeSync" summary="The security domain used for Zuul"/>
+  <variant name=".HwProtected" summary="The security domain used for passkeys"/>
+</variants>
+
+<histogram
+    name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
+    enum="DownloadAuthenticationFactorsRegistrationStateResult"
+    expires_after="2024-12-01">
+  <owner>agl@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the results of DownloadAuthenticationFactorsRegistrationState calls.
+    This function determines the recoverability state of a security domain.
+
+    It is recorded whenever DownloadAuthenticationFactorsRegistrationState is
+    called. For passkeys this happens during WebAuthn calls, in some cases
+    without a Google Password Manager passkey being selected, only present.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
 <histogram
     name="TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain"
     enum="SecurityDomainId" expires_after="2024-06-14">

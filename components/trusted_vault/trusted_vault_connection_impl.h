@@ -72,6 +72,11 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) override;
 
+  std::unique_ptr<TrustedVaultConnection::Request>
+  DownloadAuthenticationFactorsRegistrationState(
+      const CoreAccountInfo& account_info,
+      DownloadAuthenticationFactorsRegistrationStateCallback callback) override;
+
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
       const CoreAccountInfo& account_info,

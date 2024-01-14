@@ -161,6 +161,11 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
               (const CoreAccountInfo& account_info,
                IsRecoverabilityDegradedCallback),
               (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              DownloadAuthenticationFactorsRegistrationState,
+              (const CoreAccountInfo& account_info,
+               DownloadAuthenticationFactorsRegistrationStateCallback callback),
+              (override));
 };
 
 class StandaloneTrustedVaultBackendTest : public testing::Test {

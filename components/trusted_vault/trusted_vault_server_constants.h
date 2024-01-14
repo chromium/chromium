@@ -50,6 +50,7 @@ static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
               "enum values");
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();
+GURL GetGetSecurityDomainMembersURL(const GURL& server_url);
 GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
                                    base::span<const uint8_t> public_key);
 GURL GetGetSecurityDomainURL(const GURL& server_url,
@@ -58,6 +59,9 @@ GURL GetJoinSecurityDomainURL(const GURL& server_url,
                               SecurityDomainId security_domain);
 
 // Computes full URL, including alternate proto param.
+GURL GetGetSecurityDomainMembersURLForTesting(
+    const absl::optional<std::string>& next_page_token,
+    const GURL& server_url);
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url,
                                              SecurityDomainId security_domain);
 GURL GetFullGetSecurityDomainMemberURLForTesting(
@@ -69,6 +73,21 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
 std::string GetSecurityDomainName(SecurityDomainId domain);
 absl::optional<SecurityDomainId> GetSecurityDomainByName(
     base::StringPiece domain);
+
+// Returns a security domain name suitable for using in histograms. When
+// including this in a histogram, its name in the XML should have
+// "{SecurityDomainId}" where the returned string will be inserted (which
+// will include a leading period). For example:
+//   name="TrustedVault.Foo{SecurityDomainId}"
+// Will match a histogram name like:
+//   TrustedVault.Foo.ChromeSync
+//
+// Then there needs to be a <token> element in the XML entry like:
+//   <token key="SecurityDomainId" variants="SecurityDomainId"/>
+//
+// See
+// https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms
+std::string GetSecurityDomainNameForHistograms(SecurityDomainId domain);
 
 }  // namespace trusted_vault
 

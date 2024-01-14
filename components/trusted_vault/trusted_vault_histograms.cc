@@ -27,6 +27,11 @@ std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
       return "DownloadKeys";
     case TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded:
       return "DownloadIsRecoverabilityDegraded";
+    case TrustedVaultURLFetchReasonForUMA::
+        kDownloadAuthenticationFactorsRegistrationState:
+      // TODO(crbug.com/1495928): this isn't recorded until the histogram is
+      // updated to include the name of the security domain.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -84,6 +89,13 @@ void RecordTrustedVaultURLFetchResponse(
     TrustedVaultURLFetchReasonForUMA reason) {
   DCHECK_LE(net_error, 0);
   DCHECK_GE(http_response_code, 0);
+
+  // TODO(crbug.com/1495928): this isn't recorded until the histogram is
+  // updated to include the name of the security domain.
+  if (reason == TrustedVaultURLFetchReasonForUMA::
+                    kDownloadAuthenticationFactorsRegistrationState) {
+    return;
+  }
 
   const int value = http_response_code == 0 ? net_error : http_response_code;
   const std::string suffix = GetReasonSuffix(reason);

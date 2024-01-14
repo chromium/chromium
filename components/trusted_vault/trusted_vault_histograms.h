@@ -54,6 +54,7 @@ enum class TrustedVaultURLFetchReasonForUMA {
   kRegisterUnspecifiedAuthenticationFactor,
   kDownloadKeys,
   kDownloadIsRecoverabilityDegraded,
+  kDownloadAuthenticationFactorsRegistrationState,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

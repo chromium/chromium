@@ -210,6 +210,7 @@ tools/metrics/histograms/metadata/tab/enums.xml
 tools/metrics/histograms/metadata/tab/histograms.xml
 tools/metrics/histograms/metadata/translate/enums.xml
 tools/metrics/histograms/metadata/translate/histograms.xml
+tools/metrics/histograms/metadata/trusted_vault/enums.xml
 tools/metrics/histograms/metadata/trusted_vault/histograms.xml
 tools/metrics/histograms/metadata/ukm/enums.xml
 tools/metrics/histograms/metadata/ukm/histograms.xml

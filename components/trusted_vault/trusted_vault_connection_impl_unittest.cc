@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -78,6 +79,44 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
       response.mutable_security_domain();
   security_domain->set_name(GetSecurityDomainName(security_domain_id));
   security_domain->set_current_epoch(current_epoch);
+  return response;
+}
+
+enum class Member {
+  kPhysical,
+  kOtherSecurityDomain,
+  kUsableVirtual,
+  kUnusableVirtual,
+};
+
+trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
+    SecurityDomainId security_domain_id,
+    const std::vector<Member>& members,
+    absl::optional<std::string> next_page_token) {
+  trusted_vault_pb::ListSecurityDomainMembersResponse response;
+
+  for (auto member_type : members) {
+    trusted_vault_pb::SecurityDomainMember* member =
+        response.add_security_domain_members();
+    member->set_name("name");
+    member->add_memberships()->set_security_domain("other security domain");
+    if (member_type != Member::kOtherSecurityDomain) {
+      member->add_memberships()->set_security_domain(
+          GetSecurityDomainName(security_domain_id));
+    }
+
+    switch (member_type) {
+      case Member::kPhysical:
+      case Member::kOtherSecurityDomain:
+      case Member::kUnusableVirtual:
+        break;
+      case Member::kUsableVirtual:
+        member->mutable_member_metadata()->set_usable_for_retrieval(true);
+    }
+  }
+  if (next_page_token) {
+    response.set_next_page_token(*next_page_token);
+  }
   return response;
 }
 
@@ -190,6 +229,18 @@ class TrustedVaultConnectionImplTest
     base::RunLoop().RunUntilIdle();
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFullGetSecurityDomainURLForTesting(kTestURL, security_domain())
+            .spec(),
+        response_body, response_http_code);
+  }
+
+  bool RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
+      const absl::optional<std::string>& next_page_token,
+      net::HttpStatusCode response_http_code,
+      const std::string& response_body) {
+    // Allow request to reach |test_url_loader_factory_|.
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetGetSecurityDomainMembersURLForTesting(next_page_token, kTestURL)
             .spec(),
         response_body, response_http_code);
   }
@@ -872,6 +923,182 @@ TEST_P(TrustedVaultConnectionImplTest,
           security_domain(),
           /*recoverability_degraded=*/false)
           .SerializeAsString());
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadAuthenticationFactorsRegistrationState_Basic) {
+  base::MockCallback<TrustedVaultConnection::
+                         DownloadAuthenticationFactorsRegistrationStateCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadAuthenticationFactorsRegistrationState(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(
+      callback,
+      Run(DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable));
+
+  ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
+      /*next_page_token=*/absl::nullopt, net::HTTP_OK,
+      /*response_body=*/
+      MakeSecurityDomainMembers(
+          security_domain(),
+          {Member::kPhysical, Member::kOtherSecurityDomain,
+           Member::kUsableVirtual},
+          /*next_page_token=*/absl::nullopt)
+          .SerializeAsString()));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadAuthenticationFactorsRegistrationState_Cases) {
+  const struct TestCase {
+    // responses contains the set of security domain members included in each
+    // page of results from the "server".
+    std::vector<std::vector<Member>> responses;
+    DownloadAuthenticationFactorsRegistrationStateResult expected_result;
+    // The enumeration can finish before downloading all the pages of results
+    // if it has seen enough to determine the result. This value specifies the
+    // number of pages that should be downloaded.
+    int expected_num_pages_downloaded;
+  } kTestCases[] = {
+      {
+          {{}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kEmpty,
+          1,
+      },
+      {
+          {{}, {}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kEmpty,
+          2,
+      },
+      {
+          {{Member::kOtherSecurityDomain}, {Member::kOtherSecurityDomain}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kEmpty,
+          2,
+      },
+      {
+          {{Member::kPhysical}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
+          1,
+      },
+      {
+          {{Member::kPhysical, Member::kUsableVirtual}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable,
+          1,
+      },
+      {
+          {{Member::kPhysical, Member::kUnusableVirtual}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
+          1,
+      },
+      {
+          {{Member::kPhysical}, {}, {Member::kUsableVirtual}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable,
+          3,
+      },
+      {
+          {{Member::kUsableVirtual}, {}, {Member::kPhysical}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable,
+          1,
+      },
+      {
+          {{Member::kPhysical}, {}, {Member::kUnusableVirtual}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
+          3,
+      },
+      {
+          {{Member::kPhysical}, {}, {Member::kOtherSecurityDomain}},
+          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
+          3,
+      },
+  };
+
+  int test_case = 0;
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test_case);
+    test_case++;
+
+    absl::optional<DownloadAuthenticationFactorsRegistrationStateResult> result;
+    auto callback = base::BindLambdaForTesting(
+        [&result](
+            DownloadAuthenticationFactorsRegistrationStateResult in_result) {
+          result = in_result;
+        });
+
+    std::unique_ptr<TrustedVaultConnection::Request> request =
+        connection()->DownloadAuthenticationFactorsRegistrationState(
+            /*account_info=*/CoreAccountInfo(), std::move(callback));
+    ASSERT_THAT(request, NotNull());
+
+    absl::optional<std::string> prev_next_page_token;
+    int num_pages_downloaded = 0;
+    for (size_t i = 0; i < test.responses.size(); i++) {
+      if (result.has_value()) {
+        // The process stopped early. (This is valid if enough members have been
+        // seen to determine the result.)
+        break;
+      }
+
+      absl::optional<std::string> next_page_token;
+      if (i < test.responses.size() - 1) {
+        next_page_token = base::NumberToString(i);
+      }
+      ASSERT_TRUE(
+          RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
+              prev_next_page_token, net::HTTP_OK,
+              /*response_body=*/
+              MakeSecurityDomainMembers(security_domain(), test.responses[i],
+                                        next_page_token)
+                  .SerializeAsString()));
+      num_pages_downloaded++;
+      prev_next_page_token = std::move(next_page_token);
+    }
+
+    EXPECT_EQ(num_pages_downloaded, test.expected_num_pages_downloaded);
+    EXPECT_EQ(result.value(), test.expected_result);
+  }
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadAuthenticationFactorsRegistrationState_Error) {
+  base::MockCallback<TrustedVaultConnection::
+                         DownloadAuthenticationFactorsRegistrationStateCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadAuthenticationFactorsRegistrationState(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(
+      callback,
+      Run(DownloadAuthenticationFactorsRegistrationStateResult::kError));
+
+  ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
+      /*next_page_token=*/absl::nullopt, net::HTTP_INTERNAL_SERVER_ERROR,
+      /*response_body=*/""));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       DownloadAuthenticationFactorsRegistrationState_InvalidResponse) {
+  base::MockCallback<TrustedVaultConnection::
+                         DownloadAuthenticationFactorsRegistrationStateCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadAuthenticationFactorsRegistrationState(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(
+      callback,
+      Run(DownloadAuthenticationFactorsRegistrationStateResult::kError));
+
+  ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
+      /*next_page_token=*/absl::nullopt, net::HTTP_OK,
+      /*response_body=*/"not a valid protobuf"));
 }
 
 }  // namespace

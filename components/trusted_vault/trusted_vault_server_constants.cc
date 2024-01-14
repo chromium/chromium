@@ -16,6 +16,11 @@ std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
 }
 
+GURL GetGetSecurityDomainMembersURL(const GURL& server_url) {
+  // View three is `SECURITY_DOMAIN_MEMBER_METADATA`.
+  return GURL(server_url.spec() + kSecurityDomainMemberNamePrefix + "?view=3");
+}
+
 GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
                                    base::span<const uint8_t> public_key) {
   std::string encoded_public_key;
@@ -37,6 +42,17 @@ GURL GetJoinSecurityDomainURL(const GURL& server_url,
                               SecurityDomainId security_domain) {
   return GURL(server_url.spec() + GetSecurityDomainName(security_domain) +
               ":join");
+}
+
+GURL GetGetSecurityDomainMembersURLForTesting(
+    const absl::optional<std::string>& next_page_token,
+    const GURL& server_url) {
+  GURL url = GetGetSecurityDomainMembersURL(server_url);
+  if (next_page_token) {
+    url = net::AppendQueryParameter(url, "page_token", *next_page_token);
+  }
+  return net::AppendQueryParameter(url, kQueryParameterAlternateOutputKey,
+                                   kQueryParameterAlternateOutputProto);
 }
 
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url,
@@ -83,6 +99,19 @@ absl::optional<SecurityDomainId> GetSecurityDomainByName(
   return base::Contains(kSecurityDomainNames, name)
              ? absl::make_optional(kSecurityDomainNames.at(name))
              : absl::nullopt;
+}
+
+std::string GetSecurityDomainNameForHistograms(SecurityDomainId domain) {
+  switch (domain) {
+    // These strings get embedded in histogram names and so should not be
+    // changed.
+    case SecurityDomainId::kChromeSync:
+      return "ChromeSync";
+    case SecurityDomainId::kPasskeys:
+      return "HwProtected";
+      // If adding a new value, also update the variants for SecurityDomainId
+      // in tools/metrics/histograms/metadata/trusted_vault/histograms.xml.
+  }
 }
 
 }  // namespace trusted_vault
