@@ -218,20 +218,21 @@ bool CreateUrlFile(const base::FilePath& file, const std::wstring& url) {
 class TestObserver : public ProfileWriter,
                      public importer::ImporterProgressObserver {
  public:
-  explicit TestObserver(uint16_t importer_items)
+  TestObserver(uint16_t importer_items, base::OnceClosure quit_closure)
       : ProfileWriter(NULL),
         bookmark_count_(0),
         history_count_(0),
         favicon_count_(0),
         homepage_count_(0),
-        importer_items_(importer_items) {}
+        importer_items_(importer_items),
+        quit_closure_(std::move(quit_closure)) {}
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
   void ImportItemStarted(importer::ImportItem item) override {}
   void ImportItemEnded(importer::ImportItem item) override {}
   void ImportEnded() override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
     if (importer_items_ & importer::FAVORITES) {
       EXPECT_EQ(std::size(kIEBookmarks), bookmark_count_);
       EXPECT_EQ(std::size(kIEFaviconGroup), favicon_count_);
@@ -326,13 +327,16 @@ class TestObserver : public ProfileWriter,
   size_t favicon_count_;
   size_t homepage_count_;
   uint16_t importer_items_;
+  base::OnceClosure quit_closure_;
 };
 
 class MalformedFavoritesRegistryTestObserver
     : public ProfileWriter,
       public importer::ImporterProgressObserver {
  public:
-  MalformedFavoritesRegistryTestObserver() : ProfileWriter(NULL) {
+  explicit MalformedFavoritesRegistryTestObserver(
+      base::OnceClosure quit_closure)
+      : ProfileWriter(NULL), quit_closure_(std::move(quit_closure)) {
     bookmark_count_ = 0;
   }
 
@@ -341,7 +345,7 @@ class MalformedFavoritesRegistryTestObserver
   void ImportItemStarted(importer::ImportItem item) override {}
   void ImportItemEnded(importer::ImportItem item) override {}
   void ImportEnded() override {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
     EXPECT_EQ(std::size(kIESortedBookmarks), bookmark_count_);
   }
 
@@ -369,6 +373,7 @@ class MalformedFavoritesRegistryTestObserver
   ~MalformedFavoritesRegistryTestObserver() override {}
 
   size_t bookmark_count_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -457,8 +462,9 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   // Starts to import the above settings.
   // Deletes itself.
   ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
-  TestObserver* observer =
-      new TestObserver(importer::HISTORY | importer::FAVORITES);
+  base::RunLoop loop;
+  TestObserver* observer = new TestObserver(
+      importer::HISTORY | importer::FAVORITES, loop.QuitWhenIdleClosure());
   host->set_observer(observer);
 
   importer::SourceProfile source_profile;
@@ -467,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
 
   host->StartImportSettings(source_profile, browser()->profile(),
                             importer::HISTORY | importer::FAVORITES, observer);
-  base::RunLoop().Run();
+  loop.Run();
 
   // Cleans up.
   url_history_stg2->DeleteUrl(base::as_wcstr(kIEIdentifyUrl), 0);
@@ -532,8 +538,9 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
     // Starts to import the above settings.
     // Deletes itself.
     ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
+    base::RunLoop loop;
     MalformedFavoritesRegistryTestObserver* observer =
-        new MalformedFavoritesRegistryTestObserver();
+        new MalformedFavoritesRegistryTestObserver(loop.QuitWhenIdleClosure());
     host->set_observer(observer);
 
     importer::SourceProfile source_profile;
@@ -545,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
         browser()->profile(),
         importer::FAVORITES,
         observer);
-    base::RunLoop().Run();
+    loop.Run();
   }
 }
 
@@ -553,7 +560,9 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
   // Starts to import the IE home page.
   // Deletes itself.
   ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
-  TestObserver* observer = new TestObserver(importer::HOME_PAGE);
+  base::RunLoop loop;
+  TestObserver* observer =
+      new TestObserver(importer::HOME_PAGE, loop.QuitWhenIdleClosure());
   host->set_observer(observer);
 
   std::wstring key_path(importer::GetIESettingsKey());
@@ -571,5 +580,5 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
       browser()->profile(),
       importer::HOME_PAGE,
       observer);
-  base::RunLoop().Run();
+  loop.Run();
 }
