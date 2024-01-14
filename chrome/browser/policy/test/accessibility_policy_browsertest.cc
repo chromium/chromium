@@ -215,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, StickyKeysEnabled) {
   EXPECT_FALSE(accessibility_manager->IsStickyKeysEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, VirtualKeyboardEnabled) {
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest,
+                       TouchVirtualKeyboardEnabledDefault) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);
 
@@ -227,6 +228,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, VirtualKeyboardEnabled) {
   EXPECT_TRUE(keyboard_client->is_keyboard_enabled());
   ClearEnableFlag(keyboard::KeyboardEnableFlag::kTouchEnabled);
   EXPECT_FALSE(keyboard_client->is_keyboard_enabled());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest,
+                       TouchVirtualKeyboardEnabledTrueEnablesVirtualKeyboard) {
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  ASSERT_TRUE(keyboard_client);
 
   // Verify enabling the policy takes effect immediately and that that user
   // cannot disable the keyboard..
@@ -238,9 +245,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, VirtualKeyboardEnabled) {
   EXPECT_TRUE(keyboard_client->is_keyboard_enabled());
   ClearEnableFlag(keyboard::KeyboardEnableFlag::kTouchEnabled);
   EXPECT_TRUE(keyboard_client->is_keyboard_enabled());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityPolicyTest,
+    TouchVirtualKeyboardEnabledFalseDisablesVirtualKeyboard) {
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  ASSERT_TRUE(keyboard_client);
 
   // Verify that disabling the policy takes effect immediately and that the user
   // cannot enable the keyboard.
+  PolicyMap policies;
   policies.Set(key::kTouchVirtualKeyboardEnabled, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
