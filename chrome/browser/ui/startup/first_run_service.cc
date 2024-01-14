@@ -241,7 +241,18 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
 #endif
 
   if (policy_effect != PolicyEffect::kNone) {
-    FinishFirstRun(FinishedReason::kSkippedByPolicies);
+    FinishedReason reason = FinishedReason::kSkippedByPolicies;
+    if (signin_util::IsForceSigninEnabled() &&
+        base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+      // When ForceSignin is enabled and the flows are going through the profile
+      // picker, the final profile setup should not yet be reached. The
+      // rest of the flow is still happening within the Profile Picker, either
+      // the management acceptance screen for Managed accounts, or the Sync
+      // Confirmation screen for Consumer accounts.
+      reason = FinishedReason::kForceSignin;
+    }
+
+    FinishFirstRun(reason);
     return;
   }
 
@@ -331,6 +342,9 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
       break;
     case FinishedReason::kSkippedByPolicies:
       outcome = ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies;
+      break;
+    case FinishedReason::kForceSignin:
+      NOTREACHED() << "Force Signin policy value is not active on Lacros.";
       break;
   }
 
