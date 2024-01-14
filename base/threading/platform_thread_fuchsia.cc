@@ -85,8 +85,8 @@ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
 
 // static
 void PlatformThread::SetName(const std::string& name) {
-  zx_status_t status = zx_object_set_property(CurrentId(), ZX_PROP_NAME,
-                                              name.data(), name.size());
+  zx_status_t status =
+      zx::thread::self()->set_property(ZX_PROP_NAME, name.data(), name.size());
   DCHECK_EQ(status, ZX_OK);
 
   SetNameCommon(name);
