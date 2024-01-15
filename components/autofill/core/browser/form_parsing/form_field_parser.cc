@@ -28,7 +28,7 @@
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/phone_field.h"
+#include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
 #include "components/autofill/core/browser/form_parsing/search_field.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
@@ -140,7 +140,7 @@ void FormFieldParser::ParseFormFields(
   bool found_email_field = !field_candidates.empty();
 
   // Phone pass.
-  ParseFormFieldsPass(PhoneField::Parse, context, processed_fields,
+  ParseFormFieldsPass(PhoneFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   // Travel pass.

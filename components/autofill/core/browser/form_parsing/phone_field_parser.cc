@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/phone_field.h"
+#include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 
 #include <algorithm>
 #include <memory>
@@ -53,7 +53,7 @@ std::u16string GetAreaRegex() {
 
 }  // namespace
 
-PhoneField::~PhoneField() = default;
+PhoneFieldParser::~PhoneFieldParser() = default;
 
 // Phone field grammars - first matched grammar will be parsed. Suffix and
 // extension are parsed separately unless they are necessary parts of the match.
@@ -66,7 +66,8 @@ PhoneField::~PhoneField() = default;
 // :N means field is limited to N characters, otherwise it is unlimited.
 // (pattern <field>)? means pattern is optional and matched separately.
 // static
-const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
+const std::vector<PhoneFieldParser::PhoneGrammar>&
+PhoneFieldParser::GetPhoneGrammars() {
   static const base::NoDestructor<std::vector<PhoneGrammar>> grammars({
       // Country code: <cc> Area Code: <ac> Phone: <phone>
       {{REGEX_COUNTRY, FIELD_COUNTRY_CODE},
@@ -136,7 +137,7 @@ const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
 }
 
 // static
-bool PhoneField::LikelyAugmentedPhoneCountryCode(
+bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
     AutofillScanner* scanner,
     raw_ptr<AutofillField>* matched_field) {
   AutofillField* field = scanner->Cursor();
@@ -189,10 +190,10 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 }
 
 // static
-bool PhoneField::ParseGrammar(ParsingContext& context,
-                              const PhoneGrammar& grammar,
-                              ParsedPhoneFields& parsed_fields,
-                              AutofillScanner* scanner) {
+bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
+                                    const PhoneGrammar& grammar,
+                                    ParsedPhoneFields& parsed_fields,
+                                    AutofillScanner* scanner) {
   for (const auto& rule : grammar) {
     const bool is_country_code_field = rule.phone_part == FIELD_COUNTRY_CODE;
 
@@ -234,8 +235,9 @@ bool PhoneField::ParseGrammar(ParsingContext& context,
 }
 
 // static
-std::unique_ptr<FormFieldParser> PhoneField::Parse(ParsingContext& context,
-                                                   AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return nullptr;
 
@@ -282,10 +284,10 @@ std::unique_ptr<FormFieldParser> PhoneField::Parse(ParsingContext& context,
                   &parsed_fields[FIELD_EXTENSION], "kPhoneExtensionRe",
                   /*is_country_code_field=*/false, "PHONE_EXTENSION");
 
-  return base::WrapUnique(new PhoneField(std::move(parsed_fields)));
+  return base::WrapUnique(new PhoneFieldParser(std::move(parsed_fields)));
 }
 
-void PhoneField::AddClassifications(
+void PhoneFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   DCHECK(parsed_phone_fields_[FIELD_PHONE]);  // Phone was correctly parsed.
 
@@ -350,11 +352,11 @@ void PhoneField::AddClassifications(
   }
 }
 
-PhoneField::PhoneField(ParsedPhoneFields fields)
+PhoneFieldParser::PhoneFieldParser(ParsedPhoneFields fields)
     : parsed_phone_fields_(std::move(fields)) {}
 
 // static
-std::u16string PhoneField::GetRegExp(RegexType regex_id) {
+std::u16string PhoneFieldParser::GetRegExp(RegexType regex_id) {
   switch (regex_id) {
     case REGEX_COUNTRY:
       return kCountryCodeRe;
@@ -383,7 +385,7 @@ std::u16string PhoneField::GetRegExp(RegexType regex_id) {
 }
 
 // static
-const char* PhoneField::GetRegExpName(RegexType regex_id) {
+const char* PhoneFieldParser::GetRegExpName(RegexType regex_id) {
   switch (regex_id) {
     case REGEX_COUNTRY:
       return "kCountryCodeRe";
@@ -413,7 +415,7 @@ const char* PhoneField::GetRegExpName(RegexType regex_id) {
 
 // Returns the string representation of |phonetype_id| as it is used to key to
 // identify coressponding patterns.
-std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
+std::string PhoneFieldParser::GetJSONFieldType(RegexType phonetype_id) {
   switch (phonetype_id) {
     case REGEX_COUNTRY:
       return "PHONE_COUNTRY_CODE";
@@ -442,13 +444,13 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
 }
 
 // static
-bool PhoneField::ParsePhoneField(ParsingContext& context,
-                                 AutofillScanner* scanner,
-                                 base::StringPiece16 regex,
-                                 raw_ptr<AutofillField>* field,
-                                 const char* regex_name,
-                                 const bool is_country_code_field,
-                                 const std::string& json_field_type) {
+bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
+                                       AutofillScanner* scanner,
+                                       base::StringPiece16 regex,
+                                       raw_ptr<AutofillField>* field,
+                                       const char* regex_name,
+                                       const bool is_country_code_field,
+                                       const std::string& json_field_type) {
   MatchParams match_type =
       kDefaultMatchParamsWith<FormControlType::kInputTelephone,
                               FormControlType::kInputNumber>;

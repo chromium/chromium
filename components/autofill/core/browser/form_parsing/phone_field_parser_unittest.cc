@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/phone_field.h"
+#include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 
 #include <stddef.h>
 
@@ -58,14 +58,14 @@ class PhoneFieldTest
 
  protected:
   // Downcast for tests.
-  static std::unique_ptr<PhoneField> Parse(ParsingContext& context,
-                                           AutofillScanner* scanner) {
+  static std::unique_ptr<PhoneFieldParser> Parse(ParsingContext& context,
+                                                 AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormFieldParser> field =
-        PhoneField::Parse(context, scanner);
-    return std::unique_ptr<PhoneField>(
-        static_cast<PhoneField*>(field.release()));
+        PhoneFieldParser::Parse(context, scanner);
+    return std::unique_ptr<PhoneFieldParser>(
+        static_cast<PhoneFieldParser*>(field.release()));
   }
 
   // Checks if the field with `id` was classified as `expected_type`.
@@ -103,7 +103,7 @@ class PhoneFieldTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<PhoneField> field_;
+  std::unique_ptr<PhoneFieldParser> field_;
   uint64_t id_counter_ = 0;
   FieldCandidatesMap field_candidates_map_;
 };

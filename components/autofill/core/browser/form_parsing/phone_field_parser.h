@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_PARSER_H_
 
 #include <array>
 #include <memory>
@@ -27,11 +27,11 @@ class AutofillScanner;
 // - area code, prefix, suffix
 // - area code, number
 // - number
-class PhoneField : public FormFieldParser {
+class PhoneFieldParser : public FormFieldParser {
  public:
-  ~PhoneField() override;
-  PhoneField(const PhoneField&) = delete;
-  PhoneField& operator=(const PhoneField&) = delete;
+  ~PhoneFieldParser() override;
+  PhoneFieldParser(const PhoneFieldParser&) = delete;
+  PhoneFieldParser& operator=(const PhoneFieldParser&) = delete;
 
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
@@ -76,7 +76,7 @@ class PhoneField : public FormFieldParser {
   };
   using ParsedPhoneFields = std::array<raw_ptr<AutofillField>, FIELD_MAX>;
 
-  explicit PhoneField(ParsedPhoneFields fields);
+  explicit PhoneFieldParser(ParsedPhoneFields fields);
 
   struct Rule {
     RegexType regex;       // The regex used to match this `phone_part`.
@@ -129,4 +129,4 @@ class PhoneField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_PARSER_H_
