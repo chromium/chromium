@@ -819,6 +819,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/old/");
+    info->scope = info->start_url;
     info->title = u"Old app";
     old_app_id = web_app::test::InstallWebApp(profile(), std::move(info));
     apps::AppReadinessWaiter(profile(), old_app_id).Await();
@@ -837,6 +838,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/new/");
+    info->scope = info->start_url;
     info->title = u"New app";
 
     WebAppInstallParams install_params;
