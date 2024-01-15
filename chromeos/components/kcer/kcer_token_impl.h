@@ -129,6 +129,34 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                          PublicKey kcer_public_key,
                          uint32_t result_code);
 
+  struct GenerateEcKeyTask {
+    GenerateEcKeyTask(EllipticCurve in_curve,
+                      bool in_hardware_backed,
+                      Kcer::GenerateKeyCallback in_callback);
+    GenerateEcKeyTask(GenerateEcKeyTask&& other);
+    ~GenerateEcKeyTask();
+
+    const EllipticCurve curve;
+    const bool hardware_backed;
+    Kcer::GenerateKeyCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GenerateEcKeyImpl(GenerateEcKeyTask task);
+  void DidGenerateEcKey(GenerateEcKeyTask task,
+                        SessionChapsClient::ObjectHandle public_key_id,
+                        SessionChapsClient::ObjectHandle private_key_id,
+                        uint32_t result_code);
+  void DidGetEcPublicKey(GenerateEcKeyTask task,
+                         SessionChapsClient::ObjectHandle public_key_id,
+                         SessionChapsClient::ObjectHandle private_key_id,
+                         chaps::AttributeList public_key_attributes,
+                         uint32_t result_code);
+  void DidAssignEcKeyId(GenerateEcKeyTask task,
+                        SessionChapsClient::ObjectHandle public_key_id,
+                        SessionChapsClient::ObjectHandle private_key_id,
+                        PublicKey kcer_public_key,
+                        uint32_t result_code);
+
   struct RemoveKeyAndCertsTask {
     RemoveKeyAndCertsTask(PrivateKeyHandle in_key,
                           Kcer::StatusCallback in_callback);

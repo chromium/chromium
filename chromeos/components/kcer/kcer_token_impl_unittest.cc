@@ -35,16 +35,27 @@ constexpr char kFakeRsaModulusBase64[] =
     "Hh8mF9taYmrzzOsrDOjW4bgWVXTxOVFbkI8Znj/9Yt7VyWdQ==";
 constexpr char kFakeRsaExponentBase64[] = "AQAB";
 // The correct id for `kFakeRsaModulusBase64`.
-constexpr char kFakePkcs11IdBase64[] = "b4IkC5I3TLzDPDfaMaVES/hL6I4=";
+constexpr char kFakeRsaPkcs11IdBase64[] = "b4IkC5I3TLzDPDfaMaVES/hL6I4=";
 // The correct SPKI for `kFakeRsaModulusBase64` and `kFakeRsaExponentBase64`
 // pair.
-constexpr char kFakeSpkiBase64[] =
+constexpr char kFakeRsaSpkiBase64[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApKQjSyvO8LMtTx1ZKIhymKPSwn0GXB"
     "xjBshy7390MRKDa8CXfKsrkicIdbUQ54RlY2GGuxufuokdz7WBugxW5zReJkBcMG8idCaG6moQ"
     "Ir3nIgOpP1ntN0Y7xFrXIshKLifm6m9AaYyXoKMjq1wcrFb1zDO3iZoZi5a4RvSueuwTPJ6nMo"
     "6ABRqe2dcJaTeBgFtt3au49psAe3MYBtym191C3BXlc3Ei+"
     "I25Es0Pf2moxaal8BmJuaZxAIkmOFWDto9ChelM+8KA7F28Js/CHEUlGlV1g9JCOJEpH/"
     "Hh8mF9taYmrzzOsrDOjW4bgWVXTxOVFbkI8Znj/9Yt7VyWdQIDAQAB";
+
+constexpr char kFakeEcPublicValueBase64[] =
+    "BEEE9zBHRlSWLfKiDRa63Ztqagi6rnkCpQ3L8/voA1/"
+    "orozntbgol7gilBcwU3cAqdazmeWz7XRNk3OE++XVFzGgbA==";
+// The correct id for `kFakeEcPublicValueBase64`.
+constexpr char kFakeEcPkcs11IdBase64[] = "7vBH+E9iez6kgpEWm0+MSjVZxpI=";
+// The correct SPKI for `kFakeEcPublicValueBase64` and `kFakeEcPkcs11IdBase64`
+// pair.
+constexpr char kFakeEcSpkiBase64[] =
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9zBHRlSWLfKiDRa63Ztqagi6rnkCpQ3L8/"
+    "voA1/orozntbgol7gilBcwU3cAqdazmeWz7XRNk3OE++XVFzGgbA==";
 
 template <typename T1, typename T2>
 bool SpanEqual(base::span<T1> s1, base::span<T2> s2) {
@@ -96,8 +107,11 @@ class KcerTokenImplTest : public testing::Test {
   KcerTokenImplTest()
       : rsa_modulus_(base::Base64Decode(kFakeRsaModulusBase64).value()),
         rsa_pub_exponent_(base::Base64Decode(kFakeRsaExponentBase64).value()),
-        pkcs11_id_(base::Base64Decode(kFakePkcs11IdBase64).value()),
-        spki_(base::Base64Decode(kFakeSpkiBase64).value()),
+        rsa_pkcs11_id_(base::Base64Decode(kFakeRsaPkcs11IdBase64).value()),
+        rsa_spki_(base::Base64Decode(kFakeRsaSpkiBase64).value()),
+        ec_public_value_(base::Base64Decode(kFakeEcPublicValueBase64).value()),
+        ec_pkcs11_id_(base::Base64Decode(kFakeEcPkcs11IdBase64).value()),
+        ec_spki_(base::Base64Decode(kFakeEcSpkiBase64).value()),
         token_(Token::kUser, &chaps_client_) {}
 
   void TearDown() override {
@@ -124,6 +138,18 @@ class KcerTokenImplTest : public testing::Test {
     return result;
   }
 
+  chaps::AttributeList GetFakeEcPublicKeyAttrs() {
+    std::string point_str(ec_public_value_.begin(), ec_public_value_.end());
+
+    chaps::AttributeList result;
+    chaps::Attribute* point = result.add_attributes();
+    point->set_type(chromeos::PKCS11_CKA_EC_POINT);
+    point->set_value(std::move(point_str));
+    point->set_length(point->value().size());
+
+    return result;
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -133,8 +159,13 @@ class KcerTokenImplTest : public testing::Test {
 
   std::vector<uint8_t> rsa_modulus_;
   std::vector<uint8_t> rsa_pub_exponent_;
-  Pkcs11Id pkcs11_id_;
-  PublicKeySpki spki_;
+  Pkcs11Id rsa_pkcs11_id_;
+  PublicKeySpki rsa_spki_;
+
+  std::vector<uint8_t> ec_public_value_;
+  Pkcs11Id ec_pkcs11_id_;
+  PublicKeySpki ec_spki_;
+
   SessionChapsClient::SlotId pkcs11_slot_id_{1};
   MockHighLevelChapsClient chaps_client_;
   KcerTokenImpl token_;
@@ -181,14 +212,14 @@ TEST_F(KcerTokenImplTest, GenerateRsaKeySuccess) {
   EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_MODULUS_BITS,
                             MakeSpan(&modulus_length_bits)));
   EXPECT_TRUE(FindAttribute(pkcs11_id_attrs, chromeos::PKCS11_CKA_ID,
-                            pkcs11_id_.value()));
+                            rsa_pkcs11_id_.value()));
 
   EXPECT_TRUE(waiter.Get().has_value());
   EXPECT_EQ(waiter.Get()->GetToken(), Token::kUser);
   EXPECT_TRUE(SpanEqual(base::make_span(waiter.Get()->GetPkcs11Id().value()),
-                        base::make_span(pkcs11_id_.value())));
+                        base::make_span(rsa_pkcs11_id_.value())));
   EXPECT_TRUE(SpanEqual(base::make_span(waiter.Get()->GetSpki().value()),
-                        base::make_span(spki_.value())));
+                        base::make_span(rsa_spki_.value())));
 }
 
 // Test that GenerateRsaKey correctly sets attributes for a software backed key
@@ -371,10 +402,236 @@ TEST_F(KcerTokenImplTest, GenerateRsaKeyRetrySetIdOnSessionError) {
   EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
-// Test that RemoveKeyAndCerts can successfully remove a key pair and certs.
-TEST_F(KcerTokenImplTest, RemoveKeyAndCertsSuccess) {
+// Test that GenerateEcKey can successfully generate a key pair.
+TEST_F(KcerTokenImplTest, GenerateEcKeySuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+
+  ObjectHandle result_pub_key_handle{10};
+  ObjectHandle result_priv_key_handle{20};
+  std::vector<ObjectHandle> key_handles(
+      {result_pub_key_handle, result_priv_key_handle});
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+
+  std::vector<uint8_t> mechanism_attrs;
+  chaps::AttributeList public_key_attrs;
+  EXPECT_CALL(
+      chaps_client_,
+      GenerateKeyPair(pkcs11_slot_id_, chromeos::PKCS11_CKM_EC_KEY_PAIR_GEN,
+                      mechanism_attrs, _, _, _))
+      .WillOnce(DoAll(MoveArg<3>(&public_key_attrs),
+                      RunOnceCallback<5>(result_pub_key_handle,
+                                         result_priv_key_handle, result_code)));
+
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, result_pub_key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(GetFakeEcPublicKeyAttrs(), result_code));
+
+  chaps::AttributeList pkcs11_id_attrs;
+  EXPECT_CALL(chaps_client_,
+              SetAttributeValue(pkcs11_slot_id_, key_handles, _, _))
+      .WillOnce(
+          DoAll(MoveArg<2>(&pkcs11_id_attrs), RunOnceCallback<3>(result_code)));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(pkcs11_id_attrs, chromeos::PKCS11_CKA_ID,
+                            ec_pkcs11_id_.value()));
+
+  EXPECT_TRUE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get()->GetToken(), Token::kUser);
+  EXPECT_TRUE(SpanEqual(base::make_span(waiter.Get()->GetPkcs11Id().value()),
+                        base::make_span(ec_pkcs11_id_.value())));
+  EXPECT_TRUE(SpanEqual(base::make_span(waiter.Get()->GetSpki().value()),
+                        base::make_span(ec_spki_.value())));
+}
+
+// Test that GenerateEcKey correctly sets attributes for a software backed key
+// pair.
+TEST_F(KcerTokenImplTest, GenerateEcKeySoftwareBacked) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList private_key_attrs;
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .WillOnce(DoAll(MoveArg<4>(&private_key_attrs),
+                      RunOnceCallback<5>(ObjectHandle(), ObjectHandle(),
+                                         chromeos::PKCS11_CKR_GENERAL_ERROR)));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/false, waiter.GetCallback());
+
+  chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chaps::kForceSoftwareAttribute,
+                            MakeSpan(&kTrue)));
+
+  // The rest is not important for this test.
+  EXPECT_FALSE(waiter.Get().has_value());
+}
+
+// Test that GenerateEcKey correctly fails when the generation of a key pair
+// fails.
+TEST_F(KcerTokenImplTest, GenerateEcKeyFailToGenerate) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .WillOnce(RunOnceCallback<5>(ObjectHandle(), ObjectHandle(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToGenerateKey);
+}
+
+// Test that GenerateEcKey retries several times when generation of a key pair
+// fails with a session error.
+TEST_F(KcerTokenImplTest, GenerateEcKeyRetryGenerateOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<5>(
+          ObjectHandle(), ObjectHandle(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that GenerateEcKey correctly fails when the reading of public key
+// attributes fails.
+TEST_F(KcerTokenImplTest, GenerateEcKeyFailToReadPublicKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle result_pub_key_handle{10};
+  ObjectHandle result_priv_key_handle{20};
+  std::vector<ObjectHandle> key_handles(
+      {result_pub_key_handle, result_priv_key_handle});
+
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .WillOnce(RunOnceCallback<5>(result_pub_key_handle,
+                                   result_priv_key_handle,
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .WillOnce(RunOnceCallback<3>(chaps::AttributeList(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, key_handles, _))
+      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToExportPublicKey);
+}
+
+// Test that GenerateEcKey retries several times when reading of public key
+// attributes fails with a session error. GenerateEcKey has to retry all the
+// previous methods.
+TEST_F(KcerTokenImplTest, GenerateEcKeyRetryReadAttrsOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle result_pub_key_handle{10};
+  ObjectHandle result_priv_key_handle{20};
+  std::vector<ObjectHandle> key_handles(
+      {result_pub_key_handle, result_priv_key_handle});
+
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<5>(result_pub_key_handle,
+                                                   result_priv_key_handle,
+                                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that GenerateEcKey correctly fails when the writing of the id on the
+// public and private keys fails.
+TEST_F(KcerTokenImplTest, GenerateEcKeyFailToSetId) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle result_pub_key_handle{10};
+  ObjectHandle result_priv_key_handle{20};
+  std::vector<ObjectHandle> key_handles(
+      {result_pub_key_handle, result_priv_key_handle});
+
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .WillOnce(RunOnceCallback<5>(result_pub_key_handle,
+                                   result_priv_key_handle,
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .WillOnce(RunOnceCallback<3>(GetFakeEcPublicKeyAttrs(),
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, SetAttributeValue(_, key_handles, _, _))
+      .WillOnce(RunOnceCallback<3>(chromeos::PKCS11_CKR_GENERAL_ERROR));
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, key_handles, _))
+      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToWriteAttribute);
+}
+
+// Test that GenerateEcKey retries several times when the writing of the id on
+// the public and private keys fails with a session error. GenerateEcKey has to
+// retry all the previous methods.
+TEST_F(KcerTokenImplTest, GenerateEcKeyRetrySetIdOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle result_pub_key_handle{10};
+  ObjectHandle result_priv_key_handle{20};
+  std::vector<ObjectHandle> key_handles(
+      {result_pub_key_handle, result_priv_key_handle});
+
+  EXPECT_CALL(chaps_client_, GenerateKeyPair)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<5>(result_pub_key_handle,
+                                                   result_priv_key_handle,
+                                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(GetFakeEcPublicKeyAttrs(),
+                                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, SetAttributeValue(_, key_handles, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<3>(chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> waiter;
+  token_.GenerateEcKey(EllipticCurve::kP256,
+                       /*hardware_backed=*/true, waiter.GetCallback());
+
+  EXPECT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that RemoveKeyAndCerts can successfully remove a key pair and certs by
+// PKCS#11 id.
+TEST_F(KcerTokenImplTest, RemoveKeyAndCertsByIdSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   // These ids represent all the objects that are related to `public_key` and
   // should be deleted.
@@ -395,16 +652,86 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsSuccess) {
   token_.RemoveKeyAndCerts(PrivateKeyHandle(public_key), waiter.GetCallback());
 
   EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
-                            pkcs11_id_.value()));
+                            rsa_pkcs11_id_.value()));
   EXPECT_TRUE(waiter.Get().has_value());
   expected_notifications_count_ = 1;
+}
+
+// Test that RemoveKeyAndCerts can successfully remove a key pair and certs by
+// SPKI for RSA keys.
+TEST_F(KcerTokenImplTest, RemoveKeyAndCertsBySpkiRsaSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  // These ids represent all the objects that should be deleted.
+  std::vector<ObjectHandle> result_object_list{
+      ObjectHandle(10), ObjectHandle(20), ObjectHandle(30)};
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
+      .WillOnce(RunOnceCallback<2>(result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveKeyAndCerts(PrivateKeyHandle(rsa_spki_), waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(waiter.Get().has_value());
+  expected_notifications_count_ = 1;
+}
+
+// Test that RemoveKeyAndCerts can successfully remove a key pair and certs by
+// SPKI for EC keys.
+TEST_F(KcerTokenImplTest, RemoveKeyAndCertsBySpkiEcSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  // These ids represent all the objects that should be deleted.
+  std::vector<ObjectHandle> result_object_list{
+      ObjectHandle(10), ObjectHandle(20), ObjectHandle(30)};
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
+      .WillOnce(RunOnceCallback<2>(result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveKeyAndCerts(PrivateKeyHandle(ec_spki_), waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            ec_pkcs11_id_.value()));
+  EXPECT_TRUE(waiter.Get().has_value());
+  expected_notifications_count_ = 1;
+}
+
+// Test that RemoveKeyAndCerts correctly fails when it cannot recover PKCS#11
+// from the provided SPKI.
+TEST_F(KcerTokenImplTest, RemoveKeyAndCertsBySpkiFail) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  PublicKeySpki bad_spki({1, 2, 3, 4, 5});  // Not a valid SPKI.
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveKeyAndCerts(PrivateKeyHandle(bad_spki), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToGetPkcs11Id);
 }
 
 // Test that RemoveKeyAndCerts correctly fails when the search for objects
 // fails.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToSearch) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
@@ -418,7 +745,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToSearch) {
   token_.RemoveKeyAndCerts(PrivateKeyHandle(public_key), waiter.GetCallback());
 
   EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
-                            pkcs11_id_.value()));
+                            rsa_pkcs11_id_.value()));
   ASSERT_FALSE(waiter.Get().has_value());
   EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
 }
@@ -427,7 +754,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToSearch) {
 // fails with a session error.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetrySearchOnSessionError) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
@@ -444,10 +771,11 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetrySearchOnSessionError) {
   EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
-// Test that GenerateRsaKey correctly fails when the removal of objects fails.
+// Test that RemoveKeyAndCerts correctly fails when the removal of objects
+// fails.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToDestroy) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
@@ -466,7 +794,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToDestroy) {
   token_.RemoveKeyAndCerts(PrivateKeyHandle(public_key), waiter.GetCallback());
 
   EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
-                            pkcs11_id_.value()));
+                            rsa_pkcs11_id_.value()));
   ASSERT_FALSE(waiter.Get().has_value());
   EXPECT_EQ(waiter.Get().error(), Error::kFailedToRemoveObjects);
   expected_notifications_count_ = 1;
@@ -477,7 +805,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToDestroy) {
 // methods.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetryDestroyOnSessionError) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
@@ -503,7 +831,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetryDestroyOnSessionError) {
 // exists when it exists.
 TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyExistsSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{ObjectHandle(10)};
   uint32_t result_code = chromeos::PKCS11_CKR_OK;
@@ -518,7 +846,7 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyExistsSuccess) {
                              waiter.GetCallback());
 
   EXPECT_TRUE(
-      FindAttribute(attrs, chromeos::PKCS11_CKA_ID, pkcs11_id_.value()));
+      FindAttribute(attrs, chromeos::PKCS11_CKA_ID, rsa_pkcs11_id_.value()));
   ASSERT_TRUE(waiter.Get().has_value());
   EXPECT_TRUE(waiter.Get().value());
 }
@@ -527,7 +855,7 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyExistsSuccess) {
 // exists when it doesn't exist.
 TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyDoesNotExistsSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_OK;
@@ -542,7 +870,7 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyDoesNotExistsSuccess) {
                              waiter.GetCallback());
 
   EXPECT_TRUE(
-      FindAttribute(attrs, chromeos::PKCS11_CKA_ID, pkcs11_id_.value()));
+      FindAttribute(attrs, chromeos::PKCS11_CKA_ID, rsa_pkcs11_id_.value()));
   ASSERT_TRUE(waiter.Get<0>().has_value());
   EXPECT_FALSE(waiter.Get<0>().value());
 }
@@ -551,7 +879,7 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyDoesNotExistsSuccess) {
 // fails.
 TEST_F(KcerTokenImplTest, DoesPrivateKeyExistFailToSearch) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
@@ -572,7 +900,7 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistFailToSearch) {
 // objects fails with a session error.
 TEST_F(KcerTokenImplTest, DoesPrivateKeyExistRetryOnSessionError) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
@@ -600,7 +928,7 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
           std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_GENERAL_ERROR));
 
-  PublicKey public_key(Token::kUser, pkcs11_id_, spki_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_rsa_waiter;
   token_.GenerateRsaKey(RsaModulusLength::k2048, true,

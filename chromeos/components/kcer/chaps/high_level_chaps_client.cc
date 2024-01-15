@@ -27,6 +27,8 @@ int GetDefaultLength(AttributeId attribute_id) {
       return 256;
     case AttributeId::kPublicExponent:
       return 3;
+    case AttributeId::kEcPoint:
+      return 67;
   }
 }
 

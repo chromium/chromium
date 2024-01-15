@@ -15,6 +15,7 @@
 #include "net/cert/cert_database.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
@@ -58,6 +59,21 @@ base::span<const uint8_t> GetAttributeValue(
   return {};
 }
 
+// Chaps wraps the EC point in a DER-encoded ASN.1 OctetString, which is
+// required by PKCS#11 standard, but it needs to be removed before using it for
+// boringssl.
+bssl::UniquePtr<ASN1_OCTET_STRING> UnwrapEcPoint(
+    base::span<const uint8_t> ec_point) {
+  if (ec_point.empty()) {
+    return {};
+  }
+
+  const uint8_t* data = ec_point.data();
+  bssl::UniquePtr<ASN1_OCTET_STRING> result(
+      d2i_ASN1_OCTET_STRING(nullptr, &data, ec_point.size()));
+  return result;
+}
+
 // The result should be the same as the one from NSS for backwards compatibility
 // (at least until it's removed).
 Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data) {
@@ -70,8 +86,9 @@ Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data) {
   return Pkcs11Id(std::vector<uint8_t>(hash.begin(), hash.end()));
 }
 
-Pkcs11Id MakePkcs11IdRsa(bssl::UniquePtr<RSA> rsa) {
-  const BIGNUM* modulus = RSA_get0_n(rsa.get());
+// Backwards compatible with how NSS generated CKA_ID for RSA keys.
+Pkcs11Id MakePkcs11IdFromRsaKey(bssl::UniquePtr<RSA> rsa_key) {
+  const BIGNUM* modulus = RSA_get0_n(rsa_key.get());
   if (!modulus) {
     LOG(ERROR) << "Could not parse RSA public key";
     return {};
@@ -83,6 +100,33 @@ Pkcs11Id MakePkcs11IdRsa(bssl::UniquePtr<RSA> rsa) {
   BN_bn2bin(modulus, modulus_bytes.data());
 
   return MakePkcs11Id(modulus_bytes);
+}
+
+// Backwards compatible with how NSS generated CKA_ID for EC keys.
+Pkcs11Id MakePkcs11IdFromEcKey(bssl::UniquePtr<EC_KEY> ec_key) {
+  const EC_POINT* point = EC_KEY_get0_public_key(ec_key.get());
+  const EC_GROUP* group = EC_KEY_get0_group(ec_key.get());
+
+  if (!point || !group) {
+    LOG(ERROR) << "Could not parse EC public key";
+    return {};
+  }
+
+  // Serialize the public key as an uncompressed point in X9.62 form.
+  bssl::ScopedCBB cbb;
+  uint8_t* point_bytes = nullptr;
+  size_t point_bytes_len = 0;
+  if (!CBB_init(cbb.get(), 0) ||
+      !EC_POINT_point2cbb(
+          cbb.get(), group, point,
+          point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED,
+          /*ctx=*/nullptr) ||
+      !CBB_finish(cbb.get(), &point_bytes, &point_bytes_len)) {
+    return {};
+  }
+  bssl::UniquePtr<uint8_t> point_bytes_deleter(point_bytes);
+
+  return MakePkcs11Id(base::make_span(point_bytes, point_bytes_len));
 }
 
 // Calculates PKCS#11 id for the provided public key SPKI.
@@ -101,12 +145,22 @@ Pkcs11Id GetPkcs11IdFromSpki(const PublicKeySpki& public_key_spki) {
     return {};
   }
 
-  bssl::UniquePtr<RSA> rsa(EVP_PKEY_get1_RSA(evp_key.get()));
-  if (rsa) {
-    return MakePkcs11IdRsa(std::move(rsa));
+  if (EVP_PKEY_base_id(evp_key.get()) == EVP_PKEY_RSA) {
+    bssl::UniquePtr<RSA> rsa_key(EVP_PKEY_get1_RSA(evp_key.get()));
+    if (!rsa_key) {
+      return {};
+    }
+    return MakePkcs11IdFromRsaKey(std::move(rsa_key));
   }
 
-  // TODO(244409232): Implement for EC keys when GenerateEcKey is implemented.
+  if (EVP_PKEY_base_id(evp_key.get()) == EVP_PKEY_EC) {
+    bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(evp_key.get()));
+    if (!ec_key) {
+      return {};
+    }
+    return MakePkcs11IdFromEcKey(std::move(ec_key));
+  }
+
   return {};
 }
 
@@ -142,6 +196,42 @@ PublicKeySpki MakeRsaSpki(const base::span<const uint8_t>& modulus,
 
   bssl::UniquePtr<EVP_PKEY> ssl_public_key(EVP_PKEY_new());
   if (!ssl_public_key || !EVP_PKEY_set1_RSA(ssl_public_key.get(), rsa.get())) {
+    return {};
+  }
+
+  bssl::ScopedCBB cbb;
+  uint8_t* der = nullptr;
+  size_t der_len = 0;
+  if (!CBB_init(cbb.get(), 0) ||
+      !EVP_marshal_public_key(cbb.get(), ssl_public_key.get()) ||
+      !CBB_finish(cbb.get(), &der, &der_len)) {
+    return {};
+  }
+  bssl::UniquePtr<uint8_t> der_deleter(der);
+
+  return PublicKeySpki(std::vector<uint8_t>(der, der + der_len));
+}
+
+PublicKeySpki MakeEcSpki(const base::span<const uint8_t>& ec_point) {
+  bssl::UniquePtr<EC_KEY> ec(EC_KEY_new());
+  if (!ec) {
+    return {};
+  }
+
+  if (!EC_KEY_set_group(ec.get(), EC_group_p256())) {
+    return {};
+  }
+
+  EC_KEY* ec_ptr = ec.get();
+  const uint8_t* data_2 = ec_point.data();
+  size_t data_2_len = ec_point.size();
+  if (!o2i_ECPublicKey(&ec_ptr, &data_2, data_2_len)) {
+    return {};
+  }
+
+  bssl::UniquePtr<EVP_PKEY> ssl_public_key(EVP_PKEY_new());
+  if (!ssl_public_key ||
+      !EVP_PKEY_set1_EC_KEY(ssl_public_key.get(), ec.get())) {
     return {};
   }
 
@@ -341,6 +431,11 @@ void KcerTokenImpl::DidGetRsaPublicKey(
   }
 
   Pkcs11Id pkcs11_id = MakePkcs11Id(modulus);
+  if (pkcs11_id->empty()) {
+    return chaps_client_->DestroyObjectsWithRetries(
+        pkcs_11_slot_id_, {public_key_id, private_key_id},
+        Bind(std::move(task.callback), Error::kFailedToGetPkcs11Id));
+  }
 
   PublicKey kcer_public_key(token_, pkcs11_id, std::move(spki));
 
@@ -377,10 +472,193 @@ void KcerTokenImpl::DidAssignRsaKeyId(GenerateRsaKeyTask task,
 
 //==============================================================================
 
+KcerTokenImpl::GenerateEcKeyTask::GenerateEcKeyTask(
+    EllipticCurve in_curve,
+    bool in_hardware_backed,
+    Kcer::GenerateKeyCallback in_callback)
+    : curve(in_curve),
+      hardware_backed(in_hardware_backed),
+      callback(std::move(in_callback)) {}
+KcerTokenImpl::GenerateEcKeyTask::GenerateEcKeyTask(GenerateEcKeyTask&& other) =
+    default;
+KcerTokenImpl::GenerateEcKeyTask::~GenerateEcKeyTask() = default;
+
 void KcerTokenImpl::GenerateEcKey(EllipticCurve curve,
                                   bool hardware_backed,
                                   Kcer::GenerateKeyCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::GenerateEcKey, weak_factory_.GetWeakPtr(), curve,
+        hardware_backed, std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  GenerateEcKeyImpl(GenerateEcKeyTask(curve, hardware_backed,
+                                      std::move(unblocking_callback)));
+}
+
+// Generates an EC key pair.
+void KcerTokenImpl::GenerateEcKeyImpl(GenerateEcKeyTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  if (task.curve != EllipticCurve::kP256) {
+    return std::move(task.callback).Run(base::unexpected(Error::kBadKeyParams));
+  }
+
+  bssl::ScopedCBB cbb;
+  uint8_t* ec_params_der = nullptr;
+  size_t ec_params_der_len = 0;
+  if (!CBB_init(cbb.get(), 0) ||
+      !EC_KEY_marshal_curve_name(cbb.get(), EC_group_p256()) ||
+      !CBB_finish(cbb.get(), &ec_params_der, &ec_params_der_len)) {
+    return std::move(task.callback).Run(base::unexpected(Error::kBadKeyParams));
+  }
+  bssl::UniquePtr<uint8_t> der_deleter(ec_params_der);
+
+  chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+
+  chaps::AttributeList public_key_attrs;
+  AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_ENCRYPT,
+               MakeSpan(&kTrue));
+  AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_VERIFY, MakeSpan(&kTrue));
+  AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_WRAP, MakeSpan(&kTrue));
+  AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_EC_PARAMS,
+               base::make_span(ec_params_der, ec_params_der_len));
+
+  chaps::AttributeList private_key_attrs;
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_PRIVATE,
+               MakeSpan(&kTrue));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_SENSITIVE,
+               MakeSpan(&kTrue));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_DECRYPT,
+               MakeSpan(&kTrue));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_SIGN, MakeSpan(&kTrue));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_UNWRAP,
+               MakeSpan(&kTrue));
+
+  if (!task.hardware_backed) {
+    AddAttribute(private_key_attrs, chaps::kForceSoftwareAttribute,
+                 MakeSpan(&kTrue));
+  }
+
+  auto chaps_callback =
+      base::BindOnce(&KcerTokenImpl::DidGenerateEcKey,
+                     weak_factory_.GetWeakPtr(), std::move(task));
+  chaps_client_->GenerateKeyPair(
+      pkcs_11_slot_id_, chromeos::PKCS11_CKM_EC_KEY_PAIR_GEN,
+      /*mechanism_parameter=*/{}, std::move(public_key_attrs),
+      std::move(private_key_attrs), std::move(chaps_callback));
+}
+
+// Fetches the public key attributes of the generated key.
+void KcerTokenImpl::DidGenerateEcKey(GenerateEcKeyTask task,
+                                     ObjectHandle public_key_id,
+                                     ObjectHandle private_key_id,
+                                     uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GenerateEcKeyImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToGenerateKey));
+  }
+
+  chaps_client_->GetAttributeValue(
+      pkcs_11_slot_id_, public_key_id, {AttributeId::kEcPoint},
+      base::BindOnce(&KcerTokenImpl::DidGetEcPublicKey,
+                     weak_factory_.GetWeakPtr(), std::move(task), public_key_id,
+                     private_key_id));
+}
+
+// Computes PKCS#11 for the key and sets it.
+void KcerTokenImpl::DidGetEcPublicKey(
+    GenerateEcKeyTask task,
+    ObjectHandle public_key_id,
+    ObjectHandle private_key_id,
+    chaps::AttributeList public_key_attributes,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GenerateEcKeyImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return chaps_client_->DestroyObjectsWithRetries(
+        pkcs_11_slot_id_, {public_key_id, private_key_id},
+        Bind(std::move(task.callback), Error::kFailedToExportPublicKey));
+  }
+
+  base::span<const uint8_t> wrapped_ec_point =
+      GetAttributeValue(public_key_attributes, AttributeId::kEcPoint);
+  bssl::UniquePtr<ASN1_OCTET_STRING> ec_point_oct =
+      UnwrapEcPoint(wrapped_ec_point);
+  if (!ec_point_oct) {
+    return chaps_client_->DestroyObjectsWithRetries(
+        pkcs_11_slot_id_, {public_key_id, private_key_id},
+        Bind(std::move(task.callback), Error::kFailedToReadAttribute));
+  }
+  const uint8_t* ec_point_data = ASN1_STRING_data(ec_point_oct.get());
+  size_t ec_point_data_len = ASN1_STRING_length(ec_point_oct.get());
+  base::span<const uint8_t> ec_point =
+      base::make_span(ec_point_data, ec_point_data_len);
+
+  PublicKeySpki spki = MakeEcSpki(ec_point);
+  if (spki->empty()) {
+    return chaps_client_->DestroyObjectsWithRetries(
+        pkcs_11_slot_id_, {public_key_id, private_key_id},
+        Bind(std::move(task.callback), Error::kFailedToCreateSpki));
+  }
+
+  Pkcs11Id pkcs11_id = MakePkcs11Id(ec_point);
+  if (pkcs11_id->empty()) {
+    return chaps_client_->DestroyObjectsWithRetries(
+        pkcs_11_slot_id_, {public_key_id, private_key_id},
+        Bind(std::move(task.callback), Error::kFailedToGetPkcs11Id));
+  }
+
+  PublicKey kcer_public_key(token_, pkcs11_id, std::move(spki));
+
+  chaps::AttributeList attr_list;
+  AddAttribute(attr_list, chromeos::PKCS11_CKA_ID, pkcs11_id.value());
+
+  auto chaps_callback =
+      base::BindOnce(&KcerTokenImpl::DidAssignEcKeyId,
+                     weak_factory_.GetWeakPtr(), std::move(task), public_key_id,
+                     private_key_id, std::move(kcer_public_key));
+  chaps_client_->SetAttributeValue(pkcs_11_slot_id_,
+                                   {public_key_id, private_key_id}, attr_list,
+                                   std::move(chaps_callback));
+}
+
+void KcerTokenImpl::DidAssignEcKeyId(GenerateEcKeyTask task,
+                                     ObjectHandle public_key_id,
+                                     ObjectHandle private_key_id,
+                                     PublicKey kcer_public_key,
+                                     uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GenerateEcKeyImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return chaps_client_->DestroyObjectsWithRetries(
+        pkcs_11_slot_id_, {public_key_id, private_key_id},
+        Bind(std::move(task.callback), Error::kFailedToWriteAttribute));
+  }
+  return std::move(task.callback).Run(std::move(kcer_public_key));
 }
 
 //==============================================================================

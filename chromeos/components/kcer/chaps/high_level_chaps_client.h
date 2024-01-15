@@ -40,6 +40,7 @@ class HighLevelChapsClient {
   enum class AttributeId {
     kModulus = chromeos::PKCS11_CKA_MODULUS,
     kPublicExponent = chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
+    kEcPoint = chromeos::PKCS11_CKA_EC_POINT,
   };
 
   HighLevelChapsClient() = default;
