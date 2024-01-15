@@ -50,7 +50,10 @@ import java.util.ArrayList;
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.PWA_RESTORE_UI})
+@EnableFeatures({
+    ChromeFeatureList.PWA_RESTORE_UI,
+    ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND
+})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PwaRestoreBottomSheetIntegrationTest {
     @Rule
@@ -66,7 +69,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     private SharedPreferencesManager mPreferences;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mPreferences = ChromeSharedPreferences.getInstance();
@@ -80,10 +83,12 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // startup.
         mPreferences.writeBoolean(ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
 
+        PwaRestoreBottomSheetTestUtils.waitForWebApkDatabaseInitialization();
+
         ArrayList<String[]> appList = new ArrayList<String[]>();
-        appList.add(new String[] {"appId1", "App name 1"});
-        appList.add(new String[] {"appId2", "App name 2"});
-        appList.add(new String[] {"appId3", "App name 3"});
+        appList.add(new String[] {"https://example.com/app1/", "App 1"});
+        appList.add(new String[] {"https://example.com/app2/", "App 2"});
+        appList.add(new String[] {"https://example.com/app3/", "App 3"});
         PwaRestoreBottomSheetTestUtils.setAppListForRestoring(
                 appList.toArray(new String[appList.size()][]));
     }
@@ -201,8 +206,8 @@ public class PwaRestoreBottomSheetIntegrationTest {
         onView(withId(R.id.review_button)).perform(click());
 
         assertIsComboCheckedAtIndex(1, false);
-        onView(withText("Foo")).check(matches(isDisplayed()));
-        onView(withText("Foo")).perform(click());
+        onView(withText("App 1")).check(matches(isDisplayed()));
+        onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
     }
 
@@ -222,8 +227,8 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(2, false);
 
         // Ensure one entry is checked.
-        onView(withText("Foo")).check(matches(isDisplayed()));
-        onView(withText("Foo")).perform(click());
+        onView(withText("App 1")).check(matches(isDisplayed()));
+        onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
 
         // Now verify the Deselect function leaves everything in unchecked state.

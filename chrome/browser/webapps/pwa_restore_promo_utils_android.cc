@@ -59,11 +59,8 @@ class HandleWebApkDatabaseRequest {
                       std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
     // The registry is a map of webapps::AppId -> std::unique_ptr<WebApkProto>.
     for (auto const& [appId, proto] : registry) {
-      LOG(WARNING) << "Found app id " << appId;
+      results_.push_back({appId, proto->sync_data().name()});
     }
-
-    // TODO(finnur): Stop hardcoding the apps and use for loop above.
-    results_ = {{"foo", "Bar"}, {"bar", "Foo"}, {"foobar", "Barfoo"}};
 
     ReturnResultsAndDie(true);
   }

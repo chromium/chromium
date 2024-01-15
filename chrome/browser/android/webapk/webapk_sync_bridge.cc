@@ -151,6 +151,9 @@ void WebApkSyncBridge::OnDatabaseOpened(
 
   registry_ = std::move(registry);
   std::move(callback).Run();
+  if (init_done_callback_) {
+    std::move(init_done_callback_).Run(/* initialized= */ true);
+  }
 }
 
 std::unique_ptr<syncer::MetadataChangeList>
@@ -363,6 +366,42 @@ std::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
       std::move(registry_update_from_installed_and_sync));
 
   return std::nullopt;
+}
+
+void WebApkSyncBridge::RegisterDoneInitializingCallback(
+    base::OnceCallback<void(bool)> init_done_callback) {
+  if (database_->is_opened()) {
+    std::move(init_done_callback).Run(/* initialized= */ true);
+    return;
+  }
+
+  init_done_callback_ = std::move(init_done_callback);
+}
+
+void WebApkSyncBridge::MergeSyncDataForTesting(
+    std::vector<std::vector<std::string>> app_vector) {
+  CHECK(database_->is_opened());
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  std::unique_ptr<webapk::RegistryUpdateData> registry_update =
+      std::make_unique<webapk::RegistryUpdateData>();
+
+  for (auto const& app : app_vector) {
+    std::unique_ptr<sync_pb::WebApkSpecifics> specifics =
+        std::make_unique<sync_pb::WebApkSpecifics>();
+    specifics->set_manifest_id(app[0]);
+    specifics->set_name(app[1]);
+    registry_update->apps_to_create.push_back(
+        WebApkProtoFromSpecifics(specifics.get(), false));
+  }
+
+  database_->Write(
+      *registry_update, std::move(metadata_change_list),
+      base::BindOnce(&WebApkSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistry(std::move(registry_update));
 }
 
 void WebApkSyncBridge::PrepareRegistryUpdateFromSyncApps(
