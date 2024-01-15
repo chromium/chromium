@@ -317,6 +317,8 @@ void OnDialogChoiceReceived(
           ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
           std::move(cloud_open_metrics));
     }
+  } else {
+    LOG(ERROR) << "Empty user response";
   }
 }
 
