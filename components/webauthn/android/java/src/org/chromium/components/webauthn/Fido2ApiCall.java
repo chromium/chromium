@@ -245,7 +245,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param context the Android {@link Context} for the current process.
      */
     public Fido2ApiCall(Context context) {
-        this(context, BROWSER_API);
+        this(context, WebauthnModeProvider.getInstance().getFido2ApiCallParams());
     }
 
     /**
