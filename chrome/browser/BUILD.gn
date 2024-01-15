@@ -5472,6 +5472,8 @@ static_library("browser") {
       "apps/digital_goods/digital_goods_lacros.h",
       "chrome_browser_main_parts_lacros.cc",
       "chrome_browser_main_parts_lacros.h",
+      "chromeos/kcer/kcer_factory_lacros.cc",
+      "chromeos/kcer/kcer_factory_lacros.h",
       "feedback/show_feedback_page_lacros.cc",
       "lacros/account_manager/account_cache.cc",
       "lacros/account_manager/account_cache.h",
@@ -5739,6 +5741,8 @@ static_library("browser") {
       "certificate_provider/sign_requests.h",
       "certificate_provider/thread_safe_certificate_map.cc",
       "certificate_provider/thread_safe_certificate_map.h",
+      "chromeos/kcer/kcer_factory.cc",
+      "chromeos/kcer/kcer_factory.h",
       "device_notifications/device_pinned_notification_renderer.cc",
       "device_notifications/device_pinned_notification_renderer.h",
       "device_reauth/chromeos/authenticator_chromeos.cc",
@@ -5797,6 +5801,7 @@ static_library("browser") {
       "//chromeos/components/certificate_provider:certificate_provider",
       "//chromeos/components/disks:prefs",
       "//chromeos/components/editor_menu/public/cpp",
+      "//chromeos/components/kcer",
       "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
       "//chromeos/components/onc:onc",
@@ -8423,8 +8428,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "net/fake_nss_service.cc",
-      "net/fake_nss_service.h",
       "sharesheet/sharesheet_test_util.cc",
       "sharesheet/sharesheet_test_util.h",
       "speech/speech_recognition_test_helper.cc",
@@ -8455,9 +8458,15 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
+    sources += [
+      "net/fake_nss_service.cc",
+      "net/fake_nss_service.h",
+    ]
+
     deps += [
       "//chromeos/components/kiosk",
       "//components/account_manager_core:test_support",
+      "//crypto:test_support",
     ]
   }
 

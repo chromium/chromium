@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
 
   SessionChapsClient();
   virtual ~SessionChapsClient();
+  // Shuts down the client. All methods can still be called after that, but they
+  // will start returning an error.
+  virtual void Shutdown() {}
 
   // Returns true if the `result_code` contains an error related to
   // problems with PKCS#11 session, i.e. if the session cannot be used
@@ -126,6 +129,7 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
   ~SessionChapsClientImpl() override;
 
   // Implements SessionChapsClient.
+  void Shutdown() override;
   void CreateObject(SlotId slot_id,
                     const std::vector<uint8_t>& attributes,
                     int attempts_left,
@@ -202,7 +206,8 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<crosapi::mojom::ChapsService> chaps_service_;
+  // Will become nullptr after Shutdown, should be checked before using.
+  raw_ptr<crosapi::mojom::ChapsService> chaps_service_;
   base::flat_map<SlotId, SessionId> sessions_map_;
   base::WeakPtrFactory<SessionChapsClientImpl> weak_factory_{this};
 };

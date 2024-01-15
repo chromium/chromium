@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/lacros/prefs_ash_observer.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
@@ -97,6 +98,10 @@ void ChromeBrowserMainPartsLacros::PostMainMessageLoopRun() {
   // `g_browser_process->metrics_service()` is destructed as
   // MetricsReportingObserver depends on metrics service.
   metrics_reporting_observer_.reset();
+
+  // Contains a raw_ptr to ChapsService (an object owned by LacrosService) and
+  // should be shut down before LacrosService.
+  kcer::KcerFactory::Shutdown();
 
   ChromeBrowserMainParts::PostMainMessageLoopRun();
 }

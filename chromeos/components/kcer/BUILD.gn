@@ -14,6 +14,8 @@ component("kcer") {
     "chaps/high_level_chaps_client.h",
     "chaps/session_chaps_client.cc",
     "chaps/session_chaps_client.h",
+    "extra_instances.cc",
+    "extra_instances.h",
     "kcer.cc",
     "kcer.h",
     "kcer_impl.cc",
@@ -24,6 +26,7 @@ component("kcer") {
     "kcer_nss/cert_cache_nss.h",
     "kcer_nss/kcer_token_impl_nss.cc",
     "kcer_nss/kcer_token_impl_nss.h",
+    "kcer_token.cc",
     "kcer_token.h",
     "kcer_token_impl.cc",
     "kcer_token_impl.h",
@@ -38,8 +41,6 @@ component("kcer") {
     "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
-    "//content/public/browser",
-    "//net",
     "//net",
   ]
   if (is_chromeos_ash) {

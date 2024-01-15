@@ -38,6 +38,11 @@ class CertDbInitializerFactory : public ProfileKeyedServiceFactory {
   // Currently it is configured that in browser tests the service is not created
   // by default. Individual tests can override it when needed.
   void SetCreateWithBrowserContextForTesting(bool should_create);
+  // Configures whether CertDbInitializer should be automatically created when
+  // something is trying to use it. In production it is created together with
+  // BrowserContext, which can make it hard for browser tests to set up
+  // everything in time.
+  void SetCreateOnDemandForTesting(bool should_create);
 
  private:
   friend class base::NoDestructor<CertDbInitializerFactory>;
@@ -52,6 +57,7 @@ class CertDbInitializerFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 
   bool should_create_with_browser_context_ = true;
+  bool should_create_on_demand_ = false;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_FACTORY_H_

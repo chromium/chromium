@@ -169,6 +169,7 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
@@ -1691,6 +1692,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
+
+  // Contains a raw_ptr to ChapsService (an object owned by `crosapi_manager_`)
+  // and should be shut down before `crosapi_manager_`.
+  kcer::KcerFactory::Shutdown();
 
   // BrowserManager and CrosapiManager need to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().

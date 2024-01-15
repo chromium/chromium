@@ -65,6 +65,12 @@ bool SessionChapsClient::IsSessionError(uint32_t result_code) {
 
 //==============================================================================
 
+void SessionChapsClientImpl::Shutdown() {
+  chaps_service_ = nullptr;
+}
+
+//==============================================================================
+
 void SessionChapsClientImpl::CreateObject(
     SlotId slot_id,
     const std::vector<uint8_t>& attributes,
@@ -309,7 +315,9 @@ void SessionChapsClientImpl::DidFindObjectsInit(SlotId slot_id,
   SessionId session_id = GetSessionForSlot(slot_id);
   CHECK_NE(session_id.value(), chromeos::PKCS11_INVALID_SESSION_ID);
 
-  CHECK(chaps_service_);
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
   return chaps_service_->FindObjects(
       session_id.value(), kFindObjectsMaxCount,
       base::BindOnce(&SessionChapsClientImpl::DidFindObjects,
@@ -333,7 +341,9 @@ void SessionChapsClientImpl::DidFindObjects(
 
   std::vector<ObjectHandle> typed_list(object_list.begin(), object_list.end());
 
-  CHECK(chaps_service_);
+  if (!chaps_service_) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
   return chaps_service_->FindObjectsFinal(
       session_id.value(),
       base::BindOnce(&SessionChapsClientImpl::DidFindObjectsFinal,

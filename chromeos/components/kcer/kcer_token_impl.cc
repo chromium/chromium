@@ -687,7 +687,7 @@ base::OnceCallback<void(Args...)> KcerTokenImpl::BlockQueueGetUnblocker(
 }
 
 void KcerTokenImpl::UnblockQueueProcessNextTask() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   is_blocked_ = false;
 
