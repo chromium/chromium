@@ -723,6 +723,16 @@ public final class ProductionSupportedFlagList {
                         + "system pages as much as possible so that other applications can "
                         + "reuse the memory pages."),
         Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_SORT_ACTIVE_SLOT_SPANS,
+                "Sorts the active slot spans in PartitionRoot::PurgeMemory()."),
+        Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_SORT_SMALLER_SLOT_SPAN_FREE_LISTS,
+                "sort free lists for smaller slot spans in PartitionRoot::PurgeMemory()."),
+        Flag.baseFeature(
+                BaseFeatures.PARTITION_ALLOC_STRAIGHTEN_LARGER_SLOT_SPAN_FREE_LISTS,
+                "Straightens free lists for larger slot spans in PartitionRoot::PurgeMemory() -> "
+                        + "... -> PartitionPurgeSlotSpan()."),
+        Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
                 "Enables support for CSS vertical writing mode on text-based form controls."),
         Flag.baseFeature(
