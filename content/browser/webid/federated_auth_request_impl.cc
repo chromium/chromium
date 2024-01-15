@@ -1741,8 +1741,9 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*can_append_hints=*/true));
-  fedcm_metrics_->RecordMismatchDialogShown();
+  fedcm_metrics_->RecordMismatchDialogShown(has_shown_mismatch_);
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
+  has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
@@ -2471,6 +2472,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   token_response_time_ = base::TimeTicks();
   accounts_dialog_shown_time_ = std::nullopt;
   mismatch_dialog_shown_time_ = std::nullopt;
+  has_shown_mismatch_ = false;
   idp_login_infos_.clear();
   idp_infos_.clear();
   idp_data_for_display_.clear();

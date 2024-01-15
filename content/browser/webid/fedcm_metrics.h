@@ -253,8 +253,10 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records a sample when an accounts dialog is shown.
   void RecordAccountsDialogShown();
 
-  // Records a sample when a mismatch dialog is shown.
-  void RecordMismatchDialogShown();
+  // Records a sample when a mismatch dialog is shown. Also records whether this
+  // is a mismatch seen for the first time or a if there has already been a
+  // mismatch dialog for this call.
+  void RecordMismatchDialogShown(bool has_shown_mismatch);
 
   // Records a sample when an accounts request is sent.
   void RecordAccountsRequestSent();

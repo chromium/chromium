@@ -366,10 +366,12 @@ void FedCmMetrics::RecordAccountsDialogShown() {
   base::UmaHistogramBoolean("Blink.FedCm.AccountsDialogShown", true);
 }
 
-void FedCmMetrics::RecordMismatchDialogShown() {
+void FedCmMetrics::RecordMismatchDialogShown(bool has_shown_mismatch) {
   if (is_disabled_) {
     return;
   }
+  base::UmaHistogramBoolean("Blink.FedCm.MismatchDialogHasBeenShown",
+                            has_shown_mismatch);
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetMismatchDialogShown(true);
     ukm_builder.SetFedCmSessionID(session_id_);

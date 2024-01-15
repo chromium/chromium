@@ -5489,9 +5489,53 @@ TEST_F(FederatedAuthRequestImplTest, MismatchDialogShownMetric) {
   EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogHasBeenShown",
+                                       0, 1);
   ExpectUKMPresence("MismatchDialogShown");
   ExpectNoUKMPresence("AccountsDialogShown");
   CheckAllFedCmSessionIDs();
+}
+
+// Tests that a mismatch dialog is shown twice.
+TEST_F(FederatedAuthRequestImplTest, DoubleMismatchDialog) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+  MockConfiguration configuration = kConfigurationValid;
+
+  // Setup IdP sign-in status mismatch.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kHttpNotFoundError;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ukm_loop.Run();
+
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogHasBeenShown",
+                                       0, 1);
+  CheckAllFedCmSessionIDs();
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
+      OriginFromString(kProviderUrlFull), true);
+  base::RunLoop().RunUntilIdle();
+
+  // The additional mismatch should be recorded in the metrics.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 2);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.MismatchDialogHasBeenShown",
+                                     2);
+  histogram_tester_.ExpectBucketCount("Blink.FedCm.MismatchDialogHasBeenShown",
+                                      1, 1);
 }
 
 // Tests that when an accounts request is sent, the appropriate metrics are
