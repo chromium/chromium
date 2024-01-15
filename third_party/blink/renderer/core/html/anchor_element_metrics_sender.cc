@@ -409,11 +409,6 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
         anchor_elements_timing_stats_.insert(
             anchor_id, std::make_unique<AnchorElementTimingStats>());
       }
-      if (anchor_element_metrics->ratio_visible_area >=
-          INTERSECTION_RATIO_THRESHOLD) {
-        // The element is already visible.
-        EnqueueEnteredViewport(anchor_element);
-      }
       // Observe the element to collect time_in_viewport stats.
       intersection_observer_->observe(&anchor_element);
     }
