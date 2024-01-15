@@ -128,6 +128,12 @@ void PickerController::StartSearch(const std::u16string& query,
       PickerSearchResults::Section(
           u"Matching expressions",
           {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
+      PickerSearchResults::Section(u"Matching links",
+                                   {{PickerSearchResult(u"www.foo.com"),
+                                     PickerSearchResult(u"crbug.com")}}),
+      PickerSearchResults::Section(u"Matching files",
+                                   {{PickerSearchResult(u"my file"),
+                                     PickerSearchResult(u"my other file")}}),
   }}));
 }
 
