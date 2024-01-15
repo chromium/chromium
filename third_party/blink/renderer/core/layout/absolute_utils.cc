@@ -394,6 +394,9 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     AnchorEvaluatorImpl* anchor_evaluator) {
   InsetArea inset_area;
   if (!style.GetInsetArea().IsNone() && anchor_evaluator->HasDefaultAnchor()) {
+    // We only need to know if the inset-area is 'auto' or not below, but need
+    // to consider writing direction as the inset-area falls back to 'auto' if
+    // the axes are not orthogonal.
     inset_area = style.GetInsetArea().ToPhysical(container_writing_direction,
                                                  self_writing_direction);
   }
@@ -401,47 +404,47 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   // `direction`.
   const PhysicalSize available_size = ToPhysicalSize(
       available_logical_size, self_writing_direction.GetWritingMode());
-  const Length& left_length =
-      style.UsedLeft().IsAuto() ? inset_area.UsedLeft() : style.UsedLeft();
   std::optional<LayoutUnit> left;
-  if (!left_length.IsAuto()) {
+  if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ false,
                               available_size.width);
     left = MinimumValueForLength(left_length, available_size.width,
                                  anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    left = LayoutUnit();
   }
   std::optional<LayoutUnit> right;
-  const Length& right_length =
-      style.UsedRight().IsAuto() ? inset_area.UsedRight() : style.UsedRight();
-  if (!right_length.IsAuto()) {
+  if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ true,
                               available_size.width);
     right = MinimumValueForLength(right_length, available_size.width,
                                   anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    right = LayoutUnit();
   }
 
   std::optional<LayoutUnit> top;
-  const Length& top_length =
-      style.UsedTop().IsAuto() ? inset_area.UsedTop() : style.UsedTop();
-  if (!top_length.IsAuto()) {
+  if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ false,
                               available_size.height);
     top = MinimumValueForLength(top_length, available_size.height,
                                 anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    top = LayoutUnit();
   }
   std::optional<LayoutUnit> bottom;
-  const Length& bottom_length = style.UsedBottom().IsAuto()
-                                    ? inset_area.UsedBottom()
-                                    : style.UsedBottom();
-  if (!bottom_length.IsAuto()) {
+  if (const Length& bottom_length = style.UsedBottom();
+      !bottom_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ true,
                               available_size.height);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
                                    anchor_evaluator);
+  } else if (!inset_area.IsNone()) {
+    bottom = LayoutUnit();
   }
 
   // Convert the physical insets to logical.

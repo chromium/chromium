@@ -92,6 +92,13 @@ struct CORE_EXPORT LogicalRect {
     size.block_size += block_start + block_end;
   }
 
+  void ContractEdges(LayoutUnit block_start,
+                     LayoutUnit inline_end,
+                     LayoutUnit block_end,
+                     LayoutUnit inline_start) {
+    ExpandEdges(-block_start, -inline_end, -block_end, -inline_start);
+  }
+
   // Update inline-start offset without changing the inline-end offset.
   void ShiftInlineStartEdgeTo(LayoutUnit edge) {
     LayoutUnit new_size = (InlineEndOffset() - edge).ClampNegativeToZero();
