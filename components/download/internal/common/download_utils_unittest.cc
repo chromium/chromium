@@ -25,9 +25,6 @@ TEST(DownloadUtilsTest, HandleServerResponse200) {
 }
 
 TEST(DownloadUtilsTest, HandleServerResponse200_RangeRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDownloadRange);
-
   // Arbitrary range request must expect HTTP 206 as a successful response.
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
@@ -39,9 +36,6 @@ TEST(DownloadUtilsTest, HandleServerResponse200_RangeRequest) {
 }
 
 TEST(DownloadUtilsTest, HandleServerResponse206_RangeRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDownloadRange);
-
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders("HTTP/1.1 206 Partial Content"));
   headers->AddHeader("Content-Range", "bytes 105-125/500");
@@ -65,8 +59,6 @@ void VerifyRangeHeader(DownloadUrlParameters* params,
 }
 
 TEST(DownloadUtilsTest, CreateResourceRequest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDownloadRange);
   auto params = std::make_unique<DownloadUrlParameters>(
       GURL(), TRAFFIC_ANNOTATION_FOR_TESTS);
   params->set_use_if_range(false);

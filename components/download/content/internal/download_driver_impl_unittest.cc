@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/uuid.h"
 #include "components/download/content/public/all_download_item_notifier.h"
@@ -79,7 +78,6 @@ class DownloadDriverImplTest : public testing::Test {
   NiceMock<MockSimpleDownloadManager> mock_manager_;
   MockDriverClient mock_client_;
   std::unique_ptr<DownloadDriverImpl> driver_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 };
@@ -253,7 +251,6 @@ bool HasHeader(const DownloadUrlParameters::RequestHeadersType& headers,
 // Range header set in RequestParams will be set correctly in
 // DownloadUrlParameters when calling |DownloadDriver::Start|.
 TEST_F(DownloadDriverImplTest, Start_WithRangeHeader) {
-  scoped_feature_list_.InitAndEnableFeature(download::features::kDownloadRange);
   RequestParams request_params;
   request_params.url = GURL(kFakeURL);
   request_params.request_headers.AddHeaderFromString("Range: bytes=5-10");

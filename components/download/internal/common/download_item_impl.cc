@@ -2561,9 +2561,8 @@ void DownloadItemImpl::ResumeInterruptedDownload(
     download_params->add_request_header(header.first, header.second);
   }
 
-  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
-      (request_info_.range_request_from != kInvalidRange ||
-       request_info_.range_request_to != kInvalidRange)) {
+  if (request_info_.range_request_from != kInvalidRange ||
+      request_info_.range_request_to != kInvalidRange) {
     // Arbitrary range request doesn't use If-Range header and resumption
     // invalidation.
     download_params->set_range_request_offset(request_info_.range_request_from,

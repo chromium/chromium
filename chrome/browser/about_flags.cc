@@ -6788,10 +6788,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kOpenDownloadDialog)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"download-range", flag_descriptions::kDownloadRangeName,
-     flag_descriptions::kDownloadRangeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(download::features::kDownloadRange)},
-
     {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,
      flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabHoverCardImages)},

@@ -5285,15 +5285,8 @@ class DownloadRangeTest
     : public DownloadContentTest,
       public ::testing::WithParamInterface<DownloadRangeTestParams> {
  public:
-  DownloadRangeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        download::features::kDownloadRange);
-  }
-
+  DownloadRangeTest() = default;
   ~DownloadRangeTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -5343,15 +5336,8 @@ IN_PROC_BROWSER_TEST_P(DownloadRangeTest, ArbitraryDownloadRangeTest) {
 
 class DownloadRangeResumptionTest : public DownloadContentTest {
  public:
-  DownloadRangeResumptionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        download::features::kDownloadRange);
-  }
-
+  DownloadRangeResumptionTest() = default;
   ~DownloadRangeResumptionTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test to download resumption from a partially downloaded file with range

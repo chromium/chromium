@@ -735,9 +735,6 @@ extern const char kMemlogStackModeDescription[];
 extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 
-extern const char kDownloadRangeName[];
-extern const char kDownloadRangeDescription[];
-
 extern const char kEarlyDocumentSwapForBackForwardTransitionsName[];
 extern const char kEarlyDocumentSwapForBackForwardTransitionsDescription[];
 

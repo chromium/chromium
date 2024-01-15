@@ -186,8 +186,7 @@ void DownloadDriverImpl::Start(
     download_url_params->add_request_header(it.name(), it.value());
   }
 
-  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
-      request_params.request_headers.HasHeader(
+  if (request_params.request_headers.HasHeader(
           net::HttpRequestHeaders::kRange)) {
     absl::optional<net::HttpByteRange> byte_range =
         ParseRangeHeader(request_params.request_headers);

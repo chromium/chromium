@@ -1280,10 +1280,6 @@ const char kExperimentalRgbKeyboardPatternsName[] =
 const char kExperimentalRgbKeyboardPatternsDescription[] =
     "Enable experimental RGB Keyboard patterns support on supported devices.";
 
-const char kDownloadRangeName[] = "Enable download range support";
-const char kDownloadRangeDescription[] =
-    "Enables arbitrary download range request support.";
-
 const char kEarlyDocumentSwapForBackForwardTransitionsName[] =
     "Early document swap for back/forward navigations";
 const char kEarlyDocumentSwapForBackForwardTransitionsDescription[] =

@@ -54,9 +54,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteOverwrittenDownloads);
 
 // Whether to allow changing the size of file buffer.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
-
-// Arbitrary range request support for download system.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadRange);
 }  // namespace features
 
 }  // namespace download
