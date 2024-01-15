@@ -413,8 +413,6 @@ struct FormFieldData {
   bool force_override = false;
 };
 
-// TODO(crbug.com/1482526): Eliminate references to this function where
-// possible.
 std::string_view FormControlTypeToString(FormControlType type);
 
 // Consider using the FormControlType enum instead.

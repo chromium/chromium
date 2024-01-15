@@ -248,12 +248,10 @@ void PopulateRandomizedFieldMetadata(
                           RandomizedEncoder::FIELD_NAME, field.name_attribute,
                           /*include_checksum=*/false, metadata->mutable_name());
   }
-  if (!FormControlTypeToString(field.form_control_type).empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_CONTROL_TYPE,
-                          FormControlTypeToString(field.form_control_type),
-                          /*include_checksum=*/false, metadata->mutable_type());
-  }
+  EncodeRandomizedValue(encoder, form_signature, field_signature,
+                        RandomizedEncoder::FIELD_CONTROL_TYPE,
+                        FormControlTypeToString(field.form_control_type),
+                        /*include_checksum=*/false, metadata->mutable_type());
   if (!field.label.empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
                           RandomizedEncoder::FIELD_LABEL, field.label,

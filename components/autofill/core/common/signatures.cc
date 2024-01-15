@@ -122,6 +122,9 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
   for (const FormFieldData& field : form_data.fields) {
     if (!IsCheckable(field.check_status)) {
       // Add all supported form fields' form control types to the signature.
+      // For legacy reasons we need to use the string representation of the form
+      // control type. If and when the sectioning algorithm, we should hash just
+      // enum value.
       base::StrAppend(&form_signature_field_types,
                       {"&", FormControlTypeToString(field.form_control_type)});
     }
