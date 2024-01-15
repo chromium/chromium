@@ -54,6 +54,11 @@ namespace file_manager::io_task {
 
 namespace {
 
+bool* DestinationNoSpace() {
+  static bool destination_no_space = false;
+  return &destination_no_space;
+}
+
 // Starts the copy operation via FileSystemOperationRunner.
 storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
@@ -184,6 +189,12 @@ bool CopyOrMoveIOTaskImpl::IsCrossFileSystemForTesting(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url) {
   return IsCrossFileSystem(profile, source_url, destination_url);
+}
+
+// static
+void CopyOrMoveIOTaskImpl::SetDestinationNoSpaceForTesting(
+    bool destination_no_space) {
+  *DestinationNoSpace() = destination_no_space;
 }
 
 void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
@@ -403,7 +414,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
     }
   }
 
-  if (required_bytes > free_space) {
+  if (required_bytes > free_space || *DestinationNoSpace()) {
     progress_->outputs.emplace_back(progress_->GetDestinationFolder(),
                                     base::File::FILE_ERROR_NO_SPACE);
     LOG(ERROR) << "Insufficient free space in destination";

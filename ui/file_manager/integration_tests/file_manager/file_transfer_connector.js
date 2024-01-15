@@ -431,6 +431,9 @@ const TWO_FILES_MOVE_FAIL_MESSAGE = '2 files blocked from moving';
 const SINGLE_FILE_WARN_MESSAGE = 'c_warned.jpg may contain sensitive content';
 const TWO_FILES_WARN_MESSAGE = '2 files may contain sensitive content';
 
+const COPY_OUT_OF_SPACE_ERROR_MESSAGE =
+    'Copy operation failed. There is not enough space.';
+
 /**
  * Opens a Files app's main window and creates the source and destination
  * entries.
@@ -570,19 +573,7 @@ async function verifyPanelButtonsAndClick(
  */
 async function transferBetweenVolumes(
     transferInfo, entryTestSet, expectedFinalMsg, expectedWarnMsg = '') {
-  // Setup volumes
-  if (transferInfo.source.volumeName === 'usb' ||
-      transferInfo.destination.volumeName === 'usb') {
-    await sendTestMessage({name: 'mountFakeUsbEmpty'});
-  }
-  if (transferInfo.source.volumeName === 'smbfs' ||
-      transferInfo.destination.volumeName === 'smbfs') {
-    await sendTestMessage({name: 'mountSmbfs'});
-  }
-  if (transferInfo.source.volumeName === 'mtp' ||
-      transferInfo.destination.volumeName === 'mtp') {
-    await sendTestMessage({name: 'mountFakeMtpEmpty'});
-  }
+  await setupVolumes(transferInfo);
 
   // Setup policy.
   await sendTestMessage({
@@ -609,12 +600,95 @@ async function transferBetweenVolumes(
         entryTestSet.filter(entry => !entry.targetPath.includes('/')).length,
   });
 
+  const appId = await openFilesAppAndInitTransfer(transferInfo, entryTestSet);
+
+  const reportOnly =
+      await sendTestMessage({name: 'isReportOnlyFileTransferConnector'}) ===
+      'true';
+  if (reportOnly) {
+    await verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet);
+  } else {
+    await verifyAfterPasteBlocking(
+        appId, transferInfo, entryTestSet, expectedFinalMsg, expectedWarnMsg);
+  }
+}
+
+/**
+ * Test function to copy from the specified source to the specified destination.
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
+ *     entries to be used for the test.
+ * @param {string} expectedFinalMsg The final message to expect at the progress
+ *     center.
+ */
+async function transferBetweenVolumesNoSpace(
+    transferInfo, entryTestSet, expectedFinalMsg) {
+  // Ensure reportOnly is set, as the no-space behavior is special for
+  // report-only mode.
+  const reportOnly =
+      await sendTestMessage({name: 'isReportOnlyFileTransferConnector'}) ===
+      'true';
+  chrome.test.assertTrue(reportOnly);
+
+
+  await setupVolumes(transferInfo);
+
+  // Setup policy.
+  await sendTestMessage({
+    name: 'setupFileTransferPolicy',
+    source: transferInfo.source.enterpriseConnectorsVolumeIdentifier,
+    destination: transferInfo.destination.enterpriseConnectorsVolumeIdentifier,
+  });
+
+  await sendTestMessage({
+    name: 'mockIOTaskDestinationNoSpace',
+  });
+
+  // Setup the scanning closure to be able to wait for the scanning to be
+  // complete. There should only be one delegate, as all other delegates aren't
+  // initiated when an out of space error occurs.
+  await sendTestMessage({
+    name: 'setupScanningRunLoop',
+    number_of_expected_delegates: 1,
+  });
+
+  const appId = await openFilesAppAndInitTransfer(transferInfo, entryTestSet);
+
+  await verifyAfterPasteReportOnlyNoSpace(
+      appId, transferInfo, expectedFinalMsg, entryTestSet);
+}
+
+/**
+ * Mounts required volumes.
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ */
+async function setupVolumes(transferInfo) {
+  if (transferInfo.source.volumeName === 'usb' ||
+      transferInfo.destination.volumeName === 'usb') {
+    await sendTestMessage({name: 'mountFakeUsbEmpty'});
+  }
+  if (transferInfo.source.volumeName === 'smbfs' ||
+      transferInfo.destination.volumeName === 'smbfs') {
+    await sendTestMessage({name: 'mountSmbfs'});
+  }
+  if (transferInfo.source.volumeName === 'mtp' ||
+      transferInfo.destination.volumeName === 'mtp') {
+    await sendTestMessage({name: 'mountFakeMtpEmpty'});
+  }
+}
+
+/**
+ * Opens Files app and initiates source with entryTestSet and destination
+ * with [ENTRIES.hello].
+ * The destination is populated to prevent flakes (we can wait for the `hello`
+ * file to appear).
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
+ *     entries to be used for the test.
+ */
+async function openFilesAppAndInitTransfer(transferInfo, entryTestSet) {
   const dstContents = TestEntryInfo.getExpectedRows([ENTRIES.hello]);
 
-  // Opens Files app and initiates source with entryTestSet and destination
-  // with [ENTRIES.hello].
-  // The destination is populated to prevent flakes (we can wait for the `hello`
-  // file to appear).
   const appId = await setupForFileTransferConnector(
       transferInfo, entryTestSet, [ENTRIES.hello]);
 
@@ -657,16 +731,7 @@ async function transferBetweenVolumes(
   // This will execute the actual paste.
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
-
-  const reportOnly =
-      await sendTestMessage({name: 'isReportOnlyFileTransferConnector'}) ===
-      'true';
-  if (reportOnly) {
-    await verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet);
-  } else {
-    await verifyAfterPasteBlocking(
-        appId, transferInfo, entryTestSet, expectedFinalMsg, expectedWarnMsg);
-  }
+  return appId;
 }
 
 /**
@@ -869,6 +934,50 @@ async function verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet) {
 }
 
 /**
+ * Verify what happens after a paste in the case of report-only scans if
+ * there's a no space error.
+ *
+ * @param {string} appId The app id of the files app window.
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param {string} expectedFinalMsg The final message to expect at the progress
+ *     center.
+ * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
+ *     entries to be used for the test.
+ */
+async function verifyAfterPasteReportOnlyNoSpace(
+    appId, transferInfo, expectedFinalMsg, entryTestSet) {
+  // No check for scanning label, as there shouldn't be one.
+
+  // Wait for the expected files to appear in the file list.
+  // Only the hello file should appear, as the destination is assumed to be out
+  // of space.
+  const expectedEntries = [ENTRIES.hello];
+  await verifyDirectoryRecursively(
+      appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
+
+  // Verify contents of the source directory.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
+  // The source entries should be unchanged.
+  const expectedSourceEntries = entryTestSet;
+  // Wait for the expected files to appear in the file list.
+  await verifyDirectoryRecursively(
+      appId, expectedSourceEntries, transferInfo.source.breadcrumbsPath);
+
+  // Check that only one line of text is shown.
+  await remoteCall.waitForFeedbackPanelItem(
+      appId, new RegExp(`^${expectedFinalMsg}$`), new RegExp(`^$`));
+
+  // After the transfer completed, we issue scanning responses.
+  // This ensures that scanning does not impact the transfer.
+  await sendTestMessage({name: 'issueFileTransferResponses'});
+
+  // We have to wait for the scanning to be completed to fulfill the report
+  // expectations.
+  await sendTestMessage({name: 'waitForFileTransferScanningToComplete'});
+}
+
+/**
  * Tests copying from android_files to Downloads.
  */
 testcase.transferConnectorFromAndroidFilesToDownloadsDeep = () => {
@@ -939,6 +1048,18 @@ testcase.transferConnectorFromDriveToDownloadsFlat = () => {
       OLD_COPY_FAIL_MESSAGE,
   );
 };
+testcase
+    .transferConnectorFromDriveToDownloadsFlatDestinationNoSpaceForReportOnly =
+    () => {
+      return transferBetweenVolumesNoSpace(
+          new TransferInfo({
+            source: TRANSFER_LOCATIONS.drive,
+            destination: TRANSFER_LOCATIONS.downloads,
+          }),
+          CONNECTOR_ENTRIES_FLAT,
+          COPY_OUT_OF_SPACE_ERROR_MESSAGE,
+      );
+    };
 
 /**
  * Tests moving from Drive to Downloads.
