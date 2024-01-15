@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">Για προβολή αρχείων καταγραφής διεπαφής δικτύου, ανατρέξτε στην ενότητα: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Οι εφαρμογές και οι ρυθμίσεις σας θα συγχρονιστούν σε όλες τις συσκευές ChromeOS Flex, στις οποίες έχετε συνδεθεί με τον Λογαριασμό σας Google. Για επιλογές συγχρονισμού προγράμματος περιήγησης, μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Γλώσσα μετάφρασης:</translation>
+<translation id="1267649802567297774">Δημιουργήθηκε η εικόνα <ph name="INDEX" /> σχετικά με <ph name="SUBJECT" />, σε στιλ <ph name="STYLE" />, με διάθεση <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
 <translation id="1272508081857842302">Άνοιγμα <ph name="BEGIN_LINK" />υποστηριζόμενων συνδέσμων<ph name="END_LINK" /></translation>
@@ -4498,6 +4499,7 @@
 <translation id="4471354919263203780">Πραγματοποιείται λήψη των αρχείων αναγνώρισης ομιλίας… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Μπορείτε να χρησιμοποιήσετε τη γλώσσα του Λογαριασμού Google που προτιμάτε (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Συμβάλλετε στη βελτίωση των λειτουργιών και της απόδοσης του Chrome</translation>
+<translation id="4472533928615930332">Δημιουργήθηκε εικόνα <ph name="INDEX" /> σχετικά με <ph name="SUBJECT" />, σε στιλ <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4473996011558324141">εκτίμηση χρόνου</translation>
 <translation id="4474155171896946103">Δημιουργία σελιδοδείκτη για όλες τις καρτέλες...</translation>
@@ -7017,6 +7019,7 @@
 <translation id="6509207748479174212">Άδεια μέσων</translation>
 <translation id="6511607461419653612">Επανεκκινήστε το Chromebook και δοκιμάστε ξανά</translation>
 <translation id="6511827214781912955">Μπορείτε να διαγράψετε το αρχείο <ph name="FILENAME" />, έτσι ώστε τα άλλα άτομα που χρησιμοποιούν αυτήν τη συσκευή να μην μπορούν να δουν τους κωδικούς πρόσβασής σας.</translation>
+<translation id="6512759338201777379">Δημιουργήθηκε η εικόνα <ph name="INDEX" /> σχετικά με <ph name="SUBJECT" />, με διάθεση <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Το Google Chrome θα χρησιμοποιεί δεδομένα κινητής τηλεφωνίας, αν δεν είστε συνδεδεμένοι σε άλλο δίκτυο.</translation>
 <translation id="6514010653036109809">Διαθέσιμη συσκευή:</translation>
 <translation id="6514565641373682518">Αυτή η σελίδα έχει απενεργοποιήσει τον δείκτη του ποντικιού σας.</translation>
@@ -7040,6 +7043,7 @@
 <translation id="6528179044667508675">Μην ενοχλείτε</translation>
 <translation id="652937045869844725">Δοκιμάστε να επιτρέψετε τα cookie τρίτου μέρους, κάτι που σημαίνει ότι θα έχετε λιγότερη προστασία, αλλά οι λειτουργίες ιστοτόπου θα είναι πιο πιθανό να είναι διαθέσιμες</translation>
 <translation id="652948702951888897">Ιστορικό Chrome</translation>
+<translation id="6530030995840538405">Δημιουργήθηκε η εικόνα <ph name="INDEX" /> σχετικά με <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Αυτές οι ρυθμίσεις εφαρμόζονται από τον διαχειριστή σας</translation>
 <translation id="6530267432324197764">Η διαχείριση του προφίλ γίνεται από <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Διατήρηση επικίνδυνου αρχείου</translation>

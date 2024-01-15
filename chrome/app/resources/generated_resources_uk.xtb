@@ -360,6 +360,7 @@
 <translation id="1264337193001759725">Щоб переглянути журнали мережевого інтерфейсу, перейдіть на сторінку <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Ваші додатки та налаштування буде синхронізовано на всіх пристроях з ОС Chrome Flex, де ви ввійшли в обліковий запис Google. Щоб переглянути параметри синхронізації веб-переглядача, відкрийте <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Мова перекладу:</translation>
+<translation id="1267649802567297774">Створене зображення <ph name="INDEX" /> об’єкта "<ph name="SUBJECT" />". Стиль: <ph name="STYLE" />. Настрій: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1272508081857842302">Відкривати <ph name="BEGIN_LINK" />підтримувані посилання<ph name="END_LINK" /></translation>
@@ -4501,6 +4502,7 @@
 <translation id="4471354919263203780">Завантажуються файли для розпізнавання мовлення… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Ви можете використовувати мову облікового запису Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Допоможіть покращити функції і ефективність Chrome</translation>
+<translation id="4472533928615930332">Створене зображення <ph name="INDEX" /> об’єкта "<ph name="SUBJECT" />". Стиль: <ph name="STYLE" />.</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4473996011558324141">визначення часу</translation>
 <translation id="4474155171896946103">Додати всі вкладки в закладки…</translation>
@@ -7016,6 +7018,7 @@
 <translation id="6509207748479174212">Ліцензія на медіафайли</translation>
 <translation id="6511607461419653612">Перезапустіть Chromebook і повторіть спробу</translation>
 <translation id="6511827214781912955">Радимо видалити файл "<ph name="FILENAME" />", щоб інші користувачі цього пристрою не бачили ваші паролі</translation>
+<translation id="6512759338201777379">Створене зображення <ph name="INDEX" /> об’єкта "<ph name="SUBJECT" />". Настрій: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome використовуватиме мобільне передавання даних, якщо ви не підключені до іншої мережі.</translation>
 <translation id="6514010653036109809">Доступний пристрій:</translation>
 <translation id="6514565641373682518">Ця сторінка вимкнула курсор миші.</translation>
@@ -7039,6 +7042,7 @@
 <translation id="6528179044667508675">Не турбувати</translation>
 <translation id="652937045869844725">Спробуйте дозволити сторонні файли cookie. Це зменшить рівень захисту, але функції сайту з більшою імовірністю працюватимуть.</translation>
 <translation id="652948702951888897">Історія Chrome</translation>
+<translation id="6530030995840538405">Створене зображення <ph name="INDEX" /> об’єкта "<ph name="SUBJECT" />".</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
 <translation id="6530267432324197764">Профілем керує <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>

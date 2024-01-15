@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">நெட்வொர்க் UI பதிவுகளுக்கு <ph name="DEVICE_LOG_LINK" /> என்ற இணைப்பைப் பார்க்கவும்</translation>
 <translation id="1265279736024499987">நீங்கள் Google கணக்கின் மூலம் உள்நுழைந்துள்ள Chrome OS சாதனங்கள் அனைத்திலும் உங்கள் ஆப்ஸும் அமைப்புகளும் ஒத்திசைக்கப்படும். உலாவி ஒத்திசைவு விருப்பங்களுக்கு, <ph name="LINK_BEGIN" />Chrome அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
 <translation id="126710816202626562">மொழிபெயர்ப்பிற்கான மொழி:</translation>
+<translation id="1267649802567297774"><ph name="STYLE" /> ஸ்டைல் மற்றும் <ph name="MOOD" /> மனநிலையில் உருவாக்கப்பட்ட <ph name="SUBJECT" /> இன் <ph name="INDEX" />வது படம்.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ஆதரிக்கப்படும் இணைப்புகளைத்<ph name="END_LINK" /> திறத்தல்</translation>
@@ -4498,6 +4499,7 @@
 <translation id="4471354919263203780">பேச்சு அறிதலுக்கான ஃபைல்களைப் பதிவிறக்குகிறது... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">உங்கள் Google கணக்கில் தேர்வுசெய்துள்ள விருப்ப மொழியை (<ph name="NEW_LOCALE_FROM_GAIA" />) பயன்படுத்தலாம்</translation>
 <translation id="447252321002412580">Chrome இன் அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுக</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> ஸ்டைலில் உருவாக்கப்பட்ட <ph name="SUBJECT" /> இன் <ph name="INDEX" />வது படம்</translation>
 <translation id="4472575034687746823">தொடங்குக</translation>
 <translation id="4473996011558324141">நேரத்தைக் கணக்கிடுகிறது</translation>
 <translation id="4474155171896946103">அனைத்து தாவல்களையும் புக்மார்க்கிடுக...</translation>
@@ -7017,6 +7019,7 @@
 <translation id="6509207748479174212">மீடியா உரிமம்</translation>
 <translation id="6511607461419653612">உங்கள் Chromebookகை மீண்டும் தொடங்கி மறுபடியும் முயலவும்</translation>
 <translation id="6511827214781912955">இந்தச் சாதனத்தைப் பயன்படுத்துபவர்கள் உங்கள் கடவுச்சொற்களைப் பார்க்காமல் இருக்க <ph name="FILENAME" /> ஃபைலை நீக்கும்படி பரிந்துரைக்கிறோம்</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> மனநிலையில் உருவாக்கப்பட்ட <ph name="SUBJECT" /> இன் <ph name="INDEX" />வது படம்.</translation>
 <translation id="6513247462497316522">நீங்கள் வேறு நெட்வொர்க்குடன் இணையாதபோது Google Chrome மொபைல் டேட்டாவைப் பயன்படுத்தும்.</translation>
 <translation id="6514010653036109809">இணைப்பதற்கு உள்ள சாதனம்:</translation>
 <translation id="6514565641373682518">இந்தப் பக்கம் உங்களுடைய இடஞ்சுட்டியை முடக்கியுள்ளது.</translation>
@@ -7040,6 +7043,7 @@
 <translation id="6528179044667508675">தொந்தரவு செய்யாதே</translation>
 <translation id="652937045869844725">மூன்றாம் தரப்புக் குக்கீகளை அனுமதிக்க முயலவும், இதனால் பாதுகாப்பு குறைந்தாலும் தள அம்சங்கள் நன்கு செயல்பட வாய்ப்புள்ளது</translation>
 <translation id="652948702951888897">Chrome வரலாறு</translation>
+<translation id="6530030995840538405">உருவாக்கப்பட்ட <ph name="SUBJECT" /> படத்தில் <ph name="INDEX" />வது</translation>
 <translation id="6530186581263215931">இந்த அமைப்புகள் உங்கள் நிர்வாகியால் அமலாக்கப்படுகின்றன</translation>
 <translation id="6530267432324197764">சுயவிவரத்தை நிர்வகிப்பது: <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">ஆபத்தான ஃபைலை வைத்திரு</translation>

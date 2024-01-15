@@ -355,6 +355,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1264337193001759725">Sarearen erabiltzaile-interfazeen erregistroak ikusteko, joan <ph name="DEVICE_LOG_LINK" /> helbidera</translation>
 <translation id="1265279736024499987">Aplikazioak eta ezarpenak ChromeOS Flex-eko gailu guztietan sinkronizatuko dira, Google-ko kontuarekin saioa hasita badaukazu haietan. Arakatzailea sinkronizatzeko aukerak ikusteko, joan <ph name="LINK_BEGIN" />Chrome-ren ezarpenetara<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Xede-hizkuntza:</translation>
+<translation id="1267649802567297774">Sortutako <ph name="INDEX" />garren irudia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan, <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Gelditu</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Esteka bateragarriak<ph name="END_LINK" /> irekitzea</translation>
@@ -4483,6 +4484,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4471354919263203780">Hizketa-hautematearen fitxategiak deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="4472298120638043495">Google-ko kontuaren hizkuntza hobetsia erabil dezakezu (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
+<translation id="4472533928615930332">Sortutako <ph name="INDEX" />garren irudia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan</translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4473996011558324141">denbora kalkulatzen</translation>
 <translation id="4474155171896946103">Egin laster-markak fitxa guztiei…</translation>
@@ -4691,7 +4693,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4637189644956543313">Erabili kamera berriro</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Testua}other{# testu}}</translation>
 <translation id="4638930039313743000">Gautu ADB arazketa</translation>
-<translation id="4639390152280993480">Orri honen bertsio sinplifikatu bat ikusteko, joan Tresna gehiago &gt; Irakurketa modua atalera</translation>
+<translation id="4639390152280993480">Orri honen bertsio sinplifikatu bat ikusteko, joan Tresna gehiago &gt; Irakurtzeko modua atalera</translation>
 <translation id="4641539339823703554">Chrome-k ezin izan du sistemaren ordua ezarri. Egiaztatu beheko ordua eta, beharrezkoa bada, zuzen ezazu.</translation>
 <translation id="4642587497923912728">Chromebook honetan saioa hasi duen lehenengo kontuan soilik dago erabilgarri Chromebook-erako Steam (beta-bertsioa).</translation>
 <translation id="4643612240819915418">I&amp;reki bideoa fitxa berri batean</translation>
@@ -6997,6 +6999,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6509207748479174212">Multimedia-edukia erabiltzeko lizentzia</translation>
 <translation id="6511607461419653612">Berrabiarazi Chromebook-a eta saiatu berriro</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> ezabatzea gomendatzen dugu, gailua darabilten gainerakoek zure pasahitzak ikus ez ditzaten</translation>
+<translation id="6512759338201777379">Sortutako <ph name="INDEX" />garren irudia, <ph name="SUBJECT" /> erakusten duena, <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Beste sare batera konektatuta egon ezean, Google Chrome aplikazioak datu-konexioa erabiliko du.</translation>
 <translation id="6514010653036109809">Gailu erabilgarria:</translation>
 <translation id="6514565641373682518">Orri honek kurtsorea desgaitu dizu.</translation>
@@ -7020,6 +7023,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6528179044667508675">Ez molestatu</translation>
 <translation id="652937045869844725">Eman hirugarrenen cookieak erabiltzeko baimena. Babes txikiagoa izango duzu, baina webgunearen eginbideek funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="652948702951888897">Chrome-ko historia</translation>
+<translation id="6530030995840538405">Sortutako <ph name="INDEX" />garren irudia, <ph name="SUBJECT" /> erakusten duena</translation>
 <translation id="6530186581263215931">Administratzaileak gordearazten ditu ezarpen hauek</translation>
 <translation id="6530267432324197764">Profilaren kudeatzailea: <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Gorde fitxategi arriskutsua</translation>

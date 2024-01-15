@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">Тармактын колдонуучу интерфейсинин таржымалдарын көрүү үчүн төмөнкүгө өтүңүз: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Колдонмолор менен жөндөөлөр Google аккаунтуңуз менен кирип турган бардык ChromeOS Flex түзмөктөрүндө шайкештирилет. Серепчини шайкештирүү параметрлерин көрүү үчүн <ph name="LINK_BEGIN" />Chrome параметрлерине<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="126710816202626562">Кайсы тилге:</translation>
+<translation id="1267649802567297774"><ph name="SUBJECT" /> ичинен түзүлгөн сүрөт: <ph name="INDEX" />, стиль: <ph name="STYLE" />, маанай: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Колдоого алынган шилтемелерди<ph name="END_LINK" /> ачуу</translation>
@@ -4498,6 +4499,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4471354919263203780">Кепти таануу файлдары жүктөлүп алынууда... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Google аккаунтуңузда каалаган тилди колдоно аласыз (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Chrome'дун функцияларын жана өндүрүмдүүлүгүн өркүндөтүүгө жардам бериңиз</translation>
+<translation id="4472533928615930332"><ph name="SUBJECT" /> ичинен түзүлгөн сүрөт: <ph name="INDEX" />, стиль: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Баштоо</translation>
 <translation id="4473996011558324141">болжолдуу убакыт</translation>
 <translation id="4474155171896946103">Бардык өтмөктөрдү кыстарып коюу…</translation>
@@ -7016,6 +7018,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6509207748479174212">Медиа уруксаттамасы</translation>
 <translation id="6511607461419653612">Chromebook'ту өчүрүп күйгүзүп, кайталап көрүңүз</translation>
 <translation id="6511827214781912955">Бул түзмөктү колдонгон башка колдонуучулар сырсөздөрүңүздү көрүп албашы үчүн, <ph name="FILENAME" /> файлын өчүрүү сунушталат</translation>
+<translation id="6512759338201777379"><ph name="SUBJECT" /> ичинен түзүлгөн сүрөт: <ph name="INDEX" />, маанай: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Башка тармакка туташып турбасаңыз, Google Chrome мобилдик дайындарды колдонот.</translation>
 <translation id="6514010653036109809">Жеткиликтүү түзмөк:</translation>
 <translation id="6514565641373682518">Бул бет чычкан курсоруңузду иштен чыгарды.</translation>
@@ -7039,6 +7042,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6528179044667508675">Тынчымды алба</translation>
 <translation id="652937045869844725">Үчүнчү тараптын cookie файлдарына уруксат берип көрүңүз. Мында коопсуздугуңуз азыраак корголот, бирок сайттын функциялары иштеши мүмкүн</translation>
 <translation id="652948702951888897">Chrome таржымалы</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> ичинен түзүлгөн сүрөт: <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">Бул параметрлерди администраторуңуз күчүнө киргизген</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> башкарган профиль</translation>
 <translation id="6531282281159901044">Бул коркунучтуу файл сакталсын</translation>

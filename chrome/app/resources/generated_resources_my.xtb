@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">ကွန်ရက် UI မှတ်တမ်းများကို ဤနေရာတွင် ကြည့်ပါ- <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">သင်၏ Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ထားသော ChromeOS Flex စက်အားလုံးတွင် သင့်အက်ပ်နှင့် ဆက်တင်များကို စင့်ခ်လုပ်ပါမည်။ ဘရောင်ဇာစင့်ခ်လုပ်ခြင်း ရွေးစရာများအတွက် <ph name="LINK_BEGIN" />Chrome ဆက်တင်များ<ph name="LINK_END" /> သို့သွားပါ။</translation>
 <translation id="126710816202626562">ဘာသာပြန် ဘာသာစကား၊</translation>
+<translation id="1267649802567297774">ပုံ <ph name="SUBJECT" /> အနက် <ph name="INDEX" /> ထုတ်ထားသည်။ <ph name="STYLE" /> ပုံစံ၊ <ph name="MOOD" /> ခံစားချက်ဟန်ဖြင့်။</translation>
 <translation id="126768002343224824">၁၆ ဆ</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ပံ့ပိုးထားသော လင့်ခ်များ<ph name="END_LINK" /> ဖွင့်နေသည်</translation>
@@ -4496,6 +4497,7 @@
 <translation id="4471354919263203780">Speech recognition ဖိုင်များကို ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">သင့် Google Account ၏ ဦးစားပေးဘာသာစကား (<ph name="NEW_LOCALE_FROM_GAIA" />) သုံးနိုင်သည်</translation>
 <translation id="447252321002412580">Chrome ၏ ဝန်ဆောင်မှုနှင့် စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်လာအောင် ကူညီရန်</translation>
+<translation id="4472533928615930332">ပုံ <ph name="SUBJECT" /> အနက် <ph name="INDEX" /> ထုတ်ထားသည်။ <ph name="STYLE" /> ပုံစံဖြင့်</translation>
 <translation id="4472575034687746823">စကြရအောင်</translation>
 <translation id="4473996011558324141">ခန့်မှန်းကြာချိန်</translation>
 <translation id="4474155171896946103">တဲဘ်များ အားလုံးကို စာညှပ် ထည့်ပေးရန်...</translation>
@@ -7014,6 +7016,7 @@
 <translation id="6509207748479174212">မီဒီယာလိုင်စင်</translation>
 <translation id="6511607461419653612">Chromebook ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="6511827214781912955">ဤစက်သုံးသော အခြားသူများက သင့်စကားဝှက်ကို မမြင်စေရန်အတွက် <ph name="FILENAME" /> ကို ဖျက်ရန် သတိပြုပါ</translation>
+<translation id="6512759338201777379">ပုံ <ph name="SUBJECT" /> အနက် <ph name="INDEX" /> ထုတ်ထားသည်။ <ph name="MOOD" /> ခံစားချက်ဟန်ဖြင့်။</translation>
 <translation id="6513247462497316522">သင်အခြားကွန်ရက်သို့ ချိတ်ဆက်ထားမှု မရှိလျှင် Google Chrome မိုဘိုင်းအချက်လက်ကို အသုံးပြုပါမည်။</translation>
 <translation id="6514010653036109809">ရနိုင်သည့် စက်ပစ္စည်း−</translation>
 <translation id="6514565641373682518">ဒီစာမျက်နှာက သင်၏ မောက်စ်ကို ပိတ်ပစ်ခဲ့သည်။</translation>
@@ -7035,6 +7038,7 @@
 <translation id="6528179044667508675">မနှောင့်ယှက်ရ</translation>
 <translation id="652937045869844725">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ခွင့်ပြုကြည့်ပါ။ ကာကွယ်မှု လျော့နည်းသွားသော်လည်း ဝဘ်ဆိုက်အင်္ဂါရပ်များ ပိုမိုလုပ်ဆောင်နိုင်ပါမည်</translation>
 <translation id="652948702951888897">Chrome မှတ်တမ်း</translation>
+<translation id="6530030995840538405">ပုံ <ph name="SUBJECT" /> အနက် <ph name="INDEX" /> ထုတ်ထားသည်</translation>
 <translation id="6530186581263215931">ဤဆက်တင်များကို သင်၏စီမံခန့်ခွဲသူက ချမှတ်ထားခြင်းဖြစ်သည်</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> က စီမံထားသော ပရိုဖိုင်</translation>
 <translation id="6531282281159901044">အန္တရာယ်ရှိသည့်ဖိုင်ကို သိမ်းရန်</translation>
