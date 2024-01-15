@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
+#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -23,7 +23,7 @@ class MerchantPromoCodeFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return MerchantPromoCodeField::Parse(context, scanner);
+    return MerchantPromoCodeFieldParser::Parse(context, scanner);
   }
 };
 

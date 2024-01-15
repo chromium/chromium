@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
+#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -12,7 +12,7 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormFieldParser> MerchantPromoCodeField::Parse(
+std::unique_ptr<FormFieldParser> MerchantPromoCodeFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
@@ -25,16 +25,17 @@ std::unique_ptr<FormFieldParser> MerchantPromoCodeField::Parse(
                                                   FormControlType::kTextArea>,
                           merchant_promo_code_patterns, &field,
                           "kMerchantPromoCodeRe")) {
-    return std::make_unique<MerchantPromoCodeField>(field);
+    return std::make_unique<MerchantPromoCodeFieldParser>(field);
   }
 
   return nullptr;
 }
 
-MerchantPromoCodeField::MerchantPromoCodeField(const AutofillField* field)
+MerchantPromoCodeFieldParser::MerchantPromoCodeFieldParser(
+    const AutofillField* field)
     : field_(field) {}
 
-void MerchantPromoCodeField::AddClassifications(
+void MerchantPromoCodeFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, MERCHANT_PROMO_CODE,
                     kBaseMerchantPromoCodeParserScore, field_candidates);

@@ -25,7 +25,7 @@
 #include "components/autofill/core/browser/form_parsing/email_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
+#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
@@ -313,8 +313,8 @@ void FormFieldParser::ParseSingleFieldForms(
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
       RemoveCheckableFields(fields);
   // Merchant promo code pass.
-  ParseFormFieldsPass(MerchantPromoCodeField::Parse, context, processed_fields,
-                      field_candidates);
+  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context,
+                      processed_fields, field_candidates);
 
   // IBAN pass.
   ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
