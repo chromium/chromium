@@ -117,7 +117,7 @@ constexpr CGFloat kTableViewSeparatorLeadingInset = 56;
     items = @[ newDefaultEngine ];
   }
   [self reconfigureCellsForItems:items];
-  CHECK(self.delegate);
+  CHECK(self.delegate, base::NotFatalUntil::M124);
   [self.delegate selectSearchEngineAtRow:selectedRow];
 }
 

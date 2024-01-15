@@ -85,8 +85,7 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
 - (instancetype)initWithSearchEngineTableViewController:
     (SearchEngineChoiceTableViewController*)tableViewController {
-  DCHECK(tableViewController);
-
+  CHECK(tableViewController);
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _searchEngineTableViewController = tableViewController;

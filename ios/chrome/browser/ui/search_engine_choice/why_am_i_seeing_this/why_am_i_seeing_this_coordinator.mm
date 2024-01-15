@@ -58,7 +58,7 @@
 #pragma mark - WhyAmISeeingThisDelegate
 
 - (void)learnMoreDone:(WhyAmISeeingThisViewController*)viewController {
-  CHECK_EQ(_viewController, viewController);
+  CHECK_EQ(_viewController, viewController, base::NotFatalUntil::M124);
   __weak __typeof(self) weakSelf = self;
   [_viewController dismissViewControllerAnimated:YES
                                       completion:^() {

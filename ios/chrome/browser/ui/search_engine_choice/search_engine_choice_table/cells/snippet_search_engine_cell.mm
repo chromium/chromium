@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -334,7 +335,9 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 #pragma mark - Accessibility
 
 - (NSString*)accessibilityLabel {
-  CHECK_NE(self.snippetLabel.text.length, 0ul);
+  CHECK_NE(self.snippetLabel.text.length, 0ul, base::NotFatalUntil::M124)
+      << base::SysNSStringToUTF8(self.nameLabel.text) << " "
+      << base::SysNSStringToUTF8(self.snippetLabel.text);
   switch (_snippetState) {
     case SnippetState::kShown:
       return [NSString stringWithFormat:@"%@. %@", self.nameLabel.text,
@@ -346,7 +349,9 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
-  CHECK(self.nameLabel.text);
+  CHECK_NE(self.nameLabel.text.length, 0ul, base::NotFatalUntil::M124)
+      << base::SysNSStringToUTF8(self.nameLabel.text) << " "
+      << base::SysNSStringToUTF8(self.snippetLabel.text);
   return @[ self.nameLabel.text ];
 }
 
