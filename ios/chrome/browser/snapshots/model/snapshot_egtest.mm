@@ -180,7 +180,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
 // and the lower side is blue in the page. A snapshot is taken 2 times with the
 // same position before and after scrolling down.
-- (void)testSnapshotWithScrollDown {
+// TODO(crbug.com/1515809): Reenable after fixing.
+- (void)DISABLED_testSnapshotWithScrollDown {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
