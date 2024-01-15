@@ -132,8 +132,6 @@ void FCMHandler::OnMessage(const std::string& app_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(app_id, app_id_);
 
-  base::UmaHistogramBoolean("Sync.FCMMessageDeliveredToListeners",
-                            !listeners_.empty());
   if (last_received_messages_.size() >= kMaxBufferedLastFcmMessages) {
     last_received_messages_.pop_front();
   }
