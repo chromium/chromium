@@ -6,6 +6,7 @@
 -AutofillAcrossIframesTest.NoChildFrames
 -AutofillAcrossIframesTest.WithChildFrames
 -AutofillAcrossIframesTest.Resolve
+-AutofillAcrossIframesTest.SetAndGetParent
 
 # TODO(crbug.com/1505321): Test currently fails on iOS blink.
 -AutofillAgentTests.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
