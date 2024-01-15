@@ -5,6 +5,7 @@
 #ifndef NET_DNS_HTTPSSVC_METRICS_H_
 #define NET_DNS_HTTPSSVC_METRICS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -74,12 +74,12 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   // RecordIntegrityMetrics() will do nothing when |disqualified_| is true.
   bool disqualified_ = false;
   bool already_recorded_ = false;
-  absl::optional<enum HttpssvcDnsRcode> rcode_https_;
+  std::optional<enum HttpssvcDnsRcode> rcode_https_;
   size_t num_https_records_ = 0;
-  absl::optional<bool> is_https_parsable_;
+  std::optional<bool> is_https_parsable_;
   // We never make multiple HTTPS queries per DnsTask, so we only need
   // one TimeDelta for the HTTPS query.
-  absl::optional<base::TimeDelta> https_resolve_time_;
+  std::optional<base::TimeDelta> https_resolve_time_;
   std::vector<base::TimeDelta> address_resolve_times_;
 };
 

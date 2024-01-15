@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_response_result_extractor.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -75,8 +75,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
                   kName, DnsQueryType::A, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   ElementsAre(IPEndPoint(kExpected, /*port=*/0))))));
 }
 
@@ -98,8 +98,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
                   kName, DnsQueryType::AAAA, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   ElementsAre(IPEndPoint(expected, /*port=*/0))))));
 }
 
@@ -120,16 +120,16 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
   ASSERT_TRUE(results.has_value());
   EXPECT_THAT(
       results.value(),
-      UnorderedElementsAre(Pointee(ExpectHostResolverInternalDataResult(
-                               kCanonicalName, DnsQueryType::A, kDnsSource,
-                               /*expiration_matcher=*/Ne(absl::nullopt),
-                               /*timed_expiration_matcher=*/Ne(absl::nullopt),
-                               ElementsAre(IPEndPoint(kExpected, /*port=*/0)))),
-                           Pointee(ExpectHostResolverInternalAliasResult(
-                               kName, DnsQueryType::A, kDnsSource,
-                               /*expiration_matcher=*/Ne(absl::nullopt),
-                               /*timed_expiration_matcher=*/Ne(absl::nullopt),
-                               kCanonicalName))));
+      UnorderedElementsAre(
+          Pointee(ExpectHostResolverInternalDataResult(
+              kCanonicalName, DnsQueryType::A, kDnsSource,
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
+              ElementsAre(IPEndPoint(kExpected, /*port=*/0)))),
+          Pointee(ExpectHostResolverInternalAliasResult(
+              kName, DnsQueryType::A, kDnsSource,
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), kCanonicalName))));
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
@@ -158,8 +158,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalDataResult(
               "alias.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               UnorderedElementsAre(
                   IPEndPoint(IPAddress(74, 125, 226, 179), /*port=*/0),
                   IPEndPoint(IPAddress(74, 125, 226, 180), /*port=*/0),
@@ -168,8 +168,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
                   IPEndPoint(IPAddress(74, 125, 226, 178), /*port=*/0)))),
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "alias.test"))));
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "alias.test"))));
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
@@ -352,8 +352,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsTxtResponses) {
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
           kName, DnsQueryType::TXT, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           /*endpoints_matcher=*/IsEmpty(),
           /*strings_matcher=*/
           AllOf(UnorderedElementsAre("foo1", "foo2", "foo3", "bar1", "bar2"),
@@ -502,8 +502,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsPtrResponses) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
                   kName, DnsQueryType::PTR, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   /*endpoints_matcher=*/IsEmpty(),
                   /*strings_matcher=*/IsEmpty(),
                   /*hosts_matcher=*/
@@ -631,8 +631,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsSrvResponses) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
                   kName, DnsQueryType::SRV, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   /*endpoints_matcher=*/IsEmpty(),
                   /*strings_matcher=*/IsEmpty(),
                   /*hosts_matcher=*/
@@ -677,8 +677,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsZeroWeightSrvResponses) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
                   kName, DnsQueryType::SRV, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   /*endpoints_matcher=*/IsEmpty(),
                   /*strings_matcher=*/IsEmpty(),
                   /*hosts_matcher=*/
@@ -883,8 +883,8 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresHttpsResponseWithAlias) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
                   kName, DnsQueryType::HTTPS, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   /*metadatas_matcher=*/IsEmpty()))));
 }
 
@@ -920,8 +920,8 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresHttpsResponseWithNoDefaultAlpn) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
                   kName, DnsQueryType::HTTPS, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   /*metadatas_matcher=*/IsEmpty()))));
 }
 
@@ -948,8 +948,8 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresUnsupportedParamsInHttpsRecord) {
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(
               Pair(4, ExpectConnectionEndpointMetadata(
                           ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
@@ -988,8 +988,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               5, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1018,8 +1018,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1048,8 +1048,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1079,8 +1079,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kPrefixedName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1111,12 +1111,12 @@ TEST_F(DnsResponseResultExtractorTest,
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::HTTPS, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "alias.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "alias.test")),
           Pointee(ExpectHostResolverInternalMetadataResult(
               "alias.test", DnsQueryType::HTTPS, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(Pair(
                   4, ExpectConnectionEndpointMetadata(
                          ElementsAre("foo",
@@ -1151,8 +1151,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               5, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1181,8 +1181,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       ElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kPrefixedName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4,
               ExpectConnectionEndpointMetadata(
@@ -1214,12 +1214,12 @@ TEST_F(DnsResponseResultExtractorTest,
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::HTTPS, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "alias.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "alias.test")),
           Pointee(ExpectHostResolverInternalMetadataResult(
               "alias.test", DnsQueryType::HTTPS, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(Pair(
                   4, ExpectConnectionEndpointMetadata(
                          ElementsAre("foo",
@@ -1251,8 +1251,8 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsHttpsRecordWithMatchingPort) {
       results.value(),
       UnorderedElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1285,8 +1285,8 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithMismatchingPort) {
       results.value(),
       UnorderedElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1321,8 +1321,8 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithNoAlpn) {
       results.value(),
       UnorderedElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           ElementsAre(Pair(
               4, ExpectConnectionEndpointMetadata(
                      ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
@@ -1378,8 +1378,8 @@ TEST_F(DnsResponseResultExtractorTest,
       results.value(),
       UnorderedElementsAre(Pointee(ExpectHostResolverInternalMetadataResult(
           kName, DnsQueryType::HTTPS, kDnsSource,
-          /*expiration_matcher=*/Ne(absl::nullopt),
-          /*timed_expiration_matcher=*/Ne(absl::nullopt),
+          /*expiration_matcher=*/Ne(std::nullopt),
+          /*timed_expiration_matcher=*/Ne(std::nullopt),
           /*metadatas_matcher=*/IsEmpty()))));
 }
 
@@ -1556,8 +1556,8 @@ TEST_F(DnsResponseResultExtractorTest, IgnoresUnsolicitedHttpsRecords) {
   EXPECT_THAT(results.value(),
               ElementsAre(Pointee(ExpectHostResolverInternalDataResult(
                   kName, DnsQueryType::TXT, kDnsSource,
-                  /*expiration_matcher=*/Ne(absl::nullopt),
-                  /*timed_expiration_matcher=*/Ne(absl::nullopt),
+                  /*expiration_matcher=*/Ne(std::nullopt),
+                  /*timed_expiration_matcher=*/Ne(std::nullopt),
                   /*endpoints_matcher=*/IsEmpty(), ElementsAre("foo")))));
 }
 
@@ -1584,20 +1584,20 @@ TEST_F(DnsResponseResultExtractorTest, HandlesInOrderCnameChain) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               /*endpoints_matcher=*/IsEmpty(),
               UnorderedElementsAre("foo", "bar")))));
 }
@@ -1627,20 +1627,20 @@ TEST_F(DnsResponseResultExtractorTest, HandlesInOrderCnameChainTypeA) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(expected_endpoint)))));
 }
 
@@ -1666,20 +1666,20 @@ TEST_F(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               /*endpoints_matcher=*/IsEmpty(), ElementsAre("foo")))));
 }
 
@@ -1708,20 +1708,20 @@ TEST_F(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChainTypeA) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(expected_endpoint)))));
 }
 
@@ -1747,20 +1747,20 @@ TEST_F(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChain) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               /*endpoints_matcher=*/IsEmpty(), ElementsAre("foo")))));
 }
 
@@ -1791,20 +1791,20 @@ TEST_F(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChainTypeA) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "qsecond.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "qsecond.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "qsecond.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "athird.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "athird.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "athird.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "zfourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "zfourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "zfourth.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(expected_endpoint)))));
 }
 
@@ -1833,20 +1833,20 @@ TEST_F(DnsResponseResultExtractorTest,
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               /*endpoints_matcher=*/IsEmpty(), ElementsAre("foo")))));
 }
 
@@ -1877,20 +1877,20 @@ TEST_F(DnsResponseResultExtractorTest,
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "fourth.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(expected_endpoint)))));
 }
 
@@ -1915,16 +1915,16 @@ TEST_F(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResult) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::TXT, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test"))));
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test"))));
 }
 
 TEST_F(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResultTypeA) {
@@ -1948,16 +1948,16 @@ TEST_F(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResultTypeA) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "second.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "second.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "second.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "third.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "third.test")),
           Pointee(ExpectHostResolverInternalAliasResult(
               "third.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "fourth.test"))));
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "fourth.test"))));
 }
 
 TEST_F(DnsResponseResultExtractorTest, RejectsCnameChainWithLoop) {
@@ -2216,12 +2216,12 @@ TEST_F(DnsResponseResultExtractorTest, CanonicalizesAliasNames) {
       UnorderedElementsAre(
           Pointee(ExpectHostResolverInternalAliasResult(
               kName, DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt), "alias.test")),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt), "alias.test")),
           Pointee(ExpectHostResolverInternalDataResult(
               "alias.test", DnsQueryType::A, kDnsSource,
-              /*expiration_matcher=*/Ne(absl::nullopt),
-              /*timed_expiration_matcher=*/Ne(absl::nullopt),
+              /*expiration_matcher=*/Ne(std::nullopt),
+              /*timed_expiration_matcher=*/Ne(std::nullopt),
               ElementsAre(IPEndPoint(kExpected, /*port=*/0))))));
 }
 

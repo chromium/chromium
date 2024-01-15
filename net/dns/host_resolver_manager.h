@@ -11,6 +11,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -150,13 +150,13 @@ class NET_EXPORT HostResolverManager
       absl::variant<url::SchemeHostPort, HostPortPair> host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters,
+      std::optional<ResolveHostParameters> optional_parameters,
       ResolveContext* resolve_context);
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters,
+      std::optional<ResolveHostParameters> optional_parameters,
       ResolveContext* resolve_context);
   // |resolve_context| is the context to use for the probes, and it is expected
   // to be the context of the calling ContextHostResolver.
@@ -311,7 +311,7 @@ class NET_EXPORT HostResolverManager
   //
   // If results are returned from the host cache, |out_stale_info| will be
   // filled in with information on how stale or fresh the result is. Otherwise,
-  // |out_stale_info| will be set to |absl::nullopt|.
+  // |out_stale_info| will be set to |std::nullopt|.
   //
   // If |cache_usage == ResolveHostParameters::CacheUsage::STALE_ALLOWED|, then
   // stale cache entries can be returned.
@@ -325,7 +325,7 @@ class NET_EXPORT HostResolverManager
       const NetLogWithSource& source_net_log,
       HostCache* cache,
       std::deque<TaskType>* out_tasks,
-      absl::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info);
 
   // Creates and starts a Job to asynchronously attempt to resolve
   // |request|.
@@ -349,18 +349,18 @@ class NET_EXPORT HostResolverManager
   // Returns the result iff |cache_usage| permits cache lookups and a positive
   // match is found for |key| in |cache|. |out_stale_info| must be non-null, and
   // will be filled in with details of the entry's staleness if an entry is
-  // returned, otherwise it will be set to |absl::nullopt|.
-  absl::optional<HostCache::Entry> MaybeServeFromCache(
+  // returned, otherwise it will be set to |std::nullopt|.
+  std::optional<HostCache::Entry> MaybeServeFromCache(
       HostCache* cache,
       const HostCache::Key& key,
       ResolveHostParameters::CacheUsage cache_usage,
       bool ignore_secure,
       const NetLogWithSource& source_net_log,
-      absl::optional<HostCache::EntryStaleness>* out_stale_info);
+      std::optional<HostCache::EntryStaleness>* out_stale_info);
 
   // Returns any preset resolution result from the active DoH configuration that
   // matches |key.host|.
-  absl::optional<HostCache::Entry> MaybeReadFromConfig(const JobKey& key);
+  std::optional<HostCache::Entry> MaybeReadFromConfig(const JobKey& key);
 
   // Populates the secure cache with an optimal entry that supersedes the
   // bootstrap result.
@@ -371,7 +371,7 @@ class NET_EXPORT HostResolverManager
   // Iff we have a DnsClient with a valid DnsConfig and we're not about to
   // attempt a system lookup, then try to resolve the query using the HOSTS
   // file.
-  absl::optional<HostCache::Entry> ServeFromHosts(
+  std::optional<HostCache::Entry> ServeFromHosts(
       base::StringPiece hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
@@ -379,7 +379,7 @@ class NET_EXPORT HostResolverManager
 
   // Iff |key| is for a localhost name (RFC 6761) and address DNS query type,
   // returns a results entry with the loopback IP.
-  absl::optional<HostCache::Entry> ServeLocalhost(
+  std::optional<HostCache::Entry> ServeLocalhost(
       base::StringPiece hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6);
@@ -499,7 +499,7 @@ class NET_EXPORT HostResolverManager
       NetworkChangeNotifier::ConnectionType type) override;
 
   // SystemDnsConfigChangeNotifier::Observer:
-  void OnSystemDnsConfigChanged(absl::optional<DnsConfig> config) override;
+  void OnSystemDnsConfigChanged(std::optional<DnsConfig> config) override;
 
   void UpdateJobsForChangedConfig();
 

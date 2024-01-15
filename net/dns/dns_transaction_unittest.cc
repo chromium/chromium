@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -64,7 +65,6 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsOk;
 
@@ -77,7 +77,7 @@ base::TimeDelta kFallbackPeriod = base::Seconds(1);
 const char kMockHostname[] = "mock.http";
 
 std::vector<uint8_t> DomainFromDot(base::StringPiece dotted_name) {
-  absl::optional<std::vector<uint8_t>> dns_name =
+  std::optional<std::vector<uint8_t>> dns_name =
       dns_names_util::DottedNameToNetwork(dotted_name);
   CHECK(dns_name.has_value());
   return dns_name.value();
@@ -315,8 +315,8 @@ class TestSocketFactory : public MockClientSocketFactory {
     explicit RemoteNameserver(DnsOverHttpsServerConfig secure_nameserver)
         : secure_nameserver(secure_nameserver) {}
 
-    absl::optional<IPEndPoint> insecure_nameserver;
-    absl::optional<DnsOverHttpsServerConfig> secure_nameserver;
+    std::optional<IPEndPoint> insecure_nameserver;
+    std::optional<DnsOverHttpsServerConfig> secure_nameserver;
   };
 
   std::vector<RemoteNameserver> remote_endpoints_;
@@ -2490,8 +2490,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
       config_.doh_config.servers()[0].server_template()));
   auto cookie = CanonicalCookie::Create(
       cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   request_context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, CookieOptions(),
       base::BindOnce(&CookieCallback::SetCookieCallback,

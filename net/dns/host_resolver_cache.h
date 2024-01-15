@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -35,14 +35,14 @@ class NET_EXPORT HostResolverCache final {
  public:
   struct StaleLookupResult {
     StaleLookupResult(const HostResolverInternalResult& result,
-                      absl::optional<base::TimeDelta> expired_by,
+                      std::optional<base::TimeDelta> expired_by,
                       bool stale_by_generation);
     ~StaleLookupResult() = default;
 
     const raw_ref<const HostResolverInternalResult> result;
 
     // Time since the result's TTL has expired. nullopt if not expired.
-    const absl::optional<base::TimeDelta> expired_by;
+    const std::optional<base::TimeDelta> expired_by;
 
     // True if result is stale due to a call to
     // HostResolverCache::MakeAllResultsStale().
@@ -66,7 +66,7 @@ class NET_EXPORT HostResolverCache final {
 
   // Lookup an active (non-stale) cached result matching the given criteria. If
   // `query_type` is `DnsQueryType::UNSPECIFIED`, `source` is
-  // `HostResolverSource::ANY`, or `secure` is `absl::nullopt`, it is a wildcard
+  // `HostResolverSource::ANY`, or `secure` is `std::nullopt`, it is a wildcard
   // that can match for any cached parameter of that type. In cases where a
   // wildcard lookup leads to multiple matching results, only one result will be
   // returned, preferring first the most secure result and then the most
@@ -81,7 +81,7 @@ class NET_EXPORT HostResolverCache final {
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type = DnsQueryType::UNSPECIFIED,
       HostResolverSource source = HostResolverSource::ANY,
-      absl::optional<bool> secure = absl::nullopt) const;
+      std::optional<bool> secure = std::nullopt) const;
 
   // Lookup a cached result matching the given criteria. Unlike Lookup(), may
   // return stale results. In cases where a wildcard lookup leads to multiple
@@ -96,12 +96,12 @@ class NET_EXPORT HostResolverCache final {
   //
   // Returns nullopt on cache miss (no active or stale result matches the given
   // criteria).
-  absl::optional<StaleLookupResult> LookupStale(
+  std::optional<StaleLookupResult> LookupStale(
       base::StringPiece domain_name,
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type = DnsQueryType::UNSPECIFIED,
       HostResolverSource source = HostResolverSource::ANY,
-      absl::optional<bool> secure = absl::nullopt) const;
+      std::optional<bool> secure = std::nullopt) const;
 
   // Sets the result into the cache, replacing any previous result entries that
   // would match the same criteria, even if a previous entry would have matched
@@ -216,7 +216,7 @@ class NET_EXPORT HostResolverCache final {
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type,
       HostResolverSource source,
-      absl::optional<bool> secure) const;
+      std::optional<bool> secure) const;
 
   void Set(std::unique_ptr<HostResolverInternalResult> result,
            const NetworkAnonymizationKey& network_anonymization_key,

@@ -6,6 +6,7 @@
 #define NET_DNS_CONTEXT_HOST_RESOLVER_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_system_task.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -58,13 +58,12 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
       url::SchemeHostPort host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
-      absl::optional<ResolveHostParameters> optional_parameters) override;
+      std::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
-      const absl::optional<ResolveHostParameters>& optional_parameters)
-      override;
+      const std::optional<ResolveHostParameters>& optional_parameters) override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   std::unique_ptr<MdnsListener> CreateMdnsListener(
       const HostPortPair& host,

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::ElementsAre;
 using ::testing::Optional;
@@ -83,9 +83,9 @@ TEST(HostResolverInternalResultTest, RoundtripDataResultThroughSerialization) {
   EXPECT_EQ(deserialized->AsData(),
             HostResolverInternalDataResult(
                 result->domain_name(), result->query_type(),
-                /*expiration=*/absl::nullopt,
-                result->timed_expiration().value(), result->source(),
-                result->endpoints(), result->strings(), result->hosts()));
+                /*expiration=*/std::nullopt, result->timed_expiration().value(),
+                result->source(), result->endpoints(), result->strings(),
+                result->hosts()));
 }
 
 // Expect results to serialize to a consistent base::Value format for
@@ -99,7 +99,7 @@ TEST(HostResolverInternalResultTest, SerializepDataResult) {
       std::vector<HostPortPair>{HostPortPair("anotherdomain.test", 112)});
   base::Value value = result->ToValue();
 
-  absl::optional<base::Value> expected = base::JSONReader::Read(
+  std::optional<base::Value> expected = base::JSONReader::Read(
       R"(
         {
           "domain_name": "domain.test",
@@ -237,12 +237,11 @@ TEST(HostResolverInternalResultTest,
 
   // Expect deserialized result to be the same as the original other than
   // missing non-timed expiration.
-  EXPECT_EQ(
-      deserialized->AsMetadata(),
-      HostResolverInternalMetadataResult(
-          result->domain_name(), result->query_type(),
-          /*expiration=*/absl::nullopt, result->timed_expiration().value(),
-          result->source(), result->metadatas()));
+  EXPECT_EQ(deserialized->AsMetadata(),
+            HostResolverInternalMetadataResult(
+                result->domain_name(), result->query_type(),
+                /*expiration=*/std::nullopt, result->timed_expiration().value(),
+                result->source(), result->metadatas()));
 }
 
 // Expect results to serialize to a consistent base::Value format for
@@ -260,7 +259,7 @@ TEST(HostResolverInternalResultTest, SerializepMetadataResult) {
   base::Value value = result->ToValue();
 
   // Note that the `ech_config_list` base64 encodes to "ARMV".
-  absl::optional<base::Value> expected = base::JSONReader::Read(
+  std::optional<base::Value> expected = base::JSONReader::Read(
       R"(
         {
           "domain_name": "domain2.test",
@@ -398,8 +397,8 @@ TEST(HostResolverInternalResultTest, ErrorResult) {
 
 TEST(HostResolverInternalResultTest, NoncachableErrorResult) {
   auto result = std::make_unique<HostResolverInternalErrorResult>(
-      "domain3.test", DnsQueryType::PTR, /*expiration=*/absl::nullopt,
-      /*timed_expiration=*/absl::nullopt,
+      "domain3.test", DnsQueryType::PTR, /*expiration=*/std::nullopt,
+      /*timed_expiration=*/std::nullopt,
       HostResolverInternalResult::Source::kUnknown, ERR_NAME_NOT_RESOLVED);
 
   EXPECT_EQ(result->domain_name(), "domain3.test");
@@ -427,11 +426,10 @@ TEST(HostResolverInternalResultTest, RoundtripErrorResultThroughSerialization) {
   // Expect deserialized result to be the same as the original other than
   // missing non-timed expiration.
   EXPECT_EQ(deserialized->AsError(),
-            HostResolverInternalErrorResult(result->domain_name(),
-                                            result->query_type(),
-                                            /*expiration=*/absl::nullopt,
-                                            result->timed_expiration().value(),
-                                            result->source(), result->error()));
+            HostResolverInternalErrorResult(
+                result->domain_name(), result->query_type(),
+                /*expiration=*/std::nullopt, result->timed_expiration().value(),
+                result->source(), result->error()));
 }
 
 // Expect results to serialize to a consistent base::Value format for
@@ -442,7 +440,7 @@ TEST(HostResolverInternalResultTest, SerializepErrorResult) {
       HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILED);
   base::Value value = result->ToValue();
 
-  absl::optional<base::Value> expected = base::JSONReader::Read(
+  std::optional<base::Value> expected = base::JSONReader::Read(
       R"(
         {
           "domain_name": "domain4.test",
@@ -531,12 +529,11 @@ TEST(HostResolverInternalResultTest, RoundtripAliasResultThroughSerialization) {
 
   // Expect deserialized result to be the same as the original other than
   // missing non-timed expiration.
-  EXPECT_EQ(
-      deserialized->AsAlias(),
-      HostResolverInternalAliasResult(
-          result->domain_name(), result->query_type(),
-          /*expiration=*/absl::nullopt, result->timed_expiration().value(),
-          result->source(), result->alias_target()));
+  EXPECT_EQ(deserialized->AsAlias(),
+            HostResolverInternalAliasResult(
+                result->domain_name(), result->query_type(),
+                /*expiration=*/std::nullopt, result->timed_expiration().value(),
+                result->source(), result->alias_target()));
 }
 
 // Expect results to serialize to a consistent base::Value format for
@@ -547,7 +544,7 @@ TEST(HostResolverInternalResultTest, SerializepAliasResult) {
       HostResolverInternalResult::Source::kDns, "alias_target1.test");
   base::Value value = result->ToValue();
 
-  absl::optional<base::Value> expected = base::JSONReader::Read(
+  std::optional<base::Value> expected = base::JSONReader::Read(
       R"(
         {
           "alias_target": "alias_target1.test",

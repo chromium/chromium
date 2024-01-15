@@ -4,6 +4,7 @@
 
 #include "net/dns/mapped_host_resolver.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "net/base/url_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
@@ -36,7 +36,7 @@ MappedHostResolver::CreateRequest(
     url::SchemeHostPort host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource source_net_log,
-    absl::optional<ResolveHostParameters> optional_parameters) {
+    std::optional<ResolveHostParameters> optional_parameters) {
   GURL rewritten_url = host.GetURL();
   HostMappingRules::RewriteResult result = rules_.RewriteUrl(rewritten_url);
 
@@ -64,7 +64,7 @@ MappedHostResolver::CreateRequest(
     const HostPortPair& host,
     const NetworkAnonymizationKey& network_anonymization_key,
     const NetLogWithSource& source_net_log,
-    const absl::optional<ResolveHostParameters>& optional_parameters) {
+    const std::optional<ResolveHostParameters>& optional_parameters) {
   HostPortPair rewritten = host;
   rules_.RewriteHost(&rewritten);
 

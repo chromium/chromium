@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "net/base/net_errors.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/public/dns_query_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
 
@@ -72,39 +72,39 @@ base::Value EndpointMetadataPairToValue(
   return base::Value(std::move(dictionary));
 }
 
-absl::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
+std::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
 EndpointMetadataPairFromValue(const base::Value& value) {
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<int> weight = dict->FindInt(kValueMetadataWeightKey);
+  std::optional<int> weight = dict->FindInt(kValueMetadataWeightKey);
   if (!weight || !base::IsValueInRangeForNumericType<HttpsRecordPriority>(
                      weight.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value* metadata_value = dict->Find(kValueMetadataValueKey);
   if (!metadata_value)
-    return absl::nullopt;
-  absl::optional<ConnectionEndpointMetadata> metadata =
+    return std::nullopt;
+  std::optional<ConnectionEndpointMetadata> metadata =
       ConnectionEndpointMetadata::FromValue(*metadata_value);
   if (!metadata)
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::make_pair(base::checked_cast<HttpsRecordPriority>(weight.value()),
                         std::move(metadata).value());
 }
 
-absl::optional<DnsQueryType> QueryTypeFromValue(const base::Value& value) {
+std::optional<DnsQueryType> QueryTypeFromValue(const base::Value& value) {
   const std::string* query_type_string = value.GetIfString();
   if (!query_type_string)
-    return absl::nullopt;
+    return std::nullopt;
   const auto* query_type_it =
       base::ranges::find(kDnsQueryTypes, *query_type_string,
                          &decltype(kDnsQueryTypes)::value_type::second);
   if (query_type_it == kDnsQueryTypes.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return query_type_it->first;
 }
@@ -122,11 +122,11 @@ base::Value TypeToValue(HostResolverInternalResult::Type type) {
   }
 }
 
-absl::optional<HostResolverInternalResult::Type> TypeFromValue(
+std::optional<HostResolverInternalResult::Type> TypeFromValue(
     const base::Value& value) {
   const std::string* string = value.GetIfString();
   if (!string)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (*string == "data") {
     return HostResolverInternalResult::Type::kData;
@@ -137,7 +137,7 @@ absl::optional<HostResolverInternalResult::Type> TypeFromValue(
   } else if (*string == "alias") {
     return HostResolverInternalResult::Type::kAlias;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -152,11 +152,11 @@ base::Value SourceToValue(HostResolverInternalResult::Source source) {
   }
 }
 
-absl::optional<HostResolverInternalResult::Source> SourceFromValue(
+std::optional<HostResolverInternalResult::Source> SourceFromValue(
     const base::Value& value) {
   const std::string* string = value.GetIfString();
   if (!string)
-    return absl::nullopt;
+    return std::nullopt;
 
   if (*string == "dns") {
     return HostResolverInternalResult::Source::kDns;
@@ -165,7 +165,7 @@ absl::optional<HostResolverInternalResult::Source> SourceFromValue(
   } else if (*string == "unknown") {
     return HostResolverInternalResult::Source::kUnknown;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -181,7 +181,7 @@ HostResolverInternalResult::FromValue(const base::Value& value) {
   const base::Value* type_value = dict->Find(kValueTypeKey);
   if (!type_value)
     return nullptr;
-  absl::optional<Type> type = TypeFromValue(*type_value);
+  std::optional<Type> type = TypeFromValue(*type_value);
   if (!type.has_value())
     return nullptr;
 
@@ -224,8 +224,8 @@ const HostResolverInternalAliasResult& HostResolverInternalResult::AsAlias()
 HostResolverInternalResult::HostResolverInternalResult(
     std::string domain_name,
     DnsQueryType query_type,
-    absl::optional<base::TimeTicks> expiration,
-    absl::optional<base::Time> timed_expiration,
+    std::optional<base::TimeTicks> expiration,
+    std::optional<base::Time> timed_expiration,
     Type type,
     Source source)
     : domain_name_(MaybeCanonicalizeName(std::move(domain_name))),
@@ -248,7 +248,7 @@ HostResolverInternalResult::HostResolverInternalResult(
       timed_expiration_(
           dict.contains(kValueTimedExpirationKey)
               ? base::ValueToTime(*dict.Find(kValueTimedExpirationKey))
-              : absl::optional<base::Time>()) {}
+              : std::optional<base::Time>()) {}
 
 // static
 bool HostResolverInternalResult::ValidateValueBaseDict(
@@ -270,18 +270,18 @@ bool HostResolverInternalResult::ValidateValueBaseDict(
   const base::Value* type_value = dict.Find(kValueTypeKey);
   if (!type_value)
     return false;
-  absl::optional<Type> type = TypeFromValue(*type_value);
+  std::optional<Type> type = TypeFromValue(*type_value);
   if (!type.has_value())
     return false;
 
   const base::Value* source_value = dict.Find(kValueSourceKey);
   if (!source_value)
     return false;
-  absl::optional<Source> source = SourceFromValue(*source_value);
+  std::optional<Source> source = SourceFromValue(*source_value);
   if (!source.has_value())
     return false;
 
-  absl::optional<base::Time> timed_expiration;
+  std::optional<base::Time> timed_expiration;
   const base::Value* timed_expiration_value =
       dict.Find(kValueTimedExpirationKey);
   if (require_timed_expiration && !timed_expiration_value)
@@ -327,7 +327,7 @@ HostResolverInternalDataResult::FromValue(const base::Value& value) {
   std::vector<IPEndPoint> endpoints;
   endpoints.reserve(endpoint_values->size());
   for (const base::Value& endpoint_value : *endpoint_values) {
-    absl::optional<IPEndPoint> endpoint = IPEndPoint::FromValue(endpoint_value);
+    std::optional<IPEndPoint> endpoint = IPEndPoint::FromValue(endpoint_value);
     if (!endpoint.has_value())
       return nullptr;
 
@@ -355,7 +355,7 @@ HostResolverInternalDataResult::FromValue(const base::Value& value) {
   std::vector<HostPortPair> hosts;
   hosts.reserve(host_values->size());
   for (const base::Value& host_value : *host_values) {
-    absl::optional<HostPortPair> host = HostPortPair::FromValue(host_value);
+    std::optional<HostPortPair> host = HostPortPair::FromValue(host_value);
     if (!host.has_value())
       return nullptr;
 
@@ -370,7 +370,7 @@ HostResolverInternalDataResult::FromValue(const base::Value& value) {
 HostResolverInternalDataResult::HostResolverInternalDataResult(
     std::string domain_name,
     DnsQueryType query_type,
-    absl::optional<base::TimeTicks> expiration,
+    std::optional<base::TimeTicks> expiration,
     base::Time timed_expiration,
     Source source,
     std::vector<IPEndPoint> endpoints,
@@ -440,7 +440,7 @@ HostResolverInternalMetadataResult::FromValue(const base::Value& value) {
 
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas;
   for (const base::Value& metadata_value : *metadata_values) {
-    absl::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
+    std::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
         metadata = EndpointMetadataPairFromValue(metadata_value);
     if (!metadata.has_value())
       return nullptr;
@@ -455,7 +455,7 @@ HostResolverInternalMetadataResult::FromValue(const base::Value& value) {
 HostResolverInternalMetadataResult::HostResolverInternalMetadataResult(
     std::string domain_name,
     DnsQueryType query_type,
-    absl::optional<base::TimeTicks> expiration,
+    std::optional<base::TimeTicks> expiration,
     base::Time timed_expiration,
     Source source,
     std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas)
@@ -498,7 +498,7 @@ HostResolverInternalErrorResult::FromValue(const base::Value& value) {
     return nullptr;
   }
 
-  absl::optional<int> error = dict->FindInt(kValueErrorKey);
+  std::optional<int> error = dict->FindInt(kValueErrorKey);
   if (!error.has_value())
     return nullptr;
 
@@ -510,8 +510,8 @@ HostResolverInternalErrorResult::FromValue(const base::Value& value) {
 HostResolverInternalErrorResult::HostResolverInternalErrorResult(
     std::string domain_name,
     DnsQueryType query_type,
-    absl::optional<base::TimeTicks> expiration,
-    absl::optional<base::Time> timed_expiration,
+    std::optional<base::TimeTicks> expiration,
+    std::optional<base::Time> timed_expiration,
     Source source,
     int error)
     : HostResolverInternalResult(std::move(domain_name),
@@ -555,7 +555,7 @@ HostResolverInternalAliasResult::FromValue(const base::Value& value) {
 HostResolverInternalAliasResult::HostResolverInternalAliasResult(
     std::string domain_name,
     DnsQueryType query_type,
-    absl::optional<base::TimeTicks> expiration,
+    std::optional<base::TimeTicks> expiration,
     base::Time timed_expiration,
     Source source,
     std::string alias_target)

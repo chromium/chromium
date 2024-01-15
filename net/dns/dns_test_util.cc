@@ -5,6 +5,7 @@
 #include "net/dns/dns_test_util.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,7 +34,6 @@
 #include "net/dns/resolve_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -52,7 +52,7 @@ const uint8_t kMalformedResponseHeader[] = {
 // Create a response containing a valid question (as would normally be validated
 // in DnsTransaction) but completely missing a header-declared answer.
 DnsResponse CreateMalformedResponse(std::string hostname, uint16_t type) {
-  absl::optional<std::vector<uint8_t>> dns_name =
+  std::optional<std::vector<uint8_t>> dns_name =
       dns_names_util::DottedNameToNetwork(hostname);
   CHECK(dns_name.has_value());
   DnsQuery query(/*id=*/0x14, dns_name.value(), type);
@@ -108,7 +108,7 @@ DnsResourceRecord BuildTestCnameRecord(std::string name,
   DCHECK(!name.empty());
   DCHECK(!canonical_name.empty());
 
-  absl::optional<std::vector<uint8_t>> rdata =
+  std::optional<std::vector<uint8_t>> rdata =
       dns_names_util::DottedNameToNetwork(canonical_name);
   CHECK(rdata.has_value());
 
@@ -155,7 +155,7 @@ DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
 
   std::string rdata("\000\000", 2);
 
-  absl::optional<std::vector<uint8_t>> alias_domain =
+  std::optional<std::vector<uint8_t>> alias_domain =
       dns_names_util::DottedNameToNetwork(alias_name);
   CHECK(alias_domain.has_value());
   rdata.append(reinterpret_cast<char*>(alias_domain.value().data()),
@@ -226,7 +226,7 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
   base::WriteBigEndian(num_buffer, priority);
   rdata.append(num_buffer, 2);
 
-  absl::optional<std::vector<uint8_t>> service_domain;
+  std::optional<std::vector<uint8_t>> service_domain;
   if (service_name == ".") {
     // HTTPS records have special behavior for `service_name == "."` (that it
     // will be treated as if the service name is the same as the record owner
@@ -264,11 +264,11 @@ DnsResponse BuildTestDnsResponse(
     uint8_t rcode) {
   DCHECK(!name.empty());
 
-  absl::optional<std::vector<uint8_t>> dns_name =
+  std::optional<std::vector<uint8_t>> dns_name =
       dns_names_util::DottedNameToNetwork(name);
   CHECK(dns_name.has_value());
 
-  absl::optional<DnsQuery> query(absl::in_place, 0, dns_name.value(), type);
+  std::optional<DnsQuery> query(std::in_place, 0, dns_name.value(), type);
   return DnsResponse(0, true /* is_authoritative */, answers,
                      authority /* authority_records */,
                      additional /* additional_records */, query, rcode,
@@ -301,7 +301,7 @@ DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
   if (answer_name.empty())
     answer_name = name;
 
-  absl::optional<std::vector<uint8_t>> cname_rdata =
+  std::optional<std::vector<uint8_t>> cname_rdata =
       dns_names_util::DottedNameToNetwork(cannonname);
   CHECK(cname_rdata.has_value());
 
@@ -340,7 +340,7 @@ DnsResponse BuildTestDnsPointerResponse(std::string name,
 
   std::vector<DnsResourceRecord> answers;
   for (std::string& pointer_name : pointer_names) {
-    absl::optional<std::vector<uint8_t>> rdata =
+    std::optional<std::vector<uint8_t>> rdata =
         dns_names_util::DottedNameToNetwork(pointer_name);
     CHECK(rdata.has_value());
 
@@ -371,7 +371,7 @@ DnsResponse BuildTestDnsServiceResponse(
     base::WriteBigEndian(num_buffer, service_record.port);
     rdata.append(num_buffer, 2);
 
-    absl::optional<std::vector<uint8_t>> dns_name =
+    std::optional<std::vector<uint8_t>> dns_name =
         dns_names_util::DottedNameToNetwork(service_record.target);
     CHECK(dns_name.has_value());
     rdata.append(reinterpret_cast<char*>(dns_name.value().data()),
@@ -385,14 +385,14 @@ DnsResponse BuildTestDnsServiceResponse(
 }
 
 MockDnsClientRule::Result::Result(ResultType type,
-                                  absl::optional<DnsResponse> response,
-                                  absl::optional<int> net_error)
+                                  std::optional<DnsResponse> response,
+                                  std::optional<int> net_error)
     : type(type), response(std::move(response)), net_error(net_error) {}
 
 MockDnsClientRule::Result::Result(DnsResponse response)
     : type(ResultType::kOk),
       response(std::move(response)),
-      net_error(absl::nullopt) {}
+      net_error(std::nullopt) {}
 
 MockDnsClientRule::Result::Result(Result&&) = default;
 
@@ -452,11 +452,11 @@ class MockDnsTransactionFactory::MockTransaction
 
           // Generate a DnsResponse when not provided with the rule.
           std::vector<DnsResourceRecord> authority_records;
-          absl::optional<std::vector<uint8_t>> dns_name =
+          std::optional<std::vector<uint8_t>> dns_name =
               dns_names_util::DottedNameToNetwork(hostname_);
           CHECK(dns_name.has_value());
-          absl::optional<DnsQuery> query(absl::in_place, /*id=*/22,
-                                         dns_name.value(), qtype_);
+          std::optional<DnsQuery> query(std::in_place, /*id=*/22,
+                                        dns_name.value(), qtype_);
           switch (result->type) {
             case MockDnsClientRule::ResultType::kNoDomain:
             case MockDnsClientRule::ResultType::kEmpty:
@@ -731,11 +731,11 @@ bool MockDnsClient::FallbackFromInsecureTransactionPreferred() const {
          fallback_failures_ >= max_fallback_failures_;
 }
 
-bool MockDnsClient::SetSystemConfig(absl::optional<DnsConfig> system_config) {
+bool MockDnsClient::SetSystemConfig(std::optional<DnsConfig> system_config) {
   if (ignore_system_config_changes_)
     return false;
 
-  absl::optional<DnsConfig> before = effective_config_;
+  std::optional<DnsConfig> before = effective_config_;
   config_ = std::move(system_config);
   effective_config_ = BuildEffectiveConfig();
   session_ = BuildSession();
@@ -743,7 +743,7 @@ bool MockDnsClient::SetSystemConfig(absl::optional<DnsConfig> system_config) {
 }
 
 bool MockDnsClient::SetConfigOverrides(DnsConfigOverrides config_overrides) {
-  absl::optional<DnsConfig> before = effective_config_;
+  std::optional<DnsConfig> before = effective_config_;
   overrides_ = std::move(config_overrides);
   effective_config_ = BuildEffectiveConfig();
   session_ = BuildSession();
@@ -792,7 +792,7 @@ void MockDnsClient::ClearInsecureFallbackFailures() {
   fallback_failures_ = 0;
 }
 
-absl::optional<DnsConfig> MockDnsClient::GetSystemConfigForTesting() const {
+std::optional<DnsConfig> MockDnsClient::GetSystemConfigForTesting() const {
   return config_;
 }
 
@@ -805,7 +805,7 @@ void MockDnsClient::SetTransactionFactoryForTesting(
   NOTREACHED();
 }
 
-absl::optional<std::vector<IPEndPoint>> MockDnsClient::GetPresetAddrs(
+std::optional<std::vector<IPEndPoint>> MockDnsClient::GetPresetAddrs(
     const url::SchemeHostPort& endpoint) const {
   EXPECT_THAT(preset_endpoint_, testing::Optional(endpoint));
   return preset_addrs_;
@@ -824,11 +824,11 @@ void MockDnsClient::SetForceDohServerAvailable(bool available) {
   factory_->set_force_doh_server_available(available);
 }
 
-absl::optional<DnsConfig> MockDnsClient::BuildEffectiveConfig() {
+std::optional<DnsConfig> MockDnsClient::BuildEffectiveConfig() {
   if (overrides_.OverridesEverything())
     return overrides_.ApplyOverrides(DnsConfig());
   if (!config_ || !config_.value().IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   return overrides_.ApplyOverrides(config_.value());
 }

@@ -5,18 +5,18 @@
 #include "net/dns/test_dns_config_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "net/dns/dns_hosts.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 TestDnsConfigService::TestDnsConfigService()
     : DnsConfigService(base::FilePath::StringPieceType() /* hosts_file_path */,
-                       absl::nullopt /* config_change_delay */) {}
+                       std::nullopt /* config_change_delay */) {}
 
 TestDnsConfigService::~TestDnsConfigService() = default;
 
@@ -30,7 +30,7 @@ void TestDnsConfigService::RefreshConfig() {
   InvalidateHosts();
   OnConfigRead(config_for_refresh_.value());
   OnHostsRead(config_for_refresh_.value().hosts);
-  config_for_refresh_ = absl::nullopt;
+  config_for_refresh_ = std::nullopt;
 }
 
 HostsReadingTestDnsConfigService::HostsReadingTestDnsConfigService(

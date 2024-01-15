@@ -6,6 +6,7 @@
 #define NET_DNS_HOST_RESOLVER_INTERNAL_RESULT_TEST_UTIL_H_
 
 #include <map>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -28,8 +28,8 @@ ExpectHostResolverInternalDataResult(
     std::string expected_domain_name,
     DnsQueryType expected_query_type,
     HostResolverInternalResult::Source expected_source,
-    testing::Matcher<absl::optional<base::TimeTicks>> expiration_matcher,
-    testing::Matcher<absl::optional<base::Time>> timed_expiration_matcher,
+    testing::Matcher<std::optional<base::TimeTicks>> expiration_matcher,
+    testing::Matcher<std::optional<base::Time>> timed_expiration_matcher,
     testing::Matcher<std::vector<IPEndPoint>> endpoints_matcher =
         testing::IsEmpty(),
     testing::Matcher<std::vector<std::string>> strings_matcher =
@@ -42,8 +42,8 @@ ExpectHostResolverInternalMetadataResult(
     std::string expected_domain_name,
     DnsQueryType expected_query_type,
     HostResolverInternalResult::Source expected_source,
-    testing::Matcher<absl::optional<base::TimeTicks>> expiration_matcher,
-    testing::Matcher<absl::optional<base::Time>> timed_expiration_matcher,
+    testing::Matcher<std::optional<base::TimeTicks>> expiration_matcher,
+    testing::Matcher<std::optional<base::Time>> timed_expiration_matcher,
     testing::Matcher<
         std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
         metadatas_matcher = testing::IsEmpty());
@@ -53,8 +53,8 @@ ExpectHostResolverInternalErrorResult(
     std::string expected_domain_name,
     DnsQueryType expected_query_type,
     HostResolverInternalResult::Source expected_source,
-    testing::Matcher<absl::optional<base::TimeTicks>> expiration_matcher,
-    testing::Matcher<absl::optional<base::Time>> timed_expiration_matcher,
+    testing::Matcher<std::optional<base::TimeTicks>> expiration_matcher,
+    testing::Matcher<std::optional<base::Time>> timed_expiration_matcher,
     int expected_error);
 
 testing::Matcher<const HostResolverInternalResult&>
@@ -62,8 +62,8 @@ ExpectHostResolverInternalAliasResult(
     std::string expected_domain_name,
     DnsQueryType expected_query_type,
     HostResolverInternalResult::Source expected_source,
-    testing::Matcher<absl::optional<base::TimeTicks>> expiration_matcher,
-    testing::Matcher<absl::optional<base::Time>> timed_expiration_matcher,
+    testing::Matcher<std::optional<base::TimeTicks>> expiration_matcher,
+    testing::Matcher<std::optional<base::Time>> timed_expiration_matcher,
     std::string expected_alias_target);
 
 std::ostream& operator<<(std::ostream& os,

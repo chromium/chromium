@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/socket/socket_test_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -309,16 +309,16 @@ struct MockDnsClientRule {
 
   struct Result {
     explicit Result(ResultType type,
-                    absl::optional<DnsResponse> response = absl::nullopt,
-                    absl::optional<int> net_error = absl::nullopt);
+                    std::optional<DnsResponse> response = std::nullopt,
+                    std::optional<int> net_error = std::nullopt);
     explicit Result(DnsResponse response);
     Result(Result&&);
     Result& operator=(Result&&);
     ~Result();
 
     ResultType type;
-    absl::optional<DnsResponse> response;
-    absl::optional<int> net_error;
+    std::optional<DnsResponse> response;
+    std::optional<int> net_error;
   };
 
   // If |delay| is true, matching transactions will be delayed until triggered
@@ -404,7 +404,7 @@ class MockDnsClient : public DnsClient {
   bool FallbackFromSecureTransactionPreferred(
       ResolveContext* resolve_context) const override;
   bool FallbackFromInsecureTransactionPreferred() const override;
-  bool SetSystemConfig(absl::optional<DnsConfig> system_config) override;
+  bool SetSystemConfig(std::optional<DnsConfig> system_config) override;
   bool SetConfigOverrides(DnsConfigOverrides config_overrides) override;
   void ReplaceCurrentSession() override;
   DnsSession* GetCurrentSession() override;
@@ -415,11 +415,11 @@ class MockDnsClient : public DnsClient {
   void IncrementInsecureFallbackFailures() override;
   void ClearInsecureFallbackFailures() override;
   base::Value::Dict GetDnsConfigAsValueForNetLog() const override;
-  absl::optional<DnsConfig> GetSystemConfigForTesting() const override;
+  std::optional<DnsConfig> GetSystemConfigForTesting() const override;
   DnsConfigOverrides GetConfigOverridesForTesting() const override;
   void SetTransactionFactoryForTesting(
       std::unique_ptr<DnsTransactionFactory> factory) override;
-  absl::optional<std::vector<IPEndPoint>> GetPresetAddrs(
+  std::optional<std::vector<IPEndPoint>> GetPresetAddrs(
       const url::SchemeHostPort& endpoint) const override;
 
   // Completes all DnsTransactions that were delayed by a rule.
@@ -436,7 +436,7 @@ class MockDnsClient : public DnsClient {
     ignore_system_config_changes_ = ignore_system_config_changes;
   }
 
-  void set_preset_endpoint(absl::optional<url::SchemeHostPort> endpoint) {
+  void set_preset_endpoint(std::optional<url::SchemeHostPort> endpoint) {
     preset_endpoint_ = std::move(endpoint);
   }
 
@@ -449,7 +449,7 @@ class MockDnsClient : public DnsClient {
   MockDnsTransactionFactory* factory() { return factory_.get(); }
 
  private:
-  absl::optional<DnsConfig> BuildEffectiveConfig();
+  std::optional<DnsConfig> BuildEffectiveConfig();
   scoped_refptr<DnsSession> BuildSession();
 
   bool insecure_enabled_ = false;
@@ -465,14 +465,14 @@ class MockDnsClient : public DnsClient {
   bool force_doh_server_available_ = true;
 
   MockClientSocketFactory socket_factory_;
-  absl::optional<DnsConfig> config_;
+  std::optional<DnsConfig> config_;
   scoped_refptr<DnsSession> session_;
   DnsConfigOverrides overrides_;
-  absl::optional<DnsConfig> effective_config_;
+  std::optional<DnsConfig> effective_config_;
   std::unique_ptr<MockDnsTransactionFactory> factory_;
   std::unique_ptr<AddressSorter> address_sorter_;
-  absl::optional<url::SchemeHostPort> preset_endpoint_;
-  absl::optional<std::vector<IPEndPoint>> preset_addrs_;
+  std::optional<url::SchemeHostPort> preset_endpoint_;
+  std::optional<std::vector<IPEndPoint>> preset_addrs_;
 };
 
 }  // namespace net

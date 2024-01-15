@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -85,7 +85,7 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
                               std::set<uint16_t> mandatory_keys,
                               std::vector<std::string> alpn_ids,
                               bool default_alpn,
-                              absl::optional<uint16_t> port,
+                              std::optional<uint16_t> port,
                               std::vector<IPAddress> ipv4_hint,
                               std::string ech_config,
                               std::vector<IPAddress> ipv6_hint,
@@ -103,7 +103,7 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   const std::set<uint16_t>& mandatory_keys() const { return mandatory_keys_; }
   const std::vector<std::string>& alpn_ids() const { return alpn_ids_; }
   bool default_alpn() const { return default_alpn_; }
-  absl::optional<uint16_t> port() const { return port_; }
+  std::optional<uint16_t> port() const { return port_; }
   const std::vector<IPAddress>& ipv4_hint() const { return ipv4_hint_; }
   base::StringPiece ech_config() const { return ech_config_; }
   const std::vector<IPAddress>& ipv6_hint() const { return ipv6_hint_; }
@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   const std::set<uint16_t> mandatory_keys_;
   const std::vector<std::string> alpn_ids_;
   const bool default_alpn_;
-  const absl::optional<uint16_t> port_;
+  const std::optional<uint16_t> port_;
   const std::vector<IPAddress> ipv4_hint_;
   const std::string ech_config_;
   const std::vector<IPAddress> ipv6_hint_;

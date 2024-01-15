@@ -4,6 +4,7 @@
 
 #include "net/dns/httpssvc_metrics.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -16,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -31,7 +31,7 @@ class HttpssvcMetricsTest : public ::testing::TestWithParam<bool> {
   }
 
   template <typename T>
-  void ExpectSample(base::StringPiece name, absl::optional<T> sample) const {
+  void ExpectSample(base::StringPiece name, std::optional<T> sample) const {
     if (sample)
       histo().ExpectUniqueSample(name, *sample, 1);
     else
@@ -39,15 +39,15 @@ class HttpssvcMetricsTest : public ::testing::TestWithParam<bool> {
   }
 
   void ExpectSample(base::StringPiece name,
-                    absl::optional<base::TimeDelta> sample) const {
-    absl::optional<int64_t> sample_ms;
+                    std::optional<base::TimeDelta> sample) const {
+    std::optional<int64_t> sample_ms;
     if (sample)
       sample_ms = {sample->InMilliseconds()};
     ExpectSample<int64_t>(name, sample_ms);
   }
 
   void VerifyAddressResolveTimeMetric(
-      absl::optional<base::TimeDelta> expect_noerror_time = absl::nullopt) {
+      std::optional<base::TimeDelta> expect_noerror_time = std::nullopt) {
     const std::string kExpectNoerror =
         base::StrCat({BuildMetricNamePrefix(), "ResolveTimeAddress"});
 
@@ -55,11 +55,11 @@ class HttpssvcMetricsTest : public ::testing::TestWithParam<bool> {
   }
 
   void VerifyHttpsMetricsForExpectNoerror(
-      absl::optional<HttpssvcDnsRcode> rcode = absl::nullopt,
-      absl::optional<bool> parsable = absl::nullopt,
-      absl::optional<bool> record_with_error = absl::nullopt,
-      absl::optional<base::TimeDelta> resolve_time_https = absl::nullopt,
-      absl::optional<int> resolve_time_ratio = absl::nullopt) const {
+      std::optional<HttpssvcDnsRcode> rcode = std::nullopt,
+      std::optional<bool> parsable = std::nullopt,
+      std::optional<bool> record_with_error = std::nullopt,
+      std::optional<base::TimeDelta> resolve_time_https = std::nullopt,
+      std::optional<int> resolve_time_ratio = std::nullopt) const {
     const std::string kPrefix = BuildMetricNamePrefix();
     const std::string kMetricDnsRcode = base::StrCat({kPrefix, "DnsRcode"});
     const std::string kMetricParsable = base::StrCat({kPrefix, "Parsable"});
@@ -94,7 +94,7 @@ INSTANTIATE_TEST_SUITE_P(HttpssvcMetricsTestSimple,
 // Only record metrics for a non-HTTPS query.
 TEST_P(HttpssvcMetricsTest, AddressAndExperimentalMissing) {
   const base::TimeDelta kResolveTime = base::Milliseconds(10);
-  auto metrics = absl::make_optional<HttpssvcMetrics>(secure_);
+  auto metrics = std::make_optional<HttpssvcMetrics>(secure_);
   metrics->SaveForAddressQuery(kResolveTime, HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
@@ -105,7 +105,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndExperimentalMissing) {
 TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsable) {
   const base::TimeDelta kResolveTime = base::Milliseconds(10);
   const base::TimeDelta kResolveTimeHttps = base::Milliseconds(15);
-  auto metrics = absl::make_optional<HttpssvcMetrics>(secure_);
+  auto metrics = std::make_optional<HttpssvcMetrics>(secure_);
   metrics->SaveForHttps(HttpssvcDnsRcode::kNoError, {true}, kResolveTimeHttps);
   metrics->SaveForAddressQuery(kResolveTime, HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
@@ -113,7 +113,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsable) {
   VerifyAddressResolveTimeMetric({kResolveTime} /* expect_noerror_time */);
   VerifyHttpsMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNoError} /* rcode */, {true} /* parsable */,
-      absl::nullopt /* record_with_error */,
+      std::nullopt /* record_with_error */,
       {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
@@ -124,15 +124,15 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsMissingWithRcode) {
   const base::TimeDelta kResolveTime = base::Milliseconds(10);
   const base::TimeDelta kResolveTimeHttps = base::Milliseconds(15);
 
-  auto metrics = absl::make_optional<HttpssvcMetrics>(secure_);
+  auto metrics = std::make_optional<HttpssvcMetrics>(secure_);
   metrics->SaveForHttps(HttpssvcDnsRcode::kNxDomain, {}, kResolveTimeHttps);
   metrics->SaveForAddressQuery(kResolveTime, HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
   VerifyAddressResolveTimeMetric({kResolveTime} /* expect_noerror_time */);
   VerifyHttpsMetricsForExpectNoerror(
-      {HttpssvcDnsRcode::kNxDomain} /* rcode */, absl::nullopt /* parsable */,
-      absl::nullopt /* record_with_error */,
+      {HttpssvcDnsRcode::kNxDomain} /* rcode */, std::nullopt /* parsable */,
+      std::nullopt /* record_with_error */,
       {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
@@ -143,7 +143,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsableWithRcode) {
   const base::TimeDelta kResolveTime = base::Milliseconds(10);
   const base::TimeDelta kResolveTimeHttps = base::Milliseconds(15);
 
-  auto metrics = absl::make_optional<HttpssvcMetrics>(secure_);
+  auto metrics = std::make_optional<HttpssvcMetrics>(secure_);
   metrics->SaveForHttps(HttpssvcDnsRcode::kNxDomain, {true}, kResolveTimeHttps);
   metrics->SaveForAddressQuery(kResolveTime, HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
@@ -152,7 +152,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsableWithRcode) {
   VerifyHttpsMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNxDomain} /* rcode */,
       // "parsable" metric is omitted because the RCODE is not NOERROR.
-      absl::nullopt /* parsable */, {true} /* record_with_error */,
+      std::nullopt /* parsable */, {true} /* record_with_error */,
       {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
@@ -162,7 +162,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsableWithRcode) {
 TEST_P(HttpssvcMetricsTest, AddressAndHttpsMangledWithRcode) {
   const base::TimeDelta kResolveTime = base::Milliseconds(10);
   const base::TimeDelta kResolveTimeHttps = base::Milliseconds(15);
-  auto metrics = absl::make_optional<HttpssvcMetrics>(secure_);
+  auto metrics = std::make_optional<HttpssvcMetrics>(secure_);
   metrics->SaveForHttps(HttpssvcDnsRcode::kNxDomain, {false},
                         kResolveTimeHttps);
   metrics->SaveForAddressQuery(kResolveTime, HttpssvcDnsRcode::kNoError);
@@ -172,7 +172,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsMangledWithRcode) {
   VerifyHttpsMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNxDomain} /* rcode */,
       // "parsable" metric is omitted because the RCODE is not NOERROR.
-      absl::nullopt /* parsable */, {true} /* record_with_error */,
+      std::nullopt /* parsable */, {true} /* record_with_error */,
       {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
@@ -182,7 +182,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsMangledWithRcode) {
 TEST_P(HttpssvcMetricsTest, AddressAndHttpsTimedOut) {
   const base::TimeDelta kResolveTime = base::Milliseconds(10);
   const base::TimeDelta kResolveTimeHttps = base::Milliseconds(15);
-  auto metrics = absl::make_optional<HttpssvcMetrics>(secure_);
+  auto metrics = std::make_optional<HttpssvcMetrics>(secure_);
   metrics->SaveForHttps(HttpssvcDnsRcode::kTimedOut, {}, kResolveTimeHttps);
   metrics->SaveForAddressQuery(kResolveTime, HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
@@ -191,7 +191,7 @@ TEST_P(HttpssvcMetricsTest, AddressAndHttpsTimedOut) {
   VerifyHttpsMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kTimedOut} /* rcode */,
       // "parsable" metric is omitted because the RCODE is not NOERROR.
-      absl::nullopt /* parsable */, absl::nullopt /* record_with_error */,
+      std::nullopt /* parsable */, std::nullopt /* record_with_error */,
       {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }

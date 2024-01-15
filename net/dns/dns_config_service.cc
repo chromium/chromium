@@ -5,6 +5,7 @@
 #include "net/dns/dns_config_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -19,7 +20,6 @@
 #include "base/time/time.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -29,7 +29,7 @@ const base::TimeDelta DnsConfigService::kInvalidationTimeout =
 
 DnsConfigService::DnsConfigService(
     base::FilePath::StringPieceType hosts_file_path,
-    absl::optional<base::TimeDelta> config_change_delay)
+    std::optional<base::TimeDelta> config_change_delay)
     : config_change_delay_(config_change_delay),
       hosts_file_path_(hosts_file_path) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -101,12 +101,12 @@ DnsConfigService::HostsReader::WorkItem::WorkItem(
 
 DnsConfigService::HostsReader::WorkItem::~WorkItem() = default;
 
-absl::optional<DnsHosts> DnsConfigService::HostsReader::WorkItem::ReadHosts() {
+std::optional<DnsHosts> DnsConfigService::HostsReader::WorkItem::ReadHosts() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DnsHosts dns_hosts;
   if (!dns_hosts_parser_->ParseHosts(&dns_hosts))
-    return absl::nullopt;
+    return std::nullopt;
 
   return dns_hosts;
 }

@@ -8,6 +8,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -38,7 +39,6 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -89,22 +89,22 @@ base::Value IpEndpointToValue(const IPEndPoint& endpoint) {
   return base::Value(std::move(dictionary));
 }
 
-absl::optional<IPEndPoint> IpEndpointFromValue(const base::Value& value) {
+std::optional<IPEndPoint> IpEndpointFromValue(const base::Value& value) {
   if (!value.is_dict())
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::Dict& dict = value.GetDict();
   const std::string* ip_str = dict.FindString(kEndpointAddressKey);
-  absl::optional<int> port = dict.FindInt(kEndpointPortKey);
+  std::optional<int> port = dict.FindInt(kEndpointPortKey);
 
   if (!ip_str || !port ||
       !base::IsValueInRangeForNumericType<uint16_t>(port.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   IPAddress ip;
   if (!ip.AssignFromIPLiteral(*ip_str))
-    return absl::nullopt;
+    return std::nullopt;
 
   return IPEndPoint(ip, base::checked_cast<uint16_t>(port.value()));
 }
@@ -117,26 +117,26 @@ base::Value EndpointMetadataPairToValue(
   return base::Value(std::move(dictionary));
 }
 
-absl::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
+std::optional<std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
 EndpointMetadataPairFromValue(const base::Value& value) {
   if (!value.is_dict())
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::Dict& dict = value.GetDict();
-  absl::optional<int> priority = dict.FindInt(kEndpointMetadataWeightKey);
+  std::optional<int> priority = dict.FindInt(kEndpointMetadataWeightKey);
   const base::Value* metadata_value = dict.Find(kEndpointMetadataValueKey);
 
   if (!priority || !base::IsValueInRangeForNumericType<HttpsRecordPriority>(
                        priority.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!metadata_value)
-    return absl::nullopt;
-  absl::optional<ConnectionEndpointMetadata> metadata =
+    return std::nullopt;
+  std::optional<ConnectionEndpointMetadata> metadata =
       ConnectionEndpointMetadata::FromValue(*metadata_value);
   if (!metadata)
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::make_pair(
       base::checked_cast<HttpsRecordPriority>(priority.value()),
@@ -197,12 +197,12 @@ const std::string& GetHostname(
   return *hostname;
 }
 
-absl::optional<DnsQueryType> GetDnsQueryType(int dns_query_type) {
+std::optional<DnsQueryType> GetDnsQueryType(int dns_query_type) {
   for (const auto& type : kDnsQueryTypes) {
     if (base::strict_cast<int>(type.first) == dns_query_type)
       return type.first;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -255,7 +255,7 @@ HostCache::Key::~Key() = default;
 
 HostCache::Entry::Entry(int error,
                         Source source,
-                        absl::optional<base::TimeDelta> ttl)
+                        std::optional<base::TimeDelta> ttl)
     : error_(error), source_(source), ttl_(ttl.value_or(kUnknownTtl)) {
   // If |ttl| has a value, must not be negative.
   DCHECK_GE(ttl.value_or(base::TimeDelta()), base::TimeDelta());
@@ -280,9 +280,9 @@ HostCache::Entry::Entry(
   std::unique_ptr<HostResolverInternalResult> error_result;
   std::vector<std::unique_ptr<HostResolverInternalResult>> alias_results;
 
-  absl::optional<base::TimeDelta> smallest_ttl =
+  std::optional<base::TimeDelta> smallest_ttl =
       TtlFromInternalResults(results, now, now_ticks);
-  absl::optional<Source> source;
+  std::optional<Source> source;
   for (auto it = results.cbegin(); it != results.cend();) {
     // Increment iterator now to allow extracting `result` (std::set::extract()
     // is guaranteed to not invalidate any iterators except those pointing to
@@ -436,11 +436,11 @@ std::vector<ConnectionEndpointMetadata> HostCache::Entry::GetMetadatas() const {
   return metadatas;
 }
 
-absl::optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {
+std::optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {
   if (has_ttl())
     return ttl();
   else
-    return absl::nullopt;
+    return std::nullopt;
 }
 
 // static
@@ -508,7 +508,7 @@ HostCache::Entry::Entry(int error,
                         std::vector<IPEndPoint> ip_endpoints,
                         std::set<std::string> aliases,
                         Source source,
-                        absl::optional<base::TimeDelta> ttl)
+                        std::optional<base::TimeDelta> ttl)
     : error_(error),
       ip_endpoints_(std::move(ip_endpoints)),
       aliases_(std::move(aliases)),
@@ -662,11 +662,11 @@ base::Value::Dict HostCache::Entry::GetAsValue(bool include_staleness) const {
 }
 
 // static
-absl::optional<base::TimeDelta> HostCache::Entry::TtlFromInternalResults(
+std::optional<base::TimeDelta> HostCache::Entry::TtlFromInternalResults(
     const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
     base::Time now,
     base::TimeTicks now_ticks) {
-  absl::optional<base::TimeDelta> smallest_ttl;
+  std::optional<base::TimeDelta> smallest_ttl;
   for (const std::unique_ptr<HostResolverInternalResult>& result : results) {
     if (result->expiration().has_value()) {
       smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
@@ -976,7 +976,7 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
     const std::string* scheme_ptr = entry_dict.FindString(kSchemeKey);
     absl::variant<url::SchemeHostPort, std::string> host;
     if (scheme_ptr) {
-      absl::optional<int> port = entry_dict.FindInt(kPortKey);
+      std::optional<int> port = entry_dict.FindInt(kPortKey);
       if (!port || !base::IsValueInRangeForNumericType<uint16_t>(port.value()))
         return false;
 
@@ -990,17 +990,17 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
     }
 
     const std::string* expiration_ptr = entry_dict.FindString(kExpirationKey);
-    absl::optional<int> maybe_flags = entry_dict.FindInt(kFlagsKey);
+    std::optional<int> maybe_flags = entry_dict.FindInt(kFlagsKey);
     if (expiration_ptr == nullptr || !maybe_flags.has_value())
       return false;
     std::string expiration(*expiration_ptr);
     HostResolverFlags flags = maybe_flags.value();
 
-    absl::optional<int> maybe_dns_query_type =
+    std::optional<int> maybe_dns_query_type =
         entry_dict.FindInt(kDnsQueryTypeKey);
     if (!maybe_dns_query_type.has_value())
       return false;
-    absl::optional<DnsQueryType> dns_query_type =
+    std::optional<DnsQueryType> dns_query_type =
         GetDnsQueryType(maybe_dns_query_type.value());
     if (!dns_query_type.has_value())
       return false;
@@ -1030,8 +1030,8 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
     const base::Value::List* hostname_records_list = nullptr;
     const base::Value::List* host_ports_list = nullptr;
     const base::Value::List* canonical_names_list = nullptr;
-    absl::optional<int> maybe_error = entry_dict.FindInt(kNetErrorKey);
-    absl::optional<bool> maybe_pinned = entry_dict.FindBool(kPinnedKey);
+    std::optional<int> maybe_error = entry_dict.FindInt(kNetErrorKey);
+    std::optional<bool> maybe_pinned = entry_dict.FindBool(kPinnedKey);
     if (maybe_error.has_value()) {
       error = maybe_error.value();
     } else {
@@ -1061,7 +1061,7 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
     std::vector<IPEndPoint> ip_endpoints;
     if (ip_endpoints_list) {
       for (const base::Value& ip_endpoint_value : *ip_endpoints_list) {
-        absl::optional<IPEndPoint> ip_endpoint =
+        std::optional<IPEndPoint> ip_endpoint =
             IpEndpointFromValue(ip_endpoint_value);
         if (!ip_endpoint)
           return false;
@@ -1074,7 +1074,7 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
     if (endpoint_metadatas_list) {
       for (const base::Value& endpoint_metadata_value :
            *endpoint_metadatas_list) {
-        absl::optional<
+        std::optional<
             std::pair<HttpsRecordPriority, ConnectionEndpointMetadata>>
             pair = EndpointMetadataPairFromValue(endpoint_metadata_value);
         if (!pair)
@@ -1192,7 +1192,7 @@ std::unique_ptr<HostCache> HostCache::CreateDefaultCache() {
 bool HostCache::EvictOneEntry(base::TimeTicks now) {
   DCHECK_LT(0u, entries_.size());
 
-  absl::optional<net::HostCache::EntryMap::iterator> oldest_it;
+  std::optional<net::HostCache::EntryMap::iterator> oldest_it;
   for (auto it = entries_.begin(); it != entries_.end(); ++it) {
     const Entry& entry = it->second;
     if (HasActivePin(entry)) {

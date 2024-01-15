@@ -6,6 +6,7 @@
 #define NET_DNS_DNS_NAMES_UTIL_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class BigEndianReader;
@@ -46,7 +46,7 @@ NET_EXPORT_PRIVATE bool IsValidDnsRecordName(
 // IsValidDnsName()). If `require_valid_internet_hostname` is true, also returns
 // nullopt if input is not a valid internet hostname (equivalent validity can be
 // checked using net::IsCanonicalizedHostCompliant()).
-NET_EXPORT_PRIVATE absl::optional<std::vector<uint8_t>> DottedNameToNetwork(
+NET_EXPORT_PRIVATE std::optional<std::vector<uint8_t>> DottedNameToNetwork(
     base::StringPiece dotted_form_name,
     bool require_valid_internet_hostname = false);
 
@@ -60,13 +60,13 @@ NET_EXPORT_PRIVATE absl::optional<std::vector<uint8_t>> DottedNameToNetwork(
 // DNS name compression (see RFC 1035, section 4.1.4) is disallowed and
 // considered malformed. To handle a potentially compressed name, in a
 // DnsResponse object, use DnsRecordParser::ReadName().
-NET_EXPORT_PRIVATE absl::optional<std::string> NetworkToDottedName(
+NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
     base::span<const uint8_t> dns_network_wire_name,
     bool require_complete = false);
-NET_EXPORT_PRIVATE absl::optional<std::string> NetworkToDottedName(
+NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
     base::StringPiece dns_network_wire_name,
     bool require_complete = false);
-NET_EXPORT_PRIVATE absl::optional<std::string> NetworkToDottedName(
+NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
     base::BigEndianReader& reader,
     bool require_complete = false);
 
