@@ -61,8 +61,9 @@ void WaitForEntitiesOnFakeServer(int entity_count,
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kSyncOperationTimeout,
                                                           condition),
-             @"Expected %d %s entities", entity_count,
-             syncer::ModelTypeToDebugString(entity_type));
+             @"Expected %d %s entities but found %d", entity_count,
+             syncer::ModelTypeToDebugString(entity_type),
+             [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type]);
 }
 
 void WaitForAutofillProfileLocallyPresent(const std::string& guid,
@@ -89,6 +90,14 @@ void ClearRelevantData() {
   WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
   WaitForEntitiesOnFakeServer(0, syncer::PASSWORDS);
   WaitForEntitiesOnFakeServer(0, syncer::READING_LIST);
+
+  // Ensure that all of the changes made are flushed to disk before the app is
+  // terminated.
+  [ChromeEarlGrey flushFakeSyncServerToDisk];
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+  [BookmarkEarlGrey commitPendingWrite];
+  // Note that the ReadingListModel immediately writes pending changes to disk,
+  // so no need for an explicit "flush" there.
 }
 
 }  // namespace
