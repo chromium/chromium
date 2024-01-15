@@ -101,6 +101,8 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
         })
         .catch(() => {
           this.$.dialog.close();
+          this.dispatchEvent(
+              new CustomEvent('close', {bubbles: true, composed: true}));
         });
   }
 

@@ -581,6 +581,9 @@ suite('SettingsSectionTest', function() {
         });
 
         passwordManager.data.groups = [group];
+        passwordManager.setRequestCredentialsDetailsResponse(
+            passwordManager.data.groups[0]!.entries);
+
         const settings = document.createElement('settings-section');
         document.body.appendChild(settings);
         await passwordManager.whenCalled('getSavedPasswordList');
