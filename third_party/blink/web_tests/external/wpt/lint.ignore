@@ -395,6 +395,7 @@ SET TIMEOUT: scheduler/tentative/current-task-signal-async-abort.any.js
 SET TIMEOUT: scheduler/tentative/current-task-signal-async-priority.any.js
 SET TIMEOUT: speculation-rules/prerender/resources/activation-start.html
 SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
+SET TIMEOUT: speculation-rules/prerender/resources/prerender-while-prerender-outer.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/session-history-harness.js
 SET TIMEOUT: speculation-rules/prerender/resources/utils.js
