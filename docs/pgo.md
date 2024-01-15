@@ -25,10 +25,11 @@ To produce an executable built with a custom PGO profile:
   use_remoteexec = true
   ```
 
-  For android you need these in addition:
+  For android you may need in addition:
   ```
   target_os = "android"
   target_cpu = "arm64"
+  is_high_end_android = true
   ```
 
 * Run representative benchmarks to produce profiles
