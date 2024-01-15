@@ -135,6 +135,7 @@ source_set("permissions") {
     "//third_party/blink/public/common",
     "//third_party/sqlite",
     "//ui/base",
+    "//ui/strings:ui_strings_grit",
     "//url",
   ]
   if (is_mac || is_chromeos) {
@@ -188,9 +189,9 @@ source_set("permissions") {
       "//components/prefs",
       "//components/resources:android_resources",
       "//components/security_state/core:core",
+      "//components/strings:components_strings_grit",
       "//third_party/jni_zero",
       "//ui/android",
-      "//ui/strings:ui_strings_grit",
     ]
   } else {
     sources += [

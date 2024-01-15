@@ -42,4 +42,5 @@ include_rules = [
   "+ui/base",
   "+ui/events",
   "+ui/gfx",
+  "+ui/strings/grit/ui_strings.h"
 ]

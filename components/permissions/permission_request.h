@@ -21,7 +21,6 @@
 
 namespace permissions {
 enum class RequestType;
-
 // Describes the interface a feature making permission requests should
 // implement. A class of this type is registered with the permission request
 // manager to receive updates about the result of the permissions request
@@ -87,8 +86,33 @@ class PermissionRequest {
   virtual bool IsDuplicateOf(PermissionRequest* other_request) const;
 
 #if BUILDFLAG(IS_ANDROID)
+  // A message text with formatting information.
+  struct AnnotatedMessageText {
+    // |text| specifies the text string itself.
+    // |bolded_ranges| defines a (potentially empty) list of ranges represented
+    // as pairs of <textOffset, rangeSize>, which shall be used by the UI to
+    // format the specified ranges as bold text.
+    AnnotatedMessageText(std::u16string text,
+                         std::vector<std::pair<size_t, size_t>> bolded_ranges);
+    ~AnnotatedMessageText();
+    AnnotatedMessageText(const AnnotatedMessageText& other) = delete;
+    AnnotatedMessageText& operator=(const AnnotatedMessageText& other) = delete;
+
+    std::u16string text;
+
+    // A list of ranges defined as pairs of <offset, size> which
+    // will be used by Clank to format the ranges in |text| as bold.
+    std::vector<std::pair<size_t, size_t>> bolded_ranges;
+  };
+
+  virtual AnnotatedMessageText GetDialogAnnotatedMessageText(
+      const GURL& embedding_origin) const;
+
   // Returns prompt text appropriate for displaying in an Android dialog.
-  virtual std::u16string GetDialogMessageText() const;
+  static AnnotatedMessageText GetDialogAnnotatedMessageText(
+      std::u16string requesting_origin_formatted_for_display,
+      int message_id,
+      bool format_origin_bold);
 #endif
 
   // Returns a weak pointer to this instance.

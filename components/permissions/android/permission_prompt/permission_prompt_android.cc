@@ -124,52 +124,27 @@ int PermissionPromptAndroid::GetIconId() const {
   return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
 }
 
-std::u16string PermissionPromptAndroid::GetMessageText() const {
+PermissionRequest::AnnotatedMessageText
+PermissionPromptAndroid::GetAnnotatedMessageText() const {
   const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests =
       delegate_->Requests();
   if (requests.size() == 1) {
-    if (requests[0]->request_type() == RequestType::kStorageAccess) {
-      if (base::FeatureList::IsEnabled(
-              permissions::features::kPermissionStorageAccessAPI)) {
-        auto patterns =
-            HostContentSettingsMap::GetPatternsForContentSettingsType(
-                delegate_->GetRequestingOrigin(),
-                delegate_->GetEmbeddingOrigin(),
-                ContentSettingsType::STORAGE_ACCESS);
-
-        auto requesting_origin = url_formatter::FormatUrlForSecurityDisplay(
-            patterns.first.ToRepresentativeUrl(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-        auto embedding_origin = url_formatter::FormatUrlForSecurityDisplay(
-            patterns.second.ToRepresentativeUrl(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-
-        return l10n_util::GetStringFUTF16(
-            IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
-            l10n_util::GetStringFUTF16(
-                IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE,
-                requesting_origin),
-            l10n_util::GetStringFUTF16(
-                IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION,
-                requesting_origin, embedding_origin));
-      }
-      return l10n_util::GetStringFUTF16(
-          IDS_STORAGE_ACCESS_INFOBAR_TEXT,
-          url_formatter::FormatUrlForSecurityDisplay(
-              delegate_->GetRequestingOrigin(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-          url_formatter::FormatUrlForSecurityDisplay(
-              delegate_->GetEmbeddingOrigin(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-    }
-    return requests[0]->GetDialogMessageText();
+    return requests[0]->GetDialogAnnotatedMessageText(
+        delegate_->GetEmbeddingOrigin());
   }
   CheckValidRequestGroup(requests);
-  return l10n_util::GetStringFUTF16(
-      IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
+
+  // We only end up here if 2 requests are combined in one prompt (which only
+  // happens for Audio & Video). All other requests are handled in the if block
+  // above. For Audio and Video (which can be allowed once), only format origins
+  // bold if one time permissions are enabled.
+  return PermissionRequest::GetDialogAnnotatedMessageText(
       url_formatter::FormatUrlForSecurityDisplay(
           delegate_->GetRequestingOrigin(),
-          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+      IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
+      /*format_origin_bold=*/
+      base::FeatureList::IsEnabled(permissions::features::kOneTimePermission));
 }
 
 bool PermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {

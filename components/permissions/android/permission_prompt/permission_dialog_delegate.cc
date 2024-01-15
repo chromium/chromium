@@ -67,14 +67,23 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
         static_cast<int>(permission_prompt_->GetContentSettingType(i)));
   }
 
+  PermissionRequest::AnnotatedMessageText annotatedMessageText =
+      permission_prompt_->GetAnnotatedMessageText();
+  std::vector<int> bolded_ranges;
+  for (auto [start, length] : annotatedMessageText.bolded_ranges) {
+    bolded_ranges.push_back(base::checked_cast<int>(start));
+    bolded_ranges.push_back(base::checked_cast<int>(length));
+  }
+
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
       env, reinterpret_cast<uintptr_t>(owner),
       web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
       base::android::ToJavaIntArray(env, content_settings_types),
       PermissionsClient::Get()->MapToJavaDrawableId(
           permission_prompt_->GetIconId()),
-      ConvertUTF16ToJavaString(env, permission_prompt_->GetMessageText()),
-      positiveButtonText, negativeButtonText, positiveEphemeralButtonText));
+      ConvertUTF16ToJavaString(env, annotatedMessageText.text),
+      base::android::ToJavaIntArray(env, bolded_ranges), positiveButtonText,
+      negativeButtonText, positiveEphemeralButtonText));
 }
 
 void PermissionDialogJavaDelegate::CreateDialog(

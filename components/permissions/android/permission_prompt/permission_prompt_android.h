@@ -6,14 +6,11 @@
 #define COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_PROMPT_ANDROID_H_
 
 #include <memory>
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -60,7 +57,9 @@ class PermissionPromptAndroid : public PermissionPrompt {
   size_t PermissionCount() const;
   ContentSettingsType GetContentSettingType(size_t position) const;
   int GetIconId() const;
-  std::u16string GetMessageText() const;
+
+  PermissionRequest::AnnotatedMessageText GetAnnotatedMessageText() const;
+
   bool ShouldUseRequestingOriginFavicon() const;
 
   GURL GetRequestingOrigin() const;
