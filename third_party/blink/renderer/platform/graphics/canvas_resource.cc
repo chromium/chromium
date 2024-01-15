@@ -58,6 +58,10 @@ namespace blink {
 
 namespace {
 
+BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
+             "AddSharedImageRasterUsageWithNonOOPR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAlwaysUseMappableSIForSoftwareCanvas,
              "AlwaysUseMappableSIForSoftwareCanvas",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -488,6 +492,13 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
                                gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+    // RASTER usage should be included, but historically it was not.
+    // Currently in the process of adding with a killswitch.
+    // TODO(crbug.com/1518427): Remove this killswitch post-safe rollout.
+    if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
+      shared_image_usage_flags =
+          shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER;
+    }
   }
 
   GrSurfaceOrigin surface_origin = is_origin_top_left_
