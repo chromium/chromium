@@ -6237,7 +6237,11 @@ RenderFrameImpl::MaybeGetBackgroundResourceFetchAssets() {
     background_resource_fetch_context_ =
         base::MakeRefCounted<BackgroundResourceFetchAssets>(
             GetLoaderFactoryBundle()->Clone(),
-            background_resource_fetch_task_runner_);
+            GetURLLoaderThrottleProvider()
+                ? GetURLLoaderThrottleProvider()->Clone()
+                : nullptr,
+            background_resource_fetch_task_runner_,
+            frame_->GetLocalFrameToken());
   }
   return background_resource_fetch_context_;
 }

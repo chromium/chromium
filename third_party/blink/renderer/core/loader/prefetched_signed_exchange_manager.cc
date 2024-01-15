@@ -250,7 +250,8 @@ void PrefetchedSignedExchangeManager::StartPrefetchedLinkHeaderPreloads() {
 std::unique_ptr<URLLoader>
 PrefetchedSignedExchangeManager::MaybeCreateURLLoader(
     const network::ResourceRequest& network_request,
-    Vector<std::unique_ptr<URLLoaderThrottle>>& throttles) {
+    base::OnceCallback<Vector<std::unique_ptr<URLLoaderThrottle>>(void)>
+        create_throttles_callback) {
   if (started_)
     return nullptr;
   const auto* matching_resource = alternative_resources_->FindMatchingEntry(
@@ -264,7 +265,7 @@ PrefetchedSignedExchangeManager::MaybeCreateURLLoader(
           network_request,
           frame_->GetFrameScheduler()->GetTaskRunner(
               TaskType::kInternalLoading),
-          std::move(throttles));
+          std::move(create_throttles_callback).Run());
   loaders_.emplace_back(loader->GetWeakPtr());
   return loader;
 }

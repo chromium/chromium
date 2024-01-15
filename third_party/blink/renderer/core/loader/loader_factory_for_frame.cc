@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,6 +41,28 @@ Vector<String>& CorsExemptHeaderList() {
   DEFINE_STATIC_LOCAL(ThreadSpecific<Vector<String>>, cors_exempt_header_list,
                       ());
   return *cors_exempt_header_list;
+}
+
+Vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottlesImpl(
+    URLLoaderThrottleProvider* throttle_provider,
+    const LocalFrameToken local_frame_token,
+    const network::ResourceRequest* network_request) {
+  if (!throttle_provider) {
+    return {};
+  }
+  CHECK(network_request);
+
+  WebVector<std::unique_ptr<URLLoaderThrottle>> web_throttles =
+      throttle_provider->CreateThrottles(local_frame_token, *network_request);
+  // TODO(crbug.com/1517144): Stop WebVector->Vector manual conversion when we
+  // have a WTF::Vector constructor which creates a vector with items moved from
+  // a collection.
+  Vector<std::unique_ptr<URLLoaderThrottle>> throttles;
+  throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
+  for (auto& throttle : web_throttles) {
+    throttles.push_back(std::move(throttle));
+  }
+  return throttles;
 }
 
 }  // namespace
@@ -83,9 +106,6 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     const absl::optional<base::UnguessableToken>&
         service_worker_race_network_request_token,
     bool is_from_origin_dirty_style_sheet) {
-  Vector<std::unique_ptr<URLLoaderThrottle>> throttles =
-      CreateThrottles(network_request);
-
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
       url_loader_factory;
   if (options.url_loader_factory) {
@@ -134,7 +154,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
         ->CreateURLLoader(
             network_request, freezable_task_runner, unfreezable_task_runner,
             /*keep_alive_handle=*/mojo::NullRemote(),
-            back_forward_cache_loader_helper, std::move(throttles));
+            back_forward_cache_loader_helper, CreateThrottles(network_request));
   }
 
   if (document_loader_->GetServiceWorkerNetworkProvider()) {
@@ -155,13 +175,19 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
           ->CreateURLLoader(network_request, freezable_task_runner,
                             unfreezable_task_runner, std::move(pending_remote),
                             back_forward_cache_loader_helper,
-                            std::move(throttles));
+                            CreateThrottles(network_request));
     }
   }
 
   if (prefetched_signed_exchange_manager_) {
+    // CreateThrottlesImpl will be called synchronously only when there is a
+    // matching prefetched response.
     auto loader = prefetched_signed_exchange_manager_->MaybeCreateURLLoader(
-        network_request, throttles);
+        network_request,
+        WTF::BindOnce(&CreateThrottlesImpl,
+                      WTF::Unretained(GetURLLoaderThrottleProvider()),
+                      window_->GetFrame()->GetLocalFrameToken(),
+                      WTF::Unretained(&network_request)));
     if (loader)
       return loader;
   }
@@ -176,7 +202,8 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     return loader;
   }
 
-  if (BackgroundURLLoader::CanHandleRequest(network_request, options)) {
+  if (BackgroundURLLoader::CanHandleRequest(
+          network_request, options, window_->document()->IsPrefetchOnly())) {
     scoped_refptr<WebBackgroundResourceFetchAssets>
         web_background_resource_fetch_assets =
             frame->MaybeGetBackgroundResourceFetchAssets();
@@ -186,8 +213,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
       return std::make_unique<BackgroundURLLoader>(
           std::move(web_background_resource_fetch_assets),
           GetCorsExemptHeaderList(), unfreezable_task_runner,
-          back_forward_cache_loader_helper, std::move(throttles),
-          GetBackgroundCodeCacheHost());
+          back_forward_cache_loader_helper, GetBackgroundCodeCacheHost());
     }
   }
 
@@ -196,7 +222,8 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
              /*terminate_sync_load_event=*/nullptr)
       ->CreateURLLoader(network_request, freezable_task_runner,
                         unfreezable_task_runner, std::move(pending_remote),
-                        back_forward_cache_loader_helper, std::move(throttles));
+                        back_forward_cache_loader_helper,
+                        CreateThrottles(network_request));
 }
 
 CodeCacheHost* LoaderFactoryForFrame::GetCodeCacheHost() {
@@ -236,34 +263,27 @@ LoaderFactoryForFrame::GetBackgroundCodeCacheHost() {
   return background_code_cache_host_;
 }
 
-Vector<std::unique_ptr<URLLoaderThrottle>>
-LoaderFactoryForFrame::CreateThrottles(
-    const network::ResourceRequest& network_request) {
+URLLoaderThrottleProvider*
+LoaderFactoryForFrame::GetURLLoaderThrottleProvider() {
   // LocalFrameClient member may not be valid in some tests.
   if (!window_->GetFrame()->Client() ||
       !window_->GetFrame()->Client()->GetWebFrame() ||
       !window_->GetFrame()->Client()->GetWebFrame()->Client()) {
-    return {};
+    return nullptr;
   }
-  URLLoaderThrottleProvider* throttle_provider =
-      window_->GetFrame()
-          ->Client()
-          ->GetWebFrame()
-          ->Client()
-          ->GetURLLoaderThrottleProvider();
-  if (!throttle_provider) {
-    return {};
-  }
-  WebVector<std::unique_ptr<URLLoaderThrottle>> web_throttles =
-      throttle_provider->CreateThrottles(
-          window_->GetFrame()->GetLocalFrameToken(), network_request);
-  Vector<std::unique_ptr<URLLoaderThrottle>> throttles;
+  return window_->GetFrame()
+      ->Client()
+      ->GetWebFrame()
+      ->Client()
+      ->GetURLLoaderThrottleProvider();
+}
 
-  throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
-  for (auto& throttle : web_throttles) {
-    throttles.push_back(std::move(throttle));
-  }
-  return throttles;
+Vector<std::unique_ptr<URLLoaderThrottle>>
+LoaderFactoryForFrame::CreateThrottles(
+    const network::ResourceRequest& network_request) {
+  return CreateThrottlesImpl(GetURLLoaderThrottleProvider(),
+                             window_->GetFrame()->GetLocalFrameToken(),
+                             &network_request);
 }
 
 }  // namespace blink

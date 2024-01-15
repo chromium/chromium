@@ -20,7 +20,8 @@ enum class BackgroundResourceFetchSupportStatus {
   kUnsupportedNonGetRequest = 2,
   kUnsupportedNonHttpUrlRequest = 3,
   kUnsupportedKeepAliveRequest = 4,
-  kMaxValue = kUnsupportedKeepAliveRequest,
+  kUnsupportedPrefetchOnlyDocument = 5,
+  kMaxValue = kUnsupportedPrefetchOnlyDocument,
 };
 
 }  // namespace blink

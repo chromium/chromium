@@ -5,8 +5,9 @@
 #ifndef CONTENT_RENDERER_BACKGROUND_RESOURCE_FETCH_ASSETS_H_
 #define CONTENT_RENDERER_BACKGROUND_RESOURCE_FETCH_ASSETS_H_
 
-#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
+#include <memory>
 
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 namespace network {
 class PendingSharedURLLoaderFactory;
 }  // namespace network
@@ -20,7 +21,9 @@ class BackgroundResourceFetchAssets
   BackgroundResourceFetchAssets(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_loader_factory,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+      std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      const blink::LocalFrameToken& local_frame_token);
 
   BackgroundResourceFetchAssets(const BackgroundResourceFetchAssets&) = delete;
   BackgroundResourceFetchAssets& operator=(
@@ -28,6 +31,8 @@ class BackgroundResourceFetchAssets
 
   const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactory() override;
+  blink::URLLoaderThrottleProvider* GetThrottleProvider() override;
+  const blink::LocalFrameToken& GetLocalFrameToken() override;
 
  private:
   ~BackgroundResourceFetchAssets() override;
@@ -37,7 +42,11 @@ class BackgroundResourceFetchAssets
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
+  std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider_;
+
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  const blink::LocalFrameToken local_frame_token_;
 };
 
 }  // namespace content

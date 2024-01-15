@@ -14,9 +14,13 @@ namespace content {
 BackgroundResourceFetchAssets::BackgroundResourceFetchAssets(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_loader_factory,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    const blink::LocalFrameToken& local_frame_token)
     : pending_loader_factory_(std::move(pending_loader_factory)),
-      background_task_runner_(std::move(background_task_runner)) {}
+      throttle_provider_(std::move(throttle_provider)),
+      background_task_runner_(std::move(background_task_runner)),
+      local_frame_token_(local_frame_token) {}
 
 const scoped_refptr<base::SequencedTaskRunner>&
 BackgroundResourceFetchAssets::GetTaskRunner() {
@@ -35,8 +39,19 @@ BackgroundResourceFetchAssets::GetLoaderFactory() {
   return loader_factory_;
 }
 
+blink::URLLoaderThrottleProvider*
+BackgroundResourceFetchAssets::GetThrottleProvider() {
+  return throttle_provider_.get();
+}
+
+const blink::LocalFrameToken&
+BackgroundResourceFetchAssets::GetLocalFrameToken() {
+  return local_frame_token_;
+}
+
 BackgroundResourceFetchAssets::~BackgroundResourceFetchAssets() {
   background_task_runner_->ReleaseSoon(FROM_HERE, std::move(loader_factory_));
+  background_task_runner_->DeleteSoon(FROM_HERE, std::move(throttle_provider_));
 }
 
 }  // namespace content

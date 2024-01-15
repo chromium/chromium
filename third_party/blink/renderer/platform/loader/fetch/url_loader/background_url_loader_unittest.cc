@@ -213,11 +213,17 @@ class FakeBackgroundResourceFetchAssets
     return url_loader_factory_;
   }
 
+  URLLoaderThrottleProvider* GetThrottleProvider() override { return nullptr; }
+  const blink::LocalFrameToken& GetLocalFrameToken() override {
+    return local_frame_token_;
+  }
+
  private:
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
       pending_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const blink::LocalFrameToken local_frame_token_;
 };
 
 class FakeURLLoaderClient : public URLLoaderClient {
@@ -420,7 +426,6 @@ class BackgroundResourceFecherTest : public testing::Test {
             std::move(background_resource_fetch_assets),
             /*cors_exempt_header_list=*/Vector<String>(),
             unfreezable_task_runner_, bfcache_loader_helper_,
-            Vector<std::unique_ptr<URLLoaderThrottle>>(),
             /*background_code_cache_host=*/nullptr);
     background_url_loader->LoadAsynchronously(
         std::move(request), SecurityOrigin::Create(KURL(kTestURL)),
@@ -675,7 +680,6 @@ TEST_F(BackgroundResourceFecherTest, CancelSoonAfterStart) {
           /*cors_exempt_header_list=*/Vector<String>(),
           unfreezable_task_runner_,
           /*back_forward_cache_loader_helper=*/nullptr,
-          Vector<std::unique_ptr<URLLoaderThrottle>>(),
           /*background_code_cache_host*/ nullptr);
   FakeURLLoaderClient client(unfreezable_task_runner_);
   background_url_loader->LoadAsynchronously(

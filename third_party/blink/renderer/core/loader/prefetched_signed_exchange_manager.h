@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREFETCHED_SIGNED_EXCHANGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREFETCHED_SIGNED_EXCHANGE_MANAGER_H_
 
+#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -67,7 +68,8 @@ class PrefetchedSignedExchangeManager final
   // StartPrefetchedLinkHeaderPreloads() will be called.
   std::unique_ptr<URLLoader> MaybeCreateURLLoader(
       const network::ResourceRequest& request,
-      Vector<std::unique_ptr<URLLoaderThrottle>>& throttles);
+      base::OnceCallback<Vector<std::unique_ptr<URLLoaderThrottle>>(void)>
+          create_throttles_callback);
 
   // If the all loaders which have been created by MaybeCreateURLLoader() have
   // a matching "alternate" link header in the outer response and the matching

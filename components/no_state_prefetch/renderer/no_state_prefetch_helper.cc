@@ -28,6 +28,10 @@ NoStatePrefetchHelper::~NoStatePrefetchHelper() = default;
 std::unique_ptr<blink::URLLoaderThrottle>
 NoStatePrefetchHelper::MaybeCreateThrottle(
     const blink::LocalFrameToken& frame_token) {
+  // Currently NoStatePrefetchHelper doesn't work on the background thread.
+  if (!content::RenderThread::IsMainThread()) {
+    return nullptr;
+  }
   blink::WebLocalFrame* web_frame =
       blink::WebLocalFrame::FromFrameToken(frame_token);
   if (!web_frame) {
