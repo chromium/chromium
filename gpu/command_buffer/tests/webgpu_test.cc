@@ -114,7 +114,8 @@ void WebGPUTest::Initialize(const Options& options) {
   gpu_preferences.texture_target_exception_list =
       gpu::CreateBufferUsageAndFormatExceptionList();
   if (!options.adapter_blocklist) {
-    gpu_preferences.disabled_dawn_features_list = {"adapter_blocklist"};
+    gpu_preferences.disabled_dawn_features_list = {
+        "adapter_blocklist_for_testing"};
   }
 
   gpu_service_holder_ =
