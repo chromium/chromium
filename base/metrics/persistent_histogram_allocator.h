@@ -248,7 +248,7 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // be able to be located by other allocators until it is "finalized".
   std::unique_ptr<HistogramBase> AllocateHistogram(
       HistogramType histogram_type,
-      const std::string& name,
+      std::string_view name,
       int minimum,
       int maximum,
       const BucketRanges* bucket_ranges,
