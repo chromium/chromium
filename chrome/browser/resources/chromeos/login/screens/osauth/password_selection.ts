@@ -11,62 +11,55 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './password_selection.html.js';
 
 /**
  * Type of the password for setting up for the user.
- * @enum {string}
  */
-const PasswordType = {
-  LOCAL_PASSWORD: 'local-password',
-  GAIA_PASSWORD: 'gaia-password',
-};
+enum PasswordType {
+  LOCAL_PASSWORD = 'local-password',
+  GAIA_PASSWORD = 'gaia-password',
+}
 
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const PasswordSelectionState = {
-  SELECTION: 'selection',
-  PROGRESS: 'progress',
+enum PasswordSelectionState {
+  SELECTION = 'selection',
+  PROGRESS = 'progress',
+}
+
+const PasswordSelectionBase = mixinBehaviors(
+                                         [
+                                           OobeI18nBehavior,
+                                           OobeDialogHostBehavior,
+                                           LoginScreenBehavior,
+                                           MultiStepBehavior,
+                                         ],
+                                         PolymerElement) as {
+  new (): PolymerElement & OobeDialogHostBehaviorInterface &
+      OobeI18nBehaviorInterface & LoginScreenBehaviorInterface &
+      MultiStepBehaviorInterface,
 };
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const PasswordSelectionBase = mixinBehaviors(
-    [
-      OobeI18nBehavior,
-      OobeDialogHostBehavior,
-      LoginScreenBehavior,
-      MultiStepBehavior,
-    ],
-    PolymerElement);
-
-/**
- * @polymer
- */
-class PasswordSelection extends PasswordSelectionBase {
+export class PasswordSelection extends PasswordSelectionBase {
   static get is() {
-    return 'password-selection-element';
+    return 'password-selection-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The currently selected password type.
@@ -77,9 +70,9 @@ class PasswordSelection extends PasswordSelectionBase {
 
       /**
        * Enum values for `selectedPasswordType`.
-       * @private {PasswordType}
+       *  {PasswordType}
        */
-      passwordTypeEnum_: {
+      passwordTypeEnum: {
         readOnly: true,
         type: Object,
         value: PasswordType,
@@ -87,46 +80,55 @@ class PasswordSelection extends PasswordSelectionBase {
     };
   }
 
-  /** @override */
-  ready() {
+  private selectedPasswordType: string;
+  private passwordTypeEnum: PasswordType;
+
+  override ready(): void {
     super.ready();
 
     this.initializeLoginScreen('PasswordSelectionScreen');
   }
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'showProgress',
       'showPasswordChoice',
     ];
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return PasswordSelectionState;
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): PasswordSelectionState {
     return PasswordSelectionState.PROGRESS;
   }
 
   // Invoked just before being shown. Contains all the data for the screen.
-  onBeforeShow() {
+  override onBeforeShow(): void {
     this.selectedPasswordType = PasswordType.LOCAL_PASSWORD;
   }
 
-  showProgress() {
+  showProgress(): void {
     this.setUIStep(PasswordSelectionState.PROGRESS);
   }
 
-  showPasswordChoice() {
+  showPasswordChoice(): void {
     this.setUIStep(PasswordSelectionState.SELECTION);
   }
 
-  onBackClicked_() {
+  private onBackClicked(): void {
     this.userActed('back');
   }
 
-  onNextClicked_() {
+  private onNextClicked(): void {
     this.userActed(this.selectedPasswordType);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [PasswordSelection.is]: PasswordSelection;
   }
 }
 
