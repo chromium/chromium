@@ -7,35 +7,35 @@
  */
 
 import '//resources/cr_elements/icons.html.js';
+import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/security_token_pin.js';
+import '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.html.js';
-import '../../components/buttons/oobe_text_button.js';
+import '../../components/buttons/oobe_back_button.js';
+import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
+import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
-import '../../components/dialogs/oobe_modal_dialog.js';
-import '../../components/gaia_dialog.js';
+import '../../components/throbber_notice.js';
 
-import {Authenticator, AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_auth_host/authenticator.js';
-import {assert} from '//resources/js/assert.js';
-import {sendWithPromise} from '//resources/js/cr.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/ash/common/assert.js';
+import {sendWithPromise} from '//resources/ash/common/cr.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import type {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
-import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
-import type {GaiaDialog} from '../../components/gaia_dialog.js';
 import {OobeTypes} from '../../components/oobe_types.js';
-import type {SecurityTokenPin} from '../../components/security_token_pin.js';
 import {Oobe} from '../../cr_ui.js';
 import {invokePolymerMethod} from '../../display_manager.js';
 
 import {getTemplate} from './gaia_signin.html.js';
+
 
 // GAIA animation guard timer. Started when GAIA page is loaded (Authenticator
 // 'ready' event) and is intended to guard against edge cases when 'showView'
@@ -52,25 +52,28 @@ const VIDEO_LOGIN_TIMEOUT = 180 * 1000;
 
 /**
  * The authentication mode for the screen.
+ * @enum {number}
  */
-enum ScreenAuthMode {
-  DEFAULT = 0,        // Default GAIA login flow.
-  SAML_REDIRECT = 1,  // SAML redirection.
-}
+const ScreenAuthMode = {
+  DEFAULT: 0,        // Default GAIA login flow.
+  SAML_REDIRECT: 1,  // SAML redirection.
+};
 
 /**
  * UI mode for the dialog.
+ * @enum {string}
  */
-enum DialogMode {
-  GAIA = 'online-gaia',
-  LOADING = 'loading',
-  PIN_DIALOG = 'pin',
-}
+const DialogMode = {
+  GAIA: 'online-gaia',
+  LOADING: 'loading',
+  PIN_DIALOG: 'pin',
+};
 
 /**
  * Steps that could be the first one in the flow.
  */
 const POSSIBLE_FIRST_SIGNIN_STEPS = [DialogMode.GAIA, DialogMode.LOADING];
+
 
 /**
  * This enum is tied directly to the `EnrollmentNudgeUserAction` UMA enum
@@ -80,57 +83,77 @@ const POSSIBLE_FIRST_SIGNIN_STEPS = [DialogMode.GAIA, DialogMode.LOADING];
  * Do not change one without changing the others.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
+ * @enum {number}
  */
-enum EnrollmentNudgeUserAction {
-  ENTERPRISE_ENROLLMENT_BUTTON = 0,
-  USE_ANOTHER_ACCOUNT_BUTTON = 1,
-  MAX = 2,
-}
+const EnrollmentNudgeUserAction = {
+  ENTERPRISE_ENROLLMENT_BUTTON: 0,
+  USE_ANOTHER_ACCOUNT_BUTTON: 1,
+  MAX: 2,
+};
 
-const GaiaSigninElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const GaiaSigninElementBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
-interface GaiaSigninScreenData {
-  hasUserPods: boolean;
-}
+/**
+ * @typedef {{
+ *   enrollmentNudge: OobeModalDialog
+ * }}
+ */
+GaiaSigninElementBase.$;
 
-export class GaiaSigninElement extends GaiaSigninElementBase {
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   hasUserPods: boolean,
+ * }}
+ */
+let GaiaSigninScreenData;
+
+/**
+ * @polymer
+ */
+class GaiaSigninElement extends GaiaSigninElementBase {
   static get is() {
-    return 'gaia-signin-element' as const;
+    return 'gaia-signin-element';
   }
 
-  static get template(): HTMLTemplateElement {
+  static get template() {
     return getTemplate();
   }
 
-  static get properties(): PolymerElementProperties {
+  static get properties() {
     return {
       /**
        * Whether the screen contents are currently being loaded.
+       * @private
        */
-      loadingFrameContents: {
+      loadingFrameContents_: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Whether the loading UI is shown.
+       * @private
        */
-      isLoadingUiShown: {
+      isLoadingUiShown_: {
         type: Boolean,
-        computed: 'computeIsLoadingUiShown(loadingFrameContents, ' +
-            'authCompleted)',
+        computed: 'computeIsLoadingUiShown_(loadingFrameContents_, ' +
+            'authCompleted_)',
       },
 
       /**
        * Whether the navigation controls are enabled.
+       * @private
        */
-      navigationEnabled: {
+      navigationEnabled_: {
         type: Boolean,
         value: true,
       },
@@ -141,18 +164,20 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
        * when an error during loading the 3P IdP occurs and no change in
        * `authFlow` happens, but the UI for 3P IdP still should be shown.
        * Updated on `authFlow` change.
+       * @private
        */
-      isSaml: {
+      isSaml_: {
         type: Boolean,
         value: false,
-        observer: 'onSamlChanged',
+        observer: 'onSamlChanged_',
       },
 
       /**
        * Whether the authenticator is or has been in the |SAML| AuthFlow during
        * the current authentication attempt.
+       * @private
        */
-      usedSaml: {
+      usedSaml_: {
         type: Boolean,
         value: false,
       },
@@ -160,55 +185,63 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       /**
        * Contains the security token PIN dialog parameters object when the
        * dialog is shown. Is null when no PIN dialog is shown.
+       * @type {?OobeTypes.SecurityTokenPinDialogParameters}
+       * @private
        */
-      pinDialogParameters: {
+      pinDialogParameters_: {
         type: Object,
         value: null,
-        observer: 'onPinDialogParametersChanged',
+        observer: 'onPinDialogParametersChanged_',
       },
 
       /**
        * Whether the SAML 3rd-party page is visible.
+       * @private
        */
-      isSamlSsoVisible: {
+      isSamlSsoVisible_: {
         type: Boolean,
-        computed: 'computeSamlSsoVisible(isSaml, pinDialogParameters)',
+        computed: 'computeSamlSsoVisible_(isSaml_, pinDialogParameters_)',
       },
 
       /**
        * Bound to gaia-dialog::videoEnabled.
+       * @private
        */
-      videoEnabled: {
+      videoEnabled_: {
         type: Boolean,
-        observer: 'onVideoEnabledChange',
+        observer: 'onVideoEnabledChange_',
       },
 
       /**
        * Bound to gaia-dialog::authDomain.
+       * @private
        */
-      authDomain: {
+      authDomain_: {
         type: String,
       },
 
       /**
        * Bound to gaia-dialog::authFlow.
+       * @private
        */
       authFlow: {
         type: Number,
-        observer: 'onAuthFlowChange',
+        observer: 'onAuthFlowChange_',
       },
 
       /**
+       * @private
        */
-      navigationButtonsHidden: {
+      navigationButtonsHidden_: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Bound to gaia-dialog::canGoBack.
+       * @private
        */
-      canGaiaGoBack: {
+      canGaiaGoBack_: {
         type: Boolean,
       },
 
@@ -216,33 +249,37 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
        * Updates whether the Guest and Apps button is allowed to be shown.
        * (Note that the C++ side contains additional logic that decides whether
        * the Guest button should be shown.)
+       * @private
        */
-      firstSigninStep: {
+      isFirstSigninStep_: {
         type: Boolean,
-        computed: 'isFirstSigninStep(uiStep, canGaiaGoBack, isSaml)',
+        computed: 'isFirstSigninStep(uiStep, canGaiaGoBack_, isSaml_)',
         observer: 'onIsFirstSigninStepChanged',
       },
 
       /*
        * Whether the screen is shown.
+       * @private
        */
-      isShown: {
+      isShown_: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Whether the default SAML 3rd-party page is configured for the device.
+       * @private
        */
-      isDefaultSsoProviderConfigured: {
+      isDefaultSsoProviderConfigured_: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Whether the default SAML 3rd-party page is visible.
+       * @private
        */
-      isDefaultSsoProvider: {
+      isDefaultSsoProvider_: {
         type: Boolean,
         value: false,
       },
@@ -250,92 +287,81 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       /**
        * Whether the screen can be hidden.
        */
-      isClosable: {
+      isClosable_: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Domain extracted from user's email.
+       * @private
        */
-      emailDomain: {
+      emailDomain_: {
         type: String,
       },
     };
   }
 
-  private loadingFrameContents: boolean;
-  private isLoadingUiShown: boolean;
-  private navigationEnabled: boolean;
-  private isSaml: boolean;
-  private usedSaml: boolean;
-  private pinDialogParameters: OobeTypes.SecurityTokenPinDialogParameters|null;
-  private isSamlSsoVisible: boolean;
-  private videoEnabled: boolean;
-  private authDomain: string;
-  private authFlow: number;
-  private navigationButtonsHidden: boolean;
-  private canGaiaGoBack: boolean;
-  private firstSigninStep: boolean;
-  private isShown: boolean;
-  private isDefaultSsoProviderConfigured: boolean;
-  private isDefaultSsoProvider: boolean;
-  private isClosable: boolean;
-  private emailDomain: string;
-  private authenticatorParams: null|any;
-  private email: string;
-  private loadingTimer: number|undefined;
-  private loadAnimationGuardTimer: number|undefined;
-  private videoTimer: number|undefined;
-  private showViewProcessed: boolean;
-  private authCompleted: boolean;
-  private pinDialogResultReported: boolean;
-  private fallbackGaiaPath: string;
-
   constructor() {
     super();
     /**
      * Saved authenticator load params.
+     * @type {?Object}
+     * @private
      */
-    this.authenticatorParams = null;
+    this.authenticatorParams_ = null;
 
     /**
      * Email of the user, which is logging in using offline mode.
+     * @type {string}
+     * @private
      */
-    this.email = '';
+    this.email_ = '';
 
     /**
      * Timer id of pending load.
+     * @type {number|undefined}
+     * @private
      */
-    this.loadingTimer = undefined;
+    this.loadingTimer_ = undefined;
 
     /**
      * Timer id of a guard timer that is fired in case 'showView' message is not
      * received from GAIA.
+     * @type {number|undefined}
+     * @private
      */
-    this.loadAnimationGuardTimer = undefined;
+    this.loadAnimationGuardTimer_ = undefined;
 
     /**
      * Timer id of the video login timer.
+     * @type {number|undefined}
+     * @private
      */
-    this.videoTimer = undefined;
+    this.videoTimer_ = undefined;
 
     /**
      * Whether we've processed 'showView' message - either from GAIA or from
      * guard timer.
+     * @type {boolean}
+     * @private
      */
-    this.showViewProcessed = false;
+    this.showViewProcessed_ = false;
 
     /**
      * Whether we've processed 'authCompleted' message.
+     * @type {boolean}
+     * @private
      */
-    this.authCompleted = false;
+    this.authCompleted_ = false;
 
     /**
      * Whether the result was reported to the handler for the most recent PIN
      * dialog.
+     * @type {boolean}
+     * @private
      */
-    this.pinDialogResultReported = false;
+    this.pinDialogResultReported_ = false;
 
     /**
      * Gaia path which can serve as a fallback in reloading scenarios. Expected
@@ -343,11 +369,13 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
      * TODO(b/259181755): this should no longer be needed once we change the
      * implementation of the "Enter Google Account info" button to fully reload
      * the flow through cpp code.
+     * @type {string}
+     * @private
      */
-    this.fallbackGaiaPath = '';
+    this.fallbackGaiaPath_ = '';
   }
 
-  override get EXTERNAL_API(): string[] {
+  get EXTERNAL_API() {
     return [
       'loadAuthenticator',
       'doReload',
@@ -357,46 +385,43 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       'clickPrimaryButtonForTesting',
       'onBeforeLoad',
       'reset',
-      'toggleLoadingUi',
+      'toggleLoadingUI',
       'setQuickStartEnabled',
     ];
   }
 
   static get observers() {
     return [
-      'refreshDialogStep(isShown, pinDialogParameters,' +
-          'isLoadingUiShown)',
+      'refreshDialogStep_(isShown_, pinDialogParameters_,' +
+          'isLoadingUiShown_)',
     ];
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  override defaultUIStep(): string {
+  defaultUIStep() {
     return DialogMode.GAIA;
   }
 
-  override get UI_STEPS() {
+  get UI_STEPS() {
     return DialogMode;
   }
 
-  private get authenticator(): Authenticator {
-    const gaiaDialog =
-        this.shadowRoot!.querySelector<GaiaDialog>('#signin-frame-dialog');
-    assert(!!gaiaDialog);
-    return gaiaDialog.getAuthenticator()!;
+  get authenticator_() {
+    return this.$['signin-frame-dialog'].getAuthenticator();
   }
 
-  override ready(): void {
+  /** @override */
+  ready() {
     super.ready();
-    this.authenticator.insecureContentBlockedCallback =
-        this.onInsecureContentBlocked.bind(this);
-    this.authenticator.missingGaiaInfoCallback =
-        this.missingGaiaInfo.bind(this);
-    this.authenticator.samlApiUsedCallback = this.samlApiUsed.bind(this);
-    this.authenticator.recordSamlProviderCallback =
-        this.recordSamlProvider.bind(this);
-    this.authenticator.addEventListener('getDeviceId', () => {
+    this.authenticator_.insecureContentBlockedCallback =
+        this.onInsecureContentBlocked_.bind(this);
+    this.authenticator_.missingGaiaInfoCallback =
+        this.missingGaiaInfo_.bind(this);
+    this.authenticator_.samlApiUsedCallback = this.samlApiUsed_.bind(this);
+    this.authenticator_.recordSAMLProviderCallback =
+        this.recordSAMLProvider_.bind(this);
+    this.authenticator_.addEventListener('getDeviceId', (e) => {
       sendWithPromise('getDeviceIdForLogin')
-          .then(deviceId => this.authenticator.getDeviceIdResponse(deviceId));
+          .then(deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
     });
 
     this.initializeLoginScreen('GaiaSigninScreen');
@@ -406,211 +431,215 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Updates whether the Guest and Apps button is allowed to be shown. (Note
    * that the C++ side contains additional logic that decides whether the
    * Guest button should be shown.)
+   * @private
    */
-  private isFirstSigninStep(
-      uiStep: DialogMode, canGaiaGoBack: boolean, isSaml: boolean): boolean {
-    return !this.isClosable && POSSIBLE_FIRST_SIGNIN_STEPS.includes(uiStep) &&
-        !canGaiaGoBack && !(isSaml && !this.isDefaultSsoProvider);
+  isFirstSigninStep(uiStep, canGaiaGoBack, isSaml) {
+    return !this.isClosable_ && POSSIBLE_FIRST_SIGNIN_STEPS.includes(uiStep) &&
+        !canGaiaGoBack && !(isSaml && !this.isDefaultSsoProvider_);
   }
 
-  private onIsFirstSigninStepChanged(firstSigninStep: boolean): void {
-    if (this.isShown) {
-      chrome.send('setIsFirstSigninStep', [firstSigninStep]);
+  onIsFirstSigninStepChanged(isFirstSigninStep) {
+    if (this.isShown_) {
+      chrome.send('setIsFirstSigninStep', [isFirstSigninStep]);
     }
   }
 
   /**
    * Handles clicks on "Back" button.
+   * @private
    */
-  private onBackButtonCancel(): void {
-    if (!this.authCompleted) {
+  onBackButtonCancel_() {
+    if (!this.authCompleted_) {
       this.cancel(true /* isBackClicked */);
     }
   }
 
-  private onInterstitialBackButtonClicked(): void {
+  onInterstitialBackButtonClicked_() {
     this.cancel(true /* isBackClicked */);
   }
 
   /**
    * Handles user closes the dialog on the SAML page.
+   * @private
    */
-  private closeSaml(): void {
-    this.videoEnabled = false;
+  closeSaml_() {
+    this.videoEnabled_ = false;
     this.cancel(false /* isBackClicked */);
   }
 
   /**
    * Loads the authenticator and updates the UI to reflect the loading state.
-   * @param doSamlRedirect If the authenticator should do
+   * @param {boolean} doSamlRedirect If the authenticator should do
    *     authentication by automatic redirection to the SAML-based enrollment
    *     enterprise domain IdP.
+   * @private
    */
-  private loadAuthenticator_(doSamlRedirect: boolean): void {
-    this.loadingFrameContents = true;
-    this.isDefaultSsoProvider = doSamlRedirect;
-    this.startLoadingTimer();
+  loadAuthenticator_(doSamlRedirect) {
+    this.loadingFrameContents_ = true;
+    this.isDefaultSsoProvider_ = doSamlRedirect;
+    this.startLoadingTimer_();
 
-    assert(this.authenticatorParams !== null);
     // Don't enable GAIA action buttons when doing SAML redirect.
-    this.authenticatorParams.enableGaiaActionButtons = !doSamlRedirect;
-    this.authenticatorParams.doSamlRedirect = doSamlRedirect;
-    // Set `isSaml` flag here to make sure we show the correct UI. If we do a
+    this.authenticatorParams_.enableGaiaActionButtons = !doSamlRedirect;
+    this.authenticatorParams_.doSamlRedirect = doSamlRedirect;
+    // Set `isSaml_` flag here to make sure we show the correct UI. If we do a
     // redirect, but it fails due to an error, there won't be any `authFlow`
-    // change triggered by `authenticator`, however we should still show a
+    // change triggered by `authenticator_`, however we should still show a
     // button to let user go to GAIA page and keep original GAIA buttons
     // hidden.
-    this.isSaml = doSamlRedirect;
-    this.authenticator.load(AuthMode.DEFAULT, this.authenticatorParams);
+    this.isSaml_ = doSamlRedirect;
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
   }
 
   /**
    * Whether the SAML 3rd-party page is visible.
+   * @param {boolean} isSaml
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} pinDialogParameters
+   * @return {boolean}
+   * @private
    */
-  private computeSamlSsoVisible(
-      isSaml: boolean,
-      pinDialogParameters: OobeTypes.SecurityTokenPinDialogParameters):
-      boolean {
+  computeSamlSsoVisible_(isSaml, pinDialogParameters) {
     return isSaml && !pinDialogParameters;
   }
 
   /**
    * Handler for Gaia loading timeout.
+   * @private
    */
-  private onLoadingTimeOut(): void {
+  onLoadingTimeOut_() {
     if (Oobe.getInstance().currentScreen.id != 'gaia-signin') {
       return;
     }
-    this.clearLoadingTimer();
+    this.clearLoadingTimer_();
     chrome.send('showLoadingTimeoutError');
   }
 
   /**
    * Clears loading timer.
+   * @private
    */
-  private clearLoadingTimer(): void {
-    if (this.loadingTimer) {
-      clearTimeout(this.loadingTimer);
-      this.loadingTimer = undefined;
+  clearLoadingTimer_() {
+    if (this.loadingTimer_) {
+      clearTimeout(this.loadingTimer_);
+      this.loadingTimer_ = undefined;
     }
   }
 
   /**
    * Sets up loading timer.
+   * @private
    */
-  private startLoadingTimer(): void {
-    this.clearLoadingTimer();
-    this.loadingTimer = setTimeout(
-        this.onLoadingTimeOut.bind(this), MAX_GAIA_LOADING_TIME_SEC * 1000);
+  startLoadingTimer_() {
+    this.clearLoadingTimer_();
+    this.loadingTimer_ = setTimeout(
+        this.onLoadingTimeOut_.bind(this), MAX_GAIA_LOADING_TIME_SEC * 1000);
   }
 
   /**
    * Handler for GAIA animation guard timer.
+   * @private
    */
-  private onLoadAnimationGuardTimer(): void {
-    this.loadAnimationGuardTimer = undefined;
-    this.onShowView();
+  onLoadAnimationGuardTimer_() {
+    this.loadAnimationGuardTimer_ = undefined;
+    this.onShowView_();
   }
 
   /**
    * Clears GAIA animation guard timer.
+   * @private
    */
-  private clearLoadAnimationGuardTimer(): void {
-    if (this.loadAnimationGuardTimer) {
-      clearTimeout(this.loadAnimationGuardTimer);
-      this.loadAnimationGuardTimer = undefined;
+  clearLoadAnimationGuardTimer_() {
+    if (this.loadAnimationGuardTimer_) {
+      clearTimeout(this.loadAnimationGuardTimer_);
+      this.loadAnimationGuardTimer_ = undefined;
     }
   }
 
   /**
    * Sets up GAIA animation guard timer.
+   * @private
    */
-  private startLoadAnimationGuardTimer(): void {
-    this.clearLoadAnimationGuardTimer();
-    this.loadAnimationGuardTimer = setTimeout(
-        this.onLoadAnimationGuardTimer.bind(this),
+  startLoadAnimationGuardTimer_() {
+    this.clearLoadAnimationGuardTimer_();
+    this.loadAnimationGuardTimer_ = setTimeout(
+        this.onLoadAnimationGuardTimer_.bind(this),
         GAIA_ANIMATION_GUARD_MILLISEC);
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
+  getOobeUIInitialState() {
     return OOBE_UI_STATE.GAIA_SIGNIN;
   }
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param data Screen init payload
+   * @param {Object} data Screen init payload
    */
-  onBeforeShow(data: GaiaSigninScreenData): void {
+  onBeforeShow(data) {
     // Re-enable navigation in case it was disabled before refresh.
-    this.navigationEnabled = true;
+    this.navigationEnabled_ = true;
 
-    this.isShown = true;
+    this.isShown_ = true;
 
     if (data && 'hasUserPods' in data) {
-      this.isClosable = data.hasUserPods;
+      this.isClosable_ = data.hasUserPods;
     }
 
-    const pinDialog =
-        this.shadowRoot!.querySelector<SecurityTokenPin>('#pinDialog');
-    assert(!!pinDialog);
-    invokePolymerMethod(pinDialog, 'onBeforeShow');
+    invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
   }
 
-  private getSigninFrame(): chrome.webviewTag.WebView {
-    const gaiaDialog =
-        this.shadowRoot!.querySelector<GaiaDialog>('#signin-frame-dialog');
-    assert(!!gaiaDialog);
-    return gaiaDialog.getFrame() as chrome.webviewTag.WebView;
+  /** @private */
+  getSigninFrame_() {
+    return this.$['signin-frame-dialog'].getFrame();
   }
 
-  private focusSigninFrame(): void {
-    const signinFrame = this.getSigninFrame();
+  /** @private */
+  focusSigninFrame_() {
+    const signinFrame = this.getSigninFrame_();
     afterNextRender(this, () => signinFrame.focus());
   }
 
   /** Event handler that is invoked after the screen is shown. */
-  onAfterShow(): void {
-    if (!this.isLoadingUiShown) {
-      this.focusSigninFrame();
+  onAfterShow() {
+    if (!this.isLoadingUiShown_) {
+      this.focusSigninFrame_();
     }
   }
 
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
-  onBeforeHide(): void {
-    this.isShown = false;
-    this.authenticator.resetWebview();
+  onBeforeHide() {
+    this.isShown_ = false;
+    this.authenticator_.resetWebview();
   }
 
   /**
    * Loads authenticator.
-   * @param data Input for authenticator parameters.
+   * @param {!Object} data Input for authenticator parameters.
    * @suppress {missingProperties}
    */
-  loadAuthenticator(data: any) {
-    this.authenticator.setWebviewPartition(data.webviewPartitionName);
+  loadAuthenticator(data) {
+    this.authenticator_.setWebviewPartition(data.webviewPartitionName);
 
-    this.authCompleted = false;
-    this.navigationButtonsHidden = false;
-    this.fallbackGaiaPath = data.fallbackGaiaPath;
+    this.authCompleted_ = false;
+    this.navigationButtonsHidden_ = false;
+    this.fallbackGaiaPath_ = data.fallbackGaiaPath;
 
     // Reset SAML
-    this.isSaml = false;
-    this.usedSaml = false;
+    this.isSaml_ = false;
+    this.usedSaml_ = false;
 
     // Reset the PIN dialog, in case it's shown.
     this.closePinDialog();
 
-    const params: any = {};
+    const params = {};
     SUPPORTED_PARAMS.forEach(name => {
       if (data.hasOwnProperty(name)) {
         params[name] = data[name];
       }
     });
 
-    this.isDefaultSsoProviderConfigured =
+    this.isDefaultSsoProviderConfigured_ =
         data.screenMode == ScreenAuthMode.SAML_REDIRECT;
     params.doSamlRedirect = data.screenMode == ScreenAuthMode.SAML_REDIRECT;
     params.menuEnterpriseEnrollment =
@@ -618,7 +647,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.obfuscatedOwnerId = data.obfuscatedOwnerId;
 
-    this.authenticatorParams = params;
+    this.authenticatorParams_ = params;
 
     this.loadAuthenticator_(params.doSamlRedirect);
     chrome.send('authenticatorLoaded');
@@ -626,99 +655,115 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
 
   /**
    * Whether the current auth flow is SAML.
+   * @return {boolean}
    */
-  isSamlAuthFlowForTesting(): boolean {
-    return this.isSaml && this.authFlow == AuthFlow.SAML;
+  isSamlAuthFlowForTesting() {
+    return this.isSaml_ && this.authFlow == AuthFlow.SAML;
   }
 
   /**
    * Clean up from a video-enabled SAML flow.
+   * @private
    */
-  private clearVideoTimer(): void {
-    if (this.videoTimer !== undefined) {
-      clearTimeout(this.videoTimer);
-      this.videoTimer = undefined;
+  clearVideoTimer_() {
+    if (this.videoTimer_ !== undefined) {
+      clearTimeout(this.videoTimer_);
+      this.videoTimer_ = undefined;
     }
   }
 
-  private onVideoEnabledChange(): void {
-    if (this.videoEnabled && this.videoTimer === undefined) {
-      this.videoTimer = setTimeout(this.cancel.bind(this), VIDEO_LOGIN_TIMEOUT);
+  /**
+   * @private
+   */
+  onVideoEnabledChange_() {
+    if (this.videoEnabled_ && this.videoTimer_ === undefined) {
+      this.videoTimer_ =
+          setTimeout(this.cancel.bind(this), VIDEO_LOGIN_TIMEOUT);
     } else {
-      this.clearVideoTimer();
+      this.clearVideoTimer_();
     }
   }
 
   reset() {
-    this.clearLoadingTimer();
-    this.clearVideoTimer();
-    this.authCompleted = false;
+    this.clearLoadingTimer_();
+    this.clearVideoTimer_();
+    this.authCompleted_ = false;
     // Reset webview to prevent calls from authenticator.
-    this.authenticator.resetWebview();
-    this.authenticator.resetStates();
-    this.navigationButtonsHidden = true;
-    // Explicitly disable video here to let `onVideoEnabledChange()` handle
-    // timer start next time when `videoEnabled` will be set to true on SAML
+    this.authenticator_.resetWebview();
+    this.authenticator_.resetStates();
+    this.navigationButtonsHidden_ = true;
+    // Explicitly disable video here to let `onVideoEnabledChange_()` handle
+    // timer start next time when `videoEnabled_` will be set to true on SAML
     // page.
-    this.videoEnabled = false;
+    this.videoEnabled_ = false;
   }
 
   /**
    * Invoked when the authFlow property is changed on the authenticator.
+   * @private
    */
-  private onAuthFlowChange(): void {
-    this.isSaml = this.authFlow == AuthFlow.SAML;
+  onAuthFlowChange_() {
+    this.isSaml_ = this.authFlow == AuthFlow.SAML;
   }
 
   /**
-   * Observer that is called when the |isSaml| property gets changed.
+   * Observer that is called when the |isSaml_| property gets changed.
+   * @param {number} newValue
+   * @param {number} oldValue
+   * @private
    */
-  private onSamlChanged(): void {
-    if (this.isSaml) {
-      this.usedSaml = true;
+  onSamlChanged_(newValue, oldValue) {
+    if (this.isSaml_) {
+      this.usedSaml_ = true;
     }
 
-    chrome.send('samlStateChanged', [this.isSaml]);
+    chrome.send('samlStateChanged', [this.isSaml_]);
 
-    this.classList.toggle('saml', this.isSaml);
+    this.classList.toggle('saml', this.isSaml_);
   }
 
   /**
    * Invoked when the authenticator emits 'ready' event or when another
    * authentication frame is completely loaded.
+   * @private
    */
-  private onAuthReady(): void {
-    this.showViewProcessed = false;
-    this.startLoadAnimationGuardTimer();
-    this.clearLoadingTimer();
+  onAuthReady_() {
+    this.showViewProcessed_ = false;
+    this.startLoadAnimationGuardTimer_();
+    this.clearLoadingTimer_();
     // Workaround to hide flashing scroll bar.
-    setTimeout(() => {
-      this.loadingFrameContents = false;
-    }, 100);
+    setTimeout(function() {
+      this.loadingFrameContents_ = false;
+    }.bind(this), 100);
   }
 
-  private onStartEnrollment(): void {
+  /**
+   * @private
+   */
+  onStartEnrollment_() {
     this.userActed('startEnrollment');
   }
 
   /**
    * Invoked when the authenticator emits 'showView' event or when corresponding
    * guard time fires.
+   * @private
    */
-  private onShowView(): void {
-    if (this.showViewProcessed) {
+  onShowView_() {
+    if (this.showViewProcessed_) {
       return;
     }
 
-    this.showViewProcessed = true;
-    this.clearLoadAnimationGuardTimer();
-    this.onLoginUiVisible();
+    this.showViewProcessed_ = true;
+    this.clearLoadAnimationGuardTimer_();
+    this.onLoginUIVisible_();
   }
 
   /**
    * Called when UI is shown.
+   * @private
    */
-  private onLoginUiVisible(): void {
+  onLoginUIVisible_() {
     chrome.send('loginWebuiReady');
   }
 
@@ -727,55 +772,60 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * served over an unencrypted connection was detected. Shows a fatal error.
    * This method is only called on Chrome OS, where the entire authentication
    * flow is required to be encrypted.
-   * @param url The URL that was blocked.
+   * @param {string} url The URL that was blocked.
+   * @private
    */
-  private onInsecureContentBlocked(url: string): void {
-    this.showFatalAuthError(
+  onInsecureContentBlocked_(url) {
+    this.showFatalAuthError_(
         OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED, {'url': url});
   }
 
   /**
    * Shows the fatal auth error.
-   * @param errorCode The error code
-   * @param info Additional info
+   * @param {OobeTypes.FatalErrorCode} error_code The error code
+   * @param {Object} [info] Additional info
+   * @private
    */
-  private showFatalAuthError(
-      errorCode: OobeTypes.FatalErrorCode, info?: Object): void {
-    chrome.send('onFatalError', [errorCode, info || {}]);
+  showFatalAuthError_(error_code, info) {
+    chrome.send('onFatalError', [error_code, info || {}]);
   }
 
   /**
    * Show fatal auth error when information is missing from GAIA.
+   * @private
    */
-  private missingGaiaInfo(): void {
-    this.showFatalAuthError(OobeTypes.FatalErrorCode.MISSING_GAIA_INFO);
+  missingGaiaInfo_() {
+    this.showFatalAuthError_(OobeTypes.FatalErrorCode.MISSING_GAIA_INFO);
   }
 
   /**
    * Record that SAML API was used during sign-in.
-   * @param isThirdPartyIdP is login flow SAML with external IdP
+   * @param {boolean} isThirdPartyIdP is login flow SAML with external IdP
+   * @private
    */
-  private samlApiUsed(isThirdPartyIdP: boolean): void {
+  samlApiUsed_(isThirdPartyIdP) {
     chrome.send('usingSAMLAPI', [isThirdPartyIdP]);
   }
 
   /**
    * Record SAML Provider that has signed-in
-   * @param x509Certificate is a x509certificate in pem format
+   * @param {string} X509Certificate is a x509certificate in pem format
+   * @private
    */
-  private recordSamlProvider(x509Certificate: string): void {
-    chrome.send('recordSamlProvider', [x509Certificate]);
+  recordSAMLProvider_(X509Certificate) {
+    chrome.send('recordSAMLProvider', [X509Certificate]);
   }
 
   /**
    * Invoked when onAuthCompleted message received.
-   * @param e Event with the credentials object as the
+   * @param {!CustomEvent<!Object>} e Event with the credentials object as the
    *     payload.
+   * @private
    */
-  private onAuthCompletedMessage(e: CustomEvent) {
+  onAuthCompletedMessage_(e) {
     const credentials = e.detail;
     if (credentials.publicSAML) {
-      this.email = credentials.email;
+      this.email_ = credentials.email;
       chrome.send('launchSAMLPublicSession', [credentials.email]);
     } else {
       chrome.send('completeAuthentication', [
@@ -793,46 +843,50 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
 
     // Hide the navigation buttons as they are not useful when the loading
     // screen is shown.
-    this.navigationButtonsHidden = true;
+    this.navigationButtonsHidden_ = true;
 
-    this.clearVideoTimer();
-    this.authCompleted = true;
+    this.clearVideoTimer_();
+    this.authCompleted_ = true;
   }
 
   /**
    * Invoked when onLoadAbort message received.
-   * @param e Event with the payload containing
+   * @param {!CustomEvent<!Object>} e Event with the payload containing
    *     additional information about error event like:
    *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
    *     {string} src The URL that failed to load.
+   * @private
    */
-  private onLoadAbortMessage(e: CustomEvent): void {
+  onLoadAbortMessage_(e) {
     chrome.send('webviewLoadAborted', [e.detail.error_code]);
   }
 
   /**
    * Invoked when exit message received.
-   * @param e Event
+   * @param {!CustomEvent<!Object>} e Event
+   * @private
    */
-  private onExitMessage(): void {
+  onExitMessage_(e) {
     this.cancel();
   }
 
   /**
    * Invoked when identifierEntered message received.
-   * @param e Event with payload containing:
+   * @param {!CustomEvent<!Object>} e Event with payload containing:
    *     {string} accountIdentifier User identifier.
+   * @private
    */
-  private onIdentifierEnteredMessage(e: CustomEvent): void {
+  onIdentifierEnteredMessage_(e) {
     this.userActed(['identifierEntered', e.detail.accountIdentifier]);
   }
 
   /**
    * Invoked when removeUserByEmail message received.
-   * @param e Event with payload containing:
+   * @param {!CustomEvent<!Object>} e Event with payload containing:
    *     {string} email User email.
+   * @private
    */
-  private onRemoveUserByEmailMessage(e: CustomEvent): void {
+  onRemoveUserByEmailMessage_(e) {
     chrome.send('removeUserByEmail', [e.detail]);
     this.cancel();
   }
@@ -840,12 +894,12 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
   /**
    * Reloads authenticator.
    */
-  doReload(): void {
-    this.authenticator.reload();
-    this.loadingFrameContents = true;
-    this.startLoadingTimer();
-    this.authCompleted = false;
-    this.navigationButtonsHidden = false;
+  doReload() {
+    this.authenticator_.reload();
+    this.loadingFrameContents_ = true;
+    this.startLoadingTimer_();
+    this.authCompleted_ = false;
+    this.navigationButtonsHidden_ = false;
   }
 
   /**
@@ -853,19 +907,19 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * close the page. If SAML page was derived from GAIA we return to configured
    * default page (GAIA or default SAML page).
    */
-  cancel(isBackClicked: boolean = false): void {
-    this.clearVideoTimer();
+  cancel(isBackClicked = false) {
+    this.clearVideoTimer_();
 
     // TODO(crbug.com/470893): Figure out whether/which of these exit conditions
     // are useful.
-    if (this.authCompleted) {
+    if (this.authCompleted_) {
       return;
     }
 
     // If user goes back from the derived SAML page or GAIA page that is shown
     // to change SSO provider we need to reload default authenticator.
-    if ((this.isSamlSsoVisible || this.isDefaultSsoProviderConfigured) &&
-        !this.isDefaultSsoProvider) {
+    if ((this.isSamlSsoVisible_ || this.isDefaultSsoProviderConfigured_) &&
+        !this.isDefaultSsoProvider_) {
       this.userActed('reloadDefault');
       return;
     }
@@ -874,101 +928,94 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
 
   /**
    * Show enrollment nudge pop-up.
-   * @param domain User's email domain.
+   * @param {string} domain User's email domain.
    */
-  showEnrollmentNudge(domain: string): void {
+  showEnrollmentNudge(domain) {
     this.reset();
-    this.emailDomain = domain;
-    const enrollmentNudgeDialog =
-        this.shadowRoot!.querySelector<OobeModalDialog>('#enrollmentNudge');
-    assert(!!enrollmentNudgeDialog);
-    enrollmentNudgeDialog.showDialog();
-
-    afterNextRender(this, () => {
-      const enterpriseEnrollmentButton =
-          this.shadowRoot!.querySelector<OobeTextButton>(
-              '#enterpriseEnrollment');
-      if (enterpriseEnrollmentButton) {
-        enterpriseEnrollmentButton.focus();
-      }
-    });
+    this.emailDomain_ = domain;
+    this.$.enrollmentNudge.showDialog();
+    afterNextRender(this, () => this.$.enterpriseEnrollment.focus());
   }
 
-  toggleLoadingUi(isShown: boolean): void {
-    this.loadingFrameContents = isShown;
+  /**
+   * @param {boolean} isShown
+   */
+  toggleLoadingUI(isShown) {
+    this.loadingFrameContents_ = isShown;
   }
 
   /**
    * Build localized message to display on enrollment nudge pop-up.
-   * @param locale i18n locale data
-   * @param domain User's email domain.
+   * @param {string} locale i18n locale data
+   * @param {string} domain User's email domain.
+   * @return {string}
+   * @private
    */
-  private getEnrollmentNudgeMessage(locale: string, domain: string): string {
-    return this.i18nDynamic(locale, 'enrollmentNudgeMessage', domain);
+  getEnrollmentNudgeMessage_(locale, domain) {
+    return this.i18n('enrollmentNudgeMessage', domain);
   }
 
   /**
    * Handler for a button on enrollment nudge pop-up. Should lead the user to
    * reloaded sign in screen.
+   * @private
    */
-  private onEnrollmentNudgeUseAnotherAccount(): void {
-    this.recordUmaHistogramForEnrollmentNudgeUserAction(
+  onEnrollmentNudgeUseAnotherAccount_() {
+    this.RecordUMAHistogramForEnrollmentNudgeUserAction_(
         EnrollmentNudgeUserAction.USE_ANOTHER_ACCOUNT_BUTTON);
-    const enrollmentNudgeDialog =
-        this.shadowRoot!.querySelector<OobeModalDialog>('#enrollmentNudge');
-    assert(!!enrollmentNudgeDialog);
-    enrollmentNudgeDialog.hideDialog();
+    this.$.enrollmentNudge.hideDialog();
     this.doReload();
   }
 
   /**
    * Handler for a button on enrollment nudge pop-up. Should switch to
    * enrollment screen.
+   * @private
    */
-  private onEnrollmentNudgeEnroll(): void {
-    this.recordUmaHistogramForEnrollmentNudgeUserAction(
+  onEnrollmentNudgeEnroll_() {
+    this.RecordUMAHistogramForEnrollmentNudgeUserAction_(
         EnrollmentNudgeUserAction.ENTERPRISE_ENROLLMENT_BUTTON);
-    const enrollmentNudgeDialog =
-        this.shadowRoot!.querySelector<OobeModalDialog>('#enrollmentNudge');
-    assert(!!enrollmentNudgeDialog);
-    enrollmentNudgeDialog.hideDialog();
+    this.$.enrollmentNudge.hideDialog();
     this.userActed('startEnrollment');
   }
+
 
   /**
    * Shows the PIN dialog according to the given parameters.
    *
    * In case the dialog is already shown, updates it according to the new
    * parameters.
+   * @param {!OobeTypes.SecurityTokenPinDialogParameters} parameters
    */
-  showPinDialog(parameters: OobeTypes.SecurityTokenPinDialogParameters): void {
+  showPinDialog(parameters) {
     assert(parameters);
 
-    // Note that this must be done before updating |pinDialogResultReported|,
+    // Note that this must be done before updating |pinDialogResultReported_|,
     // since the observer will notify the handler about the cancellation of the
     // previous dialog depending on this flag.
-    this.pinDialogParameters = parameters;
+    this.pinDialogParameters_ = parameters;
 
-    this.pinDialogResultReported = false;
+    this.pinDialogResultReported_ = false;
   }
 
   /**
    * Closes the PIN dialog (that was previously opened using showPinDialog()).
    * Does nothing if the dialog is not shown.
    */
-  closePinDialog(): void {
+  closePinDialog() {
     // Note that the update triggers the observer, that notifies the handler
     // about the closing.
-    this.pinDialogParameters = null;
+    this.pinDialogParameters_ = null;
   }
 
   /**
-   * Observer that is called when the |pinDialogParameters| property gets
+   * Observer that is called when the |pinDialogParameters_| property gets
    * changed.
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} newValue
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} oldValue
+   * @private
    */
-  private onPinDialogParametersChanged(
-      newValue: OobeTypes.SecurityTokenPinDialogParameters,
-      oldValue: OobeTypes.SecurityTokenPinDialogParameters): void {
+  onPinDialogParametersChanged_(newValue, oldValue) {
     if (oldValue === undefined) {
       // Don't do anything on the initial call, triggered by the property
       // initialization.
@@ -981,17 +1028,13 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       // flakiness (so that the test doesn't try to simulate the input before
       // the caret is positioned).
       requestAnimationFrame(() => {
-        const pinDialog =
-            this.shadowRoot!.querySelector<SecurityTokenPin>('#pinDialog');
-        if (pinDialog) {
-          pinDialog.focus();
-        }
+        this.$.pinDialog.focus();
         chrome.send('securityTokenPinDialogShownForTest');
       });
     }
     if ((oldValue !== null && newValue === null) ||
         (oldValue !== null && newValue !== null &&
-         !this.pinDialogResultReported)) {
+         !this.pinDialogResultReported_)) {
       // Report the cancellation result if the dialog got closed or got reused
       // before reporting the result.
       chrome.send('securityTokenPinEntered', [/*user_input=*/ '']);
@@ -1000,28 +1043,30 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
 
   /**
    * Invoked when the user cancels the PIN dialog.
+   * @param {!CustomEvent} e
    */
-  onPinDialogCanceled(): void {
+  onPinDialogCanceled_(e) {
     this.closePinDialog();
     this.cancel();
   }
 
   /**
    * Invoked when the PIN dialog is completed.
-   * @param e Event with the entered PIN as the payload.
+   * @param {!CustomEvent<string>} e Event with the entered PIN as the payload.
    */
-  onPinDialogCompleted(e: CustomEvent<string>): void {
-    this.pinDialogResultReported = true;
+  onPinDialogCompleted_(e) {
+    this.pinDialogResultReported_ = true;
     chrome.send('securityTokenPinEntered', [/*user_input=*/ e.detail]);
   }
 
   /**
    * Updates current UI step based on internal state.
+   * @param {boolean} isScreenShown
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} pinParams
+   * @param {boolean} isLoading
+   * @private
    */
-  private refreshDialogStep(
-      isScreenShown: boolean,
-      pinParams: OobeTypes.SecurityTokenPinDialogParameters,
-      isLoading: boolean): void {
+  refreshDialogStep_(isScreenShown, pinParams, isLoading) {
     if (!isScreenShown) {
       return;
     }
@@ -1038,49 +1083,63 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
 
   /**
    * Invoked when "Enter Google Account info" button is pressed on SAML screen.
+   * @param {!CustomEvent} e
+   * @private
    */
-  private onSamlPageChangeAccount() {
+  onSamlPageChangeAccount_(e) {
     // The user requests to change the account. We must clear the email
     // field of the auth params.
-    this.videoEnabled = false;
-    this.authenticatorParams.email = '';
+    this.videoEnabled_ = false;
+    this.authenticatorParams_.email = '';
     // Replace Gaia path with a fallback path to land on Gaia username page.
     assert(
-        this.fallbackGaiaPath,
+        this.fallbackGaiaPath_,
         'fallback Gaia path needed when trying to switch from SAML to Gaia');
-    this.authenticatorParams.gaiaPath = this.fallbackGaiaPath;
+    this.authenticatorParams_.gaiaPath = this.fallbackGaiaPath_;
     this.loadAuthenticator_(false /* doSamlRedirect */);
   }
 
   /**
-   * Computes the value of the isLoadingUiShown property.
+   * Computes the value of the isLoadingUiShown_ property.
+   * @param {boolean} loadingFrameContents
+   * @param {boolean} authCompleted
+   * @return {boolean}
+   * @private
    */
-  private computeIsLoadingUiShown(
-      loadingFrameContents: boolean, authCompleted: boolean): boolean {
+  computeIsLoadingUiShown_(loadingFrameContents, authCompleted) {
     return (loadingFrameContents || authCompleted);
   }
 
-  clickPrimaryButtonForTesting(): void {
-    const gaiaDialog =
-        this.shadowRoot!.querySelector<GaiaDialog>('#signin-frame-dialog');
-    assert(!!gaiaDialog);
-    gaiaDialog.clickPrimaryButtonForTesting();
+  /**
+   * Checks if string is empty
+   * @param {string} value
+   * @private
+   */
+  isEmpty_(value) {
+    return !value;
   }
 
-  onBeforeLoad(): void {
+  clickPrimaryButtonForTesting() {
+    this.$['signin-frame-dialog'].clickPrimaryButtonForTesting();
+  }
+
+  onBeforeLoad() {
     // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
     // loading slowly.
-    // this.loadingFrameContents = true;
+    // this.loadingFrameContents_ = true;
   }
 
   /**
    * Copmose alert message when third-party IdP uses camera for authentication.
-   * @param locale  i18n locale data
+   * @param {string} locale  i18n locale data
+   * @param {boolean} videoEnabled
+   * @param {string} authDomain
+   * @return {string}
+   * @private
    */
-  private getSamlVideoAlertMessage(
-      locale: string, videoEnabled: boolean, authDomain: string): string {
+  getSamlVideoAlertMessage_(locale, videoEnabled, authDomain) {
     if (videoEnabled && authDomain) {
-      return this.i18nDynamic(locale, 'samlNoticeWithVideo', authDomain);
+      return this.i18n('samlNoticeWithVideo', authDomain);
     }
     return '';
   }
@@ -1088,31 +1147,26 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
   /**
    * Handle "Quick Start" button for "Signin" screen.
    *
+   * @private
    */
-  private onQuickStartButtonClicked(): void {
+  onQuickStartButtonClicked_() {
     this.userActed('activateQuickStart');
   }
 
   setQuickStartEnabled() {
-    const gaiaDialog =
-        this.shadowRoot!.querySelector<GaiaDialog>('#signin-frame-dialog');
-    assert(!!gaiaDialog);
-    gaiaDialog.isQuickStartEnabled_ = true;
+    this.$['signin-frame-dialog'].isQuickStartEnabled_ = true;
   }
 
-  private recordUmaHistogramForEnrollmentNudgeUserAction(
-      userAction: EnrollmentNudgeUserAction): void {
+  /**
+   * @param {EnrollmentNudgeUserAction} user_action
+   * @private
+   */
+  RecordUMAHistogramForEnrollmentNudgeUserAction_(user_action) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Enterprise.EnrollmentNudge.UserAction',
-      userAction,
+      user_action,
       EnrollmentNudgeUserAction.MAX,
     ]);
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [GaiaSigninElement.is]: GaiaSigninElement;
   }
 }
 

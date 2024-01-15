@@ -441,7 +441,7 @@ export class Authenticator extends EventTarget {
     this.onePasswordCallback = null;
     this.insecureContentBlockedCallback = null;
     this.samlApiUsedCallback = null;
-    this.recordSamlProviderCallback = null;
+    this.recordSAMLProviderCallback = null;
     this.missingGaiaInfoCallback = null;
     this.needPassword = true;
     this.services_ = null;
@@ -1141,9 +1141,9 @@ export class Authenticator extends EventTarget {
       return;
     }
 
-    if (this.recordSamlProviderCallback && this.authFlow === AuthFlow.SAML) {
+    if (this.recordSAMLProviderCallback && this.authFlow === AuthFlow.SAML) {
       // Makes distinction between different SAML providers
-      this.recordSamlProviderCallback(this.samlHandler_.x509certificate || '');
+      this.recordSAMLProviderCallback(this.samlHandler_.x509certificate || '');
     }
 
     if (this.samlHandler_.samlApiUsed) {
