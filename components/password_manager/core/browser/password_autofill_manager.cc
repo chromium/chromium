@@ -540,9 +540,7 @@ void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
 }
 
 bool PasswordAutofillManager::RemoveSuggestion(
-    const std::u16string& value,
-    autofill::PopupItemId popup_item_id,
-    autofill::Suggestion::BackendId backend_id) {
+    const autofill::Suggestion& suggestion) {
   // Password suggestions cannot be deleted this way.
   // See http://crbug.com/329038#c15
   return false;

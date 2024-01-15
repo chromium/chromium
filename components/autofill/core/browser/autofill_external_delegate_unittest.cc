@@ -2445,23 +2445,23 @@ INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
 
 TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   const AutofillProfile profile = test::GetFullProfile();
-  const PopupItemId& popup_item_id = GetParam();
+  const Suggestion& suggestion = test::CreateAutofillSuggestion(
+      GetParam(), u"autofill suggestion", Suggestion::Guid(profile.guid()));
   pdm().AddProfile(profile);
 
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+  if (suggestion.popup_item_id == PopupItemId::kAutocompleteEntry) {
     EXPECT_CALL(single_field_form_fill_router(),
                 OnRemoveCurrentSingleFieldSuggestion);
-  } else if (popup_item_id != PopupItemId::kPasswordEntry) {
+  } else if (suggestion.popup_item_id != PopupItemId::kPasswordEntry) {
     // Passwords entries cannot be deleted. Since all the remaining ones are
     // address or credit card, we can expect that pdm is called.
     EXPECT_CALL(pdm(), RemoveByGUID);
   }
-  bool result = external_delegate().RemoveSuggestion(
-      u"", popup_item_id, Suggestion::Guid(profile.guid()));
+  bool result = external_delegate().RemoveSuggestion(suggestion);
 
   // Password entries are the only ones from the test set that cannot be
   // deleted.
-  EXPECT_EQ(result, popup_item_id != PopupItemId::kPasswordEntry);
+  EXPECT_EQ(result, suggestion.popup_item_id != PopupItemId::kPasswordEntry);
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding

@@ -808,11 +808,8 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
   }
 }
 
-bool AutofillExternalDelegate::RemoveSuggestion(
-    const std::u16string& value,
-    PopupItemId popup_item_id,
-    Suggestion::BackendId backend_id) {
-  switch (popup_item_id) {
+bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
+  switch (suggestion.popup_item_id) {
     // These PopupItemIds are various types which can appear in the first level
     // suggestion to fill an address or credit card field.
     case PopupItemId::kAddressEntry:
@@ -823,10 +820,12 @@ bool AutofillExternalDelegate::RemoveSuggestion(
     case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kCreditCardEntry:
-      return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
+      return manager_->RemoveAutofillProfileOrCreditCard(
+          suggestion.GetPayload<Suggestion::BackendId>());
     case PopupItemId::kAutocompleteEntry:
-      manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
-                                                   popup_item_id);
+      manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name,
+                                                   suggestion.main_text.value,
+                                                   suggestion.popup_item_id);
       return true;
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kEditAddressProfile:

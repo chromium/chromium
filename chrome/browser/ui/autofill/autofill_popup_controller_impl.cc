@@ -625,13 +625,10 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     return false;
   }
 
-  PopupItemId suggestion_type = suggestions_[list_index].popup_item_id;
-  if (!delegate_->RemoveSuggestion(
-          suggestions_[list_index].main_text.value,
-          suggestions_[list_index].popup_item_id,
-          suggestions_[list_index].GetPayload<Suggestion::BackendId>())) {
+  if (!delegate_->RemoveSuggestion(suggestions_[list_index])) {
     return false;
   }
+  PopupItemId suggestion_type = suggestions_[list_index].popup_item_id;
   switch (GetFillingProductFromPopupItemId(suggestion_type)) {
     case FillingProduct::kAddress:
       switch (removal_method) {

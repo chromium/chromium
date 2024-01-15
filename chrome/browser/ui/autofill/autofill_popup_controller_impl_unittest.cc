@@ -140,10 +140,7 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
               DidPerformButtonActionForSuggestion,
               (const Suggestion&),
               (override));
-  MOCK_METHOD(bool,
-              RemoveSuggestion,
-              (const std::u16string&, PopupItemId, Suggestion::BackendId),
-              (override));
+  MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
 };
 
 class MockAutofillPopupView : public AutofillPopupView {
@@ -490,7 +487,8 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   // testing the popup here.
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAddressEntry)))
       .WillRepeatedly(Return(true));
 
   // Remove the first entry. The popup should be redrawn since its size has
@@ -517,7 +515,8 @@ TEST_F(AutofillPopupControllerImplTest,
   test::GenerateTestAutofillPopup(&manager().external_delegate());
 
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAutocompleteEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAutocompleteEntry)))
       .WillOnce(Return(true));
   EXPECT_CALL(client().popup_view(),
               AxAnnounce(Eq(u"Entry main text has been deleted")));
@@ -537,7 +536,8 @@ TEST_F(AutofillPopupControllerImplTest,
   test::GenerateTestAutofillPopup(&manager().external_delegate());
 
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAutocompleteEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAutocompleteEntry)))
       .WillOnce(Return(true));
   // Remove the first entry. The popup should be redrawn since its size has
   // changed.
@@ -558,7 +558,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAutocompleteEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAutocompleteEntry)))
       .WillOnce(Return(false));
 
   EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
@@ -579,7 +580,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAutocompleteEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAutocompleteEntry)))
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
@@ -605,7 +607,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAddressEntry)))
       .WillOnce(Return(false));
 
   EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
@@ -623,7 +626,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAddressEntry)))
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
@@ -649,7 +653,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAddressEntry)))
       .WillOnce(Return(false));
 
   EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
@@ -666,7 +671,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kAddressEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAddressEntry)))
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
@@ -691,7 +697,8 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(manager(), {PopupItemId::kCreditCardEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(_, PopupItemId::kCreditCardEntry, _))
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kCreditCardEntry)))
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
