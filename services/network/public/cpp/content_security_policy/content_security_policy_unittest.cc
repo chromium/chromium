@@ -103,7 +103,7 @@ class CSPContextTest : public CSPContext {
     scheme_to_bypass_.push_back(scheme);
   }
 
-  bool SchemeShouldBypassCSP(const std::string_view& scheme) override {
+  bool SchemeShouldBypassCSP(std::string_view scheme) override {
     return base::Contains(scheme_to_bypass_, scheme);
   }
 

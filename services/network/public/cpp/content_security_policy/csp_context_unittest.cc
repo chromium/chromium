@@ -27,7 +27,7 @@ class CSPContextTest : public CSPContext {
     scheme_to_bypass_.insert(scheme);
   }
 
-  bool SchemeShouldBypassCSP(const std::string_view& scheme) override {
+  bool SchemeShouldBypassCSP(std::string_view scheme) override {
     return scheme_to_bypass_.count(std::string(scheme));
   }
 

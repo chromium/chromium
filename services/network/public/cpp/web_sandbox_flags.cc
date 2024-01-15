@@ -20,7 +20,7 @@ namespace {
 // This is different from: base::kWhitespaceASCII.
 const char* kHtmlWhitespace = " \n\t\r\f";
 
-WebSandboxFlags ParseWebSandboxToken(const std::string_view& token) {
+WebSandboxFlags ParseWebSandboxToken(std::string_view token) {
   constexpr struct {
     const char* token;
     WebSandboxFlags flags;
@@ -61,7 +61,7 @@ WebSandboxFlags ParseWebSandboxToken(const std::string_view& token) {
 
 // See: http://www.w3.org/TR/html5/the-iframe-element.html#attr-iframe-sandbox
 WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
-    const std::string_view& input,
+    std::string_view input,
     WebSandboxFlags ignored_flags) {
   WebSandboxFlagsParsingResult out;
   out.flags = WebSandboxFlags::kAll;

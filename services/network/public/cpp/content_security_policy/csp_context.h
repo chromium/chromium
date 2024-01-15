@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
 
   // This is declared virtual only so that it can be overridden for unit
   // testing.
-  virtual bool SchemeShouldBypassCSP(const std::string_view& scheme);
+  virtual bool SchemeShouldBypassCSP(std::string_view scheme);
 };
 
 }  // namespace network

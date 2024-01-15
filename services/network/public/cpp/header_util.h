@@ -23,8 +23,7 @@ class URLResponseHead;
 
 // Checks if a single request header is safe to send.
 COMPONENT_EXPORT(NETWORK_CPP)
-bool IsRequestHeaderSafe(const std::string_view& key,
-                         const std::string_view& value);
+bool IsRequestHeaderSafe(std::string_view key, std::string_view value);
 
 // Checks if any single header in a set of request headers is not safe to send.
 // When adding sets of headers together, it's safe to call this on each set

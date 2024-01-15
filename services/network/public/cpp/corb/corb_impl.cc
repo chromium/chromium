@@ -112,8 +112,7 @@ SniffingResult MatchesSignature(std::string_view* data,
   return CrossOriginReadBlocking::kNo;
 }
 
-size_t FindFirstJavascriptLineTerminator(const std::string_view& hay,
-                                         size_t pos) {
+size_t FindFirstJavascriptLineTerminator(std::string_view hay, size_t pos) {
   // https://www.ecma-international.org/ecma-262/8.0/index.html#prod-LineTerminator
   // defines LineTerminator ::= <LF> | <CR> | <LS> | <PS>.
   //

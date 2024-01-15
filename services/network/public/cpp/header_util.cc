@@ -73,8 +73,7 @@ const struct {
 
 }  // namespace
 
-bool IsRequestHeaderSafe(const std::string_view& key,
-                         const std::string_view& value) {
+bool IsRequestHeaderSafe(std::string_view key, std::string_view value) {
   for (const auto* header : kUnsafeHeaders) {
     if (base::EqualsCaseInsensitiveASCII(header, key))
       return false;
