@@ -3628,8 +3628,8 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
   base::HistogramTester histogram_tester;
   // Simulate seeing an unowned form containing just the input "fieldID".
   FormData form = *UnownedFormElementsToFormData(
-      {GetFormControlElementById("fieldId")}, {}, nullptr,
-      GetMainFrame()->GetDocument(), *base::MakeRefCounted<FieldDataManager>(),
+      {GetFormControlElementById("fieldId")}, {}, /*element=*/nullptr,
+      *base::MakeRefCounted<FieldDataManager>(),
       /*extract_options=*/{}, nullptr);
   ASSERT_EQ(form.fields.size(), 1u);
   FormFieldData& form_field_data = form.fields[0];
@@ -5520,7 +5520,7 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
   std::vector<WebElement> iframe_elements;
 
   FormData form = *UnownedFormElementsToFormData(
-      control_elements, iframe_elements, nullptr, frame->GetDocument(),
+      control_elements, iframe_elements, /*element=*/nullptr,
       *base::MakeRefCounted<FieldDataManager>(), extract_options, nullptr);
 
   EXPECT_TRUE(form.name.empty());
@@ -5567,7 +5567,7 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithForm) {
       GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_TRUE(control_elements.empty());
   EXPECT_FALSE(UnownedFormElementsToFormData(
-      control_elements, /*iframe_elements*/ {}, nullptr, frame->GetDocument(),
+      control_elements, /*iframe_elements=*/{}, /*element=*/nullptr,
       *base::MakeRefCounted<FieldDataManager>(), extract_options, nullptr));
 }
 
@@ -5590,7 +5590,7 @@ TEST_F(FormAutofillTest, FormlessForms) {
 
   {
     FormData form = *UnownedFormElementsToFormData(
-        control_elements, iframe_elements, nullptr, frame->GetDocument(),
+        control_elements, iframe_elements, /*element=*/nullptr,
         *base::MakeRefCounted<FieldDataManager>(), extract_options, nullptr);
   }
 }

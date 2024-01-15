@@ -313,7 +313,6 @@ std::optional<FormData> UnownedFormElementsToFormData(
     const std::vector<blink::WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
-    const blink::WebDocument& document,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormFieldData* field);

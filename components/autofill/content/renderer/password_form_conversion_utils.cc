@@ -166,7 +166,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     return nullptr;
   }
   std::optional<FormData> form = UnownedFormElementsToFormData(
-      control_elements, /*iframe_elements=*/{}, nullptr, frame.GetDocument(),
+      control_elements, /*iframe_elements=*/{}, /*element=*/nullptr,
       field_data_manager, {ExtractOption::kValue},
       /*field=*/nullptr);
   if (!form) {

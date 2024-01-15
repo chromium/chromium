@@ -312,7 +312,6 @@ AutofillAgent::AutofillAgent(
       is_popup_possibly_visible_(false),
       is_secure_context_required_(false),
       form_tracker_(std::make_unique<FormTracker>(render_frame)),
-      field_data_manager_(base::MakeRefCounted<FieldDataManager>()),
       focus_state_notifier_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
@@ -978,7 +977,7 @@ std::optional<FormData> AutofillAgent::CollectFormlessElements(
 
   FormData formless_elements_form;
   return form_util::UnownedFormElementsToFormData(
-      control_elements, iframe_elements, nullptr, document,
+      control_elements, iframe_elements, /*element=*/nullptr,
       field_data_manager(), extract_options,
       /*field=*/nullptr);
 }

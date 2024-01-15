@@ -211,8 +211,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       form_util::GetUnownedIframeElements(document);
 
   std::optional<FormData> synthetic_form = UnownedFormElementsToFormData(
-      control_elements, iframe_elements, nullptr, document, field_data_manager,
-      extract_options, nullptr);
+      control_elements, iframe_elements, /*element=*/nullptr,
+      field_data_manager, extract_options, /*field=*/nullptr);
   if (!synthetic_form) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;

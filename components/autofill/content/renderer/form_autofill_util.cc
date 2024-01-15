@@ -1313,7 +1313,6 @@ void MatchLabelsAndFields(
 // |field_data_manager| and |extract_options| are only passed to
 // WebFormControlElementToFormField().
 bool OwnedOrUnownedFormToFormData(
-    const WebFrame* frame,
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement* form_control_element,
     const WebVector<WebFormControlElement>& control_elements,
@@ -2100,10 +2099,10 @@ std::optional<FormData> WebFormElementToFormData(
       owned_iframes.push_back(iframe);
     }
   }
-  return OwnedOrUnownedFormToFormData(
-             frame, form_element, &form_control_element,
-             form_element.GetFormControlElements(), owned_iframes,
-             field_data_manager, extract_options, form, field)
+  return OwnedOrUnownedFormToFormData(form_element, &form_control_element,
+                                      form_element.GetFormControlElements(),
+                                      owned_iframes, field_data_manager,
+                                      extract_options, form, field)
              ? std::make_optional(form)
              : std::nullopt;
 }
@@ -2162,22 +2161,16 @@ std::optional<FormData> UnownedFormElementsToFormData(
     const std::vector<blink::WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
-    const blink::WebDocument& document,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormFieldData* field) {
-  blink::WebLocalFrame* frame = document.GetFrame();
-  if (!frame) {
-    return std::nullopt;
-  }
   FormData form;
   form.unique_renderer_id = FormRendererId();
   form.main_frame_origin = url::Origin();
   form.is_form_tag = false;
-
   return OwnedOrUnownedFormToFormData(
-             frame, WebFormElement(), element, control_elements,
-             iframe_elements, field_data_manager, extract_options, form, field)
+             WebFormElement(), element, control_elements, iframe_elements,
+             field_data_manager, extract_options, form, field)
              ? std::make_optional(form)
              : std::nullopt;
 }
@@ -2206,7 +2199,7 @@ FindFormAndFieldForFormControlElement(
     std::vector<WebElement> iframe_elements =
         GetUnownedIframeElements(document);
     form = UnownedFormElementsToFormData(control_elements, iframe_elements,
-                                         &element, document, field_data_manager,
+                                         &element, field_data_manager,
                                          extract_options, &field);
   } else {
     form = WebFormElementToFormData(form_element, element, field_data_manager,

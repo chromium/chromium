@@ -508,7 +508,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // changes them.
   // 2) Field properties mask, i.e. whether the field was autofilled, modified
   // by user, etc. (see FieldPropertiesMask).
-  scoped_refptr<FieldDataManager> field_data_manager_;
+  scoped_refptr<FieldDataManager> field_data_manager_ =
+      base::MakeRefCounted<FieldDataManager>();
 
   // This notifier is used to avoid sending redundant messages to the password
   // manager driver mojo interface.
