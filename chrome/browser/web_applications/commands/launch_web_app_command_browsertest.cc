@@ -325,6 +325,14 @@ class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // When shortstand enabled, we no longer allow web app to be launched in
+  // browser tab. This test is no longer valid. The shortstand behaviour is
+  // tested in LaunchWebAppCommandTest_Shortstand.* below.
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP();
+  }
+#endif
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
