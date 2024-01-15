@@ -166,6 +166,22 @@ enum class FedCmErrorDialogResult {
   kMaxValue = kOtherWithMoreDetails
 };
 
+// This enum is used when we fail a FedCM request due to a bad
+// lifecycle state.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmLifecycleStateFailureReason {
+  kOther = 0,
+  kSpeculative = 1,
+  kPendingCommit = 2,
+  kPrerendering = 3,
+  kInBackForwardCache = 4,
+  kRunningUnloadHandlers = 5,
+  kReadyToBeDeleted = 6,
+
+  kMaxValue = kReadyToBeDeleted
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
@@ -337,6 +353,10 @@ void RecordAccountsResponseInvalidReason(
 
 // Records the reason why we ignored an attempt to set a login status.
 void RecordSetLoginStatusIgnoredReason(FedCmSetLoginStatusIgnoredReason reason);
+
+// Records the lifecycle state if we fail a FedCM request due to a page not
+// being primary.
+void RecordLifecycleStateFailureReason(FedCmLifecycleStateFailureReason reason);
 
 }  // namespace content
 

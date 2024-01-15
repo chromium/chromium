@@ -14136,6 +14136,16 @@ Called by update_permissions_policy_enum.py.-->
              accounts."/>
 </enum>
 
+<enum name="FedCmLifecycleStateFailureReason">
+  <int value="0" label="Other state"/>
+  <int value="1" label="Speculative"/>
+  <int value="2" label="Pending Commit"/>
+  <int value="3" label="Prerendering"/>
+  <int value="4" label="In Back/Forward Cache"/>
+  <int value="5" label="Running Unload Handlers"/>
+  <int value="6" label="Ready to be deleted"/>
+</enum>
+
 <enum name="FedCmMismatchDialogResult">
   <int value="0" label="Continue button clicked"/>
   <int value="1" label="Dismissed by user through clicking close icon"/>

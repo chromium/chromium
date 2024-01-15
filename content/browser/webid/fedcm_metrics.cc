@@ -584,4 +584,10 @@ void RecordSetLoginStatusIgnoredReason(
   base::UmaHistogramEnumeration("Blink.FedCm.SetLoginStatusIgnored", reason);
 }
 
+void RecordLifecycleStateFailureReason(
+    FedCmLifecycleStateFailureReason reason) {
+  base::UmaHistogramEnumeration("Blink.FedCm.LifecycleStateFailureReason",
+                                reason);
+}
+
 }  // namespace content

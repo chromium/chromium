@@ -741,11 +741,48 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
-  if (!render_frame_host().GetPage().IsPrimary()) {
+  if (render_frame_host().IsNestedWithinFencedFrame()) {
     mojo::ReportBadMessage(
-        "FedCM should not be allowed in nested frame trees.");
+        "FedCM should not be allowed in fenced frame trees.");
     return;
   }
+
+  if (!render_frame_host().GetPage().IsPrimary()) {
+    // This should not be possible but seems to be happening, so we log
+    // the lifecycle state for further investigation.
+    RenderFrameHostImpl* host_impl =
+        static_cast<RenderFrameHostImpl*>(&render_frame_host());
+    FedCmLifecycleStateFailureReason reason =
+        FedCmLifecycleStateFailureReason::kOther;
+    switch (host_impl->lifecycle_state()) {
+      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+        reason = FedCmLifecycleStateFailureReason::kSpeculative;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+        reason = FedCmLifecycleStateFailureReason::kPendingCommit;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+        reason = FedCmLifecycleStateFailureReason::kPrerendering;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+        reason = FedCmLifecycleStateFailureReason::kInBackForwardCache;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+        reason = FedCmLifecycleStateFailureReason::kRunningUnloadHandlers;
+        break;
+      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+        reason = FedCmLifecycleStateFailureReason::kReadyToBeDeleted;
+        break;
+      default:
+        break;
+    };
+    RecordLifecycleStateFailureReason(reason);
+    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "",
+                            /*error=*/nullptr,
+                            /*is_auto_selected=*/false);
+    return;
+  }
+
   // It should not be possible to receive multiple IDPs when the
   // `kFedCmMultipleIdentityProviders` flag is disabled. But such a message
   // could be received from a compromised renderer.

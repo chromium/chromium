@@ -1478,6 +1478,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.LifecycleStateFailureReason"
+    enum="FedCmLifecycleStateFailureReason" expires_after="2024-06-27">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    When we fail a FedCM request because the `Page` is not primary, this records
+    the lifecycle state the render frame host is in.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.LoginHint.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2024-05-18">
   <owner>npm@chromium.org</owner>
