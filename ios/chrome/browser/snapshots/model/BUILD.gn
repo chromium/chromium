@@ -120,6 +120,18 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "snapshot_egtest.mm" ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("features") {
   sources = [
     "features.h",
