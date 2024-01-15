@@ -117,11 +117,6 @@ BASE_FEATURE(kWebAuthnNewPasskeyUI,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnSortRecognizedCredentials,
-             "WebAuthenticationSortRecognizedCredentials",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries,
              "WebAuthenticationRequestUIForComplexDiscoveries",
              base::FEATURE_ENABLED_BY_DEFAULT);

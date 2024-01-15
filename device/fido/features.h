@@ -94,10 +94,6 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
 
-// Sort discoverable credentials in the UI before showing.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnSortRecognizedCredentials);
-
 // Don't configure discoveries like caBLE, iCloud Keychain, and the enclave,
 // if the WebAuthn UI is disabled.
 COMPONENT_EXPORT(DEVICE_FIDO)

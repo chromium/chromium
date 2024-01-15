@@ -484,10 +484,7 @@ void AuthenticatorRequestDialogModel::StartFlow(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnSortRecognizedCredentials)) {
-    SortRecognizedCredentials();
-  }
+  SortRecognizedCredentials();
 
 #if BUILDFLAG(IS_MAC)
   RecordMacOsStartedHistogram();
@@ -2475,10 +2472,7 @@ void AuthenticatorRequestDialogModel::OnTransportAvailabilityChanged(
     return;
   }
   transport_availability_ = std::move(transport_availability);
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnSortRecognizedCredentials)) {
-    SortRecognizedCredentials();
-  }
+  SortRecognizedCredentials();
   mechanisms_.clear();
   PopulateMechanisms();
   ephemeral_state_.priority_mechanism_index_ = IndexOfPriorityMechanism();
