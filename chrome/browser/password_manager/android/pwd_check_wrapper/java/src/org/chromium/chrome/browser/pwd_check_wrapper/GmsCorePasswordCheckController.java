@@ -24,7 +24,6 @@ class GmsCorePasswordCheckController
     private SyncService mSyncService;
     private PasswordStoreBridge mPasswordStoreBridge;
     private CompletableFuture<Integer> mPasswordsTotalCount;
-    private CompletableFuture<PasswordCheckResult> mPasswordCheckResult;
 
     public GmsCorePasswordCheckController(
             SyncService syncService, PasswordStoreBridge passwordStoreBridge) {
@@ -40,7 +39,7 @@ class GmsCorePasswordCheckController
     public CompletableFuture<PasswordCheckResult> checkPasswords(
             @PasswordStorageType int passwordStorageType) {
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
-        mPasswordCheckResult = new CompletableFuture<>();
+        CompletableFuture<PasswordCheckResult> passwordCheckResult = new CompletableFuture<>();
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 getAccountNameForStorageType(passwordStorageType),
@@ -48,25 +47,28 @@ class GmsCorePasswordCheckController
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.getBreachedCredentialsCount(passwordStorageType);
+                    controller.getBreachedCredentialsCount(
+                            passwordStorageType, passwordCheckResult);
                 },
                 error -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.onPasswordCheckFailed(error);
+                    controller.onPasswordCheckFailed(error, passwordCheckResult);
                 });
-        return mPasswordCheckResult;
+        return passwordCheckResult;
     }
 
     @Override
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
             @PasswordStorageType int passwordStorageType) {
-        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
-        if (mPasswordCheckResult == null || mPasswordCheckResult.isDone()) {
-            mPasswordCheckResult = new CompletableFuture<>();
-        }
+        return getBreachedCredentialsCount(passwordStorageType, new CompletableFuture<>());
+    }
 
+    private CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
+            @PasswordStorageType int passwordStorageType,
+            CompletableFuture<PasswordCheckResult> passwordCheckResult) {
+        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 getAccountNameForStorageType(passwordStorageType),
@@ -74,14 +76,14 @@ class GmsCorePasswordCheckController
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.onBreachedCredentialsObtained(count);
+                    controller.onBreachedCredentialsObtained(count, passwordCheckResult);
                 },
                 error -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
-                    controller.onPasswordCheckFailed(error);
+                    controller.onPasswordCheckFailed(error, passwordCheckResult);
                 });
-        return mPasswordCheckResult;
+        return passwordCheckResult;
     }
 
     @Override
@@ -96,15 +98,17 @@ class GmsCorePasswordCheckController
      *
      * @param breachedCount the number of breached credentials
      */
-    private void onBreachedCredentialsObtained(int breachedCount) {
+    private void onBreachedCredentialsObtained(
+            int breachedCount, CompletableFuture<PasswordCheckResult> passwordCheckResult) {
         mPasswordsTotalCount.thenAccept(
                 totalCount ->
-                        mPasswordCheckResult.complete(
+                        passwordCheckResult.complete(
                                 new PasswordCheckResult(totalCount, breachedCount)));
     }
 
-    private void onPasswordCheckFailed(Exception error) {
-        mPasswordCheckResult.complete(new PasswordCheckResult(error));
+    private void onPasswordCheckFailed(
+            Exception error, CompletableFuture<PasswordCheckResult> passwordCheckResult) {
+        passwordCheckResult.complete(new PasswordCheckResult(error));
     }
 
     private Optional<String> getAccountNameForStorageType(

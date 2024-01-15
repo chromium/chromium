@@ -169,4 +169,19 @@ public class GmsCorePasswordCheckControllerTest {
         mController.destroy();
         verify(mPasswordStoreBridge).removeObserver(mController);
     }
+
+    @Test
+    public void passwordCheckForBothStores() throws ExecutionException, InterruptedException {
+        // Set fake to return 0 breached credentials.
+        mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
+        mController.onSavedPasswordsChanged(10);
+
+        PasswordCheckResult passwordCheckResultLocal =
+                mController.checkPasswords(PasswordStorageType.LOCAL_STORAGE).get();
+        PasswordCheckResult passwordCheckResultAccount =
+                mController.checkPasswords(PasswordStorageType.ACCOUNT_STORAGE).get();
+
+        Assert.assertEquals(OptionalInt.of(0), passwordCheckResultLocal.getBreachedCount());
+        Assert.assertEquals(OptionalInt.of(0), passwordCheckResultAccount.getBreachedCount());
+    }
 }
