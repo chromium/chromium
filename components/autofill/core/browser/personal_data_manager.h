@@ -495,7 +495,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the |app_locale_| that was provided during construction.
   const std::string& app_locale() const { return app_locale_; }
 
-#ifdef UNIT_TEST
   // Returns the country code that was provided from the variations service
   // during construction.
   const std::string& variations_country_code_for_testing() const {
@@ -506,17 +505,6 @@ class PersonalDataManager : public KeyedService,
   void set_variations_country_code_for_testing(std::string country_code) {
     variations_country_code_ = country_code;
   }
-
-#if BUILDFLAG(IS_IOS)
-  // Returns the raw pointer to PersonalDataManagerCleaner used for testing
-  // purposes.
-  PersonalDataManagerCleaner* personal_data_manager_cleaner_for_testing()
-      const {
-    DCHECK(personal_data_manager_cleaner_);
-    return personal_data_manager_cleaner_.get();
-  }
-#endif  // IOS
-#endif  // UNIT_TEST
 
   // Returns our best guess for the country a user is likely to use when
   // inputting a new address. The value is calculated once and cached, so it
@@ -550,10 +538,8 @@ class PersonalDataManager : public KeyedService,
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
 
-#if defined(UNIT_TEST)
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueriesForTesting() { return HasPendingQueries(); }
-#endif
 
   // This function assumes |credit_card| contains the full PAN. Returns |true|
   // if the card number of |credit_card| is equal to any local card or any
@@ -722,6 +708,11 @@ class PersonalDataManager : public KeyedService,
   // have been deprecated, however tests still use this when testing
   // still-supported paths (filling, editing, and deleting full server cards).
   void AddFullServerCreditCardForTesting(const CreditCard& credit_card);
+
+  AlternativeStateNameMapUpdater*
+  get_alternative_state_name_map_updater_for_testing() {
+    return alternative_state_name_map_updater_.get();
+  }
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,

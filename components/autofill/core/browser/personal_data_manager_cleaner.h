@@ -40,14 +40,6 @@ class PersonalDataManagerCleaner {
   // |model_type|.
   void ApplyAddressAndCardFixesAndCleanups(syncer::ModelType model_type);
 
-#if defined(UNIT_TEST)
-  // Getter for |alternative_state_name_map_updater_| used for testing purposes.
-  AlternativeStateNameMapUpdater*
-  alternative_state_name_map_updater_for_testing() {
-    return alternative_state_name_map_updater_;
-  }
-#endif  // defined(UNIT_TEST)
-
  protected:
   friend class PersonalDataManagerCleanerTest;
 
