@@ -32565,6 +32565,8 @@ Called by update_net_error_codes.py.-->
   <int value="1509" label="Audio And Captions Page"/>
   <int value="1510" label="Select-to-speak Subpage"/>
   <int value="1511" label="ChromeVox Subpage"/>
+  <int value="1512" label="FaceGaze Cursor Subpage"/>
+  <int value="1513" label="FaceGaze Facial Expressions Subpage"/>
   <int value="1700" label="About Chrome OS Details"/>
   <int value="1701" label="Detailed Build Info"/>
   <int value="1800" label="Kerberos Accounts V2"/>
@@ -41004,6 +41006,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-898481268" label="/multidevice/features"/>
   <int value="-842548379" label="/apps"/>
   <int value="-710357049" label="/bluetooth"/>
+  <int value="-575518203" label="/manageAccessibility/faceGazeCursor"/>
   <int value="-570956986" label="/personalization"/>
   <int value="-512116630" label="/search"/>
   <int value="-442978022" label="/networks"/>
@@ -41036,6 +41039,7 @@ Called by update_scheduler_enums.py.-->
   <int value="863669423" label="/textToSpeech"/>
   <int value="868952532" label="/pointer-overlay"/>
   <int value="996514470" label="/osSyncSetup"/>
+  <int value="1064178954" label="/manageAccessibility/faceGazeExpressions"/>
   <int value="1071171447" label="/osPrinting"/>
   <int value="1114615837" label="/accessibility"/>
   <int value="1163194731" label="/osAccessibility"/>
