@@ -2206,9 +2206,30 @@ crbug.com/1508175 [ Chrome ] external/wpt/soft-navigation-heuristics/image-lcp-b
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/gpu/* [ Skip ]
 
 ######## Unload Deprecation
-# This is for tests in the "deprecate-unload" virtual suite that
-# cannot be fixed, e.g. because they are explicitly testing unload.
+# This is for tests in the "unload-allowed" virtual suite that
+# fail by default but keep passing when DeprecteUnload is disabled.
+# They will be removed when unload is removed.
 
-crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip ]
+crbug.com/1488371 external/wpt/fetch/api/basic/keepalive.any.html [ Skip ]
+crbug.com/1488371 external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Skip ]
+crbug.com/1488371 external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Skip ]
+crbug.com/1488371 external/wpt/fetch/metadata/unload.https.sub.html [ Skip ]
+crbug.com/1488371 external/wpt/html/browsers/the-window-object/open-close/close_unload.html [ Skip ]
+crbug.com/1488371 external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/009.html [ Skip ]
+crbug.com/1488371 external/wpt/html/browsers/history/the-history-interface/traverse_the_history_unload_1.html [ Skip ]
+crbug.com/1488371 external/wpt/navigation-api/navigate-event/replaceState-in-unload-then-remove-iframe.html [ Skip ]
+# Also tests timing, so cannot be moved to pagehide.
+crbug.com/1488371 external/wpt/navigation-timing/nested-unload-timing.html [ Skip ]
+crbug.com/1488371 external/wpt/screen-details/getScreenDetails.tentative.https.window.html [ Skip ]
+crbug.com/1488371 http/tests/inspector-protocol/issues/deprecation-issue-unload.js [ Skip ]
+crbug.com/1488371 http/tests/navigation/targeted-navigation-in-unload-handler.html [ Skip ]
+crbug.com/1488371 http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip Skip ]
+crbug.com/1488371 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.html [ Skip ]
+crbug.com/1488371 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-xml.window.html [ Skip ]
+crbug.com/1488371 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-side-effects-ignore-opens-during-unload.window.html [ Skip ]
+crbug.com/1488371 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/ignore-opens-during-unload.window.html [ Skip ]
+
+# Pagehide is not appropriate as the test checks if PiP window is functional until the very end of the page's lifecycle:
+crbug.com/1488371 external/wpt/document-picture-in-picture/clears-session-on-close.https.html [ Skip ]
 
 ######## End Unload Deprecation

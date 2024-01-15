@@ -2595,7 +2595,7 @@
     "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
   },
   {
-    "prefix": "deprecate-unload",
+    "prefix": "unload-allowed",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "http/tests/devtools/sources/debugger/skip-pause-during-navigation.js",
@@ -2649,7 +2649,7 @@
       "wpt_internal/presentation/presentation-receiver-terminate-connection.https.html",
       "wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html"
      ],
-    "args": ["--enable-features=DeprecateUnload"],
+    "args": ["--disable-features=DeprecateUnload"],
     "expires": "Jun 1, 2024",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },

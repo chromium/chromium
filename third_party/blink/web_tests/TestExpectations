@@ -1505,32 +1505,6 @@ crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
 # Bug in <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
-######## Unload Deprecation
-# This is for tests in the "deprecate-unload" virtual suite that
-# cannot be fixed and require a timeout expecation.
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/basic/keepalive.any.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.https.sub.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/open-close/close_unload.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/009.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/history/the-history-interface/traverse_the_history_unload_1.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigate-event/replaceState-in-unload-then-remove-iframe.html [ Timeout ]
-# Also tests timing, so cannot be moved to pagehide.
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-timing/nested-unload-timing.html [ Failure ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/screen-details/getScreenDetails.tentative.https.window.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/targeted-navigation-in-unload-handler.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-xml.window.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-side-effects-ignore-opens-during-unload.window.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/ignore-opens-during-unload.window.html [ Timeout ]
-
-# Pagehide is not appropriate as the test checks if PiP window is functional until the very end of the page's lifecycle:
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/document-picture-in-picture/clears-session-on-close.https.html [ Timeout ]
-
-######## End Unload Deprecation
-
 ### sheriff 2019-07-16
 
 ### sheriff 2018-05-28

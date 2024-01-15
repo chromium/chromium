@@ -5492,6 +5492,31 @@
             ]
         }
     ],
+    "DeprecateUnload": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "rollout_bucket": "10",
+                        "rollout_percent": "100"
+                    },
+                    "enable_features": [
+                        "DeprecateUnload"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprecatedNonStreamingDeclarativeShadowDOM": [
         {
             "platforms": [
