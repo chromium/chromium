@@ -978,11 +978,11 @@ class PolicyTemplateChecker(object):
         if (not self._SupportedPolicy(policy, current_version)
             and not policy.get('deprecated', False)):
           self._PolicyError(
-              "Marked as no longer supported, but isn't marked as "
-              '"deprecated.\n'
-              '  Unsupported policies must be marked as "deprecated": True. '
-              'You may see this error after branch point. Please fix the'
-              f' issue and cc the policy owners.', policy, 'supported_on')
+              'Marked as no longer supported, but is not marked as '
+              'deprecated.\n'
+              '  Unsupported policies must be marked as `deprecated: true`. '
+              'You may see this error after branch point. Please fix the '
+              'issue and cc the policy owners.', policy, 'supported_on')
 
       supported_platforms = ExpandChromeStar(supported_platforms)
       future_on = ExpandChromeStar(
