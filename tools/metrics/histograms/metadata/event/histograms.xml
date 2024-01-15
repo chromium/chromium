@@ -742,19 +742,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.DelayedFramesPercentage.FixedWindow"
-    units="%" expires_after="2024-05-19">
+    units="%" expires_after="2025-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
-    A frame is deemed janky during a scroll if there was no presented frame in
-    the previous vsync, and the current frame contains input that was not
-    presented during the missed frame. Missed input is determined by comparing
-    the timestamp of the earliest input of the current frame, to that of the
-    last input of the previously presented frame. If the delta of the timestamps
-    is less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the percentage of delayed
-    frames within a window of size 64.
+    The percentage of frames not presented during a scroll, meaning frame
+    production took longer than expected and the frame was skipped.
+
+    This metric is different from traditional graphics smoothness metrics as it
+    considers performance degradation on all threads and processes including
+    Browser and IO, unlike graphics' smoothness metrics which focus on the core
+    graphics pipeline (Renderer/GPU).
+
+    This metric is reported every fixed window of 64 Frames.
 
     For more details about this metric, please check
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
