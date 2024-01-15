@@ -26,11 +26,11 @@ first, and prevents such error.
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'deviceDisabledHeading')]]</h1>
   <div inner-h-t-m-l=
-      "[[disabledText_(locale, serial_, enrollmentDomain_, isDisabledAdDevice_)]]"
+      "[[disabledText(locale, serial, enrollmentDomain, isDisabledAdDevice)]]"
     slot="subtitle">
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <div id="message">[[message_]]</div>
+    <div id="message">[[message]]</div>
     <iron-icon icon="oobe-illos:device-disable-illo"
         class="illustration-jelly">
     </iron-icon>

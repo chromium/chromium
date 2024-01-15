@@ -28,7 +28,6 @@ js_type_check("closure_compile_local") {
   deps = [
     #":assistant_optin",
     ":consolidated_consent",
-    ":device_disabled",
     ":error_message",
     ":gaia_signin",
     ":guest_tos",
@@ -84,18 +83,6 @@ js_library("consolidated_consent") {
     "$externs_path/webview_tag.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-}
-
-js_library("device_disabled") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/device_disabled.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("gaia_signin") {
