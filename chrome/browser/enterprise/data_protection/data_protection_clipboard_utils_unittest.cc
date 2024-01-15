@@ -145,4 +145,19 @@ TEST_F(DataControlsPasteIfAllowedByPolicyTest,
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(DataControlsPasteIfAllowedByPolicyTest,
+       DataControlsPaste_NoDestinationWebContents) {
+  // Missing a destination WebContents implies the tab is gone, so null should
+  // always be returned even if no DC rule is set.
+  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  PasteIfAllowedByPolicy(
+      SourceEndpoint(),
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://destination.com"))),
+      {.size = 1234}, content::ClipboardPasteData("text", "image", {}),
+      future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
 }  // namespace enterprise_data_protection
