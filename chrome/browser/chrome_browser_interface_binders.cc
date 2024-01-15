@@ -21,6 +21,7 @@
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
+#include "chrome/browser/model_execution/model_manager_impl.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -1035,6 +1036,11 @@ void PopulateChromeFrameBinders(
   map->Add<blink::mojom::WebPrintingService>(
       base::BindRepeating(&printing::CreateWebPrintingServiceForFrame));
 #endif
+
+  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+    map->Add<blink::mojom::ModelManager>(
+        base::BindRepeating(&ModelManagerImpl::Create));
+  }
 }
 
 void PopulateChromeWebUIFrameBinders(

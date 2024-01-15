@@ -833,6 +833,8 @@ static_library("browser") {
     "metrics/variations/google_groups_updater_service_factory.h",
     "model_execution/model_execution_session.cc",
     "model_execution/model_execution_session.h",
+    "model_execution/model_manager_impl.cc",
+    "model_execution/model_manager_impl.h",
     "native_window_notification_source.h",
     "navigation_predictor/anchor_element_preloader.cc",
     "navigation_predictor/anchor_element_preloader.h",
