@@ -2141,6 +2141,24 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Automatic kiosk session"/>
 </enum>
 
+<enum name="IdleTimeoutCase">
+  <int value="0" label="Foreground"/>
+  <int value="1" label="Background"/>
+</enum>
+
+<enum name="IdleTimeoutDialogEvent">
+  <int value="0" label="Idle timeout dialog shown"/>
+  <int value="1" label="Idle timeout dialog dismissed by user"/>
+  <int value="2" label="Idle timeout dialog expired"/>
+</enum>
+
+<enum name="IdleTimeoutLaunchScreenEvent">
+  <int value="0" label="Idle timeout launch screen shown"/>
+  <int value="1"
+      label="Idle timeout launch screen dismissed after action completion"/>
+  <int value="2" label="Idle timeout launch screen expired"/>
+</enum>
+
 <enum name="InvalidDevicePolicyFilesStatus">
   <int value="0" label="All valid"/>
   <int value="1" label="Some invalid"/>

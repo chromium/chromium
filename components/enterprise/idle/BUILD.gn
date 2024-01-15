@@ -12,6 +12,8 @@ source_set("idle") {
     "idle_pref_names.h",
     "idle_timeout_policy_handler.cc",
     "idle_timeout_policy_handler.h",
+    "metrics.cc",
+    "metrics.h",
   ]
   deps = [
     "//base",
@@ -27,7 +29,10 @@ source_set("idle") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "idle_timeout_policy_handler_unittest.cc" ]
+  sources = [
+    "idle_timeout_policy_handler_unittest.cc",
+    "metrics_unittest.cc",
+  ]
   deps = [
     ":idle",
     "//base",

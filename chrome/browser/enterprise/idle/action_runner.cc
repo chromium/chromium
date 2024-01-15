@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/idle/idle_pref_names.h"
+#include "components/enterprise/idle/metrics.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_idle {
@@ -23,6 +24,7 @@ void ActionRunner::Run() {
   ActionQueue actions = GetActions();
   if (actions.empty())
     return;
+  actions_start_time_ = base::TimeTicks::Now();
   RunNextAction(std::move(actions));
 }
 
@@ -33,8 +35,14 @@ ActionRunner::ActionQueue ActionRunner::GetActions() {
 }
 
 void ActionRunner::RunNextAction(ActionQueue actions) {
-  if (actions.empty())
+  if (actions.empty()) {
+    metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kAllActions,
+                                  true);
+    metrics::RecordIdleTimeoutActionTimeTaken(
+        metrics::IdleTimeoutActionType::kAllActions,
+        base::TimeTicks::Now() - actions_start_time_);
     return;
+  }
 
   const std::unique_ptr<Action>& action = actions.top();
 
@@ -45,8 +53,11 @@ void ActionRunner::RunNextAction(ActionQueue actions) {
 
 void ActionRunner::OnActionFinished(ActionQueue remaining_actions,
                                     bool succeeded) {
-  if (!succeeded)
+  if (!succeeded) {
+    metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kAllActions,
+                                  false);
     return;  // Previous action failed. Abort.
+  }
 
   if (remaining_actions.empty())
     return;  // All done.

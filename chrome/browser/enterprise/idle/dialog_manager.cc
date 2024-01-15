@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/enterprise/idle/idle_pref_names.h"
+#include "components/enterprise/idle/metrics.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_idle {
@@ -77,7 +78,8 @@ base::CallbackListSubscription DialogManager::MaybeShowDialog(
       active_browser, timeout, threshold, GetActionSet(profile->GetPrefs()),
       base::BindOnce(&DialogManager::OnDialogDismissedByUser,
                      base::Unretained(this)));
-
+  metrics::RecordIdleTimeoutDialogEvent(
+      metrics::IdleTimeoutDialogEvent::kDialogShown);
   return callbacks_.Add(std::move(on_finished));
 }
 
@@ -97,6 +99,8 @@ void DialogManager::OnDialogDismissedByUser() {
   dialog_.reset();
   dialog_timer_.Stop();
 
+  metrics::RecordIdleTimeoutDialogEvent(
+      metrics::IdleTimeoutDialogEvent::kDialogDismissedByUser);
   callbacks_.Notify(/*expired=*/false);
 }
 
@@ -107,6 +111,8 @@ void DialogManager::OnDialogExpired() {
   dialog_.reset();
   dialog_timer_.Stop();
 
+  metrics::RecordIdleTimeoutDialogEvent(
+      metrics::IdleTimeoutDialogEvent::kDialogExpired);
   callbacks_.Notify(/*expired=*/true);
 }
 
