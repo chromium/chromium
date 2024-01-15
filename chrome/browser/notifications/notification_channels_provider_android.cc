@@ -350,6 +350,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
       if (channel_to_delete != cached_channels_.end()) {
         bridge_->DeleteChannel(channel_to_delete->second.id);
         cached_channels_.erase(channel_to_delete);
+        NotifyObservers(primary_pattern, secondary_pattern, content_type);
       }
       return false;
     }

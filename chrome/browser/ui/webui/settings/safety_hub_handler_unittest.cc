@@ -291,6 +291,8 @@ class SafetyHubHandlerTest : public testing::Test {
             : safety_hub_test_util::CleanAllMockExtensions(profile());
         break;
       case SafetyHubHandler::SafetyHubModule::kNotifications:
+        hcsm()->ClearSettingsForOneType(
+            ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
         isModuleRecommended
             ? AddNotificationPermissionsForReview()
             : handler()->HandleIgnoreOriginsForNotificationPermissionReview(
@@ -807,6 +809,7 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubHasRecommendations) {
   // has a recommendation or not.
   for (int testCase = pow(2, (int)modules.size()) - 1; testCase >= 0;
        testCase--) {
+    SCOPED_TRACE("testCase: " + std::bitset<8>(testCase).to_string());
     std::set<SafetyHubHandler::SafetyHubModule> recommendedModules;
 
     for (int i = 0; i < (int)modules.size(); i++) {

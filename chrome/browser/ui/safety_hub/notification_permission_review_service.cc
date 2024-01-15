@@ -265,26 +265,28 @@ void NotificationPermissionsReviewService::OnContentSettingChanged(
     // should be reviewed, the latest result should be updated here. This is
     // triggered whenever an update is made to the ignore list. For other
     // updates on notification permissions,
-    // |RemovePatternFromNotificationPermissionReviewBlocklist| will also update
-    // the ignore list, and thus will eventually result in the latest result
-    // being updated.
     SetLatestResult(
         UpdateOnUIThread(std::make_unique<NotificationPermissionsResult>()));
     return;
   }
-  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
+  if (content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
+    // Sites on the notification permission review blocklist are sites where the
+    // notification permission is ALLOW and the user has indicated the site
+    // should not be suggested again in the module for revocation. A change in
+    // the notification permission for such a site (e.g. by the user or by
+    // resetting permissions) is considered to be a signal that the site should
+    // not longer be ignored, in case the permission is allowed again in the
+    // future. Setting ContentSetting to ALLOW when it already is ALLOW will not
+    // trigger this function.
+    RemovePatternFromNotificationPermissionReviewBlocklist(primary_pattern,
+                                                           secondary_pattern);
+    // Update the result since the permission might have been revoked without
+    // being on the ignore list and therefore wouldn't cause another
+    // OnContentSettingChanged() event.
+    SetLatestResult(
+        UpdateOnUIThread(std::make_unique<NotificationPermissionsResult>()));
     return;
   }
-  // Sites on the notification permission review blocklist are sites where the
-  // notification permission is ALLOW and the user has indicated the site should
-  // not be suggested again in the module for revocation. A change in the
-  // notification permission for such a site (e.g. by the user or by
-  // resetting permissions) is considered to be a signal that the site should
-  // not longer be ignored, in case the permission is allowed again in the
-  // future. Setting ContentSetting to ALLOW when it already is ALLOW will not
-  // trigger this function.
-  RemovePatternFromNotificationPermissionReviewBlocklist(primary_pattern,
-                                                         secondary_pattern);
 }
 
 void NotificationPermissionsReviewService::Shutdown() {}

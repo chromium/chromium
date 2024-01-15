@@ -222,11 +222,15 @@ void ContentSettingsPref::SetWebsiteSetting(
   {
     base::AutoLock auto_lock(map_to_modify->GetLock());
     if (!value.is_none()) {
-      map_to_modify->SetValue(primary_pattern, secondary_pattern, content_type_,
-                              value.Clone(), metadata);
+      if (!map_to_modify->SetValue(primary_pattern, secondary_pattern,
+                                   content_type_, value.Clone(), metadata)) {
+        return;
+      }
     } else {
-      map_to_modify->DeleteValue(primary_pattern, secondary_pattern,
-                                 content_type_);
+      if (!map_to_modify->DeleteValue(primary_pattern, secondary_pattern,
+                                      content_type_)) {
+        return;
+      }
     }
   }
   // Update the content settings preference.

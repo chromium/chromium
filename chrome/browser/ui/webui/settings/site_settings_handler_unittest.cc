@@ -4551,16 +4551,13 @@ class SiteSettingsHandlerChooserExceptionTest
 
     // HandleSetOriginPermissions caused WebUIListenerCallbacks:
     // * contentSettingsChooserPermissionChanged once
-    // * contentSettingsSitePermissionChanged for each visible content type
+    // * contentSettingsSitePermissionChanged once
     // * contentSettingsSitePermissionChanged again for `content_type()`
-    const size_t kContentSettingsTypeCount =
-        site_settings::GetVisiblePermissionCategories().size();
-    EXPECT_EQ(kContentSettingsTypeCount + 3, web_ui()->call_data().size());
+    EXPECT_EQ(3u, web_ui()->call_data().size());
     {
       const base::Value::List& exceptions =
-          GetChooserExceptionListFromWebUiCallData(
-              group_name,
-              /*expected_total_calls=*/kContentSettingsTypeCount + 4);
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/4u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_TRUE(exceptions.empty());
@@ -4631,16 +4628,11 @@ class SiteSettingsHandlerChooserExceptionTest
     handler()->HandleSetOriginPermissions(args);
     GetChooserContext(profile())->FlushScheduledSaveSettingsCalls();
 
-    // HandleSetOriginPermissions caused WebUIListenerCallbacks:
-    // * contentSettingsSitePermissionChanged for each visible content type
-    const size_t kContentSettingsTypeCount =
-        site_settings::GetVisiblePermissionCategories().size();
-    EXPECT_EQ(kContentSettingsTypeCount + 1, web_ui()->call_data().size());
+    EXPECT_EQ(1u, web_ui()->call_data().size());
     {
       const base::Value::List& exceptions =
-          GetChooserExceptionListFromWebUiCallData(
-              group_name,
-              /*expected_total_calls=*/kContentSettingsTypeCount + 2);
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/2u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_TRUE(exceptions.empty());

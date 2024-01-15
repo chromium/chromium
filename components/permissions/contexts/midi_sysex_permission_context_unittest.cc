@@ -189,6 +189,14 @@ TEST_F(MidiSysexPermissionContextTests, TestSynchronizingPermissions) {
                      CONTENT_SETTING_ALLOW);
 
   for (auto test : tests) {
+    // Reset previous settings.
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI,
+                                                CONTENT_SETTING_DEFAULT);
+    settings_map->SetContentSettingDefaultScope(secure_url, secure_url,
+                                                ContentSettingsType::MIDI_SYSEX,
+                                                CONTENT_SETTING_DEFAULT);
+
     // First set the MIDI permission, and verify it is set correctly:
     settings_map->SetContentSettingDefaultScope(
         secure_url, secure_url, ContentSettingsType::MIDI, test.midi_set);

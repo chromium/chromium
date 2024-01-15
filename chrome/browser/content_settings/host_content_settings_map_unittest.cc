@@ -1404,7 +1404,7 @@ TEST_P(IndexedHostContentSettingsMapTest, AddContentSettingsObserver) {
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::COOKIES));
   host_content_settings_map->SetContentSettingDefaultScope(
-      host, GURL(), ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+      host, GURL(), ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 }
 
 // Guest profiles do not exist on Android, so don't run these tests there.

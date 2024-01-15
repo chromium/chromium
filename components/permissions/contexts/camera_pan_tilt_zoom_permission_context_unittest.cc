@@ -170,9 +170,21 @@ TEST_P(CameraPanTiltZoomContentSettingTests,
           browser_context());
   CameraPanTiltZoomPermissionContext permission_context(
       browser_context(), std::move(delegate), device_enumerator());
+
+  // Initialize PTZ to a non-default value to be able to reset it later.
+  if (GetParam().second == CONTENT_SETTING_DEFAULT) {
+    ContentSettingsChangeWaiter waiter(
+        browser_context(), ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
+    ContentSetting setting = GetParam().first == CONTENT_SETTING_DEFAULT
+                                 ? CONTENT_SETTING_ALLOW
+                                 : GetParam().first;
+
+    SetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM, setting);
+    waiter.Wait();
+  }
+
   ContentSettingsChangeWaiter waiter(browser_context(),
                                      ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
-
   SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA, GetParam().first);
   SetContentSetting(ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
                     GetParam().second);
