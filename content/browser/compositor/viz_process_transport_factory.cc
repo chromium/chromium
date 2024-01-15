@@ -507,15 +507,19 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   DCHECK(!is_gpu_compositing_disabled_);
 
-  if (!gpu_channel_host) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Chrome OS can't fallback to software compositing so treat this as a
-    // transient failure and retry initializing GPU channel.
-    return gpu::ContextResult::kTransientFailure;
-#else
+  // Chrome OS can't fallback to software compositing so retry up to 4 more
+  // times to initialize the GPU channel.
+  constexpr int kNumRetriesEstablishChannel = 4;
+  for (int i = 0; i < kNumRetriesEstablishChannel && !gpu_channel_host; i++) {
+    gpu_channel_host =
+        gpu_channel_establish_factory_->EstablishGpuChannelSync();
+  }
+#endif
+
+  if (!gpu_channel_host) {
     // Fallback to software compositing if there is no IPC channel.
     return gpu::ContextResult::kFatalFailure;
-#endif
   }
 
   const auto& gpu_feature_info = gpu_channel_host->gpu_feature_info();
