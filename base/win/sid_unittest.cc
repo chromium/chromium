@@ -15,6 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -152,7 +153,13 @@ TEST(SidTest, KnownCapability) {
   }
 }
 
-TEST(SidTest, NamedCapability) {
+// TODO(crbug.com/1518451): Disable flaky tests.
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_NamedCapability DISABLED_NamedCapability
+#else
+#define MAYBE_NamedCapability NamedCapability
+#endif
+TEST(SidTest, MAYBE_NamedCapability) {
   const std::wstring capabilities[] = {L"",
                                        L"InternetClient",
                                        L"InternetClientServer",
@@ -259,7 +266,13 @@ TEST(SidTest, FromSddlStringVector) {
   ASSERT_TRUE(TestFromSddlStringVector({}));
 }
 
-TEST(SidTest, FromNamedCapabilityVector) {
+// TODO(crbug.com/1518451): Disable flaky tests.
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_FromNamedCapabilityVector DISABLED_FromNamedCapabilityVector
+#else
+#define MAYBE_FromNamedCapabilityVector FromNamedCapabilityVector
+#endif
+TEST(SidTest, MAYBE_FromNamedCapabilityVector) {
   std::vector<std::wstring> capabilities = {L"",
                                             L"InternetClient",
                                             L"InternetClientServer",
