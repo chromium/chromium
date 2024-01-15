@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 

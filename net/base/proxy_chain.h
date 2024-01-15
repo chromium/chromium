@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <string_view>
 #include <tuple>
