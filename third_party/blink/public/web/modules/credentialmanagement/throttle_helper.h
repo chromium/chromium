@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_CREDENTIALMANAGEMENT_THROTTLE_HELPER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_CREDENTIALMANAGEMENT_THROTTLE_HELPER_H_
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace blink {
 
@@ -17,13 +18,13 @@ namespace mojom {
 enum class IdpSigninStatus;
 }  // namespace mojom
 
-class WebLocalFrame;
-
 // Sets the identity provider (IDP) signin state of the given |origin| to
 // |status|. This is meant for use with IdentityUrlLoaderThrottle.
-BLINK_MODULES_EXPORT void SetIdpSigninStatus(WebLocalFrame* frame,
-                                             const url::Origin& origin,
-                                             mojom::IdpSigninStatus status);
+// This method must be called on the main thread.
+BLINK_MODULES_EXPORT void SetIdpSigninStatus(
+    const blink::LocalFrameToken& local_frame_token,
+    const url::Origin& origin,
+    mojom::IdpSigninStatus status);
 
 }  // namespace blink
 

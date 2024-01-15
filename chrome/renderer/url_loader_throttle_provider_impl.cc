@@ -4,12 +4,14 @@
 
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/google_url_loader_throttle.h"
@@ -89,57 +91,68 @@ void SetExtensionThrottleManagerTestPolicy(
 
 }  // namespace
 
-URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
-    blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
+// static
+std::unique_ptr<blink::URLLoaderThrottleProvider>
+URLLoaderThrottleProviderImpl::Create(
     blink::URLLoaderThrottleProviderType type,
-    ChromeContentRendererClient* chrome_content_renderer_client)
-    : type_(type),
-      chrome_content_renderer_client_(chrome_content_renderer_client) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  broker->GetInterface(pending_safe_browsing_.InitWithNewPipeAndPassReceiver());
+    ChromeContentRendererClient* chrome_content_renderer_client,
+    blink::ThreadSafeBrowserInterfaceBrokerProxy* broker) {
+  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> pending_safe_browsing;
+  broker->GetInterface(pending_safe_browsing.InitWithNewPipeAndPassReceiver());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+      pending_extension_web_request_reporter;
   broker->GetInterface(
-      pending_extension_web_request_reporter_.InitWithNewPipeAndPassReceiver());
+      pending_extension_web_request_reporter.InitWithNewPipeAndPassReceiver());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return std::make_unique<URLLoaderThrottleProviderImpl>(
+      type, chrome_content_renderer_client, std::move(pending_safe_browsing),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      std::move(pending_extension_web_request_reporter),
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      /*main_thread_task_runner=*/
+      content::RenderThread::IsMainThread()
+          ? base::SequencedTaskRunner::GetCurrentDefault()
+          : nullptr,
+      base::PassKey<URLLoaderThrottleProviderImpl>());
+}
+
+URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
+    blink::URLLoaderThrottleProviderType type,
+    ChromeContentRendererClient* chrome_content_renderer_client,
+    mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+        pending_safe_browsing,
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+        pending_extension_web_request_reporter,
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+    base::PassKey<URLLoaderThrottleProviderImpl>)
+    : type_(type),
+      chrome_content_renderer_client_(chrome_content_renderer_client),
+      pending_safe_browsing_(std::move(pending_safe_browsing)),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      pending_extension_web_request_reporter_(
+          std::move(pending_extension_web_request_reporter)),
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+      main_thread_task_runner_(std::move(main_thread_task_runner)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 URLLoaderThrottleProviderImpl::~URLLoaderThrottleProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
-    const URLLoaderThrottleProviderImpl& other)
-    : type_(other.type_),
-      chrome_content_renderer_client_(other.chrome_content_renderer_client_) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (other.safe_browsing_) {
-    other.safe_browsing_->Clone(
-        pending_safe_browsing_.InitWithNewPipeAndPassReceiver());
-  }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (other.extension_web_request_reporter_) {
-    other.extension_web_request_reporter_->Clone(
-        pending_extension_web_request_reporter_
-            .InitWithNewPipeAndPassReceiver());
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
-
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 URLLoaderThrottleProviderImpl::Clone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pending_safe_browsing_) {
-    safe_browsing_.Bind(std::move(pending_safe_browsing_));
-  }
-
+  return std::make_unique<URLLoaderThrottleProviderImpl>(
+      type_, chrome_content_renderer_client_, CloneSafeBrowsingPendingRemote(),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (pending_extension_web_request_reporter_) {
-    extension_web_request_reporter_.Bind(
-        std::move(pending_extension_web_request_reporter_));
-  }
+      CloneExtensionWebRequestReporterPendingRemote(),
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  return base::WrapUnique(new URLLoaderThrottleProviderImpl(*this));
+      main_thread_task_runner_, base::PassKey<URLLoaderThrottleProviderImpl>());
 }
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
@@ -235,16 +248,26 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
           ->chromeos_listener()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Workers can call us on a background thread. We don't care about such
-  // requests because we purposefully only look at resources from frames
-  // that the user can interact with.
-  blink::WebLocalFrame* frame = nullptr;
-  if (content::RenderThread::IsMainThread() && local_frame_token.has_value()) {
-    frame = blink::WebLocalFrame::FromFrameToken(local_frame_token.value());
-  }
-  if (frame) {
-    auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
-        base::BindRepeating(blink::SetIdpSigninStatus, frame));
+  if (local_frame_token.has_value()) {
+    auto throttle =
+        content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
+            [](const blink::LocalFrameToken& local_frame_token,
+               const scoped_refptr<base::SequencedTaskRunner>
+                   main_thread_task_runner,
+               const url::Origin& origin,
+               blink::mojom::IdpSigninStatus status) {
+              if (content::RenderThread::IsMainThread()) {
+                blink::SetIdpSigninStatus(local_frame_token, origin, status);
+                return;
+              }
+              if (main_thread_task_runner) {
+                main_thread_task_runner->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(&blink::SetIdpSigninStatus,
+                                   local_frame_token, origin, status));
+              }
+            },
+            local_frame_token.value(), main_thread_task_runner_));
     if (throttle)
       throttles.push_back(std::move(throttle));
   }
@@ -258,3 +281,37 @@ void URLLoaderThrottleProviderImpl::SetOnline(bool is_online) {
     extension_throttle_manager_->SetOnline(is_online);
 #endif
 }
+
+mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+URLLoaderThrottleProviderImpl::CloneSafeBrowsingPendingRemote() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
+      new_pending_safe_browsing;
+  if (pending_safe_browsing_) {
+    safe_browsing_.Bind(std::move(pending_safe_browsing_));
+  }
+  if (safe_browsing_) {
+    safe_browsing_->Clone(
+        new_pending_safe_browsing.InitWithNewPipeAndPassReceiver());
+  }
+  return new_pending_safe_browsing;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+URLLoaderThrottleProviderImpl::CloneExtensionWebRequestReporterPendingRemote() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
+      new_pending_extension_web_request_reporter;
+  if (pending_extension_web_request_reporter_) {
+    extension_web_request_reporter_.Bind(
+        std::move(pending_extension_web_request_reporter_));
+  }
+  if (extension_web_request_reporter_) {
+    extension_web_request_reporter_->Clone(
+        new_pending_extension_web_request_reporter
+            .InitWithNewPipeAndPassReceiver());
+  }
+  return new_pending_extension_web_request_reporter;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
