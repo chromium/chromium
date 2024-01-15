@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -490,6 +491,24 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   // Check that a new download chip is created.
   download_chips = test_api().GetDownloadChips();
   EXPECT_EQ(download_chips.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       IndeterminateDownload) {
+  // Create a download with an unknown total bytes count.
+  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
+      ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
+      /*target_bytes=*/std::nullopt);
+  Update(download->Clone());
+  test_api().Show();
+
+  // Verify the existence of a single download chip.
+  ASSERT_EQ(test_api().GetDownloadChips().size(), 1u);
+
+  // Complete the download and check the existence of the download chip.
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  Update(download->Clone());
+  EXPECT_EQ(test_api().GetDownloadChips().size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,

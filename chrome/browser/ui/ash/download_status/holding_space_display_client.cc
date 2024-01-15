@@ -57,8 +57,12 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
 
   HoldingSpaceKeyedService* const service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile());
-  const HoldingSpaceProgress progress(display_metadata.received_bytes,
-                                      display_metadata.total_bytes);
+
+  // Create a `HoldingSpaceProgress` instance from a `Progress` instance.
+  const Progress& download_progress = display_metadata.progress;
+  const HoldingSpaceProgress progress(download_progress.received_bytes(),
+                                      download_progress.total_bytes(),
+                                      download_progress.complete());
 
   if (item_id_by_guid == item_ids_by_guids_.end() ||
       !HoldingSpaceController::Get()->model()->GetItem(
@@ -97,8 +101,6 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile(), file_path);
 
-  // TODO(http://b/307347158): Update the holding space item specified by
-  // `holding_space_item_id` with `display_metadata`.
   service->UpdateItem(item_id_by_guid->second)
       ->SetBackingFile(HoldingSpaceFile(
           file_path,

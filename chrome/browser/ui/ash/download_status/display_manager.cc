@@ -13,6 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
@@ -25,6 +28,13 @@ namespace ash::download_status {
 
 namespace {
 
+// Constants -------------------------------------------------------------------
+
+// Indicates an unknown total bytes count of `crosapi::mojom::DownloadStatus`.
+constexpr int64_t kUnknownTotalBytes = -1;
+
+// Helpers ---------------------------------------------------------------------
+
 // Returns true if `download_status` provides sufficient data to display the
 // associated download update.
 bool CanDisplay(const crosapi::mojom::DownloadStatus& download_status) {
@@ -32,33 +42,65 @@ bool CanDisplay(const crosapi::mojom::DownloadStatus& download_status) {
   return file_path.has_value() && !file_path->empty();
 }
 
-// Returns the total number of bytes, or `std::nullopt` if the
-// `download_status` total bytes count is null or less than one.
-std::optional<int64_t> GetTotalBytes(
-    const crosapi::mojom::DownloadStatus& download_status) {
-  const std::optional<int64_t>& total_bytes = download_status.total_bytes;
-  return total_bytes > 0 ? total_bytes : std::nullopt;
+std::string GetPrintString(const std::optional<int64_t>& data) {
+  return data.has_value() ? base::NumberToString(data.value()) : "null";
 }
 
-// Returns the number of received bytes, or `std::nullopt` if the
-// `download_status` received bytes count is null or a negative value.
-// NOTE: This function ensures that the number of received bytes is less than
-// the number of total bytes if the download is not complete.
-std::optional<int64_t> GetReceivedBytes(
-    const crosapi::mojom::DownloadStatus& download_status) {
+// Returns the progress indicated by `download_status`.
+Progress GetProgress(const crosapi::mojom::DownloadStatus& download_status) {
   const std::optional<int64_t>& received_bytes = download_status.received_bytes;
-  if (received_bytes < 0) {
-    return std::nullopt;
+  const std::optional<int64_t>& total_bytes = download_status.total_bytes;
+
+  // `received_bytes` and `total_bytes` could be invalid. Correct these numbers
+  // if necessary. NOTE: `total_bytes` could be negative but `Progress` expects
+  // a non-negative if `updated_total_bytes` has a value.
+  std::optional<int64_t> updated_received_bytes = received_bytes;
+  std::optional<int64_t> updated_total_bytes = total_bytes;
+
+  if (received_bytes && received_bytes < 0) {
+    LOG(ERROR) << "The received bytes count is invalid: expected a non "
+                  "negative value; the actual value is "
+               << GetPrintString(received_bytes);
+    updated_received_bytes = std::nullopt;
   }
 
-  if (const std::optional<int64_t>& total_bytes =
-          GetTotalBytes(download_status);
-      received_bytes == total_bytes &&
-      download_status.state != crosapi::mojom::DownloadState::kComplete) {
-    return *received_bytes - 1;
+  if (total_bytes && total_bytes < kUnknownTotalBytes) {
+    LOG(ERROR) << "The total bytes count is invalid: expected to be a non "
+                  "negative value or -1 that indicates an unknown total bytes "
+                  "count; the actual value is "
+               << GetPrintString(total_bytes);
   }
 
-  return received_bytes;
+  // `Progress` does not accept a negative total bytes count.
+  if (updated_total_bytes < 0) {
+    updated_total_bytes = std::nullopt;
+  }
+
+  const bool is_determinate =
+      received_bytes && total_bytes && total_bytes != kUnknownTotalBytes;
+
+  if (is_determinate && received_bytes > total_bytes) {
+    LOG(ERROR) << "For a download that is determinate, its received bytes "
+                  "count should not be greater than the total bytes count; the "
+                  "actual received bytes count is "
+               << GetPrintString(received_bytes)
+               << " and the actual total bytes count is "
+               << GetPrintString(total_bytes);
+  }
+
+  const bool complete =
+      download_status.state == crosapi::mojom::DownloadState::kComplete;
+
+  if (complete) {
+    updated_received_bytes = updated_total_bytes =
+        base::ranges::max({updated_received_bytes, updated_total_bytes,
+                           std::optional<int64_t>(0)});
+  } else if (updated_total_bytes >= 0 &&
+             updated_received_bytes > updated_total_bytes) {
+    updated_total_bytes = updated_received_bytes;
+  }
+
+  return Progress(updated_received_bytes, updated_total_bytes, complete);
 }
 
 // Returns the text to display for the download specified by `download_status`.
@@ -165,10 +207,9 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   display_metadata.command_infos = std::move(command_infos);
 
   display_metadata.file_path = *download_status.full_path;
-  display_metadata.received_bytes = GetReceivedBytes(download_status);
+  display_metadata.progress = GetProgress(download_status);
   display_metadata.secondary_text = download_status.status_text;
   display_metadata.text = GetText(download_status);
-  display_metadata.total_bytes = GetTotalBytes(download_status);
 
   return display_metadata;
 }

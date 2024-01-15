@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
 
-#include <array>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -34,6 +33,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
@@ -47,10 +47,6 @@ constexpr char kNotificationNotifierId[] =
     "chrome://downloads/notification/id-notifier";
 
 constexpr char kNotificationOrigin[] = "chrome://downloads";
-
-// The commands supported by notification buttons.
-constexpr std::array<CommandType, 3> kButtonCommands = {
-    CommandType::kCancel, CommandType::kPause, CommandType::kResume};
 
 // DownloadNotificationDelegate ------------------------------------------------
 
@@ -158,29 +154,42 @@ void NotificationDisplayClient::AddOrUpdate(
   std::vector<base::RepeatingClosure> button_click_callbacks;
   std::vector<message_center::ButtonInfo> buttons;
   for (const auto& command_info : display_metadata.command_infos) {
-    if (base::Contains(kButtonCommands, command_info.type)) {
-      button_click_callbacks.push_back(command_info.command_callback);
-      buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
+    switch (command_info.type) {
+      case CommandType::kCancel:
+      case CommandType::kPause:
+      case CommandType::kResume:
+        button_click_callbacks.push_back(command_info.command_callback);
+        buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
+        break;
+      case CommandType::kShowInBrowser:
+        // NOTE: The `kShowInBrowser` command is associated with the
+        // notification body and is not rendered as a button.
+        break;
     }
   }
 
-  // Calculate progress from `display_metadata`.
-  int progress = 0;
-  const std::optional<int64_t>& received_bytes =
-      display_metadata.received_bytes;
-  const std::optional<int64_t>& total_bytes = display_metadata.total_bytes;
-  if (received_bytes >= 0 && total_bytes > 0) {
-    progress = *received_bytes * 100.f / *total_bytes;
-  } else {
-    // A negative progress value shows an indeterminate progress bar.
-    progress = -1;
+  // Calculate `progress_value` from `display_metadata`. Initialize with a
+  // negative value that shows an indeterminate progress bar.
+  int progress_value = -1;
+  const Progress& progress = display_metadata.progress;
+  const std::optional<int64_t>& received_bytes = progress.received_bytes();
+  const std::optional<int64_t>& total_bytes = progress.total_bytes();
+  const bool complete = progress.complete();
+  if (complete || (received_bytes && received_bytes == total_bytes)) {
+    // NOTE: `total_bytes` could be zero. Therefore, check the equality of
+    // `received_bytes` and `total_bytes` before division.
+    // In addition, the equality of `received_bytes` and `total_bytes` does not
+    // necessarily mean that `complete` is true.
+    progress_value = 100;
+  } else if (received_bytes >= 0 && total_bytes > 0) {
+    progress_value = *received_bytes * 100.f / *total_bytes;
   }
 
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons = std::move(buttons);
   rich_notification_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
-  rich_notification_data.progress = progress;
+  rich_notification_data.progress = progress_value;
   rich_notification_data.progress_status =
       display_metadata.secondary_text.value_or(std::u16string());
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
@@ -204,16 +213,15 @@ void NotificationDisplayClient::AddOrUpdate(
           .SetOptionalFields(std::move(rich_notification_data))
           .SetOriginUrl(GURL(kNotificationOrigin))
           .SetTitle(display_metadata.text.value_or(std::u16string()))
-          .SetType(message_center::NOTIFICATION_TYPE_PROGRESS)
+          .SetType(complete ? message_center::NOTIFICATION_TYPE_SIMPLE
+                            : message_center::NOTIFICATION_TYPE_PROGRESS)
           .Build(/*keep_timestamp=*/false);
 
   NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, std::move(notification),
       /*metadata=*/nullptr);
 
-  // TODO(http://b/306459683): Change this code after `DisplayMetadata` uses a
-  // data structure to represent download progress.
-  if (received_bytes > 0 && received_bytes == total_bytes) {
+  if (complete) {
     // The download associated with `guid` completes. We no longer anticipate
     // receiving download updates. Therefore, remove `guid` from the collection.
     notifications_closed_by_user_guids_.erase(guid);
