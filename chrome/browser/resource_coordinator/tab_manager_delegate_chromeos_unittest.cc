@@ -518,4 +518,33 @@ TEST_F(TabManagerDelegateTest, ReportProcesses) {
   EXPECT_EQ(processes[5].is_focused, true);
 }
 
+TEST_F(TabManagerDelegateTest, TestTargetMemoryToFreeIsRespected) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 10);
+  tab1.SetEstimatedMemoryFreedOnDiscardKB(60);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+  TestLifecycleUnit tab2(base::TimeTicks() + base::Seconds(1), 11);
+  tab2.SetEstimatedMemoryFreedOnDiscardKB(60);
+  tab_manager_delegate.AddLifecycleUnit(&tab2);
+  TestLifecycleUnit tab3(base::TimeTicks() + base::Seconds(5), 12);
+  tab3.SetEstimatedMemoryFreedOnDiscardKB(60);
+  tab_manager_delegate.AddLifecycleUnit(&tab3);
+
+  // With target memory to free at 100, only two of the tabs should be killed.
+  memory_stat->SetTargetMemoryToFreeKB(100);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), absl::nullopt);
+
+  auto killed_tabs = tab_manager_delegate.GetKilledTabs();
+
+  ASSERT_EQ(2U, killed_tabs.size());
+}
+
 }  // namespace resource_coordinator

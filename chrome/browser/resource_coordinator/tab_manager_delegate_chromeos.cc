@@ -598,7 +598,7 @@ void TabManagerDelegate::LowMemoryKillImpl(
   for (auto& candidate : base::Reversed(candidates)) {
     MEMORY_LOG(ERROR) << "Target memory to free: "
                       << target_memory_to_free.target_kb << " KB";
-    if (target_memory_to_free.target_kb <= 0) {
+    if (target_memory_to_free.target_kb == 0) {
       break;
     }
 
@@ -608,7 +608,10 @@ void TabManagerDelegate::LowMemoryKillImpl(
     unnecessary_discard_monitor_.OnDiscard(freed_memory_kb,
                                            base::TimeTicks::Now());
 
-    target_memory_to_free.target_kb -= freed_memory_kb;
+    // Prevent underflow by capping the memory freed.
+    target_memory_to_free.target_kb -=
+        std::min(static_cast<uint64_t>(freed_memory_kb),
+                 target_memory_to_free.target_kb);
 
     if (freed_memory_kb > 0 && !first_kill_time) {
       first_kill_time = base::TimeTicks::Now();
