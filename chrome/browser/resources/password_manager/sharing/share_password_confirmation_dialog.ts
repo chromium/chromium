@@ -24,6 +24,7 @@ import {getTemplate} from './share_password_confirmation_dialog.html.js';
 
 export interface SharePasswordConfirmationDialogElement {
   $: {
+    animation: HTMLElement,
     header: HTMLElement,
     cancel: HTMLElement,
     done: HTMLElement,
@@ -92,6 +93,11 @@ export class SharePasswordConfirmationDialogElement extends
 
   override ready() {
     super.ready();
+
+    // Start the animation after all elements have been loaded.
+    setTimeout(() => {
+      this.$.animation.classList.add('loading');
+    }, 0);
 
     // The user has 5 seconds to cancel the share action while loading/sharing
     // animation is in progress.
@@ -191,6 +197,7 @@ export class SharePasswordConfirmationDialogElement extends
     recordPasswordSharingInteraction(
         PasswordSharingActions.CONFIRMATION_DIALOG_SHARING_CANCELED);
     this.dialogStage_ = ConfirmationDialogStage.CANCELED;
+    this.$.animation.classList.remove('loading');
   }
 }
 
