@@ -24,12 +24,11 @@ import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.FieldTrials;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/** Tests for {@link FieldTrials}. */
+/** Integration tests for {@link org.chromium.base.test.util.FieldTrials}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public final class FieldTrialsInstrumentationTest {

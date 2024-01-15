@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.CachedFlagUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,13 +59,30 @@ public class FeaturesBase {
     }
 
     protected void applyForJUnit() {
+        // In unit tests, @Enable/DisableFeatures become Java-side {@link FeatureList$TestValues}.
+        // If a flag is checked but its value is not explicitly set by the test, {@link FeatureList}
+        // throws an exception.
         FeatureList.setTestFeatures(mRegisteredState);
+
+        // Set overrides for CachedFlag separately.
+        CachedFlag.setFeaturesForTesting(mRegisteredState);
     }
 
     protected void applyForInstrumentation() {
+        // In instrumentation tests, command line args --enable/disable-features passed by
+        // @CommandLineFlags and @Enable/DisableFeatures are merged, and actually applied via
+        // {@link CommandLine}, so that their test values are reflected in native too. Thus,
+        // {@link FeatureList} is configured to allow asking native for a flag value regardless of
+        // whether some other flag override has been set.
         FeatureList.setTestCanUseDefaultsForTesting();
         mergeFeatureLists("enable-features", true);
         mergeFeatureLists("disable-features", false);
+
+        // Set overrides for CachedFlag separately.
+        CachedFlag.setFeaturesForTesting(mRegisteredState);
+
+        // Apply "--force-fieldtrials" passed by @CommandLineFlags.
+        FieldTrials.getInstance().applyFieldTrials();
     }
 
     /**
@@ -84,6 +103,7 @@ public class FeaturesBase {
         protected void after() {
             super.after();
             sInstance = null;
+            resetCachedFlags(/* forInstrumentation= */ false);
         }
     }
 
@@ -94,6 +114,12 @@ public class FeaturesBase {
     public abstract static class BaseInstrumentationProcessor extends Processor {
         public BaseInstrumentationProcessor(Class enableFeatures, Class disableFeatures) {
             super(enableFeatures, disableFeatures);
+        }
+
+        @Override
+        protected void after() {
+            super.after();
+            resetCachedFlags(/* forInstrumentation= */ true);
         }
 
         @Override
@@ -165,5 +191,14 @@ public class FeaturesBase {
 
         // Not really append, it puts the value in a map so we can override values that way too.
         commandLine.appendSwitchWithValue(switchName, TextUtils.join(",", existingFeatures));
+    }
+
+    /** Resets Features-related state that might persist in between tests. */
+    private static void resetCachedFlags(boolean forInstrumentation) {
+        CachedFlagUtils.resetFlagsForTesting();
+        if (forInstrumentation) {
+            CachedFlag.resetDiskForTesting();
+        }
+        FieldTrials.getInstance().reset();
     }
 }

@@ -5,8 +5,6 @@
 package org.chromium.chrome.test.util.browser;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.test.util.FeaturesBase;
 
 import java.lang.annotation.Annotation;
@@ -62,19 +60,6 @@ public class Features extends FeaturesBase {
         return (Features) sInstance;
     }
 
-    @Override
-    protected void applyForJUnit() {
-        super.applyForJUnit();
-        CachedFlag.setFeaturesForTesting(mRegisteredState);
-    }
-
-    @Override
-    protected void applyForInstrumentation() {
-        super.applyForInstrumentation();
-        CachedFlag.setFeaturesForTesting(mRegisteredState);
-        FieldTrials.getInstance().applyFieldTrials();
-    }
-
     /**
      * Feature processor intended to be used in Robolectric and {@link BlankUiTestActivityTestCase}
      * tests. The collected feature states would be applied to {@link FeatureList}'s internal
@@ -90,12 +75,6 @@ public class Features extends FeaturesBase {
         protected void before() {
             getInstance();
             super.before();
-        }
-
-        @Override
-        protected void after() {
-            super.after();
-            resetCachedFlags(/* forInstrumentation= */ false);
         }
 
         @Override
@@ -116,24 +95,9 @@ public class Features extends FeaturesBase {
         }
 
         @Override
-        protected void after() {
-            super.after();
-            resetCachedFlags(/* forInstrumentation= */ true);
-        }
-
-        @Override
         protected void collectFeatures() {
             collectFeaturesImpl(getAnnotations());
         }
-    }
-
-    /** Resets Features-related state that might persist in between tests. */
-    private static void resetCachedFlags(boolean forInstrumentation) {
-        CachedFlagUtils.resetFlagsForTesting();
-        if (forInstrumentation) {
-            CachedFlag.resetDiskForTesting();
-        }
-        FieldTrials.getInstance().reset();
     }
 
     private static void collectFeaturesImpl(List<Annotation> annotations) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.test.util.browser;
+package org.chromium.base.test.util;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
@@ -20,14 +20,14 @@ import java.util.Set;
  * Helps with setting Field Trial parameters during instrumentation tests. It parses the field
  * trials info from CommandLine, and applies the overrides to {@link CachedFlag}.
  */
-public class FieldTrials {
+class FieldTrials {
     private static FieldTrials sInstance;
     private final Map<String, Map<String, String>> mTrialToParamValueMap = new HashMap<>();
     private final Map<String, Set<String>> mTrialToFeatureNameMap = new HashMap<>();
 
     private FieldTrials() {}
 
-    public static FieldTrials getInstance() {
+    static FieldTrials getInstance() {
         if (sInstance == null) sInstance = new FieldTrials();
         return sInstance;
     }
@@ -111,7 +111,7 @@ public class FieldTrials {
      * Applies the <feature, param, value> info to CachedFeatureFlags, and enables these features
      * in CachedFeatureFlags.
      */
-    public void applyFieldTrials() {
+    void applyFieldTrials() {
         CommandLine commandLine = CommandLine.getInstance();
         String forceFieldTrials = commandLine.getSwitchValue(BaseSwitches.FORCE_FIELD_TRIALS);
         String forceFieldTrialParams =
