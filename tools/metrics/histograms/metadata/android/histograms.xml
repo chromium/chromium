@@ -5804,6 +5804,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SupervisedUser.UrlCheckTime.FirstRequest"
+    units="ms" expires_after="2024-08-28">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to return from the call to GMS Core that checks if a
+    given URL is allowed to be loaded by the current device user. This metric is
+    only recorded on the first call to GMS Core.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.SupervisedUser.UrlCheckTime.SubsequentRequest"
+    units="ms" expires_after="2024-08-28">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to return from the call to GMS Core that checks if a
+    given URL is allowed to be loaded by the current device user. This metric is
+    not recorded on the first call, only on subsequent ones.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
     enum="WebViewClientTypeEnum" expires_after="2024-08-23">
   <owner>pbirk@chromium.org</owner>
