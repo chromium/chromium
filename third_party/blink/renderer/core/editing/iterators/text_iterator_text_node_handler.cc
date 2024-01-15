@@ -24,6 +24,7 @@ const unsigned kMaxOffset = std::numeric_limits<unsigned>::max();
 // Resolves kMaxOffset to an actual number. Should simply return |dom_length|
 // when we can handle text-transform correctly.
 unsigned CalculateMaxOffset(const Text& text) {
+  DCHECK(!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled());
   DCHECK(text.GetLayoutObject());
   unsigned dom_length = text.data().length();
   unsigned layout_length;
@@ -189,7 +190,11 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
 void TextIteratorTextNodeHandler::HandleTextNodeStartFrom(
     const Text* node,
     unsigned start_offset) {
-  HandleTextNodeInRange(node, start_offset, kMaxOffset);
+  unsigned end_offset =
+      RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()
+          ? node->data().length()
+          : kMaxOffset;
+  HandleTextNodeInRange(node, start_offset, end_offset);
 }
 
 void TextIteratorTextNodeHandler::HandleTextNodeEndAt(const Text* node,
