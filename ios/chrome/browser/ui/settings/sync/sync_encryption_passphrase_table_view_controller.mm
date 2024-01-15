@@ -542,7 +542,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (void)reportBackUserAction {
-  NOTREACHED();
+  // No-op for this view controller.
 }
 
 - (void)settingsWillBeDismissed {
