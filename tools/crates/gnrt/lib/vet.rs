@@ -8,6 +8,11 @@ use anyhow::Result;
 
 fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<AuditCriteria> {
     use AuditCriteria::*;
+    // No third-party crates from crates.io are allowed to implement crypto today.
+    // We only accept crypto implementation from BoringSSL, which we bring in
+    // through DEPS. If this should ever change we will need to add a
+    // configuration option in gnrt_config.toml to allow a crate to
+    // implement crypto.
     match (shipped, group) {
         // Safe crates can be used on adversarial inputs without a sandbox. They can not cause
         // security bugs in this case, and must satisfy the Rule of Two.
@@ -18,22 +23,26 @@ fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<AuditCriteria>
         //
         // We currently consider ub-risk-2 as satisfying the Rule of Two, though there seems to be
         // some spot in between risk 1 and 2 that fits better and this could be improved.
-        (Some(true), Group::Safe) | (None, Group::Safe) => vec![SafeToDeploy, UbRisk2],
+        (Some(true), Group::Safe) | (None, Group::Safe) => {
+            vec![DoesNotImplmentCrypto, SafeToDeploy, UbRisk2]
+        }
         // Sandbox crates are used in a sandbox, so we have a weaker tolerance. There may be a bunch
         // of ASM code in there for example. Adversarial inputs may have a way to break things,
         // though we certainly try to avoid it.
         //
         // This type of crate is not well described in the UB risk guidelines for now, so we use
         // "ub-risk-3" for this category.
-        (Some(true), Group::Sandbox) | (None, Group::Sandbox) => vec![SafeToDeploy, UbRisk3],
+        (Some(true), Group::Sandbox) | (None, Group::Sandbox) => {
+            vec![DoesNotImplmentCrypto, SafeToDeploy, UbRisk3]
+        }
         // Code in tests is not run on user machines and does not interact with adversarial inputs.
         // Thus it does not need to be safe-to-deploy, but it needs to not be malicious against
         // developers and CI bots which is covered by "safe-to-run".
-        (_, Group::Test) => vec![SafeToRun],
+        (_, Group::Test) => vec![DoesNotImplmentCrypto, SafeToRun],
         // Crates that contribute to the shipped binary but are not themselves shipped (code
         // generators for example) do not get deployed themselves and do not interact with
         // adversarial inputs. Thus they need to be "safe-to-run" by developers and CI only.
-        (Some(false), _) => vec![SafeToRun],
+        (Some(false), _) => vec![DoesNotImplmentCrypto, SafeToRun],
     }
 }
 
@@ -57,6 +66,7 @@ pub struct Policy {
 #[derive(serde::Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum AuditCriteria {
+    DoesNotImplmentCrypto,
     SafeToDeploy,
     SafeToRun,
     #[serde(rename = "ub-risk-2")]
