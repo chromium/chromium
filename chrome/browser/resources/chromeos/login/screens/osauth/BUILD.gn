@@ -22,7 +22,6 @@ js_type_check("closure_compile") {
     ":local_password_setup",
     ":osauth_error",
     ":password_selection",
-    ":pin_setup",
   ]
 }
 
@@ -164,30 +163,6 @@ js_library("password_selection") {
     "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
-}
-
-js_library("pin_setup") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/pin_setup.js" ]
-  deps = [
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:cr.m",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    "$externs_path/quick_unlock_private.js",
-
-    # setup_pin_keyboard_externs.js is a temporary band-aid to let this
-    # closure-compiled JS library depend on the typescript file
-    # setup_pin_keyboard.ts. If you remove this dependency, consider deleting
-    # the externs file if it's not used elsewhere.
-    "//ash/webui/common/resources/quick_unlock/setup_pin_keyboard_externs.js",
-  ]
-  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
 }
 
 group("web_components") {
