@@ -143,15 +143,13 @@ void ModelExecutionManager::ExecuteModel(
     OptimizationGuideModelExecutionResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (active_model_execution_fetchers_.find(feature) !=
-      active_model_execution_fetchers_.end()) {
+  auto previous_fetcher_it = active_model_execution_fetchers_.find(feature);
+  if (previous_fetcher_it != active_model_execution_fetchers_.end()) {
+    // Cancel the existing fetcher and let the new one continue.
+    active_model_execution_fetchers_.erase(previous_fetcher_it);
     RecordModelExecutionResultHistogram(feature, false);
-    std::move(callback).Run(
-        base::unexpected(
-            OptimizationGuideModelExecutionError::FromModelExecutionError(
-                ModelExecutionError::kGenericFailure)),
-        nullptr);
-    return;
+    CHECK(active_model_execution_fetchers_.find(feature) ==
+          active_model_execution_fetchers_.end());
   }
 
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
