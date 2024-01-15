@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::input_method {
 
@@ -89,7 +89,7 @@ class AssistiveSuggester : public SuggestionsSource {
   // Called when suggestions are generated outside of the assistive framework.
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::AssistiveSuggestion>& suggestions,
-      const absl::optional<ime::SuggestionsTextContext>& context);
+      const std::optional<ime::SuggestionsTextContext>& context);
 
   // Accepts the suggestion at a given index if a suggester is currently
   // active.
@@ -102,7 +102,7 @@ class AssistiveSuggester : public SuggestionsSource {
     return &emoji_suggester_;
   }
 
-  absl::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
+  std::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
   get_enabled_suggestion_from_last_onfocus_for_testing() {
     return enabled_suggestions_from_last_onfocus_;
   }
@@ -164,7 +164,7 @@ class AssistiveSuggester : public SuggestionsSource {
 
   void ProcessExternalSuggestions(
       const std::vector<ime::AssistiveSuggestion>& suggestions,
-      const absl::optional<ime::SuggestionsTextContext>& context,
+      const std::optional<ime::SuggestionsTextContext>& context,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // This records any text input state metrics for each relevant assistive
@@ -199,11 +199,11 @@ class AssistiveSuggester : public SuggestionsSource {
   std::string active_engine_id_;
 
   // ID of the focused text field, nullopt if none focused.
-  absl::optional<int> focused_context_id_;
+  std::optional<int> focused_context_id_;
 
   // KeyEvent of the held down key at key down. nullopt if no longpress in
   // progress.
-  absl::optional<ui::KeyEvent> current_longpress_keydown_;
+  std::optional<ui::KeyEvent> current_longpress_keydown_;
 
   // Timer for longpress. Starts when key is held down. Fires when successfully
   // held down for a specified longpress duration.
@@ -212,7 +212,7 @@ class AssistiveSuggester : public SuggestionsSource {
   // The current suggester in use, nullptr means no suggestion is shown.
   raw_ptr<Suggester> current_suggester_ = nullptr;
 
-  absl::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
+  std::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
       enabled_suggestions_from_last_onfocus_;
 
   std::u16string last_surrounding_text_ = u"";

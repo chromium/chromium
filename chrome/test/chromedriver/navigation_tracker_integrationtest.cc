@@ -13,6 +13,8 @@
 #include <windows.h>
 #endif
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -36,7 +38,6 @@
 #include "chrome/test/chromedriver/net/pipe_builder.h"
 #include "chrome/test/chromedriver/net/test_http_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -170,7 +171,7 @@ TEST_F(NavigationTrackerTest, SimpleNavigation) {
                                             &timeout, client);
   ASSERT_TRUE(StatusOk(status));
   WebViewImpl web_view(view_info->id, true, nullptr, &browser_info_,
-                       std::move(client), absl::nullopt,
+                       std::move(client), std::nullopt,
                        PageLoadStrategy::kNormal);
   web_view.AttachTo(browser_client_.get());
 

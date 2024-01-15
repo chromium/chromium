@@ -144,7 +144,7 @@ void SearchPreloadResponseController::AddDelayedResponseTask(
 
 void SearchPreloadResponseController::DispatchDelayedResponseTask() {
   ASSERT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  absl::optional<DelayedResponseTask> delayed_task;
+  std::optional<DelayedResponseTask> delayed_task;
   {
     base::AutoLock auto_lock(response_queue_lock_);
     if (!delayed_response_tasks_.empty()) {

@@ -5,12 +5,12 @@
 #include "chrome/browser/themes/theme_properties.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -125,7 +125,7 @@ SkColor GetLightModeColor(int id) {
   }
 }
 
-absl::optional<SkColor> GetIncognitoColor(int id) {
+std::optional<SkColor> GetIncognitoColor(int id) {
   switch (id) {
     case ThemeProperties::COLOR_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE:
@@ -153,11 +153,11 @@ absl::optional<SkColor> GetIncognitoColor(int id) {
     case ThemeProperties::COLOR_NTP_LINK:
       return gfx::kGoogleBlue300;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
-absl::optional<SkColor> GetDarkModeColor(int id) {
+std::optional<SkColor> GetDarkModeColor(int id) {
   // Current UX thinking is to use the same colors for dark mode and incognito,
   // but this is very subject to change. Additionally, dark mode incognito may
   // end up having a different look. For now, just call into GetIncognitoColor
@@ -271,12 +271,12 @@ SkColor ThemeProperties::GetDefaultColor(int id,
                                          bool incognito,
                                          bool dark_mode) {
   if (incognito) {
-    absl::optional<SkColor> incognito_color = GetIncognitoColor(id);
+    std::optional<SkColor> incognito_color = GetIncognitoColor(id);
     if (incognito_color.has_value())
       return incognito_color.value();
   }
   if (dark_mode) {
-    absl::optional<SkColor> dark_mode_color = GetDarkModeColor(id);
+    std::optional<SkColor> dark_mode_color = GetDarkModeColor(id);
     if (dark_mode_color.has_value())
       return dark_mode_color.value();
   }

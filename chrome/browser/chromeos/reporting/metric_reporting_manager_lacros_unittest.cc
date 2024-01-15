@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -35,7 +36,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Address;
@@ -99,7 +99,7 @@ class FakeCollector : public CollectorBase {
  protected:
   // CollectorBase:
   void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override {}
+                             std::optional<MetricData> metric_data) override {}
   bool CanCollect() const override { return true; }
 
  private:
@@ -120,7 +120,7 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
       Destination destination,
       Priority priority,
       std::unique_ptr<RateLimiterInterface> rate_limiter,
-      absl::optional<SourceInfo> source_info) override {
+      std::optional<SourceInfo> source_info) override {
     return CreateMetricReportQueueMock(event_type, destination, priority,
                                        rate_limiter.get(), source_info);
   }
@@ -131,7 +131,7 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
                Destination destination,
                Priority priority,
                RateLimiterInterface* rate_limiter,
-               absl::optional<SourceInfo> source_info),
+               std::optional<SourceInfo> source_info),
               ());
 
   MOCK_METHOD(std::unique_ptr<RateLimiterSlideWindow>,
@@ -193,7 +193,7 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
                int rate_unit_to_ms,
-               absl::optional<SourceInfo> source_info),
+               std::optional<SourceInfo> source_info),
               (override));
 };
 

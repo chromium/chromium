@@ -127,7 +127,7 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
 
   // If the WebContents is no longer valid, then we cannot show a dialog.
   if (!web_contents_) {
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 
@@ -138,7 +138,7 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
           web_contents_.get());
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_AUTH_NEEDED);
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 
@@ -153,7 +153,7 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
 
     // Cancel the current auth request. This will result in synchronous
     // destruction of `this`.
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 
@@ -164,7 +164,7 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
       web_modal::WebContentsModalDialogManager::FromWebContents(
           web_contents_.get());
   if (!manager) {
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 #endif
@@ -182,7 +182,7 @@ HttpAuthCoordinator::Flow::GetWeakPtr() {
 }
 
 void HttpAuthCoordinator::Flow::OnExtensionResponse(
-    const absl::optional<net::AuthCredentials>& credentials,
+    const std::optional<net::AuthCredentials>& credentials,
     bool should_cancel) {
   if (credentials) {
     std::move(callback_).Run(credentials);
@@ -192,7 +192,7 @@ void HttpAuthCoordinator::Flow::OnExtensionResponse(
     if (is_request_for_primary_main_frame_) {
       did_cancel_from_extension_ = true;
     }
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -200,7 +200,7 @@ void HttpAuthCoordinator::Flow::OnExtensionResponse(
 }
 
 void HttpAuthCoordinator::Flow::OnCredentials(
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   std::move(callback_).Run(credentials);
 }
 

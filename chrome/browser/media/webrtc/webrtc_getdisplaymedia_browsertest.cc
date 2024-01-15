@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gl/gl_switches.h"
@@ -1503,7 +1503,7 @@ INSTANTIATE_TEST_SUITE_P(
 class GetDisplayMediaTransientActivationRequiredTest
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<bool, bool, bool, absl::optional<std::string>>> {
+          std::tuple<bool, bool, bool, std::optional<std::string>>> {
  public:
   GetDisplayMediaTransientActivationRequiredTest()
       : with_user_gesture_(std::get<0>(GetParam())),
@@ -1559,7 +1559,7 @@ class GetDisplayMediaTransientActivationRequiredTest
   const bool with_user_gesture_;
   const bool require_gesture_feature_enabled_;
   const bool prefer_current_tab_;
-  const absl::optional<std::string> policy_allowlist_value_;
+  const std::optional<std::string> policy_allowlist_value_;
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
@@ -1607,7 +1607,5 @@ INSTANTIATE_TEST_SUITE_P(
         /*require_gesture_feature_enabled=*/testing::Bool(),
         /*prefer_current_tab=*/testing::Bool(),
         /*policy_allowlist_value=*/
-        testing::Values(absl::nullopt,
-                        kEmbeddedTestServerOrigin,
-                        kOtherOrigin)),
+        testing::Values(std::nullopt, kEmbeddedTestServerOrigin, kOtherOrigin)),
     &GetDisplayMediaTransientActivationRequiredTest::GetDescription);

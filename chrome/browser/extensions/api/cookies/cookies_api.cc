@@ -251,7 +251,7 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  absl::optional<net::CookiePartitionKey> partition_key;
+  std::optional<net::CookiePartitionKey> partition_key;
   if (!cookies_helpers::ValidateCookieApiPartitionKey(
           parsed_args_->details.partition_key, partition_key, error)) {
     return RespondNow(Error(std::move(error)));
@@ -340,7 +340,7 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   // make sure user input is valid
-  absl::optional<net::CookiePartitionKey> partition_key;
+  std::optional<net::CookiePartitionKey> partition_key;
   if (!cookies_helpers::ValidateCookieApiPartitionKey(
           parsed_args_->details.partition_key, partition_key, error)) {
     return RespondNow(Error(std::move(error)));
@@ -447,7 +447,7 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  absl::optional<net::CookiePartitionKey> partition_key;
+  std::optional<net::CookiePartitionKey> partition_key;
   if (!cookies_helpers::ValidateCookieApiPartitionKey(
           parsed_args_->details.partition_key, partition_key, error)) {
     return RespondNow(Error(std::move(error)));
@@ -553,7 +553,7 @@ void CookiesSetFunction::GetCookieListCallback(
     return;
   }
 
-  absl::optional<ResponseValue> value;
+  std::optional<ResponseValue> value;
   for (const net::CookieWithAccessResult& cookie_with_access_result :
        cookie_list) {
     // Return the first matching cookie. Relies on the fact that the
@@ -601,7 +601,7 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  absl::optional<net::CookiePartitionKey> partition_key;
+  std::optional<net::CookiePartitionKey> partition_key;
   if (!cookies_helpers::ValidateCookieApiPartitionKey(
           parsed_args_->details.partition_key, partition_key, error)) {
     return RespondNow(Error(std::move(error)));

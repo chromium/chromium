@@ -475,7 +475,7 @@ class BackgroundModeManager : public BrowserListObserver,
   // Set to true when background mode is suspended.
   bool background_mode_suspended_ = false;
 
-  absl::optional<bool> launch_on_startup_enabled_;
+  std::optional<bool> launch_on_startup_enabled_;
 
   // Task runner for making startup/login configuration changes that may
   // require file system or registry access.

@@ -310,7 +310,7 @@ void LaunchWebApp(const webapps::AppId& app_id, Profile* profile) {
   // add a "default" launch container enum value.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
-  absl::optional<web_app::mojom::UserDisplayMode> display_mode =
+  std::optional<web_app::mojom::UserDisplayMode> display_mode =
       provider->registrar_unsafe().GetAppUserDisplayMode(app_id);
   auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
   if (display_mode == web_app::mojom::UserDisplayMode::kBrowser) {
@@ -345,7 +345,7 @@ void OnWebAppInstallabilityChecked(
     InstallOrLaunchWebAppCallback callback,
     std::unique_ptr<content::WebContents> web_contents,
     InstallableCheckResult result,
-    absl::optional<webapps::AppId> app_id) {
+    std::optional<webapps::AppId> app_id) {
   if (!profile) {
     return;
   }
@@ -536,7 +536,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
   // could still be installed with different start_url.
   if (provider->registrar_unsafe().IsLocallyInstalled(web_app_url)) {
     LaunchWebApp(
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_url),
+        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, web_app_url),
         profile);
     std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
     return;

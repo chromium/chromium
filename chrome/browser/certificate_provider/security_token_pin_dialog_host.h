@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_H_
 #define CHROME_BROWSER_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -57,7 +57,7 @@ class SecurityTokenPinDialogHost {
       bool enable_user_input,
       security_token_pin::ErrorLabel error_label,
       int attempts_left,
-      const absl::optional<AccountId>& authenticating_user_account_id,
+      const std::optional<AccountId>& authenticating_user_account_id,
       SecurityTokenPinEnteredCallback pin_entered_callback,
       SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) = 0;
 

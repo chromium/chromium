@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,7 +31,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -47,7 +47,7 @@ class MockNotificationService
   MOCK_METHOD(void,
               GetDisplayedNotifications,
               (mac_notifications::mojom::ProfileIdentifierPtr,
-               const absl::optional<GURL>& origin,
+               const std::optional<GURL>& origin,
                GetDisplayedNotificationsCallback),
               (override));
   MOCK_METHOD(void,
@@ -163,7 +163,7 @@ CreateNotificationActionInfo() {
   auto meta = CreateNotificationMetadata();
   return mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), NotificationOperation::kClick,
-      /*button_index=*/-1, /*reply=*/absl::nullopt);
+      /*button_index=*/-1, /*reply=*/std::nullopt);
 }
 
 }  // namespace

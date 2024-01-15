@@ -78,7 +78,7 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   void ExpectNotificationShown(bool expected_notification) {
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kNotificationId);
     if (expected_notification) {
       ASSERT_TRUE(notification);

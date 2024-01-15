@@ -52,7 +52,7 @@ class PrefetchPageLoadMetricsObserverTest
   }
 
   void VerifyUKMEntry(const std::string& metric_name,
-                      absl::optional<int64_t> expected_value) {
+                      std::optional<int64_t> expected_value) {
     auto entries = tester()->test_ukm_recorder().GetEntriesByName(
         ukm::builders::PrefetchProxy::kEntryName);
     ASSERT_EQ(1U, entries.size());
@@ -122,7 +122,7 @@ TEST_F(PrefetchPageLoadMetricsObserverTest, LastVisitToHost_None) {
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
 
   using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kdays_since_last_visit_to_originName, absl::nullopt);
+  VerifyUKMEntry(UkmEntry::kdays_since_last_visit_to_originName, std::nullopt);
 }
 
 TEST_F(PrefetchPageLoadMetricsObserverTest, LastVisitToHost_Fail) {
@@ -137,7 +137,7 @@ TEST_F(PrefetchPageLoadMetricsObserverTest, LastVisitToHost_Fail) {
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
 
   using UkmEntry = ukm::builders::PrefetchProxy;
-  VerifyUKMEntry(UkmEntry::kdays_since_last_visit_to_originName, absl::nullopt);
+  VerifyUKMEntry(UkmEntry::kdays_since_last_visit_to_originName, std::nullopt);
 }
 
 TEST_F(PrefetchPageLoadMetricsObserverTest, LastVisitToHost_NullTime) {

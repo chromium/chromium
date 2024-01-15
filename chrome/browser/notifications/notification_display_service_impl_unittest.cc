@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/notifications/notification_display_service_impl.h"
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,7 +22,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 #include "chrome/browser/notifications/notification_display_queue.h"
-#include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,7 +29,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -357,7 +358,7 @@ TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
   service().ProcessNotificationOperation(
       NotificationOperation::kClick,
       NotificationHandler::Type::NOTIFICATIONS_MUTED, /*origin=*/GURL(),
-      kMuteNotificationId, /*action_index=*/0, /*reply=*/absl::nullopt,
+      kMuteNotificationId, /*action_index=*/0, /*reply=*/std::nullopt,
       /*by_user=*/true);
 
   // Clicking "Snooze" should remove the "Notifications Muted" notification.

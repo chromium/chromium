@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -47,7 +48,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -134,7 +134,7 @@ class NativeMessagingTest : public ::testing::Test,
     last_message_ = message;
 
     // Parse the message.
-    absl::optional<base::Value> dict_value = base::JSONReader::Read(message);
+    std::optional<base::Value> dict_value = base::JSONReader::Read(message);
     if (!dict_value || !dict_value->is_dict()) {
       LOG(ERROR) << "Failed to parse " << message;
       last_message_parsed_.reset();
@@ -179,7 +179,7 @@ class NativeMessagingTest : public ::testing::Test,
   TestingProfile profile_;
 
   std::string last_message_;
-  absl::optional<base::Value::Dict> last_message_parsed_;
+  std::optional<base::Value::Dict> last_message_parsed_;
   bool channel_closed_ = false;
 };
 
@@ -293,7 +293,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
                              ScopedTestNativeMessagingHost::kExtensionId + "/";
 
   {
-    absl::optional<int> id = last_message_parsed_->FindInt("id");
+    std::optional<int> id = last_message_parsed_->FindInt("id");
     ASSERT_TRUE(id);
     EXPECT_EQ(1, *id);
     const std::string* text =
@@ -310,7 +310,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   run_loop_->Run();
 
   {
-    absl::optional<int> id = last_message_parsed_->FindInt("id");
+    std::optional<int> id = last_message_parsed_->FindInt("id");
     ASSERT_TRUE(id);
     EXPECT_EQ(2, *id);
     const std::string* text =

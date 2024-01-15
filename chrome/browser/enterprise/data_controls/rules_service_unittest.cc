@@ -54,12 +54,12 @@ class DataControlsRulesServiceTest : public testing::Test {
   }
 
   content::ClipboardEndpoint empty_endpoint() const {
-    return content::ClipboardEndpoint(absl::nullopt);
+    return content::ClipboardEndpoint(std::nullopt);
   }
 
   content::ClipboardEndpoint incognito_endpoint() {
     return content::ClipboardEndpoint(
-        absl::nullopt,
+        std::nullopt,
         base::BindLambdaForTesting([this]() -> content::BrowserContext* {
           return static_cast<content::BrowserContext*>(incognito_profile());
         }),

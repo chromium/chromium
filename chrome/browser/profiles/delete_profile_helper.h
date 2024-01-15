@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_
 #define CHROME_BROWSER_PROFILES_DELETE_PROFILE_HELPER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;

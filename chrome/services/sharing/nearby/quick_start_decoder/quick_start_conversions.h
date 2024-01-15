@@ -11,7 +11,7 @@ namespace ash::quick_start {
 
 // Converts a string into a WifiSecurityType enum, or returns nullopt if
 // it's not a valid security type.
-absl::optional<mojom::WifiSecurityType> WifiSecurityTypeFromString(
+std::optional<mojom::WifiSecurityType> WifiSecurityTypeFromString(
     base::StringPiece security_type_string);
 
 }  // namespace ash::quick_start

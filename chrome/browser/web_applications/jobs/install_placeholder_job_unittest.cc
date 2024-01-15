@@ -55,7 +55,7 @@ class InstallPlaceholderJobWrapperCommand
             "InstallPlaceholderJobWrapperCommand",
             SharedWebContentsWithAppLockDescription(
                 base::flat_set<webapps::AppId>{
-                    GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+                    GenerateAppId(/*manifest_id_path=*/std::nullopt,
                                   install_options.install_url)}),
             std::move(callback),
             /*args_for_shutdown=*/
@@ -158,7 +158,7 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   EXPECT_TRUE(last_install_options->add_to_quick_launch_bar);
   EXPECT_FALSE(last_install_options->os_hooks[OsHookType::kRunOnOsLogin]);
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
     ASSERT_TRUE(os_state.has_value());
     EXPECT_TRUE(os_state->has_shortcut());
@@ -203,7 +203,7 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
     ASSERT_TRUE(os_state.has_value());
     EXPECT_TRUE(os_state->has_shortcut());

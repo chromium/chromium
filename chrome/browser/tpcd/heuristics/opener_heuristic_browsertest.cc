@@ -268,16 +268,16 @@ class OpenerHeuristicBrowserTest
         entries[0].metrics["OpenerHasSameSiteIframe"]);
   }
 
-  absl::optional<PopupsStateValue> GetPopupState(const GURL& opener_url,
-                                                 const GURL& popup_url) {
-    absl::optional<PopupsStateValue> state;
+  std::optional<PopupsStateValue> GetPopupState(const GURL& opener_url,
+                                                const GURL& popup_url) {
+    std::optional<PopupsStateValue> state;
 
     GetDipsService()
         ->storage()
         ->AsyncCall(&DIPSStorage::ReadPopup)
         .WithArgs(GetSiteForDIPS(opener_url), GetSiteForDIPS(popup_url))
         .Then(base::BindLambdaForTesting(
-            [&state](absl::optional<PopupsStateValue> db_state) {
+            [&state](std::optional<PopupsStateValue> db_state) {
               state = db_state;
             }));
     GetDipsService()->storage()->FlushPostedTasksForTesting();
@@ -717,8 +717,8 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
       opener_url);
   access_id = top_level_entries[0].metrics["AccessId"];
 
-  base::OnceCallback<void(absl::optional<PopupsStateValue>)> assert_popup =
-      base::BindLambdaForTesting([&](absl::optional<PopupsStateValue> state) {
+  base::OnceCallback<void(std::optional<PopupsStateValue>)> assert_popup =
+      base::BindLambdaForTesting([&](std::optional<PopupsStateValue> state) {
         ASSERT_TRUE(state.has_value());
         EXPECT_EQ(access_id, static_cast<int64_t>(state->access_id));
       });
@@ -980,8 +980,8 @@ IN_PROC_BROWSER_TEST_F(
       opener_url);
   access_id = top_level_entries[0].metrics["AccessId"];
 
-  base::OnceCallback<void(absl::optional<PopupsStateValue>)> assert_popup =
-      base::BindLambdaForTesting([&](absl::optional<PopupsStateValue> state) {
+  base::OnceCallback<void(std::optional<PopupsStateValue>)> assert_popup =
+      base::BindLambdaForTesting([&](std::optional<PopupsStateValue> state) {
         ASSERT_TRUE(state.has_value());
         EXPECT_EQ(access_id, static_cast<int64_t>(state->access_id));
       });
@@ -1329,9 +1329,9 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   SimulateMouseClick(popup);
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
-  absl::optional<PopupsStateValue> initial_state =
+  std::optional<PopupsStateValue> initial_state =
       GetPopupState(opener_url, initial_url);
-  absl::optional<PopupsStateValue> final_state =
+  std::optional<PopupsStateValue> final_state =
       GetPopupState(opener_url, final_url);
   ASSERT_THAT(
       initial_state,

@@ -25,16 +25,16 @@ class MockDeviceTrustKeyManager : public DeviceTrustKeyManager {
 
   MOCK_METHOD(void,
               ExportPublicKeyAsync,
-              (base::OnceCallback<void(absl::optional<std::string>)>),
+              (base::OnceCallback<void(std::optional<std::string>)>),
               (override));
 
   MOCK_METHOD(void,
               SignStringAsync,
               (const std::string&,
-               base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>),
+               base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>),
               (override));
 
-  MOCK_METHOD(absl::optional<MockDeviceTrustKeyManager::KeyMetadata>,
+  MOCK_METHOD(std::optional<MockDeviceTrustKeyManager::KeyMetadata>,
               GetLoadedKeyMetadata,
               (),
               (const, override));

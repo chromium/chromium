@@ -272,7 +272,7 @@ developer::LoadError CreateLoadError(
   return response;
 }
 
-absl::optional<URLPattern> ParseRuntimePermissionsPattern(
+std::optional<URLPattern> ParseRuntimePermissionsPattern(
     const std::string& pattern_str) {
   constexpr int kValidRuntimePermissionSchemes = URLPattern::SCHEME_HTTP |
                                                  URLPattern::SCHEME_HTTPS |
@@ -280,13 +280,13 @@ absl::optional<URLPattern> ParseRuntimePermissionsPattern(
 
   URLPattern pattern(kValidRuntimePermissionSchemes);
   if (pattern.Parse(pattern_str) != URLPattern::ParseResult::kSuccess)
-    return absl::nullopt;
+    return std::nullopt;
 
   // We don't allow adding paths for permissions, because they aren't meaningful
   // in terms of origin access. The frontend should validate this, but there's
   // a chance something can slip through, so we should fail gracefully.
   if (pattern.path() != "/*")
-    return absl::nullopt;
+    return std::nullopt;
 
   return pattern;
 }
@@ -973,7 +973,7 @@ DeveloperPrivateGetExtensionsInfoFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetExtensionsInfoFunction::Run() {
-  absl::optional<developer::GetExtensionsInfo::Params> params =
+  std::optional<developer::GetExtensionsInfo::Params> params =
       developer::GetExtensionsInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1010,7 +1010,7 @@ DeveloperPrivateGetExtensionInfoFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetExtensionInfoFunction::Run() {
-  absl::optional<developer::GetExtensionInfo::Params> params =
+  std::optional<developer::GetExtensionInfo::Params> params =
       developer::GetExtensionInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1038,7 +1038,7 @@ DeveloperPrivateGetExtensionSizeFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetExtensionSizeFunction::Run() {
-  absl::optional<developer::GetExtensionSize::Params> params =
+  std::optional<developer::GetExtensionSize::Params> params =
       developer::GetExtensionSize::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1086,7 +1086,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
-  absl::optional<developer::UpdateProfileConfiguration::Params> params =
+  std::optional<developer::UpdateProfileConfiguration::Params> params =
       developer::UpdateProfileConfiguration::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1112,7 +1112,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
-  absl::optional<developer::UpdateExtensionConfiguration::Params> params =
+  std::optional<developer::UpdateExtensionConfiguration::Params> params =
       developer::UpdateExtensionConfiguration::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1204,7 +1204,7 @@ DeveloperPrivateReloadFunction::DeveloperPrivateReloadFunction() = default;
 DeveloperPrivateReloadFunction::~DeveloperPrivateReloadFunction() = default;
 
 ExtensionFunction::ResponseAction DeveloperPrivateReloadFunction::Run() {
-  absl::optional<Reload::Params> params = Reload::Params::Create(args());
+  std::optional<Reload::Params> params = Reload::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const Extension* extension = GetExtensionById(params->extension_id);
@@ -1302,7 +1302,7 @@ void DeveloperPrivateReloadFunction::ClearObservers() {
 DeveloperPrivateLoadUnpackedFunction::DeveloperPrivateLoadUnpackedFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
-  absl::optional<developer::LoadUnpacked::Params> params =
+  std::optional<developer::LoadUnpacked::Params> params =
       developer::LoadUnpacked::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1564,7 +1564,7 @@ void DeveloperPrivatePackDirectoryFunction::OnPackFailure(
 }
 
 ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
-  absl::optional<PackDirectory::Params> params =
+  std::optional<PackDirectory::Params> params =
       PackDirectory::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1846,7 +1846,7 @@ DeveloperPrivateLoadDirectoryFunction::~DeveloperPrivateLoadDirectoryFunction()
     {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
-  absl::optional<developer::ChoosePath::Params> params =
+  std::optional<developer::ChoosePath::Params> params =
       developer::ChoosePath::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -1995,7 +1995,7 @@ DeveloperPrivateOpenDevToolsFunction::~DeveloperPrivateOpenDevToolsFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateOpenDevToolsFunction::Run() {
-  absl::optional<developer::OpenDevTools::Params> params =
+  std::optional<developer::OpenDevTools::Params> params =
       developer::OpenDevTools::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const developer::OpenDevToolsProperties& properties = params->properties;
@@ -2092,7 +2092,7 @@ DeveloperPrivateDeleteExtensionErrorsFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
-  absl::optional<developer::DeleteExtensionErrors::Params> params =
+  std::optional<developer::DeleteExtensionErrors::Params> params =
       developer::DeleteExtensionErrors::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const developer::DeleteExtensionErrorsProperties& properties =
@@ -2121,7 +2121,7 @@ DeveloperPrivateRepairExtensionFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateRepairExtensionFunction::Run() {
-  absl::optional<developer::RepairExtension::Params> params =
+  std::optional<developer::RepairExtension::Params> params =
       developer::RepairExtension::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension = GetExtensionById(params->extension_id);
@@ -2167,7 +2167,7 @@ void DeveloperPrivateRepairExtensionFunction::OnReinstallComplete(
 DeveloperPrivateShowOptionsFunction::~DeveloperPrivateShowOptionsFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
-  absl::optional<developer::ShowOptions::Params> params =
+  std::optional<developer::ShowOptions::Params> params =
       developer::ShowOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension = GetEnabledExtensionById(params->extension_id);
@@ -2189,7 +2189,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
 DeveloperPrivateShowPathFunction::~DeveloperPrivateShowPathFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateShowPathFunction::Run() {
-  absl::optional<developer::ShowPath::Params> params =
+  std::optional<developer::ShowPath::Params> params =
       developer::ShowPath::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension = GetExtensionById(params->extension_id);
@@ -2209,7 +2209,7 @@ DeveloperPrivateSetShortcutHandlingSuspendedFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateSetShortcutHandlingSuspendedFunction::Run() {
-  absl::optional<developer::SetShortcutHandlingSuspended::Params> params =
+  std::optional<developer::SetShortcutHandlingSuspended::Params> params =
       developer::SetShortcutHandlingSuspended::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ExtensionCommandsGlobalRegistry::Get(browser_context())
@@ -2222,7 +2222,7 @@ DeveloperPrivateUpdateExtensionCommandFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateExtensionCommandFunction::Run() {
-  absl::optional<developer::UpdateExtensionCommand::Params> params =
+  std::optional<developer::UpdateExtensionCommand::Params> params =
       developer::UpdateExtensionCommand::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const developer::ExtensionCommandUpdate& update = params->update;
@@ -2249,11 +2249,11 @@ DeveloperPrivateAddHostPermissionFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateAddHostPermissionFunction::Run() {
-  absl::optional<developer::AddHostPermission::Params> params =
+  std::optional<developer::AddHostPermission::Params> params =
       developer::AddHostPermission::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  absl::optional<URLPattern> pattern =
+  std::optional<URLPattern> pattern =
       ParseRuntimePermissionsPattern(params->host);
   if (!pattern)
     return RespondNow(Error(kInvalidHost));
@@ -2292,11 +2292,11 @@ DeveloperPrivateRemoveHostPermissionFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateRemoveHostPermissionFunction::Run() {
-  absl::optional<developer::RemoveHostPermission::Params> params =
+  std::optional<developer::RemoveHostPermission::Params> params =
       developer::RemoveHostPermission::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  absl::optional<URLPattern> pattern =
+  std::optional<URLPattern> pattern =
       ParseRuntimePermissionsPattern(params->host);
   if (!pattern)
     return RespondNow(Error(kInvalidHost));
@@ -2355,7 +2355,7 @@ DeveloperPrivateAddUserSpecifiedSitesFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateAddUserSpecifiedSitesFunction::Run() {
-  absl::optional<developer::AddUserSpecifiedSites::Params> params =
+  std::optional<developer::AddUserSpecifiedSites::Params> params =
       developer::AddUserSpecifiedSites::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -2394,7 +2394,7 @@ DeveloperPrivateRemoveUserSpecifiedSitesFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateRemoveUserSpecifiedSitesFunction::Run() {
-  absl::optional<developer::RemoveUserSpecifiedSites::Params> params =
+  std::optional<developer::RemoveUserSpecifiedSites::Params> params =
       developer::RemoveUserSpecifiedSites::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -2520,7 +2520,7 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
-  absl::optional<developer::GetMatchingExtensionsForSite::Params> params =
+  std::optional<developer::GetMatchingExtensionsForSite::Params> params =
       developer::GetMatchingExtensionsForSite::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -2593,7 +2593,7 @@ DeveloperPrivateUpdateSiteAccessFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateSiteAccessFunction::Run() {
-  absl::optional<developer::UpdateSiteAccess::Params> params =
+  std::optional<developer::UpdateSiteAccess::Params> params =
       developer::UpdateSiteAccess::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -2681,7 +2681,7 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
-  absl::optional<developer::RemoveMultipleExtensions::Params> params =
+  std::optional<developer::RemoveMultipleExtensions::Params> params =
       developer::RemoveMultipleExtensions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   profile_ = Profile::FromBrowserContext(browser_context());

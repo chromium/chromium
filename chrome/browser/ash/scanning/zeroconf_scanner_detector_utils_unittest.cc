@@ -52,7 +52,7 @@ class CreateSaneScannerServiceTypeTest
 TEST_P(CreateSaneScannerServiceTypeTest, SupportedServiceType) {
   net::IPAddress ip_address = IpAddressFromString("101.102.103.104");
 
-  absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
+  std::optional<Scanner> maybe_scanner = CreateSaneScanner(
       "EPSON scanner", params().service_type, "EPSON", "Model", "UUID", "eSCL",
       {"pdl-1", "pdl-2"}, ip_address, 8080);
 
@@ -109,7 +109,7 @@ class CreateSaneScannerSlashTest
 // Test that the correct scanner name is constructed for scanners which report
 // rs values with slashes.
 TEST_P(CreateSaneScannerSlashTest, DropsSlash) {
-  absl::optional<Scanner> maybe_scanner =
+  std::optional<Scanner> maybe_scanner =
       CreateSaneScanner("name", ZeroconfScannerDetector::kEsclServiceType,
                         "Manufacturer", "Model", /*uuid=*/"", rs(), /*pdl=*/{},
                         IpAddressFromString("101.102.103.104"), 8080);
@@ -131,9 +131,9 @@ INSTANTIATE_TEST_SUITE_P(,
 // Test that CreateSaneScanner handles scanners which don't report an rs value,
 // manufacturer value, nor model value.
 TEST(CreateSaneScanner, NoRsValue) {
-  absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
+  std::optional<Scanner> maybe_scanner = CreateSaneScanner(
       "name", ZeroconfScannerDetector::kEsclServiceType, /*manufacturer=*/"",
-      /*model=*/"", /*uuid=*/"", /*rs=*/absl::nullopt, /*pdl=*/{},
+      /*model=*/"", /*uuid=*/"", /*rs=*/std::nullopt, /*pdl=*/{},
       IpAddressFromString("101.102.103.104"), 8080);
 
   ASSERT_TRUE(maybe_scanner.has_value());
@@ -150,7 +150,7 @@ TEST(CreateSaneScanner, NoRsValue) {
 
 // Test that CreateSaneScanner fails when an invalid IP address is passed in.
 TEST(CreateSaneScanner, InvalidIpAddress) {
-  absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
+  std::optional<Scanner> maybe_scanner = CreateSaneScanner(
       "name", ZeroconfScannerDetector::kEsclServiceType, "Manufacturer",
       "Model", /*uuid=*/"", "eSCL", /*pdl=*/{}, net::IPAddress(), 8080);
 
@@ -159,9 +159,9 @@ TEST(CreateSaneScanner, InvalidIpAddress) {
 
 // Test that CreateSaneScanner fails for a generic, non-Epson scanner.
 TEST(CreateSaneScanner, GenericNonEpsonScanner) {
-  absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
+  std::optional<Scanner> maybe_scanner = CreateSaneScanner(
       "name", ZeroconfScannerDetector::kGenericScannerServiceType,
-      "Manufacturer", "Model", /*uuid=*/"", absl::nullopt, /*pdl=*/{},
+      "Manufacturer", "Model", /*uuid=*/"", std::nullopt, /*pdl=*/{},
       IpAddressFromString("101.102.103.104"), 8080);
 
   EXPECT_FALSE(maybe_scanner.has_value());

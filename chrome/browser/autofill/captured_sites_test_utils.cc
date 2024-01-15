@@ -147,7 +147,7 @@ std::optional<autofill::FieldType> StringToFieldType(const std::string& str) {
   }();
   auto it = map.find(str);
   if (it == map.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -300,7 +300,7 @@ std::optional<std::string> FindPopulateString(
                     << absl::get<base::StringPiece>(key_descriptor)
                     << "' string from container!";
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return *value;
@@ -317,7 +317,7 @@ std::optional<std::vector<std::string>> FindPopulateStringVector(
                     << absl::get<base::StringPiece>(key_descriptor)
                     << "' strings from container!";
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> strings;
@@ -328,7 +328,7 @@ std::optional<std::vector<std::string>> FindPopulateStringVector(
                       << absl::get<base::StringPiece>(key_descriptor)
                       << "' vector from container!";
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
     strings.push_back(item.GetString());
   }
@@ -452,10 +452,10 @@ std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 std::optional<base::FilePath> GetCommandFilePath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line && command_line->HasSwitch(kCommandFileFlag)) {
-    return absl::make_optional(
+    return std::make_optional(
         command_line->GetSwitchValuePath(kCommandFileFlag));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PrintInstructions(const char* test_file_name) {

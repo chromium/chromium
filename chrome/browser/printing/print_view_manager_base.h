@@ -373,7 +373,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Client ID with the print backend service manager for system print dialog.
-  absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
+  std::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

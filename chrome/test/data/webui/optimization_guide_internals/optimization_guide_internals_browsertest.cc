@@ -152,9 +152,9 @@ class OptimizationGuideInternalsModelsPageBrowserTest
             }));
 
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->AddObserverForOptimizationTargetModel(
-            optimization_target,
-            /*model_metadata=*/absl::nullopt, &model_file_observer);
+        ->AddObserverForOptimizationTargetModel(optimization_target,
+                                                /*model_metadata=*/std::nullopt,
+                                                &model_file_observer);
 
     run_loop.Run();
   }

@@ -998,7 +998,7 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
   EXPECT_EQ(u"münchen.de",
             privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
                 GURL("https://muenchen.de")));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
                 GURL("https://example.com")));
 }
@@ -1037,7 +1037,7 @@ TEST_F(PrivacySandboxServiceTest,
   first_party_sets_policy_service()->InitForTesting();
   // We shouldn't get associate1's owner since FPS is disabled.
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
@@ -1076,7 +1076,7 @@ TEST_F(PrivacySandboxServiceTest,
   first_party_sets_policy_service()->InitForTesting();
   // We shouldn't get associate1's owner since FPS is disabled.
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
@@ -1118,7 +1118,7 @@ TEST_F(PrivacySandboxServiceTest,
 
   // We shouldn't get associate1's owner since FPS is disabled.
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
@@ -1160,7 +1160,7 @@ TEST_F(PrivacySandboxServiceTest,
 
   // We shouldn't get associate1's owner since FPS is disabled.
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
@@ -1191,9 +1191,9 @@ TEST_F(PrivacySandboxServiceTest,
   // Verify `GetFirstPartySetOwner` returns empty if FPS is enabled but the
   // Global sets are not ready yet.
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
@@ -1247,7 +1247,7 @@ TEST_F(PrivacySandboxServiceTest,
       privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl).value(),
       primary_site);
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
-            absl::nullopt);
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {

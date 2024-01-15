@@ -268,10 +268,10 @@ void IconLabelBubbleView::SetCustomBackgroundColorId(
   background_color_id_ = color_id;
 }
 
-absl::optional<ui::ColorId> IconLabelBubbleView::GetCustomForegroundColorId() {
+std::optional<ui::ColorId> IconLabelBubbleView::GetCustomForegroundColorId() {
   return foreground_color_id_;
 }
-absl::optional<ui::ColorId> IconLabelBubbleView::GetCustomBackgroundColorId() {
+std::optional<ui::ColorId> IconLabelBubbleView::GetCustomBackgroundColorId() {
   return background_color_id_;
 }
 

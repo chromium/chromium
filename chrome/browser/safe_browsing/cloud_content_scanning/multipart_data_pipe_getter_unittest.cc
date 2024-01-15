@@ -17,16 +17,16 @@ namespace safe_browsing {
 
 class MultipartDataPipeGetterTest : public testing::Test {
  public:
-  absl::optional<base::File> CreateFile(const std::string& content) {
+  std::optional<base::File> CreateFile(const std::string& content) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath path = temp_dir_.GetPath().AppendASCII("test.txt");
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE);
     if (!file.IsValid())
-      return absl::nullopt;
+      return std::nullopt;
 
     if (file.WriteAtCurrentPos(content.data(), content.size()) < 0)
-      return absl::nullopt;
+      return std::nullopt;
 
     return file;
   }
@@ -116,7 +116,7 @@ class MultipartDataPipeGetterParametrizedTest
   std::unique_ptr<MultipartDataPipeGetter> CreateDataPipeGetter(
       const std::string& content) {
     if (is_file_data_pipe()) {
-      absl::optional<base::File> file = CreateFile(content);
+      std::optional<base::File> file = CreateFile(content);
       if (!file)
         return nullptr;
 

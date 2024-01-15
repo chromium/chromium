@@ -42,7 +42,7 @@ void PinnedAppsCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
         }
       });
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace chromeos

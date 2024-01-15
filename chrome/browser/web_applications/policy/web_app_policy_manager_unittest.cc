@@ -393,7 +393,7 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
             [this](const ExternalInstallOptions& install_options) {
               const GURL& install_url = install_options.install_url;
               const webapps::AppId app_id = GenerateAppId(
-                  /*manifest_id=*/absl::nullopt, install_url);
+                  /*manifest_id=*/std::nullopt, install_url);
               if (app_registrar().GetAppById(app_id) &&
                   install_options.force_reinstall) {
                 UnregisterApp(app_id);
@@ -417,7 +417,7 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
         base::BindLambdaForTesting(
             [this](const GURL& app_url,
                    ExternalInstallSource install_source) -> bool {
-              absl::optional<webapps::AppId> app_id =
+              std::optional<webapps::AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id) {
                 UnregisterApp(*app_id);
@@ -447,14 +447,14 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
         url, ConvertExternalInstallSourceToSource(install_source));
     RegisterApp(std::move(web_app));
     test::AddInstallUrlData(profile()->GetPrefs(), &sync_bridge(),
-                            GenerateAppId(/*manifest_id=*/absl::nullopt, url),
+                            GenerateAppId(/*manifest_id=*/std::nullopt, url),
                             url, install_source);
   }
 
   void MakeInstalledAppPlaceholder(const GURL& url) {
     test::AddInstallUrlAndPlaceholderData(
         profile()->GetPrefs(), &sync_bridge(),
-        GenerateAppId(/*manifest_id=*/absl::nullopt, url), url,
+        GenerateAppId(/*manifest_id=*/std::nullopt, url), url,
         ExternalInstallSource::kExternalPolicy, /*is_placeholder=*/true);
   }
 
@@ -1611,7 +1611,7 @@ TEST_P(WebAppPolicyManagerPreventCloseTest, WebAppSettingsPreventClose) {
   {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
 
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         app_registrar().LookUpAppIdByInstallUrl(
             GURL(kWindowedAlsoManuallyInstalled));
     ASSERT_TRUE(app_id.has_value());

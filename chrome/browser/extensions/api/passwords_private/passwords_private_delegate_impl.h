@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -71,7 +71,7 @@ class PasswordsPrivateDelegateImpl
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
-  absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
+  std::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
   bool IsAccountStoreDefault(content::WebContents* web_contents) override;
   bool AddPassword(const std::string& url,

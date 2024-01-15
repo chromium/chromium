@@ -143,15 +143,15 @@ bool UnpinShortcutFromTaskbar(const base::FilePath& shortcut) {
 }
 
 // static
-absl::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut) {
+std::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut) {
   Microsoft::WRL::ComPtr<IPinnedList3> pinned_list = GetTaskbarPinnedList();
   if (!pinned_list.Get())
-    return absl::nullopt;
+    return std::nullopt;
 
   ScopedPIDLFromPath item_id_list(shortcut.value().data());
   HRESULT hr = pinned_list->IsPinned(item_id_list.Get());
   // S_OK means `shortcut` is pinned, S_FALSE means it's not pinned.
-  return SUCCEEDED(hr) ? absl::optional<bool>(hr == S_OK) : absl::nullopt;
+  return SUCCEEDED(hr) ? std::optional<bool>(hr == S_OK) : std::nullopt;
 }
 
 bool SetInstallerPinnedChromeToTaskbar(bool installed) {
@@ -163,7 +163,7 @@ bool SetInstallerPinnedChromeToTaskbar(bool installed) {
   return false;
 }
 
-absl::optional<bool> GetInstallerPinnedChromeToTaskbar() {
+std::optional<bool> GetInstallerPinnedChromeToTaskbar() {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, install_static::GetRegistryPath().c_str(),
                KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
@@ -172,5 +172,5 @@ absl::optional<bool> GetInstallerPinnedChromeToTaskbar() {
     if (result == ERROR_SUCCESS)
       return installer_pinned != 0;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }

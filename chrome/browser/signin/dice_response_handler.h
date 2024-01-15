@@ -25,10 +25,11 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include <optional>
+
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"  // nogncheck
 #include "components/unexportable_keys/unexportable_key_id.h"       // nogncheck
 #include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class AboutSigninInternals;
@@ -87,7 +88,7 @@ class DiceResponseHandler : public KeyedService {
           base::StringPiece auth_code,
           const GURL& registration_url,
           base::OnceCallback<void(
-              absl::optional<RegistrationTokenHelper::Result>)> callback)>;
+              std::optional<RegistrationTokenHelper::Result>)> callback)>;
 #else
   // A fake factory type that is always used to pass a null callback.
   using RegistrationTokenHelperFactory = base::RepeatingClosure;
@@ -174,7 +175,7 @@ class DiceResponseHandler : public KeyedService {
     void StartBindingKeyGeneration(const RegistrationTokenHelperFactory&
                                        registration_token_helper_factory);
     void OnRegistrationTokenGenerated(
-        absl::optional<RegistrationTokenHelper::Result> result);
+        std::optional<RegistrationTokenHelper::Result> result);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
     // Lock the account reconcilor while tokens are being fetched.

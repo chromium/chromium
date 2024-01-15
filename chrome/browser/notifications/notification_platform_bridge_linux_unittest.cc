@@ -343,9 +343,9 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                        NotificationHandler::Type notification_type,
                        const GURL& origin,
                        const std::string& notification_id,
-                       const absl::optional<int>& action_index,
-                       const absl::optional<std::u16string>& reply,
-                       const absl::optional<bool>& by_user) {
+                       const std::optional<int>& action_index,
+                       const std::optional<std::u16string>& reply,
+                       const std::optional<bool>& by_user) {
     last_operation_ = operation;
     last_action_index_ = action_index;
     last_reply_ = reply;
@@ -443,9 +443,9 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationPlatformBridgeLinux> notification_bridge_linux_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
-  absl::optional<NotificationOperation> last_operation_;
-  absl::optional<int> last_action_index_;
-  absl::optional<std::u16string> last_reply_;
+  std::optional<NotificationOperation> last_operation_;
+  std::optional<int> last_action_index_;
+  std::optional<std::u16string> last_reply_;
 
  private:
   void DoInvokeAction(uint32_t dbus_id, const std::string& action) {

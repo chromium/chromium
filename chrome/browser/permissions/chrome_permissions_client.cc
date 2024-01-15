@@ -273,21 +273,21 @@ permissions::IconId ChromePermissionsClient::GetOverrideIconId(
 void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     content::WebContents* web_contents,
     permissions::RequestType request_type,
-    absl::optional<permissions::PermissionAction> action,
+    std::optional<permissions::PermissionAction> action,
     permissions::PermissionPromptDisposition prompt_disposition,
     permissions::PermissionPromptDispositionReason prompt_disposition_reason,
     permissions::PermissionRequestGestureType gesture_type,
-    absl::optional<base::TimeDelta> prompt_display_duration,
+    std::optional<base::TimeDelta> prompt_display_duration,
     bool is_post_prompt,
     const GURL& gurl,
     base::OnceCallback<void()> hats_shown_callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  absl::optional<GURL> recorded_gurl =
+  std::optional<GURL> recorded_gurl =
       profile->GetPrefs()->GetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)
-          ? absl::make_optional(gurl)
-          : absl::nullopt;
+          ? std::make_optional(gurl)
+          : std::nullopt;
 
   auto prompt_parameters =
       permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
@@ -368,7 +368,7 @@ void ChromePermissionsClient::OnPromptResolved(
     permissions::PermissionPromptDisposition prompt_disposition,
     permissions::PermissionPromptDispositionReason prompt_disposition_reason,
     permissions::PermissionRequestGestureType gesture_type,
-    absl::optional<QuietUiReason> quiet_ui_reason,
+    std::optional<QuietUiReason> quiet_ui_reason,
     base::TimeDelta prompt_display_duration,
     content::WebContents* web_contents) {
   Profile* profile =
@@ -400,31 +400,30 @@ void ChromePermissionsClient::OnPromptResolved(
   }
 
   TriggerPromptHatsSurveyIfEnabled(
-      web_contents, request_type, absl::make_optional(action),
+      web_contents, request_type, std::make_optional(action),
       prompt_disposition, prompt_disposition_reason, gesture_type,
-      absl::make_optional(prompt_display_duration), true,
+      std::make_optional(prompt_display_duration), true,
       web_contents->GetLastCommittedURL(), base::DoNothing());
 }
 
-absl::optional<bool>
+std::optional<bool>
 ChromePermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(
     content::BrowserContext* browser_context) {
   if (!QuietNotificationPermissionUiConfig::
           IsAdaptiveActivationDryRunEnabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return Profile::FromBrowserContext(browser_context)
       ->GetPrefs()
       ->GetBoolean(prefs::kHadThreeConsecutiveNotificationPermissionDenies);
 }
 
-absl::optional<bool>
-ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
+std::optional<bool> ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
     content::BrowserContext* browser_context,
     const GURL& origin,
     ContentSettingsType permission) {
   if (permission != ContentSettingsType::NOTIFICATIONS) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -432,7 +431,7 @@ ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
                                                                      origin);
 }
 
-absl::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
+std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
   // In web kiosk mode, all permission requests are auto-approved for the origin
   // of the main app.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -452,7 +451,7 @@ absl::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
         KioskSessionServiceLacros::Get()->GetInstallURL());
   }
 #endif
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
@@ -474,7 +473,7 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
              GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
 }
 
-absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
+std::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   if (embedding_origin.DeprecatedGetOriginAsURL() ==
@@ -497,7 +496,7 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   }
 #endif
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ChromePermissionsClient::DoURLsMatchNewTabPage(

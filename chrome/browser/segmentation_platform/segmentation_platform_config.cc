@@ -246,7 +246,7 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
     base::StringPiece trial_name,
     SegmentId segment_id,
     int subsegment_rank) {
-  absl::optional<std::string> group_name;
+  std::optional<std::string> group_name;
   // TODO(ssid): Make GetSubsegmentName as a ModelProvider API so that clients
   // can simply implement it instead of adding conditions here, once the
   // subsegment process is more stable.

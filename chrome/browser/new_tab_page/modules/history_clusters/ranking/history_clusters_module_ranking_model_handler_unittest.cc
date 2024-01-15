@@ -23,7 +23,7 @@ class FakeModelProvider
  public:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const absl::optional<optimization_guide::proto::Any>& model_metadata,
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     CHECK_EQ(
         optimization_target,
@@ -67,17 +67,17 @@ class HistoryClustersModuleRankingModelHandlerTest : public testing::Test {
   }
 
   void PushModelFileToModelExecutor(
-      absl::optional<
+      std::optional<
           new_tab_page::proto::HistoryClustersModuleRankingModelMetadata>
           metadata) {
-    absl::optional<optimization_guide::proto::Any> any;
+    std::optional<optimization_guide::proto::Any> any;
 
     // Craft a correct Any proto in the case we passed in metadata.
     if (metadata.has_value()) {
       std::string serialized_metadata;
       (*metadata).SerializeToString(&serialized_metadata);
       optimization_guide::proto::Any any_proto;
-      any = absl::make_optional(any_proto);
+      any = std::make_optional(any_proto);
       any->set_value(serialized_metadata);
       any->set_type_url(
           "type.googleapis.com/"
@@ -130,7 +130,7 @@ TEST_F(HistoryClustersModuleRankingModelHandlerTest, ModelNotAvailable) {
 }
 
 TEST_F(HistoryClustersModuleRankingModelHandlerTest, ModelUpdatedBadMetadata) {
-  PushModelFileToModelExecutor(/*metadata=*/absl::nullopt);
+  PushModelFileToModelExecutor(/*metadata=*/std::nullopt);
 
   EXPECT_FALSE(model_handler()->CanExecuteAvailableModel());
 

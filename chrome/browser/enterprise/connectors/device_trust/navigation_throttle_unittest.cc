@@ -383,8 +383,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestReplyValidChallengeResponse) {
   EnableDTCPolicy();
   SetCanCollectSignals();
 
-  DeviceTrustResponse test_response_valid = {kChallengeResponse, absl::nullopt,
-                                             absl::nullopt};
+  DeviceTrustResponse test_response_valid = {kChallengeResponse, std::nullopt,
+                                             std::nullopt};
   std::string valid_challenge_json = kChallengeResponse;
   TestReplyChallengeResponseAndResume(test_response_valid, valid_challenge_json,
                                       DTHandshakeResult::kSuccess);
@@ -400,8 +400,7 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   EnableDTCPolicy();
   SetCanCollectSignals();
 
-  DeviceTrustResponse test_response_unknown = {"", absl::nullopt,
-                                               absl::nullopt};
+  DeviceTrustResponse test_response_unknown = {"", std::nullopt, std::nullopt};
   std::string unknown_error_json = "{\"error\":\"unknown\"}";
   TestReplyChallengeResponseAndResume(test_response_unknown, unknown_error_json,
                                       DTHandshakeResult::kUnknown);
@@ -487,7 +486,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
   // timeout.
   ASSERT_TRUE(captured_callback);
   std::move(captured_callback)
-      .Run({kChallengeResponse, absl::nullopt, absl::nullopt});
+      .Run({kChallengeResponse, std::nullopt, std::nullopt});
 
   histogram_tester_.ExpectTotalCount(
       base::StringPrintf(kLatencyHistogramName, "Failure"), 1);

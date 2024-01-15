@@ -174,7 +174,7 @@ void VpnThreadExtensionFunction::SignalCallCompletionFailure(
 VpnProviderCreateConfigFunction::~VpnProviderCreateConfigFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
-  absl::optional<api_vpn::CreateConfig::Params> params =
+  std::optional<api_vpn::CreateConfig::Params> params =
       api_vpn::CreateConfig::Params::Create(args());
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
@@ -201,7 +201,7 @@ ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
 VpnProviderDestroyConfigFunction::~VpnProviderDestroyConfigFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
-  absl::optional<api_vpn::DestroyConfig::Params> params =
+  std::optional<api_vpn::DestroyConfig::Params> params =
       api_vpn::DestroyConfig::Params::Create(args());
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
@@ -227,7 +227,7 @@ ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
 VpnProviderSetParametersFunction::~VpnProviderSetParametersFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
-  absl::optional<api_vpn::SetParameters::Params> params =
+  std::optional<api_vpn::SetParameters::Params> params =
       api_vpn::SetParameters::Params::Create(args());
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
@@ -260,7 +260,7 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
 VpnProviderSendPacketFunction::~VpnProviderSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
-  absl::optional<api_vpn::SendPacket::Params> params =
+  std::optional<api_vpn::SendPacket::Params> params =
       api_vpn::SendPacket::Params::Create(args());
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
@@ -289,7 +289,7 @@ VpnProviderNotifyConnectionStateChangedFunction::
 
 ExtensionFunction::ResponseAction
 VpnProviderNotifyConnectionStateChangedFunction::Run() {
-  absl::optional<api_vpn::NotifyConnectionStateChanged::Params> params =
+  std::optional<api_vpn::NotifyConnectionStateChanged::Params> params =
       api_vpn::NotifyConnectionStateChanged::Params::Create(args());
   if (!params) {
     return RespondNow(Error("Invalid arguments."));

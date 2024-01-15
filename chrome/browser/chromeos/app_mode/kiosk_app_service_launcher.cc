@@ -114,7 +114,7 @@ void KioskAppServiceLauncher::OnAppTypePublishing(
     // is called recursively.
     base::OnceClosure app_type_initialized_callback =
         std::move(app_type_initialized_callback_.value());
-    app_type_initialized_callback_ = absl::nullopt;
+    app_type_initialized_callback_ = std::nullopt;
     std::move(app_type_initialized_callback).Run();
   }
 }

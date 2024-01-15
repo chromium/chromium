@@ -246,7 +246,7 @@ void NtpBackgroundService::OnCollectionInfoFetchComplete(
                 collection.preview(0).image_url(), thumbnail_image_options_)));
       } else {
         collection_info_.push_back(CollectionInfo::CreateFromProto(
-            collection, /*preview_image_url=*/absl::nullopt));
+            collection, /*preview_image_url=*/std::nullopt));
       }
     }
     NotifyObservers(FetchComplete::COLLECTION_INFO);
@@ -525,7 +525,7 @@ void NtpBackgroundService::OnReplacementCollectionPreviewURLHeadersReceived(
 
 void NtpBackgroundService::FetchNextCollectionImage(
     const std::string& collection_id,
-    const absl::optional<std::string>& resume_token) {
+    const std::optional<std::string>& resume_token) {
   next_image_error_info_.ClearError();
   if (next_image_loader_ != nullptr)
     return;

@@ -121,7 +121,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_, InstalledBundle{.path = bundle_path},
-        /*expected_version=*/absl::nullopt, /*optional_keep_alive=*/nullptr,
+        /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
   }

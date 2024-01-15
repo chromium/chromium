@@ -33,7 +33,7 @@ void PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved(
     base::Value::List print_jobs) {
   std::vector<api::printing_metrics::PrintJobInfo> print_job_infos;
   for (const auto& print_job : print_jobs) {
-    absl::optional<api::printing_metrics::PrintJobInfo> print_job_info =
+    std::optional<api::printing_metrics::PrintJobInfo> print_job_info =
         api::printing_metrics::PrintJobInfo::FromValue(print_job);
     DCHECK(print_job_info);
     print_job_infos.emplace_back(std::move(print_job_info).value());

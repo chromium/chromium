@@ -135,12 +135,12 @@ class WebrtcAudioPrivateGetAssociatedSinkFunction
 
   // Calculates HMAC and calls Reply().
   void CalculateHMACAndReply(const std::string& extension_salt,
-                             const absl::optional<std::string>& raw_sink_id);
+                             const std::optional<std::string>& raw_sink_id);
 
   // Receives the associated sink ID as HMAC and sends the response.
   void Reply(const std::string& hmac);
 
-  absl::optional<api::webrtc_audio_private::GetAssociatedSink::Params> params_;
+  std::optional<api::webrtc_audio_private::GetAssociatedSink::Params> params_;
 };
 
 }  // namespace extensions

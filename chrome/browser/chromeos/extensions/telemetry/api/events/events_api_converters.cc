@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
@@ -12,7 +13,6 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::converters::events {
 
@@ -157,7 +157,7 @@ cx_events::StylusGarageEventInfo UncheckedConvertPtr(
   return result;
 }
 
-absl::optional<uint32_t> UncheckedConvertPtr(crosapi::UInt32ValuePtr ptr) {
+std::optional<uint32_t> UncheckedConvertPtr(crosapi::UInt32ValuePtr ptr) {
   return ptr->value;
 }
 

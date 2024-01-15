@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 
+#include <optional>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/logging.h"
@@ -13,8 +15,8 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -33,7 +35,6 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -50,21 +51,21 @@ const char kAccountId1[] = "dla1@example.com";
 const char kDisplayName1[] = "display name 1";
 const char kAppInstallUrl[] = "https://app.com/install";
 
-absl::optional<em::PolicyData::MarketSegment> GetMarketSegment(
+std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     policy::MarketSegment device_segment) {
   switch (device_segment) {
     case policy::MarketSegment::UNKNOWN:
-      return absl::nullopt;
+      return std::nullopt;
     case policy::MarketSegment::EDUCATION:
       return em::PolicyData::ENROLLED_EDUCATION;
     case policy::MarketSegment::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
+std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     UserSegment user_segment) {
   switch (user_segment) {
     case UserSegment::kK12:
@@ -79,13 +80,13 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case UserSegment::kKioskApp:
     case UserSegment::kManagedGuestSession:
     case UserSegment::kDemoMode:
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<AccountId> GetPrimaryAccountId() {
+std::optional<AccountId> GetPrimaryAccountId() {
   return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
                                         FakeGaiaMixin::kEnterpriseUser1GaiaId);
 }
@@ -159,12 +160,12 @@ class TestCase {
 
   policy::MarketSegment GetDeviceSegment() const { return device_segment_; }
 
-  absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment()
+  std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment()
       const {
     return ::GetMetricsLogSegment(user_segment_);
   }
 
-  absl::optional<em::PolicyData::MarketSegment> GetMarketSegment() const {
+  std::optional<em::PolicyData::MarketSegment> GetMarketSegment() const {
     return ::GetMarketSegment(device_segment_);
   }
 
@@ -276,7 +277,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
     // Add an account with DeviceLocalAccount::Type::TYPE_PUBLIC_SESSION.
     AddPublicSessionToDevicePolicy(kAccountId1);
 
-    absl::optional<em::PolicyData::MarketSegment> market_segment =
+    std::optional<em::PolicyData::MarketSegment> market_segment =
         GetParam().GetMarketSegment();
     if (market_segment) {
       device_policy()->policy_data().set_market_segment(market_segment.value());
@@ -307,7 +308,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
   }
 
   void LogInUser() {
-    absl::optional<em::PolicyData::MetricsLogSegment> log_segment =
+    std::optional<em::PolicyData::MetricsLogSegment> log_segment =
         GetParam().GetMetricsLogSegment();
     if (log_segment) {
       logged_in_user_mixin_.GetUserPolicyMixin()

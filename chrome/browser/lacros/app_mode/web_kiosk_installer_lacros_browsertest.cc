@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,7 +29,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -84,7 +84,7 @@ class WebKioskInstallerLacrosBrowserTest : public WebAppControllerBrowserTest {
     result_code_ = result.code;
   }
 
-  absl::optional<webapps::InstallResultCode> result_code_;
+  std::optional<webapps::InstallResultCode> result_code_;
   bool simulate_redirect_ = false;
 };
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskInstallerLacrosBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<webapps::AppId> app_id = registrar().LookupExternalAppId(url);
+  std::optional<webapps::AppId> app_id = registrar().LookupExternalAppId(url);
   ASSERT_TRUE(app_id.has_value());
   EXPECT_TRUE(
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kKiosk));
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskInstallerLacrosBrowserTest,
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  absl::optional<webapps::AppId> final_app_id =
+  std::optional<webapps::AppId> final_app_id =
       registrar().LookupExternalAppId(url);
   ASSERT_TRUE(final_app_id.has_value());
   EXPECT_FALSE(registrar().IsPlaceholderApp(final_app_id.value(),

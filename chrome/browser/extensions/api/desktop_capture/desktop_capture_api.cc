@@ -50,7 +50,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
 
   mutable_args().erase(args().begin());
 
-  absl::optional<api::desktop_capture::ChooseDesktopMedia::Params> params =
+  std::optional<api::desktop_capture::ChooseDesktopMedia::Params> params =
       api::desktop_capture::ChooseDesktopMedia::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

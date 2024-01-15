@@ -42,14 +42,14 @@ class WebViewImpl : public WebView {
       const bool w3c_compliant,
       const BrowserInfo* browser_info,
       std::unique_ptr<DevToolsClient> client,
-      absl::optional<MobileDevice> mobile_device,
+      std::optional<MobileDevice> mobile_device,
       std::string page_load_strategy);
   WebViewImpl(const std::string& id,
               const bool w3c_compliant,
               const WebViewImpl* parent,
               const BrowserInfo* browser_info,
               std::unique_ptr<DevToolsClient> client,
-              absl::optional<MobileDevice> mobile_device,
+              std::optional<MobileDevice> mobile_device,
               std::string page_load_strategy);
   ~WebViewImpl() override;
   std::unique_ptr<WebViewImpl> CreateChild(const std::string& session_id,

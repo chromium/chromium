@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -238,7 +238,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // If true, immediately accept the blocked action dialog by running the
   // callback.
-  absl::optional<bool> accept_bubble_for_testing_;
+  std::optional<bool> accept_bubble_for_testing_;
 
   raw_ptr<TestObserver> test_observer_;
 

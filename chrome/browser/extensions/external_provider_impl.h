@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTERNAL_PROVIDER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/manifest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -133,7 +133,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   raw_ptr<VisitorInterface> service_;  // weak
 
   // Dict of the external extensions that are provided by this provider.
-  absl::optional<base::Value::Dict> prefs_;
+  std::optional<base::Value::Dict> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.

@@ -93,8 +93,8 @@ class HatsService : public KeyedService {
       const SurveyStringData& product_specific_string_data,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
-      const absl::optional<std::string_view>& supplied_trigger_id =
-          absl::nullopt) = 0;
+      const std::optional<std::string_view>& supplied_trigger_id =
+          std::nullopt) = 0;
 
   // Launches survey (with id |trigger|) with a timeout |timeout_ms| if
   // appropriate.
@@ -127,8 +127,8 @@ class HatsService : public KeyedService {
       NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
       base::OnceClosure success_callback = base::DoNothing(),
       base::OnceClosure failure_callback = base::DoNothing(),
-      const absl::optional<std::string_view>& supplied_trigger_id =
-          absl::nullopt) = 0;
+      const std::optional<std::string_view>& supplied_trigger_id =
+          std::nullopt) = 0;
 
   // Whether the user is eligible for any survey (of the type |user_prompted|
   // or not) to be shown. A return value of false is always a true-negative,

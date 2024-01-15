@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonProfileColorBrowserTest,
   EXPECT_NE(theme_colors, GetDefaultProfileThemeColors());
 
   // Reset the cached colors to test that they're recreated on the next startup.
-  entry->SetProfileThemeColors(absl::nullopt);
+  entry->SetProfileThemeColors(std::nullopt);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
 }
 

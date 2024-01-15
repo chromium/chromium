@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -59,7 +59,7 @@ void BirchKeyedService::OnFileSuggestionUpdated(FileSuggestionType type) {
 }
 
 void BirchKeyedService::OnSuggestedFileDataUpdated(
-    const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
+    const std::optional<std::vector<FileSuggestData>>& suggest_results) {
   if (suggest_results) {
     // Convert each `FileSuggestData` into a `BirchFileItem`.
     base::ThreadPool::PostTaskAndReplyWithResult(

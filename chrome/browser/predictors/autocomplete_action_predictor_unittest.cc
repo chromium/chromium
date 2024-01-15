@@ -253,7 +253,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
     predictor_->OnURLsDeleted(
         history_service,
         history::DeletionInfo(history::DeletionTimeRange::Invalid(), expired,
-                              rows, std::set<GURL>(), absl::nullopt));
+                              rows, std::set<GURL>(), std::nullopt));
 
     EXPECT_EQ(expected.size(), db_cache()->size());
     EXPECT_EQ(expected.size(), db_id_cache()->size());

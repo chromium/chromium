@@ -205,7 +205,7 @@ class NoStatePrefetchTest : public testing::Test {
     attributes->view_size = kDefaultViewSize;
 
     // This could delete an existing prefetcher as a side-effect.
-    absl::optional<int> link_trigger_id =
+    std::optional<int> link_trigger_id =
         no_state_prefetch_link_manager()->OnStartLinkTrigger(
             render_process_id, render_view_id, render_frame_id,
             std::move(attributes), url::Origin::Create(initiator_url));
@@ -623,14 +623,14 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
 
   // Prefetch the url once.
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, absl::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_CANCELLED);
+      kUrl, std::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_CANCELLED);
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       kUrl, nullptr, gfx::Size(), nullptr));
   // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, absl::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_PROFILE_DESTROYED);
+      kUrl, std::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_PROFILE_DESTROYED);
 
   // Prefetch again before time_to_live aborts, because it is a duplicate.
   tick_clock()->Advance(base::Seconds(1));
@@ -894,7 +894,7 @@ TEST_F(NoStatePrefetchTest, CancelAllTest) {
 TEST_F(NoStatePrefetchTest, OmniboxAllowedWhenNotDisabled) {
   FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          GURL("http://www.example.com"), absl::nullopt, ORIGIN_OMNIBOX,
+          GURL("http://www.example.com"), std::nullopt, ORIGIN_OMNIBOX,
           FINAL_STATUS_PROFILE_DESTROYED);
 
   EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
@@ -1068,7 +1068,7 @@ TEST_F(NoStatePrefetchTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
   GURL url("http://www.google.com/");
   FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
+          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
@@ -1093,7 +1093,7 @@ TEST_F(NoStatePrefetchTest,
   GURL url("http://www.google.com/");
   FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
+          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
@@ -1118,7 +1118,7 @@ TEST_F(NoStatePrefetchTest,
   GURL url("http://www.google.com/");
   FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
+          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
@@ -1140,7 +1140,7 @@ TEST_F(
   GURL url("http://www.google.com/");
   FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
+          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
@@ -1163,7 +1163,7 @@ TEST_F(NoStatePrefetchTest, PrerenderAllowedForForcedCellular) {
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle;
   no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
+          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
           FINAL_STATUS_USED);
   no_state_prefetch_handle =
       no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
@@ -1547,7 +1547,7 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIncrementsByteCount) {
   GURL url("http://www.google.com/");
   FakeNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
+          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
       no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(

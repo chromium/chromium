@@ -101,7 +101,7 @@ class WilcoDtcSupportdNotificationControllerTest
         .size();
   }
 
-  absl::optional<message_center::Notification> GetNotification(
+  std::optional<message_center::Notification> GetNotification(
       const std::string& notification_id) const {
     return service_tester_->GetNotification(notification_id);
   }
@@ -133,7 +133,7 @@ TEST_P(WilcoDtcSupportdNotificationControllerTest, SingleNotification) {
   EXPECT_EQ(0u, NotificationCount());
   std::string id = (notification_controller()->*test_params.function)();
   EXPECT_EQ(1u, NotificationCount());
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       GetNotification(id);
   EXPECT_EQ(l10n_util::GetStringUTF16(test_params.title),
             notification->title());

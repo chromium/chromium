@@ -62,7 +62,7 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 
   void SetExtensionSettings(const std::string& settings_string,
                             TestingProfile* profile) {
-    absl::optional<base::Value> settings =
+    std::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
     profile->GetTestingPrefService()->SetManagedPref(

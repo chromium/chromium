@@ -34,8 +34,8 @@ TEST(CoalitionResourceUsageProviderTest, StartAndEndIntervals) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestCoalitionResourceUsageProvider provider;
 
-  absl::optional<power_metrics::CoalitionResourceUsageRate> short_rate;
-  absl::optional<power_metrics::CoalitionResourceUsageRate> long_rate;
+  std::optional<power_metrics::CoalitionResourceUsageRate> short_rate;
+  std::optional<power_metrics::CoalitionResourceUsageRate> long_rate;
 
   // Begin long interval.
   auto cru1 = std::make_unique<coalition_resource_usage>();
@@ -89,8 +89,8 @@ TEST(CoalitionResourceUsageProviderTest, CoalitionResourceUsageIsNull) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestCoalitionResourceUsageProvider provider;
 
-  absl::optional<power_metrics::CoalitionResourceUsageRate> short_rate;
-  absl::optional<power_metrics::CoalitionResourceUsageRate> long_rate;
+  std::optional<power_metrics::CoalitionResourceUsageRate> short_rate;
+  std::optional<power_metrics::CoalitionResourceUsageRate> long_rate;
 
   // Begin long interval.
   provider.SetCoalitionResourceUsage(

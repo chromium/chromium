@@ -15,7 +15,7 @@ class LaunchWebAuthFlowDelegateAsh : public LaunchWebAuthFlowDelegate {
   void GetOptionalWindowBounds(
       Profile* profile,
       const std::string& extension_id,
-      base::OnceCallback<void(absl::optional<gfx::Rect>)> callback) override;
+      base::OnceCallback<void(std::optional<gfx::Rect>)> callback) override;
 };
 
 }  // namespace extensions

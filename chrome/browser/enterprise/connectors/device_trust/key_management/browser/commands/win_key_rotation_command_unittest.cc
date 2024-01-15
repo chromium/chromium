@@ -6,6 +6,8 @@
 
 #include <winerror.h>
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -18,7 +20,6 @@
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -51,9 +52,9 @@ class WinKeyRotationCommandTest : public testing::Test {
 
   void RunTest(
       HRESULT command_hresult,
-      absl::optional<int> exit_code,
+      std::optional<int> exit_code,
       KeyRotationCommand::Status expected_status,
-      absl::optional<KeyRotationCommandError> logged_error = absl::nullopt,
+      std::optional<KeyRotationCommandError> logged_error = std::nullopt,
       bool skip_wait = false) {
     install_static::ScopedInstallDetails install_details(true);
 
@@ -63,7 +64,7 @@ class WinKeyRotationCommandTest : public testing::Test {
     WinKeyRotationCommand command(base::BindLambdaForTesting(
         [&command_hresult, &exit_code](const wchar_t* command,
                                        const std::vector<std::string>& args,
-                                       absl::optional<DWORD>* return_code) {
+                                       std::optional<DWORD>* return_code) {
           CheckCommandArgs(args);
           if (exit_code) {
             *return_code = exit_code.value();
@@ -83,8 +84,8 @@ class WinKeyRotationCommandTest : public testing::Test {
     VerifyHistograms(logged_error, exit_code);
   }
 
-  void VerifyHistograms(absl::optional<KeyRotationCommandError> error,
-                        absl::optional<int> exit_code) {
+  void VerifyHistograms(std::optional<KeyRotationCommandError> error,
+                        std::optional<int> exit_code) {
     if (error) {
       histogram_tester_.ExpectUniqueSample(
           "Enterprise.DeviceTrust.KeyRotationCommand.Error", error.value(), 1);
@@ -118,35 +119,35 @@ TEST_F(WinKeyRotationCommandTest, RotateFailure) {
 }
 
 TEST_F(WinKeyRotationCommandTest, RotateTimeout) {
-  RunTest(E_ABORT, absl::nullopt, KeyRotationCommand::Status::TIMED_OUT,
+  RunTest(E_ABORT, std::nullopt, KeyRotationCommand::Status::TIMED_OUT,
           KeyRotationCommandError::kTimeout);
 }
 
 TEST_F(WinKeyRotationCommandTest, GoogleUpdateConcurrencyIssue) {
   RunTest(WinKeyRotationCommand::GOOPDATE_E_APP_USING_EXTERNAL_UPDATER,
-          absl::nullopt, KeyRotationCommand::Status::FAILED,
+          std::nullopt, KeyRotationCommand::Status::FAILED,
           KeyRotationCommandError::kUpdaterConcurrency, /*skip_wait=*/true);
 }
 
 TEST_F(WinKeyRotationCommandTest, GeneralFailure) {
-  RunTest(S_OK, absl::nullopt, KeyRotationCommand::Status::FAILED,
+  RunTest(S_OK, std::nullopt, KeyRotationCommand::Status::FAILED,
           KeyRotationCommandError::kUnknown);
 }
 
 TEST_F(WinKeyRotationCommandTest, COMClassNotRegistered) {
-  RunTest(REGDB_E_CLASSNOTREG, absl::nullopt,
+  RunTest(REGDB_E_CLASSNOTREG, std::nullopt,
           KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION,
           KeyRotationCommandError::kClassNotRegistered);
 }
 
 TEST_F(WinKeyRotationCommandTest, COMClassNoInterface) {
-  RunTest(E_NOINTERFACE, absl::nullopt,
+  RunTest(E_NOINTERFACE, std::nullopt,
           KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION,
           KeyRotationCommandError::kNoInterface);
 }
 
 TEST_F(WinKeyRotationCommandTest, UnknownHresult) {
-  RunTest(CLASS_E_NOAGGREGATION, absl::nullopt,
+  RunTest(CLASS_E_NOAGGREGATION, std::nullopt,
           KeyRotationCommand::Status::FAILED,
           KeyRotationCommandError::kUnknown);
   histogram_tester_.ExpectUniqueSample(
@@ -160,7 +161,7 @@ TEST_F(WinKeyRotationCommandTest, UserLevelInstall) {
 
   WinKeyRotationCommand command(base::BindLambdaForTesting(
       [](const wchar_t* command, const std::vector<std::string>& args,
-         absl::optional<DWORD>* return_code) {
+         std::optional<DWORD>* return_code) {
         NOTREACHED() << "Should not get to launching the command.";
         return S_OK;
       }));
@@ -170,7 +171,7 @@ TEST_F(WinKeyRotationCommandTest, UserLevelInstall) {
 
   EXPECT_EQ(future_status.Get(),
             KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION);
-  VerifyHistograms(KeyRotationCommandError::kUserInstallation, absl::nullopt);
+  VerifyHistograms(KeyRotationCommandError::kUserInstallation, std::nullopt);
 }
 
 }  // namespace enterprise_connectors

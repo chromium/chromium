@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_PRINTING_PDF_TO_EMF_CONVERTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -32,7 +32,7 @@ class PdfConverter {
   static std::unique_ptr<PdfConverter> StartPdfConverter(
       scoped_refptr<base::RefCountedMemory> data,
       const PdfRenderSettings& conversion_settings,
-      const absl::optional<bool>& use_skia,
+      const std::optional<bool>& use_skia,
       const GURL& url,
       StartCallback start_callback);
 

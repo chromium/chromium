@@ -113,10 +113,10 @@ bool ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
   return false;
 }
 
-absl::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
+std::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
   if (IsPlatformApp())
     return false;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromeContentSettingsAgentDelegate::DidCommitProvisionalLoad(

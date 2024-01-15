@@ -78,7 +78,7 @@ void UpdateAllShortcutsForShortcutInfo(
   internals::PostShortcutIOTaskAndReplyWithResult(
       base::BindOnce(&internals::UpdatePlatformShortcuts,
                      std::move(shortcut_data_dir), old_app_title,
-                     /*user_specified_locations=*/absl::nullopt),
+                     /*user_specified_locations=*/std::nullopt),
       std::move(shortcut_info), std::move(callback));
 }
 

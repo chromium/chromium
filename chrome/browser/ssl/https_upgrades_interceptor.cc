@@ -111,7 +111,7 @@ net::RedirectInfo SetupRedirect(
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
       request.referrer_policy, request.referrer.spec(),
       net::HTTP_TEMPORARY_REDIRECT, new_url,
-      /*referrer_policy_header=*/absl::nullopt,
+      /*referrer_policy_header=*/std::nullopt,
       /*insecure_scheme_was_upgraded=*/false);
   return redirect_info;
 }

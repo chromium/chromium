@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_SERVICE_SETTINGS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_SERVICE_SETTINGS_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -27,9 +27,9 @@ class ReportingServiceSettings {
   ReportingServiceSettings(ReportingServiceSettings&&);
   ~ReportingServiceSettings();
 
-  // Get the settings to apply to a specific report. absl::nullopt implies no
+  // Get the settings to apply to a specific report. std::nullopt implies no
   // report should take place.
-  absl::optional<ReportingSettings> GetReportingSettings() const;
+  std::optional<ReportingSettings> GetReportingSettings() const;
 
   std::string service_provider_name() const { return service_provider_name_; }
 
@@ -55,7 +55,7 @@ class ReportingServiceSettings {
 
  private:
   // Returns true if the settings were initialized correctly. If this returns
-  // false, then GetAnalysisSettings will always return absl::nullopt.
+  // false, then GetAnalysisSettings will always return std::nullopt.
   bool IsValid() const;
 
   // The reporting config matching the name given in a Connector policy. nullptr

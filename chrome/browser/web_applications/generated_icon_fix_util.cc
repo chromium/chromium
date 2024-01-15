@@ -34,7 +34,7 @@ constexpr uint32_t kMaxAttemptCount =
     kFixWindowDuration.IntDiv(kFixAttemptThrottleDuration);
 static_assert(kMaxAttemptCount == 7u);
 
-absl::optional<base::Time> g_now_override_for_testing_;
+std::optional<base::Time> g_now_override_for_testing_;
 
 base::Time Now() {
   return g_now_override_for_testing_.value_or(base::Time::Now());
@@ -74,7 +74,7 @@ void SetNowForTesting(base::Time now) {
 }
 
 bool HasRemainingAttempts(const WebApp& app) {
-  const absl::optional<GeneratedIconFix>& generated_icon_fix =
+  const std::optional<GeneratedIconFix>& generated_icon_fix =
       app.generated_icon_fix();
   if (!generated_icon_fix.has_value()) {
     return true;
@@ -83,7 +83,7 @@ bool HasRemainingAttempts(const WebApp& app) {
 }
 
 bool IsWithinFixTimeWindow(const WebApp& app) {
-  const absl::optional<GeneratedIconFix>& generated_icon_fix =
+  const std::optional<GeneratedIconFix>& generated_icon_fix =
       app.generated_icon_fix();
   if (!generated_icon_fix.has_value()) {
     return base::FeatureList::IsEnabled(
@@ -118,7 +118,7 @@ GeneratedIconFix CreateInitialTimeWindow(GeneratedIconFixSource source) {
 }
 
 base::TimeDelta GetThrottleDuration(const WebApp& app) {
-  const absl::optional<GeneratedIconFix> generated_icon_fix =
+  const std::optional<GeneratedIconFix> generated_icon_fix =
       app.generated_icon_fix();
   if (!generated_icon_fix.has_value() ||
       !generated_icon_fix->has_last_attempt_time()) {

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_MANAGER_COMMON_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -318,7 +318,7 @@ class LogFileWriter {
     // If !max_file_size_bytes.has_value(), the LogFileWriter is unlimited.
     virtual std::unique_ptr<LogFileWriter> Create(
         const base::FilePath& path,
-        absl::optional<size_t> max_file_size_bytes) const = 0;
+        std::optional<size_t> max_file_size_bytes) const = 0;
   };
 
   virtual ~LogFileWriter() = default;
@@ -363,7 +363,7 @@ class BaseLogFileWriterFactory : public LogFileWriter::Factory {
 
   std::unique_ptr<LogFileWriter> Create(
       const base::FilePath& path,
-      absl::optional<size_t> max_file_size_bytes) const override;
+      std::optional<size_t> max_file_size_bytes) const override;
 };
 
 // Interface for a class that provides compression of a stream, while attempting
@@ -396,7 +396,7 @@ class LogCompressor {
     // initializations are successful; en empty unique_ptr otherwise.
     // If !max_size_bytes.has_value(), an unlimited compressor is created.
     virtual std::unique_ptr<LogCompressor> Create(
-        absl::optional<size_t> max_size_bytes) const = 0;
+        std::optional<size_t> max_size_bytes) const = 0;
   };
 
   // Result of a call to Compress().
@@ -482,7 +482,7 @@ class GzipLogCompressorFactory : public LogCompressor::Factory {
   size_t MinSizeBytes() const override;
 
   std::unique_ptr<LogCompressor> Create(
-      absl::optional<size_t> max_size_bytes) const override;
+      std::optional<size_t> max_size_bytes) const override;
 
  private:
   std::unique_ptr<CompressedSizeEstimator::Factory> estimator_factory_;
@@ -502,7 +502,7 @@ class GzippedLogFileWriterFactory : public LogFileWriter::Factory {
 
   std::unique_ptr<LogFileWriter> Create(
       const base::FilePath& path,
-      absl::optional<size_t> max_file_size_bytes) const override;
+      std::optional<size_t> max_file_size_bytes) const override;
 
  private:
   std::unique_ptr<GzipLogCompressorFactory> gzip_compressor_factory_;

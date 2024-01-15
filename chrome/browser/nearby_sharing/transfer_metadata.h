@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TRANSFER_METADATA_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TRANSFER_METADATA_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // Metadata about an ongoing transfer. Wraps transient data like status and
@@ -65,7 +65,7 @@ class TransferMetadata {
 
   TransferMetadata(Status status,
                    float progress,
-                   absl::optional<std::string> token,
+                   std::optional<std::string> token,
                    bool is_original,
                    bool is_final_status);
   ~TransferMetadata();
@@ -77,9 +77,9 @@ class TransferMetadata {
   // Returns transfer progress as percentage.
   float progress() const { return progress_; }
 
-  // Represents the UKey2 token from Nearby Connection. absl::nullopt if no
+  // Represents the UKey2 token from Nearby Connection. std::nullopt if no
   // UKey2 comparison is needed for this transfer.
-  const absl::optional<std::string>& token() const { return token_; }
+  const std::optional<std::string>& token() const { return token_; }
 
   // True if this |TransferMetadata| has not been seen.
   bool is_original() const { return is_original_; }
@@ -92,7 +92,7 @@ class TransferMetadata {
  private:
   Status status_;
   float progress_;
-  absl::optional<std::string> token_;
+  std::optional<std::string> token_;
   bool is_original_;
   bool is_final_status_;
 };

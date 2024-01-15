@@ -127,7 +127,7 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
   content::URLLoaderInterceptor url_loader_interceptor_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::string image_url_;
-  absl::optional<SkBitmap> image_;
+  std::optional<SkBitmap> image_;
 };
 
 TEST_F(RemoteCopyMessageHandlerTest, NotificationWithoutDeviceName) {

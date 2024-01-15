@@ -51,7 +51,7 @@ class FederatedIdentityPermissionContext
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
-      const absl::optional<std::string>& account_id) override;
+      const std::optional<std::string>& account_id) override;
   bool HasSharingPermission(
       const url::Origin& relying_party_requester) override;
   void GrantSharingPermission(const url::Origin& relying_party_requester,
@@ -62,7 +62,7 @@ class FederatedIdentityPermissionContext
                                const url::Origin& relying_party_embedder,
                                const url::Origin& identity_provider,
                                const std::string& account_id) override;
-  absl::optional<bool> GetIdpSigninStatus(
+  std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
   void SetIdpSigninStatus(const url::Origin& idp_origin,
                           bool idp_signin_status) override;

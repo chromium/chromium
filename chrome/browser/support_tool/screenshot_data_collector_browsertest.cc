@@ -74,13 +74,13 @@ IN_PROC_BROWSER_TEST_F(ScreenshotDataCollectorBrowserTest,
   data_collector.SetPickerFactoryForTesting(&picker_factory);
 
   // Take a screenshot of the new tab.
-  base::test::TestFuture<absl::optional<SupportToolError>> test_future_new_page;
+  base::test::TestFuture<std::optional<SupportToolError>> test_future_new_page;
   data_collector.CollectDataAndDetectPII(
       test_future_new_page.GetCallback(),
       /*task_runner_for_redaction_tool=*/nullptr,
       /*redaction_tool_container=*/nullptr);
-  const absl::optional<SupportToolError> error = test_future_new_page.Get();
-  EXPECT_EQ(error, absl::nullopt);
+  const std::optional<SupportToolError> error = test_future_new_page.Get();
+  EXPECT_EQ(error, std::nullopt);
   const std::string new_page_screenshot = data_collector.GetScreenshotBase64();
   EXPECT_THAT(new_page_screenshot, StartsWith(kBase64Header));
 }

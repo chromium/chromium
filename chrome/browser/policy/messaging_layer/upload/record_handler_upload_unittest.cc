@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
-
+#include <optional>
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
@@ -36,7 +36,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -269,7 +268,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
 EncryptedRecord ComposeEncryptedRecord(
     std::string_view data,
     UploadSettings upload_settings,
-    absl::optional<UploadTracker> upload_tracker) {
+    std::optional<UploadTracker> upload_tracker) {
   static constexpr int64_t kGenerationId = 1234;
   EncryptedRecord encrypted_record;
   encrypted_record.set_encrypted_wrapped_record(data.data(), data.size());
@@ -363,7 +362,7 @@ UploadTracker ComposeDoneTracker(int64_t total) {
 
 TEST_F(RecordHandlerUploadTest, SuccessfulInitiation) {
   EncryptedRecord init_encrypted_record = ComposeEncryptedRecord(
-      "Init Upload Record", ComposeUploadSettings(), absl::nullopt);
+      "Init Upload Record", ComposeUploadSettings(), std::nullopt);
   ScopedReservation record_reservation(init_encrypted_record.ByteSizeLong(),
                                        memory_resource_);
   const SuccessfulUploadResponse expected_response{
@@ -590,7 +589,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
   static constexpr int64_t kNumTestRecords = 10;
 
   EncryptedRecord init_encrypted_record = ComposeEncryptedRecord(
-      "Init Upload Record", ComposeUploadSettings(), absl::nullopt);
+      "Init Upload Record", ComposeUploadSettings(), std::nullopt);
   SuccessfulUploadResponse expected_response{
       .sequence_information = init_encrypted_record.sequence_information(),
       .force_confirm = false};
@@ -643,7 +642,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
 TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
   EncryptedRecord init_encrypted_record = ComposeEncryptedRecord(
       "Init Upload Record", ComposeUploadSettings(/*retry_count=*/2),
-      absl::nullopt);
+      std::nullopt);
   const SuccessfulUploadResponse expected_response{
       .sequence_information = init_encrypted_record.sequence_information(),
       .force_confirm = false};

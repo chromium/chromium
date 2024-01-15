@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DISABLED_AddApp) {
   iv->icon_type = apps::IconType::kStandard;
   iv->uncompressed = icon;
   apps::ApplyIconEffects(
-      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      profile_, /*app_id=*/std::nullopt, apps::IconEffects::kCrOsStandardIcon,
       /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is the downloaded icon.
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
       manager_->GetPlaceholderIcon(kId1, /*size_hint_in_dip=*/64);
   iv->is_placeholder_icon = true;
   apps::ApplyIconEffects(
-      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      profile_, /*app_id=*/std::nullopt, apps::IconEffects::kCrOsStandardIcon,
       /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is placeholder.

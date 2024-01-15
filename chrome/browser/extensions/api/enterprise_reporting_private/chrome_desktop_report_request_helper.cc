@@ -283,7 +283,7 @@ void OverrideEndpointVerificationDirForTesting(const base::FilePath& path) {
 }
 
 void StoreDeviceData(const std::string& id,
-                     const absl::optional<std::vector<uint8_t>> data,
+                     const std::optional<std::vector<uint8_t>> data,
                      base::OnceCallback<void(bool)> callback) {
   base::FilePath data_file = GetEndpointVerificationDir();
   if (data_file.empty()) {

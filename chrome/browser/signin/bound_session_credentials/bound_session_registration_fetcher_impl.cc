@@ -86,7 +86,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
               "BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete",
               perfetto::Flow::FromPointer(this), "net_error", net_error);
 
-  absl::optional<int> http_response_code;
+  std::optional<int> http_response_code;
   if (head && head->headers) {
     http_response_code = head->headers->response_code();
   }
@@ -143,7 +143,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
 
 void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
     base::ElapsedTimer generate_registration_token_timer,
-    absl::optional<RegistrationTokenHelper::Result> result) {
+    std::optional<RegistrationTokenHelper::Result> result) {
   TRACE_EVENT("browser",
               "BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated",
               perfetto::Flow::FromPointer(this), "success", result.has_value());
@@ -252,7 +252,7 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
   std::move(callback_).Run(
       params_or_error.has_value()
           ? std::move(params_or_error).value()
-          : absl::optional<bound_session_credentials::BoundSessionParams>());
+          : std::optional<bound_session_credentials::BoundSessionParams>());
 }
 
 BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
@@ -266,7 +266,7 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
                        base::CompareCase::SENSITIVE)) {
     response_json = response_json.substr(strlen(kXSSIPrefix));
   }
-  absl::optional<base::Value::Dict> maybe_root =
+  std::optional<base::Value::Dict> maybe_root =
       base::JSONReader::ReadDict(response_json);
   if (!maybe_root) {
     return base::unexpected(RegistrationError::kParseJsonFailed);

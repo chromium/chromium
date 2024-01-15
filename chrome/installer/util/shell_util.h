@@ -9,13 +9,13 @@
 #ifndef CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 #define CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 
-#include <windows.h>
-
 #include <stddef.h>
 #include <stdint.h>
+#include <windows.h>
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,7 +26,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class RegistryEntry;
 
@@ -431,7 +430,7 @@ class ShellUtil {
   // location. The input should be formatted by FormatIconLocation above,
   // or follow one of the formats specified in
   // http://msdn.microsoft.com/library/windows/desktop/dd391573.aspx.
-  static absl::optional<std::pair<base::FilePath, int>> ParseIconLocation(
+  static std::optional<std::pair<base::FilePath, int>> ParseIconLocation(
       const std::wstring& argument);
 
   // This method returns the command to open URLs/files using chrome. Typically
@@ -612,7 +611,7 @@ class ShellUtil {
     std::wstring ToCommandLineArgument() const;
 
     // Parses a ProtocolAssociations instance from a string command line arg.
-    static absl::optional<ProtocolAssociations> FromCommandLineArgument(
+    static std::optional<ProtocolAssociations> FromCommandLineArgument(
         const std::wstring& argument);
 
     base::flat_map<std::wstring, std::wstring> associations;

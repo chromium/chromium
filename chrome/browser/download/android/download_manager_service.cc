@@ -5,6 +5,7 @@
 #include "chrome/browser/download/android/download_manager_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
@@ -49,7 +50,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_request_utils.h"
 #include "net/url_request/referrer_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"

@@ -346,7 +346,7 @@ void TabManagerDelegate::LowMemoryKill(
     }
   }
 
-  LowMemoryKillImpl(now, reason, std::move(tab_discard_done), absl::nullopt);
+  LowMemoryKillImpl(now, reason, std::move(tab_discard_done), std::nullopt);
 }
 
 int TabManagerDelegate::GetCachedOomScore(ProcessHandle process_handle) {
@@ -498,7 +498,7 @@ void TabManagerDelegate::AdjustOomPriorities() {
   }
 
   // Pass in nullopt if unable to get ARC container processes.
-  AdjustOomPrioritiesImpl(absl::nullopt);
+  AdjustOomPrioritiesImpl(std::nullopt);
 }
 
 // Get a list of candidates to kill, sorted by descending importance.
@@ -592,7 +592,7 @@ void TabManagerDelegate::LowMemoryKillImpl(
   // bring the system memory back to a normal level.
   // The list is sorted by descending importance, so we go through the list
   // backwards.
-  absl::optional<base::TimeTicks> first_kill_time = absl::nullopt;
+  std::optional<base::TimeTicks> first_kill_time = std::nullopt;
   const TimeTicks now = TimeTicks::Now();
 
   for (auto& candidate : base::Reversed(candidates)) {

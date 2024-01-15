@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_RUN_ON_OS_LOGIN_SUB_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -31,7 +31,7 @@ class RunOnOsLoginSubManager : public OsIntegrationSubManager {
                  base::OnceClosure configure_done) override;
 
   void Execute(const webapps::AppId& app_id,
-               const absl::optional<SynchronizeOsOptions>& synchronize_options,
+               const std::optional<SynchronizeOsOptions>& synchronize_options,
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure execute_done) override;

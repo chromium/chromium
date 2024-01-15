@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -31,7 +32,6 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 

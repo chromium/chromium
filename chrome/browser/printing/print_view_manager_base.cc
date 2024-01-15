@@ -435,7 +435,7 @@ void PrintViewManagerBase::StartLocalPrintJob(
                      ? PrintScanningContext::kSystemPrintBeforePrintDocument
                      : PrintScanningContext::kNormalPrintBeforePrintDocument;
 
-  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+  std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
       scanning_data = enterprise_data_protection::GetPrintAnalysisData(
           web_contents(), context);
 
@@ -702,7 +702,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
-  absl::optional<int> printer_type_value =
+  std::optional<int> printer_type_value =
       job_settings.FindInt(kSettingPrinterType);
   if (!printer_type_value) {
     std::move(callback).Run(nullptr);
@@ -815,7 +815,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   }
 #endif
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+  std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
       scanning_data = enterprise_data_protection::GetPrintAnalysisData(
           web_contents(), enterprise_data_protection::PrintScanningContext::
                               kBeforeSystemDialog);

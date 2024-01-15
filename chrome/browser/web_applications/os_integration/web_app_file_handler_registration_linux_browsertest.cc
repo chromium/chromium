@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/repeating_test_future.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -14,6 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,7 +29,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -82,7 +82,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
         "applications");
   }
 
-  absl::optional<webapps::InstallResultCode> result_code_;
+  std::optional<webapps::InstallResultCode> result_code_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };
@@ -128,9 +128,9 @@ IN_PROC_BROWSER_TEST_F(
   InstallApp(install_options);
 
   loop.Run();
-  absl::optional<webapps::AppId> app_id = WebAppProvider::GetForTest(profile())
-                                              ->registrar_unsafe()
-                                              .LookupExternalAppId(url);
+  std::optional<webapps::AppId> app_id = WebAppProvider::GetForTest(profile())
+                                             ->registrar_unsafe()
+                                             .LookupExternalAppId(url);
   EXPECT_TRUE(app_id.has_value());
 
   base::FilePath expected_filename =

@@ -49,7 +49,7 @@ ClosedTabCache::ClosedTabCache()
 }
 ClosedTabCache::~ClosedTabCache() = default;
 
-bool ClosedTabCache::CanCacheWebContents(absl::optional<SessionID> id) {
+bool ClosedTabCache::CanCacheWebContents(std::optional<SessionID> id) {
   TRACE_EVENT0("browser", "ClosedTabCache::CanCacheWebContents");
 
   // Only store if the kClosedTabCache feature is enabled.
@@ -72,7 +72,7 @@ bool ClosedTabCache::CanCacheWebContents(absl::optional<SessionID> id) {
 }
 
 void ClosedTabCache::CacheWebContents(
-    std::pair<absl::optional<SessionID>, std::unique_ptr<content::WebContents>>
+    std::pair<std::optional<SessionID>, std::unique_ptr<content::WebContents>>
         cached) {
   TRACE_EVENT0("browser", "ClosedTabCache::CacheWebContents");
 

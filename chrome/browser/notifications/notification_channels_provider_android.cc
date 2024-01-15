@@ -412,15 +412,15 @@ bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
   return false;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 NotificationChannelsProviderAndroid::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    absl::optional<ContentSetting> setting_to_match,
+    std::optional<ContentSetting> setting_to_match,
     const content_settings::PartitionKey& partition_key) {
   // Setting renewal is not implemented for this type.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void NotificationChannelsProviderAndroid::SetClockForTesting(

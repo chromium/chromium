@@ -24,7 +24,7 @@ class Profile;
 
 namespace guest_os {
 
-// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+// web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 extern const char kTerminalSystemAppId[];
 
@@ -163,7 +163,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile);
 std::string GetTerminalSettingBackgroundColor(
     Profile* profile,
     GURL url,
-    absl::optional<SkColor> opener_background_color);
+    std::optional<SkColor> opener_background_color);
 
 // Returns terminal setting 'pass-ctrl-w'.
 bool GetTerminalSettingPassCtrlW(Profile* profile);

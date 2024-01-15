@@ -23,7 +23,7 @@ class OsIntegrationSynchronizeCommand : public WebAppCommand<AppLock> {
  public:
   OsIntegrationSynchronizeCommand(
       const webapps::AppId& app_id,
-      absl::optional<SynchronizeOsOptions> synchronize_options,
+      std::optional<SynchronizeOsOptions> synchronize_options,
       base::OnceClosure synchronize_callback);
   ~OsIntegrationSynchronizeCommand() override;
 
@@ -36,7 +36,7 @@ class OsIntegrationSynchronizeCommand : public WebAppCommand<AppLock> {
   std::unique_ptr<AppLock> app_lock_;
 
   webapps::AppId app_id_;
-  absl::optional<SynchronizeOsOptions> synchronize_options_ = absl::nullopt;
+  std::optional<SynchronizeOsOptions> synchronize_options_ = std::nullopt;
 
   base::WeakPtrFactory<OsIntegrationSynchronizeCommand> weak_factory_{this};
 };

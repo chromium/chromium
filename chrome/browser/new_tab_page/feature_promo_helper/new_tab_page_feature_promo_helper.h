@@ -24,7 +24,7 @@ class NewTabPageFeaturePromoHelper {
   virtual ~NewTabPageFeaturePromoHelper() = default;
 
  private:
-  absl::optional<bool> default_search_provider_is_google_ = absl::nullopt;
+  std::optional<bool> default_search_provider_is_google_ = std::nullopt;
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_FEATURE_PROMO_HELPER_NEW_TAB_PAGE_FEATURE_PROMO_HELPER_H_

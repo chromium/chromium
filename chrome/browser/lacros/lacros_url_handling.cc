@@ -52,7 +52,7 @@ bool IsUrlHandledByLacros(const GURL& url) {
 
 bool IsUrlAcceptedByAsh(const GURL& url) {
   auto* init_params = chromeos::BrowserParamsProxy::Get();
-  const absl::optional<std::vector<GURL>>& accepted_urls =
+  const std::optional<std::vector<GURL>>& accepted_urls =
       init_params->AcceptedInternalAshUrls();
   if (!accepted_urls.has_value()) {
     CHECK_IS_TEST();

@@ -57,7 +57,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoParse) {
   EXPECT_EQ(sync_pb::WebAppSpecifics::BROWSER, sync_proto.user_display_mode());
 
   // Check the fields were parsed into the web app struct.
-  absl::optional<WebApp::SyncFallbackData> fallback_data =
+  std::optional<WebApp::SyncFallbackData> fallback_data =
       ParseSyncFallbackDataStruct(sync_proto);
   ASSERT_TRUE(fallback_data.has_value());
   EXPECT_EQ(kAppName, fallback_data->name);
@@ -78,7 +78,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_Minimal) {
   sync_proto.set_user_display_mode(sync_pb::WebAppSpecifics::BROWSER);
 
   // Parse the proto.
-  absl::optional<WebApp::SyncFallbackData> fallback_data =
+  std::optional<WebApp::SyncFallbackData> fallback_data =
       ParseSyncFallbackDataStruct(sync_proto);
 
   // Check the fields were parsed.
@@ -109,7 +109,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_FullyPopulated) {
   icon_info_2->set_purpose(sync_pb::WebAppIconInfo_Purpose_MASKABLE);
 
   // Parse the proto.
-  absl::optional<WebApp::SyncFallbackData> fallback_data =
+  std::optional<WebApp::SyncFallbackData> fallback_data =
       ParseSyncFallbackDataStruct(sync_proto);
 
   // Check the fields were parsed.

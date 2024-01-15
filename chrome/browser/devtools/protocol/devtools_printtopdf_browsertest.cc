@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "pdf/pdf.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfScaleTest, PrintToPdfScaleArea) {
 
 class PrintToPdfPaperOrientationTest : public PrintToPdfProtocolTest {
  protected:
-  absl::optional<gfx::SizeF> PrintToPdfAndReturnPageSize(
+  std::optional<gfx::SizeF> PrintToPdfAndReturnPageSize(
       bool landscape = false) {
     base::Value::Dict params;
     params.Set("paperWidth", kPaperWidth);
@@ -305,11 +305,11 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfPaperOrientationTest,
 
   Attach();
 
-  absl::optional<gfx::SizeF> portrait_page_size = PrintToPdfAndReturnPageSize();
+  std::optional<gfx::SizeF> portrait_page_size = PrintToPdfAndReturnPageSize();
   ASSERT_TRUE(portrait_page_size.has_value());
   EXPECT_GT(portrait_page_size->height(), portrait_page_size->width());
 
-  absl::optional<gfx::SizeF> landscape_page_size =
+  std::optional<gfx::SizeF> landscape_page_size =
       PrintToPdfAndReturnPageSize(/*landscape=*/true);
   ASSERT_TRUE(landscape_page_size.has_value());
   EXPECT_GT(landscape_page_size->width(), landscape_page_size->height());

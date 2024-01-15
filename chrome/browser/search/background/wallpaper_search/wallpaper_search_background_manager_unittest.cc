@@ -39,7 +39,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
  public:
   explicit MockNtpCustomBackgroundService(Profile* profile)
       : NtpCustomBackgroundService(profile) {}
-  MOCK_METHOD(absl::optional<CustomBackground>, GetCustomBackground, ());
+  MOCK_METHOD(std::optional<CustomBackground>, GetCustomBackground, ());
   MOCK_METHOD0(IsCustomBackgroundDisabledByPolicy, bool());
   MOCK_METHOD1(SetBackgroundToLocalResourceWithId, void(const base::Token&));
   MOCK_METHOD1(UpdateCustomLocalBackgroundColorAsync, void(const gfx::Image&));
@@ -229,7 +229,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   CustomBackground custom_background;
   custom_background.local_background_id = token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
   wallpaper_search_background_manager().SelectLocalBackgroundImage(
       token, bitmap, base::ElapsedTimer());
 
@@ -244,7 +244,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {
   CustomBackground custom_background;
   custom_background.local_background_id = token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
 
   HistoryEntry entry = HistoryEntry(token);
   entry.subject = "foo";
@@ -294,7 +294,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   CustomBackground custom_background;
   custom_background.local_background_id = theme_token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
 
   HistoryEntry entry = HistoryEntry(theme_token);
   entry.subject = "foo";
@@ -352,7 +352,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   CustomBackground custom_background;
   custom_background.local_background_id = theme_token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
 
   HistoryEntry theme_entry = HistoryEntry(theme_token);
   theme_entry.subject = "foo2";
@@ -434,7 +434,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   CustomBackground custom_background;
   custom_background.local_background_id = theme_token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
 
   wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(
       HistoryEntry(theme_token));
@@ -465,7 +465,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   }
 }
 
-// Check that absl::nullopt is returned if the history entry passed in is
+// Check that std::nullopt is returned if the history entry passed in is
 // not the current theme, and history is not changed.
 TEST_F(WallpaperSearchBackgroundManagerTest,
        SaveCurrentBackgroundToHistory_NotCurrentBackground) {
@@ -473,7 +473,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   CustomBackground custom_background;
   custom_background.local_background_id = token;
   ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
-      .WillByDefault(Return(absl::make_optional(custom_background)));
+      .WillByDefault(Return(std::make_optional(custom_background)));
 
   auto response =
       wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(

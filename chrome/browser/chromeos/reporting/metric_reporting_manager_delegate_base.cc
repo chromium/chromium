@@ -28,7 +28,7 @@ std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
 CreateReportQueue(EventType event_type,
                   Destination destination,
                   std::unique_ptr<RateLimiterInterface> rate_limiter,
-                  absl::optional<SourceInfo> source_info) {
+                  std::optional<SourceInfo> source_info) {
   return ReportQueueFactory::CreateSpeculativeReportQueue(
       ReportQueueConfiguration::Create(
           {.event_type = event_type, .destination = destination})
@@ -44,7 +44,7 @@ MetricReportingManagerDelegateBase::CreateMetricReportQueue(
     Destination destination,
     Priority priority,
     std::unique_ptr<RateLimiterInterface> rate_limiter,
-    absl::optional<SourceInfo> source_info) {
+    std::optional<SourceInfo> source_info) {
   std::unique_ptr<MetricReportQueue> metric_report_queue;
   auto report_queue = CreateReportQueue(
       event_type, destination, std::move(rate_limiter), std::move(source_info));
@@ -66,7 +66,7 @@ MetricReportingManagerDelegateBase::CreatePeriodicUploadReportQueue(
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms,
-    absl::optional<SourceInfo> source_info) {
+    std::optional<SourceInfo> source_info) {
   std::unique_ptr<MetricReportQueue> metric_report_queue;
   auto report_queue =
       CreateReportQueue(event_type, destination, /*rate_limiter=*/nullptr,

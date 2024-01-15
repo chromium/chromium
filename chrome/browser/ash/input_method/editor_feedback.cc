@@ -74,7 +74,7 @@ bool SendEditorFeedback(Profile* profile, std::string_view description) {
   feedback_data->set_product_id(kOrcaFeedbackProductId);
   feedback_data->set_include_chrome_platform(false);
   feedback_data->set_description(std::string(description));
-  if (absl::optional<std::string> user_email =
+  if (std::optional<std::string> user_email =
           GetSignedInUserEmailFromProfile(profile);
       user_email.has_value() &&
       gaia::IsGoogleInternalAccountEmail(*user_email)) {

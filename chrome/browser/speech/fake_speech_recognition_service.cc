@@ -70,7 +70,7 @@ void FakeSpeechRecognitionService::Start(
 void FakeSpeechRecognitionService::Stop() {
   capturing_audio_ = false;
   device_id_ = "";
-  audio_parameters_ = absl::nullopt;
+  audio_parameters_ = std::nullopt;
   MarkDone();
 }
 
@@ -116,7 +116,7 @@ void FakeSpeechRecognitionService::OnRecognizerClientDisconnected() {
   recognizer_receiver_.reset();
   capturing_audio_ = false;
   device_id_ = "";
-  audio_parameters_ = absl::nullopt;
+  audio_parameters_ = std::nullopt;
 }
 
 }  // namespace speech

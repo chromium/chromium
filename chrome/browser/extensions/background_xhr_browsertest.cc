@@ -152,7 +152,7 @@ class BackgroundXhrPolicyTest : public ExtensionApiTestWithManagementPolicy {
 
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     EXPECT_TRUE(value->is_string());
     std::string trimmed_result;

@@ -19,7 +19,7 @@ using x509_certificate_model::OptionalStringOrError;
 
 namespace {
 
-absl::optional<std::string> FindExtension(
+std::optional<std::string> FindExtension(
     const std::vector<x509_certificate_model::Extension>& extensions,
     base::StringPiece name) {
   for (const auto& extension : extensions) {
@@ -28,7 +28,7 @@ absl::optional<std::string> FindExtension(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/nearby/presence/credential_storage/nearby_presence_credential_storage.h"
+
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -11,7 +14,6 @@
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/local_credential.pb.h"
 
@@ -780,7 +782,7 @@ TEST_F(NearbyPresenceCredentialStorageTest,
             kLocalPublicCredential,
         base::BindLambdaForTesting(
             [&run_loop](mojo_base::mojom::AbslStatusCode status,
-                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                        std::optional<std::vector<mojom::SharedCredentialPtr>>
                             credentials) {
               EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
               EXPECT_TRUE(credentials.has_value());
@@ -818,7 +820,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Local_Fail) {
             kLocalPublicCredential,
         base::BindLambdaForTesting(
             [&run_loop](mojo_base::mojom::AbslStatusCode status,
-                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                        std::optional<std::vector<mojom::SharedCredentialPtr>>
                             credentials) {
               EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
               EXPECT_FALSE(credentials.has_value());
@@ -856,7 +858,7 @@ TEST_F(NearbyPresenceCredentialStorageTest,
             kRemotePublicCredential,
         base::BindLambdaForTesting(
             [&run_loop](mojo_base::mojom::AbslStatusCode status,
-                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                        std::optional<std::vector<mojom::SharedCredentialPtr>>
                             credentials) {
               EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
               EXPECT_TRUE(credentials.has_value());
@@ -894,7 +896,7 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
             kRemotePublicCredential,
         base::BindLambdaForTesting(
             [&run_loop](mojo_base::mojom::AbslStatusCode status,
-                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                        std::optional<std::vector<mojom::SharedCredentialPtr>>
                             credentials) {
               EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
               EXPECT_FALSE(credentials.has_value());
@@ -925,9 +927,9 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
   {
     base::RunLoop run_loop;
     credential_storage_->GetPrivateCredentials(base::BindLambdaForTesting(
-        [&run_loop](mojo_base::mojom::AbslStatusCode status,
-                    absl::optional<std::vector<mojom::LocalCredentialPtr>>
-                        credentials) {
+        [&run_loop](
+            mojo_base::mojom::AbslStatusCode status,
+            std::optional<std::vector<mojom::LocalCredentialPtr>> credentials) {
           EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
           EXPECT_TRUE(credentials.has_value());
           EXPECT_EQ(credentials->size(), 3u);
@@ -959,9 +961,9 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
   {
     base::RunLoop run_loop;
     credential_storage_->GetPrivateCredentials(base::BindLambdaForTesting(
-        [&run_loop](mojo_base::mojom::AbslStatusCode status,
-                    absl::optional<std::vector<mojom::LocalCredentialPtr>>
-                        credentials) {
+        [&run_loop](
+            mojo_base::mojom::AbslStatusCode status,
+            std::optional<std::vector<mojom::LocalCredentialPtr>> credentials) {
           EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
           EXPECT_FALSE(credentials.has_value());
           run_loop.Quit();

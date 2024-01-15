@@ -44,7 +44,7 @@ void SettingsSyncProcessor::Init(const base::Value::Dict& initial_state) {
   initialized_ = true;
 }
 
-absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
+std::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
     const value_store::ValueStoreChangeList& changes) {
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
@@ -78,9 +78,9 @@ absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
   }
 
   if (sync_changes.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<syncer::ModelError> error =
+  std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, sync_changes);
   if (error.has_value())
     return error;
@@ -90,7 +90,7 @@ absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
     synced_keys_.erase(deleted_key);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SettingsSyncProcessor::NotifyChanges(

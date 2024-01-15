@@ -41,7 +41,7 @@ DIPSStorage::PrepopulateArgs::PrepopulateArgs(PrepopulateArgs&&) = default;
 
 DIPSStorage::PrepopulateArgs::~PrepopulateArgs() = default;
 
-DIPSStorage::DIPSStorage(const absl::optional<base::FilePath>& path)
+DIPSStorage::DIPSStorage(const std::optional<base::FilePath>& path)
     : db_(std::make_unique<DIPSDatabase>(path)) {
   base::AssertLongCPUWorkAllowed();
 }
@@ -60,7 +60,7 @@ DIPSState DIPSStorage::ReadSite(std::string site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  absl::optional<StateValue> state = db_->Read(site);
+  std::optional<StateValue> state = db_->Read(site);
 
   if (state.has_value()) {
     // We should not have entries in the DB without any timestamps.
@@ -84,7 +84,7 @@ void DIPSStorage::Write(const DIPSState& state) {
              state.bounce_times(), state.web_authn_assertion_times());
 }
 
-absl::optional<PopupsStateValue> DIPSStorage::ReadPopup(
+std::optional<PopupsStateValue> DIPSStorage::ReadPopup(
     const std::string& first_party_site,
     const std::string& tracking_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -255,7 +255,7 @@ std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
 }
 
 std::vector<std::string> DIPSStorage::GetSitesToClear(
-    absl::optional<base::TimeDelta> custom_period) const {
+    std::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
   base::TimeDelta grace_period =
       custom_period.value_or(features::kDIPSGracePeriod.Get());
@@ -288,10 +288,10 @@ bool DIPSStorage::DidSiteHaveInteractionSince(const GURL& url,
          last_user_interaction_time >= bound;
 }
 
-absl::optional<base::Time> DIPSStorage::LastInteractionTime(const GURL& url) {
+std::optional<base::Time> DIPSStorage::LastInteractionTime(const GURL& url) {
   const DIPSState state = Read(url);
   if (!state.user_interaction_times().has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return state.user_interaction_times()->second;
 }

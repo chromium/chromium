@@ -174,8 +174,8 @@ void UpdateRequiredNotification::Close(bool by_user) {
 }
 
 void UpdateRequiredNotification::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   // |button_index| may be empty if the notification body was clicked.
   if (!button_index)
     return;

@@ -24,7 +24,7 @@ class MockAppActivity : public AppActivity {
   MOCK_METHOD1(SendAppMessageToReceiver,
                cast_channel::Result(const CastInternalMessage& cast_message));
   MOCK_METHOD1(SendMediaRequestToReceiver,
-               absl::optional<int>(const CastInternalMessage& cast_message));
+               std::optional<int>(const CastInternalMessage& cast_message));
   MOCK_METHOD2(SendSetVolumeRequestToReceiver,
                void(const CastInternalMessage& cast_message,
                     cast_channel::ResultCallback callback));
@@ -51,7 +51,7 @@ class MockAppActivity : public AppActivity {
                     blink::mojom::PresentationConnectionMessagePtr message));
   MOCK_METHOD2(SendMediaStatusToClients,
                void(const base::Value::Dict& media_status,
-                    absl::optional<int> request_id));
+                    std::optional<int> request_id));
   MOCK_METHOD1(
       ClosePresentationConnections,
       void(blink::mojom::PresentationConnectionCloseReason close_reason));

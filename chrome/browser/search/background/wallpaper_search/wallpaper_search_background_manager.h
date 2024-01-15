@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_WALLPAPER_SEARCH_WALLPAPER_SEARCH_BACKGROUND_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/token.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class PrefRegistrySimple;
@@ -45,7 +45,7 @@ class WallpaperSearchBackgroundManager {
 
   // Saves the background to history if it is the current background.
   // Returns the backround's ID if successful.
-  virtual absl::optional<base::Token> SaveCurrentBackgroundToHistory(
+  virtual std::optional<base::Token> SaveCurrentBackgroundToHistory(
       const HistoryEntry& history_entry);
 
  private:

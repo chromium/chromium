@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/system_network_context_manager.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -53,7 +54,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -325,7 +325,7 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::Process network_process_;
-  absl::optional<base::RunLoop> launch_run_loop_;
+  std::optional<base::RunLoop> launch_run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -638,7 +638,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class SystemNetworkContextManagerCertificateTransparencyBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
-      public testing::WithParamInterface<absl::optional<bool>> {
+      public testing::WithParamInterface<std::optional<bool>> {
  public:
   SystemNetworkContextManagerCertificateTransparencyBrowsertest() {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
@@ -646,6 +646,6 @@ class SystemNetworkContextManagerCertificateTransparencyBrowsertest
   }
   ~SystemNetworkContextManagerCertificateTransparencyBrowsertest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 };

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -66,7 +67,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -197,8 +197,8 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 
   struct Parameters {
     IsolatedWebAppUrlInfo url_info;
-    absl::optional<IsolatedWebAppLocation> location;
-    absl::optional<base::Version> expected_version;
+    std::optional<IsolatedWebAppLocation> location;
+    std::optional<base::Version> expected_version;
   };
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -305,7 +305,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
               Pointee(Property(
                   &WebApp::isolation_data,
                   Optional(Property(&WebApp::IsolationData::pending_update_info,
-                                    Eq(absl::nullopt))))));
+                                    Eq(std::nullopt))))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -334,7 +334,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
           *profile()->GetPrefs()));
 
   auto command = std::make_unique<InstallIsolatedWebAppCommand>(
-      url_info, CreateDevProxyLocation(), /*expected_version=*/absl::nullopt,
+      url_info, CreateDevProxyLocation(), /*expected_version=*/std::nullopt,
       content::WebContents::Create(
           content::WebContents::CreateParams(profile())),
       /*optional_keep_alive=*/nullptr,
@@ -479,7 +479,7 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsUntranslatedNameWhenNameIsNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.opt_manifest->name = absl::nullopt;
+  page_state.opt_manifest->name = std::nullopt;
   page_state.opt_manifest->short_name = u"test short name";
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());

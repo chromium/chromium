@@ -165,7 +165,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
+  std::optional<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
 #endif
 
   net::EmbeddedTestServer primary_server_;

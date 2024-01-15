@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/concierge_helper_service.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -12,13 +14,12 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
 
 void OnSetVmCpuRestriction(
-    absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
+    std::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
   if (!response || !response->success()) {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "Failed to call SetVmCpuRestriction";
@@ -50,7 +51,7 @@ void SetVmCpuRestriction(
   auto* client = ConciergeClient::Get();
   if (!client) {
     LOG(WARNING) << "ConciergeClient is not available";
-    OnSetVmCpuRestriction(absl::nullopt);
+    OnSetVmCpuRestriction(std::nullopt);
     return;
   }
   client->SetVmCpuRestriction(request, base::BindOnce(&OnSetVmCpuRestriction));

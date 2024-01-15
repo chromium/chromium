@@ -310,15 +310,15 @@ TEST_F(SigninUtilTest,
 TEST_F(SigninUtilTest, IsProfileSeparationEnforced) {
   EXPECT_FALSE(signin_util::IsProfileSeparationEnforcedByPolicies(
       policy::ProfileSeparationPolicies(
-          policy::ProfileSeparationSettings::SUGGESTED, absl::nullopt)));
+          policy::ProfileSeparationSettings::SUGGESTED, std::nullopt)));
 
   EXPECT_TRUE(signin_util::IsProfileSeparationEnforcedByPolicies(
       policy::ProfileSeparationPolicies(
-          policy::ProfileSeparationSettings::ENFORCED, absl::nullopt)));
+          policy::ProfileSeparationSettings::ENFORCED, std::nullopt)));
 
   EXPECT_FALSE(signin_util::IsProfileSeparationEnforcedByPolicies(
       policy::ProfileSeparationPolicies(
-          policy::ProfileSeparationSettings::DISABLED, absl::nullopt)));
+          policy::ProfileSeparationSettings::DISABLED, std::nullopt)));
 }
 
 TEST_F(SigninUtilTest,

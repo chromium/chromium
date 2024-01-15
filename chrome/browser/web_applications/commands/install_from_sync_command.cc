@@ -64,8 +64,8 @@ InstallFromSyncCommand::Params::Params(
     const GURL& start_url,
     const std::string& title,
     const GURL& scope,
-    const absl::optional<SkColor>& theme_color,
-    const absl::optional<mojom::UserDisplayMode>& user_display_mode,
+    const std::optional<SkColor>& theme_color,
+    const std::optional<mojom::UserDisplayMode>& user_display_mode,
     const std::vector<apps::IconInfo>& icons)
     : app_id(app_id),
       manifest_id(manifest_id),

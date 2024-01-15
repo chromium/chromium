@@ -290,11 +290,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
         CrxInstaller::OffStoreInstallAllowedFromSettingsPage);
     crx_installer->set_install_immediately(true);
 
-    base::test::TestFuture<absl::optional<CrxInstallError>>
+    base::test::TestFuture<std::optional<CrxInstallError>>
         installer_done_future;
     crx_installer->AddInstallerCallback(
         installer_done_future
-            .GetCallback<const absl::optional<CrxInstallError>&>());
+            .GetCallback<const std::optional<CrxInstallError>&>());
 
     WorkerInitializedWaiter worker_waiter(id);
 

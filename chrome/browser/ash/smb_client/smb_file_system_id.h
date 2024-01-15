@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_ID_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_FILE_SYSTEM_ID_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace smb_client {
@@ -39,7 +39,7 @@ bool IsKerberosChromadFileSystemId(const std::string& file_system_id);
 // Returns the username if |file_system_id| was constructed with
 // CreateFileSystemIdForUser(). Returns nullopt if |file_system_id| does not
 // store the username.
-absl::optional<std::string> GetUserFromFileSystemId(
+std::optional<std::string> GetUserFromFileSystemId(
     const std::string& file_system_id);
 
 }  // namespace smb_client

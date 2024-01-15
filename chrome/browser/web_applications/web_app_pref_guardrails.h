@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREF_GUARDRAILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREF_GUARDRAILS_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -15,7 +16,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -26,12 +26,12 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 struct GuardrailData {
-  absl::optional<int> app_specific_not_accept_count;
-  absl::optional<int> app_specific_mute_after_dismiss_days;
-  absl::optional<int> app_specific_mute_after_ignore_days;
+  std::optional<int> app_specific_not_accept_count;
+  std::optional<int> app_specific_mute_after_dismiss_days;
+  std::optional<int> app_specific_mute_after_ignore_days;
   int global_not_accept_count;
-  absl::optional<int> global_mute_after_dismiss_days;
-  absl::optional<int> global_mute_after_ignore_days;
+  std::optional<int> global_mute_after_dismiss_days;
+  std::optional<int> global_mute_after_ignore_days;
 };
 
 struct GuardrailPrefNames {
@@ -43,13 +43,13 @@ struct GuardrailPrefNames {
   std::string_view block_reason_name;
 };
 
-absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
-                                     const webapps::AppId& app_id,
-                                     base::StringPiece path);
+std::optional<int> GetIntWebAppPref(const PrefService* pref_service,
+                                    const webapps::AppId& app_id,
+                                    base::StringPiece path);
 
-absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
-                                             const webapps::AppId& app_id,
-                                             base::StringPiece path);
+std::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
+                                            const webapps::AppId& app_id,
+                                            base::StringPiece path);
 
 // WebAppPrefGuardrails provide a simple way of building guardrails based on the
 // number of times a prompt on an app has been ignored or dismissed in the past.
@@ -126,11 +126,11 @@ class WebAppPrefGuardrails {
   WebAppPrefGuardrails(PrefService* profile,
                        const GuardrailData& guardrail_data,
                        const GuardrailPrefNames& guardrail_pref_names,
-                       absl::optional<int> max_days_to_store_guardrails);
+                       std::optional<int> max_days_to_store_guardrails);
 
   // If guardrails are blocked, returns a string result of why it was blocked.
-  absl::optional<std::string> IsAppBlocked(const webapps::AppId& app_id);
-  absl::optional<std::string> IsGloballyBlocked();
+  std::optional<std::string> IsAppBlocked(const webapps::AppId& app_id);
+  std::optional<std::string> IsGloballyBlocked();
 
   void UpdateAppSpecificNotAcceptedPrefs(const webapps::AppId& app_id,
                                          base::Time time,
@@ -162,8 +162,8 @@ class WebAppPrefGuardrails {
 
   // This cannot be a part of the GuardrailData struct since this is dynamic and
   // is usually controlled via Finch, and is hence not a constant. If not
-  // defined or set to absl::nullopt, guardrails will never be reset.
-  absl::optional<int> max_days_to_store_guardrails_;
+  // defined or set to std::nullopt, guardrails will never be reset.
+  std::optional<int> max_days_to_store_guardrails_;
 };
 
 inline constexpr GuardrailData kIphGuardrails{

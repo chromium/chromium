@@ -5,6 +5,7 @@
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_ash.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kDriveFsProviderName[] = "drive.google.com";

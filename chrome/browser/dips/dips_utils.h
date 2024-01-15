@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_UTILS_H_
 #define CHROME_BROWSER_DIPS_DIPS_UTILS_H_
 
+#include <optional>
 #include <ostream>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class ProfileSelections;
@@ -125,7 +125,7 @@ base::StringPiece GetHistogramPiece(DIPSRedirectType type);
 const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 
-using TimestampRange = absl::optional<std::pair<base::Time, base::Time>>;
+using TimestampRange = std::optional<std::pair<base::Time, base::Time>>;
 // Expand the range to include `time` if necessary. Returns true iff the range
 // was modified.
 bool UpdateTimestampRange(TimestampRange& range, base::Time time);
@@ -210,10 +210,10 @@ inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
 
 // Returns the last committed or the to be committed url of the main frame of
 // the page containing the `navigation_handle`.
-inline absl::optional<GURL> GetFirstPartyURL(
+inline std::optional<GURL> GetFirstPartyURL(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()
@@ -224,9 +224,9 @@ inline absl::optional<GURL> GetFirstPartyURL(
 
 // Returns an optional last committed url of the main frame of the page
 // containing the `rfh`.
-inline absl::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
-  return rfh ? absl::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
-             : absl::nullopt;
+inline std::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
+  return rfh ? std::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
+             : std::nullopt;
 }
 
 enum class DIPSRecordedEvent {

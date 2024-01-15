@@ -43,7 +43,7 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
 
   // Helper function to generate mojom metrics.
   blink::mojom::AnchorElementMetricsPtr CreateMetricsPtr(
-      absl::optional<int> anchor_id = absl::nullopt) {
+      std::optional<int> anchor_id = std::nullopt) {
     if (anchor_id.has_value()) {
       next_id_ = anchor_id.value();
     }
@@ -522,7 +522,7 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
     auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
     return user_interactions()[index_it->second];
   }
-  absl::optional<base::TimeDelta> navigation_start_to_click() {
+  std::optional<base::TimeDelta> navigation_start_to_click() {
     return navigation_start_to_click_;
   }
   int GetAnchorIndex(AnchorId anchor_id) {
@@ -560,7 +560,7 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
 
   MockNavigationPredictorForTesting::AnchorId ReportNewAnchorElement(
       blink::mojom::AnchorElementMetricsHost* predictor_service,
-      absl::optional<int> id = absl::nullopt) {
+      std::optional<int> id = std::nullopt) {
     std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
     metrics.push_back(CreateMetricsPtr(id));
 

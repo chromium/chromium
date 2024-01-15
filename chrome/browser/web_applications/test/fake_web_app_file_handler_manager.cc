@@ -32,7 +32,7 @@ void FakeWebAppFileHandlerManager::InstallFileHandler(
     const webapps::AppId& app_id,
     const GURL& action,
     const AcceptMap& accept,
-    absl::optional<apps::FileHandler::LaunchType> launch_type,
+    std::optional<apps::FileHandler::LaunchType> launch_type,
     bool enable) {
   if (!base::Contains(file_handlers_, app_id))
     file_handlers_[app_id] = apps::FileHandlers();

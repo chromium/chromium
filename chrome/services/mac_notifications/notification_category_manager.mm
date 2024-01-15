@@ -36,7 +36,7 @@ UNNotificationAction* CreateAction(
 NotificationCategoryManager::Button GetButtonFromAction(
     UNNotificationAction* action) {
   std::u16string title = base::SysNSStringToUTF16([action title]);
-  absl::optional<std::u16string> placeholder;
+  std::optional<std::u16string> placeholder;
 
   if ([action isKindOfClass:[UNTextInputNotificationAction class]]) {
     auto* text_action = static_cast<UNTextInputNotificationAction*>(action);

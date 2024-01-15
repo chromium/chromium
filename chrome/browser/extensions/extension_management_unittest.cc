@@ -370,11 +370,11 @@ class ExtensionManagementServiceTest : public testing::Test {
 
 class MockCWSInfoService : public CWSInfoServiceInterface {
  public:
-  MOCK_METHOD(absl::optional<bool>,
+  MOCK_METHOD(std::optional<bool>,
               IsLiveInCWS,
               (const Extension&),
               (const, override));
-  MOCK_METHOD(absl::optional<CWSInfoServiceInterface::CWSInfo>,
+  MOCK_METHOD(std::optional<CWSInfoServiceInterface::CWSInfo>,
               GetCWSInfo,
               (const Extension&),
               (const, override));
@@ -1367,7 +1367,7 @@ TEST_F(ExtensionManagementServiceTest,
       .WillOnce(testing::Return(cws_info_live))
       .WillOnce(testing::Return(cws_info_malware))
       .WillOnce(testing::Return(cws_info_not_live))
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
   // Verify that the extension is allowed when it is live in CWS.
   EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
       normal_extension.get()));

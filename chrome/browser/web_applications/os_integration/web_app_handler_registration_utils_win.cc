@@ -107,7 +107,7 @@ Result UpdateAppRegistration(const webapps::AppId& app_id,
 
   base::FilePath web_app_path(
       GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL()));
-  absl::optional<base::FilePath> app_launcher_path =
+  std::optional<base::FilePath> app_launcher_path =
       CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
   if (!app_launcher_path)
     return Result::kError;
@@ -143,8 +143,8 @@ bool AppNameHasProfileExtension(const std::wstring& app_name,
 // previously written values, and should therefore be avoided if possible.
 std::wstring GetProgId(const base::FilePath& profile_path,
                        const webapps::AppId& app_id,
-                       const absl::optional<std::set<std::string>>&
-                           file_extensions = absl::nullopt) {
+                       const std::optional<std::set<std::string>>&
+                           file_extensions = std::nullopt) {
   // On system-level Win7 installs of the browser we need a user-specific part
   // to differentiate HKLM entries from different Windows profiles.
   std::wstring user_specific_part;
@@ -233,14 +233,14 @@ std::wstring GetProgIdForAppFileHandler(
   return GetProgId(profile_path, app_id, file_extensions);
 }
 
-absl::optional<base::FilePath> CreateAppLauncherFile(
+std::optional<base::FilePath> CreateAppLauncherFile(
     const std::wstring& app_name,
     const std::wstring& app_name_extension,
     const base::FilePath& web_app_path) {
   if (!base::CreateDirectory(web_app_path)) {
     DPLOG(ERROR) << "Unable to create web app dir";
     RecordRegistration(RegistrationResult::kFailToCopyFromGenericLauncher);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::FilePath icon_path =
@@ -263,7 +263,7 @@ absl::optional<base::FilePath> CreateAppLauncherFile(
                  << " app_specific_launcher_path: "
                  << app_specific_launcher_path;
     RecordRegistration(RegistrationResult::kFailToCopyFromGenericLauncher);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return app_specific_launcher_path;

@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_CLOUD_AP_PROVIDER_WIN_H_
 #define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_CLOUD_AP_PROVIDER_WIN_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class ProofOfPossessionCookieInfo;
@@ -54,7 +55,7 @@ class CloudApProviderWin : public PlatformAuthProvider {
 
   // Overrides support detection with `level` if it has a value, or resets the
   // override if not.
-  static void SetSupportLevelForTesting(absl::optional<SupportLevel> level);
+  static void SetSupportLevelForTesting(std::optional<SupportLevel> level);
 
   // Allows cookie info to be parsed for testing purposes.
   void ParseCookieInfoForTesting(const ProofOfPossessionCookieInfo* cookie_info,

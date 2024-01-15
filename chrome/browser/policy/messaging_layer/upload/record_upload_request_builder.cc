@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 // Feature that controls if the configuration file should be requested
@@ -79,7 +79,7 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
           .Build();
   if (!record_result.has_value()) {
     // Record has errors. Stop here.
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
     return *this;
   }
 
@@ -100,7 +100,7 @@ UploadEncryptedReportingRequestBuilder::SetRequestId(
   return *this;
 }
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 UploadEncryptedReportingRequestBuilder::Build() {
   // Ensure that if result_ has value, then it must not have a non-string
   // requestId.
@@ -208,7 +208,7 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
 
 EncryptedRecordDictionaryBuilder::~EncryptedRecordDictionaryBuilder() = default;
 
-absl::optional<base::Value::Dict> EncryptedRecordDictionaryBuilder::Build() {
+std::optional<base::Value::Dict> EncryptedRecordDictionaryBuilder::Build() {
   return std::move(result_);
 }
 
@@ -267,8 +267,7 @@ SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
 SequenceInformationDictionaryBuilder::~SequenceInformationDictionaryBuilder() =
     default;
 
-absl::optional<base::Value::Dict>
-SequenceInformationDictionaryBuilder::Build() {
+std::optional<base::Value::Dict> SequenceInformationDictionaryBuilder::Build() {
   return std::move(result_);
 }
 
@@ -327,7 +326,7 @@ EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
 
 EncryptionInfoDictionaryBuilder::~EncryptionInfoDictionaryBuilder() = default;
 
-absl::optional<base::Value::Dict> EncryptionInfoDictionaryBuilder::Build() {
+std::optional<base::Value::Dict> EncryptionInfoDictionaryBuilder::Build() {
   return std::move(result_);
 }
 
@@ -361,7 +360,7 @@ CompressionInformationDictionaryBuilder::
 CompressionInformationDictionaryBuilder::
     ~CompressionInformationDictionaryBuilder() = default;
 
-absl::optional<base::Value::Dict>
+std::optional<base::Value::Dict>
 CompressionInformationDictionaryBuilder::Build() {
   return std::move(result_);
 }

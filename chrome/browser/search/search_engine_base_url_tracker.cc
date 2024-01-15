@@ -45,7 +45,7 @@ void SearchEngineBaseURLTracker::OnTemplateURLServiceChanged() {
     if (template_url)
       previous_default_search_provider_data_ = template_url->data();
     else
-      previous_default_search_provider_data_ = absl::nullopt;
+      previous_default_search_provider_data_ = std::nullopt;
 
     // Also update the cached Google base URL, without separately notifying.
     previous_google_base_url_ = google_base_url;

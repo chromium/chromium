@@ -126,7 +126,7 @@ GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
 
 // static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  network::mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
+  network::mojom::SCTAuditingConfigurationPtr configuration(std::in_place);
   configuration->sampling_rate = features::kSCTAuditingSamplingRate.Get();
   configuration->log_expected_ingestion_delay =
       features::kSCTLogExpectedIngestionDelay.Get();

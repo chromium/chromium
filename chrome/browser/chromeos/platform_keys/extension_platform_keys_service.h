@@ -81,7 +81,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // failed, |public_key_spki_der| will be empty.
   using GenerateKeyCallback = base::OnceCallback<void(
       std::vector<uint8_t> public_key_spki_der,
-      absl::optional<crosapi::mojom::KeystoreError> error)>;
+      std::optional<crosapi::mojom::KeystoreError> error)>;
 
   // Generates an RSA key pair with |modulus_length_bits| and registers the key
   // to allow a single sign operation by the given extension. |token_id|
@@ -116,7 +116,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // failed, |signature| will be empty.
   using SignCallback = base::OnceCallback<void(
       std::vector<uint8_t> signature,
-      absl::optional<crosapi::mojom::KeystoreError> error)>;
+      std::optional<crosapi::mojom::KeystoreError> error)>;
 
   // Digests |data|, applies PKCS1 padding if specified by |hash_algorithm| and
   // chooses the signature algorithm according to |key_type| and signs the data
@@ -130,7 +130,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // future signing attempts. If signing was successful, |callback| will be
   // invoked with the signature. If it failed, the resulting signature will be
   // empty. Will only call back during the lifetime of this object.
-  void SignDigest(absl::optional<platform_keys::TokenId> token_id,
+  void SignDigest(std::optional<platform_keys::TokenId> token_id,
                   std::vector<uint8_t> data,
                   std::vector<uint8_t> public_key_spki_der,
                   platform_keys::KeyType key_type,
@@ -150,7 +150,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // future signing attempts. If signing was successful, |callback| will be
   // invoked with the signature. If it failed, the resulting signature will be
   // empty. Will only call back during the lifetime of this object.
-  void SignRSAPKCS1Raw(absl::optional<platform_keys::TokenId> token_id,
+  void SignRSAPKCS1Raw(std::optional<platform_keys::TokenId> token_id,
                        std::vector<uint8_t> data,
                        std::vector<uint8_t> public_key_spki_der,
                        std::string extension_id,
@@ -161,7 +161,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // occurred, |matches| will be null.
   using SelectCertificatesCallback = base::OnceCallback<void(
       std::unique_ptr<net::CertificateList> matches,
-      absl::optional<crosapi::mojom::KeystoreError> error)>;
+      std::optional<crosapi::mojom::KeystoreError> error)>;
 
   // Returns a list of certificates matching |request|.
   // 1) all certificates that match the request (like being rooted in one of the

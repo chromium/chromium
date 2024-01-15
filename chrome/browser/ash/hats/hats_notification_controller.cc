@@ -300,8 +300,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
 }
 
 void HatsNotificationController::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   UpdateLastInteractionTime();
@@ -400,7 +400,7 @@ std::string HatsNotificationController::GetFormattedSiteContext(
   context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
       version_info::GetVersionNumber();
 
-  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+  std::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
       version.value_or("0.0.0.0");

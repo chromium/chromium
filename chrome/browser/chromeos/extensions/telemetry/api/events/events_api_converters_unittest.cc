@@ -323,8 +323,8 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   }
   {
     auto output = ConvertStructPtr(
-        crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, absl::nullopt));
-    EXPECT_EQ(output.pressure, absl::nullopt);
+        crosapi::TelemetryStylusTouchPointInfo::New(kX, kY, std::nullopt));
+    EXPECT_EQ(output.pressure, std::nullopt);
   }
 }
 
@@ -684,9 +684,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(result.touch_points[1].tracking_id, kTrackingId2);
   EXPECT_EQ(result.touch_points[1].x, kX2);
   EXPECT_EQ(result.touch_points[1].y, kY2);
-  EXPECT_EQ(result.touch_points[1].pressure, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_major, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_minor, absl::nullopt);
+  EXPECT_EQ(result.touch_points[1].pressure, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_major, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_minor, std::nullopt);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,
@@ -752,9 +752,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(result.touch_points[1].tracking_id, kTrackingId2);
   EXPECT_EQ(result.touch_points[1].x, kX2);
   EXPECT_EQ(result.touch_points[1].y, kY2);
-  EXPECT_EQ(result.touch_points[1].pressure, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_major, absl::nullopt);
-  EXPECT_EQ(result.touch_points[1].touch_minor, absl::nullopt);
+  EXPECT_EQ(result.touch_points[1].pressure, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_major, std::nullopt);
+  EXPECT_EQ(result.touch_points[1].touch_minor, std::nullopt);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,
@@ -794,7 +794,7 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertTouchpointInfo) {
   EXPECT_EQ(output.y, kY);
   EXPECT_EQ(output.pressure, kPressure);
   EXPECT_EQ(output.touch_major, kTouchMajor);
-  EXPECT_EQ(output.touch_minor, absl::nullopt);
+  EXPECT_EQ(output.touch_minor, std::nullopt);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest,

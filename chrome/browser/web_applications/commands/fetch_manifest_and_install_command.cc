@@ -84,7 +84,7 @@ struct PlayStoreIntent {
 // Find the first Chrome OS app in related_applications of |manifest| and return
 // the details necessary to redirect the user to the app's listing in the Play
 // Store.
-absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
+std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
     const blink::mojom::Manifest& manifest) {
   for (const auto& app : manifest.related_applications) {
     std::string id = base::UTF16ToUTF8(app.id.value_or(std::u16string()));
@@ -109,7 +109,7 @@ absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
     std::string intent = kPlayIntentPrefix + id + referrer;
     return PlayStoreIntent{id, intent};
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -389,7 +389,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
 
   if (!skip_store) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    absl::optional<PlayStoreIntent> intent =
+    std::optional<PlayStoreIntent> intent =
         GetPlayStoreIntentFromManifest(*opt_manifest_);
     if (intent) {
       auto* arc_service_manager = arc::ArcServiceManager::Get();
@@ -412,7 +412,7 @@ void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (ShouldInteractWithArc()) {
-      absl::optional<PlayStoreIntent> intent =
+      std::optional<PlayStoreIntent> intent =
           GetPlayStoreIntentFromManifest(*opt_manifest_);
       mojo::Remote<crosapi::mojom::Arc>* opt_arc = GetArcRemoteWithMinVersion(
           crosapi::mojom::Arc::MethodMinVersions::kIsInstallableMinVersion);

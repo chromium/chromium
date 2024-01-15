@@ -4,6 +4,8 @@
 
 #include "chrome/browser/cart/cart_handler.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -26,7 +28,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 void GetEvaluationMerchantCarts(
@@ -415,7 +416,7 @@ TEST_F(CartHandlerTest, TestDiscountDataWithoutFeature) {
   cart_db::ChromeCartContentProto merchant_proto =
       BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
   merchant_proto.mutable_discount_info()->set_discount_text("15% off");
-  service_->AddCart(mock_merchant_url_, absl::nullopt, merchant_proto);
+  service_->AddCart(mock_merchant_url_, std::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
   // Skip the welcome surface stage as discount is not showing for welcome
@@ -627,7 +628,7 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataWithFeature) {
   cart_db::RuleDiscountInfoProto* rule_discount_info =
       merchant_proto.mutable_discount_info()->add_rule_discount_info();
   rule_discount_info->set_rule_id("123");
-  service_->AddCart(mock_merchant_url_, absl::nullopt, merchant_proto);
+  service_->AddCart(mock_merchant_url_, std::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
   profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
                                    0);
@@ -677,7 +678,7 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataShows) {
       BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
   merchant_proto.mutable_discount_info()->set_discount_text("15% off");
   merchant_proto.mutable_discount_info()->set_has_coupons(true);
-  service_->AddCart(mock_merchant_url_, absl::nullopt, merchant_proto);
+  service_->AddCart(mock_merchant_url_, std::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
   // Discount should show.
@@ -722,7 +723,7 @@ class CartHandlerCartURLUTMTest : public CartHandlerTest {
 // Verifies UTM tags are correctly appended to partner merchant's cart.
 TEST_F(CartHandlerCartURLUTMTest, TestAppendUTMToPartnerMerchant) {
   base::RunLoop run_loop[2];
-  service_->AddCart(fake_merchant_url_, absl::nullopt, kFakeProto);
+  service_->AddCart(fake_merchant_url_, std::nullopt, kFakeProto);
   task_environment_.RunUntilIdle();
 
   // Verifies UTM tags for when discount is disabled.
@@ -745,7 +746,7 @@ TEST_F(CartHandlerCartURLUTMTest, TestAppendUTMToPartnerMerchant) {
 // Verifies UTM tags are correctly appended to non-partner merchant's cart.
 TEST_F(CartHandlerCartURLUTMTest, TestAppendUTMToNonPartnerMerchant) {
   base::RunLoop run_loop[2];
-  service_->AddCart(mock_merchant_url_, absl::nullopt, kMockProtoB);
+  service_->AddCart(mock_merchant_url_, std::nullopt, kMockProtoB);
   task_environment_.RunUntilIdle();
 
   // UTM tags are the same for non-partner merchants regardless of discount

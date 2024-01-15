@@ -43,7 +43,7 @@ DlpFilesControllerLacros::DlpFilesControllerLacros(
 DlpFilesControllerLacros::~DlpFilesControllerLacros() = default;
 
 // TODO(b/283764626): Add OneDrive component
-absl::optional<data_controls::Component>
+std::optional<data_controls::Component>
 DlpFilesControllerLacros::MapFilePathToPolicyComponent(
     Profile* profile,
     const base::FilePath& file_path) {
@@ -83,7 +83,7 @@ bool DlpFilesControllerLacros::IsInLocalFileSystem(
 }
 
 void DlpFilesControllerLacros::ShowDlpBlockedFiles(
-    absl::optional<uint64_t> task_id,
+    std::optional<uint64_t> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
   chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();

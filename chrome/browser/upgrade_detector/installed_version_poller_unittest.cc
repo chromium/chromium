@@ -167,14 +167,14 @@ TEST_F(InstalledVersionPollerTest, TestUpgrade) {
   });
   EXPECT_CALL(
       mock_observer_,
-      OnUpdate(AllOf(
-          Eq(&build_state_),
-          Property(&BuildState::update_type,
-                   Eq(BuildState::UpdateType::kNormalUpdate)),
-          Property(&BuildState::installed_version, IsTrue()),
-          Property(&BuildState::installed_version,
-                   Eq(absl::optional<base::Version>(GetUpgradeVersion()))),
-          Property(&BuildState::critical_version, IsFalse()))));
+      OnUpdate(
+          AllOf(Eq(&build_state_),
+                Property(&BuildState::update_type,
+                         Eq(BuildState::UpdateType::kNormalUpdate)),
+                Property(&BuildState::installed_version, IsTrue()),
+                Property(&BuildState::installed_version,
+                         Eq(std::optional<base::Version>(GetUpgradeVersion()))),
+                Property(&BuildState::critical_version, IsFalse()))));
   task_environment_.FastForwardBy(
       InstalledVersionPoller::kDefaultPollingInterval);
   ::testing::Mock::VerifyAndClearExpectations(&callback);
@@ -201,14 +201,14 @@ TEST_F(InstalledVersionPollerTest, TestUpgradeThenDowngrade) {
   });
   EXPECT_CALL(
       mock_observer_,
-      OnUpdate(AllOf(
-          Eq(&build_state_),
-          Property(&BuildState::update_type,
-                   Eq(BuildState::UpdateType::kNormalUpdate)),
-          Property(&BuildState::installed_version, IsTrue()),
-          Property(&BuildState::installed_version,
-                   Eq(absl::optional<base::Version>(GetUpgradeVersion()))),
-          Property(&BuildState::critical_version, IsFalse()))));
+      OnUpdate(
+          AllOf(Eq(&build_state_),
+                Property(&BuildState::update_type,
+                         Eq(BuildState::UpdateType::kNormalUpdate)),
+                Property(&BuildState::installed_version, IsTrue()),
+                Property(&BuildState::installed_version,
+                         Eq(std::optional<base::Version>(GetUpgradeVersion()))),
+                Property(&BuildState::critical_version, IsFalse()))));
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
   task_environment_.RunUntilIdle();
@@ -248,10 +248,10 @@ TEST_F(InstalledVersionPollerTest, TestCriticalUpgrade) {
                    Eq(BuildState::UpdateType::kNormalUpdate)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(absl::optional<base::Version>(GetUpgradeVersion()))),
+                   Eq(std::optional<base::Version>(GetUpgradeVersion()))),
           Property(&BuildState::critical_version, IsTrue()),
           Property(&BuildState::critical_version,
-                   Eq(absl::optional<base::Version>(GetCriticalVersion()))))));
+                   Eq(std::optional<base::Version>(GetCriticalVersion()))))));
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
   task_environment_.RunUntilIdle();
@@ -295,7 +295,7 @@ TEST_F(InstalledVersionPollerTest, TestRollback) {
                    Eq(BuildState::UpdateType::kEnterpriseRollback)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(absl::optional<base::Version>(GetRollbackVersion()))),
+                   Eq(std::optional<base::Version>(GetRollbackVersion()))),
           Property(&BuildState::critical_version, IsFalse()))));
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());

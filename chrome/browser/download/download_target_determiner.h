@@ -356,7 +356,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
       PriorVisitsToReferrer visits) const;
 
   // Returns the timestamp of the last download bypass.
-  absl::optional<base::Time> GetLastDownloadBypassTimestamp() const;
+  std::optional<base::Time> GetLastDownloadBypassTimestamp() const;
 
   // Generates the download file name based on information from URL, response
   // headers and sniffed mime type.

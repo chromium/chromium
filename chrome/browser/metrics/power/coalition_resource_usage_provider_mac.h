@@ -7,13 +7,14 @@
 
 #include <mach/mach_time.h>
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/power_metrics/energy_impact_mac.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace power_metrics {
 struct CoalitionResourceUsageRate;
@@ -58,9 +59,9 @@ class CoalitionResourceUsageProvider {
   // Ends the current "short" and "long" intervals. Returns the resource usage
   // rate for these intervals via arguments (or nullopt if not available).
   // Starts a new "long" interval.
-  void EndIntervals(absl::optional<power_metrics::CoalitionResourceUsageRate>*
+  void EndIntervals(std::optional<power_metrics::CoalitionResourceUsageRate>*
                         short_interval_resource_usage_rate,
-                    absl::optional<power_metrics::CoalitionResourceUsageRate>*
+                    std::optional<power_metrics::CoalitionResourceUsageRate>*
                         long_interval_resource_usage_rate);
 
  protected:
@@ -82,10 +83,10 @@ class CoalitionResourceUsageProvider {
 #endif
 
   // Coalition ID for the current process or nullopt if not available.
-  absl::optional<uint64_t> coalition_id_;
+  std::optional<uint64_t> coalition_id_;
 
   // Coefficients to compute Energy Impact from a `coalition_resource_usage`.
-  const absl::optional<power_metrics::EnergyImpactCoefficients>
+  const std::optional<power_metrics::EnergyImpactCoefficients>
       energy_impact_coefficients_;
 
   // Start time of the current "long" interval.

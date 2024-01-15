@@ -34,14 +34,14 @@ enum class IsolatedInstallabilityCheckResult {
 class CheckIsolatedWebAppBundleInstallabilityCommand
     : public WebAppCommand<AppLock,
                            IsolatedInstallabilityCheckResult,
-                           absl::optional<base::Version>> {
+                           std::optional<base::Version>> {
  public:
   // If an app with the same app ID is already installed, runs the callback with
   // the version of the installed app. Otherwise, |installed_version| will be
   // null.
   using BundleInstallabilityCallback =
       base::OnceCallback<void(IsolatedInstallabilityCheckResult result,
-                              absl::optional<base::Version> installed_version)>;
+                              std::optional<base::Version> installed_version)>;
 
   CheckIsolatedWebAppBundleInstallabilityCommand(
       Profile* profile,
@@ -55,7 +55,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommand
 
  private:
   void ReportResult(IsolatedInstallabilityCheckResult status,
-                    absl::optional<base::Version> installed_version);
+                    std::optional<base::Version> installed_version);
 
   std::unique_ptr<AppLock> lock_;
 

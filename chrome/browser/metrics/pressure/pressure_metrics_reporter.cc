@@ -89,7 +89,7 @@ void PressureMetricsWorker::OnTracingDisabled() {
 
 void PressureMetricsWorker::ReadAndEmitCounters() {
   for (const auto& metric : pressure_metrics_) {
-    absl::optional<PressureMetrics::Sample> current_pressure =
+    std::optional<PressureMetrics::Sample> current_pressure =
         metric.CollectCurrentPressure();
     if (current_pressure.has_value()) {
       metric.EmitCounters(current_pressure.value());
@@ -99,7 +99,7 @@ void PressureMetricsWorker::ReadAndEmitCounters() {
 
 void PressureMetricsWorker::ReadAndEmitUMA() {
   for (const auto& metric : pressure_metrics_) {
-    absl::optional<PressureMetrics::Sample> current_pressure =
+    std::optional<PressureMetrics::Sample> current_pressure =
         metric.CollectCurrentPressure();
     if (current_pressure.has_value()) {
       metric.ReportToUMA(current_pressure.value());

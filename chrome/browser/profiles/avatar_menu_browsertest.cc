@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/avatar_menu.h"
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AvatarMenuBrowserTest : public InProcessBrowserTest {
  public:
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, AddNewProfile) {
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile) {
-  absl::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
+  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
   ASSERT_TRUE(active_profile_index.has_value());
   ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
             browser()->profile()->GetPath());
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
   ui_test_utils::WaitForBrowserToClose(browser());
   EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
 
-  absl::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
+  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
   ASSERT_TRUE(active_profile_index.has_value());
   ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
             profile->GetPath());
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
   ui_test_utils::WaitForBrowserToClose(browser());
   EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
 
-  absl::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
+  std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
   ASSERT_TRUE(active_profile_index.has_value());
   ASSERT_EQ(menu()->GetItemAt(*active_profile_index).profile_path,
             profile->GetPath());

@@ -299,7 +299,7 @@ void ContentAnalysisDialog::AcceptButtonCallback() {
   DCHECK(delegate_);
   DCHECK(is_warning());
   accepted_or_cancelled_ = true;
-  absl::optional<std::u16string> justification = absl::nullopt;
+  std::optional<std::u16string> justification = std::nullopt;
   if (delegate_->BypassRequiresJustification() && bypass_justification_)
     justification = bypass_justification_->GetText();
   delegate_->BypassWarnings(justification);

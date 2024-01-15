@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,6 @@
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
@@ -87,15 +87,15 @@ class ChromeConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
-  absl::optional<bool> IsMachineExternallyManaged() const override;
+  std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  absl::optional<base::FilePath> GetCrxCachePath() const override;
+  std::optional<base::FilePath> GetCrxCachePath() const override;
   bool IsConnectionMetered() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
-  absl::optional<base::FilePath> GetBackgroundDownloaderCache() const;
+  std::optional<base::FilePath> GetBackgroundDownloaderCache() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
   ConfiguratorImpl configurator_impl_;
@@ -279,7 +279,7 @@ ChromeConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-absl::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
+std::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return configurator_impl_.IsMachineExternallyManaged();
 }
@@ -294,24 +294,24 @@ ChromeConfigurator::GetUpdaterStateProvider() const {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
-absl::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
+std::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath path;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
-  return result ? absl::optional<base::FilePath>(
+  return result ? std::optional<base::FilePath>(
                       path.AppendASCII("component_crx_cache"))
-                : absl::nullopt;
+                : std::nullopt;
 }
 
 // TODO(crbug/1496582): Consolidate the cache path getters.
-absl::optional<base::FilePath>
-ChromeConfigurator::GetBackgroundDownloaderCache() const {
+std::optional<base::FilePath> ChromeConfigurator::GetBackgroundDownloaderCache()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath path;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
-  return result ? absl::optional<base::FilePath>(
-                      path.AppendASCII("download_cache"))
-                : absl::nullopt;
+  return result
+             ? std::optional<base::FilePath>(path.AppendASCII("download_cache"))
+             : std::nullopt;
 }
 
 bool ChromeConfigurator::IsConnectionMetered() const {

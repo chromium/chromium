@@ -47,7 +47,7 @@ SessionRestoreDelegate::RestoredTab::RestoredTab(
     bool is_active,
     bool is_app,
     bool is_pinned,
-    const absl::optional<tab_groups::TabGroupId>& group)
+    const std::optional<tab_groups::TabGroupId>& group)
     : contents_(contents),
       is_active_(is_active),
       is_app_(is_app),

@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -163,7 +163,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
 
     // How long to wait for the condition before timing out. If not set, waits
     // indefinitely (in practice, until the test itself times out).
-    absl::optional<base::TimeDelta> timeout;
+    std::optional<base::TimeDelta> timeout;
 
     // If this is set to `true`, the condition will continue to be polled across
     // page navigation. This can be used when the target WebContents may
@@ -191,13 +191,13 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   static std::unique_ptr<WebContentsInteractionTestUtil>
   ForExistingTabInContext(ui::ElementContext context,
                           ui::ElementIdentifier page_identifier,
-                          absl::optional<int> tab_index = absl::nullopt);
+                          std::optional<int> tab_index = std::nullopt);
 
   // As above, but you may directly specify the Browser to use.
   static std::unique_ptr<WebContentsInteractionTestUtil>
   ForExistingTabInBrowser(Browser* browser,
                           ui::ElementIdentifier page_identifier,
-                          absl::optional<int> tab_index = absl::nullopt);
+                          std::optional<int> tab_index = std::nullopt);
 
   // Creates a util object associated with a WebContents, which must be in a
   // tab. The associated TrackedElementWebContents will be assigned
@@ -427,7 +427,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
 
   WebContentsInteractionTestUtil(content::WebContents* web_contents,
                                  ui::ElementIdentifier page_identifier,
-                                 absl::optional<Browser*> browser,
+                                 std::optional<Browser*> browser,
                                  views::WebView* web_view);
 
   void MaybeCreateElement(bool force = false);
@@ -444,7 +444,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
 
   // When we force a page load, we might still get events for the old page.
   // We'll ignore those events.
-  absl::optional<GURL> navigating_away_from_;
+  std::optional<GURL> navigating_away_from_;
 
   // Tracks the WebView that hosts a non-tab WebContents; null otherwise.
   std::unique_ptr<WebViewData> web_view_data_;

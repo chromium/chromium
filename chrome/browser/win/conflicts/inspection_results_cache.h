@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_WIN_CONFLICTS_INSPECTION_RESULTS_CACHE_H_
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "chrome/browser/win/conflicts/module_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -55,9 +55,9 @@ void AddInspectionResultToCache(
 
 // Helper function to retrieve a ModuleInspectionResult from an existing cache.
 // Also updates the time stamp of the element found to base::Time::Now().
-// Returns absl::nullopt if the cache does not contains an entry for
+// Returns std::nullopt if the cache does not contains an entry for
 // |module_key|.
-absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
+std::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache);
 

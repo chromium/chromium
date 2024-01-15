@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -42,7 +43,6 @@
 #include "gpu/config/gpu_feature_type.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -454,7 +454,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
   supervised_user::SupervisionMixin supervision_mixin_;
-  absl::optional<NextDialogAction> next_dialog_action_;
+  std::optional<NextDialogAction> next_dialog_action_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -553,9 +553,8 @@ class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
     static const char kWebGLStatusBlocked[] = "webgl_blocked";
     scoped_refptr<WebstorePrivateGetWebGLStatusFunction> function =
         new WebstorePrivateGetWebGLStatusFunction();
-    absl::optional<base::Value> result =
-        utils::RunFunctionAndReturnSingleResult(function.get(), kEmptyArgs,
-                                                browser()->profile());
+    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+        function.get(), kEmptyArgs, browser()->profile());
     ASSERT_TRUE(result);
     EXPECT_EQ(base::Value::Type::STRING, result->type());
     EXPECT_TRUE(result->is_string());

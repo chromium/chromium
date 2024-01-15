@@ -162,7 +162,7 @@ class MacNotificationServiceNSTest : public testing::Test {
 
   std::vector<mojom::NotificationIdentifierPtr> GetDisplayedNotificationsSync(
       mojom::ProfileIdentifierPtr profile,
-      absl::optional<GURL> origin = absl::nullopt) {
+      std::optional<GURL> origin = std::nullopt) {
     base::test::TestFuture<std::vector<mojom::NotificationIdentifierPtr>>
         displayed;
     service_remote_->GetDisplayedNotifications(std::move(profile), origin,

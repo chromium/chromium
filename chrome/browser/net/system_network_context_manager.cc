@@ -967,7 +967,7 @@ SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting() {
 }
 
 void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-    absl::optional<bool> enabled) {
+    std::optional<bool> enabled) {
   certificate_transparency_enabled_for_testing_ = enabled;
 }
 
@@ -1056,6 +1056,6 @@ StubResolverConfigReader*
     SystemNetworkContextManager::stub_resolver_config_reader_for_testing_ =
         nullptr;
 
-absl::optional<bool>
+std::optional<bool>
     SystemNetworkContextManager::certificate_transparency_enabled_for_testing_ =
-        absl::nullopt;
+        std::nullopt;

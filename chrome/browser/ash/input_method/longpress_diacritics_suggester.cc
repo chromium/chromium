@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/longpress_diacritics_suggester.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -28,7 +29,6 @@
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -223,8 +223,8 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
     const ui::KeyEvent& event) {
   ui::DomCode code = event.code();
   // The diacritic suggester is not set up.
-  if (focused_context_id_ == absl::nullopt ||
-      displayed_window_base_character_ == absl::nullopt ||
+  if (focused_context_id_ == std::nullopt ||
+      displayed_window_base_character_ == std::nullopt ||
       !GetCurrentShownDiacritics().size()) {
     return SuggestionStatus::kNotHandled;
   }
@@ -252,7 +252,7 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
     case kTabDomCode:
     case kPreviousDomCode:
       move_next = (code == kNextDomCode || code == kTabDomCode);
-      if (highlighted_index_ == absl::nullopt) {
+      if (highlighted_index_ == std::nullopt) {
         // We want the cursor to start at the end if you press back, and at the
         // beginning if you press next.
         new_index = move_next ? 0 : GetCurrentShownDiacritics().size();
@@ -397,14 +397,14 @@ void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index,
 
 std::vector<std::u16string>
 LongpressDiacriticsSuggester::GetCurrentShownDiacritics() {
-  if (displayed_window_base_character_ == absl::nullopt) {
+  if (displayed_window_base_character_ == std::nullopt) {
     return {};
   }
   return GetDiacriticsFor(*displayed_window_base_character_, engine_id_);
 }
 
 void LongpressDiacriticsSuggester::Reset() {
-  displayed_window_base_character_ = absl::nullopt;
-  highlighted_index_ = absl::nullopt;
+  displayed_window_base_character_ = std::nullopt;
+  highlighted_index_ = std::nullopt;
 }
 }  // namespace ash::input_method

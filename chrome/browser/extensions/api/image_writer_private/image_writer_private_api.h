@@ -25,7 +25,7 @@ class ImageWriterPrivateBaseFunction : public ExtensionFunction {
       const ImageWriterPrivateBaseFunction&) = delete;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  virtual void OnComplete(const absl::optional<std::string>& error);
+  virtual void OnComplete(const std::optional<std::string>& error);
 #else
   virtual void OnComplete(bool success, const std::string& error);
 #endif
@@ -95,7 +95,7 @@ class ImageWriterPrivateListRemovableStorageDevicesFunction
   void OnDeviceListReady(scoped_refptr<StorageDeviceList> device_list);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnCrosapiDeviceListReady(
-      absl::optional<std::vector<crosapi::mojom::RemovableStorageDevicePtr>>
+      std::optional<std::vector<crosapi::mojom::RemovableStorageDevicePtr>>
           devices);
 #endif
 };

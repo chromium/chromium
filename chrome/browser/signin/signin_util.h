@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
@@ -17,7 +18,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

@@ -1155,10 +1155,10 @@ TEST(TelemetryApiConverters, DisplayInfo) {
         kInputTypeExternal, std::string(kDisplayNameExternal));
 
     auto external_display_empty = crosapi::ProbeExternalDisplayInfo::New(
-        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
-        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
-        absl::nullopt, absl::nullopt, absl::nullopt,
-        crosapi::ProbeDisplayInputType::kUnmappedEnumField, absl::nullopt);
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, crosapi::ProbeDisplayInputType::kUnmappedEnumField,
+        std::nullopt);
 
     std::vector<crosapi::ProbeExternalDisplayInfoPtr> external_displays;
     external_displays.push_back(std::move(external_display_1));
@@ -1246,15 +1246,15 @@ TEST(TelemetryApiConverters, DisplayInfo) {
   ASSERT_FALSE(external_displays[1].resolution_horizontal);
   ASSERT_FALSE(external_displays[1].resolution_vertical);
   ASSERT_FALSE(external_displays[1].refresh_rate);
-  EXPECT_EQ(external_displays[1].manufacturer, absl::nullopt);
+  EXPECT_EQ(external_displays[1].manufacturer, std::nullopt);
   ASSERT_FALSE(external_displays[1].model_id);
   ASSERT_FALSE(external_displays[1].serial_number);
   ASSERT_FALSE(external_displays[1].manufacture_week);
   ASSERT_FALSE(external_displays[1].manufacture_year);
-  EXPECT_EQ(external_displays[1].edid_version, absl::nullopt);
+  EXPECT_EQ(external_displays[1].edid_version, std::nullopt);
   EXPECT_EQ(external_displays[1].input_type,
             Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField));
-  EXPECT_EQ(external_displays[1].display_name, absl::nullopt);
+  EXPECT_EQ(external_displays[1].display_name, std::nullopt);
 }
 
 TEST(TelemetryApiConverters, ThermalSensorSource) {

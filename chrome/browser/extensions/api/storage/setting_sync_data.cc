@@ -23,7 +23,7 @@ SettingSyncData::SettingSyncData(const syncer::SyncChange& sync_change)
 }
 
 SettingSyncData::SettingSyncData(const syncer::SyncData& sync_data)
-    : change_type_(absl::nullopt) {
+    : change_type_(std::nullopt) {
   ExtractSyncData(sync_data);
 }
 

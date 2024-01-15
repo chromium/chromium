@@ -201,7 +201,7 @@ void BindIndicatorTranscienceForWin(
     TransientElement* e,
     Model* model,
     UiScene* scene,
-    const absl::optional<
+    const std::optional<
         std::tuple<bool, CapturingStateModel, CapturingStateModel>>& last_value,
     const std::tuple<bool, CapturingStateModel, CapturingStateModel>& value) {
   const bool in_web_vr_presentation = model->web_vr.IsImmersiveWebXrVisible() &&

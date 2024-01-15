@@ -349,7 +349,7 @@ int TabStripModel::InsertDetachedTabAt(
     int index,
     std::unique_ptr<TabModel> tab,
     int add_types,
-    absl::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   tab->OnAddedToModel(this);
   return InsertTabAtImpl(index, std::move(tab), add_types, group);

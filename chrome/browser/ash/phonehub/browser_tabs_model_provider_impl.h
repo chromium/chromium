@@ -77,9 +77,9 @@ class BrowserTabsModelProviderImpl
   void AttemptBrowserTabsModelUpdate();
   void InvalidateWeakPtrsAndClearTabMetadata(bool is_tab_sync_enabled);
   void OnMetadataFetched(
-      absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
+      std::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
           metadata);
-  absl::optional<std::string> GetHostDeviceName() const;
+  std::optional<std::string> GetHostDeviceName() const;
 
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
 

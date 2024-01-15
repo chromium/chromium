@@ -134,7 +134,7 @@ WallpaperSearchHandler::WallpaperSearchHandler(
 }
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {
-  absl::optional<base::Token> background_id;
+  std::optional<base::Token> background_id;
   if (history_entry_) {
     background_id =
         wallpaper_search_background_manager_->SaveCurrentBackgroundToHistory(
@@ -831,7 +831,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
         ->mutable_wallpaper_search()
         ->mutable_response_data()
         ->clear_images();
-    log_entries_.emplace_back(std::move(log_entry), absl::nullopt);
+    log_entries_.emplace_back(std::move(log_entry), std::nullopt);
   }
   if (!log_entries_.empty()) {
     auto* quality =
@@ -915,7 +915,7 @@ void WallpaperSearchHandler::SetResultRenderTime(
   }
   if (!log_entries_.empty()) {
     log_entries_.back().second =
-        absl::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
+        std::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));
   }
 }
 

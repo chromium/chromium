@@ -50,7 +50,7 @@ ExternallyManagedAppManager::InstallResult::InstallResult() = default;
 
 ExternallyManagedAppManager::InstallResult::InstallResult(
     webapps::InstallResultCode code,
-    absl::optional<webapps::AppId> app_id,
+    std::optional<webapps::AppId> app_id,
     bool did_uninstall_and_replace)
     : code(code),
       app_id(std::move(app_id)),
@@ -162,7 +162,7 @@ void ExternallyManagedAppManager::UninstallApps(
     const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
     provider_->scheduler().RemoveInstallUrl(
-        /*app_id=*/absl::nullopt,
+        /*app_id=*/std::nullopt,
         ConvertExternalInstallSourceToSource(install_source), url,
         ConvertExternalInstallSourceToUninstallSource(install_source),
         base::BindOnce(
@@ -303,7 +303,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     const ExternalInstallOptions& install_options =
         front->task->install_options();
 
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         lock.registrar().LookupExternalAppId(install_options.install_url);
     debug_value.Set("app_id_from_install_url", app_id.value_or("<none>"));
 
@@ -320,7 +320,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
           std::move(front),
           /*installed_placeholder_app_id=*/is_placeholder_installed
               ? std::move(app_id)
-              : absl::nullopt);
+              : std::nullopt);
       return;
     }
 
@@ -328,7 +328,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     // then no external source has installed it.
     if (!app_id.has_value()) {
       StartInstallationTask(std::move(front),
-                            /*installed_placeholder_app_id=*/absl::nullopt);
+                            /*installed_placeholder_app_id=*/std::nullopt);
       return;
     }
 
@@ -362,7 +362,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
                 ->IsPolicyInstalledApp())) {
         debug_value.Set("reinstalling_policy_app", true);
         StartInstallationTask(std::move(front),
-                              /*installed_placeholder_app_id=*/absl::nullopt);
+                              /*installed_placeholder_app_id=*/std::nullopt);
         return;
       } else {
         debug_value.Set("simple_source_addition", true);
@@ -388,7 +388,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     // uninstalled but it wasn't been removed from the map. We should install
     // the app in this case.
     StartInstallationTask(std::move(front),
-                          /*installed_placeholder_app_id=*/absl::nullopt);
+                          /*installed_placeholder_app_id=*/std::nullopt);
     return;
   }
   DCHECK(!current_install_);
@@ -402,7 +402,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 
 void ExternallyManagedAppManager::StartInstallationTask(
     std::unique_ptr<TaskAndCallback> task,
-    absl::optional<webapps::AppId> installed_placeholder_app_id) {
+    std::optional<webapps::AppId> installed_placeholder_app_id) {
   if (IsShuttingDown()) {
     return;
   }

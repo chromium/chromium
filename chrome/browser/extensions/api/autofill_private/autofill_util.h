@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -43,7 +43,7 @@ IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data);
 
 // Uses |personal_data| to get primary account info.
-absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
+std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data);
 
 // Returns a `CreditCardEntry` object which is UI compatible.

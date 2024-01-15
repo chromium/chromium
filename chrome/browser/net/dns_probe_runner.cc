@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/dns_probe_runner.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_net {
 
@@ -24,7 +24,7 @@ namespace {
 
 DnsProbeRunner::Result EvaluateResponse(
     int net_error,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const std::optional<net::AddressList>& resolved_addresses) {
   switch (net_error) {
     case net::OK:
       break;
@@ -121,8 +121,8 @@ bool DnsProbeRunner::IsRunning() const {
 void DnsProbeRunner::OnComplete(
     int32_t result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
@@ -146,8 +146,8 @@ void DnsProbeRunner::OnMojoConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             /*resolved_addresses=*/absl::nullopt,
-             /*endpoint_results_with_metadata=*/absl::nullopt);
+             /*resolved_addresses=*/std::nullopt,
+             /*endpoint_results_with_metadata=*/std::nullopt);
 }
 
 }  // namespace chrome_browser_net

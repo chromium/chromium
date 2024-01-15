@@ -74,7 +74,7 @@ void AddSessionDetailsToQuality(
 
   for (const auto& response_organization :
        session->request()->response()->organizations) {
-    absl::optional<TabOrganization::ID> response_organization_id =
+    std::optional<TabOrganization::ID> response_organization_id =
         response_organization.organization_id;
     TabOrganization* matching_organization_ptr = nullptr;
 

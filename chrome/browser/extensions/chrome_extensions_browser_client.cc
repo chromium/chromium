@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -93,7 +94,6 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ipc/ipc_message.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -595,7 +595,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
 scoped_refptr<update_client::UpdateClient>
 ChromeExtensionsBrowserClient::CreateUpdateClient(
     content::BrowserContext* context) {
-  absl::optional<GURL> override_url;
+  std::optional<GURL> override_url;
   GURL update_url = extension_urls::GetWebstoreUpdateUrl();
   if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
     if (update_url.path() == kCrxUrlPath) {
@@ -959,7 +959,7 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     content::SiteInstance* owner_site_instance,
     const std::string& partition_name,
     bool in_memory,
-    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+    base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
         callback) {
   const GURL& owner_site_url = owner_site_instance->GetSiteURL();
   if (owner_site_url.SchemeIs(chrome::kIsolatedAppScheme)) {

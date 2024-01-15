@@ -55,9 +55,9 @@ class ClientBounceDetectionState {
   GURL previous_url;
   std::string current_site;
   base::TimeTicks page_load_time;
-  absl::optional<base::Time> last_activation_time;
-  absl::optional<base::Time> last_storage_time;
-  absl::optional<base::Time> last_successful_web_authn_assertion_time;
+  std::optional<base::Time> last_activation_time;
+  std::optional<base::Time> last_storage_time;
+  std::optional<base::Time> last_successful_web_authn_assertion_time;
   SiteDataAccessType site_data_access_type = SiteDataAccessType::kUnknown;
 };
 
@@ -127,7 +127,7 @@ class DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
-  absl::optional<std::pair<size_t, DIPSRedirectInfo*>> GetRedirectInfoFromChain(
+  std::optional<std::pair<size_t, DIPSRedirectInfo*>> GetRedirectInfoFromChain(
       const std::string& site) const;
 
   // Return whether `site` had an interaction in the current redirect context.
@@ -143,7 +143,7 @@ class DIPSRedirectContext {
   // only sites in `allowed_sites` should be included.
   std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
       const GURL& first_party_url,
-      absl::optional<std::set<std::string>> allowed_sites) const;
+      std::optional<std::set<std::string>> allowed_sites) const;
 
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
@@ -301,7 +301,7 @@ class DIPSBounceDetector {
   raw_ptr<const base::TickClock> tick_clock_;
   raw_ptr<const base::Clock> clock_;
   raw_ptr<DIPSBounceDetectorDelegate> delegate_;
-  absl::optional<ClientBounceDetectionState> client_detection_state_;
+  std::optional<ClientBounceDetectionState> client_detection_state_;
   DIPSRedirectContext committed_redirect_context_;
   base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
@@ -362,7 +362,7 @@ class DIPSWebContentsObserver
       const content::CookieAccessDetails& details,
       const size_t sites_passed_count,
       bool is_current_interaction,
-      absl::optional<base::Time> last_user_interaction_time);
+      std::optional<base::Time> last_user_interaction_time);
 
   // Create all eligible RedirectHeuristic grants for the current redirect
   // chain. This may create a storage access grant for any site in the redirect
@@ -453,8 +453,8 @@ class DIPSWebContentsObserver
   DIPSBounceDetector detector_;
   DIPSIssueReportingCallback issue_reporting_callback_;
 
-  absl::optional<std::string> last_committed_site_;
-  absl::optional<base::Time> last_commit_timestamp_;
+  std::optional<std::string> last_committed_site_;
+  std::optional<base::Time> last_commit_timestamp_;
 
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
@@ -24,7 +26,6 @@
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -160,12 +161,12 @@ void EmojiSuggester::OnFocus(int context_id) {
 }
 
 void EmojiSuggester::OnBlur() {
-  focused_context_id_ = absl::nullopt;
+  focused_context_id_ = std::nullopt;
 }
 
 void EmojiSuggester::OnExternalSuggestionsUpdated(
     const std::vector<AssistiveSuggestion>& suggestions,
-    const absl::optional<SuggestionsTextContext>& context) {
+    const std::optional<SuggestionsTextContext>& context) {
   // EmojiSuggester doesn't utilize any suggestions produced externally, so
   // ignore this call.
 }

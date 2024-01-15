@@ -9,12 +9,12 @@
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "components/cross_device/logging/logging.h"
 
-absl::optional<base::Time>
+std::optional<base::Time>
 NearbyShareCertificateStorage::NextPrivateCertificateExpirationTime() {
-  absl::optional<std::vector<NearbySharePrivateCertificate>> certs =
+  std::optional<std::vector<NearbySharePrivateCertificate>> certs =
       GetPrivateCertificates();
   if (!certs || certs->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Time min_time = base::Time::Max();
   for (const NearbySharePrivateCertificate& cert : *certs)
@@ -25,7 +25,7 @@ NearbyShareCertificateStorage::NextPrivateCertificateExpirationTime() {
 
 void NearbyShareCertificateStorage::UpdatePrivateCertificate(
     const NearbySharePrivateCertificate& private_certificate) {
-  absl::optional<std::vector<NearbySharePrivateCertificate>> certs =
+  std::optional<std::vector<NearbySharePrivateCertificate>> certs =
       GetPrivateCertificates();
   if (!certs) {
     CD_LOG(WARNING, Feature::NS)
@@ -51,7 +51,7 @@ void NearbyShareCertificateStorage::UpdatePrivateCertificate(
 
 void NearbyShareCertificateStorage::RemoveExpiredPrivateCertificates(
     base::Time now) {
-  absl::optional<std::vector<NearbySharePrivateCertificate>> certs =
+  std::optional<std::vector<NearbySharePrivateCertificate>> certs =
       GetPrivateCertificates();
   if (!certs)
     return;
@@ -82,7 +82,7 @@ void NearbyShareCertificateStorage::ClearPrivateCertificates() {
 
 void NearbyShareCertificateStorage::ClearPrivateCertificatesOfVisibility(
     nearby_share::mojom::Visibility visibility) {
-  absl::optional<std::vector<NearbySharePrivateCertificate>> certs =
+  std::optional<std::vector<NearbySharePrivateCertificate>> certs =
       GetPrivateCertificates();
   if (!certs)
     return;

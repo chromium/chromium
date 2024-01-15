@@ -103,8 +103,8 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(PreviousSlide, void());
   MOCK_METHOD0(NextSlide, void());
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
-  MOCK_METHOD0(GetWindowBounds, absl::optional<gfx::Rect>());
-  MOCK_METHOD0(GetOrigin, absl::optional<url::Origin>());
+  MOCK_METHOD0(GetWindowBounds, std::optional<gfx::Rect>());
+  MOCK_METHOD0(GetOrigin, std::optional<url::Origin>());
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =

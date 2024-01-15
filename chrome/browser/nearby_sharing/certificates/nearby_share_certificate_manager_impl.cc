@@ -87,13 +87,13 @@ size_t NumExpectedPrivateCertificates() {
   return (kVisibilities.size() - 1) * NumPrivateCertificates();
 }
 
-absl::optional<std::string> GetBluetoothMacAddress(
+std::optional<std::string> GetBluetoothMacAddress(
     device::BluetoothAdapter* bluetooth_adapter) {
   if (!bluetooth_adapter) {
     CD_LOG(WARNING, Feature::NS)
         << __func__
         << ": Failed to get Bluetooth MAC address; Bluetooth adapter is null.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!bluetooth_adapter->IsPresent()) {
@@ -104,7 +104,7 @@ absl::optional<std::string> GetBluetoothMacAddress(
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to get Bluetooth MAC address; Bluetooth "
         << "adapter is not present.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::array<uint8_t, 6> bytes;
@@ -112,24 +112,24 @@ absl::optional<std::string> GetBluetoothMacAddress(
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to get Bluetooth MAC address; cannot parse "
         << "address: " << bluetooth_adapter->GetAddress();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(bytes.begin(), bytes.end());
 }
 
-absl::optional<nearby::sharing::proto::EncryptedMetadata> BuildMetadata(
+std::optional<nearby::sharing::proto::EncryptedMetadata> BuildMetadata(
     std::string device_name,
-    absl::optional<std::string> full_name,
-    absl::optional<std::string> icon_url,
-    absl::optional<std::string> account_name,
+    std::optional<std::string> full_name,
+    std::optional<std::string> icon_url,
+    std::optional<std::string> account_name,
     device::BluetoothAdapter* bluetooth_adapter) {
   nearby::sharing::proto::EncryptedMetadata metadata;
   if (device_name.empty()) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to create private certificate metadata; "
         << "missing device name.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   metadata.set_device_name(device_name);
@@ -143,14 +143,14 @@ absl::optional<nearby::sharing::proto::EncryptedMetadata> BuildMetadata(
     metadata.set_account_name(*account_name);
   }
 
-  absl::optional<std::string> bluetooth_mac_address =
+  std::optional<std::string> bluetooth_mac_address =
       GetBluetoothMacAddress(bluetooth_adapter);
   base::UmaHistogramBoolean(
       "Nearby.Share.Certificates.Manager."
       "BluetoothMacAddressPresentForPrivateCertificateCreation",
       bluetooth_mac_address.has_value());
   if (!bluetooth_mac_address) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   metadata.set_bluetooth_mac_address(*bluetooth_mac_address);
@@ -204,12 +204,12 @@ void TryDecryptPublicCertificates(
         << __func__ << ": Failed to read public certificates from storage.";
     RecordGetDecryptedPublicCertificateResultMetric(
         GetDecryptedPublicCertificateResult::kStorageFailure);
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   for (const auto& cert : *public_certificates) {
-    absl::optional<NearbyShareDecryptedPublicCertificate> decrypted =
+    std::optional<NearbyShareDecryptedPublicCertificate> decrypted =
         NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
             cert, encrypted_metadata_key);
     if (decrypted) {
@@ -227,7 +227,7 @@ void TryDecryptPublicCertificates(
       << ": Metadata key could not decrypt any public certificates.";
   RecordGetDecryptedPublicCertificateResultMetric(
       GetDecryptedPublicCertificateResult::kNoMatch);
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace
@@ -337,7 +337,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnDownloadPublicCertificatesRequest,
                                   base::Unretained(this),
-                                  /*page_token=*/absl::nullopt,
+                                  /*page_token=*/std::nullopt,
                                   /*page_number=*/1,
                                   /*certificate_count=*/0),
               clock_)) {
@@ -383,10 +383,10 @@ void NearbyShareCertificateManagerImpl::OnStop() {
   download_public_certificates_scheduler_->Stop();
 }
 
-absl::optional<NearbySharePrivateCertificate>
+std::optional<NearbySharePrivateCertificate>
 NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
     nearby_share::mojom::Visibility visibility) const {
-  absl::optional<std::vector<NearbySharePrivateCertificate>> certs =
+  std::optional<std::vector<NearbySharePrivateCertificate>> certs =
       *certificate_storage_->GetPrivateCertificates();
   for (auto& cert : *certs) {
     if (IsNearbyShareCertificateWithinValidityPeriod(
@@ -400,7 +400,7 @@ NearbyShareCertificateManagerImpl::GetValidPrivateCertificate(
   CD_LOG(WARNING, Feature::NS)
       << __func__ << ": No valid private certificate found with visibility "
       << visibility;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void NearbyShareCertificateManagerImpl::UpdatePrivateCertificateInStorage(
@@ -444,7 +444,7 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceDataChanged(
   private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
   // We enforce that a fixed number--kNearbyShareNumPrivateCertificates for each
   // visibility--of private certificates be present at all times. This might not
@@ -457,7 +457,7 @@ NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
     return base::Time::Min();
   }
 
-  absl::optional<base::Time> expiration_time =
+  std::optional<base::Time> expiration_time =
       certificate_storage_->NextPrivateCertificateExpirationTime();
   DCHECK(expiration_time);
 
@@ -502,7 +502,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
         std::max(latest_not_after[cert.visibility()], cert.not_after());
   }
 
-  absl::optional<nearby::sharing::proto::EncryptedMetadata> metadata =
+  std::optional<nearby::sharing::proto::EncryptedMetadata> metadata =
       BuildMetadata(local_device_data_manager_->GetDeviceName(),
                     local_device_data_manager_->GetFullName(),
                     local_device_data_manager_->GetIconUrl(),
@@ -592,14 +592,14 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceCertificateUploadFinished(
   upload_local_device_certificates_scheduler_->HandleResult(success);
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 NearbyShareCertificateManagerImpl::NextPublicCertificateExpirationTime() {
-  absl::optional<base::Time> next_expiration_time =
+  std::optional<base::Time> next_expiration_time =
       certificate_storage_->NextPublicCertificateExpirationTime();
 
   // Supposedly there are no store public certificates.
   if (!next_expiration_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // To account for clock skew between devices, we accept public certificates
@@ -621,7 +621,7 @@ void NearbyShareCertificateManagerImpl::OnExpiredPublicCertificatesRemoved(
 }
 
 void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
-    absl::optional<std::string> page_token,
+    std::optional<std::string> page_token,
     size_t page_number,
     size_t certificate_count) {
   DCHECK(!client_);
@@ -667,10 +667,10 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesSuccess(
       response.public_certificates().begin(),
       response.public_certificates().end());
 
-  absl::optional<std::string> page_token =
+  std::optional<std::string> page_token =
       response.next_page_token().empty()
-          ? absl::nullopt
-          : absl::make_optional(response.next_page_token());
+          ? std::nullopt
+          : std::make_optional(response.next_page_token());
 
   client_.reset();
 
@@ -706,7 +706,7 @@ void NearbyShareCertificateManagerImpl::OnListPublicCertificatesTimeout(
 }
 
 void NearbyShareCertificateManagerImpl::OnPublicCertificatesAddedToStorage(
-    absl::optional<std::string> page_token,
+    std::optional<std::string> page_token,
     size_t page_number,
     size_t certificate_count,
     bool success) {

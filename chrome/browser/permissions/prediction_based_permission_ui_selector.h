@@ -53,10 +53,10 @@ class PredictionBasedPermissionUiSelector
   bool IsPermissionRequestSupported(
       permissions::RequestType request_type) override;
 
-  absl::optional<PredictionGrantLikelihood> PredictedGrantLikelihoodForUKM()
+  std::optional<PredictionGrantLikelihood> PredictedGrantLikelihoodForUKM()
       override;
 
-  absl::optional<bool> WasSelectorDecisionHeldback() override;
+  std::optional<bool> WasSelectorDecisionHeldback() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
@@ -72,7 +72,7 @@ class PredictionBasedPermissionUiSelector
       permissions::RequestType request_type,
       bool lookup_succesful,
       bool response_from_cache,
-      const absl::optional<permissions::GeneratePredictionsResponse>& response);
+      const std::optional<permissions::GeneratePredictionsResponse>& response);
   PredictionSource GetPredictionTypeToUse(
       permissions::RequestType request_type);
 
@@ -81,16 +81,16 @@ class PredictionBasedPermissionUiSelector
   }
 
   void OnModelExecutionComplete(
-      const absl::optional<permissions::GeneratePredictionsResponse>& result);
+      const std::optional<permissions::GeneratePredictionsResponse>& result);
 
   bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
-  absl::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
-  absl::optional<bool> was_decision_held_back_;
+  std::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
+  std::optional<bool> was_decision_held_back_;
 
-  absl::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
+  std::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
 
   DecisionMadeCallback callback_;
 

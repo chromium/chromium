@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
@@ -26,7 +27,6 @@
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::DoDefault;
 using ::testing::InvokeWithoutArgs;
@@ -43,7 +43,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
       OnSpeechResult,
       void(const std::u16string& text,
            bool is_final,
-           const absl::optional<media::SpeechRecognitionResult>& timing));
+           const std::optional<media::SpeechRecognitionResult>& timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
   MOCK_METHOD0(OnSpeechRecognitionStopped, void());

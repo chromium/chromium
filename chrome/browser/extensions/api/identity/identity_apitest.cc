@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -94,7 +95,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/gfx/geometry/rect.h"
@@ -419,10 +419,10 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
 
   void StartTokenKeyAccountAccessTokenRequest() override {
     if (auto_login_access_token_) {
-      absl::optional<std::string> access_token("access_token");
+      std::optional<std::string> access_token("access_token");
       GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
       if (!login_access_token_result_) {
-        access_token = absl::nullopt;
+        access_token = std::nullopt;
         error = GoogleServiceAuthError(
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
       }
@@ -662,7 +662,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
-      absl::optional<api::identity::AccountInfo> info =
+      std::optional<api::identity::AccountInfo> info =
           api::identity::AccountInfo::FromValue(item);
       if (info) {
         result_ids.insert(info->id);
@@ -691,7 +691,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       msg << "NULL";
     } else {
       for (const auto& result : *results) {
-        absl::optional<api::identity::AccountInfo> info =
+        std::optional<api::identity::AccountInfo> info =
             api::identity::AccountInfo::FromValue(result);
         if (info) {
           msg << info->id << " ";
@@ -744,22 +744,22 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, TwoAccountsSignedIn) {
 
 class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
  protected:
-  absl::optional<api::identity::ProfileUserInfo> RunGetProfileUserInfo() {
+  std::optional<api::identity::ProfileUserInfo> RunGetProfileUserInfo() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(
         ExtensionBuilder("Test").SetID(kExtensionId).Build().get());
-    absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), "[]", browser()->profile());
     return api::identity::ProfileUserInfo::FromValue(*value);
   }
 
-  absl::optional<api::identity::ProfileUserInfo>
+  std::optional<api::identity::ProfileUserInfo>
   RunGetProfileUserInfoWithEmail() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(CreateExtensionWithEmailPermission());
-    absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), "[]", browser()->profile());
     return api::identity::ProfileUserInfo::FromValue(*value);
   }
@@ -770,7 +770,7 @@ class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
-  absl::optional<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, SignedIn) {
   SignIn("president@example.com");
-  absl::optional<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_EQ("president@example.com", info->email);
   EXPECT_EQ("gaia_id_for_president_example.com", info->id);
@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInUnconsented) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
-  absl::optional<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        NotSignedInNoEmail) {
-  absl::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
+  std::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
 }
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
                        SignedInNoEmail) {
   SignIn("president@example.com");
-  absl::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
+  std::optional<api::identity::ProfileUserInfo> info = RunGetProfileUserInfo();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
 }
@@ -813,14 +813,14 @@ class IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam
     : public IdentityGetProfileUserInfoFunctionTest,
       public ::testing::WithParamInterface<std::string> {
  protected:
-  absl::optional<api::identity::ProfileUserInfo>
+  std::optional<api::identity::ProfileUserInfo>
   RunGetProfileUserInfoWithAccountStatus() {
     scoped_refptr<IdentityGetProfileUserInfoFunction> func(
         new IdentityGetProfileUserInfoFunction);
     func->set_extension(CreateExtensionWithEmailPermission());
     std::string args = base::StringPrintf(R"([{"accountStatus": "%s"}])",
                                           account_status().c_str());
-    absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+    std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
         func.get(), args, browser()->profile());
     return api::identity::ProfileUserInfo::FromValue(*value);
   }
@@ -836,7 +836,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     NotSignedIn) {
-  absl::optional<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_TRUE(info->email.empty());
   EXPECT_TRUE(info->id.empty());
@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     SignedIn) {
   SignIn("test@example.com");
-  absl::optional<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   EXPECT_EQ("test@example.com", info->email);
   EXPECT_EQ("gaia_id_for_test_example.com", info->id);
@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(
     SignedInUnconsented) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
-  absl::optional<api::identity::ProfileUserInfo> info =
+  std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
   // The unconsented (Sync off) primary account is returned conditionally,
   // depending on the accountStatus parameter.
@@ -980,7 +980,7 @@ class GetAuthTokenFunctionTest
     return GetCachedToken(account_info, oauth_scopes_);
   }
 
-  absl::optional<std::string> GetCachedGaiaId() {
+  std::optional<std::string> GetCachedGaiaId() {
     return id_api()->GetGaiaIdForExtension(extension_id_);
   }
 
@@ -1007,11 +1007,11 @@ class GetAuthTokenFunctionTest
                                Browser* browser,
                                std::string* access_token,
                                std::set<std::string>* granted_scopes) {
-    absl::optional<base::Value> result_value =
+    std::optional<base::Value> result_value =
         utils::RunFunctionAndReturnSingleResult(function, args,
                                                 browser->profile());
     ASSERT_TRUE(result_value);
-    absl::optional<api::identity::GetAuthTokenResult> result =
+    std::optional<api::identity::GetAuthTokenResult> result =
         api::identity::GetAuthTokenResult::FromValue(*result_value);
     ASSERT_TRUE(result);
 
@@ -1034,7 +1034,7 @@ class GetAuthTokenFunctionTest
     } else {
       function_runner->WaitForOneResult(function, &result_value);
     }
-    absl::optional<api::identity::GetAuthTokenResult> result =
+    std::optional<api::identity::GetAuthTokenResult> result =
         api::identity::GetAuthTokenResult::FromValue(result_value);
     ASSERT_TRUE(result);
 
@@ -3221,7 +3221,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   void RunNewFunctionAndExpectSelectedUserId(
       const scoped_refptr<const extensions::Extension>& extension,
       const std::string& expected_selected_user_id,
-      const absl::optional<std::string> requested_account = absl::nullopt) {
+      const std::optional<std::string> requested_account = std::nullopt) {
     auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
     func->set_extension(extension);
     RunFunctionAndExpectSelectedUserId(func, expected_selected_user_id,
@@ -3231,7 +3231,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   void RunFunctionAndExpectSelectedUserId(
       const scoped_refptr<FakeGetAuthTokenFunction>& func,
       const std::string& expected_selected_user_id,
-      const absl::optional<std::string> requested_account = absl::nullopt) {
+      const std::optional<std::string> requested_account = std::nullopt) {
     // Stops the function right before selected_user_id would be used.
     MockQueuedMintRequest queued_request;
     IdentityMintRequestQueue::MintType type =
@@ -3546,7 +3546,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, NonInteractiveSuccess) {
       CreateLaunchWebAuthFlowFunction();
 
   function->InitFinalRedirectURLDomainsForTest("abcdefghij");
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(),
       "[{\"interactive\": false,"
       "\"url\": \"https://abcdefghij.chromiumapp.org/callback#test\"}]",
@@ -3579,7 +3579,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
         "timeoutMsForNonInteractive": 20000
       }])",
       auth_url.spec().c_str());
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(), args, browser()->profile());
 
   EXPECT_TRUE(value->is_string());
@@ -3593,7 +3593,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
       CreateLaunchWebAuthFlowFunction();
 
   function->InitFinalRedirectURLDomainsForTest("abcdefghij");
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(),
       "[{\"interactive\": true,"
       "\"url\": \"https://abcdefghij.chromiumapp.org/callback#test\"}]",
@@ -3618,7 +3618,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   function->InitFinalRedirectURLDomainsForTest("abcdefghij");
   std::string args =
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       function.get(), args, browser()->profile());
 
   EXPECT_TRUE(value->is_string());
@@ -3726,7 +3726,7 @@ class TestDelegate : public LaunchWebAuthFlowDelegate {
   void GetOptionalWindowBounds(
       Profile* profile,
       const std::string& extension_id,
-      base::OnceCallback<void(absl::optional<gfx::Rect>)> callback) override {
+      base::OnceCallback<void(std::optional<gfx::Rect>)> callback) override {
     std::move(callback).Run(kTestBounds);
   }
 

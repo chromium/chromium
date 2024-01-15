@@ -39,7 +39,7 @@ class ManagementApiFunctionBase
   // to the `Params` type. If the `Params` can't be created, this resolves the
   // corresponding JavaScript call with an error and returns `nullptr`.
   template <class Params>
-  absl::optional<Params> GetParams();
+  std::optional<Params> GetParams();
 
  private:
   std::unique_ptr<RemoteTelemetryManagementServiceStrategy>

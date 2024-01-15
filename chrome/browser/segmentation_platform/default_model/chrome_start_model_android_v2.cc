@@ -92,7 +92,7 @@ void ChromeStartModelV2::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != kChromeStartUMAFeatures.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 

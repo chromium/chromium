@@ -271,11 +271,11 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
           ->GetWebsiteSetting(origin.GetURL(), GURL(),
                               ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)
           .TakeDict();
-  absl::optional<int> stored_visits =
+  std::optional<int> stored_visits =
       values.FindInt(MediaEngagementScore::kVisitsKey);
-  absl::optional<int> stored_media_playbacks =
+  std::optional<int> stored_media_playbacks =
       values.FindInt(MediaEngagementScore::kMediaPlaybacksKey);
-  absl::optional<double> stored_last_media_playback_time =
+  std::optional<double> stored_last_media_playback_time =
       values.FindDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey);
   EXPECT_TRUE(stored_visits);
   EXPECT_TRUE(stored_media_playbacks);

@@ -72,7 +72,7 @@ class AppIconColorCache : public ProfileObserver {
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Returns the icon color associated with the given `app_id` from the prefs
-  // cache. Returns `absl::nullopt` if the target color cannot be found.
+  // cache. Returns `std::nullopt` if the target color cannot be found.
   std::optional<IconColor> GetIconColorForAppFromPrefsCache(
       const std::string& app_id);
 

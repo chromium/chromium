@@ -75,7 +75,7 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
 
   // Callback handler for bind. Calls OpenPort.
   void OnBindComplete(int32_t result,
-                      const absl::optional<net::IPEndPoint>& local_ip);
+                      const std::optional<net::IPEndPoint>& local_ip);
 
   // Callback handler for OpenPort. Calls SetBroadcast.
   void OnOpenPortComplete(
@@ -89,8 +89,8 @@ class NetBiosClient : public network::mojom::UDPSocketListener,
 
   // network::mojom::UDPSocketListener implementation.
   void OnReceived(int32_t result,
-                  const absl::optional<net::IPEndPoint>& src_ip,
-                  absl::optional<base::span<const uint8_t>> data) override;
+                  const std::optional<net::IPEndPoint>& src_ip,
+                  std::optional<base::span<const uint8_t>> data) override;
 
   // Creates a NetBios Name Query Request packet.
   // https://tools.ietf.org/html/rfc1002

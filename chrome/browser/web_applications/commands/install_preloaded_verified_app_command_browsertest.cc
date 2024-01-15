@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       kManifestTemplate, {GetIconUrl()}, nullptr);
 
   webapps::AppId expected_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kStartUrl);
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       result;
   provider().command_manager().ScheduleCommand(
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       kManifestTemplate, {GetIconUrl()}, nullptr);
 
   webapps::AppId expected_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kDocumentUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       result;
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       },
       nullptr);
   webapps::AppId expected_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kDocumentUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       result;
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
        https_server()->GetURL("youtube.com", "/web_apps/blue-192.png").spec()},
       nullptr);
   webapps::AppId expected_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kDocumentUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       result;
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
       nullptr);
 
   webapps::AppId expected_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kStartUrl);
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       result;
   provider().command_manager().ScheduleCommand(
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest, FailureNoIcons) {
   })json";
 
   webapps::AppId expected_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kStartUrl);
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       result;
   provider().command_manager().ScheduleCommand(

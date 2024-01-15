@@ -51,7 +51,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest,
   GURL GetSuggestServerURL(const std::string& path) const;
 
   void WaitUntilStatusChangesTo(const GURL& canonical_search_url,
-                                absl::optional<SearchPrefetchStatus> status);
+                                std::optional<SearchPrefetchStatus> status);
 
   content::WebContents* GetWebContents() const;
 
@@ -59,7 +59,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest,
 
   void WaitForDuration(base::TimeDelta duration);
 
-  void ClearBrowsingCacheData(absl::optional<GURL> url_origin);
+  void ClearBrowsingCacheData(std::optional<GURL> url_origin);
 
   void SetDSEWithURL(const GURL& url, bool dse_allows_prefetch);
 

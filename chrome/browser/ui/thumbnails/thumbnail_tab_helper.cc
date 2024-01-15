@@ -360,7 +360,7 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
           ->GetPartSize(ui::NativeTheme::Part::kScrollbarVerticalTrack,
                         ui::NativeTheme::State::kNormal,
                         ui::NativeTheme::ExtraParams(
-                            absl::in_place_type<
+                            std::in_place_type<
                                 ui::NativeTheme::ScrollbarTrackExtraParams>))
           .width();
   // Round up to make sure any scrollbar pixls are eliminated. It's better to

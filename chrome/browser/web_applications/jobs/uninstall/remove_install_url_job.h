@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_URL_JOB_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -32,7 +32,7 @@ class RemoveInstallUrlJob : public UninstallJob {
   RemoveInstallUrlJob(webapps::WebappUninstallSource uninstall_source,
                       Profile& profile,
                       base::Value::Dict& debug_value,
-                      absl::optional<webapps::AppId> app_id,
+                      std::optional<webapps::AppId> app_id,
                       WebAppManagement::Type install_source,
                       GURL install_url);
   ~RemoveInstallUrlJob() override;
@@ -48,7 +48,7 @@ class RemoveInstallUrlJob : public UninstallJob {
   // `this` must be owned by `profile_`.
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;
-  const absl::optional<webapps::AppId> app_id_;
+  const std::optional<webapps::AppId> app_id_;
   const WebAppManagement::Type install_source_;
   const GURL install_url_;
 

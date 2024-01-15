@@ -21,7 +21,7 @@
 namespace SearchEngineChoiceClientSideTrial {
 namespace {
 
-absl::optional<version_info::Channel> g_channel_for_testing;
+std::optional<version_info::Channel> g_channel_for_testing;
 
 // Should match the trial name from Finch.
 const char kTrialName[] = "WaffleStudy";

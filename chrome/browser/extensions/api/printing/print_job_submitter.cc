@@ -212,7 +212,7 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
                         .Contains(extension_->id())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback_), base::unexpected(absl::nullopt)));
+        base::BindOnce(std::move(callback_), base::unexpected(std::nullopt)));
     return;
   }
   StartPrintJob();
@@ -230,7 +230,7 @@ void PrintJobSubmitter::StartPrintJob() {
 }
 
 void PrintJobSubmitter::OnPrintJobCreated(
-    absl::optional<printing::PrintJobCreatedInfo> info) {
+    std::optional<printing::PrintJobCreatedInfo> info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!info) {
     FireErrorCallback(kPrintingFailed);

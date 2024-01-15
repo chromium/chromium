@@ -495,8 +495,8 @@ std::u16string UsbChooserContext::GetObjectDisplayName(
   if (!name->empty())
     return base::UTF8ToUTF16(*name);
 
-  absl::optional<int> vendor_id = object.FindInt(kVendorIdKey);
-  absl::optional<int> product_id = object.FindInt(kProductIdKey);
+  std::optional<int> vendor_id = object.FindInt(kVendorIdKey);
+  std::optional<int> product_id = object.FindInt(kProductIdKey);
   DCHECK(vendor_id && product_id);
   return GetDeviceNameFromIds(*vendor_id, *product_id);
 }

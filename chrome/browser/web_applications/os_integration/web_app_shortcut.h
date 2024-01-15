@@ -255,7 +255,7 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id);
 Result UpdatePlatformShortcuts(
     const base::FilePath& shortcut_data_path,
     const std::u16string& old_app_title,
-    absl::optional<ShortcutLocations> user_specified_locations,
+    std::optional<ShortcutLocations> user_specified_locations,
     const ShortcutInfo& shortcut_info);
 
 // Run an IO task on a worker thread. Ownership of |shortcut_info| transfers

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_POLICY_WEB_APP_POLICY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -136,8 +136,8 @@ class WebAppPolicyManager {
     void SetName(const std::string& utf8_name);
     void SetIcon(const GURL& icon_gurl);
 
-    absl::optional<std::u16string> name;
-    absl::optional<std::vector<blink::Manifest::ImageResource>> icons;
+    std::optional<std::u16string> name;
+    std::optional<std::vector<blink::Manifest::ImageResource>> icons;
   };
 
   void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);

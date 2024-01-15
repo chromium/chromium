@@ -222,7 +222,7 @@ void ChromeOSSystemProfileProvider::InitTaskGetCellularDeviceVariant(
 
 void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
     base::OnceClosure callback) {
-  if (const absl::optional<base::StringPiece> full_hardware_class =
+  if (const std::optional<base::StringPiece> full_hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               "hardware_class")) {
     full_hardware_class_ = std::string(full_hardware_class.value());
@@ -232,7 +232,7 @@ void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
 
 void ChromeOSSystemProfileProvider::OnArcFeaturesParsed(
     base::OnceClosure callback,
-    absl::optional<arc::ArcFeatures> features) {
+    std::optional<arc::ArcFeatures> features) {
   base::ScopedClosureRunner runner(std::move(callback));
   if (!features) {
     LOG(WARNING) << "ArcFeatures not available on this build";

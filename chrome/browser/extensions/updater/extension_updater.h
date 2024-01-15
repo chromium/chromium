@@ -298,7 +298,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
                               bool file_ownership_passed);
 
   void OnInstallerDone(const base::UnguessableToken& token,
-                       const absl::optional<CrxInstallError>& error);
+                       const std::optional<CrxInstallError>& error);
 
   // This function verifies if |extension_id| can be updated using
   // UpdateService.

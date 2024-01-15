@@ -134,7 +134,7 @@ void PendingJob::OnDocDone(int job_id, PrintedDocument* document) {
 }
 
 void PendingJob::OnFailed() {
-  std::move(callback_).Run(absl::nullopt);
+  std::move(callback_).Run(std::nullopt);
 
   storage_->DeletePendingJobPlease(this);
 }

@@ -83,7 +83,7 @@ bool IsMetricsEnabled(const base::FilePath& file_path) {
   if (!root || !root->is_dict())
     return false;
 
-  const absl::optional<bool> value = root->GetDict().FindBoolByDottedPath(
+  const std::optional<bool> value = root->GetDict().FindBoolByDottedPath(
       metrics::prefs::kMetricsReportingEnabled);
 
   return value.value_or(false);

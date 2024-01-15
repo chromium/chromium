@@ -41,7 +41,7 @@ class MockDlpFilesController : public DlpFilesController {
  public:
   explicit MockDlpFilesController(const DlpRulesManager& rules_manager)
       : DlpFilesController(rules_manager) {}
-  MOCK_METHOD(absl::optional<data_controls::Component>,
+  MOCK_METHOD(std::optional<data_controls::Component>,
               MapFilePathToPolicyComponent,
               (Profile * profile, const base::FilePath& file_path),
               (override));
@@ -53,7 +53,7 @@ class MockDlpFilesController : public DlpFilesController {
 
   MOCK_METHOD(void,
               ShowDlpBlockedFiles,
-              (absl::optional<uint64_t> task_id,
+              (std::optional<uint64_t> task_id,
                std::vector<base::FilePath> blocked_files,
                dlp::FileAction action),
               (override));
@@ -173,8 +173,8 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
       file_access_future;
   ASSERT_TRUE(files_controller_);
   EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
-      .WillOnce(testing::Return(absl::nullopt))
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt))
+      .WillOnce(testing::Return(std::nullopt));
   EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
       .WillOnce(testing::Return(true))
       .WillOnce(testing::Return(true));
@@ -338,7 +338,7 @@ TEST_F(DlpFilesControllerTest, FileCopyFromExternalTest) {
   EXPECT_CALL(request_file_access_call, Run).Times(0);
 
   EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
-      .WillOnce(testing::Return(absl::nullopt))
+      .WillOnce(testing::Return(std::nullopt))
       .WillOnce(testing::Return(data_controls::Component::kDrive));
 
   chromeos::DlpClient::Get()->GetTestInterface()->SetRequestFileAccessMock(
@@ -379,7 +379,7 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalAllowTest) {
 
   EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(data_controls::Component::kDrive))
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
 
   chromeos::DlpClient::Get()->GetTestInterface()->SetRequestFileAccessMock(
       request_file_access_call.Get());
@@ -429,7 +429,7 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
 
   EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(data_controls::Component::kDrive))
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
 
   chromeos::DlpClient::Get()->GetTestInterface()->SetRequestFileAccessMock(
       request_file_access_call.Get());
@@ -458,8 +458,8 @@ TEST_F(DlpFilesControllerTest, FileCopyToUnknownComponent) {
   auto destination = storage::FileSystemURL();
 
   EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
-      .WillOnce(testing::Return(absl::nullopt))   // destination component
-      .WillOnce(testing::Return(absl::nullopt));  // source component
+      .WillOnce(testing::Return(std::nullopt))   // destination component
+      .WillOnce(testing::Return(std::nullopt));  // source component
 
   base::MockRepeatingCallback<void(
       ::dlp::RequestFileAccessRequest request,
@@ -553,7 +553,7 @@ TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed) {
       check_files_transfer_response);
 
   EXPECT_CALL(*files_controller_,
-              ShowDlpBlockedFiles(/*task_id=*/{absl::nullopt},
+              ShowDlpBlockedFiles(/*task_id=*/{std::nullopt},
                                   std::vector<base::FilePath>{file_path2},
                                   dlp::FileAction::kCopy));
   EXPECT_CALL(*files_controller_, IsInLocalFileSystem)

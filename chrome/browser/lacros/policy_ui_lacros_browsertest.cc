@@ -103,7 +103,7 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
   std::string json = content::EvalJs(contents, javascript).ExtractString();
-  absl::optional<base::Value> statuses = base::JSONReader::Read(json);
+  std::optional<base::Value> statuses = base::JSONReader::Read(json);
   ASSERT_TRUE(statuses.has_value() && statuses->is_dict());
   const base::Value::Dict* actual_entries =
       statuses->GetDict().FindDict(policy_legend);

@@ -566,7 +566,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
       return false;
     }
 
-    absl::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
+    std::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
     EXPECT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
     GURL urn_uuid = observed_urn_uuid.value();
@@ -1029,7 +1029,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
   // Privacy Sandbox is enabled and 3P cookies are allowed, so Shared Storage
   // should be allowed.
   EXPECT_TRUE(run_url_op_result.error.empty());
-  absl::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
+  std::optional<GURL> observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
   GURL urn_uuid = observed_urn_uuid.value();
@@ -2792,8 +2792,7 @@ class SharedStorageFencedFrameChromeBrowserTest
 
     EXPECT_TRUE(run_url_op_console_observer.Wait());
     EXPECT_TRUE(run_url_op_result.error.empty());
-    const absl::optional<GURL>& observed_urn_uuid =
-        config_observer.GetUrnUuid();
+    const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     EXPECT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 

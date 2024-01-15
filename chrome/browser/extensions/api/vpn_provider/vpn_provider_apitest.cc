@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -27,7 +29,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -172,7 +173,7 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
   }
 
   raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
-  absl::optional<std::string> extension_id_;
+  std::optional<std::string> extension_id_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -309,13 +310,13 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
     ash::NetworkHandler::Get()
         ->network_configuration_handler()
         ->RemoveConfiguration(
-            GetSingleServicePath(), /*remove_confirmer=*/absl::nullopt,
+            GetSingleServicePath(), /*remove_confirmer=*/std::nullopt,
             base::DoNothing(), base::BindOnce(DoNothingFailureCallback));
   }
 
   bool HasService(const std::string& service_path) const {
     std::string profile_path;
-    absl::optional<base::Value::Dict> properties =
+    std::optional<base::Value::Dict> properties =
         ash::ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
     return properties.has_value();
@@ -633,7 +634,7 @@ class TestEventObserverForExtension
   void OnConfigRemoved(const std::string& configuration_name) override {}
   void OnPlatformMessage(const std::string& configuration_name,
                          int32_t platform_message,
-                         const absl::optional<std::string>& error) override {}
+                         const std::optional<std::string>& error) override {}
   void OnPacketReceived(const std::vector<uint8_t>& data) override {}
 };
 

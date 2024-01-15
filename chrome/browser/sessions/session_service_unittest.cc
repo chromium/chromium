@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -53,7 +54,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -90,14 +90,14 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  absl::optional<SessionServiceEvent> FindMostRecentEventOfType(
+  std::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) {
     auto events = GetSessionServiceEvents(browser()->profile());
     for (const SessionServiceEvent& event : base::Reversed(events)) {
       if (event.type == type)
         return event;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void DestroySessionService() {
@@ -1140,15 +1140,15 @@ TEST_F(SessionServiceTest, TabGroupDefaultsToNone) {
 
   // Verify that the recorded tab has no group.
   sessions::SessionTab* tab = windows[0]->tabs[0].get();
-  EXPECT_EQ(absl::nullopt, tab->group);
+  EXPECT_EQ(std::nullopt, tab->group);
 }
 
 TEST_F(SessionServiceTest, TabGroupsSaved) {
   const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
   const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
   constexpr int kNumTabs = 5;
-  const std::array<absl::optional<tab_groups::TabGroupId>, kNumTabs> groups = {
-      absl::nullopt, group1, group1, absl::nullopt, group2};
+  const std::array<std::optional<tab_groups::TabGroupId>, kNumTabs> groups = {
+      std::nullopt, group1, group1, std::nullopt, group2};
 
   // Create |kNumTabs| tabs with group IDs in |groups|.
   for (int tab_ndx = 0; tab_ndx < kNumTabs; ++tab_ndx) {
@@ -1180,8 +1180,8 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
                                      tab_groups::TabGroupColorId::kBlue),
       tab_groups::TabGroupVisualData(u"Bar",
                                      tab_groups::TabGroupColorId::kGreen)};
-  const std::array<absl::optional<std::string>, kNumGroups> saved_guids = {
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), absl::nullopt};
+  const std::array<std::optional<std::string>, kNumGroups> saved_guids = {
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), std::nullopt};
 
   // Create |kNumGroups| tab groups, each with one tab.
   for (int group_ndx = 0; group_ndx < kNumGroups; ++group_ndx) {
@@ -1215,7 +1215,7 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
       EXPECT_EQ(saved_guids[group_ndx],
                 tab_groups[group_id]->saved_guid.value());
     } else {
-      EXPECT_EQ(absl::nullopt, tab_groups[group_id]->saved_guid);
+      EXPECT_EQ(std::nullopt, tab_groups[group_id]->saved_guid);
     }
   }
 }

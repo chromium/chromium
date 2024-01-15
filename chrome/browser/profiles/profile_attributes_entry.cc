@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,7 +17,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -29,7 +31,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -485,13 +486,13 @@ size_t ProfileAttributesEntry::GetAvatarIconIndex() const {
   return icon_index;
 }
 
-absl::optional<ProfileThemeColors>
+std::optional<ProfileThemeColors>
 ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
-  absl::optional<SkColor> profile_highlight_color =
+  std::optional<SkColor> profile_highlight_color =
       GetProfileThemeColor(kProfileHighlightColorKey);
-  absl::optional<SkColor> default_avatar_fill_color =
+  std::optional<SkColor> default_avatar_fill_color =
       GetProfileThemeColor(kDefaultAvatarFillColorKey);
-  absl::optional<SkColor> default_avatar_stroke_color =
+  std::optional<SkColor> default_avatar_stroke_color =
       GetProfileThemeColor(kDefaultAvatarStrokeColorKey);
 
   DCHECK_EQ(profile_highlight_color.has_value(),
@@ -500,7 +501,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
             default_avatar_fill_color.has_value());
 
   if (!profile_highlight_color.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ProfileThemeColors colors;
@@ -517,8 +518,7 @@ ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
   return {gfx::kPlaceholderColor, gfx::kPlaceholderColor,
           gfx::kPlaceholderColor};
 #else
-  absl::optional<ProfileThemeColors> theme_colors =
-      GetProfileThemeColorsIfSet();
+  std::optional<ProfileThemeColors> theme_colors = GetProfileThemeColorsIfSet();
   if (theme_colors)
     return *theme_colors;
 
@@ -714,7 +714,7 @@ void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
 }
 
 void ProfileAttributesEntry::SetProfileThemeColors(
-    const absl::optional<ProfileThemeColors>& colors) {
+    const std::optional<ProfileThemeColors>& colors) {
   bool changed = false;
   if (colors.has_value()) {
     changed |=
@@ -883,13 +883,13 @@ int ProfileAttributesEntry::GetInteger(const char* key) const {
   return value->GetInt();
 }
 
-absl::optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
+std::optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
     const char* key) const {
   // Do not use GetInteger(), as it defaults to kIntegerNotSet which is
   // undistinguishable from a valid color.
   const base::Value* value = GetValue(key);
   if (!value || !value->is_int())
-    return absl::nullopt;
+    return std::nullopt;
   return value->GetInt();
 }
 

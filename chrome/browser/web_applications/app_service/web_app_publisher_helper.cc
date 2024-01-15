@@ -239,7 +239,7 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
 }
 
 apps::InstallSource GetInstallSource(
-    absl::optional<webapps::WebappInstallSource> source) {
+    std::optional<webapps::WebappInstallSource> source) {
   if (!source) {
     return apps::InstallSource::kUnknown;
   }
@@ -839,11 +839,11 @@ void WebAppPublisherHelper::UninstallWebApp(
             return browser_context;
           },
           base::Unretained(profile())),
-      /*storage_partition_config=*/absl::nullopt, origin,
+      /*storage_partition_config=*/std::nullopt, origin,
       content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{}, /*avoid_closing_connections=*/false,
-      /*cookie_partition_key=*/absl::nullopt,
-      /*storage_key=*/absl::nullopt,
+      /*cookie_partition_key=*/std::nullopt,
+      /*storage_key=*/std::nullopt,
       /*partitioned_state_allowed_only=*/false, std::move(callback));
 }
 
@@ -1072,7 +1072,7 @@ void WebAppPublisherHelper::LaunchAppWithParams(
       params.intent);
 
   bool is_system_web_app = false;
-  absl::optional<GURL> override_url = absl::nullopt;
+  std::optional<GURL> override_url = std::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal SWA has custom launch code and manages its own restore data.
@@ -1743,7 +1743,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
 
   std::vector<std::string> policy_ids;
 
-  if (absl::optional<base::StringPiece> preinstalled_web_app_policy_id =
+  if (std::optional<base::StringPiece> preinstalled_web_app_policy_id =
           apps_util::GetPolicyIdForPreinstalledWebApp(app_id)) {
     policy_ids.emplace_back(*preinstalled_web_app_policy_id);
   }
@@ -1754,7 +1754,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     const auto& swa_data = web_app.client_data().system_web_app_data;
     DCHECK(swa_data);
     const ash::SystemWebAppType swa_type = swa_data->system_app_type;
-    const absl::optional<base::StringPiece> swa_policy_id =
+    const std::optional<base::StringPiece> swa_policy_id =
         apps_util::GetPolicyIdForSystemWebAppType(swa_type);
     if (swa_policy_id) {
       policy_ids.emplace_back(*swa_policy_id);
@@ -1852,7 +1852,7 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
 
   if (persistent_metadata) {
     // For persistent notifications, find the web app with the SW scope url.
-    absl::optional<webapps::AppId> app_id = FindInstalledAppWithUrlInScope(
+    std::optional<webapps::AppId> app_id = FindInstalledAppWithUrlInScope(
         profile(), persistent_metadata->service_worker_scope,
         /*window_only=*/false);
     if (app_id.has_value()) {
@@ -1985,7 +1985,7 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
 void WebAppPublisherHelper::OnLaunchCompleted(
     apps::AppLaunchParams params_for_restore,
     bool is_system_web_app,
-    absl::optional<GURL> override_url,
+    std::optional<GURL> override_url,
     base::OnceCallback<void(content::WebContents*)> on_complete,
     base::WeakPtr<Browser> browser,
     base::WeakPtr<content::WebContents> web_contents,
@@ -2020,7 +2020,7 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 
 void WebAppPublisherHelper::OnGetWebAppSize(
     webapps::AppId app_id,
-    absl::optional<ComputedAppSize> size) {
+    std::optional<ComputedAppSize> size) {
   auto app = std::make_unique<apps::App>(app_type(), app_id);
   if (!size.has_value()) {
     return;

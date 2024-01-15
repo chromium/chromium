@@ -187,14 +187,14 @@ bool OneTimePermissionProvider::UpdateLastVisitTime(
   return false;
 }
 
-absl::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
+std::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    absl::optional<ContentSetting> setting_to_match,
+    std::optional<ContentSetting> setting_to_match,
     const content_settings::PartitionKey& partition_key) {
   // Setting renewal is not supported for one-time permissions.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void OneTimePermissionProvider::ClearAllContentSettingsRules(

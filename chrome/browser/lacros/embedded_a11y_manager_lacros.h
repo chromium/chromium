@@ -105,7 +105,7 @@ class EmbeddedA11yManagerLacros
   void InstallExtension(extensions::ComponentLoader* component_loader,
                         const base::FilePath& path,
                         const std::string& extension_id,
-                        absl::optional<base::Value::Dict> manifest);
+                        std::optional<base::Value::Dict> manifest);
 
   // Called when focus highlight feature is active and the focused node
   // changed.

@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_PRINT_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_PRINT_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -95,7 +96,7 @@ void PrintIfAllowedByPolicy(
 
 // Returns a `ContentAnalysisDelegate::Data` object with information about how
 // content scanning should proceed, or nullopt if it shouldn't.
-absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+std::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
 GetPrintAnalysisData(content::WebContents* web_contents,
                      PrintScanningContext context);
 

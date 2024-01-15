@@ -32,7 +32,7 @@ void WebAppProtocolHandlerManager::Start() {
   DCHECK(provider_);
 }
 
-absl::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
+std::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
     const webapps::AppId& app_id,
     const GURL& protocol_url) const {
   std::vector<ProtocolHandler> handlers = GetAppProtocolHandlers(app_id);
@@ -43,7 +43,7 @@ absl::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<apps::ProtocolHandlerInfo>

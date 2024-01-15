@@ -68,7 +68,7 @@ class EncryptionKeyApi
         receivers_.ReportBadMessage("empty keys for " + vault_name);
         return;
       }
-      const absl::optional<trusted_vault::SecurityDomainId> security_domain =
+      const std::optional<trusted_vault::SecurityDomainId> security_domain =
           trusted_vault::GetSecurityDomainByName(vault_name);
       trusted_vault::RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
           security_domain, is_off_the_record_for_uma_

@@ -72,7 +72,7 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
         /*cursor=*/media::mojom::CursorCaptureType::NEVER,
         /*capture_handle=*/nullptr);
     stream_devices_set->stream_devices.push_back(
-        blink::mojom::StreamDevices::New(/*audio_device=*/absl::nullopt,
+        blink::mojom::StreamDevices::New(/*audio_device=*/std::nullopt,
                                          /*video_device=*/device));
   }
   return stream_devices_set;
@@ -109,7 +109,7 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
                                     /*name=*/"Screen",
                                     /*display_id=*/source.display_id);
     stream_devices_set->stream_devices.push_back(
-        blink::mojom::StreamDevices::New(/*audio_device=*/absl::nullopt,
+        blink::mojom::StreamDevices::New(/*audio_device=*/std::nullopt,
                                          /*video_device=*/device));
   }
 

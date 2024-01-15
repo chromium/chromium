@@ -23,7 +23,7 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
 ExternallyManagedAppInstallTask::~ExternallyManagedAppInstallTask() = default;
 
 void ExternallyManagedAppInstallTask::Install(
-    absl::optional<webapps::AppId> installed_placeholder_app_id,
+    std::optional<webapps::AppId> installed_placeholder_app_id,
     ResultCallback result_callback) {
   provider_->scheduler().InstallExternallyManagedApp(
       std::move(install_options_), std::move(installed_placeholder_app_id),

@@ -54,7 +54,7 @@ bool IsVM(const ui::EndpointType type) {
 }
 
 // Returns true if `endpoint` has no value or its type is kDefault.
-bool IsNullEndpoint(const absl::optional<ui::DataTransferEndpoint>& endpoint) {
+bool IsNullEndpoint(const std::optional<ui::DataTransferEndpoint>& endpoint) {
   return !endpoint.has_value() ||
          endpoint->type() == ui::EndpointType::kDefault;
 }
@@ -110,7 +110,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     const DlpRulesManager& dlp_rules_manager,
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    const absl::optional<size_t> size,
+    const std::optional<size_t> size,
     std::string* src_pattern,
     std::string* dst_pattern,
     DlpRulesManager::RuleMetadata* out_rule_metadata) {
@@ -233,7 +233,7 @@ void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
 bool DataTransferDlpController::IsClipboardReadAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    const absl::optional<size_t> size) {
+    const std::optional<size_t> size) {
   std::string src_pattern;
   std::string dst_pattern;
   DlpRulesManager::RuleMetadata rule_metadata;
@@ -561,7 +561,7 @@ void DataTransferDlpController::ContinueDropIfAllowed(
   std::string dst_pattern;
   DlpRulesManager::RuleMetadata rule_metadata;
   DlpRulesManager::Level level = IsDataTransferAllowed(
-      *dlp_rules_manager_, data_src, data_dst, absl::nullopt, &src_pattern,
+      *dlp_rules_manager_, data_src, data_dst, std::nullopt, &src_pattern,
       &dst_pattern, &rule_metadata);
 
   MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,

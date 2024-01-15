@@ -4,6 +4,8 @@
 
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 
+#include <optional>
+
 #include "base/barrier_closure.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
@@ -24,7 +26,6 @@
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/gurl.h"
 
@@ -176,7 +177,7 @@ class ChromeUsbTestHelper {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates a fake extension with the specified `extension_id` so that it can
   // exercise behaviors that are only enabled for privileged extensions.
-  absl::optional<GURL> CreateExtensionWithId(base::StringPiece extension_id) {
+  std::optional<GURL> CreateExtensionWithId(base::StringPiece extension_id) {
     auto manifest = base::Value::Dict()
                         .Set("name", "Fake extension")
                         .Set("description", "For testing.")
@@ -190,7 +191,7 @@ class ChromeUsbTestHelper {
             .SetID(std::string(extension_id))
             .Build();
     if (!extension) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     extensions::TestExtensionSystem* extension_system =
         static_cast<extensions::TestExtensionSystem*>(

@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -58,7 +59,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
 
@@ -271,7 +271,7 @@ std::string GenerateUpdateManifest(const extensions::ExtensionId& extension_id,
 bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
                                 base::Version* extension_version) {
   std::string error_message;
-  absl::optional<base::Value::Dict> extension_manifest;
+  std::optional<base::Value::Dict> extension_manifest;
   {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     extension_manifest =
@@ -546,7 +546,7 @@ bool ExtensionForceInstallMixin::ForceInstallFromCrx(
 
 bool ExtensionForceInstallMixin::ForceInstallFromSourceDir(
     const base::FilePath& extension_dir_path,
-    const absl::optional<base::FilePath>& pem_path,
+    const std::optional<base::FilePath>& pem_path,
     WaitMode wait_mode,
     extensions::ExtensionId* extension_id,
     base::Version* extension_version) {
@@ -737,7 +737,7 @@ bool ExtensionForceInstallMixin::ServeExistingCrx(
 
 bool ExtensionForceInstallMixin::CreateAndServeCrx(
     const base::FilePath& extension_dir_path,
-    const absl::optional<base::FilePath>& pem_path,
+    const std::optional<base::FilePath>& pem_path,
     const base::Version& extension_version,
     extensions::ExtensionId* extension_id) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;

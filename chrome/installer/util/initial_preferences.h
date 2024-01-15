@@ -203,7 +203,7 @@ class InitialPreferences {
   // copied over to profile preferences.
   std::string ExtractPrefString(const std::string& name);
 
-  absl::optional<base::Value::Dict> initial_dictionary_;
+  std::optional<base::Value::Dict> initial_dictionary_;
   raw_ptr<base::Value::Dict> distribution_ = nullptr;
   bool preferences_read_from_file_ = false;
 };

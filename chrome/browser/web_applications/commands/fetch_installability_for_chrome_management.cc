@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -34,13 +34,13 @@ FetchInstallabilityForChromeManagement::FetchInstallabilityForChromeManagement(
     FetchInstallabilityForChromeManagementCallback callback)
     : WebAppCommand<NoopLock,
                     InstallableCheckResult,
-                    absl::optional<webapps::AppId>>(
+                    std::optional<webapps::AppId>>(
           "FetchInstallabilityForChromeManagement",
           NoopLockDescription(),
           std::move(callback),
           /*args_for_shutdown=*/
           std::make_tuple(InstallableCheckResult::kNotInstallable,
-                          absl::nullopt)),
+                          std::nullopt)),
       url_(url),
       web_contents_(web_contents),
       url_loader_(std::move(url_loader)),
@@ -63,7 +63,7 @@ void FetchInstallabilityForChromeManagement::StartWithLock(
     GetMutableDebugValue().Set("web_contents_destroyed", true);
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -80,7 +80,7 @@ void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
     GetMutableDebugValue().Set("web_contents_destroyed", true);
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   GetMutableDebugValue().Set("WebAppUrlLoader::Result",
@@ -89,21 +89,21 @@ void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
     CompleteAndSelfDestruct(CommandResult::kFailure,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -123,13 +123,13 @@ void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
     GetMutableDebugValue().Set("web_contents_destroyed", true);
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   DCHECK(opt_manifest);
@@ -149,7 +149,7 @@ void FetchInstallabilityForChromeManagement::OnAppLockGranted(
     GetMutableDebugValue().Set("web_contents_destroyed", true);
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             InstallableCheckResult::kNotInstallable,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   DCHECK(!app_id_.empty());

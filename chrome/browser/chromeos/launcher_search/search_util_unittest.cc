@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/json/json_reader.h"
@@ -13,7 +14,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace crosapi {
@@ -43,7 +43,7 @@ TEST(SearchUtilTest, CreateAnswerResult) {
       R"(            "at": { "t": "additional two", "tt": 6 },)"
       R"(            "al": "a11y label" } })"
       R"(] })";
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
   ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", &answer));
   match.answer = answer;
@@ -130,7 +130,7 @@ TEST(SearchUtilTest, CreateWeatherResult) {
       R"(    })"
       R"(  })"
       R"(] })";
-  const absl::optional<base::Value> value = base::JSONReader::Read(json);
+  const std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
   ASSERT_TRUE(SuggestionAnswer::ParseAnswer(
       value->GetDict(), /* The answer type for 'weather'. */ u"8", &answer));

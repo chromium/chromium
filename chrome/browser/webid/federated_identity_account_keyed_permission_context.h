@@ -44,7 +44,7 @@ class FederatedIdentityAccountKeyedPermissionContext
   bool HasPermission(const url::Origin& relying_party_requester,
                      const url::Origin& relying_party_embedder,
                      const url::Origin& identity_provider,
-                     const absl::optional<std::string>& account_id);
+                     const std::optional<std::string>& account_id);
 
   // Grants permission for the (relying_party_requester, relying_party_embedder,
   // identity_provider, account_id) tuple.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/public/common/content_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/profiles/profile_types_ash.h"
@@ -121,7 +121,7 @@ void ExperimentManagerImpl::SetClientEligibility(
     EligibilityDecisionCallback on_eligibility_decision_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (absl::optional<bool> client_is_eligible = IsClientEligible()) {
+  if (std::optional<bool> client_is_eligible = IsClientEligible()) {
     // If client eligibility is already known, just run callback.
     client_is_eligible_ = *client_is_eligible;
     std::move(on_eligibility_decision_callback).Run(client_is_eligible_);
@@ -161,7 +161,7 @@ void ExperimentManagerImpl::MaybeUpdateSyntheticTrialRegistration() {
     return;
   }
 
-  absl::optional<bool> is_client_eligible = IsClientEligible();
+  std::optional<bool> is_client_eligible = IsClientEligible();
   CHECK(is_client_eligible.has_value());
 
   std::string eligible_group_name =
@@ -176,7 +176,7 @@ void ExperimentManagerImpl::MaybeUpdateSyntheticTrialRegistration() {
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
-absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
+std::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
   if (kForceEligibleForTesting.Get()) {
     return true;
   }
@@ -189,7 +189,7 @@ absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
     case static_cast<int>(utils::ExperimentState::kIneligible):
       return false;
     case static_cast<int>(utils::ExperimentState::kUnknownEligibility):
-      return absl::nullopt;
+      return std::nullopt;
     default:
       // invalid
       return false;

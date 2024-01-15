@@ -91,7 +91,7 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 
 // Returns the optional value to use for mirroring playout delay from the
 // relevant command line flag or feature, if any are set.
-absl::optional<base::TimeDelta> GetCastMirroringPlayoutDelay();
+std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

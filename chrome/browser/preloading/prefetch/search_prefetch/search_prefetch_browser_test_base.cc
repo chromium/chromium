@@ -158,7 +158,7 @@ SearchPrefetchBaseBrowserTest::GetSearchPrefetchAndNonPrefetch(
 
 void SearchPrefetchBaseBrowserTest::WaitUntilStatusChangesTo(
     const GURL& canonical_search_url,
-    absl::optional<SearchPrefetchStatus> status) {
+    std::optional<SearchPrefetchStatus> status) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   while (search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -185,7 +185,7 @@ void SearchPrefetchBaseBrowserTest::WaitForDuration(base::TimeDelta duration) {
 }
 
 void SearchPrefetchBaseBrowserTest::ClearBrowsingCacheData(
-    absl::optional<GURL> url_origin) {
+    std::optional<GURL> url_origin) {
   auto filter = content::BrowsingDataFilterBuilder::Create(
       url_origin ? content::BrowsingDataFilterBuilder::Mode::kDelete
                  : content::BrowsingDataFilterBuilder::Mode::kPreserve);

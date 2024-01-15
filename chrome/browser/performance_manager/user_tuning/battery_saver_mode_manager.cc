@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -277,7 +277,7 @@ class DesktopBatterySaverProvider
 
   // base::BatteryStateSampler::Observer:
   void OnBatteryStateSampled(
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           battery_state) override {
     if (!battery_state) {
       return;
@@ -383,7 +383,7 @@ class ChromeOSBatterySaverProvider
   ~ChromeOSBatterySaverProvider() override = default;
 
   void OnInitialBatterySaverModeObtained(
-      absl::optional<power_manager::BatterySaverModeState> state) {
+      std::optional<power_manager::BatterySaverModeState> state) {
     if (state) {
       BatterySaverModeStateChanged(*state);
     }

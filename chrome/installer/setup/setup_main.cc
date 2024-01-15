@@ -107,7 +107,6 @@
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(CLANG_PROFILING)
@@ -1097,7 +1096,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
       const std::wstring protocol_associations_value =
           cmd_line.GetSwitchValueNative(
               installer::switches::kRegisterURLProtocol);
-      absl::optional<ShellUtil::ProtocolAssociations> protocol_associations =
+      std::optional<ShellUtil::ProtocolAssociations> protocol_associations =
           ShellUtil::ProtocolAssociations::FromCommandLineArgument(
               protocol_associations_value);
 

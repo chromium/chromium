@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -37,7 +38,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -416,7 +416,7 @@ ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
     const std::string& localized_name,
     const std::string& localized_description,
     std::string* error) {
-  absl::optional<base::Value::Dict> localized_manifest;
+  std::optional<base::Value::Dict> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
     localized_manifest = manifest.Clone();
     if (!localized_name.empty()) {

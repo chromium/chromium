@@ -4,6 +4,8 @@
 #ifndef CHROME_BROWSER_CART_CART_SERVICE_H_
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/commerce/core/discount_consent_handler.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history/core/browser/history_service.h"
@@ -27,9 +30,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "chrome/browser/ui/browser.h"
 
 class DiscountURLLoader;
 class FetchDiscountWorker;
@@ -72,7 +72,7 @@ class CartService : public history::HistoryServiceObserver,
   virtual void LoadAllActiveCarts(CartDB::LoadCallback callback);
   // Add a cart to the cart service.
   void AddCart(const GURL& navigation_url,
-               const absl::optional<GURL>& cart_url,
+               const std::optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
   // Delete the cart from the same domain as |url| in the cart service. When not
   // |ignore_remove_status|, we keep the cart if it has been permanently
@@ -209,7 +209,7 @@ class CartService : public history::HistoryServiceObserver,
                             std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to handle adding a cart.
   void OnAddCart(const GURL& navigation_url,
-                 const absl::optional<GURL>& cart_url,
+                 const std::optional<GURL>& cart_url,
                  cart_db::ChromeCartContentProto proto,
                  bool success,
                  std::vector<CartDB::KeyAndValue> proto_pairs);

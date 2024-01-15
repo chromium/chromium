@@ -119,11 +119,11 @@ class MockUserModifiableProvider
                     ContentSettingsType content_type,
                     const content_settings::PartitionKey& partition_key));
   MOCK_METHOD5(RenewContentSetting,
-               absl::optional<base::TimeDelta>(
+               std::optional<base::TimeDelta>(
                    const GURL& primary_url,
                    const GURL& secondary_url,
                    ContentSettingsType content_type,
-                   absl::optional<ContentSetting> setting_to_match,
+                   std::optional<ContentSetting> setting_to_match,
                    const content_settings::PartitionKey& partition_key));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
@@ -2153,7 +2153,7 @@ TEST_P(IndexedHostContentSettingsMapTest,
   ASSERT_EQ(3u, settings.size());
 
   // Validate that using no SessionModel functions the exact same way.
-  settings = map->GetSettingsForOneType(persistent_type, absl::nullopt);
+  settings = map->GetSettingsForOneType(persistent_type, std::nullopt);
   ASSERT_EQ(3u, settings.size());
 
   // Each one/type of settings we set should be retrievable by specifying the
@@ -2399,7 +2399,7 @@ TEST_P(IndexedHostContentSettingsMapTest, RenewContentSetting) {
   EXPECT_EQ(map->RenewContentSetting(primary_url, secondary_url,
                                      ContentSettingsType::STORAGE_ACCESS,
                                      ContentSetting::CONTENT_SETTING_ALLOW),
-            absl::make_optional(base::Hours(1)));
+            std::make_optional(base::Hours(1)));
 }
 
 TEST_P(IndexedHostContentSettingsMapTest, Increments3pcSettingsMetrics) {

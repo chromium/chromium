@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_CROS_COMPONENT_INSTALLER_CHROMEOS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -221,7 +221,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
     LoadInfo();
     ~LoadInfo();
     // If null, then the request is pending.
-    absl::optional<bool> success;
+    std::optional<bool> success;
     // Only populated on success.
     base::FilePath path;
     // Only populated if request is pending. Includes all subsequent callbacks
@@ -281,13 +281,13 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // point).
   void FinishLoad(LoadCallback load_callback,
                   const std::string& name,
-                  absl::optional<base::FilePath> result);
+                  std::optional<base::FilePath> result);
 
   // Calls `version_callback` and pass in the parameter `result` (component
   // version).
   void FinishGetVersion(
       base::OnceCallback<void(const base::Version&)> version_callback,
-      absl::optional<std::string> result) const;
+      std::optional<std::string> result) const;
 
   // Registers component |configs| to be updated.
   void RegisterN(const std::vector<ComponentConfig>& configs);

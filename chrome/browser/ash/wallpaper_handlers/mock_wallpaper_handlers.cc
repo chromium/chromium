@@ -145,7 +145,7 @@ CreateFakeGooglePhotosPhoto(const std::string& id) {
 
 ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
 CreateFakeGooglePhotosPhotosResponse(
-    const absl::optional<std::string>& item_id) {
+    const std::optional<std::string>& item_id) {
   auto response =
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
   std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr> photos;
@@ -166,7 +166,7 @@ CreateFakeGooglePhotosPhotosResponse(
   }
 
   response->photos = std::move(photos);
-  response->resume_token = absl::nullopt;
+  response->resume_token = std::nullopt;
   return response;
 }
 
@@ -188,7 +188,7 @@ CreateFakeGooglePhotosSharedAlbumsResponse() {
     result.push_back(std::move(album));
   }
   return ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New(
-      std::move(result), absl::nullopt);
+      std::move(result), std::nullopt);
 }
 
 }  // namespace
@@ -305,10 +305,10 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& resume_token,
+          [](const std::optional<std::string>& resume_token,
              base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback) {
             auto response = FetchGooglePhotosAlbumsResponse::New(
-                std::vector<GooglePhotosAlbumPtr>(), absl::nullopt);
+                std::vector<GooglePhotosAlbumPtr>(), std::nullopt);
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(response)));
@@ -322,7 +322,7 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 
 MockGooglePhotosAlbumsFetcher::~MockGooglePhotosAlbumsFetcher() = default;
 
-absl::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
     const GooglePhotosAlbumsCbkArgs& result) {
   return GooglePhotosAlbumsFetcher::GetResultCount(result);
 }
@@ -335,7 +335,7 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& resume_token,
+          [](const std::optional<std::string>& resume_token,
              base::OnceCallback<void(ash::personalization_app::mojom::
                                          FetchGooglePhotosAlbumsResponsePtr)>
                  callback) {
@@ -354,7 +354,7 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
 MockGooglePhotosSharedAlbumsFetcher::~MockGooglePhotosSharedAlbumsFetcher() =
     default;
 
-absl::optional<size_t> MockGooglePhotosSharedAlbumsFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosSharedAlbumsFetcher::GetResultCount(
     const GooglePhotosAlbumsCbkArgs& result) {
   return GooglePhotosSharedAlbumsFetcher::GetResultCount(result);
 }
@@ -378,7 +378,7 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
 
 MockGooglePhotosEnabledFetcher::~MockGooglePhotosEnabledFetcher() = default;
 
-absl::optional<size_t> MockGooglePhotosEnabledFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosEnabledFetcher::GetResultCount(
     const GooglePhotosEnablementState& result) {
   return GooglePhotosEnabledFetcher::GetResultCount(result);
 }
@@ -390,9 +390,9 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 
   ON_CALL(*this, AddRequestAndStartIfNecessary)
       .WillByDefault(
-          [](const absl::optional<std::string>& item_id,
-             const absl::optional<std::string>& album_id,
-             const absl::optional<std::string>& resume_token, bool shuffle,
+          [](const std::optional<std::string>& item_id,
+             const std::optional<std::string>& album_id,
+             const std::optional<std::string>& resume_token, bool shuffle,
              base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
@@ -408,7 +408,7 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 
 MockGooglePhotosPhotosFetcher::~MockGooglePhotosPhotosFetcher() = default;
 
-absl::optional<size_t> MockGooglePhotosPhotosFetcher::GetResultCount(
+std::optional<size_t> MockGooglePhotosPhotosFetcher::GetResultCount(
     const GooglePhotosPhotosCbkArgs& result) {
   return GooglePhotosPhotosFetcher::GetResultCount(result);
 }

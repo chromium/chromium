@@ -57,7 +57,7 @@ class RunOnOsLoginCommand : public WebAppCommand<AppLock> {
 
  private:
   RunOnOsLoginCommand(webapps::AppId app_id,
-                      absl::optional<RunOnOsLoginMode> login_mode,
+                      std::optional<RunOnOsLoginMode> login_mode,
                       RunOnOsLoginAction set_or_sync_mode,
                       base::OnceClosure callback_);
   void Abort(RunOnOsLoginCommandCompletionState aborted_state);
@@ -79,7 +79,7 @@ class RunOnOsLoginCommand : public WebAppCommand<AppLock> {
   std::unique_ptr<AppLock> lock_;
 
   webapps::AppId app_id_;
-  absl::optional<RunOnOsLoginMode> login_mode_;
+  std::optional<RunOnOsLoginMode> login_mode_;
   RunOnOsLoginAction set_or_sync_mode_;
   std::string stop_reason_;
   bool completion_state_set_ = false;

@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -20,7 +21,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace nearby {
 namespace chrome {
@@ -33,14 +33,14 @@ class CountDownLatchTest : public testing::Test {
 
   void PostAwaitTask(base::RunLoop& run_loop,
                      const base::UnguessableToken& attempt_id,
-                     absl::optional<base::TimeDelta> timeout) {
+                     std::optional<base::TimeDelta> timeout) {
     base::RunLoop wait_run_loop;
     auto callback = base::BindLambdaForTesting([&, timeout]() {
       base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
 
       wait_run_loop.Quit();
 
-      absl::optional<ExceptionOr<bool>> result;
+      std::optional<ExceptionOr<bool>> result;
       if (timeout) {
         result = count_down_latch_->Await(
             absl::Microseconds(timeout->InMicroseconds()));
@@ -86,7 +86,7 @@ class CountDownLatchTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::Lock map_lock_;
-  base::flat_map<base::UnguessableToken, absl::optional<ExceptionOr<bool>>>
+  base::flat_map<base::UnguessableToken, std::optional<ExceptionOr<bool>>>
       id_to_result_map_;
   std::unique_ptr<CountDownLatch> count_down_latch_;
 
@@ -112,7 +112,7 @@ TEST_F(CountDownLatchTest, InitializeCount0_AwaitInf_DoesNotBlock) {
 
   base::RunLoop run_loop;
   base::UnguessableToken attempt_id = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop, attempt_id, absl::nullopt /* timeout */);
+  PostAwaitTask(run_loop, attempt_id, std::nullopt /* timeout */);
 
   run_loop.Run();
   EXPECT_EQ(1u, MapSize());
@@ -124,7 +124,7 @@ TEST_F(CountDownLatchTest, InitializeCount2_BlocksUnlessCountIsZero) {
 
   base::RunLoop run_loop;
   base::UnguessableToken attempt_id = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop, attempt_id, absl::nullopt /* timeout */);
+  PostAwaitTask(run_loop, attempt_id, std::nullopt /* timeout */);
   ASSERT_EQ(0u, MapSize());
 
   count_down_latch_->CountDown();
@@ -155,13 +155,13 @@ TEST_F(CountDownLatchTest,
 
   base::RunLoop run_loop_1;
   base::UnguessableToken attempt_id_1 = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop_1, attempt_id_1, absl::nullopt /* timeout */);
+  PostAwaitTask(run_loop_1, attempt_id_1, std::nullopt /* timeout */);
   base::RunLoop run_loop_2;
   base::UnguessableToken attempt_id_2 = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop_2, attempt_id_2, absl::nullopt /* timeout */);
+  PostAwaitTask(run_loop_2, attempt_id_2, std::nullopt /* timeout */);
   base::RunLoop run_loop_3;
   base::UnguessableToken attempt_id_3 = base::UnguessableToken::Create();
-  PostAwaitTask(run_loop_3, attempt_id_3, absl::nullopt /* timeout */);
+  PostAwaitTask(run_loop_3, attempt_id_3, std::nullopt /* timeout */);
   ASSERT_EQ(0u, MapSize());
 
   count_down_latch_->CountDown();

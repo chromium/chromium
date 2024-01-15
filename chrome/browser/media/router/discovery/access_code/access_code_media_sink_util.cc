@@ -53,7 +53,7 @@ CastDeviceCapabilitySet ConvertDeviceCapabilities(
   return capabilities;
 }
 
-absl::optional<net::IPAddress> GetIPAddress(NetworkInfo network_info) {
+std::optional<net::IPAddress> GetIPAddress(NetworkInfo network_info) {
   net::IPAddress ip_address;
   const std::string& ip_v6_address = network_info.ip_v6_address();
   const std::string& ip_v4_address = network_info.ip_v4_address();
@@ -65,31 +65,31 @@ absl::optional<net::IPAddress> GetIPAddress(NetworkInfo network_info) {
              ip_address.AssignFromIPLiteral(ip_v4_address)) {
     return ip_address;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
-std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
+std::pair<std::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
 CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   if (!discovery_device.has_network_info()) {
-    return std::make_pair(absl::nullopt,
+    return std::make_pair(std::nullopt,
                           CreateCastMediaSinkResult::kMissingNetworkInfo);
   }
-  absl::optional<net::IPAddress> ip_address =
+  std::optional<net::IPAddress> ip_address =
       GetIPAddress(discovery_device.network_info());
   if (!ip_address.has_value()) {
     return std::make_pair(
-        absl::nullopt, CreateCastMediaSinkResult::kMissingOrInvalidIPAddress);
+        std::nullopt, CreateCastMediaSinkResult::kMissingOrInvalidIPAddress);
   }
 
   const std::string& unique_id = discovery_device.id();
   if (unique_id.empty()) {
-    return std::make_pair(absl::nullopt, CreateCastMediaSinkResult::kMissingID);
+    return std::make_pair(std::nullopt, CreateCastMediaSinkResult::kMissingID);
   }
 
   const std::string& display_name = discovery_device.display_name();
   if (display_name.empty()) {
-    return std::make_pair(absl::nullopt,
+    return std::make_pair(std::nullopt,
                           CreateCastMediaSinkResult::kMissingFriendlyName);
   }
 
@@ -98,18 +98,18 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   int port_value = kCastControlPort;
   // Convert port from string to int
   if (!port.empty() && !base::StringToInt(port, &port_value)) {
-    return std::make_pair(absl::nullopt,
+    return std::make_pair(std::nullopt,
                           CreateCastMediaSinkResult::kMissingOrInvalidPort);
   }
   if (!net::IsPortValid(port_value)) {
-    return std::make_pair(absl::nullopt,
+    return std::make_pair(std::nullopt,
                           CreateCastMediaSinkResult::kMissingOrInvalidPort);
   }
   uint16_t valid_port = static_cast<uint16_t>(port_value);
   extra_data.ip_endpoint = net::IPEndPoint(ip_address.value(), valid_port);
   if (!discovery_device.has_device_capabilities()) {
     return std::make_pair(
-        absl::nullopt, CreateCastMediaSinkResult::kMissingDeviceCapabilities);
+        std::nullopt, CreateCastMediaSinkResult::kMissingDeviceCapabilities);
   }
   extra_data.capabilities =
       ConvertDeviceCapabilities(discovery_device.device_capabilities());
@@ -170,27 +170,27 @@ base::Value::Dict CreateValueDictFromMediaSinkInternal(
 //       "ip_address": ""192.0.2.146"",
 //     },
 //   }
-absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
+std::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
     const base::Value::Dict& value_dict) {
   const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
   if (!extra_data_dict)
-    return absl::nullopt;
+    return std::nullopt;
 
   net::IPAddress ip_address;
   const std::string* ip_address_string =
       extra_data_dict->FindString(kIpAddressKey);
   if (!ip_address_string)
-    return absl::nullopt;
+    return std::nullopt;
   if (!ip_address.AssignFromIPLiteral(*ip_address_string))
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<int> port = extra_data_dict->FindInt(kPortKey);
+  std::optional<int> port = extra_data_dict->FindInt(kPortKey);
   if (!port.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<int> capabilities = extra_data_dict->FindInt(kCapabilitiesKey);
+  std::optional<int> capabilities = extra_data_dict->FindInt(kCapabilitiesKey);
   if (!capabilities.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = net::IPEndPoint(ip_address, port.value());
@@ -203,13 +203,13 @@ absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
 
   const auto* sink_dict = value_dict.FindDict(kSinkDictKey);
   if (!sink_dict)
-    return absl::nullopt;
+    return std::nullopt;
   const std::string* sink_id = sink_dict->FindString(kSinkIdKey);
   if (!sink_id)
-    return absl::nullopt;
+    return std::nullopt;
   const std::string* display_name = sink_dict->FindString(kDisplayNameKey);
   if (!display_name)
-    return absl::nullopt;
+    return std::nullopt;
 
   MediaSink sink(*sink_id, *display_name,
                  GetCastSinkIconType(extra_data.capabilities),
@@ -259,26 +259,26 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
   NOTREACHED_NORETURN();
 }
 
-absl::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
+std::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
     const base::Value::Dict& value_dict) {
   const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
   if (!extra_data_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   net::IPAddress ip_address;
   const std::string* ip_address_string =
       extra_data_dict->FindString(kIpAddressKey);
   if (!ip_address_string) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!ip_address.AssignFromIPLiteral(*ip_address_string)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<int> port = extra_data_dict->FindInt(kPortKey);
+  std::optional<int> port = extra_data_dict->FindInt(kPortKey);
   if (!port.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return net::IPEndPoint(ip_address, port.value());

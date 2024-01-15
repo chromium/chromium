@@ -92,7 +92,7 @@ void ModelFileObserver::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
   optimization_target_ = optimization_target;
-  model_info_ = absl::nullopt;
+  model_info_ = std::nullopt;
   if (model_info.has_value()) {
     model_info_ = *model_info;
   }

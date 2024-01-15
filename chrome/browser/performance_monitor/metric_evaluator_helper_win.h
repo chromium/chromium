@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_METRIC_EVALUATOR_HELPER_WIN_H_
 #define CHROME_BROWSER_PERFORMANCE_MONITOR_METRIC_EVALUATOR_HELPER_WIN_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/performance_monitor/system_monitor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_monitor {
 
@@ -20,7 +21,7 @@ class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
   ~MetricEvaluatorsHelperWin() override;
 
   // MetricEvaluatorsHelper:
-  absl::optional<int> GetFreePhysicalMemoryMb() override;
+  std::optional<int> GetFreePhysicalMemoryMb() override;
 
  private:
   friend class MetricEvaluatorsHelperWinTest;

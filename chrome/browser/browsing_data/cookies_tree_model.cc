@@ -1243,7 +1243,7 @@ void CookiesTreeModel::GetIcons(std::vector<ui::ImageModel>* icons) {
           IDR_COOKIE_STORAGE_ICON)));
 }
 
-absl::optional<size_t> CookiesTreeModel::GetIconIndex(ui::TreeModelNode* node) {
+std::optional<size_t> CookiesTreeModel::GetIconIndex(ui::TreeModelNode* node) {
   CookieTreeNode* ct_node = static_cast<CookieTreeNode*>(node);
   switch (ct_node->GetDetailedInfo().node_type) {
     case CookieTreeNode::DetailedInfo::TYPE_COOKIE:
@@ -1262,7 +1262,7 @@ absl::optional<size_t> CookiesTreeModel::GetIconIndex(ui::TreeModelNode* node) {
     case CookieTreeNode::DetailedInfo::TYPE_HOST:
     case CookieTreeNode::DetailedInfo::TYPE_QUOTA:
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

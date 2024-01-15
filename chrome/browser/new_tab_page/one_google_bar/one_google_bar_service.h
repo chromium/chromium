@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/observer_list.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 class IdentityManager;
@@ -31,7 +31,7 @@ class OneGoogleBarService : public KeyedService {
   void Shutdown() override;
 
   // Returns the currently cached OneGoogleBarData, if any.
-  const absl::optional<OneGoogleBarData>& one_google_bar_data() const {
+  const std::optional<OneGoogleBarData>& one_google_bar_data() const {
     return one_google_bar_data_;
   }
 
@@ -60,7 +60,7 @@ class OneGoogleBarService : public KeyedService {
   void SigninStatusChanged();
 
   void OneGoogleBarDataLoaded(OneGoogleBarLoader::Status status,
-                              const absl::optional<OneGoogleBarData>& data);
+                              const std::optional<OneGoogleBarData>& data);
 
   void NotifyObservers();
 
@@ -70,7 +70,7 @@ class OneGoogleBarService : public KeyedService {
 
   base::ObserverList<OneGoogleBarServiceObserver, true>::Unchecked observers_;
 
-  absl::optional<OneGoogleBarData> one_google_bar_data_;
+  std::optional<OneGoogleBarData> one_google_bar_data_;
 
   std::string language_code_;
 };

@@ -25,7 +25,7 @@ class FakeNoStatePrefetchContents : public NoStatePrefetchContents {
       UnitTestNoStatePrefetchManager* test_no_state_prefetch_manager,
       const GURL& url,
       Origin origin,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       FinalStatus expected_final_status);
 
   ~FakeNoStatePrefetchContents() override;
@@ -74,7 +74,7 @@ class UnitTestNoStatePrefetchManager : public NoStatePrefetchManager {
 
   FakeNoStatePrefetchContents* CreateNextNoStatePrefetchContents(
       const GURL& url,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin,
       FinalStatus expected_final_status);
 
@@ -111,7 +111,7 @@ class UnitTestNoStatePrefetchManager : public NoStatePrefetchManager {
   std::unique_ptr<NoStatePrefetchContents> CreateNoStatePrefetchContents(
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin) override;
 
   // Maintain a map from route pairs to NoStatePrefetchContents for

@@ -43,7 +43,7 @@ class PolicyTest : public PlatformBrowserTest {
 
   static void SetPolicy(PolicyMap* policies,
                         const char* key,
-                        absl::optional<base::Value> value);
+                        std::optional<base::Value> value);
 
   static bool FetchSubresource(content::WebContents* web_contents,
                                const GURL& url);

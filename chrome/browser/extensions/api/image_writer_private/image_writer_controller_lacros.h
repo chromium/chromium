@@ -39,14 +39,14 @@ class ImageWriterControllerLacros : public BrowserContextKeyedAPI,
       ListRemovableStorageDevicesCallback callback);
 
   using WriteOperationCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&)>;
+      base::OnceCallback<void(const std::optional<std::string>&)>;
   void DestroyPartitions(const std::string& extension_id,
                          const std::string& storage_unit_id,
                          WriteOperationCallback callback);
   void WriteFromUrl(const std::string& extension_id,
                     const std::string& storage_unit_id,
                     const GURL& image_url,
-                    const absl::optional<std::string>& image_hash,
+                    const std::optional<std::string>& image_hash,
                     WriteOperationCallback callback);
   void WriteFromFile(const std::string& extension_id,
                      const std::string& storage_unit_id,

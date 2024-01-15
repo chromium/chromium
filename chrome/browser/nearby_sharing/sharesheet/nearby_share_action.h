@@ -47,8 +47,8 @@ class NearbyShareAction : public sharesheet::ShareAction {
   bool IsNearbyShareDisabledByPolicy();
 
   raw_ptr<Profile> profile_;
-  absl::optional<bool> nearby_share_disabled_by_policy_for_testing_ =
-      absl::nullopt;
+  std::optional<bool> nearby_share_disabled_by_policy_for_testing_ =
+      std::nullopt;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_SHARESHEET_NEARBY_SHARE_ACTION_H_

@@ -257,10 +257,10 @@ class FastCheckoutClientImpl
   bool is_running_ = false;
 
   // Autofill profile selected by the user in the bottomsheet.
-  absl::optional<std::string> selected_autofill_profile_guid_;
+  std::optional<std::string> selected_autofill_profile_guid_;
 
   // Credit card selected by the user in the bottomsheet.
-  absl::optional<std::string> selected_credit_card_id_;
+  std::optional<std::string> selected_credit_card_id_;
 
   // Specifis whether the selected credit card is local or a server card.
   bool selected_credit_card_is_local_ = true;
@@ -283,7 +283,7 @@ class FastCheckoutClientImpl
 
   // Identifier of the credit card form to be filled once the CVC popup is
   // fulfilled.
-  absl::optional<autofill::FormGlobalId> credit_card_form_global_id_;
+  std::optional<autofill::FormGlobalId> credit_card_form_global_id_;
 
   // Hash of the unique run ID used for metrics.
   int64_t run_id_ = 0;

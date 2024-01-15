@@ -41,7 +41,7 @@ ClickToCallUiController* ClickToCallUiController::GetOrCreateFromWebContents(
 // static
 void ClickToCallUiController::ShowDialog(
     content::WebContents* web_contents,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const GURL& url,
     bool hide_default_handler,
@@ -148,9 +148,9 @@ void ClickToCallUiController::SendNumberToDevice(
   sharing_message.mutable_click_to_call_message()->set_phone_number(
       phone_number);
 
-  SendMessageToDevice(device, /*response_timeout=*/absl::nullopt,
+  SendMessageToDevice(device, /*response_timeout=*/std::nullopt,
                       std::move(sharing_message),
-                      /*callback=*/absl::nullopt);
+                      /*callback=*/std::nullopt);
 }
 
 void ClickToCallUiController::OnAppChosen(const SharingApp& app) {

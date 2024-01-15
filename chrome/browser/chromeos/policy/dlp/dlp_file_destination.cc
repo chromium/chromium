@@ -59,11 +59,11 @@ bool DlpFileDestination::operator>=(const DlpFileDestination& other) const {
 
 DlpFileDestination::~DlpFileDestination() = default;
 
-absl::optional<GURL> DlpFileDestination::url() const {
+std::optional<GURL> DlpFileDestination::url() const {
   return url_;
 }
 
-absl::optional<data_controls::Component> DlpFileDestination::component() const {
+std::optional<data_controls::Component> DlpFileDestination::component() const {
   return component_;
 }
 

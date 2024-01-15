@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/overloaded.h"
@@ -21,7 +22,6 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
@@ -113,7 +113,7 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated(
     bool skip_signature_verification,
     base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
         integrity_callback,
-    absl::optional<std::string> integrity_block_error) {
+    std::optional<std::string> integrity_block_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (integrity_block_error.has_value()) {

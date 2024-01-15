@@ -54,11 +54,11 @@ void ValidateTraceEventHasCorrectCandidateSize(int expected_size,
   ASSERT_TRUE(event.HasDictArg("data"));
   base::Value::Dict data = event.GetKnownArgAsDict("data");
 
-  const absl::optional<int> traced_size = data.FindInt("size");
+  const std::optional<int> traced_size = data.FindInt("size");
   ASSERT_TRUE(traced_size.has_value());
   EXPECT_EQ(traced_size.value(), expected_size);
 
-  const absl::optional<bool> traced_main_frame_flag =
+  const std::optional<bool> traced_main_frame_flag =
       data.FindBool("isMainFrame");
   ASSERT_TRUE(traced_main_frame_flag.has_value());
   EXPECT_TRUE(traced_main_frame_flag.value());
@@ -69,14 +69,14 @@ void ValidateTraceEventBreakdownTimings(const TraceEvent& event,
   ASSERT_TRUE(event.HasDictArg("data"));
   base::Value::Dict data = event.GetKnownArgAsDict("data");
 
-  const absl::optional<double> load_start = data.FindDouble("imageLoadStart");
+  const std::optional<double> load_start = data.FindDouble("imageLoadStart");
   ASSERT_TRUE(load_start.has_value());
 
-  const absl::optional<double> discovery_time =
+  const std::optional<double> discovery_time =
       data.FindDouble("imageDiscoveryTime");
   ASSERT_TRUE(discovery_time.has_value());
 
-  const absl::optional<double> load_end = data.FindDouble("imageLoadEnd");
+  const std::optional<double> load_end = data.FindDouble("imageLoadEnd");
   ASSERT_TRUE(load_end.has_value());
 
   // Verify image discovery time < load start < load end < lcp time;
@@ -89,7 +89,7 @@ void ValidateTraceEventBreakdownTimings(const TraceEvent& event,
 
 int GetCandidateIndex(const TraceEvent& event) {
   base::Value::Dict data = event.GetKnownArgAsDict("data");
-  absl::optional<int> candidate_idx = data.FindInt("candidateIndex");
+  std::optional<int> candidate_idx = data.FindInt("candidateIndex");
   DCHECK(candidate_idx.has_value()) << "couldn't find 'candidateIndex'";
 
   return candidate_idx.value();
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
   // need to be updated to reflect new semantics.
   const std::string test_name[3] = {"test_first_image()", "test_larger_image()",
                                     "test_largest_image()"};
-  absl::optional<double> lcp_timestamps[3];
+  std::optional<double> lcp_timestamps[3];
   for (size_t i = 0; i < 3; i++) {
     waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                    TimingField::kLargestContentfulPaint);
@@ -349,7 +349,7 @@ class MAYBE_IsAnimatedLCPTest : public MetricIntegrationTest {
                         unsigned entries = 1) {
     // Install a ScopedRunLoopTimeout override to distinguish the timeout from
     // IsAnimatedLCPTest vs browser_test_base.
-    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, absl::nullopt,
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, std::nullopt,
                                                       base::NullCallback());
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
@@ -429,7 +429,7 @@ class MAYBE_MouseoverLCPTest : public MetricIntegrationTest,
 
     // Install a ScopedRunLoopTimeout override to distinguish the timeout
     // from MouseoverLCPTest vs browser_test_base.
-    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, absl::nullopt,
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, std::nullopt,
                                                       base::NullCallback());
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(

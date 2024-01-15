@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_FILE_HANDLER_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -44,7 +44,7 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
       const webapps::AppId& app_id,
       const GURL& handler,
       const AcceptMap& accept,
-      absl::optional<apps::FileHandler::LaunchType> launch_type,
+      std::optional<apps::FileHandler::LaunchType> launch_type,
       bool enable = true);
 
  private:

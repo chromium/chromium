@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
-#include "base/time/time.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+
+#include <optional>
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -24,7 +26,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -89,7 +90,7 @@ class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
 
   UrlResult LoadUrlAndWait(UrlComparison url_comparison,
                            const std::string& path) {
-    absl::optional<UrlResult> result;
+    std::optional<UrlResult> result;
     base::RunLoop run_loop;
     WebAppUrlLoader loader;
     loader.LoadUrl(embedded_test_server()->GetURL(path), web_contents(),
@@ -124,7 +125,7 @@ class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
   // optionally respond with the given `content`. Must be called before the
   // server is started.
   void SetupHttpResponseWithContent(const net::HttpStatusCode code,
-                                    absl::optional<std::string> content) {
+                                    std::optional<std::string> content) {
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [code, content](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -207,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http404ErrorWithContent) {
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http407ErrorWithoutContent) {
   SetupHttpResponseWithContent(net::HTTP_PROXY_AUTHENTICATION_REQUIRED,
-                               /*content=*/absl::nullopt);
+                               /*content=*/std::nullopt);
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(UrlResult::kFailedErrorPageLoaded,
             LoadUrlAndWait(UrlComparison::kExact, "/unused.html"));
@@ -223,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http500ErrorWithContent) {
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http500ErrorWithoutContent) {
   SetupHttpResponseWithContent(net::HTTP_INTERNAL_SERVER_ERROR,
-                               /*content=*/absl::nullopt);
+                               /*content=*/std::nullopt);
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(UrlResult::kFailedErrorPageLoaded,
             LoadUrlAndWait(UrlComparison::kExact, "/unused.html"));
@@ -235,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
 
   WebAppUrlLoader loader;
-  absl::optional<UrlResult> result;
+  std::optional<UrlResult> result;
 
   loader.LoadUrl(embedded_test_server()->GetURL("/hung"), web_contents(),
                  UrlComparison::kExact,
@@ -264,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, WebContentsDestroyed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppUrlLoader loader;
-  absl::optional<UrlResult> result;
+  std::optional<UrlResult> result;
 
   base::RunLoop run_loop;
   loader.LoadUrl(embedded_test_server()->GetURL("/hung"), web_contents(),
@@ -291,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, WebContentsDestroyed) {
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, MultipleLoadUrlCalls) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppUrlLoader loader;
-  absl::optional<UrlResult> title1_result;
-  absl::optional<UrlResult> title2_result;
+  std::optional<UrlResult> title1_result;
+  std::optional<UrlResult> title2_result;
 
   std::unique_ptr<content::WebContents> web_contents1 =
       content::WebContents::Create(

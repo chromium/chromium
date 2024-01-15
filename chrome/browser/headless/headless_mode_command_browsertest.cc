@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/headless/headless_mode_browsertest.h"
-
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,6 +24,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/headless/headless_mode_browsertest.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"
 #include "components/headless/test/bitmap_utils.h"
@@ -34,7 +34,6 @@
 #include "pdf/pdf.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -70,7 +69,7 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
     return embedded_test_server()->GetURL(url);
   }
 
-  absl::optional<HeadlessCommandHandler::Result> ProcessCommands() {
+  std::optional<HeadlessCommandHandler::Result> ProcessCommands() {
     if (!test_complete_) {
       run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
@@ -91,7 +90,7 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   bool test_complete_ = false;
-  absl::optional<HeadlessCommandHandler::Result> result_;
+  std::optional<HeadlessCommandHandler::Result> result_;
 };
 
 class HeadlessModeCommandBrowserTestWithTempDir
@@ -287,7 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
     HeadlessDumpDomWithSubResourceTimeout) {
-  absl::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
+  std::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
 
   capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/browser_dm_token_storage_mac.h"
 
+#include <optional>
 #include <string>
 
 #include "base/apple/foundation_util.h"
@@ -27,7 +28,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -137,27 +137,27 @@ bool GetEnrollmentTokenFromFile(std::string* enrollment_token) {
   return true;
 }
 
-absl::optional<bool> IsEnrollmentMandatoryByPolicy() {
+std::optional<bool> IsEnrollmentMandatoryByPolicy() {
   base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
       CFPreferencesCopyAppValue(kEnrollmentMandatoryOptionPolicyName,
                                 kBundleId));
 
   if (!value || !CFPreferencesAppValueIsForced(
                     kEnrollmentMandatoryOptionPolicyName, kBundleId)) {
-    return absl::optional<bool>();
+    return std::optional<bool>();
   }
 
   CFBooleanRef value_bool = base::apple::CFCast<CFBooleanRef>(value.get());
   if (!value_bool)
-    return absl::optional<bool>();
+    return std::optional<bool>();
   return value_bool == kCFBooleanTrue;
 }
 
-absl::optional<bool> IsEnrollmentMandatoryByFile() {
+std::optional<bool> IsEnrollmentMandatoryByFile() {
   std::string options;
   if (!base::ReadFileToString(base::FilePath(kEnrollmentOptionsFilePath),
                               &options)) {
-    return absl::optional<bool>();
+    return std::optional<bool>();
   }
   return std::string(base::TrimWhitespaceASCII(options, base::TRIM_ALL)) ==
          kEnrollmentMandatoryOption;
@@ -209,7 +209,7 @@ std::string BrowserDMTokenStorageMac::InitDMToken() {
 }
 
 bool BrowserDMTokenStorageMac::InitEnrollmentErrorOption() {
-  absl::optional<bool> is_mandatory = IsEnrollmentMandatoryByPolicy();
+  std::optional<bool> is_mandatory = IsEnrollmentMandatoryByPolicy();
   if (is_mandatory)
     return is_mandatory.value();
 

@@ -105,7 +105,7 @@ class MockMirroringServiceHostFactory
               (int32_t frame_tree_node_id));
   MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
               GetForDesktop,
-              (const absl::optional<std::string>& media_id));
+              (const std::optional<std::string>& media_id));
   MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
               GetForOffscreenTab,
               (const GURL& presentation_url,
@@ -243,7 +243,7 @@ INSTANTIATE_TEST_SUITE_P(Namespaces,
 TEST_F(MirroringActivityTest, MirrorDesktop) {
   base::HistogramTester uma_recorder;
   EXPECT_CALL(mirroring_service_host_factory_,
-              GetForDesktop(absl::optional<std::string>(kDesktopMediaId)));
+              GetForDesktop(std::optional<std::string>(kDesktopMediaId)));
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
   ASSERT_TRUE(source.IsDesktopMirroringSource());
   MakeActivity(source);
@@ -503,7 +503,7 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
       "type": "OFFER"
     })";
 
-  absl::optional<base::Value> message_json = base::JSONReader::Read(message);
+  std::optional<base::Value> message_json = base::JSONReader::Read(message);
   EXPECT_TRUE(message_json);
   EXPECT_TRUE(message_json.value().is_dict());
   EXPECT_THAT(scrubbed_message,
@@ -547,7 +547,7 @@ TEST_F(MirroringActivityTest, OnSourceChanged) {
 
   // Nothing should happen as no value was returned for tab source.
   EXPECT_CALL(*mirroring_service_, GetTabSourceId())
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
   activity_->OnSourceChanged();
   EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
   testing::Mock::VerifyAndClearExpectations(mirroring_service_);
@@ -865,7 +865,7 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
       ]
     }
     })";
-  absl::optional<base::Value> stats = base::JSONReader::Read(kJsonStats);
+  std::optional<base::Value> stats = base::JSONReader::Read(kJsonStats);
   ASSERT_TRUE(stats.has_value());
 
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/run_loop.h"
@@ -30,7 +31,6 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -60,7 +60,7 @@ void CheckShortcut(const ui::SimpleMenuModel& model,
                    size_t index,
                    int shortcut_index,
                    const std::u16string& label,
-                   absl::optional<SkColor> color) {
+                   std::optional<SkColor> color) {
   EXPECT_EQ(model.GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
   EXPECT_EQ(model.GetCommandIdAt(index),
             ash::LAUNCH_APP_SHORTCUT_FIRST + shortcut_index);
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   CheckShortcut(*menu_model, index++, 4, u"Five", SK_ColorMAGENTA);
   CheckSeparator(*menu_model, index++);
   // No icons.
-  CheckShortcut(*menu_model, index++, 5, u"Six", absl::nullopt);
+  CheckShortcut(*menu_model, index++, 5, u"Six", std::nullopt);
   EXPECT_EQ(index, menu_model->GetItemCount());
 
   const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + 3;

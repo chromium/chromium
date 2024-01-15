@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -54,7 +55,6 @@
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -204,7 +204,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
   ~ChromeOsFeedbackDelegateTest() override = default;
 
-  absl::optional<GURL> GetLastActivePageUrl() {
+  std::optional<GURL> GetLastActivePageUrl() {
     auto feedback_delegate =
         ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
     return feedback_delegate.GetLastActivePageUrl();

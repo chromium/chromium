@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -40,7 +40,7 @@ class HostedAppsCounterTest : public testing::Test {
 
   std::string AddExtension() {
     return AddItem(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                   /*app_manifest=*/absl::nullopt);
+                   /*app_manifest=*/std::nullopt);
   }
 
   std::string AddPackagedApp() {
@@ -65,7 +65,7 @@ class HostedAppsCounterTest : public testing::Test {
   }
 
   std::string AddItem(const std::string& name,
-                      absl::optional<base::Value::Dict> app_manifest) {
+                      std::optional<base::Value::Dict> app_manifest) {
     auto manifest_builder = base::Value::Dict()
                                 .Set("manifest_version", 2)
                                 .Set("name", name)

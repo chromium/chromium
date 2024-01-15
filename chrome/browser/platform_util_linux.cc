@@ -29,12 +29,13 @@
 // complain as Chromecast doesn't use (or depend on) //components/dbus.
 // TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
 // on Chromecast and remove the nogncheck below.
+#include <optional>
+
 #include "components/dbus/thread_linux/dbus_thread_linux.h"  // nogncheck
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -284,7 +285,7 @@ class ShowItemHelper {
   raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
   raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
-  absl::optional<bool> prefer_filemanager_interface_;
+  std::optional<bool> prefer_filemanager_interface_;
 
   base::CallbackListSubscription browser_shutdown_subscription_;
   base::WeakPtrFactory<ShowItemHelper> weak_ptr_factory_{this};

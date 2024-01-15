@@ -305,7 +305,7 @@ device::mojom::XRRenderInfoPtr ValidateFrameData(
                                 InRange(ret->mojo_from_viewer->position->y()) &&
                                 InRange(ret->mojo_from_viewer->position->z()));
       if (any_out_of_range) {
-        ret->mojo_from_viewer->position = absl::nullopt;
+        ret->mojo_from_viewer->position = std::nullopt;
         // If testing with unexpectedly high values, catch on debug builds
         // rather than silently change data.  On release builds its better to
         // be safe and validate.

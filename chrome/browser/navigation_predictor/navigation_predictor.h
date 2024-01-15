@@ -137,8 +137,8 @@ class NavigationPredictor
     blink::mojom::AnchorElementMetricsPtr metrics;
     // Following fields are used for computing timing inputs of the ML model.
     base::TimeTicks first_report_timestamp;
-    absl::optional<base::TimeTicks> pointer_over_timestamp;
-    absl::optional<base::TimeTicks> entered_viewport_timestamp;
+    std::optional<base::TimeTicks> pointer_over_timestamp;
+    std::optional<base::TimeTicks> entered_viewport_timestamp;
     size_t pointer_hovering_over_count = 0u;
   };
   std::unordered_map<AnchorId, AnchorElementData, typename AnchorId::Hasher>
@@ -146,10 +146,10 @@ class NavigationPredictor
   // It is the anchor element that the user has recently interacted
   // with and is a good candidate for the ML model to predict the next user
   // click.
-  absl::optional<AnchorId> ml_model_candidate_;
+  std::optional<AnchorId> ml_model_candidate_;
 
   // The time between navigation start and the last time user clicked on a link.
-  absl::optional<base::TimeDelta> navigation_start_to_click_;
+  std::optional<base::TimeDelta> navigation_start_to_click_;
 
   // Mapping between the anchor ID for the anchors that we track and the index
   // that this anchor will have in the UKM logs.

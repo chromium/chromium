@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_GET_AUTH_TOKEN_FUNCTION_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -24,7 +25,6 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
@@ -121,7 +121,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   // Invoked on completion of the access token fetcher.
   // Exposed for testing.
-  void OnGetAccessTokenComplete(const absl::optional<std::string>& access_token,
+  void OnGetAccessTokenComplete(const std::optional<std::string>& access_token,
                                 base::Time expiration_time,
                                 const GoogleServiceAuthError& error);
 
@@ -250,7 +250,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Computes the interactivity status for consent and sign-in based on the
   // "interactive" parameter, the idle state and whether signin is allowed.
   void ComputeInteractivityStatus(
-      const absl::optional<api::identity::TokenDetails>& details);
+      const std::optional<api::identity::TokenDetails>& details);
 
   // Returns an error for cases when interactivity is not allowed. Must not be
   // called when interactivity is allowed.

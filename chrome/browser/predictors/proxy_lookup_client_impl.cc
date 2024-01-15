@@ -29,14 +29,14 @@ ProxyLookupClientImpl::ProxyLookupClientImpl(
                                      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&ProxyLookupClientImpl::OnProxyLookupComplete,
-                     base::Unretained(this), net::ERR_ABORTED, absl::nullopt));
+                     base::Unretained(this), net::ERR_ABORTED, std::nullopt));
 }
 
 ProxyLookupClientImpl::~ProxyLookupClientImpl() = default;
 
 void ProxyLookupClientImpl::OnProxyLookupComplete(
     int32_t net_error,
-    const absl::optional<net::ProxyInfo>& proxy_info) {
+    const std::optional<net::ProxyInfo>& proxy_info) {
   UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ProxyLookupLatency",
                       base::TimeTicks::Now() - proxy_lookup_start_time_);
 

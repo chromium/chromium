@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -25,7 +26,6 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/variations/synthetic_trials.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -128,7 +128,7 @@ void CampaignsManagerClientImpl::OnComponentDownloaded(
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
   if (error != component_updater::CrOSComponentManager::Error::NONE) {
-    std::move(loaded_callback).Run(absl::nullopt);
+    std::move(loaded_callback).Run(std::nullopt);
     return;
   }
 

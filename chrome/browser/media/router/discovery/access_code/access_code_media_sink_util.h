@@ -20,18 +20,18 @@ using NetworkInfo = chrome_browser_media::proto::NetworkInfo;
 
 // Creates a MediaSinkInternal from |discovery_device|. |cast_sink| is only
 // valid if the returned result is |kOk|.
-std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
+std::pair<std::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
 CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device);
 
 base::Value::Dict CreateValueDictFromMediaSinkInternal(
     const MediaSinkInternal& sink);
-absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
+std::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
     const base::Value::Dict& value_dict);
 
 AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
     AddSinkResultCode result);
 
-absl::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
+std::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
     const base::Value::Dict& value_dict);
 
 }  // namespace media_router

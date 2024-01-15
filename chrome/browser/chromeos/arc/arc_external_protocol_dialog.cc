@@ -103,7 +103,7 @@ std::vector<apps::IntentPickerAppInfo> AddDevices(
 // is at least one app or device to choose from.
 bool MaybeAddDevicesAndShowPicker(
     const GURL& url,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     WebContents* web_contents,
     std::vector<apps::IntentPickerAppInfo> app_info,
     bool stay_in_chrome,
@@ -216,8 +216,8 @@ ArcIntentHelperMojoDelegate::IntentInfo CreateIntentInfo(const GURL& url,
 
   constexpr char kArcIntentActionView[] = "org.chromium.arc.intent.action.VIEW";
   return ArcIntentHelperMojoDelegate::IntentInfo(
-      kArcIntentActionView, /*categories=*/absl::nullopt, url.spec(),
-      /*type=*/absl::nullopt, ui_bypassed, /*extras=*/absl::nullopt);
+      kArcIntentActionView, /*categories=*/std::nullopt, url.spec(),
+      /*type=*/std::nullopt, ui_bypassed, /*extras=*/std::nullopt);
 }
 
 // Sends |url| to ARC.
@@ -592,7 +592,7 @@ void OnIntentPickerClosed(
 void OnAppIconsReceived(
     base::WeakPtr<WebContents> web_contents,
     const GURL& url,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
@@ -634,7 +634,7 @@ void OnAppIconsReceived(
 void ShowExternalProtocolDialogWithoutApps(
     base::WeakPtr<WebContents> web_contents,
     const GURL& url,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb) {
   // Try to show the device picker and fallback to the default dialog otherwise.
@@ -655,7 +655,7 @@ void ShowExternalProtocolDialogWithoutApps(
 void OnUrlHandlerList(
     base::WeakPtr<WebContents> web_contents,
     const GURL& url,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     bool safe_to_bypass_ui,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb,
@@ -721,7 +721,7 @@ void OnUrlHandlerList(
 
 void RunArcExternalProtocolDialog(
     const GURL& url,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     base::WeakPtr<WebContents> web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,

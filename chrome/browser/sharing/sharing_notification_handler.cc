@@ -19,8 +19,8 @@ void SharingNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply,
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   auto handler = SharingServiceFactory::GetForBrowserContext(profile)
                      ->GetNotificationActionHandler(notification_id);
@@ -42,7 +42,7 @@ void SharingNotificationHandler::OnClose(Profile* profile,
   auto handler = SharingServiceFactory::GetForBrowserContext(profile)
                      ->GetNotificationActionHandler(notification_id);
   if (handler)
-    handler.Run(/*button=*/absl::nullopt, /*closed=*/true);
+    handler.Run(/*button=*/std::nullopt, /*closed=*/true);
   std::move(completed_closure).Run();
 }
 

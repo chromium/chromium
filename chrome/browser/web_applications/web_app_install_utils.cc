@@ -7,6 +7,7 @@
 #include <array>
 #include <iterator>
 #include <map>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -61,7 +62,6 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -289,10 +289,10 @@ apps::ShareTarget::Enctype ToAppsShareTargetEnctype(
   NOTREACHED();
 }
 
-absl::optional<apps::ShareTarget> ToWebAppShareTarget(
-    const absl::optional<blink::Manifest::ShareTarget>& share_target) {
+std::optional<apps::ShareTarget> ToWebAppShareTarget(
+    const std::optional<blink::Manifest::ShareTarget>& share_target) {
   if (!share_target) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   apps::ShareTarget apps_share_target;
   apps_share_target.action = share_target->action;

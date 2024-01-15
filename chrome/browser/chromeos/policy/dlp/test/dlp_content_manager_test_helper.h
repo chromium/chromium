@@ -60,7 +60,7 @@ class DlpContentManagerTestHelper {
   GetRunningScreenShares() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<DlpContentManagerAsh::VideoCaptureInfo>
+  std::optional<DlpContentManagerAsh::VideoCaptureInfo>
   GetRunningVideoCaptureInfo() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

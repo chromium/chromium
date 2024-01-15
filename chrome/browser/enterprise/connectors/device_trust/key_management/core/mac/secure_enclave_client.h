@@ -8,12 +8,12 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -39,7 +39,7 @@ class SecureEnclaveClient {
 
   // Returns the key type from the `wrapped_key_label` if the label matches
   // any of the supported key labels. Otherwise a nullptr is returned.
-  static absl::optional<SecureEnclaveClient::KeyType> GetTypeFromWrappedKey(
+  static std::optional<SecureEnclaveClient::KeyType> GetTypeFromWrappedKey(
       base::span<const uint8_t> wrapped_key_label);
 
   // Returns the label corresponding to the given key `type`.

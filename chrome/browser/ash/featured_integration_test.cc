@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_test_definition.pb.h"
 #include "chrome/test/base/chromeos/crosier/crosier_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -192,23 +192,23 @@ IN_PROC_BROWSER_TEST_P(FeaturedIntegrationTest, FeatureLibraryLateBoot) {
   ASSERT_EQ(split_out.size(), 2u);
 
   // The first line of the output is the state of the default enabled feature.
-  absl::optional<base::Value> default_enabled =
+  std::optional<base::Value> default_enabled =
       base::JSONReader::Read(split_out[0]);
   ASSERT_TRUE(default_enabled.has_value());
 
   // The test case has the expected JSON for the default enabled feature.
-  absl::optional<base::Value> expected_default_enabled =
+  std::optional<base::Value> expected_default_enabled =
       base::JSONReader::Read(GetParam().expected_default_enabled);
   ASSERT_TRUE(expected_default_enabled.has_value());
   EXPECT_EQ(default_enabled, expected_default_enabled);
 
   // The second line of the output is the default disabled feature.
-  absl::optional<base::Value> default_disabled =
+  std::optional<base::Value> default_disabled =
       base::JSONReader::Read(split_out[1]);
   ASSERT_TRUE(default_disabled.has_value());
 
   // The test case has the expected JSON for the default disabled feature.
-  absl::optional<base::Value> expected_default_disabled =
+  std::optional<base::Value> expected_default_disabled =
       base::JSONReader::Read(GetParam().expected_default_disabled);
   ASSERT_TRUE(expected_default_disabled.has_value());
   EXPECT_EQ(default_disabled, expected_default_disabled);

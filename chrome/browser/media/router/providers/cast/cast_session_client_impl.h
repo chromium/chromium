@@ -33,7 +33,7 @@ class CastSessionClientImpl : public CastSessionClient,
   void SendMessageToClient(
       blink::mojom::PresentationConnectionMessagePtr message) override;
   void SendMediaMessageToClient(const base::Value::Dict& payload,
-                                absl::optional<int> request_id) override;
+                                std::optional<int> request_id) override;
   void CloseConnection(
       blink::mojom::PresentationConnectionCloseReason close_reason) override;
   void TerminateConnection() override;
@@ -41,7 +41,7 @@ class CastSessionClientImpl : public CastSessionClient,
                              int frame_tree_node_id) const override;
   void SendErrorCodeToClient(int sequence_number,
                              CastInternalMessage::ErrorCode error_code,
-                             absl::optional<std::string> description) override;
+                             std::optional<std::string> description) override;
   void SendErrorToClient(int sequence_number, base::Value::Dict error) override;
 
   // blink::mojom::PresentationConnection implementation

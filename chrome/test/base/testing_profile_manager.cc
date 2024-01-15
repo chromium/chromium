@@ -91,8 +91,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     int avatar_id,
     TestingProfile::TestingFactories testing_factories,
     bool is_supervised_profile,
-    absl::optional<bool> is_new_profile,
-    absl::optional<std::unique_ptr<policy::PolicyService>> policy_service,
+    std::optional<bool> is_new_profile,
+    std::optional<std::unique_ptr<policy::PolicyService>> policy_service,
     bool is_main_profile,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
@@ -178,8 +178,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   return CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
       base::UTF8ToUTF16(name), /*avatar_id=*/0, std::move(testing_factories),
-      /*is_supervised_profile=*/false, /*is_new_profile=*/absl::nullopt,
-      /*policy_service=*/absl::nullopt, is_main_profile,
+      /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
+      /*policy_service=*/std::nullopt, is_main_profile,
       shared_url_loader_factory);
 }
 

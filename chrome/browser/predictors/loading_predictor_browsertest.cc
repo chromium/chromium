@@ -917,7 +917,7 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
         loading_predictor()->resource_prefetch_predictor()->GetLcppData(url);
     std::vector<std::string> locators;
     if (lcpp_data) {
-      absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+      std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
           hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
               *lcpp_data);
       if (hint) {

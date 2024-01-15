@@ -194,8 +194,8 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
          MediaRouterEnabled(context);
 }
 
-absl::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {
-  absl::optional<base::TimeDelta> target_playout_delay;
+std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {
+  std::optional<base::TimeDelta> target_playout_delay;
 
   // First see if there is a command line switch for mirroring playout delay.
   // Otherwise, check the relevant feature.

@@ -74,7 +74,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-absl::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
+std::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   // Add info about the opener's tab (if it was a tab).
   if (web_contents && ExtensionTabUtil::GetTabId(web_contents) >= 0) {
@@ -94,7 +94,7 @@ absl::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
                                              nullptr)
         .ToValue();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 content::WebContents* ChromeMessagingDelegate::GetWebContentsByTabId(

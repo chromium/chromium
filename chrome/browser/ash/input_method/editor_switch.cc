@@ -70,7 +70,7 @@ constexpr char kExperimentName[] = "OrcaEnabled";
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 
 bool IsGoogleInternalAccountEmailFromProfile(Profile* profile) {
-  absl::optional<std::string> user_email =
+  std::optional<std::string> user_email =
       GetSignedInUserEmailFromProfile(profile);
 
   return user_email.has_value() &&

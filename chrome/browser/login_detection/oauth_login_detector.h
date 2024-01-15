@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_LOGIN_DETECTION_OAUTH_LOGIN_DETECTOR_H_
 #define CHROME_BROWSER_LOGIN_DETECTION_OAUTH_LOGIN_DETECTOR_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace login_detection {
@@ -46,17 +46,17 @@ class OAuthLoginDetector {
   OAuthLoginDetector& operator=(const OAuthLoginDetector&) = delete;
 
   // Processes the navigation |redirect_chain| and returns the site that started
-  // the OAuth login flow and completed. absl::nullopt is returned when there is
+  // the OAuth login flow and completed. std::nullopt is returned when there is
   // no login flow detected or it has not yet completed. |prev_navigation_url|
   // is the URL of the previous navigation on this detector, and can be invalid
   // when no previous navigation happened.
-  absl::optional<GURL> GetSuccessfulLoginFlowSite(
+  std::optional<GURL> GetSuccessfulLoginFlowSite(
       const GURL& prev_navigation_url,
       const std::vector<GURL>& redirect_chain);
 
   // Returns the OAuth requestor site when popup based login flow is detected,
-  // otherwise absl::nullopt is returned.
-  absl::optional<GURL> GetPopUpLoginFlowSite() const;
+  // otherwise std::nullopt is returned.
+  std::optional<GURL> GetPopUpLoginFlowSite() const;
 
   // Indicates this detector is opened for a popup window, and the opener window
   // had the |opener_navigation_url|.
@@ -95,11 +95,11 @@ class OAuthLoginDetector {
   // Info about the current login flow. Exists only when there is an ongoing
   // OAuth login flow. Created on the start of login flow, and destroyed when
   // the flow completes successfully or navigation limit is reached.
-  absl::optional<OAuthLoginFlowInfo> login_flow_info_;
+  std::optional<OAuthLoginFlowInfo> login_flow_info_;
 
-  // The site that opened this detector window as a popup. absl::nullopt when
+  // The site that opened this detector window as a popup. std::nullopt when
   // this detector is not opened as a popup.
-  absl::optional<GURL> popup_opener_navigation_site_;
+  std::optional<GURL> popup_opener_navigation_site_;
 };
 
 }  // namespace login_detection

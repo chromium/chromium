@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -14,10 +17,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
@@ -71,7 +72,7 @@ TestContactRecordList() {
 nearby::sharing::proto::ListContactPeopleResponse
 CreateListContactPeopleResponse(
     const std::vector<nearby::sharing::proto::ContactRecord>& contact_records,
-    const absl::optional<std::string>& next_page_token) {
+    const std::optional<std::string>& next_page_token) {
   nearby::sharing::proto::ListContactPeopleResponse response;
   *response.mutable_contact_records() = {contact_records.begin(),
                                          contact_records.end()};
@@ -88,8 +89,8 @@ class NearbyShareContactDownloaderImplTest
  protected:
   struct Result {
     bool success;
-    absl::optional<std::vector<nearby::sharing::proto::ContactRecord>> contacts;
-    absl::optional<uint32_t> num_unreachable_contacts_filtered_out;
+    std::optional<std::vector<nearby::sharing::proto::ContactRecord>> contacts;
+    std::optional<uint32_t> num_unreachable_contacts_filtered_out;
   };
 
   NearbyShareContactDownloaderImplTest() = default;
@@ -106,7 +107,7 @@ class NearbyShareContactDownloaderImplTest
   }
 
   void SucceedListContactPeopleRequest(
-      const absl::optional<std::string>& expected_page_token_in_request,
+      const std::optional<std::string>& expected_page_token_in_request,
       const nearby::sharing::proto::ListContactPeopleResponse& response) {
     VerifyListContactPeopleRequest(expected_page_token_in_request);
 
@@ -116,7 +117,7 @@ class NearbyShareContactDownloaderImplTest
   }
 
   void FailListContactPeopleRequest(
-      const absl::optional<std::string>& expected_page_token_in_request) {
+      const std::optional<std::string>& expected_page_token_in_request) {
     VerifyListContactPeopleRequest(expected_page_token_in_request);
 
     EXPECT_FALSE(result_);
@@ -126,7 +127,7 @@ class NearbyShareContactDownloaderImplTest
   }
 
   void TimeoutListContactPeopleRequest(
-      const absl::optional<std::string>& expected_page_token_in_request) {
+      const std::optional<std::string>& expected_page_token_in_request) {
     VerifyListContactPeopleRequest(expected_page_token_in_request);
 
     EXPECT_FALSE(result_);
@@ -163,7 +164,7 @@ class NearbyShareContactDownloaderImplTest
   }
 
   void VerifyListContactPeopleRequest(
-      const absl::optional<std::string>& expected_page_token) {
+      const std::optional<std::string>& expected_page_token) {
     ASSERT_FALSE(fake_client_factory_.instances().empty());
     FakeNearbyShareClient* client = fake_client_factory_.instances().back();
     ASSERT_EQ(1u, client->list_contact_people_requests().size());
@@ -192,7 +193,7 @@ class NearbyShareContactDownloaderImplTest
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  absl::optional<Result> result_;
+  std::optional<Result> result_;
   FakeNearbyShareClientFactory fake_client_factory_;
   std::unique_ptr<NearbyShareContactDownloader> downloader_;
 };
@@ -202,7 +203,7 @@ TEST_F(NearbyShareContactDownloaderImplTest, Success) {
 
   // Contacts are sent in two ListContactPeople responses.
   SucceedListContactPeopleRequest(
-      /*expected_page_token=*/absl::nullopt,
+      /*expected_page_token=*/std::nullopt,
       CreateListContactPeopleResponse(
           std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin(),
@@ -214,7 +215,7 @@ TEST_F(NearbyShareContactDownloaderImplTest, Success) {
           std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin() + 1,
               TestContactRecordList().end()),
-          /*next_page_token=*/absl::nullopt));
+          /*next_page_token=*/std::nullopt));
 
   // The last two records are filtered out because the are not reachable.
   VerifySuccess(/*expected_contacts=*/
@@ -230,7 +231,7 @@ TEST_F(NearbyShareContactDownloaderImplTest, Failure_ListContactPeople) {
   // Contacts should be sent in two ListContactPeople responses, but second
   // request fails.
   SucceedListContactPeopleRequest(
-      /*expected_page_token=*/absl::nullopt,
+      /*expected_page_token=*/std::nullopt,
       CreateListContactPeopleResponse(
           std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin(),
@@ -248,7 +249,7 @@ TEST_F(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
   // Contacts should be sent in two ListContactPeople responses. Timeout before
   // second response.
   SucceedListContactPeopleRequest(
-      /*expected_page_token=*/absl::nullopt,
+      /*expected_page_token=*/std::nullopt,
       CreateListContactPeopleResponse(
           std::vector<nearby::sharing::proto::ContactRecord>(
               TestContactRecordList().begin(),
@@ -269,9 +270,9 @@ TEST_F(NearbyShareContactDownloaderImplTest, Success_FilterOutDeviceContacts) {
   RunDownload();
 
   SucceedListContactPeopleRequest(
-      /*expected_page_token=*/absl::nullopt,
+      /*expected_page_token=*/std::nullopt,
       CreateListContactPeopleResponse(TestContactRecordList(),
-                                      /*next_page_token=*/absl::nullopt));
+                                      /*next_page_token=*/std::nullopt));
 
   // The device contact is filtered out.
   VerifySuccess(/*expected_contacts=*/{TestContactRecordList()[0],

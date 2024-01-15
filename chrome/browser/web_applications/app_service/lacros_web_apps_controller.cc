@@ -440,8 +440,8 @@ void LacrosWebAppsController::PublishWebApp(apps::AppPtr app) {
 
 void LacrosWebAppsController::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
-    absl::optional<bool> accessing_camera,
-    absl::optional<bool> accessing_microphone) {
+    std::optional<bool> accessing_camera,
+    std::optional<bool> accessing_microphone) {
   if (!remote_publisher_) {
     return;
   }

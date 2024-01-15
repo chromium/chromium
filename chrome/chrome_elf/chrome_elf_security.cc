@@ -12,6 +12,8 @@
 #include <assert.h>
 #include <ntstatus.h>
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/file_version_info.h"
 #include "base/logging.h"
@@ -20,7 +22,6 @@
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace elf_security {
 
@@ -77,7 +78,7 @@ class ExtensionPointDisableSet {
   ExtensionPointDisableSet() { DETACH_FROM_THREAD(thread_checker_); }
 
   THREAD_CHECKER(thread_checker_);
-  absl::optional<bool> extension_point_disable_set_
+  std::optional<bool> extension_point_disable_set_
       GUARDED_BY_CONTEXT(thread_checker_);
 };
 

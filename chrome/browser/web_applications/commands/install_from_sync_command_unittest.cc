@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <utility>
 
@@ -45,7 +46,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -112,7 +112,7 @@ class InstallFromSyncTest : public WebAppTest {
     bool callback_triggered = false;
     webapps::AppId installed_app_id;
     webapps::InstallResultCode install_code;
-    absl::optional<webapps::InstallResultCode> install_code_before_fallback;
+    std::optional<webapps::InstallResultCode> install_code_before_fallback;
   };
 
   InstallFromSyncCommand::Params CreateParams(webapps::AppId app_id,
@@ -120,7 +120,7 @@ class InstallFromSyncTest : public WebAppTest {
                                               GURL start_url) {
     return InstallFromSyncCommand::Params(
         app_id, manifest_id, start_url, kFallbackTitle,
-        start_url.GetWithoutFilename(), /*theme_color=*/absl::nullopt,
+        start_url.GetWithoutFilename(), /*theme_color=*/std::nullopt,
         mojom::UserDisplayMode::kStandalone, /*icons=*/
         {apps::IconInfo(kFallbackIconUrl, kIconSize)});
   }

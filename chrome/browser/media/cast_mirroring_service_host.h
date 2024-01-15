@@ -64,7 +64,7 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
              mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
              const std::string& sink_name) override;
-  absl::optional<int> GetTabSourceId() const override;
+  std::optional<int> GetTabSourceId() const override;
 
   void GetMirroringStats(
       base::OnceCallback<void(const base::Value)> json_stats_cb) override;
@@ -184,7 +184,7 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   // Represents the number of times a tab was switched during an active
   // mirroring session using tab switcher UI bar. Mainly used for metrics
   // collecting.
-  absl::optional<int> tab_switching_count_;
+  std::optional<int> tab_switching_count_;
 
   std::u16string sink_name_;
 

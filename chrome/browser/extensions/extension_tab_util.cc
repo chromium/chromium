@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -68,7 +69,6 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
@@ -338,7 +338,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
           navigate_params.navigated_or_inserted_contents);
 
   if (tab_strip) {
-    absl::optional<tab_groups::TabGroupId> group =
+    std::optional<tab_groups::TabGroupId> group =
         tab_strip->GetTabGroupForTab(new_index);
     if (group.has_value()) {
       if (tab_groups_util::IsGroupSaved(group.value(), tab_strip)) {
@@ -456,13 +456,13 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 
   tab_object.group_id = -1;
   if (tab_strip) {
-    absl::optional<tab_groups::TabGroupId> group =
+    std::optional<tab_groups::TabGroupId> group =
         tab_strip->GetTabGroupForTab(tab_index);
     if (group.has_value()) {
       tab_object.group_id = tab_groups_util::GetGroupId(group.value());
     }
 
-    absl::optional<base::Time> last_accessed =
+    std::optional<base::Time> last_accessed =
         tab_strip->GetLastAccessed(tab_index);
 
     if (last_accessed.has_value()) {
@@ -1114,7 +1114,7 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
 
   // If the tab is not in a group, then its not going to be in a saved group.
   int index = tab_strip_model->GetIndexOfWebContents(contents);
-  absl::optional<tab_groups::TabGroupId> tab_group_id =
+  std::optional<tab_groups::TabGroupId> tab_group_id =
       tab_strip_model->GetTabGroupForTab(index);
   if (!tab_group_id.has_value()) {
     return false;

@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/sharing_service.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -36,7 +37,6 @@
 #include "crypto/ec_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -167,11 +167,11 @@ class SharingServiceTest : public testing::Test {
   void OnMessageSent(
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
-    send_message_result_ = absl::make_optional(result);
+    send_message_result_ = std::make_optional(result);
     send_message_response_ = std::move(response);
   }
 
-  const absl::optional<SharingSendMessageResult>& send_message_result() {
+  const std::optional<SharingSendMessageResult>& send_message_result() {
     return send_message_result_;
   }
 
@@ -224,7 +224,7 @@ class SharingServiceTest : public testing::Test {
   bool device_candidates_initialized_ = false;
 
  private:
-  absl::optional<SharingSendMessageResult> send_message_result_;
+  std::optional<SharingSendMessageResult> send_message_result_;
   std::unique_ptr<chrome_browser_sharing::ResponseMessage>
       send_message_response_;
 };

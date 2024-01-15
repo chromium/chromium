@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/tracing/public/cpp/tracing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -242,8 +242,7 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #endif
 }
 
-absl::optional<base::Value::Dict>
-ChromeTracingDelegate::GenerateMetadataDict() {
+std::optional<base::Value::Dict> ChromeTracingDelegate::GenerateMetadataDict() {
   base::Value::Dict metadata_dict;
   // Do not include low anonymity field trials, to prevent them from being
   // included in chrometto reports.

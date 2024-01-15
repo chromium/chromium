@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 // Tests that opening a new window for a tabbed web app opens a new window.
 // TODO(crbug.com/1490336): Make this run on Ash as well.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, NewTabbedWindow) {
-  const absl::optional<std::vector<std::string>>& capabilities =
+  const std::optional<std::vector<std::string>>& capabilities =
       chromeos::BrowserParamsProxy::Get()->AshCapabilities();
   if (!capabilities || !base::Contains(*capabilities, "crbug/1490336")) {
     GTEST_SKIP() << "Unsupported Ash version.";

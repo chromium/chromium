@@ -24,7 +24,7 @@ void OnExported(const std::string& interface_name,
 
 void Respond(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender response_sender,
-             absl::optional<std::string> maybe_error) {
+             std::optional<std::string> maybe_error) {
   if (maybe_error) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,

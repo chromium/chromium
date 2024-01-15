@@ -413,7 +413,7 @@ class WebRtcPanTiltZoomPermissionRequestBrowserTest
     blink::MediaStreamDevice fake_video_device(
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "fake_video_dev",
         "Fake Video Device", control_support, media::MEDIA_VIDEO_FACING_NONE,
-        absl::nullopt);
+        std::nullopt);
     video_devices.push_back(fake_video_device);
     MediaCaptureDevicesDispatcher::GetInstance()->SetTestVideoCaptureDevices(
         video_devices);
@@ -460,7 +460,7 @@ class WebRtcPanTiltZoomCameraDevicesBrowserTest : public WebRtcTestBase {
     blink::MediaStreamDevice fake_video_device(
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "fake_video_dev",
         "Fake Video Device", {pan_supported, tilt_supported, zoom_supported},
-        media::MEDIA_VIDEO_FACING_NONE, absl::nullopt);
+        media::MEDIA_VIDEO_FACING_NONE, std::nullopt);
     video_devices.push_back(fake_video_device);
     MediaCaptureDevicesDispatcher::GetInstance()->SetTestVideoCaptureDevices(
         video_devices);

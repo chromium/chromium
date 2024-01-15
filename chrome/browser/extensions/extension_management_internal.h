@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_MANAGEMENT_INTERNAL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -178,11 +178,11 @@ struct GlobalSettings {
 
   // Settings specifying which URLs are allowed to install extensions, will be
   // enforced only if |has_restricted_install_sources| is set to true.
-  absl::optional<URLPatternSet> install_sources;
+  std::optional<URLPatternSet> install_sources;
 
   // Settings specifying all allowed app/extension types, will be enforced
   // only of |has_restricted_allowed_types| is set to true.
-  absl::optional<std::vector<Manifest::Type>> allowed_types;
+  std::optional<std::vector<Manifest::Type>> allowed_types;
 
   // An enum setting indicates if manifest v2 is allowed.
   ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kDefault;

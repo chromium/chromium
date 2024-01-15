@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "chrome/services/mac_notifications/un_user_notifications_spi.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
@@ -70,10 +70,10 @@ int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
   return kNotificationInvalidButtonIndex;
 }
 
-absl::optional<std::u16string> GetReplyFromResponse(
+std::optional<std::u16string> GetReplyFromResponse(
     UNNotificationResponse* response) {
   if (![response isKindOfClass:[UNTextInputNotificationResponse class]])
-    return absl::nullopt;
+    return std::nullopt;
   auto* textResponse = static_cast<UNTextInputNotificationResponse*>(response);
   return base::SysNSStringToUTF16(textResponse.userText);
 }
@@ -252,7 +252,7 @@ void MacNotificationServiceUN::DoDisplayNotification(
 
 void MacNotificationServiceUN::GetDisplayedNotifications(
     mojom::ProfileIdentifierPtr profile,
-    const absl::optional<GURL>& origin,
+    const std::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Move |callback| into block storage so we can use it from the block below.
@@ -262,7 +262,7 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
   // Note: |profile| might be null if we want all notifications.
   NSString* profile_id = profile ? base::SysUTF8ToNSString(profile->id) : nil;
   bool incognito = profile && profile->incognito;
-  __block absl::optional<GURL> block_origin = origin;
+  __block std::optional<GURL> block_origin = origin;
 
   // We need to call |callback| on the same sequence as this method is called.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -363,7 +363,7 @@ void MacNotificationServiceUN::OkayToTerminateService(
   }
 
   GetDisplayedNotifications(
-      /*profile=*/nullptr, /*origin=*/absl::nullopt,
+      /*profile=*/nullptr, /*origin=*/std::nullopt,
       base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
                             notifications) {
         return notifications.empty();
@@ -469,7 +469,7 @@ void MacNotificationServiceUN::SynchronizeNotifications(
   }
   is_synchronizing_notifications_ = true;
   GetDisplayedNotifications(
-      /*profile=*/nullptr, /*origin=*/absl::nullopt,
+      /*profile=*/nullptr, /*origin=*/std::nullopt,
       base::BindOnce(&MacNotificationServiceUN::DoSynchronizeNotifications,
                      weak_factory_.GetWeakPtr()));
 }
@@ -500,7 +500,7 @@ void MacNotificationServiceUN::DoSynchronizeNotifications(
     auto action_info = mojom::NotificationActionInfo::New(
         std::move(entry.second), NotificationOperation::kClose,
         kNotificationInvalidButtonIndex,
-        /*reply=*/absl::nullopt);
+        /*reply=*/std::nullopt);
     action_handler_->OnNotificationAction(std::move(action_info));
   }
 
@@ -574,7 +574,7 @@ void MacNotificationServiceUN::OnNotificationsClosed(
   NotificationOperation operation =
       GetNotificationOperationFromAction(response.actionIdentifier);
   int buttonIndex = GetActionButtonIndexFromAction(response.actionIdentifier);
-  absl::optional<std::u16string> reply = GetReplyFromResponse(response);
+  std::optional<std::u16string> reply = GetReplyFromResponse(response);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), operation, buttonIndex, std::move(reply));
   _handler.Run(std::move(actionInfo));

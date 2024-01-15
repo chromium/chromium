@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREFETCH_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREFETCH_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -14,7 +16,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -77,15 +78,15 @@ class PrefetchPageLoadMetricsObserver
   // The minimum number of days since the last visit, as reported by
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is
   // a response from the history service but was no previous visit.
-  absl::optional<int> min_days_since_last_visit_to_origin_;
+  std::optional<int> min_days_since_last_visit_to_origin_;
 
   // Metrics related to prefetches requested by a page via the Speculation Rules
   // API.
-  absl::optional<content::PrefetchReferringPageMetrics> referring_page_metrics_;
+  std::optional<content::PrefetchReferringPageMetrics> referring_page_metrics_;
 
   // Metrics for page loads where prefetches were requested via the Speculation
   // Rules API by the previous page load.
-  absl::optional<content::PrefetchServingPageMetrics> serving_page_metrics_;
+  std::optional<content::PrefetchServingPageMetrics> serving_page_metrics_;
 
   // Task tracker for calls for the history service.
   base::CancelableTaskTracker task_tracker_;

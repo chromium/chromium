@@ -59,13 +59,12 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   ResponseAction Run() override;
   bool ShouldKeepWorkerAliveIndefinitely() override;
 
-  void StartAuthFlow(
-      Profile* profile,
-      GURL auth_url,
-      WebAuthFlow::Mode mode,
-      WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive,
-      absl::optional<base::TimeDelta> timeout_for_non_interactive,
-      absl::optional<gfx::Rect> popup_bounds);
+  void StartAuthFlow(Profile* profile,
+                     GURL auth_url,
+                     WebAuthFlow::Mode mode,
+                     WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive,
+                     std::optional<base::TimeDelta> timeout_for_non_interactive,
+                     std::optional<gfx::Rect> popup_bounds);
 
   // WebAuthFlow::Delegate implementation.
   void OnAuthFlowFailure(WebAuthFlow::Failure failure) override;

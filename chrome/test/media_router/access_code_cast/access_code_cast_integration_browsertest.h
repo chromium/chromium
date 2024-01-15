@@ -84,7 +84,7 @@ class AccessCodeCastIntegrationBrowserTest
   int WaitForAddSinkErrorCode(content::WebContents* dialog_contents);
 
   bool HasSinkInDevicesDict(const MediaSink::Id& sink_id);
-  absl::optional<base::Time> GetDeviceAddedTimeFromDict(
+  std::optional<base::Time> GetDeviceAddedTimeFromDict(
       const MediaSink::Id& sink_id);
 
   void SetUpOnMainThread() override;

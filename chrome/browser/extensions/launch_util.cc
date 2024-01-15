@@ -80,7 +80,7 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
   apps::LaunchContainer manifest_launch_container =
       AppLaunchInfo::GetLaunchContainer(extension);
 
-  absl::optional<apps::LaunchContainer> result;
+  std::optional<apps::LaunchContainer> result;
 
   if (manifest_launch_container ==
       apps::LaunchContainer::kLaunchContainerPanelDeprecated) {

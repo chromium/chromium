@@ -430,7 +430,7 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
     return output;
   }
 
-  absl::optional<base::Value::Dict> algorithm =
+  std::optional<base::Value::Dict> algorithm =
       BuildWebCrypAlgorithmDictionary(key_info);
   DCHECK(algorithm.has_value());
   output.algorithm = std::move(algorithm.value());
@@ -478,7 +478,7 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
   return net::X509Certificate::kPublicKeyTypeUnknown;
 }
 
-absl::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
+std::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
     const PublicKeyInfo& key_info) {
   switch (key_info.key_type) {
     case net::X509Certificate::kPublicKeyTypeRSA: {
@@ -492,7 +492,7 @@ absl::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
       return result;
     }
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

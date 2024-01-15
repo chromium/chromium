@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_QUICK_START_DECODER_QUICK_START_DECODER_H_
 #define CHROME_SERVICES_SHARING_NEARBY_QUICK_START_DECODER_QUICK_START_DECODER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/types/expected.h"
@@ -15,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -33,7 +33,7 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
 
   // mojom::QuickStartDecoder;
   void DecodeQuickStartMessage(
-      const absl::optional<std::vector<uint8_t>>& data,
+      const std::optional<std::vector<uint8_t>>& data,
       DecodeQuickStartMessageCallback callback) override;
 
  private:

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -12,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -22,7 +24,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Contains;
 using ::testing::HasSubstr;
@@ -78,14 +79,14 @@ IN_PROC_BROWSER_TEST_F(UiHierarchyDataCollectorBrowserTest,
       browser->GetWindowTitleForCurrentTab(/*include_app_name=*/true));
 
   // Collect UI hierarchy data and assert no error returned.
-  base::test::TestFuture<absl::optional<SupportToolError>>
+  base::test::TestFuture<std::optional<SupportToolError>>
       test_future_collect_data;
   data_collector.CollectDataAndDetectPII(
       test_future_collect_data.GetCallback(),
       /*task_runner_for_redaction_tool=*/nullptr,
       /*redaction_tool_container=*/nullptr);
-  absl::optional<SupportToolError> error = test_future_collect_data.Get();
-  EXPECT_EQ(error, absl::nullopt);
+  std::optional<SupportToolError> error = test_future_collect_data.Get();
+  EXPECT_EQ(error, std::nullopt);
 
   // Check the returned map of detected PII inside the collected data.
   PIIMap pii_map = data_collector.GetDetectedPII();
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(UiHierarchyDataCollectorBrowserTest,
   base::FilePath output_path = temp_dir_.GetPath();
   // Export the collected data into `output_path` and make sure no error is
   // returned.
-  base::test::TestFuture<absl::optional<SupportToolError>>
+  base::test::TestFuture<std::optional<SupportToolError>>
       test_future_export_data;
   data_collector.ExportCollectedDataWithPII(
       /*pii_types_to_keep=*/{}, output_path,
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(UiHierarchyDataCollectorBrowserTest,
       /*redaction_tool_container=*/nullptr,
       test_future_export_data.GetCallback());
   error = test_future_export_data.Get();
-  EXPECT_EQ(error, absl::nullopt);
+  EXPECT_EQ(error, std::nullopt);
   std::string output_contents;
   ASSERT_NO_FATAL_FAILURE(ReadExportedUiHierarchyFile(&output_contents));
   EXPECT_THAT(output_contents, Not(IsEmpty()));

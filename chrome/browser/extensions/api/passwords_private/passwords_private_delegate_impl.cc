@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -68,7 +69,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -392,13 +392,13 @@ void PasswordsPrivateDelegateImpl::GetPasswordExceptionsList(
   }
 }
 
-absl::optional<api::passwords_private::UrlCollection>
+std::optional<api::passwords_private::UrlCollection>
 PasswordsPrivateDelegateImpl::GetUrlCollection(const std::string& url) {
   GURL url_with_scheme = password_manager_util::ConstructGURLWithScheme(url);
   if (!password_manager::IsValidPasswordURL(url_with_scheme)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::optional<api::passwords_private::UrlCollection>(
+  return std::optional<api::passwords_private::UrlCollection>(
       CreateUrlCollectionFromGURL(
           password_manager_util::StripAuthAndParams(url_with_scheme)));
 }
@@ -951,13 +951,13 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
     PlaintextPasswordCallback callback,
     bool authenticated) {
   if (!authenticated) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
   if (!entry) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -1196,7 +1196,7 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
 
     entry.federation_text = base::UTF16ToUTF8(formatted_origin);
   }
-  absl::optional<GURL> change_password_url = credential.GetChangePasswordURL();
+  std::optional<GURL> change_password_url = credential.GetChangePasswordURL();
   if (change_password_url.has_value()) {
     entry.change_password_url = change_password_url->spec();
   }

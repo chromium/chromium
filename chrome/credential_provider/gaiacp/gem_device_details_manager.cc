@@ -289,7 +289,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
                        base::WideToUTF8(known_resource_id));
   }
 
-  absl::optional<base::Value> request_result;
+  std::optional<base::Value> request_result;
 
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GemDeviceDetailsManager::Get()->GetGemServiceUploadDeviceDetailsUrl(),

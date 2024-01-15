@@ -29,7 +29,7 @@ const int kMaxReadBufferCapacity = 100 * 1024 * 1024;  // 100Mb
 
 void DetermineRecipient(const std::string& message,
                         bool* send_to_chromedriver) {
-  absl::optional<base::Value> message_value =
+  std::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
   base::Value::Dict* message_dict =
       message_value ? message_value->GetIfDict() : nullptr;

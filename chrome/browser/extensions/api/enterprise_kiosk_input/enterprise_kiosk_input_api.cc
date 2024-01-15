@@ -47,7 +47,7 @@ EnterpriseKioskInputSetCurrentInputMethodFunction::
 ExtensionFunction::ResponseAction
 EnterpriseKioskInputSetCurrentInputMethodFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<SetCurrentInputMethod::Params> params =
+  std::optional<SetCurrentInputMethod::Params> params =
       SetCurrentInputMethod::Params::Create(args());
 
   const std::string& params_input_id = params->options.input_method_id;

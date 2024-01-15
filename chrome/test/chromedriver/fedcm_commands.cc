@@ -139,7 +139,7 @@ Status ExecuteGetFedCmTitle(Session* session,
   }
   base::Value::Dict dict;
   dict.Set("title", tracker->GetLastTitle());
-  absl::optional<std::string> subtitle = tracker->GetLastSubtitle();
+  std::optional<std::string> subtitle = tracker->GetLastSubtitle();
   if (subtitle) {
     dict.Set("subtitle", *subtitle);
   }

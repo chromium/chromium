@@ -14,20 +14,20 @@ class FakeNearbyShareProfileInfoProvider
   ~FakeNearbyShareProfileInfoProvider() override;
 
   // NearbyShareProfileInfoProvider:
-  absl::optional<std::u16string> GetGivenName() const override;
-  absl::optional<std::string> GetProfileUserName() const override;
+  std::optional<std::u16string> GetGivenName() const override;
+  std::optional<std::string> GetProfileUserName() const override;
 
-  void set_given_name(const absl::optional<std::u16string>& given_name) {
+  void set_given_name(const std::optional<std::u16string>& given_name) {
     given_name_ = given_name;
   }
   void set_profile_user_name(
-      const absl::optional<std::string>& profile_user_name) {
+      const std::optional<std::string>& profile_user_name) {
     profile_user_name_ = profile_user_name;
   }
 
  private:
-  absl::optional<std::u16string> given_name_;
-  absl::optional<std::string> profile_user_name_;
+  std::optional<std::u16string> given_name_;
+  std::optional<std::string> profile_user_name_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_COMMON_FAKE_NEARBY_SHARE_PROFILE_INFO_PROVIDER_H_

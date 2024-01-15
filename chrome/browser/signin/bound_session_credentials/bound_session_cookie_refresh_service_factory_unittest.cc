@@ -52,8 +52,8 @@ struct BoundSessionCookieRefreshServiceFactoryTestParams {
   std::string test_name;
   std::vector<FeatureRefAndParams> enabled_features;
   std::vector<FeatureRef> disabled_features;
-  absl::optional<switches::EnableBoundSessionCredentialsDiceSupport>
-      expected_support;  // absl::nullopt means no support at all.
+  std::optional<switches::EnableBoundSessionCredentialsDiceSupport>
+      expected_support;  // std::nullopt means no support at all.
   ~BoundSessionCookieRefreshServiceFactoryTestParams() = default;
 };
 

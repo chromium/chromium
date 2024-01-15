@@ -7,6 +7,7 @@
 
 #include <bitset>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -30,7 +31,6 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class ScopedProfileKeepAlive;
@@ -132,7 +132,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   virtual void Synchronize(
       const webapps::AppId& app_id,
       base::OnceClosure callback,
-      absl::optional<SynchronizeOsOptions> options = absl::nullopt);
+      std::optional<SynchronizeOsOptions> options = std::nullopt);
 
   // Install all needed OS hooks for the web app.
   // If provided |web_app_info| is a nullptr, it will read icons data from disk,
@@ -184,9 +184,8 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id) const;
 
   // Proxy calls for WebAppProtocolHandlerManager.
-  virtual absl::optional<GURL> TranslateProtocolUrl(
-      const webapps::AppId& app_id,
-      const GURL& protocol_url);
+  virtual std::optional<GURL> TranslateProtocolUrl(const webapps::AppId& app_id,
+                                                   const GURL& protocol_url);
   virtual std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
       const webapps::AppId& app_id);
   virtual std::vector<custom_handlers::ProtocolHandler>
@@ -317,7 +316,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   // Synchronize:
   void StartSubManagerExecutionIfRequired(
       const webapps::AppId& app_id,
-      absl::optional<SynchronizeOsOptions> options,
+      std::optional<SynchronizeOsOptions> options,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure on_all_execution_done);
 
@@ -327,7 +326,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   // sub managers execute only if the one before it has finished executing.
   void ExecuteNextSubmanager(
       const webapps::AppId& app_id,
-      absl::optional<SynchronizeOsOptions> options,
+      std::optional<SynchronizeOsOptions> options,
       proto::WebAppOsIntegrationState* desired_state,
       const proto::WebAppOsIntegrationState current_state,
       size_t index,

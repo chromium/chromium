@@ -4,6 +4,7 @@
 
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "extensions/common/constants.h"
 #include "pdf/pdf_features.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "url/gurl.h"
@@ -64,7 +64,7 @@ bool ShouldEnableSkiaRenderer(content::WebContents* contents) {
 // returns the stashed result to `PdfURLLoaderRequestInterceptor`.
 class StreamInfoHelper : public content::DocumentUserData<StreamInfoHelper> {
  public:
-  absl::optional<pdf::PdfStreamDelegate::StreamInfo> TakeStreamInfo() {
+  std::optional<pdf::PdfStreamDelegate::StreamInfo> TakeStreamInfo() {
     return std::move(stream_info_);
   }
 
@@ -77,7 +77,7 @@ class StreamInfoHelper : public content::DocumentUserData<StreamInfoHelper> {
       : content::DocumentUserData<StreamInfoHelper>(embedder_frame),
         stream_info_(std::move(stream_info)) {}
 
-  absl::optional<pdf::PdfStreamDelegate::StreamInfo> stream_info_;
+  std::optional<pdf::PdfStreamDelegate::StreamInfo> stream_info_;
 };
 
 DOCUMENT_USER_DATA_KEY_IMPL(StreamInfoHelper);
@@ -87,7 +87,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(StreamInfoHelper);
 ChromePdfStreamDelegate::ChromePdfStreamDelegate() = default;
 ChromePdfStreamDelegate::~ChromePdfStreamDelegate() = default;
 
-absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
+std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     content::NavigationHandle& navigation_handle) {
   // The embedder frame's `Document` is used to store `StreamInfoHelper`.
   content::RenderFrameHost* embedder_frame = navigation_handle.GetParentFrame();
@@ -96,7 +96,7 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
       StreamInfoHelper::GetForCurrentDocument(embedder_frame);
   if (helper) {
     // PDF viewer and Print Preview only do this once per `blink::Document`.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL original_url;
@@ -130,7 +130,7 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     if (stream->extension_id() != extension_misc::kPdfExtensionId ||
         stream->stream_url() != stream_url ||
         !stream->pdf_plugin_attributes()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     CHECK_EQ(embedder_frame->GetLastCommittedURL().host(),
@@ -157,7 +157,7 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.use_skia = ShouldEnableSkiaRenderer(contents);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static const base::NoDestructor<std::string> injected_script(
@@ -172,17 +172,17 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
   return original_url;
 }
 
-absl::optional<pdf::PdfStreamDelegate::StreamInfo>
+std::optional<pdf::PdfStreamDelegate::StreamInfo>
 ChromePdfStreamDelegate::GetStreamInfo(
     content::RenderFrameHost* embedder_frame) {
   if (!embedder_frame) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   StreamInfoHelper* helper =
       StreamInfoHelper::GetForCurrentDocument(embedder_frame);
   if (!helper) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Only the call immediately following `MapToOriginalUrl()` requires a valid

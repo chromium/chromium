@@ -247,7 +247,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, DriveDisabled) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             EXPECT_FALSE(data);
             result_waiter.Quit();
           })));
@@ -270,7 +270,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, DriveNotMounted) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             EXPECT_FALSE(data);
             result_waiter.Quit();
           })));
@@ -344,7 +344,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -438,7 +438,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -496,7 +496,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, DriveFailedSearch) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
             EXPECT_TRUE(data->empty());
             result_waiter.Quit();
@@ -566,7 +566,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, LastViewedSearchFailed) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -653,7 +653,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifiedTimeSearchFailed) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -765,7 +765,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -790,7 +790,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -869,7 +869,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {
@@ -893,7 +893,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
   suggest_service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(base::BindLambdaForTesting(
-          [&](const absl::optional<std::vector<FileSuggestData>>& data) {
+          [&](const std::optional<std::vector<FileSuggestData>>& data) {
             ASSERT_TRUE(data);
 
             std::vector<SuggestionInfo> expected_suggestions = {

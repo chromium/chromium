@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_DATABASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class ModelError;
@@ -67,21 +67,21 @@ class WebAppDatabase {
 
  private:
   void OnDatabaseOpened(RegistryOpenedCallback callback,
-                        const absl::optional<syncer::ModelError>& error,
+                        const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::ModelTypeStore> store);
 
   void OnAllDataRead(
       RegistryOpenedCallback callback,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
   void OnAllMetadataRead(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
       RegistryOpenedCallback callback,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,
-                     const absl::optional<syncer::ModelError>& error);
+                     const std::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
   const raw_ptr<AbstractWebAppDatabaseFactory, DanglingUntriaged>

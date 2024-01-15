@@ -7,8 +7,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "web_app_install_info.h"
@@ -81,7 +82,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
 
   // For each of |purposes|, in the given order, looks for an icon with size at
   // least |min_icon_size|. Returns information on the first icon found.
-  absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
+  std::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const webapps::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size) const;
@@ -228,7 +229,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
   base::WeakPtr<WebAppIconManager> GetWeakPtr();
 
-  absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
+  std::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const webapps::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx max_size) const;

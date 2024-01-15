@@ -2469,7 +2469,7 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
 void WizardController::ObtainContextAndLoginAuthenticated() {
   CHECK(wizard_context_->extra_factors_token);
   auto token = std::move(wizard_context_->extra_factors_token);
-  wizard_context_->extra_factors_token = absl::nullopt;
+  wizard_context_->extra_factors_token = std::nullopt;
 
   ash::AuthSessionStorage::Get()->Withdraw(
       *token, base::BindOnce(&WizardController::LoginAuthenticatedWithContext,
@@ -2479,7 +2479,7 @@ void WizardController::ObtainContextAndLoginAuthenticated() {
 void WizardController::ObtainContextAndAttemptLocalAuthentication() {
   CHECK(wizard_context_->extra_factors_token);
   auto token = std::move(wizard_context_->extra_factors_token);
-  wizard_context_->extra_factors_token = absl::nullopt;
+  wizard_context_->extra_factors_token = std::nullopt;
 
   ash::AuthSessionStorage::Get()->Withdraw(
       *token,

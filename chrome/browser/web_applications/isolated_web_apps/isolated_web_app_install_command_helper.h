@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALL_COMMAND_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/installable/installable_logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -109,7 +109,7 @@ class IsolatedWebAppInstallCommandHelper {
 
   base::expected<WebAppInstallInfo, std::string>
   ValidateManifestAndCreateInstallInfo(
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       const ManifestAndUrl& manifest_and_url);
 
   void RetrieveIconsAndPopulateInstallInfo(

@@ -562,7 +562,7 @@ WebContentsState::CreateSingleNavigationStateAsByteBuffer(
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
           GURL(base::android::ConvertJavaStringToUTF8(env, url)), referrer,
-          initiator_origin, /* initiator_base_url= */ absl::nullopt,
+          initiator_origin, /* initiator_base_url= */ std::nullopt,
           ui::PAGE_TRANSITION_LINK,
           true,  // is_renderer_initiated
           "",    // extra_headers

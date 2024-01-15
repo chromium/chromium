@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_MANAGEMENT_CONTEXT_MIXIN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
@@ -59,7 +59,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   // function will overwrite conflicting entries, but will not remove old policy
   // values whose keys don't conflict.
   void SetCloudUserPolicies(
-      base::flat_map<std::string, absl::optional<base::Value>> policy_entries);
+      base::flat_map<std::string, std::optional<base::Value>> policy_entries);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a scoped object which can be used to set device policies. When that
@@ -71,7 +71,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   // function will overwrite conflicting entries, but will not remove old policy
   // values whose keys don't conflict.
   virtual void SetCloudMachinePolicies(
-      base::flat_map<std::string, absl::optional<base::Value>>
+      base::flat_map<std::string, std::optional<base::Value>>
           policy_entries) = 0;
 #endif
 

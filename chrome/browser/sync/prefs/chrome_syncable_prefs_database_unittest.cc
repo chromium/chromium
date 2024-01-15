@@ -10,7 +10,7 @@
 namespace {
 
 TEST(ChromeSyncablePrefsDatabaseTest, CheckMetricsEnum) {
-  absl::optional<base::HistogramEnumEntryMap> syncable_pref_enums =
+  std::optional<base::HistogramEnumEntryMap> syncable_pref_enums =
       base::ReadEnumFromEnumsXml("SyncablePref", "sync");
 
   ASSERT_TRUE(syncable_pref_enums.has_value())

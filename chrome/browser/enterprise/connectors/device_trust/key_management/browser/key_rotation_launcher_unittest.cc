@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -27,7 +28,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
@@ -83,7 +83,7 @@ class KeyRotationLauncherTest : public testing::Test {
 TEST_F(KeyRotationLauncherTest, LaunchKeyRotation) {
   SetDMToken();
 
-  absl::optional<KeyRotationCommand::Params> params;
+  std::optional<KeyRotationCommand::Params> params;
   EXPECT_CALL(*mock_command_, Trigger(testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&params](const KeyRotationCommand::Params given_params,

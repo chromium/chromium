@@ -5,12 +5,12 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -34,7 +34,7 @@ BaseTelemetryExtensionApiGuardFunction::Run() {
 }
 
 void BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi(
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   if (error.has_value()) {
     Respond(Error(base::StringPrintf("Unauthorized access to chrome.%s. %s",
                                      name(), error.value().c_str())));

@@ -666,11 +666,11 @@ base::Time GetConsoleSessionStartTime() {
   return base::Time::FromFileTime(filetime);
 }
 
-absl::optional<std::string> DecodeDMTokenSwitchValue(
+std::optional<std::string> DecodeDMTokenSwitchValue(
     const std::wstring& encoded_token) {
   if (encoded_token.empty()) {
     LOG(ERROR) << "Empty DMToken specified on the command line";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The token passed on the command line is base64-encoded, but since this is
@@ -679,13 +679,13 @@ absl::optional<std::string> DecodeDMTokenSwitchValue(
   if (!base::IsStringASCII(encoded_token) ||
       !base::Base64Decode(base::WideToASCII(encoded_token), &token)) {
     LOG(ERROR) << "DMToken passed on the command line is not correctly encoded";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return token;
 }
 
-absl::optional<std::string> DecodeNonceSwitchValue(
+std::optional<std::string> DecodeNonceSwitchValue(
     const std::string& encoded_nonce) {
   if (encoded_nonce.empty()) {
     // The nonce command line argument is optional.  If none is specified use
@@ -697,7 +697,7 @@ absl::optional<std::string> DecodeNonceSwitchValue(
   std::string nonce;
   if (!base::Base64Decode(encoded_nonce, &nonce)) {
     LOG(ERROR) << "Nonce passed on the command line is not correctly encoded";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return nonce;

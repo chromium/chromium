@@ -158,7 +158,7 @@ void BoardingPassExtractor::ExtractBoardingPassWithScript(
 
 void BoardingPassExtractor::OnBoardingPassExtracted(
     ExtractBoardingPassCallback callback,
-    absl::optional<base::Value> results,
+    std::optional<base::Value> results,
     base::TimeTicks start_time) {
   std::vector<std::string> boarding_passes;
   if (results.has_value()) {

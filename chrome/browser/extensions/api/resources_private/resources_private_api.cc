@@ -66,7 +66,7 @@ ResourcesPrivateGetStringsFunction::ResourcesPrivateGetStringsFunction() {}
 ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() {}
 
 ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
-  absl::optional<get_strings::Params> params =
+  std::optional<get_strings::Params> params =
       get_strings::Params::Create(args());
   base::Value::Dict dict;
 

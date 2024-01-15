@@ -192,15 +192,15 @@ class PrivacySandboxService : public KeyedService {
   GetSampleFirstPartySets() const = 0;
 
   // Returns the owner domain of the first party set that `site_url` is a member
-  // of, or absl::nullopt if `site_url` is not recognised as a member of an FPS.
+  // of, or std::nullopt if `site_url` is not recognised as a member of an FPS.
   // Encapsulates logic about whether FPS information should be shown, if it
-  // should not, absl::nullopt is always returned.
+  // should not, std::nullopt is always returned.
   // Virtual for mocking in tests.
-  virtual absl::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  virtual std::optional<net::SchemefulSite> GetFirstPartySetOwner(
       const GURL& site_url) const = 0;
 
   // Same as GetFirstPartySetOwner but returns a formatted string.
-  virtual absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  virtual std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
       const GURL& site_url) const = 0;
 
   // Returns true if `site`'s membership in an FPS is being managed by policy or

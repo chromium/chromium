@@ -67,7 +67,7 @@ class ExtensionServiceTestBase : public testing::Test {
     // directory with the given content, and initializes user prefs store
     // referring the file.
     // If not, sync_preferences::TestingPrefServiceSyncable is used.
-    absl::optional<std::string> prefs_content;
+    std::optional<std::string> prefs_content;
 
     // If not empty, copies both directories to the profile directory.
     base::FilePath extensions_dir;

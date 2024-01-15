@@ -52,10 +52,9 @@ class DeviceAttesterTest : public testing::Test {
 
   void SetupPubkeyExport(bool can_export_pubkey = true) {
     EXPECT_CALL(mock_key_manager_, ExportPublicKeyAsync(_))
-        .WillOnce(
-            Invoke([&, can_export_pubkey](
-                       base::OnceCallback<void(absl::optional<std::string>)>
-                           callback) {
+        .WillOnce(Invoke(
+            [&, can_export_pubkey](
+                base::OnceCallback<void(std::optional<std::string>)> callback) {
               if (can_export_pubkey) {
                 auto public_key_info =
                     test_key_pair_->key()->GetSubjectPublicKeyInfo();
@@ -64,7 +63,7 @@ class DeviceAttesterTest : public testing::Test {
                 public_key_ = public_key;
                 std::move(callback).Run(public_key);
               } else {
-                std::move(callback).Run(absl::nullopt);
+                std::move(callback).Run(std::nullopt);
               }
             }));
   }
@@ -74,13 +73,13 @@ class DeviceAttesterTest : public testing::Test {
         .WillOnce(Invoke(
             [&, can_sign](const std::string& str,
                           base::OnceCallback<void(
-                              absl::optional<std::vector<uint8_t>>)> callback) {
+                              std::optional<std::vector<uint8_t>>)> callback) {
               if (can_sign) {
                 signature = test_key_pair_->key()->SignSlowly(
                     base::as_bytes(base::make_span(str)));
                 std::move(callback).Run(signature);
               } else {
-                std::move(callback).Run(absl::nullopt);
+                std::move(callback).Run(std::nullopt);
               }
             }));
   }
@@ -88,7 +87,7 @@ class DeviceAttesterTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
   scoped_refptr<SigningKeyPair> test_key_pair_;
-  absl::optional<std::vector<uint8_t>> signature;
+  std::optional<std::vector<uint8_t>> signature;
   std::string public_key_;
   testing::StrictMock<test::MockDeviceTrustKeyManager> mock_key_manager_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;

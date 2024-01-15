@@ -86,7 +86,7 @@ bool IsPreconnectExpensive() {
     return false;
   }
 
-  absl::optional<base::android::RadioSignalLevel> maybe_level =
+  std::optional<base::android::RadioSignalLevel> maybe_level =
       base::android::RadioUtils::GetCellSignalLevel();
   return maybe_level.has_value() &&
          *maybe_level <= base::android::RadioSignalLevel::kModerate;
@@ -159,7 +159,7 @@ bool LoadingPredictor::PrepareForPageLoad(
     const GURL& url,
     HintOrigin origin,
     bool preconnectable,
-    absl::optional<PreconnectPrediction> preconnect_prediction) {
+    std::optional<PreconnectPrediction> preconnect_prediction) {
   if (shutdown_)
     return true;
 
@@ -211,7 +211,7 @@ bool LoadingPredictor::PrepareForPageLoad(
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll) {
-    absl::optional<LcppData> lcpp_data =
+    std::optional<LcppData> lcpp_data =
         resource_prefetch_predictor()->GetLcppData(url);
     if (lcpp_data) {
       auto network_anonymization_key =
@@ -530,7 +530,7 @@ void LoadingPredictor::MaybePrewarmResources(
     return;
   }
 
-  absl::optional<LcppData> lcpp_data =
+  std::optional<LcppData> lcpp_data =
       resource_prefetch_predictor()->GetLcppData(top_frame_main_resource_url);
 
   if (!lcpp_data || !IsValidLcppStat(lcpp_data->lcpp_stat())) {

@@ -286,7 +286,7 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
     }
     entry->SetProfileThemeColors(GetCurrentProfileThemeColors(*color_provider));
   } else {
-    entry->SetProfileThemeColors(absl::nullopt);
+    entry->SetProfileThemeColors(std::nullopt);
   }
 }
 

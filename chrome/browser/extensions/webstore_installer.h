@@ -242,7 +242,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
   void ReportSuccess();
 
   // Called when crx_installer_->InstallCrx() finishes.
-  void OnInstallerDone(const absl::optional<CrxInstallError>& error);
+  void OnInstallerDone(const std::optional<CrxInstallError>& error);
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

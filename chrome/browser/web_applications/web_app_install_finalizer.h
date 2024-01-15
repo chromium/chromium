@@ -67,15 +67,15 @@ class WebAppInstallFinalizer {
     bool overwrite_existing_manifest_fields = true;
     bool skip_icon_writes_on_download_failure = false;
 
-    absl::optional<WebAppChromeOsData> chromeos_data;
+    std::optional<WebAppChromeOsData> chromeos_data;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    absl::optional<ash::SystemWebAppData> system_web_app_data;
+    std::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
 
     // If set, will set `WebApp::IsolationData` with the given location, as well
     // as the version from `WebAppInstallInfo::isolated_web_app_version`. Will
     // `CHECK` if `web_app_info.isolated_web_app_version` is invalid.
-    absl::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
+    std::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
     // meaning that all other OS Hooks related parameters below will be ignored.

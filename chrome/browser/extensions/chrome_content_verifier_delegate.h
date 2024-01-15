@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_verifier_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -63,7 +63,7 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   };
 
   static VerifyInfo::Mode GetDefaultMode();
-  static void SetDefaultModeForTesting(absl::optional<VerifyInfo::Mode> mode);
+  static void SetDefaultModeForTesting(std::optional<VerifyInfo::Mode> mode);
 
   explicit ChromeContentVerifierDelegate(content::BrowserContext* context);
 

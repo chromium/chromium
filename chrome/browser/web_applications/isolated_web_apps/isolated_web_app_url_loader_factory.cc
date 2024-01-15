@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -57,7 +58,6 @@
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
@@ -86,7 +86,7 @@ bool IsSupportedHttpMethod(const std::string& method) {
 void CompleteWithGeneratedHtmlResponse(
     mojo::Remote<network::mojom::URLLoaderClient> loader_client,
     net::HttpStatusCode http_status_code,
-    absl::optional<std::string> body) {
+    std::optional<std::string> body) {
   size_t content_length = body.has_value() ? body->size() : 0;
   std::string headers = base::StringPrintf(
       "HTTP/1.1 %d %s\n"
@@ -114,7 +114,7 @@ void CompleteWithGeneratedHtmlResponse(
 
   loader_client->OnReceiveResponse(std::move(response_head),
                                    std::move(consumer_handle),
-                                   /*cached_metadata=*/absl::nullopt);
+                                   /*cached_metadata=*/std::nullopt);
 
   if (body.has_value()) {
     uint32_t write_size = body->size();
@@ -135,7 +135,7 @@ void CompleteWithGeneratedHtmlResponse(
   loader_client->OnComplete(status);
 }
 
-void LogErrorMessageToConsole(absl::optional<int> frame_tree_node_id,
+void LogErrorMessageToConsole(std::optional<int> frame_tree_node_id,
                               const std::string& error_message) {
   if (!frame_tree_node_id.has_value()) {
     LOG(ERROR) << error_message;
@@ -196,7 +196,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       web_package::SignedWebBundleId web_bundle_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const network::ResourceRequest& resource_request,
-      absl::optional<int> frame_tree_node_id)
+      std::optional<int> frame_tree_node_id)
       : loader_client_(std::move(loader_client)),
         resource_request_(resource_request),
         frame_tree_node_id_(frame_tree_node_id) {
@@ -235,7 +235,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
           // Return a synthetic 404 response.
           CompleteWithGeneratedHtmlResponse(std::move(loader_client_),
                                             net::HTTP_NOT_FOUND,
-                                            /*body=*/absl::nullopt);
+                                            /*body=*/std::nullopt);
           return;
       }
     }
@@ -279,8 +279,8 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
     }
     header_length_ = header_string.size();
     body_length_ = response->head()->payload_length;
-    loader_client_->OnReceiveResponse(
-        std::move(response_head), std::move(consumer_handle), absl::nullopt);
+    loader_client_->OnReceiveResponse(std::move(response_head),
+                                      std::move(consumer_handle), std::nullopt);
 
     response->ReadBody(
         std::move(producer_handle),
@@ -307,7 +307,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
@@ -319,7 +319,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   int64_t header_length_;
   int64_t body_length_;
   const network::ResourceRequest resource_request_;
-  absl::optional<int> frame_tree_node_id_;
+  std::optional<int> frame_tree_node_id_;
 
   base::WeakPtrFactory<IsolatedWebAppURLLoader> weak_factory_{this};
 };
@@ -327,7 +327,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
 }  // namespace
 
 IsolatedWebAppURLLoaderFactory::IsolatedWebAppURLLoaderFactory(
-    absl::optional<int> frame_tree_node_id,
+    std::optional<int> frame_tree_node_id,
     Profile* profile,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
@@ -390,7 +390,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                       std::move(loader_client));
       return;
     }
-    absl::optional<IsolatedWebAppLocation> pending_install_app_location =
+    std::optional<IsolatedWebAppLocation> pending_install_app_location =
         IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
             .location();
 
@@ -454,7 +454,7 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
   if (!IsSupportedHttpMethod(resource_request.method)) {
     CompleteWithGeneratedHtmlResponse(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
-        net::HTTP_METHOD_NOT_ALLOWED, /*body=*/absl::nullopt);
+        net::HTTP_METHOD_NOT_ALLOWED, /*body=*/std::nullopt);
     return;
   }
 
@@ -590,13 +590,13 @@ IsolatedWebAppURLLoaderFactory::Create(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
     content::BrowserContext* browser_context) {
-  return CreateInternal(/*frame_tree_node_id=*/absl::nullopt, browser_context);
+  return CreateInternal(/*frame_tree_node_id=*/std::nullopt, browser_context);
 }
 
 // static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::CreateInternal(
-    absl::optional<int> frame_tree_node_id,
+    std::optional<int> frame_tree_node_id,
     content::BrowserContext* browser_context) {
   DCHECK(browser_context);
   DCHECK(!browser_context->ShutdownStarted());

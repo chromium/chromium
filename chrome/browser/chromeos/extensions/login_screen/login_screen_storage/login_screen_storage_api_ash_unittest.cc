@@ -36,7 +36,7 @@ constexpr char kCredentialsKeyPrefix[] = "credentials_";
 
 void LoginScreenStorageStoreSuccess(
     ash::FakeSessionManagerClient::LoginScreenStorageStoreCallback callback) {
-  std::move(callback).Run(/*error_message=*/absl::nullopt);
+  std::move(callback).Run(/*error_message=*/std::nullopt);
 }
 
 void LoginScreenStorageStoreError(
@@ -47,13 +47,13 @@ void LoginScreenStorageStoreError(
 void LoginScreenStorageRetrieveSuccess(
     ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
-  std::move(callback).Run(kData, /*error_message=*/absl::nullopt);
+  std::move(callback).Run(kData, /*error_message=*/std::nullopt);
 }
 
 void LoginScreenStorageRetrieveError(
     ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
-  std::move(callback).Run(/*data=*/absl::nullopt, kError);
+  std::move(callback).Run(/*data=*/std::nullopt, kError);
 }
 
 // A mock around FakeSessionManagerClient for tracking the D-Bus calls.

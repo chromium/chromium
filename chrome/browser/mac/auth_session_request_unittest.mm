@@ -9,5 +9,5 @@
 TEST(AuthSessionRequestTest, SchemeCanonicalization) {
   EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("abcdefg"));
   EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("aBcDeFg"));
-  EXPECT_EQ(absl::nullopt, AuthSessionRequest::CanonicalizeScheme("🥰"));
+  EXPECT_EQ(std::nullopt, AuthSessionRequest::CanonicalizeScheme("🥰"));
 }

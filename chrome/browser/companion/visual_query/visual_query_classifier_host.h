@@ -118,7 +118,7 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // Returns the |VisualQueryResult| for a given url, currently we only cache
   // the current url that we are processing.
-  absl::optional<VisualSuggestionsResults> GetVisualResult(const GURL& url);
+  std::optional<VisualSuggestionsResults> GetVisualResult(const GURL& url);
 
  private:
   // This method performs the actual mojom IPC to start classifier agent after
@@ -146,7 +146,7 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // Used to store last |VisualQueryResult|, this is needed for instances where
   // the result is ready before the WebUI is ready to render it.
-  absl::optional<VisualQueryResultPair> current_result_;
+  std::optional<VisualQueryResultPair> current_result_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualQueryClassifierHost> weak_ptr_factory_{this};

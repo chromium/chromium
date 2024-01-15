@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
   bridge->AddPrinter(std::move(printer));
 
   // Confirm that the bridge is not migrated.
-  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+  std::optional<sync_pb::PrinterSpecifics> spec_printer =
       bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
   ASSERT_THAT(spec_printer->make_and_model(), IsEmpty());
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   bridge->AddPrinter(std::move(printer));
 
   // Confirm that the bridge is not migrated.
-  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+  std::optional<sync_pb::PrinterSpecifics> spec_printer =
       bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
   ASSERT_TRUE(spec_printer->has_ppd_reference());

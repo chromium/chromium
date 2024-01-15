@@ -162,7 +162,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   // Verify only extensions button is visible and has no flat edge.
   EXPECT_TRUE(extensions_button()->GetVisible());
-  EXPECT_EQ(extensions_button()->GetFlatEdge(), absl::nullopt);
+  EXPECT_EQ(extensions_button()->GetFlatEdge(), std::nullopt);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
   // Navigate to an url the extension requests access to.
@@ -183,7 +183,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   // Verify only extensions button is visible and has no flat edge.
   EXPECT_TRUE(extensions_button()->GetVisible());
-  EXPECT_EQ(extensions_button()->GetFlatEdge(), absl::nullopt);
+  EXPECT_EQ(extensions_button()->GetFlatEdge(), std::nullopt);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 

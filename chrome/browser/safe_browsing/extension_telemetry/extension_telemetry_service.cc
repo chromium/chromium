@@ -986,24 +986,24 @@ ExtensionTelemetryService::OffstoreExtensionFileData::
     OffstoreExtensionFileData::OffstoreExtensionFileData(
         const OffstoreExtensionFileData& src) = default;
 
-absl::optional<ExtensionTelemetryService::OffstoreExtensionFileData>
+std::optional<ExtensionTelemetryService::OffstoreExtensionFileData>
 ExtensionTelemetryService::RetrieveOffstoreFileDataForReport(
     const extensions::ExtensionId& extension_id) {
   const auto& pref_dict = GetExtensionTelemetryFileData(*pref_service_);
   const base::Value::Dict* extension_dict = pref_dict.FindDict(extension_id);
   if (!extension_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::Dict* file_data_dict =
       extension_dict->FindDict(kFileDataDictPref);
   if (!file_data_dict || file_data_dict->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   OffstoreExtensionFileData offstore_extension_file_data;
   base::Value::Dict dict = file_data_dict->Clone();
-  absl::optional<base::Value> manifest_value = dict.Extract(kManifestFile);
+  std::optional<base::Value> manifest_value = dict.Extract(kManifestFile);
   if (manifest_value.has_value()) {
     offstore_extension_file_data.manifest =
         std::move(manifest_value.value().GetString());
@@ -1015,7 +1015,7 @@ ExtensionTelemetryService::RetrieveOffstoreFileDataForReport(
     file_info.set_hash(std::move(file_hash.GetString()));
     offstore_extension_file_data.file_infos.emplace_back(std::move(file_info));
   }
-  return absl::make_optional(offstore_extension_file_data);
+  return std::make_optional(offstore_extension_file_data);
 }
 
 std::unique_ptr<ExtensionInfo>
@@ -1045,16 +1045,16 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
   extension_info->set_disable_reasons(
       extension_prefs_->GetDisableReasons(extension.id()));
 
-    absl::optional<OffstoreExtensionFileData> offstore_file_data =
-        RetrieveOffstoreFileDataForReport(extension.id());
+  std::optional<OffstoreExtensionFileData> offstore_file_data =
+      RetrieveOffstoreFileDataForReport(extension.id());
 
-    if (offstore_file_data.has_value()) {
-      extension_info->set_manifest_json(
-          std::move(offstore_file_data.value().manifest));
-      for (auto& file_info : offstore_file_data.value().file_infos) {
-        extension_info->mutable_file_infos()->Add(std::move(file_info));
-      }
+  if (offstore_file_data.has_value()) {
+    extension_info->set_manifest_json(
+        std::move(offstore_file_data.value().manifest));
+    for (auto& file_info : offstore_file_data.value().file_infos) {
+      extension_info->mutable_file_infos()->Add(std::move(file_info));
     }
+  }
 
   return extension_info;
 }
@@ -1108,7 +1108,7 @@ void ExtensionTelemetryService::StartOffstoreFileDataCollection() {
       continue;
     }
 
-    absl::optional<base::Time> timestamp = base::ValueToTime(timestamp_value);
+    std::optional<base::Time> timestamp = base::ValueToTime(timestamp_value);
     if (!timestamp.has_value()) {
       offstore_extension_file_data_contexts_.emplace(extension_id, root_dir);
     } else if (base::Time::Now() - timestamp.value() > base::Days(1)) {

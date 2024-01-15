@@ -240,8 +240,8 @@ TestingProfile::TestingProfile(
     std::unique_ptr<policy::PolicyService> policy_service,
     TestingFactories testing_factories,
     const std::string& profile_name,
-    absl::optional<bool> override_policy_connector_is_managed,
-    absl::optional<OTRProfileID> otr_profile_id,
+    std::optional<bool> override_policy_connector_is_managed,
+    std::optional<OTRProfileID> otr_profile_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : prefs_(std::move(prefs)),
       original_profile_(parent),
@@ -1166,7 +1166,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
-      override_policy_connector_is_managed_, absl::optional<OTRProfileID>(),
+      override_policy_connector_is_managed_, std::optional<OTRProfileID>(),
       url_loader_factory_);
 }
 
@@ -1191,7 +1191,7 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_,
-      absl::optional<OTRProfileID>(otr_profile_id), url_loader_factory_);
+      std::optional<OTRProfileID>(otr_profile_id), url_loader_factory_);
 }
 
 TestingProfile* TestingProfile::Builder::BuildIncognito(

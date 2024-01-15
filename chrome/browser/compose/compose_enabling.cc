@@ -95,7 +95,7 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
-  absl::optional<compose::ComposeHintMetadata> compose_metadata;
+  std::optional<compose::ComposeHintMetadata> compose_metadata;
   if (metadata.any_metadata().has_value()) {
     compose_metadata =
         optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(

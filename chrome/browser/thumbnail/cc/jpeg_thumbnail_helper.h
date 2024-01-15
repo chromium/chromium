@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_
 #define CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace thumbnail {
 
@@ -39,7 +40,7 @@ class JpegThumbnailHelper {
   // `post_read_task` will run on the thread that created this
   // JpegThumbnailHelper.
   void Read(thumbnail::TabId tab_id,
-            base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+            base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                 post_read_task);
   void Delete(thumbnail::TabId tab_id);
 

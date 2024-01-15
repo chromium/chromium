@@ -66,7 +66,7 @@ class DlpFilesPolicyServiceProviderTest
   }
 
   template <class ResponseProtoType>
-  absl::optional<ResponseProtoType> CallDlpFilesPolicyServiceMethod(
+  std::optional<ResponseProtoType> CallDlpFilesPolicyServiceMethod(
       const char* method_name,
       const google::protobuf::MessageLite& request) {
     dbus::MethodCall method_call(dlp::kDlpFilesPolicyServiceInterface,
@@ -155,7 +155,7 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsFilesTransferRestricted) {
   EXPECT_CALL(
       *files_controller_.get(),
       IsFilesTransferRestricted(
-          absl::optional<file_manager::io_task::IOTaskId>(1234),
+          std::optional<file_manager::io_task::IOTaskId>(1234),
           std::vector<FileDaemonInfo>{file_info},
           policy::DlpFileDestination(GURL(kExampleUrl)),
           policy::dlp::FileAction::kOpen, base::test::IsNotNullCallback()))

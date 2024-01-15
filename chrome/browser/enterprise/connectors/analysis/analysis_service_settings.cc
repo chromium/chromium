@@ -167,7 +167,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 }
 
 // static
-absl::optional<AnalysisServiceSettings::URLPatternSettings>
+std::optional<AnalysisServiceSettings::URLPatternSettings>
 AnalysisServiceSettings::GetPatternSettings(
     const PatternSettings& patterns,
     base::MatcherStringPattern::ID match) {
@@ -184,7 +184,7 @@ AnalysisServiceSettings::GetPatternSettings(
   if (next != patterns.end())
     return next->second;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
@@ -225,40 +225,40 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   return settings;
 }
 
-absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
+std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     const GURL& url) const {
   if (!IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK(matcher_);
   auto matches = matcher_->MatchURL(url);
   if (matches.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto tags = GetTags(matches);
   if (tags.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return GetAnalysisSettingsWithTags(std::move(tags));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
+std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     content::BrowserContext* context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url) const {
   if (!IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK(source_destination_matcher_);
 
   auto matches =
       source_destination_matcher_->Match(context, source_url, destination_url);
   if (matches.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto tags = GetTags(matches);
   if (tags.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return GetAnalysisSettingsWithTags(std::move(tags));
 }
@@ -277,25 +277,25 @@ bool AnalysisServiceSettings::ShouldBlockByDefault() const {
   return default_action_ == DefaultAction::kBlock;
 }
 
-absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(
+std::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(
     const std::string& tag) {
   const auto& element = tags_.find(tag);
 
   if (!IsValid() || element == tags_.end() ||
       element->second.custom_message.message.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return element->second.custom_message.message;
 }
 
-absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
+std::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
     const std::string& tag) {
   const auto& element = tags_.find(tag);
 
   if (!IsValid() || element == tags_.end() ||
       element->second.custom_message.learn_more_url.is_empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return element->second.custom_message.learn_more_url;

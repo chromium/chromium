@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -65,7 +66,6 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -326,8 +326,8 @@ class ChromeDownloadManagerDelegateTest
   std::unique_ptr<download::MockDownloadItem>
   PrepareDownloadItemForInsecureBlocking(
       const GURL& download_url,
-      const absl::optional<url::Origin>& request_initiator,
-      const absl::optional<GURL>& redirect_url);
+      const std::optional<url::Origin>& request_initiator,
+      const std::optional<GURL>& redirect_url);
 
   const std::vector<uint32_t>& download_ids() const { return download_ids_; }
   void GetNextId(uint32_t next_id) { download_ids_.emplace_back(next_id); }
@@ -417,7 +417,7 @@ ChromeDownloadManagerDelegateTest::CreateActiveDownloadItem(int32_t id) {
   ON_CALL(*item, GetReferrerUrl())
       .WillByDefault(ReturnRefOfCopy(GURL()));
   ON_CALL(*item, GetRequestInitiator())
-      .WillByDefault(ReturnRefOfCopy(absl::optional<Origin>()));
+      .WillByDefault(ReturnRefOfCopy(std::optional<Origin>()));
   ON_CALL(*item, GetState())
       .WillByDefault(Return(DownloadItem::IN_PROGRESS));
   ON_CALL(*item, GetTargetFilePath())
@@ -509,8 +509,8 @@ PrefService* ChromeDownloadManagerDelegateTest::pref_service() {
 std::unique_ptr<download::MockDownloadItem>
 ChromeDownloadManagerDelegateTest::PrepareDownloadItemForInsecureBlocking(
     const GURL& download_url,
-    const absl::optional<Origin>& request_initiator,
-    const absl::optional<GURL>& redirect_url) {
+    const std::optional<Origin>& request_initiator,
+    const std::optional<GURL>& redirect_url) {
   std::vector<GURL> url_chain;
   if (redirect_url.has_value())
     url_chain.push_back(redirect_url.value());
@@ -965,7 +965,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpPageOk) {
     base::HistogramTester histograms;
     std::unique_ptr<download::MockDownloadItem> download_item =
         PrepareDownloadItemForInsecureBlocking(kHttpsUrl, kInsecureOrigin,
-                                               absl::nullopt);
+                                               std::nullopt);
     DetermineDownloadTarget(download_item.get(), &result);
 
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -983,7 +983,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpPageOk) {
     base::HistogramTester histograms;
     std::unique_ptr<download::MockDownloadItem> download_item =
         PrepareDownloadItemForInsecureBlocking(kHttpUrl, kInsecureOrigin,
-                                               absl::nullopt);
+                                               std::nullopt);
     DetermineDownloadTarget(download_item.get(), &result);
 
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
@@ -1011,7 +1011,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kInsecureSilentlyBlockableFile,
-                                             absl::nullopt, absl::nullopt);
+                                             std::nullopt, std::nullopt);
   ON_CALL(*download_item, GetTabUrl())
       .WillByDefault(ReturnRefOfCopy(kSecureOrigin.GetURL()));
   ON_CALL(*download_item, GetDownloadSource())
@@ -1082,7 +1082,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
   std::unique_ptr<download::MockDownloadItem> foo_download_item =
       PrepareDownloadItemForInsecureBlocking(kFooUrl, kSecureOrigin,
-                                             absl::nullopt);
+                                             std::nullopt);
 
   VerifyMixedContentExtensionOverride(
       foo_download_item.get(),
@@ -1287,7 +1287,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_SilentBlock) {
 
   std::unique_ptr<download::MockDownloadItem> foo_download_item =
       PrepareDownloadItemForInsecureBlocking(kFooUrl, kSecureOrigin,
-                                             absl::nullopt);
+                                             std::nullopt);
 
   // Test everything is blocked normally.
   VerifyMixedContentExtensionOverride(
@@ -1340,7 +1340,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_Warn) {
 
   std::unique_ptr<download::MockDownloadItem> foo_download_item =
       PrepareDownloadItemForInsecureBlocking(kFooUrl, kSecureOrigin,
-                                             absl::nullopt);
+                                             std::nullopt);
 
   // By default, nothing is warned on since everything is silently blocked.
   VerifyMixedContentExtensionOverride(
@@ -1408,13 +1408,13 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_Block) {
 
   std::unique_ptr<download::MockDownloadItem> blocked_download_item =
       PrepareDownloadItemForInsecureBlocking(kInsecureBlockableFile,
-                                             kSecureOrigin, absl::nullopt);
+                                             kSecureOrigin, std::nullopt);
   std::unique_ptr<download::MockDownloadItem> foo_download_item =
       PrepareDownloadItemForInsecureBlocking(kFooUrl, kSecureOrigin,
-                                             absl::nullopt);
+                                             std::nullopt);
   std::unique_ptr<download::MockDownloadItem> bar_download_item =
       PrepareDownloadItemForInsecureBlocking(kBarUrl, kSecureOrigin,
-                                             absl::nullopt);
+                                             std::nullopt);
 
   // Test that toggling the allowlist parameter impacts blocking.
   VerifyMixedContentExtensionOverride(
@@ -1487,13 +1487,13 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
   std::unique_ptr<download::MockDownloadItem> warned_download_item =
       PrepareDownloadItemForInsecureBlocking(kInsecureWarnableFile,
-                                             kSecureOrigin, absl::nullopt);
+                                             kSecureOrigin, std::nullopt);
   std::unique_ptr<download::MockDownloadItem> blocked_download_item =
       PrepareDownloadItemForInsecureBlocking(kInsecureBlockableFile,
-                                             kSecureOrigin, absl::nullopt);
+                                             kSecureOrigin, std::nullopt);
   std::unique_ptr<download::MockDownloadItem> silent_blocked_download_item =
       PrepareDownloadItemForInsecureBlocking(kInsecureSilentlyBlockableFile,
-                                             kSecureOrigin, absl::nullopt);
+                                             kSecureOrigin, std::nullopt);
 
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetContentSettingDefaultScope(kSecureOrigin.GetURL(), GURL(),
@@ -1537,9 +1537,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
     // The file's final URL.
     GURL download_url;
     // The origin that linked to or initiated the download.
-    absl::optional<url::Origin> initiator_origin;
+    std::optional<url::Origin> initiator_origin;
     // One URL that the download may have redirected through.
-    absl::optional<GURL> redirect_url;
+    std::optional<GURL> redirect_url;
 
     download::DownloadInterruptReason expected_interrupt_reason;
     download::DownloadItem::InsecureDownloadStatus
@@ -1552,18 +1552,18 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE,
        "secure_with_secure_redirect"},
-      {kSecureFile, kSecureOrigin, absl::nullopt,
+      {kSecureFile, kSecureOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE,
        "secure_no_redirect"},
       // Secure files initiated from insecure origins should be blocked.
-      {kSecureFile, kInsecureOrigin, absl::nullopt,
+      {kSecureFile, kInsecureOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::BLOCK,
        "insecure_no_redirect"},
       // Insecure files initiated from secure origins should be silently blocked
       // as mixed downloads.
-      {kInsecureFile, kSecureOrigin, absl::nullopt,
+      {kInsecureFile, kSecureOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
        download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK, "mixdl"},
       // Secure files initiated from secure origins but redirected insecurely
@@ -1583,35 +1583,35 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
        "secure_secure_blob"},
       // Neither should blobs initiated from unknown origins, out of an
       // abundance of caution.
-      {kNullBlobFile, absl::nullopt, absl::nullopt,
+      {kNullBlobFile, std::nullopt, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE,
        "null_unknown_blob"},
-      {kSecureBlobFile, absl::nullopt, absl::nullopt,
+      {kSecureBlobFile, std::nullopt, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE,
        "secure_unknown_blob"},
       // Empty origins show up as opaque and should be treated like we don't
       // have an initiator.  Note this may introduce a bypass risk but insecure
       // download warnings are not a security boundary.
-      {kNullBlobFile, kBlankOrigin, absl::nullopt,
+      {kNullBlobFile, kBlankOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE, "null_blank_blob"},
-      {kSecureBlobFile, kBlankOrigin, absl::nullopt,
+      {kSecureBlobFile, kBlankOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE,
        "secure_blank_blob"},
       // If we affirmatively know that a blob's initiator is insecure, however,
       // it should still be blocked.
-      {kNullBlobFile, kInsecureOrigin, absl::nullopt,
+      {kNullBlobFile, kInsecureOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::BLOCK,
        "null_insecure_blob"},
-      {kInsecureBlobFile, kInsecureOrigin, absl::nullopt,
+      {kInsecureBlobFile, kInsecureOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::BLOCK,
        "insecure_insecure_blob"},
-      {kSecureBlobFile, kInsecureOrigin, absl::nullopt,
+      {kSecureBlobFile, kInsecureOrigin, std::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::BLOCK,
        "secure_insecure_blob"},
@@ -1710,8 +1710,8 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #endif
 
   std::unique_ptr<download::MockDownloadItem> download_item =
-      PrepareDownloadItemForInsecureBlocking(kInsecureFile, absl::nullopt,
-                                             absl::nullopt);
+      PrepareDownloadItemForInsecureBlocking(kInsecureFile, std::nullopt,
+                                             std::nullopt);
   ON_CALL(*download_item, GetTabUrl())
       .WillByDefault(ReturnRefOfCopy(kSecureOrigin.GetURL()));
   ON_CALL(*download_item, GetDownloadSource())

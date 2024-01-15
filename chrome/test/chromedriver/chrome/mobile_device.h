@@ -6,11 +6,11 @@
 #define CHROME_TEST_CHROMEDRIVER_CHROME_MOBILE_DEVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chrome/test/chromedriver/chrome/client_hints.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Status;
 
@@ -38,16 +38,16 @@ struct MobileDevice {
                             std::string* platform);
 
   // Specifies viewport size, window decorations, etc.
-  absl::optional<DeviceMetrics> device_metrics;
+  std::optional<DeviceMetrics> device_metrics;
   // User agent value of the browser.
   // Maps to "user-agent" header.
   // Maps to "navigator.userAgent JS value.
   // Inferred from client_hints if empty for the platforms listed in
   // MobileDevice::GetReducedUserAgentPlatrforms function result.
-  absl::optional<std::string> user_agent;
+  std::optional<std::string> user_agent;
   // Client hints used by the browser.
   // S/A: chrome/test/chromedriver/chrome/client_hints.h
-  absl::optional<ClientHints> client_hints;
+  std::optional<ClientHints> client_hints;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_MOBILE_DEVICE_H_

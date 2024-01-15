@@ -69,13 +69,13 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   ExternalInstallOptions install_options(
       kWebAppUrl,
-      /*user_display_mode=*/absl::nullopt,
+      /*user_display_mode=*/std::nullopt,
       ExternalInstallSource::kInternalDefault);
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(
       install_options,
-      /*installed_placeholder_app_id=*/absl::nullopt, future.GetCallback());
+      /*installed_placeholder_app_id=*/std::nullopt, future.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(
       install_options,
-      /*installed_placeholder_app_id=*/absl::nullopt, future.GetCallback());
+      /*installed_placeholder_app_id=*/std::nullopt, future.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(
       install_options,
-      /*installed_placeholder_app_id=*/absl::nullopt, future.GetCallback());
+      /*installed_placeholder_app_id=*/std::nullopt, future.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options,
-      /*installed_placeholder_app_id=*/absl::nullopt, future.GetCallback());
+      /*installed_placeholder_app_id=*/std::nullopt, future.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
@@ -179,11 +179,11 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options,
-      /*installed_placeholder_app_id=*/absl::nullopt, future.GetCallback());
+      /*installed_placeholder_app_id=*/std::nullopt, future.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
-  const webapps::AppId& app_id = GenerateAppId(absl::nullopt, kWebAppUrl);
+  const webapps::AppId& app_id = GenerateAppId(std::nullopt, kWebAppUrl);
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options,
-      /*installed_placeholder_app_id=*/absl::nullopt,
+      /*installed_placeholder_app_id=*/std::nullopt,
       future_first_install.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& first_result =
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options_policy,
-      /*installed_placeholder_app_id=*/absl::nullopt,
+      /*installed_placeholder_app_id=*/std::nullopt,
       future_second_install.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& second_result =
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options_policy,
-      /*installed_placeholder_app_id=*/absl::nullopt,
+      /*installed_placeholder_app_id=*/std::nullopt,
       future_second_install.GetCallback());
 
   const ExternallyManagedAppManager::InstallResult& second_result =

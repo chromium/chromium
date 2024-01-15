@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dips/dips_storage.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
@@ -21,14 +23,13 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
 
 class TestStorage : public DIPSStorage {
  public:
-  TestStorage() : DIPSStorage(absl::nullopt) {}
+  TestStorage() : DIPSStorage(std::nullopt) {}
 
   void WriteForTesting(GURL url, const StateValue& state) {
     Write(DIPSState(this, GetSiteForDIPS(url), state));
@@ -41,10 +42,10 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
        base::ThreadPolicy::PREFER_BACKGROUND});
 }
 
-void StoreState(absl::optional<StateValue>* state_value,
+void StoreState(std::optional<StateValue>* state_value,
                 const DIPSState& state) {
-  *state_value = state.was_loaded() ? absl::make_optional(state.ToStateValue())
-                                    : absl::nullopt;
+  *state_value = state.was_loaded() ? std::make_optional(state.ToStateValue())
+                                    : std::nullopt;
 }
 
 class ScopedDIPSFeatureEnabledWithParams {
@@ -80,14 +81,14 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         features::kDIPS, {{"triggering_action", "none"}});
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
   }
   // Call 'GetSitesToClear' when DIPS is triggered by bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         features::kDIPS, {{"triggering_action", "bounce"}});
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
                                      GetSiteForDIPS(kStatefulBounceUrl)));
   }
@@ -96,7 +97,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         features::kDIPS, {{"triggering_action", "storage"}});
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
                                      GetSiteForDIPS(kStorageUrl)));
   }
@@ -105,7 +106,7 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
         features::kDIPS, {{"triggering_action", "stateful_bounce"}});
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt),
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
                 testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
   }
 }
@@ -143,7 +144,7 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
   // `start + custom_grace_period` and verify that no sites are returned without
   // using the custom grace period.
   clock.Advance(base::Seconds(10));
-  EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+  EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
   // Verify that using a custom grace period less than the amount time was
   // advanced returns only `kUrl` since `kLateUrl` is still within its grace
   // period.
@@ -179,10 +180,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `features::kDIPSGracePeriod` and verify that
     // no sites are returned
     clock.Advance(features::kDIPSGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced still returns nothing when the trigger is unset.
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
 
     // Reset `clock` to `start`.
     clock.SetNow(start);
@@ -197,7 +198,7 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `features::kDIPSGracePeriod` and verify that
     // no sites are returned without using a custom grace period.
     clock.Advance(features::kDIPSGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on bounces.
     EXPECT_THAT(storage.GetSitesToClear(grace_period),
@@ -217,7 +218,7 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `features::kDIPSGracePeriod` and verify that
     // no sites are returned without using a custom grace period.
     clock.Advance(features::kDIPSGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on storage.
     EXPECT_THAT(storage.GetSitesToClear(grace_period),
@@ -237,7 +238,7 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
     // Advance time by less than `features::kDIPSGracePeriod` and verify that
     // no sites are returned without using a custom grace period.
     clock.Advance(features::kDIPSGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(absl::nullopt), testing::IsEmpty());
+    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on stateful bounces.
     EXPECT_THAT(storage.GetSitesToClear(grace_period),
@@ -328,10 +329,10 @@ TEST_F(DIPSStorageTest, SetValues) {
 
   DIPSState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
-  EXPECT_EQ(state.site_storage_times()->first, absl::make_optional(time1));
-  EXPECT_EQ(state.user_interaction_times()->first, absl::make_optional(time2));
+  EXPECT_EQ(state.site_storage_times()->first, std::make_optional(time1));
+  EXPECT_EQ(state.user_interaction_times()->first, std::make_optional(time2));
   EXPECT_EQ(state.web_authn_assertion_times()->first,
-            absl::make_optional(time3));
+            std::make_optional(time3));
 }
 
 TEST_F(DIPSStorageTest, SameSiteSameState) {
@@ -360,9 +361,9 @@ TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
 
   // Verify that url1 and url2 have independent state:
   EXPECT_EQ(storage_.Read(url1).site_storage_times()->first,
-            absl::make_optional(time1));
+            std::make_optional(time1));
   EXPECT_EQ(storage_.Read(url2).site_storage_times()->first,
-            absl::make_optional(time2));
+            std::make_optional(time2));
 }
 
 // This test is not all-inclusive as only fucuses on some (deemed) important
@@ -488,12 +489,12 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
-            absl::make_optional(delete_begin));  // adjusted
+            std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_interaction_times(),
-            absl::nullopt);  // removed
+            std::nullopt);  // removed
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
@@ -521,11 +522,11 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
                         DIPSEventRemovalType::kAll);
 
   DIPSState state1 = storage_.Read(url1);
-  EXPECT_EQ(state1.site_storage_times(), absl::nullopt);  // removed
+  EXPECT_EQ(state1.site_storage_times(), std::nullopt);  // removed
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(delete_end));  // adjusted
+            std::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
@@ -552,14 +553,14 @@ TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
-            absl::make_optional(delete_begin));  // adjusted
+            std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(delete_end));  // adjusted
+            std::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
@@ -582,16 +583,16 @@ TEST_F(DIPSStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
 
   DIPSState state = storage_.Read(url1);
   EXPECT_EQ(state.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state.site_storage_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
   EXPECT_EQ(state.user_interaction_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 }
 
@@ -615,23 +616,23 @@ TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
-            absl::make_optional(delete_begin));  // adjusted
+            std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_EQ(state2.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state2.user_interaction_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
 }
 
@@ -655,15 +656,15 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.site_storage_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(delete_end));  // adjusted
+            std::make_optional(delete_end));  // adjusted
   EXPECT_EQ(state1.user_interaction_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
@@ -692,17 +693,17 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
 
   // Verify that only the second popup event (with timestamp 4) was cleared.
 
-  absl::optional<PopupsStateValue> popup1 = storage_.ReadPopup(site1, site2);
+  std::optional<PopupsStateValue> popup1 = storage_.ReadPopup(site1, site2);
   ASSERT_TRUE(popup1.has_value());
   EXPECT_EQ(popup1.value().access_id, 1u);
   EXPECT_EQ(popup1.value().last_popup_time,
             base::Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_TRUE(popup1.value().is_current_interaction);
 
-  absl::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
+  std::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
   ASSERT_FALSE(popup2.has_value());
 
-  absl::optional<PopupsStateValue> popup3 = storage_.ReadPopup(site2, site3);
+  std::optional<PopupsStateValue> popup3 = storage_.ReadPopup(site2, site3);
   ASSERT_TRUE(popup3.has_value());
   EXPECT_EQ(popup3.value().access_id, 3u);
   EXPECT_EQ(popup3.value().last_popup_time,
@@ -734,15 +735,15 @@ TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
 
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.stateful_bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.stateful_bounce_times()->second,
-            absl::make_optional(delete_begin));  // adjusted
+            std::make_optional(delete_begin));  // adjusted
   EXPECT_EQ(state1.bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.bounce_times()->second,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
   DIPSState state2 = storage_.Read(url2);
@@ -802,23 +803,23 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   DIPSState state1 = storage_.Read(url1);
   EXPECT_FALSE(state1.site_storage_times().has_value());  // removed
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));    // no change
   EXPECT_FALSE(state1.stateful_bounce_times().has_value());    // removed
   EXPECT_FALSE(state1.bounce_times().has_value());             // removed
 
   DIPSState state2 = storage_.Read(url2);
   EXPECT_EQ(state2.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state2.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
   EXPECT_EQ(state2.stateful_bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state2.bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 
   DIPSState state3 = storage_.Read(url3);
@@ -827,13 +828,13 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   DIPSState state4 = storage_.Read(url2);
   EXPECT_FALSE(state1.site_storage_times().has_value());  // no change
   EXPECT_EQ(state4.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
   EXPECT_EQ(state4.stateful_bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state4.bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 }
 
@@ -865,16 +866,16 @@ TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   // So url1's DIPS Storage entry should be unaffected.
   DIPSState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
   EXPECT_EQ(state1.user_interaction_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(2)));  // no change
   EXPECT_EQ(state1.stateful_bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
   EXPECT_EQ(state1.bounce_times()->first,
-            absl::make_optional(
+            std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 }
 
@@ -941,7 +942,7 @@ class DIPSStoragePrepopulateTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED)),
         storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner(),
-                                                  absl::nullopt)) {}
+                                                  std::nullopt)) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -954,7 +955,7 @@ TEST_F(DIPSStoragePrepopulateTest, NoExistingTime) {
 
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(time, std::vector<std::string>{"site"}, base::DoNothing());
-  absl::optional<StateValue> state;
+  std::optional<StateValue> state;
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(GURL("http://site"))
       .Then(base::BindOnce(StoreState, &state));
@@ -979,7 +980,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
-  absl::optional<StateValue> state;
+  std::optional<StateValue> state;
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(GURL("http://site"))
       .Then(base::BindOnce(StoreState, &state));
@@ -1003,7 +1004,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingStorageTime) {
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
-  absl::optional<StateValue> state;
+  std::optional<StateValue> state;
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(GURL("http://site"))
       .Then(base::BindOnce(StoreState, &state));
@@ -1027,7 +1028,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
   storage_.AsyncCall(&DIPSStorage::Prepopulate)
       .WithArgs(prepopulate_time, std::vector<std::string>{"site"},
                 base::DoNothing());
-  absl::optional<StateValue> state;
+  std::optional<StateValue> state;
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(GURL("http://site"))
       .Then(base::BindOnce(StoreState, &state));
@@ -1036,7 +1037,7 @@ TEST_F(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_interaction_times->first,
             interaction_time);                          // no change
-  EXPECT_EQ(state->site_storage_times, absl::nullopt);  // no change
+  EXPECT_EQ(state->site_storage_times, std::nullopt);   // no change
 }
 
 TEST_F(DIPSStoragePrepopulateTest, WorksOnChunks) {
@@ -1044,7 +1045,7 @@ TEST_F(DIPSStoragePrepopulateTest, WorksOnChunks) {
   std::vector<std::string> sites = {"site1", "site2", "site3"};
   DIPSStorage::SetPrepopulateChunkSizeForTesting(2);
 
-  absl::optional<StateValue> state1, state2, state3;
+  std::optional<StateValue> state1, state2, state3;
   auto queue_state_reads = [&]() {
     storage_.AsyncCall(&DIPSStorage::Read)
         .WithArgs(GURL("http://site1"))

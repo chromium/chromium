@@ -27,7 +27,7 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
   MOCK_METHOD3(IsClipboardReadAllowed,
                bool(base::optional_ref<const ui::DataTransferEndpoint> data_src,
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-                    const absl::optional<size_t> size));
+                    const std::optional<size_t> size));
 
   MOCK_METHOD5(
       PasteIfAllowed,
@@ -88,7 +88,7 @@ class DataControlsPasteIfAllowedByPolicyTest : public testing::Test {
 TEST_F(DataControlsPasteIfAllowedByPolicyTest,
        DataTransferPolicyController_NoController) {
   // Without a controller set up, the paste should be allowed through.
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
       content::ClipboardPasteData("text", "image", {}), future.GetCallback());
@@ -111,7 +111,7 @@ TEST_F(DataControlsPasteIfAllowedByPolicyTest,
             std::move(callback).Run(true);
           }));
 
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
       content::ClipboardPasteData("text", "image", {}), future.GetCallback());
@@ -136,7 +136,7 @@ TEST_F(DataControlsPasteIfAllowedByPolicyTest,
             std::move(callback).Run(false);
           }));
 
-  base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
       content::ClipboardPasteData("text", "image", {}), future.GetCallback());

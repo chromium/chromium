@@ -83,11 +83,11 @@ class OneTimePermissionProvider
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       const content_settings::PartitionKey& partition_key) override;
-  absl::optional<base::TimeDelta> RenewContentSetting(
+  std::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType type,
-      absl::optional<ContentSetting> setting_to_match,
+      std::optional<ContentSetting> setting_to_match,
       const content_settings::PartitionKey& partition_key) override;
   void SetClockForTesting(base::Clock* clock) override;
 

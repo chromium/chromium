@@ -28,7 +28,7 @@ void TestFileUtils::SetRemainingDiskSpaceSize(int remaining_disk_space) {
 }
 
 void TestFileUtils::SetNextDeleteFileRecursivelyResult(
-    absl::optional<bool> delete_result) {
+    std::optional<bool> delete_result) {
   delete_file_recursively_result_ = delete_result;
 }
 

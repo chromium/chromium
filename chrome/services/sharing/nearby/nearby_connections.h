@@ -6,7 +6,9 @@
 #define CHROME_SERVICES_SHARING_NEARBY_NEARBY_CONNECTIONS_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -30,7 +32,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/connections/implementation/service_controller_router.h"
 #include "third_party/nearby/src/presence/presence_device.h"
 

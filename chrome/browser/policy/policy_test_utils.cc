@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -66,7 +66,7 @@ void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
 // static
 void PolicyTest::SetPolicy(PolicyMap* policies,
                            const char* key,
-                           absl::optional<base::Value> value) {
+                           std::optional<base::Value> value) {
   policies->Set(key, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                 POLICY_SOURCE_CLOUD, std::move(value), nullptr);
 }

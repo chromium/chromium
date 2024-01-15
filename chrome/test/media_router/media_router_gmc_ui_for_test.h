@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_MEDIA_ROUTER_MEDIA_ROUTER_GMC_UI_FOR_TEST_H_
 #define CHROME_TEST_MEDIA_ROUTER_MEDIA_ROUTER_GMC_UI_FOR_TEST_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +17,6 @@
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 
@@ -56,7 +57,7 @@ class MediaRouterGmcUiForTest : public MediaRouterUiForTestBase {
 
   void ObserveDialog(
       WatchType watch_type,
-      absl::optional<std::string> sink_name = absl::nullopt) override;
+      std::optional<std::string> sink_name = std::nullopt) override;
 
   Browser* browser() const { return browser_; }
 

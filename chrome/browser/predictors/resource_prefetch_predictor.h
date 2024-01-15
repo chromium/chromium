@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -30,7 +31,6 @@
 #include "components/sqlite_proto/key_value_data.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -121,7 +121,7 @@ struct OptimizationGuidePrediction {
   optimization_guide::OptimizationGuideDecision decision;
   PreconnectPrediction preconnect_prediction;
   std::vector<GURL> predicted_subresources;
-  absl::optional<base::TimeTicks> optimization_guide_prediction_arrived;
+  std::optional<base::TimeTicks> optimization_guide_prediction_arrived;
 };
 
 // Contains logic for learning what can be prefetched and for kicking off
@@ -208,8 +208,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();
 
-  // Returns LcppData for the `url`, or absl::nullopt on failure.
-  absl::optional<LcppData> GetLcppData(const GURL& url) const;
+  // Returns LcppData for the `url`, or std::nullopt on failure.
+  std::optional<LcppData> GetLcppData(const GURL& url) const;
 
  private:
   friend class LoadingPredictor;

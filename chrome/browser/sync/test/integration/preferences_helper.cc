@@ -137,7 +137,7 @@ const sync_pb::PreferenceSpecifics& GetPreferenceFromEntity(
   }
 }
 
-absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
     syncer::ModelType model_type,
     const std::string& pref_name,
     fake_server::FakeServer* fake_server) {
@@ -150,7 +150,7 @@ absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace preferences_helper
@@ -250,7 +250,7 @@ FakeServerPrefMatchesValueChecker::FakeServerPrefMatchesValueChecker(
 
 bool FakeServerPrefMatchesValueChecker::IsExitConditionSatisfied(
     std::ostream* os) {
-  const absl::optional<sync_pb::PreferenceSpecifics> actual_specifics =
+  const std::optional<sync_pb::PreferenceSpecifics> actual_specifics =
       preferences_helper::GetPreferenceInFakeServer(model_type_, pref_name_,
                                                     fake_server());
   if (!actual_specifics.has_value()) {

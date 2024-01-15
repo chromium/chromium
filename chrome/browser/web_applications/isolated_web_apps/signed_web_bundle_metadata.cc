@@ -124,7 +124,7 @@ class WebAppInstallInfoFetcher {
       IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url) {
     CHECK(helper_);
     base::expected<WebAppInstallInfo, std::string> install_info =
-        helper_->ValidateManifestAndCreateInstallInfo(absl::nullopt,
+        helper_->ValidateManifestAndCreateInstallInfo(std::nullopt,
                                                       manifest_and_url);
     RunNextStepOnSuccess(std::move(next_step_callback),
                          std::move(install_info));

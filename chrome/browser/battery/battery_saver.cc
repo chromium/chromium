@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "battery_saver.h"
+
+#include <optional>
+
 #include "base/check_is_test.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
@@ -14,7 +16,7 @@
 #endif
 
 namespace {
-absl::optional<bool> g_override_battery_saver_mode_for_testing;
+std::optional<bool> g_override_battery_saver_mode_for_testing;
 }  // namespace
 
 namespace battery {

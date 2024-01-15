@@ -112,7 +112,7 @@ TEST_F(EPKPChallengeMachineKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser()->profile(),
       extensions::api_test_utils::FunctionMode::kNone);
 
@@ -154,7 +154,7 @@ TEST_F(EPKPChallengeUserKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
-  absl::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
+  std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser()->profile(),
       extensions::api_test_utils::FunctionMode::kNone);
 

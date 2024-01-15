@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_FAMILY_USER_METRICS_PROVIDER_H_
 
+#include <optional>
+
 #include "base/scoped_multi_source_observation.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -76,7 +77,7 @@ class FamilyUserMetricsProvider
   // The only way the |family_user_log_segment_| can change during a ChromeOS
   // session is if a child user adds or removes an EDU secondary account. Since
   // this action doesn't happen often, cache the log segment.
-  absl::optional<FamilyUserLogSegment> family_user_log_segment_;
+  std::optional<FamilyUserLogSegment> family_user_log_segment_;
   int num_secondary_accounts_ = -1;
 
   base::ScopedMultiSourceObservation<signin::IdentityManager,

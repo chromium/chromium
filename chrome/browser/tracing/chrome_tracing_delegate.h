@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_
 #define CHROME_BROWSER_TRACING_CHROME_TRACING_DELEGATE_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/tracing_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -49,7 +50,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   bool ShouldSaveUnuploadedTrace() const override;
   bool IsSystemWideTracingEnabled() override;
 
-  absl::optional<base::Value::Dict> GenerateMetadataDict() override;
+  std::optional<base::Value::Dict> GenerateMetadataDict() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,

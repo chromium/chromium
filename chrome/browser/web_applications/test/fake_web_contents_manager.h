@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -64,13 +64,13 @@ class FakeWebContentsManager : public WebContentsManager {
     // redirection is allowed by the `LoadUrlComparison`, then `url_load_result`
     // will be given as the result. Otherwise,`kRedirectedUrlLoaded` is
     // returned.
-    absl::optional<GURL> redirection_url = absl::nullopt;
+    std::optional<GURL> redirection_url = std::nullopt;
     WebAppUrlLoaderResult url_load_result =
         WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
     // `WebAppDataRetriever::GetWebAppInstallInfo`:
     bool return_null_info = false;
-    absl::optional<std::u16string> title;
+    std::optional<std::u16string> title;
     webapps::mojom::WebPageMetadataPtr opt_metadata;
 
     // `WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest`:

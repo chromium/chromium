@@ -101,8 +101,8 @@ class FloatingWorkspaceService : public KeyedService,
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // message_center::NotificationObserver overrides:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // ash::SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -196,7 +196,7 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Callback function that is run after a floating workspace template is
   // captured by `desks_storage::DeskSyncBridge`.
-  void OnTemplateCaptured(absl::optional<DesksClient::DeskActionError> error,
+  void OnTemplateCaptured(std::optional<DesksClient::DeskActionError> error,
                           std::unique_ptr<DeskTemplate> desk_template);
 
   // Upload floating workspace desk template after detecting that it's a
@@ -209,9 +209,9 @@ class FloatingWorkspaceService : public KeyedService,
       std::unique_ptr<DeskTemplate> new_entry);
 
   // Get the associated floating workspace uuid for the current device. Return
-  // an absl::nullopt if there is no floating workspace uuid that is associated
+  // an std::nullopt if there is no floating workspace uuid that is associated
   // with the current device.
-  absl::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
+  std::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
   // When sync passes an error status to floating workspace service,
   // floating workspace service should send notification to user asking whether
   // to restore the most recent FWS desk from local storage.
@@ -267,7 +267,7 @@ class FloatingWorkspaceService : public KeyedService,
   base::Time initialization_time_;
 
   // Time when we first received `kUpToDate` status from `sync_service_`
-  absl::optional<base::TimeTicks> first_uptodate_download_timeticks_;
+  std::optional<base::TimeTicks> first_uptodate_download_timeticks_;
 
   // Time when the last template was uploaded.
   base::TimeTicks last_uploaded_timeticks_;
@@ -290,7 +290,7 @@ class FloatingWorkspaceService : public KeyedService,
 
   // The uuid associated with this device's floating workspace template. This is
   // populated when we first capture a floating workspace template.
-  absl::optional<base::Uuid> floating_workspace_uuid_;
+  std::optional<base::Uuid> floating_workspace_uuid_;
 
   std::unique_ptr<message_center::Notification> notification_;
   std::string progress_notification_id_;

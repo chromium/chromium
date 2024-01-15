@@ -7,6 +7,7 @@
 #include <ios>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -102,7 +103,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -287,7 +287,7 @@ class UpdateCheckResultAwaiter {
  private:
   const GURL url_;
   base::RunLoop run_loop_;
-  absl::optional<ManifestUpdateResult> result_;
+  std::optional<ManifestUpdateResult> result_;
 };
 
 void WaitForUpdatePendingCallback(const GURL& url) {
@@ -621,7 +621,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   webapps::AppId InstallWebAppFromSync(const GURL& start_url) {
     const webapps::AppId app_id =
-        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+        GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
     std::vector<std::unique_ptr<WebApp>> add_synced_apps_data;
     {
@@ -698,7 +698,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   void ResetAutomatedAppIdentityUpdateDialogBehavior() {
     update_dialog_scope_ =
-        SetIdentityUpdateDialogActionForTesting(absl::nullopt);
+        SetIdentityUpdateDialogActionForTesting(std::nullopt);
   }
 
  protected:
@@ -710,12 +710,12 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<base::RunLoop> shortcut_run_loop_;
+  std::optional<base::RunLoop> shortcut_run_loop_;
   // A vector mapping image sizes to shortcut colors. Note that the top left
   // pixel color for each size is used as the representation color for that
   // size, even if the image is multi-colored.
   std::vector<std::pair<int, SkColor>> updated_colors_;
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope_;
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 
 enum class UpdateDialogParam {
@@ -4562,7 +4562,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   // Simulate the user accepting the App Identity update dialog (when it
   // appears).
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope =
       SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   // Setup the web app, install it and immediately update the manifest.
@@ -4680,7 +4680,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 // sends the right signal back.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
                        VerifyCallbackUpgradeAllowed) {
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+  base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope =
       SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   constexpr char kManifestTemplate[] = R"(

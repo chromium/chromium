@@ -656,7 +656,7 @@ Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
     }
   }
 
-  absl::optional<int> maybe_modifiers = input_state.FindInt("modifiers");
+  std::optional<int> maybe_modifiers = input_state.FindInt("modifiers");
   if (!maybe_modifiers)
     return Status(kUnknownError, "missing 'modifiers'");
 

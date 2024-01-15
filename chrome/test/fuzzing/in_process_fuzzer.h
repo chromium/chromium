@@ -30,7 +30,7 @@ struct InProcessFuzzerOptions {
   // https://source.chromium.org/chromium/chromium/src/+/main:content/public/test/browser_test_base.cc?q=ScopedRunLoopTimeout.
   // Mind that it doesn't guarantee that this will be the maximum time a fuzzing
   // loop will take since ScopedRunLoopTimeout can be nested.
-  absl::optional<base::TimeDelta> run_loop_timeout = absl::nullopt;
+  std::optional<base::TimeDelta> run_loop_timeout = std::nullopt;
 };
 
 // In-process fuzz test.

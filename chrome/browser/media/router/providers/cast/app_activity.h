@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_APP_ACTIVITY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
@@ -15,7 +16,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace url {
@@ -39,13 +39,13 @@ class AppActivity : public CastActivity {
   ~AppActivity() override;
 
   void SendMediaStatusToClients(const base::Value::Dict& media_status,
-                                absl::optional<int> request_id) override;
+                                std::optional<int> request_id) override;
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
   void BindMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
-  absl::optional<int> SendMediaRequestToReceiver(
+  std::optional<int> SendMediaRequestToReceiver(
       const CastInternalMessage& cast_message) override;
   cast_channel::Result SendAppMessageToReceiver(
       const CastInternalMessage& cast_message) override;

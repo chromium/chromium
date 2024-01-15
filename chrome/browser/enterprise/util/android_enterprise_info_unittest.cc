@@ -4,11 +4,12 @@
 
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AndroidEnterpriseInfoTest : public ::testing::Test {
  protected:
@@ -23,7 +24,7 @@ class AndroidEnterpriseInfoTest : public ::testing::Test {
 
 class EnterpriseInfoCallbackHelper {
  public:
-  absl::optional<bool> is_profile_owned, is_device_owned;
+  std::optional<bool> is_profile_owned, is_device_owned;
   int num_times_called = 0;
 
   void OnResult(bool profile_owned, bool device_owned) {

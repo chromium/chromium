@@ -248,10 +248,10 @@ bool PictureInPictureWindowManager::IsChildWebContents(
   return instance->GetChildWebContents() == wc;
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
   return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()
-                                : absl::nullopt;
+                                : std::nullopt;
 }
 
 gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
@@ -269,7 +269,7 @@ gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
   // tests we don't.  Don't worry about the cache if it's missing.
   if (pip_window_controller_) {
     auto* const web_contents = pip_window_controller_->GetWebContents();
-    absl::optional<gfx::Size> requested_content_bounds;
+    std::optional<gfx::Size> requested_content_bounds;
     if (pip_options.width > 0 && pip_options.height > 0) {
       requested_content_bounds.emplace(pip_options.width, pip_options.height);
     }

@@ -146,7 +146,7 @@ void FilesRequestHandler::ResetFactoryForTesting() {
 FilesRequestHandler::~FilesRequestHandler() = default;
 
 void FilesRequestHandler::ReportWarningBypass(
-    absl::optional<std::u16string> user_justification) {
+    std::optional<std::u16string> user_justification) {
   // Report a warning bypass for each previously warned file.
   for (const auto& warning : file_warnings_) {
     size_t index = warning.first;

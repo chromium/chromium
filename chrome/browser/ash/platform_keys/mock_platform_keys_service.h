@@ -52,7 +52,7 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               SignRsaPkcs1,
-              (absl::optional<chromeos::platform_keys::TokenId> token_id,
+              (std::optional<chromeos::platform_keys::TokenId> token_id,
                std::vector<uint8_t> data,
                std::vector<uint8_t> public_key_spki_der,
                chromeos::platform_keys::HashAlgorithm hash_algorithm,
@@ -61,7 +61,7 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               SignRSAPKCS1Raw,
-              (absl::optional<chromeos::platform_keys::TokenId> token_id,
+              (std::optional<chromeos::platform_keys::TokenId> token_id,
                std::vector<uint8_t> data,
                std::vector<uint8_t> public_key_spki_der,
                SignCallback callback),
@@ -69,7 +69,7 @@ class MockPlatformKeysService : public PlatformKeysService {
 
   MOCK_METHOD(void,
               SignEcdsa,
-              (absl::optional<chromeos::platform_keys::TokenId> token_id,
+              (std::optional<chromeos::platform_keys::TokenId> token_id,
                std::vector<uint8_t> data,
                std::vector<uint8_t> public_key_spki_der,
                chromeos::platform_keys::HashAlgorithm hash_algorithm,

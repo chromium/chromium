@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -179,7 +179,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   bool GetDefaultWallpaperUrl(GURL* out_url) const;
 
   // Returns list of default apps.
-  absl::optional<base::Value::Dict> GetDefaultApps() const;
+  std::optional<base::Value::Dict> GetDefaultApps() const;
 
   // Creates an extensions::ExternalLoader that will provide OEM default apps.
   // Cache of OEM default apps stored in profile preferences.
@@ -308,7 +308,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
 
   // Delay between checks for network online state. If the optional is empty,
   // the default value for delay is used.
-  absl::optional<base::TimeDelta> custom_network_delay_ = absl::nullopt;
+  std::optional<base::TimeDelta> custom_network_delay_ = std::nullopt;
 
   // Known external loaders.
   ExternalLoaders external_loaders_;

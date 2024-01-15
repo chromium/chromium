@@ -217,8 +217,7 @@ Status PerformanceLogger::HandleTraceEvents(DevToolsClient* client,
   } else if (method == "Tracing.bufferUsage") {
     // 'value' will be between 0-1 and represents how full the DevTools trace
     // buffer is. If the buffer is full, warn the user.
-    absl::optional<double> maybe_buffer_usage =
-        params.FindDouble("percentFull");
+    std::optional<double> maybe_buffer_usage = params.FindDouble("percentFull");
     if (!maybe_buffer_usage.has_value()) {
       // Tracing.bufferUsage event will occur once per second, and it really
       // only serves as a warning, so if we can't reliably tell whether the

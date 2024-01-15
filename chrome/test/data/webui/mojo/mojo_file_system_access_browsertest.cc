@@ -96,13 +96,13 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
         ->ResolveTransferToken(
             std::move(token),
             base::BindLambdaForTesting(
-                [&](absl::optional<storage::FileSystemURL> url) {
+                [&](std::optional<storage::FileSystemURL> url) {
                   resolved_url_ = url;
                   run_loop_.Quit();
                 }));
   }
 
-  const absl::optional<storage::FileSystemURL>& WaitForResolvedURL() {
+  const std::optional<storage::FileSystemURL>& WaitForResolvedURL() {
     run_loop_.Run();
     return resolved_url_;
   }
@@ -111,7 +111,7 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
 
  private:
   mojo::Receiver<::test::mojom::MojoFileSystemAccessTest> receiver_;
-  absl::optional<storage::FileSystemURL> resolved_url_;
+  std::optional<storage::FileSystemURL> resolved_url_;
   base::RunLoop run_loop_;
 };
 

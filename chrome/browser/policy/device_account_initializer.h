@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_DEVICE_ACCOUNT_INITIALIZER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -44,7 +44,7 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
     // Called when an error happens during token fetching. `dm_status` is
     // nullopt if error happened before requesting device management service.
     virtual void OnDeviceAccountTokenFetchError(
-        absl::optional<DeviceManagementStatus> dm_status) = 0;
+        std::optional<DeviceManagementStatus> dm_status) = 0;
 
     // Called when an error happens during token saving.
     virtual void OnDeviceAccountTokenStoreError() = 0;

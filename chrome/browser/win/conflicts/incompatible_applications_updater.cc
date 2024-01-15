@@ -69,12 +69,12 @@ ConvertToIncompatibleApplication(const std::string& name,
     return nullptr;
 
   const base::Value::Dict& dict = value.GetDict();
-  absl::optional<bool> registry_is_hkcu = dict.FindBool("registry_is_hkcu");
+  std::optional<bool> registry_is_hkcu = dict.FindBool("registry_is_hkcu");
   const std::string* registry_key_path = dict.FindString("registry_key_path");
-  absl::optional<int> registry_wow64_access =
+  std::optional<int> registry_wow64_access =
       dict.FindInt("registry_wow64_access");
-  absl::optional<bool> allow_load = dict.FindBool("allow_load");
-  absl::optional<int> type = dict.FindInt("type");
+  std::optional<bool> allow_load = dict.FindBool("allow_load");
+  std::optional<int> type = dict.FindInt("type");
   const std::string* message_url = dict.FindString("message_url");
 
   // All of the above are required for a valid application.

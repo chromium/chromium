@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
               Optional(PasskeyHasSyncId(sync_id1b)));
   EXPECT_EQ(
       GetModel().GetPasskeyByCredentialId(kRpId2, passkey1a.credential_id()),
-      absl::nullopt);
+      std::nullopt);
 
   EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(kRpId2),
               UnorderedElementsAre(PasskeyHasSyncId(sync_id2)));
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
               Optional(PasskeyHasSyncId(sync_id1)));
   EXPECT_EQ(GetModel().GetPasskeyByCredentialId(
                 passkey1_shadow.rp_id(), passkey1_shadow.credential_id()),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
               UnorderedElementsAre(PasskeyHasSyncId(sync_id2)));
   EXPECT_THAT(

@@ -103,7 +103,7 @@ Status OverrideClientHintsIfNeeded(DevToolsClient* client,
 
 MobileEmulationOverrideManager::MobileEmulationOverrideManager(
     DevToolsClient* client,
-    absl::optional<MobileDevice> mobile_device,
+    std::optional<MobileDevice> mobile_device,
     int browser_major_version)
     : client_(client),
       mobile_device_(mobile_device),

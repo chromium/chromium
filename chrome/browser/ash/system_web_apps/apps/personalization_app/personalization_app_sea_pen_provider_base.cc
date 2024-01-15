@@ -221,7 +221,7 @@ void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
     const auto image_id = image.id;
     auto [it, _] = sea_pen_images_.insert(
         std::pair<uint32_t, SeaPenImage>(image_id, std::move(image)));
-    result.emplace_back(absl::in_place, GetJpegDataUrl(it->second.jpg_bytes),
+    result.emplace_back(std::in_place, GetJpegDataUrl(it->second.jpg_bytes),
                         image_id);
   }
   std::move(callback).Run(std::move(result), status_code);

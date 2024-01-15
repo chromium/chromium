@@ -72,7 +72,7 @@ class ConfigurationFileController {
   // current OS version that the device is on at the moment. Returns true if the
   // metric or destination should be blocked and false otherwise.
   bool ShouldBeBlocked(int32_t minimum_version,
-                       absl::optional<int32_t> maximum_version) const;
+                       std::optional<int32_t> maximum_version) const;
 
   // Callback to update the configuration file in missive, only called
   // after verifying

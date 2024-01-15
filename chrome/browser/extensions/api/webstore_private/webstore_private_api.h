@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -22,7 +23,6 @@
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/extension_function.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -154,13 +154,13 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   const Params::Details& details() const { return params_->details; }
 
-  absl::optional<Params> params_;
+  std::optional<Params> params_;
 
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
-  absl::optional<base::Value::Dict> parsed_manifest_;
+  std::optional<base::Value::Dict> parsed_manifest_;
   SkBitmap icon_;
 
   // A dummy Extension object we create for the purposes of using

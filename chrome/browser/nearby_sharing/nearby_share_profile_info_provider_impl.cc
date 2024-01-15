@@ -15,19 +15,19 @@ NearbyShareProfileInfoProviderImpl::NearbyShareProfileInfoProviderImpl(
 NearbyShareProfileInfoProviderImpl::~NearbyShareProfileInfoProviderImpl() =
     default;
 
-absl::optional<std::u16string>
-NearbyShareProfileInfoProviderImpl::GetGivenName() const {
+std::optional<std::u16string> NearbyShareProfileInfoProviderImpl::GetGivenName()
+    const {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (!user)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::u16string name = user->GetGivenName();
-  return name.empty() ? absl::nullopt : absl::make_optional(name);
+  return name.empty() ? std::nullopt : std::make_optional(name);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 NearbyShareProfileInfoProviderImpl::GetProfileUserName() const {
   std::string name = profile_->GetProfileUserName();
-  return name.empty() ? absl::nullopt : absl::make_optional(name);
+  return name.empty() ? std::nullopt : std::make_optional(name);
 }

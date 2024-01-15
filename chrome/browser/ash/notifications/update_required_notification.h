@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_UPDATE_REQUIRED_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_UPDATE_REQUIRED_NOTIFICATION_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -32,8 +32,8 @@ class UpdateRequiredNotification : public message_center::NotificationObserver {
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // Collects notification data like title, body, button text, priority on the
   // basis of |type| and |warning_time|. Sets the |button_click_callback| to be

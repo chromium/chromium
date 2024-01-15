@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "chrome/common/chromeos/extensions/api/management.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -47,7 +47,7 @@ bool ManagementApiFunctionBase::IsCrosApiAvailable() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 template <class Params>
-absl::optional<Params> ManagementApiFunctionBase::GetParams() {
+std::optional<Params> ManagementApiFunctionBase::GetParams() {
   auto params = Params::Create(args());
   if (!params) {
     SetBadMessage();

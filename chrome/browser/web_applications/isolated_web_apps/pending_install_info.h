@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_PENDING_INSTALL_INFO_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_PENDING_INSTALL_INFO_H_
 
+#include <optional>
+
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -34,14 +35,14 @@ class IsolatedWebAppPendingInstallInfo {
 
   void set_isolated_web_app_location(const IsolatedWebAppLocation& location);
 
-  const absl::optional<IsolatedWebAppLocation>& location() const;
+  const std::optional<IsolatedWebAppLocation>& location() const;
 
   void ResetIsolatedWebAppLocation();
 
  private:
   IsolatedWebAppPendingInstallInfo();
 
-  absl::optional<IsolatedWebAppLocation> location_ = absl::nullopt;
+  std::optional<IsolatedWebAppLocation> location_ = std::nullopt;
 };
 
 }  // namespace web_app

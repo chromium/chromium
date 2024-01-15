@@ -192,7 +192,7 @@ StreamParser::ParseNextMessagesFieldFromStream(
   // contain a ReceiveMessagesResponse, but we still want to remove this data
   // from the buffer and continue reading the next data, if applicable. We
   // update the |is_noop_field_| to true to tell ParseStreamIfAvailable that
-  // although it receives an absl::nullopt, it should still remove the bytes
+  // although it receives an std::nullopt, it should still remove the bytes
   // from the buffer.
   if (field_number == chrome_browser_nearby_sharing_instantmessaging::
                           StreamBody::kNoopFieldNumber) {

@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
-  webapps::AppId id = GenerateAppId(absl::nullopt, test_url);
+  webapps::AppId id = GenerateAppId(std::nullopt, test_url);
 
   auto* provider = WebAppProvider::GetForTest(profile());
   base::RunLoop loop;
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
       id, GenerateManifestIdFromStartUrlOnly(test_url), /*start_url=*/test_url,
       "Test Title",
       /*scope=*/https_server()->GetURL("/banners/"),
-      /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone,
+      /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
       {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                       96)});
   provider->command_manager().ScheduleCommand(
@@ -70,11 +70,11 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
-  webapps::AppId id = GenerateAppId(absl::nullopt, test_url);
+  webapps::AppId id = GenerateAppId(std::nullopt, test_url);
   GURL other_test_url = https_server()->GetURL(
       "/banners/"
       "manifest_no_service_worker.html");
-  webapps::AppId other_id = GenerateAppId(absl::nullopt, test_url);
+  webapps::AppId other_id = GenerateAppId(std::nullopt, test_url);
 
   auto* provider = WebAppProvider::GetForTest(profile());
   base::RunLoop loop;
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
         id, GenerateManifestIdFromStartUrlOnly(test_url),
         /*start_url=*/test_url, "Test Title",
         /*scope=*/https_server()->GetURL("/banners/"),
-        /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone,
+        /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                         96)});
     provider->command_manager().ScheduleCommand(
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
         other_id, GenerateManifestIdFromStartUrlOnly(other_test_url),
         /*start_url=*/other_test_url, "Test Title",
         /*scope=*/https_server()->GetURL("/banners/"),
-        /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone,
+        /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                         96)});
     provider->command_manager().ScheduleCommand(
@@ -146,14 +146,14 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
-  webapps::AppId id = GenerateAppId(absl::nullopt, test_url);
+  webapps::AppId id = GenerateAppId(std::nullopt, test_url);
 
   auto* provider = WebAppProvider::GetForTest(profile());
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
       id, GenerateManifestIdFromStartUrlOnly(test_url), /*start_url=*/test_url,
       "Test Title",
       /*scope=*/https_server()->GetURL("/banners/"),
-      /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone, {});
+      /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone, {});
   std::unique_ptr<InstallFromSyncCommand> command = std::make_unique<
       InstallFromSyncCommand>(
       profile(), params,

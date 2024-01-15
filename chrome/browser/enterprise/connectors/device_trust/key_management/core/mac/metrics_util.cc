@@ -16,7 +16,7 @@ constexpr char kSecureEnclaveOperationHistogramFormat[] =
 constexpr char kKeychainOSStatusHistogramFormat[] =
     "Enterprise.DeviceTrust.Mac.KeychainOSStatus.%s.%s";
 
-absl::optional<SecureEnclaveOperationStatus> ConvertOperationToStatus(
+std::optional<SecureEnclaveOperationStatus> ConvertOperationToStatus(
     KeychainOperation operation) {
   switch (operation) {
     case KeychainOperation::kCreate:
@@ -31,7 +31,7 @@ absl::optional<SecureEnclaveOperationStatus> ConvertOperationToStatus(
       return SecureEnclaveOperationStatus::
           kUpdateSecureKeyLabelDataProtectionKeychainFailed;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

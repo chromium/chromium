@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IDENTITY_WEB_AUTH_FLOW_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_WEB_AUTH_FLOW_H_
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -89,15 +89,15 @@ class WebAuthFlow : public content::WebContentsObserver {
 
   // Creates an instance with the given parameters.
   // Caller owns `delegate`.
-  WebAuthFlow(Delegate* delegate,
-              Profile* profile,
-              const GURL& provider_url,
-              Mode mode,
-              bool user_gesture,
-              AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
-              absl::optional<base::TimeDelta> timeout_for_non_interactive =
-                  absl::nullopt,
-              absl::optional<gfx::Rect> popup_bounds = absl::nullopt);
+  WebAuthFlow(
+      Delegate* delegate,
+      Profile* profile,
+      const GURL& provider_url,
+      Mode mode,
+      bool user_gesture,
+      AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
+      std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt,
+      std::optional<gfx::Rect> popup_bounds = std::nullopt);
 
   WebAuthFlow(const WebAuthFlow&) = delete;
   WebAuthFlow& operator=(const WebAuthFlow&) = delete;
@@ -170,9 +170,9 @@ class WebAuthFlow : public content::WebContentsObserver {
   base::WeakPtr<WebAuthFlowInfoBarDelegate> info_bar_delegate_ = nullptr;
 
   const AbortOnLoad abort_on_load_for_non_interactive_;
-  const absl::optional<base::TimeDelta> timeout_for_non_interactive_;
+  const std::optional<base::TimeDelta> timeout_for_non_interactive_;
   std::unique_ptr<base::OneShotTimer> non_interactive_timeout_timer_;
-  const absl::optional<gfx::Rect> popup_bounds_;
+  const std::optional<gfx::Rect> popup_bounds_;
   // Flag indicating that the initial URL was successfully loaded. Influences
   // the error code when the flow times out.
   bool initial_url_loaded_ = false;

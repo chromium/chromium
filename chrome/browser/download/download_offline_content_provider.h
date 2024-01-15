@@ -132,7 +132,7 @@ class DownloadOfflineContentProvider
                                     DownloadItem* item,
                                     DownloadItem::DownloadRenameResult result);
   void UpdateObservers(const OfflineItem& item,
-                       const absl::optional<UpdateDelta>& update_delta);
+                       const std::optional<UpdateDelta>& update_delta);
   void CheckForExternallyRemovedDownloads();
 
   // Ensure that download core service is started.

@@ -39,7 +39,7 @@ class FetchInstallInfoFromInstallUrlCommand
   FetchInstallInfoFromInstallUrlCommand(
       webapps::ManifestId manifest_id,
       GURL install_url,
-      absl::optional<webapps::ManifestId> parent_manifest_id,
+      std::optional<webapps::ManifestId> parent_manifest_id,
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
   ~FetchInstallInfoFromInstallUrlCommand() override;
   FetchInstallInfoFromInstallUrlCommand(
@@ -72,7 +72,7 @@ class FetchInstallInfoFromInstallUrlCommand
 
   webapps::ManifestId manifest_id_;
   GURL install_url_;
-  absl::optional<webapps::ManifestId> parent_manifest_id_;
+  std::optional<webapps::ManifestId> parent_manifest_id_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

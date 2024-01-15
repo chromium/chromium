@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -51,7 +52,6 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/signature_creator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -549,7 +549,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
           if (account_id)
             account->set_account_id(*account_id);
 
-          absl::optional<int> type =
+          std::optional<int> type =
               entry_dict.FindInt(kAccountsPrefDeviceLocalAccountsKeyType);
           if (type.has_value()) {
             account->set_type(

@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace performance_monitor {
 
@@ -28,11 +28,11 @@ MetricEvaluatorsHelperWin::~MetricEvaluatorsHelperWin() {
   g_metric_evaluator_instance = nullptr;
 }
 
-absl::optional<int> MetricEvaluatorsHelperWin::GetFreePhysicalMemoryMb() {
+std::optional<int> MetricEvaluatorsHelperWin::GetFreePhysicalMemoryMb() {
   MEMORYSTATUSEX mem_status;
   mem_status.dwLength = sizeof(mem_status);
   if (!::GlobalMemoryStatusEx(&mem_status))
-    return absl::nullopt;
+    return std::nullopt;
 
   return (mem_status.ullAvailPhys / kMBBytes);
 }

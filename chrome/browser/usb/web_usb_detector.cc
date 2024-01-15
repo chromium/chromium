@@ -4,6 +4,7 @@
 
 #include "chrome/browser/usb/web_usb_detector.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -108,7 +108,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
         landing_page_(landing_page),
         notification_id_(notification_id),
         disposition_(WEBUSB_NOTIFICATION_CLOSED),
-        browser_tab_strip_tracker_(absl::in_place, this, nullptr) {
+        browser_tab_strip_tracker_(std::in_place, this, nullptr) {
     browser_tab_strip_tracker_->Init();
   }
   WebUsbNotificationDelegate(const WebUsbNotificationDelegate&) = delete;
@@ -132,8 +132,8 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     }
   }
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     disposition_ = WEBUSB_NOTIFICATION_CLOSED_CLICKED;
 
     // If the URL is already open, activate that tab.
@@ -178,7 +178,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
   GURL landing_page_;
   std::string notification_id_;
   WebUsbNotificationClosed disposition_;
-  absl::optional<BrowserTabStripTracker> browser_tab_strip_tracker_;
+  std::optional<BrowserTabStripTracker> browser_tab_strip_tracker_;
 };
 
 }  // namespace

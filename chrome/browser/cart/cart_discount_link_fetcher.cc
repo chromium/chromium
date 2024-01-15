@@ -157,7 +157,7 @@ void CartDiscountLinkFetcher::OnLinkFetched(
     return;
   }
 
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
 
   if (!value || !value->is_dict() || !value->GetDict().FindString("url")) {

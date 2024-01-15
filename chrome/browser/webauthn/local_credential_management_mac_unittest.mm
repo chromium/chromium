@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <tuple>
-
 #include "chrome/browser/webauthn/local_credential_management_mac.h"
+
+#include <optional>
+#include <tuple>
 
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,7 +17,6 @@
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -48,7 +48,7 @@ TEST_F(LocalCredentialManagementTest, NoCredentials) {
   EXPECT_FALSE(std::get<0>(callback.TakeResult()));
 
   device::test::TestCallbackReceiver<
-      absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
       enumerate_callback;
   local_cred_man_.Enumerate(enumerate_callback.callback());
   EXPECT_FALSE(enumerate_callback.was_called());
@@ -69,12 +69,12 @@ TEST_F(LocalCredentialManagementTest, OneCredential) {
   EXPECT_TRUE(std::get<0>(callback.TakeResult()));
 
   device::test::TestCallbackReceiver<
-      absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
       enumerate_callback;
   local_cred_man_.Enumerate(enumerate_callback.callback());
   EXPECT_FALSE(enumerate_callback.was_called());
   enumerate_callback.WaitForCallback();
-  const absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
+  const std::optional<std::vector<device::DiscoverableCredentialMetadata>>
       result = std::get<0>(enumerate_callback.TakeResult());
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
@@ -207,7 +207,7 @@ TEST_F(MockKeychainLocalCredentialManagementTest, KeychainError) {
   EXPECT_CALL(mock_keychain_, ItemCopyMatching)
       .WillOnce(testing::Return(errSecInternalComponent));
   device::test::TestCallbackReceiver<
-      absl::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
       enumerate_callback;
   local_cred_man_.Enumerate(enumerate_callback.callback());
   EXPECT_FALSE(enumerate_callback.was_called());

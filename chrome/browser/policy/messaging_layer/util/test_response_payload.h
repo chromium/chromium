@@ -7,11 +7,11 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_RESPONSE_PAYLOAD_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_RESPONSE_PAYLOAD_H_
 
-#include "base/values.h"
+#include <optional>
 
+#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -91,7 +91,7 @@ class MakeUploadEncryptedReportAction {
   explicit MakeUploadEncryptedReportAction(
       ResponseBuilder&& response_builder = ResponseBuilder());
   void operator()(base::Value::Dict request,
-                  absl::optional<base::Value::Dict> context,
+                  std::optional<base::Value::Dict> context,
                   ReportingServerConnector::ResponseCallback callback);
 
  private:

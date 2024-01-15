@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -246,7 +246,7 @@ struct WebAppInstallInfo {
   GURL manifest_url;
 
   // Optional query parameters to add to the start_url when launching the app.
-  absl::optional<std::string> launch_query_params;
+  std::optional<std::string> launch_query_params;
 
   // Scope for the app. Dictates what URLs will be opened in the app.
   // https://www.w3.org/TR/appmanifest/#scope-member
@@ -275,19 +275,19 @@ struct WebAppInstallInfo {
   MobileCapable mobile_capable = MOBILE_CAPABLE_UNSPECIFIED;
 
   // The color to use for the web app frame.
-  absl::optional<SkColor> theme_color;
+  std::optional<SkColor> theme_color;
 
   // The color to use for the web app frame when
   // launched in dark mode. This doesn't yet have manifest support.
-  absl::optional<SkColor> dark_mode_theme_color;
+  std::optional<SkColor> dark_mode_theme_color;
 
   // The expected page background color of the web app.
   // https://www.w3.org/TR/appmanifest/#background_color-member
-  absl::optional<SkColor> background_color;
+  std::optional<SkColor> background_color;
 
   // The color to use for the background when
   // launched in dark mode. This doesn't yet have manifest support.
-  absl::optional<SkColor> dark_mode_background_color;
+  std::optional<SkColor> dark_mode_background_color;
 
   // App preference regarding whether the app should be opened in a tab,
   // in a window (with or without minimal-ui buttons), or full screen. Defaults
@@ -301,14 +301,14 @@ struct WebAppInstallInfo {
   // User preference for whether the app should be opened as a tab or in an app
   // window. Must be either kBrowser or kStandalone, this will be checked by
   // WebApp::SetUserDisplayMode().
-  absl::optional<web_app::mojom::UserDisplayMode> user_display_mode =
+  std::optional<web_app::mojom::UserDisplayMode> user_display_mode =
       web_app::mojom::UserDisplayMode::kBrowser;
 
   // The extensions and mime types the app can handle.
   apps::FileHandlers file_handlers;
 
   // File types the app accepts as a Web Share Target.
-  absl::optional<apps::ShareTarget> share_target;
+  std::optional<apps::ShareTarget> share_target;
 
   // Additional search terms that users can use to find the app.
   std::vector<std::string> additional_search_terms;
@@ -340,7 +340,7 @@ struct WebAppInstallInfo {
   // See
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
-  absl::optional<base::flat_set<web_app::ScopeExtensionInfo>>
+  std::optional<base::flat_set<web_app::ScopeExtensionInfo>>
       validated_scope_extensions;
 
   // URL within scope to launch on the lock screen for a "show on lock screen"
@@ -357,7 +357,7 @@ struct WebAppInstallInfo {
       blink::mojom::CaptureLinks::kUndefined;
 
   // The window selection behaviour of app launches.
-  absl::optional<blink::Manifest::LaunchHandler> launch_handler;
+  std::optional<blink::Manifest::LaunchHandler> launch_handler;
 
   // A mapping from locales to translated fields.
   base::flat_map<std::string, blink::Manifest::TranslationItem> translations;
@@ -378,17 +378,17 @@ struct WebAppInstallInfo {
 
   // Customisations to the tab strip. This field is only used when the
   // display mode is set to 'tabbed'.
-  absl::optional<blink::Manifest::TabStrip> tab_strip;
+  std::optional<blink::Manifest::TabStrip> tab_strip;
 
   // Id of the app that called the SUB_APP API to install this app. This field
   // is only used when the app is installed as a sub app through the SUB_APP
   // API.
-  absl::optional<webapps::AppId> parent_app_id;
+  std::optional<webapps::AppId> parent_app_id;
 
   // ManifestId of the app that called the SUB_APP API to install this app. This
   // field is only used when the app is installed as a sub app through the
   // SUB_APP API.
-  absl::optional<webapps::ManifestId> parent_app_manifest_id;
+  std::optional<webapps::ManifestId> parent_app_manifest_id;
 
   // A list of additional terms to use when matching this app against
   // identifiers in admin policies (for shelf pinning, default file handlers,
@@ -402,7 +402,7 @@ struct WebAppInstallInfo {
 
   // Bookkeeping details about attempts to fix broken icons from sync installed
   // web apps.
-  absl::optional<GeneratedIconFix> generated_icon_fix;
+  std::optional<GeneratedIconFix> generated_icon_fix;
 
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.

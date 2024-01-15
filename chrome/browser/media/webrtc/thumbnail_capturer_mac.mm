@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <deque>
+#include <optional>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -27,7 +28,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/desktop_frame_utils.h"
 
 using SampleCallback =

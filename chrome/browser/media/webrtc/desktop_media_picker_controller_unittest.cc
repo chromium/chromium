@@ -50,7 +50,7 @@ class MockDesktopMediaList : public DesktopMediaList {
   MOCK_METHOD(void, Update, (UpdateCallback callback));
   MOCK_METHOD(void,
               SetPreviewedSource,
-              (const absl::optional<content::DesktopMediaID>& id));
+              (const std::optional<content::DesktopMediaID>& id));
   MOCK_METHOD(int, GetSourceCount, (), (const));
   MOCK_METHOD(Source&, GetSource, (int), (const));
   MOCK_METHOD(DesktopMediaList::Type, GetMediaListType, (), (const));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/reporting/usage_telemetry_periodic_collector_base.h"
 
+#include <optional>
+
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
@@ -12,7 +14,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 

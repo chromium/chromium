@@ -184,7 +184,7 @@ void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
   Navigate(&params);
 }
 
-absl::optional<AvatarSyncErrorType> GetTrustedVaultError(
+std::optional<AvatarSyncErrorType> GetTrustedVaultError(
     const syncer::SyncService* sync_service) {
   if (sync_service->GetUserSettings()
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
@@ -201,7 +201,7 @@ absl::optional<AvatarSyncErrorType> GetTrustedVaultError(
                      kTrustedVaultRecoverabilityDegradedForPasswordsError;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -240,11 +240,11 @@ SyncStatusMessageType GetSyncStatusMessageType(Profile* profile) {
   return GetSyncStatusLabels(profile).message_type;
 }
 
-absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
+std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   const syncer::SyncService* service =
       SyncServiceFactory::GetForProfile(profile);
   if (!service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!service->HasSyncConsent()) {
@@ -281,7 +281,7 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     return AvatarSyncErrorType::kPassphraseError;
   }
 
-  const absl::optional<AvatarSyncErrorType> trusted_vault_error =
+  const std::optional<AvatarSyncErrorType> trusted_vault_error =
       GetTrustedVaultError(service);
   if (trusted_vault_error) {
     return trusted_vault_error;
@@ -291,7 +291,7 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     return AvatarSyncErrorType::kSettingsUnconfirmedError;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,

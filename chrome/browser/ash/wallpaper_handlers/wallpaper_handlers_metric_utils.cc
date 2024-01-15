@@ -33,7 +33,7 @@ std::string ToHistogramBase(GooglePhotosApi api) {
 // NOTE: Histogram names are persisted to metric logs.
 void RecordGooglePhotosApiResponseParsed(GooglePhotosApi api,
                                          base::TimeDelta response_time,
-                                         absl::optional<size_t> result_count) {
+                                         std::optional<size_t> result_count) {
   const std::string histogram_base = ToHistogramBase(api);
   const bool success = result_count.has_value();
 

@@ -624,7 +624,7 @@ std::string GetBrowserManagerName(Profile* profile) {
 
   // @TODO(https://crbug.com/1227786): There are some use-cases where the
   // expected behavior of chrome://management is to show more than one domain.
-  absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
     manager = GetDeviceManagerIdentity();

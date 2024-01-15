@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_SHARING_FCM_SENDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chrome/browser/sharing/sharing_send_message_result.h"
 #include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "components/sync_device_info/device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gcm {
 class GCMDriver;
@@ -47,7 +47,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   using SharingMessage = chrome_browser_sharing::SharingMessage;
   using SendMessageCallback =
       base::OnceCallback<void(SharingSendMessageResult result,
-                              absl::optional<std::string> message_id,
+                              std::optional<std::string> message_id,
                               SharingChannelType channel_type)>;
 
   SharingFCMSender(
@@ -65,7 +65,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
 
   // Sends a |message| to device identified by |fcm_configuration|, which
   // expires after |time_to_live| seconds. |callback| will be invoked with
-  // message_id if asynchronous operation succeeded, or absl::nullopt if
+  // message_id if asynchronous operation succeeded, or std::nullopt if
   // operation failed.
   virtual void SendMessageToFcmTarget(
       const chrome_browser_sharing::FCMChannelConfiguration& fcm_configuration,
@@ -75,7 +75,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
 
   // Sends a |message| to device identified by |server_channel|, |callback| will
   // be invoked with message_id if asynchronous operation succeeded, or
-  // absl::nullopt if operation failed.
+  // std::nullopt if operation failed.
   virtual void SendMessageToServerTarget(
       const chrome_browser_sharing::ServerChannelConfiguration& server_channel,
       SharingMessage message,
@@ -121,7 +121,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
 
   void OnMessageSentToVapidTarget(SendMessageCallback callback,
                                   SendWebPushMessageResult result,
-                                  absl::optional<std::string> message_id);
+                                  std::optional<std::string> message_id);
 
   void DoSendMessageToSenderIdTarget(const std::string& fcm_token,
                                      base::TimeDelta time_to_live,

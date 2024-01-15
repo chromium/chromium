@@ -207,7 +207,7 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
   EXPECT_EQ("application/json", request_content_type);
 
   // Parse the JSON sent to the service, and verify its parameters.
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       intercepted_body, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_dict());

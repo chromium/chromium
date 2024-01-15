@@ -83,7 +83,7 @@ void VideoConferenceAshFeatureClient::GetMediaApps(
         /*is_capturing_microphone=*/app_state.is_capturing_microphone,
         /*is_capturing_screen=*/false,
         /*title=*/base::UTF8ToUTF16(app_name),
-        /*url=*/absl::nullopt,
+        /*url=*/std::nullopt,
         /*app_type=*/GetAppType(app_id)));
   }
 

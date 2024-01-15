@@ -100,7 +100,7 @@ std::string ChromeJsErrorReportProcessor::GetCrashEndpointStaging() {
 // On non-Chrome OS platforms, send the report directly.
 void ChromeJsErrorReportProcessor::SendReport(
     ParameterMap params,
-    absl::optional<std::string> stack_trace,
+    std::optional<std::string> stack_trace,
     bool send_to_production_servers,
     base::ScopedClosureRunner callback_runner,
     base::Time report_time,

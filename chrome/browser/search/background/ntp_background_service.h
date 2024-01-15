@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -71,9 +71,8 @@ class NtpBackgroundService : public KeyedService {
   // completes, OnNextCollectionImageAvailable will be called on the observers.
   // Requests that are made while an asynchronous fetch is in progress will be
   // dropped until the currently active loader completes.
-  void FetchNextCollectionImage(
-      const std::string& collection_id,
-      const absl::optional<std::string>& resume_token);
+  void FetchNextCollectionImage(const std::string& collection_id,
+                                const std::optional<std::string>& resume_token);
 
   // Requests an asynchronous fetch of an image's URL headers.
   virtual void VerifyImageURL(

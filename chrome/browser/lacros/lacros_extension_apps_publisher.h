@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -22,7 +23,6 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -123,11 +123,11 @@ class LacrosExtensionAppsPublisher
 
   void OnSizeCalculated(const std::string& app_id, int64_t size);
 
-  absl::optional<std::string> MaybeGetAppId(content::WebContents* web_contents);
+  std::optional<std::string> MaybeGetAppId(content::WebContents* web_contents);
 
   void ModifyCapabilityAccess(const std::string& app_id,
-                              absl::optional<bool> accessing_camera,
-                              absl::optional<bool> accessing_microphone);
+                              std::optional<bool> accessing_camera,
+                              std::optional<bool> accessing_microphone);
 
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.

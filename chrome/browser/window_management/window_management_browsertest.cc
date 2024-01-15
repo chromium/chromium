@@ -59,13 +59,13 @@ class FakeScreen : public display::ScreenBase {
  private:
   int64_t current_display_override_ = display::kInvalidDisplayId;
   // Return the overridden display object if set and exists, nullopt otherwise.
-  absl::optional<display::Display> GetCurrentDisplayOverride() const {
+  std::optional<display::Display> GetCurrentDisplayOverride() const {
     if (display::Display display;
         current_display_override_ != display::kInvalidDisplayId &&
         GetDisplayWithDisplayId(current_display_override_, &display)) {
       return display;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 };
 

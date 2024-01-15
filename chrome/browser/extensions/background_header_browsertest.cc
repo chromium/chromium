@@ -60,7 +60,7 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
         extension->id(), content::JsReplace("executeFetch($1);", url));
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     if (!value) {
       ADD_FAILURE() << "Received invalid response: " << json;

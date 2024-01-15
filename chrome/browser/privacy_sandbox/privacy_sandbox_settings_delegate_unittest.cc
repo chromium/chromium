@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/webapps/webapp_registry.h"
@@ -292,19 +292,19 @@ struct CookieDeprecationExperimentEligibilityTestCase {
 #if BUILDFLAG(IS_ANDROID)
   bool exclude_pwa_twa_installed = true;
 #endif
-  absl::optional<bool> is_subject_to_enterprise_policies;
+  std::optional<bool> is_subject_to_enterprise_policies;
   content_settings::CookieControlsMode cookie_controls_mode_pref =
       content_settings::CookieControlsMode::kOff;
   ContentSetting cookie_content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
   bool tracking_protection_3pcd_enabled_pref = false;
   bool privacy_sandbox_eea_notice_acknowledged_pref = false;
   bool privacy_sandbox_row_notice_acknowledged_pref = false;
-  absl::optional<base::Time> install_date = kValidInstallDate;
+  std::optional<base::Time> install_date = kValidInstallDate;
 #if BUILDFLAG(IS_ANDROID)
   std::vector<std::string> origins_with_installed_app;
 #endif
   // The eligibility before the set up, which should be sticky.
-  absl::optional<bool> expected_eligible_before;
+  std::optional<bool> expected_eligible_before;
   bool expected_eligible;
   TpcdExperimentEligibility::Reason expected_current_eligibility;
 };
@@ -373,7 +373,7 @@ const CookieDeprecationExperimentEligibilityTestCase
         },
         {
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
-            .install_date = absl::nullopt,
+            .install_date = std::nullopt,
             .expected_eligible = false,
             .expected_current_eligibility =
                 TpcdExperimentEligibility::Reason::kNewUser,
@@ -494,7 +494,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest, IsEligible) {
 
   const struct {
     const char* description;
-    absl::optional<bool> is_eligible;
+    std::optional<bool> is_eligible;
     bool expected_eligible;
   } kTestCases[] = {
       {

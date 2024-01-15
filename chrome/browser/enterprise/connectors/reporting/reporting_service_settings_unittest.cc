@@ -54,7 +54,7 @@ class ReportingServiceSettingsTest : public testing::Test {
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
   }
 
-  absl::optional<ReportingSettings> GetReportingSettings(
+  std::optional<ReportingSettings> GetReportingSettings(
       const char* settings_value) {
     auto settings = base::JSONReader::Read(settings_value,
                                            base::JSON_ALLOW_TRAILING_COMMAS);
@@ -78,13 +78,13 @@ class ReportingServiceSettingsTest : public testing::Test {
 };
 
 TEST_F(ReportingServiceSettingsTest, TestNoSettings) {
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNoProviderSettings);
   ASSERT_FALSE(reporting_settings.has_value());
 }
 
 TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithoutEvents) {
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithoutEvents);
   ASSERT_TRUE(reporting_settings.has_value());
 
@@ -94,7 +94,7 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithoutEvents) {
 }
 
 TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithEvents) {
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithEvents);
   ASSERT_TRUE(reporting_settings.has_value());
 
@@ -105,7 +105,7 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithEvents) {
 }
 
 TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithOptInEvents) {
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithOptInEvents);
   ASSERT_TRUE(reporting_settings.has_value());
 
@@ -128,14 +128,14 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithOptInEvents) {
 
 TEST_F(ReportingServiceSettingsTest, FlagOverrideNoProviderSettings) {
   SetUpTestCommandLine();
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNoProviderSettings);
   ASSERT_FALSE(reporting_settings.has_value());
 }
 
 TEST_F(ReportingServiceSettingsTest, FlagOverrideNormalSettingsWithoutEvents) {
   SetUpTestCommandLine();
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithoutEvents);
   ASSERT_TRUE(reporting_settings.has_value());
 
@@ -145,7 +145,7 @@ TEST_F(ReportingServiceSettingsTest, FlagOverrideNormalSettingsWithoutEvents) {
 
 TEST_F(ReportingServiceSettingsTest, FlagOverrideNormalSettingsWithEvents) {
   SetUpTestCommandLine();
-  absl::optional<ReportingSettings> reporting_settings =
+  std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithEvents);
   ASSERT_TRUE(reporting_settings.has_value());
 

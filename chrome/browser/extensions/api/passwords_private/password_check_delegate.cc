@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -50,7 +51,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
@@ -497,7 +497,7 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   api_credential.username = base::UTF16ToUTF8(entry.username);
   api_credential.stored_in = StoreSetFromCredential(entry);
   api_credential.compromised_info = CreateCompromiseInfo(entry);
-  absl::optional<GURL> change_password_url = entry.GetChangePasswordURL();
+  std::optional<GURL> change_password_url = entry.GetChangePasswordURL();
   if (change_password_url.has_value()) {
     api_credential.change_password_url = change_password_url->spec();
   }

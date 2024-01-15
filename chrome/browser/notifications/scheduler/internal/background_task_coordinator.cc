@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/scheduler/internal/background_task_coordinator.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 namespace {
@@ -170,7 +170,7 @@ class BackgroundTaskCoordinatorHelper {
   raw_ptr<NotificationBackgroundTaskScheduler> background_task_;
   raw_ptr<const SchedulerConfig> config_;
   raw_ptr<base::Clock> clock_;
-  absl::optional<base::Time> background_task_time_;
+  std::optional<base::Time> background_task_time_;
 };
 
 }  // namespace

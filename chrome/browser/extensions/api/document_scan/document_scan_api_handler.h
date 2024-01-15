@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class PrefRegistrySimple;
@@ -41,8 +41,8 @@ class StartScanRunner;
 class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
  public:
   using SimpleScanCallback = base::OnceCallback<void(
-      absl::optional<api::document_scan::ScanResults> scan_results,
-      absl::optional<std::string> error)>;
+      std::optional<api::document_scan::ScanResults> scan_results,
+      std::optional<std::string> error)>;
   using GetScannerListCallback =
       base::OnceCallback<void(api::document_scan::GetScannerListResponse)>;
   using OpenScannerCallback =
@@ -206,7 +206,7 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
                                  const std::vector<std::string>& scanner_names);
   void OnSimpleScanCompleted(SimpleScanCallback callback,
                              crosapi::mojom::ScanFailureMode failure_mode,
-                             const absl::optional<std::string>& scan_data);
+                             const std::optional<std::string>& scan_data);
 
   void SendGetScannerListRequest(const api::document_scan::DeviceFilter& filter,
                                  GetScannerListCallback callback);

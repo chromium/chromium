@@ -133,7 +133,7 @@ int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
 }
 
 void PowerMetricsReporter::OnFirstBatteryStateSampled(
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(battery_level_provider_);
@@ -212,7 +212,7 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
 void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(battery_level_provider_);
@@ -252,9 +252,9 @@ void PowerMetricsReporter::ReportMetrics(
 
 #if BUILDFLAG(IS_MAC)
   // Sample coalition resource usage rate.
-  absl::optional<power_metrics::CoalitionResourceUsageRate>
+  std::optional<power_metrics::CoalitionResourceUsageRate>
       short_interval_resource_usage_rate;
-  absl::optional<power_metrics::CoalitionResourceUsageRate>
+  std::optional<power_metrics::CoalitionResourceUsageRate>
       long_interval_resource_usage_rate;
   coalition_resource_usage_provider_->EndIntervals(
       &short_interval_resource_usage_rate, &long_interval_resource_usage_rate);

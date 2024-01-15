@@ -69,9 +69,9 @@ class HttpServiceRequest {
   // within the given |request_timeout|. If the background thread returns before
   // the timeout expires, it is guaranteed that a result can be returned and the
   // requester will delete itself.
-  absl::optional<base::Value> WaitForResponseFromHttpService(
+  std::optional<base::Value> WaitForResponseFromHttpService(
       const base::TimeDelta& request_timeout) {
-    absl::optional<base::Value> result;
+    std::optional<base::Value> result;
 
     // Start the thread and wait on its handle until |request_timeout| expires
     // or the thread finishes.
@@ -426,7 +426,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     const base::Value::Dict& request_dict,
     const base::TimeDelta& request_timeout,
     unsigned int request_retries,
-    absl::optional<base::Value>* request_result) {
+    std::optional<base::Value>* request_result) {
   DCHECK(request_result);
 
   std::string request_body;
@@ -466,7 +466,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     LOGFN(ERROR) << "error: " << *error_detail;
 
     // If error code is known, retry only on retryable server errors.
-    absl::optional<int> error_code =
+    std::optional<int> error_code =
         error_detail->FindInt(kHttpErrorCodeKeyNameInResponse);
     if (error_code.has_value() &&
         !base::Contains(kRetryableHttpErrorCodes, error_code.value())) {

@@ -5,12 +5,12 @@
 #include "chrome/browser/sync/test/integration/password_sharing_invitation_helper.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/uuid.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/nigori/cryptographer_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_sharing_helper {
 
@@ -47,7 +47,7 @@ std::vector<uint8_t> EncryptInvitationData(
       syncer::CryptographerImpl::CreateEmpty();
 
   // Clone `sender_key_pair` since the cryptographer requires it to be moved.
-  absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair>
+  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair>
       sender_key_pair_copy =
           syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
               sender_key_pair.GetRawPrivateKey());
@@ -60,7 +60,7 @@ std::vector<uint8_t> EncryptInvitationData(
   bool success = unencrypted_password_data.SerializeToString(&serialized_data);
   CHECK(success);
 
-  absl::optional<std::vector<uint8_t>> result =
+  std::optional<std::vector<uint8_t>> result =
       sender_cryptographer->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span(serialized_data)),
           base::as_bytes(
@@ -85,7 +85,7 @@ CreateEncryptedIncomingInvitationSpecifics(
   specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   specifics.set_recipient_key_version(recipient_public_key.version());
 
-  absl::optional<syncer::CrossUserSharingPublicKey> sender_public_key =
+  std::optional<syncer::CrossUserSharingPublicKey> sender_public_key =
       syncer::CrossUserSharingPublicKey::CreateByImport(
           sender_key_pair.GetRawPublicKey());
   CHECK(sender_public_key);

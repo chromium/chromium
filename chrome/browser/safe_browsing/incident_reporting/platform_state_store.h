@@ -11,11 +11,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Certain platforms provide their own storage of protobuf-serialized prune
 // state. On platforms where it is not supported, Load() and Store() are noops.
@@ -29,10 +29,10 @@ class Profile;
 namespace safe_browsing {
 namespace platform_state_store {
 
-// Loads the platform-specific storage for |profile|. Returns absl::nullopt if
+// Loads the platform-specific storage for |profile|. Returns std::nullopt if
 // there is no such storage for the current platform or in case of error;
 // otherwise, a (possibly empty) dictionary.
-absl::optional<base::Value::Dict> Load(Profile* profile);
+std::optional<base::Value::Dict> Load(Profile* profile);
 
 // Stores the state for |profile| in |incidents_sent| into platform-specific
 // storage if there is such for the current platform.

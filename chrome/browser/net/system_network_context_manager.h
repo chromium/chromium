@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -25,7 +26,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -161,10 +161,10 @@ class SystemNetworkContextManager {
   GetHttpAuthDynamicParamsForTesting();
 
   // Enables Certificate Transparency and enforcing the Chrome Certificate
-  // Transparency Policy. For test use only. Use absl::nullopt_t to reset to
+  // Transparency Policy. For test use only. Use std::nullopt_t to reset to
   // the default state.
   static void SetEnableCertificateTransparencyForTesting(
-      absl::optional<bool> enabled);
+      std::optional<bool> enabled);
 
   // Reloads the static CT log lists but overriding the log list update time
   // with the current time. For test use only.
@@ -271,7 +271,7 @@ class SystemNetworkContextManager {
   StubResolverConfigReader stub_resolver_config_reader_;
   static StubResolverConfigReader* stub_resolver_config_reader_for_testing_;
 
-  static absl::optional<bool> certificate_transparency_enabled_for_testing_;
+  static std::optional<bool> certificate_transparency_enabled_for_testing_;
 
 #if BUILDFLAG(IS_LINUX)
   GssapiLibraryLoadObserver gssapi_library_loader_observer_{this};

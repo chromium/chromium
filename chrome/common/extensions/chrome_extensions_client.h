@@ -51,7 +51,7 @@ class ChromeExtensionsClient : public ExtensionsClient {
       bool is_extension_active,
       std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns)
       const override;
-  absl::optional<int> GetExtensionExtendedErrorCode() const override;
+  std::optional<int> GetExtensionExtendedErrorCode() const override;
 
  private:
   const ChromePermissionMessageProvider permission_message_provider_;

@@ -33,13 +33,13 @@ void NavigateToURL(WindowOpenDisposition disposition,
 using extensions::api::search::Disposition;
 
 ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
-  absl::optional<api::search::Query::Params> params =
+  std::optional<api::search::Query::Params> params =
       api::search::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Convenience for input params.
   const std::string& text = params->query_info.text;
-  const absl::optional<int>& tab_id = params->query_info.tab_id;
+  const std::optional<int>& tab_id = params->query_info.tab_id;
   Disposition disposition = params->query_info.disposition;
 
   // Simple validation of input params.

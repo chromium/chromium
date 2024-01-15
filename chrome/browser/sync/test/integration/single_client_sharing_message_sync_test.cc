@@ -164,7 +164,7 @@ class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
   }
 
   const sync_pb::SharingMessageCommitError::ErrorCode expected_error_code_;
-  absl::optional<sync_pb::SharingMessageCommitError> last_error_code_;
+  std::optional<sync_pb::SharingMessageCommitError> last_error_code_;
 
   base::WeakPtrFactory<SharingMessageCallbackChecker> weak_ptr_factory_{this};
 };

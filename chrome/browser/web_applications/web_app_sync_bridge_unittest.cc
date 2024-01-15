@@ -61,8 +61,9 @@ bool IsSyncDataEqualIfApplied(const WebApp& expected_app,
 
   const GURL sync_start_url(entity_data.specifics.web_app().start_url());
   if (expected_app.app_id() !=
-      GenerateAppId(/*manifest_id=*/absl::nullopt, sync_start_url))
+      GenerateAppId(/*manifest_id=*/std::nullopt, sync_start_url)) {
     return false;
+  }
 
   // ApplySyncDataToApp enforces kSync source on |app_to_apply_sync_data|.
   ApplySyncDataToApp(entity_data.specifics.web_app(),
@@ -101,7 +102,7 @@ bool RegistryContainsSyncDataBatchChanges(
 std::unique_ptr<WebApp> CreateWebAppWithSyncOnlyFields(const std::string& url) {
   const GURL start_url(url);
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->AddSource(WebAppManagement::kSync);

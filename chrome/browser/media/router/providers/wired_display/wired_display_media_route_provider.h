@@ -168,7 +168,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   void TerminatePresentationsOnDisplay(const display::Display& display);
 
   // Returns a display associated with |sink_id|, or a nullopt if not found.
-  absl::optional<display::Display> GetDisplayBySinkId(
+  std::optional<display::Display> GetDisplayBySinkId(
       const std::string& sink_id) const;
 
   // Returns a list of available sinks.
@@ -198,7 +198,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   // Used for recording UMA metrics for the number of sinks available.
   WiredDisplayDeviceCountMetrics device_count_metrics_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 }  // namespace media_router

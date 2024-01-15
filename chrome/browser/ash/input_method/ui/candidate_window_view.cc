@@ -176,7 +176,7 @@ class InformationTextArea : public views::View {
  private:
   raw_ptr<views::Label> label_;
   int min_width_;
-  absl::optional<BorderPosition> position_;
+  std::optional<BorderPosition> position_;
 };
 
 BEGIN_METADATA(InformationTextArea, views::View)

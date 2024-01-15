@@ -271,7 +271,7 @@ class ProfileManager : public Profile::Delegate {
   // Searches for the latest active profile that respects |predicate|, already
   // loaded preferably. Returns nullopt if no existing profile respects all the
   // conditions.
-  absl::optional<base::FilePath> FindLastActiveProfile(
+  std::optional<base::FilePath> FindLastActiveProfile(
       base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
 
   DeleteProfileHelper& GetDeleteProfileHelper();

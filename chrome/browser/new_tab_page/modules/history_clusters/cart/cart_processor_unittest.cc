@@ -431,14 +431,14 @@ TEST_F(CartProcessorTest, TestRecordCartAssociationMetrics) {
       history_clusters::testing::CreateDefaultAnnotatedVisit(
           1, GURL("https://foo.com/"));
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-      visit, /*normalized_url=*/absl::nullopt, 0.1)};
+      visit, /*normalized_url=*/std::nullopt, 0.1)};
   history::Cluster cluster2;
   cluster2.cluster_id = 2;
   history::AnnotatedVisit visit2 =
       history_clusters::testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://amazon.com/"));
   cluster2.visits = {history_clusters::testing::CreateClusterVisit(
-      visit2, /*normalized_url=*/absl::nullopt, 0.1)};
+      visit2, /*normalized_url=*/std::nullopt, 0.1)};
 
   // Act.
   std::vector<history::Cluster> clusters = {cluster1};

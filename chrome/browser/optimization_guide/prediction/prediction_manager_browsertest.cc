@@ -204,7 +204,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            absl::nullopt, model_file_observer);
+            std::nullopt, model_file_observer);
   }
 
   PredictionManager* GetPredictionManager() {
@@ -454,7 +454,7 @@ class PredictionManagerModelDownloadingBrowserTest
         profile ? profile : browser()->profile())
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/absl::nullopt, model_file_observer_.get());
+            /*model_metadata=*/std::nullopt, model_file_observer_.get());
   }
 
  private:
@@ -975,7 +975,7 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
         guest_browser->profile())
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/absl::nullopt, &model_file_observer);
+            /*model_metadata=*/std::nullopt, &model_file_observer);
     // Wait until the opt guide is up and the model is loaded as its shared
     // between profiles.
     RetryForHistogramUntilCountReached(
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelPackageOverrideTest, TestE2E) {
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddObserverForOptimizationTargetModel(
           proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-          /*model_metadata=*/absl::nullopt, &model_file_observer);
+          /*model_metadata=*/std::nullopt, &model_file_observer);
 
   run_loop.Run();
 }

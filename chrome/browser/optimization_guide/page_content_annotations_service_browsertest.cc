@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,7 +24,6 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -37,7 +40,6 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -64,7 +66,7 @@ class TestPageContentAnnotationsObserver
       const PageContentAnnotationsResult& result) override {
     last_page_content_annotations_result_ = result;
   }
-  absl::optional<PageContentAnnotationsResult>
+  std::optional<PageContentAnnotationsResult>
       last_page_content_annotations_result_;
 };
 
@@ -78,7 +80,7 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   GetContentAnnotationsTask(
       const GURL& url,
       base::OnceCallback<void(
-          const absl::optional<history::VisitContentAnnotations>&)> callback)
+          const std::optional<history::VisitContentAnnotations>&)> callback)
       : url_(url), callback_(std::move(callback)) {}
   ~GetContentAnnotationsTask() override = default;
 
@@ -110,10 +112,10 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   const GURL url_;
   // The callback to invoke when the database call has completed.
   base::OnceCallback<void(
-      const absl::optional<history::VisitContentAnnotations>&)>
+      const std::optional<history::VisitContentAnnotations>&)>
       callback_;
   // The content annotations that were stored for |url_|.
-  absl::optional<history::VisitContentAnnotations> stored_content_annotations_;
+  std::optional<history::VisitContentAnnotations> stored_content_annotations_;
 };
 
 class PageContentAnnotationsServiceDisabledBrowserTest
@@ -278,16 +280,16 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 #endif
   }
 
-  absl::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
+  std::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
       const GURL& url) {
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
     if (!history_service)
-      return absl::nullopt;
+      return std::nullopt;
 
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    absl::optional<history::VisitContentAnnotations> got_content_annotations;
+    std::optional<history::VisitContentAnnotations> got_content_annotations;
 
     base::CancelableTaskTracker task_tracker;
     history_service->ScheduleDBTask(
@@ -295,9 +297,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         std::make_unique<GetContentAnnotationsTask>(
             url, base::BindOnce(
                      [](base::RunLoop* run_loop,
-                        absl::optional<history::VisitContentAnnotations>*
+                        std::optional<history::VisitContentAnnotations>*
                             out_content_annotations,
-                        const absl::optional<history::VisitContentAnnotations>&
+                        const std::optional<history::VisitContentAnnotations>&
                             content_annotations) {
                        *out_content_annotations = content_annotations;
                        run_loop->Quit();
@@ -310,7 +312,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 
   bool ModelAnnotationsFieldsAreSetForURL(const GURL& url) {
-    absl::optional<history::VisitContentAnnotations> got_content_annotations =
+    std::optional<history::VisitContentAnnotations> got_content_annotations =
         GetContentAnnotationsForURL(url);
     // No content annotations -> no model annotations fields.
     if (!got_content_annotations)
@@ -375,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       expected_count);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
@@ -409,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 #endif
 
@@ -441,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   WaitForHistoryServiceToFinish();
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
@@ -460,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{std::string(), 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{std::string(), 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 #endif
 
@@ -513,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   history_visit.text_to_annotate = "sometext";
 
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"sometext", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"sometext", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   {
@@ -564,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        RegisterPageContentAnnotationsObserver) {
   base::HistogramTester histogram_tester;
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   TestPageContentAnnotationsObserver observer;
@@ -630,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_THAT(
@@ -668,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_THAT(
@@ -697,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_EQ(got_content_annotations->alternative_title, "alternative title");
@@ -808,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
 
-  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+  std::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_TRUE(got_content_annotations->has_url_keyed_image);
@@ -836,7 +838,7 @@ class PageContentAnnotationsServiceNoHistoryTest
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
                        ModelExecutesButDoesntWriteToHistory) {
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   base::HistogramTester histogram_tester;
@@ -868,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
                        ModelExecutesAndUsesCachedResult) {
   TestPageContentAnnotator test_annotator;
-  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   {
@@ -928,7 +930,7 @@ class PageContentAnnotationsServiceBatchVisitTest
             browser()->profile());
 
     annotator_.UsePageEntities(
-        /*model_info=*/absl::nullopt,
+        /*model_info=*/std::nullopt,
         {
             {
                 "Test Page",

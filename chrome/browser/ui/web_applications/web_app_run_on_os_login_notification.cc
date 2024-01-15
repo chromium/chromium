@@ -112,7 +112,7 @@ message_center::Notification CreateNotification(
 #endif  // (BUILDFLAG(IS_CHROMEOS_ASH))
 
   auto click_callback = base::BindRepeating(
-      [](base::WeakPtr<Profile> profile, absl::optional<int> index) -> void {
+      [](base::WeakPtr<Profile> profile, std::optional<int> index) -> void {
         if (!profile) {
           return;
         }

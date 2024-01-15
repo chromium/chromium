@@ -289,7 +289,7 @@ class SmartCardProviderPrivateAPI
       void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                      RequestId),
       base::Value::List event_arguments = base::Value::List(),
-      absl::optional<base::TimeDelta> timeout = absl::nullopt);
+      std::optional<base::TimeDelta> timeout = std::nullopt);
 
   device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(
       ContextId scard_context,

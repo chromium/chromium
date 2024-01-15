@@ -65,7 +65,7 @@ class EnterpriseConnectorsResultShouldAllowDataUseTest
   }
 
   AnalysisSettings settings() {
-    absl::optional<AnalysisSettings> settings =
+    std::optional<AnalysisSettings> settings =
         ConnectorsServiceFactory::GetForBrowserContext(profile())
             ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
     EXPECT_TRUE(settings.has_value());

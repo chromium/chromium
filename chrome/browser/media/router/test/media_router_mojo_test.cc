@@ -67,7 +67,7 @@ void MockMediaRouteProvider::RouteRequestSuccess(RouteCallback& cb) const {
 }
 
 void MockMediaRouteProvider::RouteRequestTimeout(RouteCallback& cb) const {
-  std::move(cb).Run(absl::nullopt, nullptr, std::string("error"),
+  std::move(cb).Run(std::nullopt, nullptr, std::string("error"),
                     mojom::RouteRequestResultCode::TIMED_OUT);
 }
 
@@ -243,7 +243,7 @@ void MediaRouterMojoTest::TestTerminateRoute() {
       .WillOnce(
           Invoke([](const std::string& route_id,
                     mojom::MediaRouteProvider::TerminateRouteCallback& cb) {
-            std::move(cb).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
+            std::move(cb).Run(std::nullopt, mojom::RouteRequestResultCode::OK);
           }));
   router()->TerminateRoute(kRouteId);
   base::RunLoop().RunUntilIdle();

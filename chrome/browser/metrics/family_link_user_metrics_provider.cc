@@ -35,7 +35,7 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
       continue;
     }
 #endif
-    absl::optional<supervised_user::LogSegment> log_segment =
+    std::optional<supervised_user::LogSegment> log_segment =
         supervised_user::SupervisionStatusForUser(
             IdentityManagerFactory::GetForProfile(profile));
     if (log_segment.has_value()) {

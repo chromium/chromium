@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
@@ -89,7 +89,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void Shutdown();
 
   void MaybeUpdate(const GURL& url,
-                   const absl::optional<webapps::AppId>& app_id,
+                   const std::optional<webapps::AppId>& app_id,
                    content::WebContents* web_contents);
   bool IsUpdateConsumed(const webapps::AppId& app_id, base::Time check_time);
   bool IsUpdateCommandPending(const webapps::AppId& app_id);
@@ -162,7 +162,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       const GURL& url,
       const webapps::AppId& app_id,
       ManifestUpdateCheckResult check_result,
-      absl::optional<WebAppInstallInfo> install_info);
+      std::optional<WebAppInstallInfo> install_info);
 
   void StartManifestWriteAfterWindowsClosed(
       const GURL& url,
@@ -174,7 +174,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   bool MaybeConsumeUpdateCheck(const GURL& origin,
                                const webapps::AppId& app_id,
                                base::Time check_time);
-  absl::optional<base::Time> GetLastUpdateCheckTime(
+  std::optional<base::Time> GetLastUpdateCheckTime(
       const webapps::AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
                               const webapps::AppId& app_id,
@@ -183,7 +183,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                        const webapps::AppId& app_id,
                        ManifestUpdateResult result);
   void NotifyResult(const GURL& url,
-                    const absl::optional<webapps::AppId>& app_id,
+                    const std::optional<webapps::AppId>& app_id,
                     ManifestUpdateResult result);
 
   static bool& BypassWindowCloseWaitingForTesting();
@@ -200,7 +200,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   std::map<webapps::AppId, UpdateStage> update_stages_;
   base::flat_map<webapps::AppId, base::Time> last_update_check_;
 
-  absl::optional<base::Time> time_override_for_testing_;
+  std::optional<base::Time> time_override_for_testing_;
 
   bool started_ = false;
   bool hang_update_checks_for_testing_ = false;

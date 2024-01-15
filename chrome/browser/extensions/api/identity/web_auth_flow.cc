@@ -42,8 +42,8 @@ WebAuthFlow::WebAuthFlow(
     Mode mode,
     bool user_gesture,
     AbortOnLoad abort_on_load_for_non_interactive,
-    absl::optional<base::TimeDelta> timeout_for_non_interactive,
-    absl::optional<gfx::Rect> popup_bounds)
+    std::optional<base::TimeDelta> timeout_for_non_interactive,
+    std::optional<gfx::Rect> popup_bounds)
     : delegate_(delegate),
       profile_(profile),
       provider_url_(provider_url),

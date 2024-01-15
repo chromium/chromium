@@ -62,7 +62,7 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
   // "X-Chrome-Manage-Accounts" header.
   void ReceiveManageAccountsHeader(
       const base::flat_map<std::string, std::string>& header_params) {
-    NavigateToURL(GetUrlWithManageAccountsHeader(header_params), absl::nullopt);
+    NavigateToURL(GetUrlWithManageAccountsHeader(header_params), std::nullopt);
   }
 
   GURL GetUrlWithManageAccountsHeader(
@@ -80,7 +80,7 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
 
   // Helper method to navigate with an optional request initiator origin.
   void NavigateToURL(const GURL& url,
-                     absl::optional<url::Origin> initiator_origin) {
+                     std::optional<url::Origin> initiator_origin) {
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
     params.disposition = WindowOpenDisposition::CURRENT_TAB;
     if (initiator_origin) {
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
   size_t browser_count = chrome::GetTotalBrowserCount();
 
   NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
-                absl::nullopt);
+                std::nullopt);
 
   // Incognito window should not have been displayed, the browser count
   // stays the same.

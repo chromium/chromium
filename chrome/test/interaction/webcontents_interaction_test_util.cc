@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -42,7 +43,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -61,7 +61,7 @@ class RenderFrameHost;
 namespace {
 
 content::WebContents* GetWebContents(Browser* browser,
-                                     absl::optional<int> tab_index) {
+                                     std::optional<int> tab_index) {
   auto* const model = browser->tab_strip_model();
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
@@ -663,7 +663,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForExistingTabInContext(
     ui::ElementContext context,
     ui::ElementIdentifier page_identifier,
-    absl::optional<int> tab_index) {
+    std::optional<int> tab_index) {
   return ForExistingTabInBrowser(
       InteractionTestUtilBrowser::GetBrowserFromContext(context),
       page_identifier, tab_index);
@@ -674,7 +674,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForExistingTabInBrowser(
     Browser* browser,
     ui::ElementIdentifier page_identifier,
-    absl::optional<int> tab_index) {
+    std::optional<int> tab_index) {
   return ForTabWebContents(GetWebContents(browser, tab_index), page_identifier);
 }
 
@@ -684,7 +684,7 @@ WebContentsInteractionTestUtil::ForTabWebContents(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier) {
   return base::WrapUnique(new WebContentsInteractionTestUtil(
-      web_contents, page_identifier, absl::nullopt, nullptr));
+      web_contents, page_identifier, std::nullopt, nullptr));
 }
 
 // static
@@ -693,7 +693,7 @@ WebContentsInteractionTestUtil::ForNonTabWebView(
     views::WebView* web_view,
     ui::ElementIdentifier page_identifier) {
   return base::WrapUnique(new WebContentsInteractionTestUtil(
-      web_view->GetWebContents(), page_identifier, absl::nullopt, web_view));
+      web_view->GetWebContents(), page_identifier, std::nullopt, web_view));
 }
 
 // static
@@ -1017,7 +1017,7 @@ void WebContentsInteractionTestUtil::OnTabStripModelChanged(
 WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier,
-    absl::optional<Browser*> browser,
+    std::optional<Browser*> browser,
     views::WebView* web_view)
     : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
   CHECK(page_identifier);

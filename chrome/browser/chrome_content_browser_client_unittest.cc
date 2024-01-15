@@ -267,13 +267,13 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   ui::PageTransition transition;
   bool is_renderer_initiated;
   content::Referrer referrer = content::Referrer();
-  absl::optional<url::Origin> initiator_origin = absl::nullopt;
+  std::optional<url::Origin> initiator_origin = std::nullopt;
 
   GURL remote_ntp_url("chrome-search://remote-ntp");
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   // The origin is a placeholder to test that |initiator_origin| is set to
-  // absl::nullopt and is not meant to represent what would happen in practice.
+  // std::nullopt and is not meant to represent what would happen in practice.
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
   client.OverrideNavigationParams(remote_ntp_url, &transition,
                                   &is_renderer_initiated, &referrer,
@@ -281,7 +281,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(absl::nullopt, initiator_origin);
+  EXPECT_EQ(std::nullopt, initiator_origin);
 
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
@@ -292,7 +292,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(absl::nullopt, initiator_origin);
+  EXPECT_EQ(std::nullopt, initiator_origin);
 
   // No change for transitions that are not PAGE_TRANSITION_LINK.
   transition = ui::PAGE_TRANSITION_TYPED;

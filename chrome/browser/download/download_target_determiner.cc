@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_target_determiner.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,6 @@
 #include "net/base/filename_util.h"
 #include "net/http/http_content_disposition.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -1304,7 +1304,7 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   return danger_level;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 DownloadTargetDeterminer::GetLastDownloadBypassTimestamp() const {
   safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
       safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
@@ -1313,7 +1313,7 @@ DownloadTargetDeterminer::GetLastDownloadBypassTimestamp() const {
   return metrics_collector ? metrics_collector->GetLatestEventTimestamp(
                                  safe_browsing::SafeBrowsingMetricsCollector::
                                      EventType::DANGEROUS_DOWNLOAD_BYPASS)
-                           : absl::nullopt;
+                           : std::nullopt;
 }
 
 void DownloadTargetDeterminer::OnDownloadDestroyed(

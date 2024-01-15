@@ -206,7 +206,7 @@ void ImeServiceConnector::NotifyAllDownloadListeners(base::FilePath file_path) {
 
   // Clear the currently active request info.
   url_loader_.reset();
-  active_request_url_ = absl::nullopt;
+  active_request_url_ = std::nullopt;
 }
 
 }  // namespace input_method

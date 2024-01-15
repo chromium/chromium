@@ -50,7 +50,7 @@ class ChromeUserLogsDataCollector : public DataCollector {
  private:
   void CleanUp();
 
-  void OnTempDirCreated(absl::optional<base::FilePath> temp_dir);
+  void OnTempDirCreated(std::optional<base::FilePath> temp_dir);
 
   void OnGetUserLogPaths(std::vector<base::FilePath> user_logs_paths);
 
@@ -71,7 +71,7 @@ class ChromeUserLogsDataCollector : public DataCollector {
       std::set<redaction::PIIType> pii_types_to_keep,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
-      absl::optional<std::string> log_contents);
+      std::optional<std::string> log_contents);
 
   void OnPIIRedacted(base::RepeatingClosure barrier_closure,
                      std::string file_name,

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 
+#include <optional>
+
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "extensions/common/extension_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -34,19 +35,19 @@ ExtensionFunction::ResponseAction SidePanelApiFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction SidePanelGetOptionsFunction::RunFunction() {
-  absl::optional<api::side_panel::GetOptions::Params> params =
+  std::optional<api::side_panel::GetOptions::Params> params =
       api::side_panel::GetOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto tab_id = params->options.tab_id
-                    ? absl::optional<int>(*(params->options.tab_id))
-                    : absl::nullopt;
+                    ? std::optional<int>(*(params->options.tab_id))
+                    : std::nullopt;
   const api::side_panel::PanelOptions& options =
       GetService()->GetOptions(*extension(), tab_id);
   return RespondNow(WithArguments(options.ToValue()));
 }
 
 ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {
-  absl::optional<api::side_panel::SetOptions::Params> params =
+  std::optional<api::side_panel::SetOptions::Params> params =
       api::side_panel::SetOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   // TODO(crbug.com/1328645): Validate the relative extension path exists.
@@ -56,7 +57,7 @@ ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {
 
 ExtensionFunction::ResponseAction
 SidePanelSetPanelBehaviorFunction::RunFunction() {
-  absl::optional<api::side_panel::SetPanelBehavior::Params> params =
+  std::optional<api::side_panel::SetPanelBehavior::Params> params =
       api::side_panel::SetPanelBehavior::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->behavior.open_panel_on_action_click.has_value()) {
@@ -87,7 +88,7 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
               "response to a user gesture."));
   }
 
-  absl::optional<api::side_panel::Open::Params> params =
+  std::optional<api::side_panel::Open::Params> params =
       api::side_panel::Open::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

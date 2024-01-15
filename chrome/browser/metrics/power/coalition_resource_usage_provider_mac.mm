@@ -99,9 +99,9 @@ void CoalitionResourceUsageProvider::StartShortInterval() {
 }
 
 void CoalitionResourceUsageProvider::EndIntervals(
-    absl::optional<power_metrics::CoalitionResourceUsageRate>*
+    std::optional<power_metrics::CoalitionResourceUsageRate>*
         short_interval_resource_usage_rate,
-    absl::optional<power_metrics::CoalitionResourceUsageRate>*
+    std::optional<power_metrics::CoalitionResourceUsageRate>*
         long_interval_resource_usage_rate) {
 #if DCHECK_IS_ON()
   DCHECK(initialized_);

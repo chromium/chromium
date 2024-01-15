@@ -62,7 +62,7 @@ bool FederatedIdentityPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const absl::optional<std::string>& account_id) {
+    const std::optional<std::string>& account_id) {
   return sharing_context_->HasPermission(relying_party_requester,
                                          relying_party_embedder,
                                          identity_provider, account_id);
@@ -105,7 +105,7 @@ void FederatedIdentityPermissionContext::RemoveFederatedIdentityDataByDataKey(
                                                          std::move(callback));
 }
 
-absl::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
+std::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   return idp_signin_context_->GetSigninStatus(idp_origin);
 }
@@ -113,7 +113,7 @@ absl::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
 void FederatedIdentityPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
-  absl::optional<bool> old_idp_signin_status = GetIdpSigninStatus(idp_origin);
+  std::optional<bool> old_idp_signin_status = GetIdpSigninStatus(idp_origin);
   // We always notify if idp_signin_status is true because the list of logged
   // in accounts may have changed.
   if (!idp_signin_status && (idp_signin_status == old_idp_signin_status)) {

@@ -308,7 +308,7 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   // ui::TreeModel:
   void GetIcons(std::vector<ui::ImageModel>* icons) override;
-  absl::optional<size_t> GetIconIndex(ui::TreeModelNode* node) override;
+  std::optional<size_t> GetIconIndex(ui::TreeModelNode* node) override;
 
   void DeleteAllStoredObjects();
 

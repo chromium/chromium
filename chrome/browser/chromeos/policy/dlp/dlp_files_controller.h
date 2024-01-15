@@ -167,12 +167,12 @@ class DlpFilesController {
   explicit DlpFilesController(const DlpRulesManager& rules_manager);
 
   // Maps |file_path| to data_controls::Component if possible.
-  virtual absl::optional<data_controls::Component> MapFilePathToPolicyComponent(
+  virtual std::optional<data_controls::Component> MapFilePathToPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) = 0;
 
   // Shows DLP block desktop notification.
-  virtual void ShowDlpBlockedFiles(absl::optional<uint64_t> task_id,
+  virtual void ShowDlpBlockedFiles(std::optional<uint64_t> task_id,
                                    std::vector<base::FilePath> blocked_files,
                                    dlp::FileAction action) = 0;
 

@@ -16,7 +16,7 @@ namespace app_list::test {
 TEST(ManateeTest, GetWordSimilarityPositiveVectors) {
   std::vector<double> v1{1.0, 2.0, 3.0};
   std::vector<double> v2{4.0, 5.0, 6.0};
-  absl::optional<double> result = GetWordSimilarity(v1, v2);
+  std::optional<double> result = GetWordSimilarity(v1, v2);
   ASSERT_TRUE(result.has_value());
   EXPECT_NEAR(0.974632, result.value(), 1e-5);
 }
@@ -25,7 +25,7 @@ TEST(ManateeTest, GetWordSimilarityPositiveVectors) {
 TEST(ManateeTest, GetWordSimilarityMismatchingSize) {
   std::vector<double> v1{1.0, 2.0, 3.0};
   std::vector<double> v2{4.0, 5.0, 6.0, 7.0};
-  absl::optional<double> result = GetWordSimilarity(v1, v2);
+  std::optional<double> result = GetWordSimilarity(v1, v2);
   ASSERT_FALSE(result.has_value());
 }
 
@@ -33,7 +33,7 @@ TEST(ManateeTest, GetWordSimilarityMismatchingSize) {
 TEST(ManateeTest, GetWordSimilarityEmptyVectors) {
   std::vector<double> v1{};
   std::vector<double> v2{};
-  absl::optional<double> result = GetWordSimilarity(v1, v2);
+  std::optional<double> result = GetWordSimilarity(v1, v2);
   ASSERT_TRUE(result.has_value());
   EXPECT_DOUBLE_EQ(0.0, result.value());
 }
@@ -42,7 +42,7 @@ TEST(ManateeTest, GetWordSimilarityEmptyVectors) {
 TEST(ManateeTest, GetWordSimilarityZeroVectors) {
   std::vector<double> v1{1.0, 2.0, 3.0};
   std::vector<double> v2{0.0, 0.0, 0.0};
-  absl::optional<double> result = GetWordSimilarity(v1, v2);
+  std::optional<double> result = GetWordSimilarity(v1, v2);
   ASSERT_TRUE(result.has_value());
   EXPECT_DOUBLE_EQ(0.0, result.value());
 }

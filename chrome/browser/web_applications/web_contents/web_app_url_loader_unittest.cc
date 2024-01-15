@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -15,7 +16,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -48,7 +48,7 @@ class WebAppUrlLoaderTest : public WebAppTest {
   WebAppUrlLoader::Result LoadUrl(
       const GURL& desired,
       const GURL& actual,
-      absl::optional<int> error_code = absl::nullopt) {
+      std::optional<int> error_code = std::nullopt) {
     base::test::TestFuture<WebAppUrlLoader::Result> result;
     loader().LoadUrl(desired, web_contents(),
                      WebAppUrlLoader::UrlComparison::kExact,

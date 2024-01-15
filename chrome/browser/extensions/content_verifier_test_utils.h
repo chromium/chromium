@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -105,7 +105,7 @@ class DelayTracker {
 
  private:
   std::vector<base::TimeDelta> calls_;
-  absl::optional<base::OnceClosure> saved_callback_;
+  std::optional<base::OnceClosure> saved_callback_;
   CorruptedExtensionReinstaller::ReinstallCallback action_;
 };
 

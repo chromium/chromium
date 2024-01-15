@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/web_view/chrome_web_view_internal_api.h"
 
+#include <optional>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/extensions/api/context_menus/context_menus_api.h"
 #include "chrome/browser/extensions/api/context_menus/context_menus_api_helpers.h"
@@ -12,7 +14,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/common/error_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webview = extensions::api::chrome_web_view_internal;
 
@@ -22,7 +23,7 @@ namespace extensions {
 // WebViewInternalExtensionFunction::RunAsyncSafe(WebViewGuest*).
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusCreateFunction::Run() {
-  absl::optional<webview::ContextMenusCreate::Params> params =
+  std::optional<webview::ContextMenusCreate::Params> params =
       webview::ContextMenusCreate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -41,7 +42,7 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
     const base::Value& properties = args()[1];
     EXTENSION_FUNCTION_VALIDATE(properties.is_dict());
-    absl::optional<int> result = properties.GetDict().FindInt(
+    std::optional<int> result = properties.GetDict().FindInt(
         extensions::context_menus_api_helpers::kGeneratedIdKey);
     EXTENSION_FUNCTION_VALIDATE(result);
     id.uid = *result;
@@ -56,7 +57,7 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusUpdateFunction::Run() {
-  absl::optional<webview::ContextMenusUpdate::Params> params =
+  std::optional<webview::ContextMenusUpdate::Params> params =
       webview::ContextMenusUpdate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -84,7 +85,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusRemoveFunction::Run() {
-  absl::optional<webview::ContextMenusRemove::Params> params =
+  std::optional<webview::ContextMenusRemove::Params> params =
       webview::ContextMenusRemove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -121,7 +122,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusRemoveAllFunction::Run() {
-  absl::optional<webview::ContextMenusRemoveAll::Params> params =
+  std::optional<webview::ContextMenusRemoveAll::Params> params =
       webview::ContextMenusRemoveAll::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -145,7 +146,7 @@ ChromeWebViewInternalShowContextMenuFunction::
 
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalShowContextMenuFunction::Run() {
-  absl::optional<webview::ShowContextMenu::Params> params =
+  std::optional<webview::ShowContextMenu::Params> params =
       webview::ShowContextMenu::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

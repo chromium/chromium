@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace task_manager {
 
@@ -47,7 +47,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
     base::Time start_time;
   };
   using OnSamplingCompleteCallback =
-      base::RepeatingCallback<void(absl::optional<SamplingResult>)>;
+      base::RepeatingCallback<void(std::optional<SamplingResult>)>;
 
   // Returns a combination of refresh flags supported by the shared sampler.
   int64_t GetSupportedFlags() const;

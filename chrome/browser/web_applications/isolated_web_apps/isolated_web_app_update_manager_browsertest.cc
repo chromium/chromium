@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                               VariantWith<InstalledBundle>(_),
                               Eq(base::Version("7.0.6")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               VariantWith<InstalledBundle>(_),
                               Eq(base::Version("7.0.6")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 }
 
 // TODO(crbug.com/1479463): Session restore does not restore app windows on
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               VariantWith<InstalledBundle>(_),
                               Eq(base::Version("7.0.6")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt))));
 
   Browser* app_window =
       AppBrowserController::FindForWebApp(*profile(), url_info_.app_id());

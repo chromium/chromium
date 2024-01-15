@@ -322,7 +322,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     providers.push_back(&provider_);
     policy_service_ = std::make_unique<PolicyServiceImpl>(std::move(providers));
 
-    absl::optional<base::Value::Dict> fake_toplevel_onc =
+    std::optional<base::Value::Dict> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
     ASSERT_TRUE(fake_toplevel_onc.has_value());
 
@@ -345,7 +345,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   }
 
   base::Value::List* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
-    absl::optional<base::Value::Dict> fake_toplevel_onc =
+    std::optional<base::Value::Dict> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
     if (!fake_toplevel_onc.has_value()) {
       return nullptr;

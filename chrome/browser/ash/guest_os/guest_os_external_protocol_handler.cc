@@ -24,15 +24,14 @@ void GuestOsUrlHandler::Handle(Profile* profile, const GURL& url) {
   handler_.Run(profile, url);
 }
 
-absl::optional<GuestOsUrlHandler> GuestOsUrlHandler::GetForUrl(
-    Profile* profile,
-    const GURL& url) {
+std::optional<GuestOsUrlHandler> GuestOsUrlHandler::GetForUrl(Profile* profile,
+                                                              const GURL& url) {
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   if (!registry_service) {
     // GuestOsRegistryService does not exist for incognito or guest profiles, so
     // don't try and use it.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return registry_service->GetHandler(url);

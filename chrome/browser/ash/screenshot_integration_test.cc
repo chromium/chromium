@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
 
     // Load the PNG screenshot.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    absl::optional<std::vector<uint8_t>> image_png =
+    std::optional<std::vector<uint8_t>> image_png =
         base::ReadFileToBytes(base::FilePath("/tmp/screen.png"));
     ASSERT_TRUE(image_png.has_value());
 

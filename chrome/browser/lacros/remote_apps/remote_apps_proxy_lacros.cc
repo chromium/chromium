@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -15,7 +16,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 

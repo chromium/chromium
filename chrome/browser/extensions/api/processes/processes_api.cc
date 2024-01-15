@@ -459,7 +459,7 @@ ProcessesEventRouter* ProcessesAPI::processes_event_router() {
 
 ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   // For this function, the task manager doesn't even need to be running.
-  absl::optional<api::processes::GetProcessIdForTab::Params> params =
+  std::optional<api::processes::GetProcessIdForTab::Params> params =
       api::processes::GetProcessIdForTab::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -489,7 +489,7 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // For this function, the task manager doesn't even need to be running.
-  absl::optional<api::processes::Terminate::Params> params =
+  std::optional<api::processes::Terminate::Params> params =
       api::processes::Terminate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -577,7 +577,7 @@ ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
           GetRefreshTypesFlagOnlyEssentialData()) {}
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
-  absl::optional<api::processes::GetProcessInfo::Params> params =
+  std::optional<api::processes::GetProcessInfo::Params> params =
       api::processes::GetProcessInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->process_ids.as_integer)

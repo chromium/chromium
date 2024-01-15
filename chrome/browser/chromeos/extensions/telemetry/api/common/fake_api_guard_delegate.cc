@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_api_guard_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -24,8 +24,7 @@ class Extension;
 
 namespace chromeos {
 
-FakeApiGuardDelegate::Factory::Factory(
-    absl::optional<std::string> error_message)
+FakeApiGuardDelegate::Factory::Factory(std::optional<std::string> error_message)
     : error_message_(error_message) {}
 
 FakeApiGuardDelegate::Factory::~Factory() = default;
@@ -37,7 +36,7 @@ FakeApiGuardDelegate::Factory::CreateInstance() {
 }
 
 FakeApiGuardDelegate::FakeApiGuardDelegate(
-    absl::optional<std::string> error_message)
+    std::optional<std::string> error_message)
     : error_message_(error_message) {}
 
 FakeApiGuardDelegate::~FakeApiGuardDelegate() = default;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -19,7 +20,6 @@
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -74,7 +74,7 @@ void SubresourceFilterComponentInstallerPolicy::ComponentReady(
     base::Value::Dict manifest) {
   DCHECK(!install_dir.empty());
   DVLOG(1) << "Subresource Filter Version Ready: " << install_dir.value();
-  absl::optional<int> ruleset_format =
+  std::optional<int> ruleset_format =
       manifest.FindInt(kManifestRulesetFormatKey);
   if (!ruleset_format || *ruleset_format != kCurrentRulesetFormat) {
     DVLOG(1) << "Bailing out.";

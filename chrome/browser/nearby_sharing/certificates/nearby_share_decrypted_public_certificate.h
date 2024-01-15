@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_DECRYPTED_PUBLIC_CERTIFICATE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "crypto/symmetric_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
@@ -24,10 +24,10 @@ class NearbyShareDecryptedPublicCertificate {
  public:
   // Attempts to decrypt the encrypted metadata of the PublicCertificate proto
   // by first decrypting the |encrypted_metadata_key| using the secret key
-  // then using the decrypted key to decrypt the metadata. Returns absl::nullopt
+  // then using the decrypted key to decrypt the metadata. Returns std::nullopt
   // if the metadata was not successfully decrypted or if the proto data is
   // invalid.
-  static absl::optional<NearbyShareDecryptedPublicCertificate>
+  static std::optional<NearbyShareDecryptedPublicCertificate>
   DecryptPublicCertificate(
       const nearby::sharing::proto::PublicCertificate& public_certificate,
       const NearbyShareEncryptedMetadataKey& encrypted_metadata_key);

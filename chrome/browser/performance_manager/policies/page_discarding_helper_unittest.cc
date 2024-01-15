@@ -816,7 +816,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target*/ absl::nullopt,
+      /*reclaim_target*/ std::nullopt,
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);

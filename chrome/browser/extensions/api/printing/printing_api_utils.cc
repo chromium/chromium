@@ -37,7 +37,7 @@ constexpr char kNamePattern[] = "namePattern";
 
 bool DoesPrinterMatchDefaultPrinterRules(
     const crosapi::mojom::LocalDestinationInfo& printer,
-    const absl::optional<DefaultPrinterRules>& rules) {
+    const std::optional<DefaultPrinterRules>& rules) {
   if (!rules.has_value())
     return false;
   return (rules->kind.empty() || rules->kind == kLocal) &&
@@ -67,19 +67,19 @@ bool ValidateVendorItem(const cloud_devices::printer::VendorItem& vendor_item) {
 
 }  // namespace
 
-absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
+std::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     const std::string& default_destination_selection_rules) {
   if (default_destination_selection_rules.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<base::Value> default_destination_selection_rules_value =
+  std::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules);
   base::Value::Dict* default_destination_selection_rules_dict =
       default_destination_selection_rules_value.has_value()
           ? default_destination_selection_rules_value->GetIfDict()
           : nullptr;
   if (!default_destination_selection_rules_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DefaultPrinterRules default_printer_rules;
@@ -101,7 +101,7 @@ absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
 
 idl::Printer PrinterToIdl(
     const crosapi::mojom::LocalDestinationInfo& printer,
-    const absl::optional<DefaultPrinterRules>& default_printer_rules,
+    const std::optional<DefaultPrinterRules>& default_printer_rules,
     const base::flat_map<std::string, int>& recently_used_ranks) {
   idl::Printer idl_printer;
   idl_printer.id = printer.id;
@@ -282,7 +282,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
   if (!base::Contains(capabilities.duplex_modes, settings.duplex_mode()))
     return false;
 
-  absl::optional<bool> is_color =
+  std::optional<bool> is_color =
       ::printing::IsColorModelSelected(settings.color());
   bool color_mode_selected = is_color.has_value() && is_color.value();
   if (!color_mode_selected &&

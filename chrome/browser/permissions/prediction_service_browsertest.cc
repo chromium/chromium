@@ -103,7 +103,7 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
       std::string test_url,
       PermissionAction permission_action,
       bool should_expect_quiet_ui,
-      absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
+      std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
           expected_prediction_likelihood) {
     auto* manager = GetPermissionRequestManager();
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest, ModelReturnsUnlikely) {
   std::string test_urls[] = {"a.test", "b.test", "c.test", "d.test"};
   for (std::string test_url : test_urls) {
     TriggerPromptAndVerifyUI(test_url, PermissionAction::DISMISSED,
-                             /*should_expect_quiet_ui=*/false, absl::nullopt);
+                             /*should_expect_quiet_ui=*/false, std::nullopt);
   }
   TriggerPromptAndVerifyUI(
       "e.test", PermissionAction::DISMISSED,
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTest, ModelReturnsLikely) {
   std::string test_urls[] = {"a.test", "b.test", "c.test", "d.test"};
   for (std::string test_url : test_urls) {
     TriggerPromptAndVerifyUI(test_url, PermissionAction::GRANTED,
-                             /*should_expect_quiet_ui=*/false, absl::nullopt);
+                             /*should_expect_quiet_ui=*/false, std::nullopt);
   }
   TriggerPromptAndVerifyUI(
       "e.test", PermissionAction::DISMISSED,

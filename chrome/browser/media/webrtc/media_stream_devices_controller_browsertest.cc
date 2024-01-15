@@ -250,7 +250,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
     blink::MediaStreamDevice fake_video_device(
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, example_video_id_,
         "Fake Video Device", GetControlSupport(),
-        media::MEDIA_VIDEO_FACING_NONE, absl::nullopt);
+        media::MEDIA_VIDEO_FACING_NONE, std::nullopt);
     video_devices.push_back(fake_video_device);
     MediaCaptureDevicesDispatcher::GetInstance()->SetTestVideoCaptureDevices(
         video_devices);

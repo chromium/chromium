@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -42,7 +43,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& os,
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppLocation& location,
-    const absl::optional<base::Version>& expected_version,
+    const std::optional<base::Version>& expected_version,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -277,7 +277,7 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
   GetMutableDebugValue().Set("result", "success");
   // Move the location so that it isn't cleaned up in the destructor.
   IsolatedWebAppLocation location = lazy_destination_location_.value();
-  lazy_destination_location_ = absl::nullopt;
+  lazy_destination_location_ = std::nullopt;
   CompleteAndSelfDestruct(
       CommandResult::kSuccess,
       InstallIsolatedWebAppCommandSuccess(actual_version_, location));

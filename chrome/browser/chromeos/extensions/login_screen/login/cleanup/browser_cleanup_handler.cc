@@ -99,7 +99,7 @@ void BrowserCleanupHandler::OnBrowsingDataRemoverDone(
   data_remover_->RemoveObserver(this);
 
   if (failed_data_types == 0) {
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 

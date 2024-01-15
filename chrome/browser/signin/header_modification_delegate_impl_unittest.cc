@@ -97,7 +97,7 @@ class TestResponseAdapter : public signin::ResponseAdapter {
 
   bool IsOutermostMainFrame() const override { return true; }
 
-  absl::optional<url::Origin> GetRequestInitiator() const override {
+  std::optional<url::Origin> GetRequestInitiator() const override {
     // Pretend the request came from the same origin.
     return url::Origin::Create(GetUrl());
   }

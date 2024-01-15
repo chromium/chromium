@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters::telemetry {
 
@@ -1600,10 +1600,10 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
         std::string(kDisplayNameExternal));
 
     auto external_display_empty = cros_healthd::mojom::ExternalDisplayInfo::New(
-        nullptr, nullptr, nullptr, nullptr, nullptr, absl::nullopt, nullptr,
-        nullptr, nullptr, nullptr, absl::nullopt,
+        nullptr, nullptr, nullptr, nullptr, nullptr, std::nullopt, nullptr,
+        nullptr, nullptr, nullptr, std::nullopt,
         cros_healthd::mojom::DisplayInputType::kUnmappedEnumField,
-        absl::nullopt);
+        std::nullopt);
 
     std::vector<cros_healthd::mojom::ExternalDisplayInfoPtr> external_displays;
     external_displays.push_back(std::move(external_display_1));
@@ -1772,7 +1772,7 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
                   crosapi::mojom::DoubleValue::New(0.),
                   crosapi::mojom::DoubleValue::New(0.), "",
                   crosapi::mojom::DoubleValue::New(0.),
-                  crosapi::mojom::DoubleValue::New(0.), "", "", absl::nullopt,
+                  crosapi::mojom::DoubleValue::New(0.), "", "", std::nullopt,
                   nullptr)),
           crosapi::mojom::ProbeNonRemovableBlockDeviceResult::
               NewBlockDeviceInfo({}),
@@ -1810,8 +1810,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
                   crosapi::mojom::BoolValue::New(false),
                   crosapi::mojom::BoolValue::New(false),
                   crosapi::mojom::UInt32Value::New(0),
-                  crosapi::mojom::UInt32Value::New(0), absl::nullopt,
-                  absl::nullopt)),
+                  crosapi::mojom::UInt32Value::New(0), std::nullopt,
+                  std::nullopt)),
           crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(
               std::vector<crosapi::mojom::ProbeBusInfoPtr>()),
           crosapi::mojom::ProbeDisplayResult::NewDisplayInfo(

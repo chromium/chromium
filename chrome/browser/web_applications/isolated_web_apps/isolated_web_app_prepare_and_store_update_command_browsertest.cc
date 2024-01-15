@@ -103,7 +103,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
                             test::IsolationDataIs(
                                 Eq(result->location), Eq(installed_version_),
                                 /*controlled_frame_partitions=*/_,
-                                /*pending_update_info=*/Eq(absl::nullopt))));
+                                /*pending_update_info=*/Eq(std::nullopt))));
     return result.value();
   }
 

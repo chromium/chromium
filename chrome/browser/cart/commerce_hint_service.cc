@@ -80,7 +80,7 @@ class CommerceHintObserverImpl
 
   ~CommerceHintObserverImpl() override = default;
 
-  void OnAddToCart(const absl::optional<GURL>& cart_url,
+  void OnAddToCart(const std::optional<GURL>& cart_url,
                    const std::string& product_id) override {
     DVLOG(1) << "Received OnAddToCart in the browser process on "
              << binding_url_;
@@ -227,22 +227,22 @@ bool CommerceHintService::ShouldSkip(const GURL& url) {
 }
 
 void CommerceHintService::OnAddToCart(const GURL& navigation_url,
-                                      const absl::optional<GURL>& cart_url,
+                                      const std::optional<GURL>& cart_url,
                                       const std::string& product_id) {
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldSkip(navigation_url))
     return;
-  absl::optional<GURL> validated_cart = cart_url;
+  std::optional<GURL> validated_cart = cart_url;
   if (cart_url && GetDomain(*cart_url) != GetDomain(navigation_url)) {
     DVLOG(1) << "Reject cart URL with different eTLD+1 domain.";
-    validated_cart = absl::nullopt;
+    validated_cart = std::nullopt;
   }
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
   if (service_->IsCartDiscountEnabled() &&
       commerce::IsRuleDiscountPartnerMerchant(navigation_url) &&
       product_id.empty()) {
-    validated_cart = absl::nullopt;
+    validated_cart = std::nullopt;
   }
   cart_db::ChromeCartContentProto proto;
   std::vector<mojom::ProductPtr> products;
@@ -268,12 +268,12 @@ void CommerceHintService::OnCartUpdated(
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldSkip(cart_url))
     return;
-  absl::optional<GURL> validated_cart = cart_url;
+  std::optional<GURL> validated_cart = cart_url;
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
   if (service_->IsCartDiscountEnabled() &&
       commerce::IsRuleDiscountPartnerMerchant(cart_url)) {
-    validated_cart = absl::nullopt;
+    validated_cart = std::nullopt;
   }
   cart_db::ChromeCartContentProto proto;
   ConstructCartProto(&proto, cart_url, std::move(products));

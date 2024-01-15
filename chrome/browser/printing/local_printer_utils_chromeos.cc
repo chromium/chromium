@@ -4,12 +4,12 @@
 
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 
+#include <optional>
 #include <string>
 
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -90,7 +90,7 @@ crosapi::mojom::LocalPrinter* GetLocalPrinterInterface() {
 
 crosapi::mojom::CapabilitiesResponsePtr PrinterWithCapabilitiesToMojom(
     const chromeos::Printer& printer,
-    const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
+    const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
   return crosapi::mojom::CapabilitiesResponse::New(
       PrinterToMojom(printer), printer.HasSecureProtocol(),
       caps,     // comment to prevent git cl format

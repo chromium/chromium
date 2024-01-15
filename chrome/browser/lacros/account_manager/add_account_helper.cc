@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/account_manager/add_account_helper.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_upsertion_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 AddAccountHelper::AddAccountHelper(
     IsAccountInCacheCallback is_account_in_cache_callback,
@@ -96,7 +96,7 @@ void AddAccountHelper::OnShowAddAccountDialogCompleted(
       result.account()->key.account_type() !=
           account_manager::AccountType::kGaia;
   if (add_account_failure) {
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     // `this` may be deleted.
     return;
   }
@@ -148,7 +148,7 @@ void AddAccountHelper::MaybeCompleteAddAccount() {
   DCHECK_EQ(account_->key.account_type(), account_manager::AccountType::kGaia);
   const std::string& gaia_id = account_->key.id();
   DCHECK(!gaia_id.empty());
-  absl::optional<AccountProfileMapper::AddAccountResult> result;
+  std::optional<AccountProfileMapper::AddAccountResult> result;
 
   ProfileAttributesEntry* entry =
       profile_attributes_storage_->GetProfileAttributesWithPath(

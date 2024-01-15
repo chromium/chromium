@@ -52,13 +52,13 @@ class ExtensionFunctionalTest : public ExtensionBrowserTest {
     installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedInTest);
 
-    TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+    TestFuture<std::optional<CrxInstallError>> installer_done_future;
     installer->AddInstallerCallback(
         installer_done_future
-            .GetCallback<const absl::optional<CrxInstallError>&>());
+            .GetCallback<const std::optional<CrxInstallError>&>());
     installer->InstallCrx(path);
 
-    const absl::optional<CrxInstallError>& error = installer_done_future.Get();
+    const std::optional<CrxInstallError>& error = installer_done_future.Get();
     EXPECT_FALSE(error);
 
     size_t num_after = registry->enabled_extensions().size();

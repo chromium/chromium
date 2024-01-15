@@ -893,7 +893,7 @@ void UiElement::ClipChildren(const gfx::RectF& abs_clip) {
       continue;
 
     DCHECK(child->LocalTransform().IsScaleOrTranslation());
-    absl::optional<gfx::RectF> child_abs_clip =
+    std::optional<gfx::RectF> child_abs_clip =
         child->LocalTransform().InverseMapRect(abs_clip);
     DCHECK(child_abs_clip);
     if (!child->size().IsEmpty()) {

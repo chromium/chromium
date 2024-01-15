@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -16,7 +17,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -46,7 +46,7 @@ void SetFirstAcceptTimeTo(Profile* profile, int days_ago) {
               since_epoch.InDaysFloored() - days_ago);
 }
 
-absl::optional<int> GetFirstAcceptTime(Profile* profile) {
+std::optional<int> GetFirstAcceptTime(Profile* profile) {
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   return update->FindInt("multi_word_first_accept");
@@ -421,7 +421,7 @@ TEST_F(MultiWordSuggesterTest, SetsAcceptTimeOnFirstSuggestionAcceptedOnly) {
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
   auto pref_after_second_accept = GetFirstAcceptTime(profile_.get());
 
-  EXPECT_EQ(pref_before_accept, absl::nullopt);
+  EXPECT_EQ(pref_before_accept, std::nullopt);
   ASSERT_TRUE(pref_after_first_accept.has_value());
   ASSERT_TRUE(pref_after_second_accept.has_value());
   EXPECT_EQ(*pref_after_first_accept, *pref_after_second_accept);

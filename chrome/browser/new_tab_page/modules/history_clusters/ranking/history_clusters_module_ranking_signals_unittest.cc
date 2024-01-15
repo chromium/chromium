@@ -46,11 +46,11 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorNoCartsNoBoost) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster.visits = {history_clusters::testing::CreateClusterVisit(
-                        visit, /*normalized_url=*/absl::nullopt, 1.0),
+                        visit, /*normalized_url=*/std::nullopt, 1.0),
                     history_clusters::testing::CreateClusterVisit(
-                        visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                        visit2, /*normalized_url=*/std::nullopt, 1.0),
                     history_clusters::testing::CreateClusterVisit(
-                        visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                        visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   HistoryClustersModuleRankingSignals signals(
       /*active_carts=*/{}, /*category_boostlist=*/{}, cluster);
@@ -116,11 +116,11 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster.visits = {history_clusters::testing::CreateClusterVisit(
-                        visit, /*normalized_url=*/absl::nullopt, 1.0),
+                        visit, /*normalized_url=*/std::nullopt, 1.0),
                     history_clusters::testing::CreateClusterVisit(
-                        visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                        visit2, /*normalized_url=*/std::nullopt, 1.0),
                     history_clusters::testing::CreateClusterVisit(
-                        visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                        visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   std::vector<CartDB::KeyAndValue> active_carts = {
       {"merchant.com", cart_db::ChromeCartContentProto::default_instance()},

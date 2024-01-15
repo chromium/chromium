@@ -179,9 +179,8 @@ bool FeatureFlagsUpdate::DiffersFromCommandLine(
   auto lookup = [](const std::map<std::string, std::string>& origin_list_flags,
                    const std::string& key) {
     const auto entry = origin_list_flags.find(key);
-    return entry == origin_list_flags.end()
-               ? absl::nullopt
-               : absl::make_optional(entry->second);
+    return entry == origin_list_flags.end() ? std::nullopt
+                                            : std::make_optional(entry->second);
   };
   const auto cmdline_origin_list_flags =
       ParseOriginListFlagsFromCommmandLine(cmdline);

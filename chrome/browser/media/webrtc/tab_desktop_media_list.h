@@ -25,7 +25,7 @@ class TabDesktopMediaList : public DesktopMediaListBase {
   ~TabDesktopMediaList() override;
 
   void SetPreviewedSource(
-      const absl::optional<content::DesktopMediaID>& id) override;
+      const std::optional<content::DesktopMediaID>& id) override;
 
  private:
   class RefreshCompleter {
@@ -67,11 +67,11 @@ class TabDesktopMediaList : public DesktopMediaListBase {
 
   // The WebContents from which the media-picker was invoked, if such
   // a WebContents was ever set.
-  const absl::optional<base::WeakPtr<content::WebContents>> web_contents_;
+  const std::optional<base::WeakPtr<content::WebContents>> web_contents_;
 
   // The hash of the last captured preview frame. Used to detect identical
   // frames and prevent needless rescaling.
-  absl::optional<uint32_t> last_hash_;
+  std::optional<uint32_t> last_hash_;
 
   ImageHashesMap favicon_hashes_;
   const DesktopMediaList::WebContentsFilter includable_web_contents_filter_;
@@ -80,7 +80,7 @@ class TabDesktopMediaList : public DesktopMediaListBase {
   // Task runner used for resizing thumbnail and preview images.
   scoped_refptr<base::SequencedTaskRunner> image_resize_task_runner_;
 
-  absl::optional<content::DesktopMediaID> previewed_source_;
+  std::optional<content::DesktopMediaID> previewed_source_;
 
   // Handle returned when incrementing the visible capturer count on the
   // WebContents instance being previewed, if there is one. Allowing this to go

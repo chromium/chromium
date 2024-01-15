@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_THEMES_THEME_HELPER_H_
 #define CHROME_BROWSER_THEMES_THEME_HELPER_H_
 
+#include <optional>
+
 #include "base/sequence_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/theme_provider.h"

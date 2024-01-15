@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
+
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -25,7 +28,6 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
-#include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -78,7 +80,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -816,7 +817,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Password) {
   EXPECT_EQ(credentials.size(), 1u);
   const PasswordUiEntry& refreshed_credential = credentials.at(0);
   EXPECT_EQ(refreshed_credential.username, "new_user");
-  EXPECT_EQ(refreshed_credential.note, absl::nullopt);
+  EXPECT_EQ(refreshed_credential.note, std::nullopt);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
@@ -1034,7 +1035,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   base::Time before_call = test_clipboard_->GetLastModifiedTime();
 
   MockPlaintextPasswordCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
+  EXPECT_CALL(password_callback, Run(Eq(std::nullopt)));
   delegate->RequestPlaintextPassword(
       0, api::passwords_private::PlaintextReason::kCopy,
       password_callback.Get(), web_contents.get());
@@ -1120,7 +1121,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   ExpectAuthentication(delegate, /*successful=*/false);
 
   MockPlaintextPasswordCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
+  EXPECT_CALL(password_callback, Run(Eq(std::nullopt)));
   delegate->RequestPlaintextPassword(
       0, api::passwords_private::PlaintextReason::kView,
       password_callback.Get(), web_contents.get());
@@ -1173,7 +1174,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenIpAddress) {
   auto delegate = CreateDelegate();
-  const absl::optional<UrlCollection> urls =
+  const std::optional<UrlCollection> urls =
       delegate->GetUrlCollection("127.0.0.1");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("127.0.0.1", urls.value().shown);
@@ -1184,7 +1185,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenWebAddress) {
   auto delegate = CreateDelegate();
-  const absl::optional<UrlCollection> urls =
+  const std::optional<UrlCollection> urls =
       delegate->GetUrlCollection("example.com/login");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("example.com", urls.value().shown);
@@ -1195,7 +1196,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionStrippedValueWhenFullUrl) {
   auto delegate = CreateDelegate();
-  const absl::optional<UrlCollection> urls = delegate->GetUrlCollection(
+  const std::optional<UrlCollection> urls = delegate->GetUrlCollection(
       "http://username:password@example.com/login?param=value#ref");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("example.com", urls.value().shown);
@@ -1206,7 +1207,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenUnsupportedScheme) {
   auto delegate = CreateDelegate();
-  const absl::optional<UrlCollection> urls =
+  const std::optional<UrlCollection> urls =
       delegate->GetUrlCollection("scheme://unsupported");
   EXPECT_FALSE(urls.has_value());
 }
@@ -1214,7 +1215,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenInvalidUrl) {
   auto delegate = CreateDelegate();
-  const absl::optional<UrlCollection> urls =
+  const std::optional<UrlCollection> urls =
       delegate->GetUrlCollection("https://^/invalid");
   EXPECT_FALSE(urls.has_value());
 }
@@ -1930,7 +1931,7 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
                           Field(&RecipientInfo::display_name, kTestUserName),
                           Field(&RecipientInfo::email, kTestEmail),
                           Field(&RecipientInfo::is_eligible, false),
-                          Field(&RecipientInfo::public_key, Eq(absl::nullopt)),
+                          Field(&RecipientInfo::public_key, Eq(std::nullopt)),
                           Field(&RecipientInfo::profile_image_url,
                                 kTestProfileImageUrl)))))));
 

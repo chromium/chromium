@@ -212,11 +212,11 @@ void RawXmlParsed(ParsingMode parsing_mode,
 
 ParsedXml::ParsedXml() = default;
 ParsedXml::ParsedXml(ParsedXml&&) = default;
-ParsedXml::ParsedXml(RawRuleSet&& rules_, absl::optional<std::string>&& error_)
+ParsedXml::ParsedXml(RawRuleSet&& rules_, std::optional<std::string>&& error_)
     : rules(std::move(rules_)), error(std::move(error_)) {}
 ParsedXml::ParsedXml(std::vector<std::string>&& sitelist,
                      std::vector<std::string>&& greylist,
-                     absl::optional<std::string>&& error)
+                     std::optional<std::string>&& error)
     : ParsedXml(RawRuleSet(std::move(sitelist), std::move(greylist)),
                 std::move(error)) {}
 ParsedXml::~ParsedXml() = default;

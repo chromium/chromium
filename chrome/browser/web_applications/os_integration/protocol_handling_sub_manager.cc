@@ -83,7 +83,7 @@ void ProtocolHandlingSubManager::Configure(
 
 void ProtocolHandlingSubManager::Execute(
     const webapps::AppId& app_id,
-    const absl::optional<SynchronizeOsOptions>& synchronize_options,
+    const std::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {

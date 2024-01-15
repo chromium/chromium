@@ -578,27 +578,27 @@ void LacrosExtensionAppsPublisher::OnSizeCalculated(const std::string& app_id,
   Publish(std::move(apps));
 }
 
-absl::optional<std::string> LacrosExtensionAppsPublisher::MaybeGetAppId(
+std::optional<std::string> LacrosExtensionAppsPublisher::MaybeGetAppId(
     content::WebContents* web_contents) {
   // The web app publisher is responsible to handle `web_contents` for web
   // apps.
   const webapps::AppId* web_app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (web_app_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto* extension =
       lacros_extensions_util::MaybeGetExtension(web_contents);
   return (extension && which_type_.Matches(extension))
-             ? absl::make_optional<std::string>(extension->id())
-             : absl::nullopt;
+             ? std::make_optional<std::string>(extension->id())
+             : std::nullopt;
 }
 
 void LacrosExtensionAppsPublisher::ModifyCapabilityAccess(
     const std::string& app_id,
-    absl::optional<bool> accessing_camera,
-    absl::optional<bool> accessing_microphone) {
+    std::optional<bool> accessing_camera,
+    std::optional<bool> accessing_microphone) {
   if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
     return;
   }

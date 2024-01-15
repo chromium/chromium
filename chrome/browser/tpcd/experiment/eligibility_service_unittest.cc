@@ -5,6 +5,7 @@
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -35,7 +36,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
@@ -124,7 +124,7 @@ TEST_F(EligibilityServiceTest,
   base::HistogramTester histograms;
 
   EXPECT_CALL(*experiment_manager_, IsClientEligible)
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
 
   EXPECT_CALL(*privacy_sandbox_delegate_,
               GetCookieDeprecationExperimentCurrentEligibility)
@@ -151,7 +151,7 @@ TEST_F(EligibilityServiceTest,
   base::HistogramTester histograms;
 
   EXPECT_CALL(*experiment_manager_, IsClientEligible)
-      .WillOnce(Return(absl::nullopt));
+      .WillOnce(Return(std::nullopt));
 
   EXPECT_CALL(*privacy_sandbox_delegate_,
               GetCookieDeprecationExperimentCurrentEligibility)

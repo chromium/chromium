@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -65,7 +66,6 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace extensions {
@@ -199,7 +199,7 @@ auto ExpectCompromisedInfo(
 }
 
 // Creates matcher for a given compromised credential
-auto ExpectCredential(const absl::optional<std::string>& change_password_url,
+auto ExpectCredential(const std::optional<std::string>& change_password_url,
                       const std::u16string& username) {
   return AllOf(
       Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
@@ -208,7 +208,7 @@ auto ExpectCredential(const absl::optional<std::string>& change_password_url,
 
 // Creates matcher for a given compromised credential
 auto ExpectCompromisedCredential(
-    const absl::optional<std::string>& change_password_url,
+    const std::optional<std::string>& change_password_url,
     const std::u16string& username,
     base::TimeDelta elapsed_time_since_compromise,
     const std::string& elapsed_time_since_compromise_str,
@@ -218,7 +218,7 @@ auto ExpectCompromisedCredential(
           ? Field(&PasswordUiEntry::change_password_url,
                   change_password_url.value())
           : Field(&PasswordUiEntry::change_password_url,
-                  testing::Eq(absl::nullopt));
+                  testing::Eq(std::nullopt));
   return AllOf(
       Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
       change_password_url_field_matcher,
@@ -517,7 +517,7 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsInjectsAndroid) {
                       {api::passwords_private::CompromiseType::kPhished,
                        api::passwords_private::CompromiseType::kReused}),
                   ExpectCompromisedCredential(
-                      absl::nullopt, kUsername1, base::Days(4), "4 days ago",
+                      std::nullopt, kUsername1, base::Days(4), "4 days ago",
                       {api::passwords_private::CompromiseType::kPhished,
                        api::passwords_private::CompromiseType::kReused}),
                   ExpectCompromisedCredential(

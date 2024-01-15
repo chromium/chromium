@@ -222,7 +222,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
 
   crash_keys::ScopedPrinterInfo crash_key(device_name, driver_info);
 
-  auto caps = absl::make_optional<PrinterSemanticCapsAndDefaults>();
+  auto caps = std::make_optional<PrinterSemanticCapsAndDefaults>();
   mojom::ResultCode result =
       print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps);
   if (result == mojom::ResultCode::kSuccess) {
@@ -233,7 +233,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
     // return what information we do have.
     PRINTER_LOG(ERROR) << "Failed to get capabilities for " << device_name
                        << ", result: " << result;
-    caps = absl::nullopt;
+    caps = std::nullopt;
   }
 
   return AssemblePrinterSettings(device_name, basic_info,

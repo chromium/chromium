@@ -387,13 +387,13 @@ void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
   }
 }
 
-absl::optional<bool> IsUserChild(Profile* profile) {
+std::optional<bool> IsUserChild(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user ? absl::make_optional(user->GetType() ==
-                                    user_manager::USER_TYPE_CHILD)
-              : absl::nullopt;
+  return user ? std::make_optional(user->GetType() ==
+                                   user_manager::USER_TYPE_CHILD)
+              : std::nullopt;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kChildSession;
@@ -1120,7 +1120,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   // change to the profile in both Ash and LaCrOS and remove stored profile
   // attributes so they can be re-initialized later.
 #if BUILDFLAG(IS_CHROMEOS)
-  const absl::optional<bool> user_is_child = IsUserChild(profile);
+  const std::optional<bool> user_is_child = IsUserChild(profile);
   const bool profile_is_new = profile->IsNewProfile();
   const bool profile_is_child = profile->IsChild();
   const bool did_supervised_status_change =
@@ -1909,7 +1909,7 @@ void ProfileManager::OnProfileCreationStarted(Profile* profile,
 
 #if !BUILDFLAG(IS_ANDROID)
 
-absl::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
+std::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
     base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate) {
   bool found_entry_loaded = false;
   ProfileAttributesEntry* found_entry = nullptr;
@@ -1928,8 +1928,8 @@ absl::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
       found_entry_loaded = entry_loaded;
     }
   }
-  return found_entry ? absl::optional<base::FilePath>(found_entry->GetPath())
-                     : absl::nullopt;
+  return found_entry ? std::optional<base::FilePath>(found_entry->GetPath())
+                     : std::nullopt;
 }
 
 DeleteProfileHelper& ProfileManager::GetDeleteProfileHelper() {

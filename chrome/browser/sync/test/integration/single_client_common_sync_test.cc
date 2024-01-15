@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // Set the preference to false initially which should get synced.
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
   ASSERT_TRUE(SetupSync());
-  absl::optional<sync_pb::PreferenceSpecifics> server_value =
+  std::optional<sync_pb::PreferenceSpecifics> server_value =
       preferences_helper::GetPreferenceInFakeServer(
           syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
           GetFakeServer());
@@ -281,14 +281,13 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
       base::FilePath prefs_path = profile_path.AppendASCII("Preferences");
       std::string prefs_string;
       ASSERT_TRUE(base::ReadFileToString(prefs_path, &prefs_string));
-      absl::optional<base::Value> prefs = base::JSONReader::Read(prefs_string);
+      std::optional<base::Value> prefs = base::JSONReader::Read(prefs_string);
       ASSERT_TRUE(prefs);
       ASSERT_TRUE(prefs->is_dict());
       prefs->GetDict().SetByDottedPath(prefs::kGoogleServicesConsentedToSync,
                                        base::Value(false));
 
-      absl::optional<std::string> updated_prefs_string =
-          base::WriteJson(*prefs);
+      std::optional<std::string> updated_prefs_string = base::WriteJson(*prefs);
       ASSERT_TRUE(updated_prefs_string);
       ASSERT_TRUE(base::WriteFile(prefs_path, *updated_prefs_string));
     }

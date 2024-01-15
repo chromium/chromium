@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
@@ -45,7 +45,7 @@ using ::variations::HashName;
 struct SyntheticTrialTestCase {
   utils::ExperimentState prev_state;
   bool new_state_eligible;
-  absl::optional<std::string> expected_group_name;
+  std::optional<std::string> expected_group_name;
   std::string group_name_override;
   bool disable_3pcs = false;
   bool need_onboarding = false;
@@ -208,7 +208,7 @@ const SyntheticTrialTestCase kTestCases[] = {
     {
         .prev_state = utils::ExperimentState::kEligible,
         .new_state_eligible = true,
-        .expected_group_name = absl::nullopt,
+        .expected_group_name = std::nullopt,
         .need_onboarding = true,
         .enable_silent_onboarding = true,
     },
@@ -234,7 +234,7 @@ const SyntheticTrialTestCase kTestCases[] = {
     {
         .prev_state = utils::ExperimentState::kEligible,
         .new_state_eligible = true,
-        .expected_group_name = absl::nullopt,
+        .expected_group_name = std::nullopt,
         .disable_3pcs = true,
         .need_onboarding = true,
     },

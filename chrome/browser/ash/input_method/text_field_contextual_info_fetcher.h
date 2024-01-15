@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_FIELD_CONTEXTUAL_INFO_FETCHER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_FIELD_CONTEXTUAL_INFO_FETCHER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/app_types.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -41,10 +41,10 @@ using TextFieldContextualInfoCallback =
 void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb);
 
 // Get the current tab url if the text field is hosted by a tab.
-absl::optional<GURL> GetUrlForTextFieldOnAshChrome();
+std::optional<GURL> GetUrlForTextFieldOnAshChrome();
 
 using TextFieldTabUrlCallback =
-    base::OnceCallback<void(const absl::optional<GURL>& url)>;
+    base::OnceCallback<void(const std::optional<GURL>& url)>;
 // Get the current tab url if the text field is hosted by a tab from Lacros.
 // This query requires a further call over IPC.
 void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb);

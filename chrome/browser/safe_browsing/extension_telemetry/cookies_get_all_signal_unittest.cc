@@ -42,10 +42,10 @@ TEST(CookiesGetAllSignalTest, ConcatFieldsWithDefaultArgs) {
       /*domain=*/"",
       /*name=*/"",
       /*path=*/"",
-      /*secure=*/absl::nullopt,
+      /*secure=*/std::nullopt,
       /*store_id=*/"",
       /*url=*/"",
-      /*is_session=*/absl::nullopt);
+      /*is_session=*/std::nullopt);
   EXPECT_EQ(signal.getUniqueArgSetId(), ",,,,,,");
 }
 

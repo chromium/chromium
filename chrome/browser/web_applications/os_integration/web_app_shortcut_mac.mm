@@ -2130,7 +2130,7 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
 Result UpdatePlatformShortcuts(
     const base::FilePath& app_data_path,
     const std::u16string& old_app_title,
-    absl::optional<ShortcutLocations> user_specified_locations,
+    std::optional<ShortcutLocations> user_specified_locations,
     const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);

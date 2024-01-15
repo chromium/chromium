@@ -38,7 +38,7 @@ constexpr char kOutOfCryptohomeConsent[] = "/home/chronos/boot-collect-consent";
 constexpr char kWriteFileFailMetric[] =
     "UMA.CrosPerUser.DaemonStoreWriteFailed";
 
-absl::optional<bool> g_is_managed_for_testing;
+std::optional<bool> g_is_managed_for_testing;
 
 std::string GenerateUserId() {
   return base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -165,21 +165,21 @@ void PerUserStateManagerChromeOS::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kMetricsUserInheritOwnerConsent, true);
 }
 
-absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
+std::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED)
-    return absl::nullopt;
+    return std::nullopt;
   auto user_id = GetCurrentUserPrefs()->GetString(prefs::kMetricsUserId);
   if (user_id.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return user_id;
 }
 
-absl::optional<bool>
+std::optional<bool>
 PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED || !IsDeviceStatusKnown()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Guest sessions with no device owner should use the guest's metrics
@@ -192,7 +192,7 @@ PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
   if (IsUserAllowedToChangeConsent(current_user_) || is_guest_with_no_owner)
     return GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_API_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/files/file.h"
@@ -40,7 +41,6 @@
 #include "extensions/common/extension_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 class Profile;
@@ -724,7 +724,7 @@ class DeveloperPrivateRequestFileSourceFunction
  private:
   void Finish(const std::string& file_contents);
 
-  absl::optional<api::developer_private::RequestFileSource::Params> params_;
+  std::optional<api::developer_private::RequestFileSource::Params> params_;
 };
 
 class DeveloperPrivateOpenDevToolsFunction
@@ -992,7 +992,7 @@ class DeveloperPrivateRemoveMultipleExtensionsFunction
 
   // If true, immediately accept the blocked action dialog by running the
   // callback.
-  absl::optional<bool> accept_bubble_for_testing_;
+  std::optional<bool> accept_bubble_for_testing_;
 };
 
 class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction

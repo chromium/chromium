@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -57,7 +58,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -313,13 +313,13 @@ class QuickUnlockPrivateUnitTest
 
   // Wrapper for chrome.quickUnlockPrivate.getAuthToken. Expects the function
   // to succeed and returns the result.
-  absl::optional<quick_unlock_private::TokenInfo> GetAuthToken(
+  std::optional<quick_unlock_private::TokenInfo> GetAuthToken(
       const std::string& password) {
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
 
     base::Value::List params;
     params.Append(base::Value(password));
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunction(std::move(func), std::move(params));
     EXPECT_TRUE(result);
     auto token_info = quick_unlock_private::TokenInfo::FromValue(*result);
@@ -360,7 +360,7 @@ class QuickUnlockPrivateUnitTest
   // Wrapper for chrome.quickUnlockPrivate.getAvailableModes.
   QuickUnlockModeList GetAvailableModes() {
     // Run the function.
-    absl::optional<base::Value> result = RunFunction(
+    std::optional<base::Value> result = RunFunction(
         base::MakeRefCounted<QuickUnlockPrivateGetAvailableModesFunction>(),
         base::Value::List());
 
@@ -379,7 +379,7 @@ class QuickUnlockPrivateUnitTest
 
   // Wrapper for chrome.quickUnlockPrivate.getActiveModes.
   QuickUnlockModeList GetActiveModes() {
-    absl::optional<base::Value> result = RunFunction(
+    std::optional<base::Value> result = RunFunction(
         base::MakeRefCounted<QuickUnlockPrivateGetActiveModesFunction>(),
         base::Value::List());
 
@@ -424,7 +424,7 @@ class QuickUnlockPrivateUnitTest
     params.Append(ToString(QuickUnlockMode::kPin));
     params.Append(pin);
 
-    absl::optional<base::Value> result = RunFunction(
+    std::optional<base::Value> result = RunFunction(
         base::MakeRefCounted<QuickUnlockPrivateCheckCredentialFunction>(),
         std::move(params));
     EXPECT_TRUE(result->is_dict());
@@ -439,7 +439,7 @@ class QuickUnlockPrivateUnitTest
     base::Value::List params;
     params.Append(ToString(QuickUnlockMode::kPin));
 
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         RunFunction(base::MakeRefCounted<
                         QuickUnlockPrivateGetCredentialRequirementsFunction>(),
                     std::move(params));
@@ -613,12 +613,12 @@ class QuickUnlockPrivateUnitTest
     user_context->SetIsUsingPin(true);
 
     base::test::TestFuture<std::unique_ptr<ash::UserContext>,
-                           absl::optional<ash::AuthenticationError>>
+                           std::optional<ash::AuthenticationError>>
         auth_future;
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
         std::move(user_context), ash::Key(password),
         ash::quick_unlock::Purpose::kAny, auth_future.GetCallback());
-    return !auth_future.Get<absl::optional<ash::AuthenticationError>>()
+    return !auth_future.Get<std::optional<ash::AuthenticationError>>()
                 .has_value();
   }
 
@@ -645,10 +645,10 @@ class QuickUnlockPrivateUnitTest
 
  private:
   // Runs the given |func| with the given |params|.
-  absl::optional<base::Value> RunFunction(scoped_refptr<ExtensionFunction> func,
-                                          base::Value::List params) {
+  std::optional<base::Value> RunFunction(scoped_refptr<ExtensionFunction> func,
+                                         base::Value::List params) {
     base::RunLoop().RunUntilIdle();
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionWithDelegateAndReturnSingleResult(
             std::move(func), std::move(params),
             std::make_unique<ExtensionFunctionDispatcher>(profile()),
@@ -691,7 +691,7 @@ class QuickUnlockPrivateUnitTest
 
 // Verifies that GetAuthTokenValid succeeds when a valid password is provided.
 TEST_P(QuickUnlockPrivateUnitTest, GetAuthTokenValid) {
-  absl::optional<quick_unlock_private::TokenInfo> token_info =
+  std::optional<quick_unlock_private::TokenInfo> token_info =
       GetAuthToken(kValidPassword);
 
   EXPECT_TRUE(ash::AuthSessionStorage::Get()->IsValid(token_info->token));

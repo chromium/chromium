@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -27,21 +27,21 @@ class LorgnetteScannerManager : public KeyedService {
   using GetScannerNamesCallback =
       base::OnceCallback<void(std::vector<std::string> scanner_names)>;
   using GetScannerInfoListCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::ListScannersResponse>& response)>;
+      const std::optional<lorgnette::ListScannersResponse>& response)>;
   using GetScannerCapabilitiesCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::ScannerCapabilities>& capabilities)>;
+      const std::optional<lorgnette::ScannerCapabilities>& capabilities)>;
   using OpenScannerCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::OpenScannerResponse>& response)>;
+      const std::optional<lorgnette::OpenScannerResponse>& response)>;
   using CloseScannerCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::CloseScannerResponse>& response)>;
+      const std::optional<lorgnette::CloseScannerResponse>& response)>;
   using SetOptionsCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::SetOptionsResponse>& response)>;
+      const std::optional<lorgnette::SetOptionsResponse>& response)>;
   using GetCurrentConfigCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::GetCurrentConfigResponse>& response)>;
+      const std::optional<lorgnette::GetCurrentConfigResponse>& response)>;
   using StartPreparedScanCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::StartPreparedScanResponse>& response)>;
+      const std::optional<lorgnette::StartPreparedScanResponse>& response)>;
   using ReadScanDataCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::ReadScanDataResponse>& response)>;
+      const std::optional<lorgnette::ReadScanDataResponse>& response)>;
   using ProgressCallback =
       base::RepeatingCallback<void(uint32_t progress_percent,
                                    uint32_t page_number)>;
@@ -51,7 +51,7 @@ class LorgnetteScannerManager : public KeyedService {
       base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>;
   using CancelCallback = base::OnceCallback<void(bool success)>;
   using CancelScanCallback = base::OnceCallback<void(
-      const absl::optional<lorgnette::CancelScanResponse>& response)>;
+      const std::optional<lorgnette::CancelScanResponse>& response)>;
 
   enum class LocalScannerFilter {
     kLocalScannersOnly = 0,
@@ -79,42 +79,42 @@ class LorgnetteScannerManager : public KeyedService {
                                   GetScannerInfoListCallback callback) = 0;
 
   // Returns the capabilities of the scanner specified by |scanner_name|. If
-  // |scanner_name| does not correspond to a known scanner, absl::nullopt is
+  // |scanner_name| does not correspond to a known scanner, std::nullopt is
   // returned in the callback.
   virtual void GetScannerCapabilities(
       const std::string& scanner_name,
       GetScannerCapabilitiesCallback callback) = 0;
 
   // Opens the scanner described by |request|.  If an error occurs,
-  // absl::nullopt is returned in the callback.
+  // std::nullopt is returned in the callback.
   virtual void OpenScanner(const lorgnette::OpenScannerRequest& request,
                            OpenScannerCallback callback) = 0;
 
   // Closes the scanner described by |request|.  If an error occurs,
-  // absl::nullopt is returned in the callback.
+  // std::nullopt is returned in the callback.
   virtual void CloseScanner(const lorgnette::CloseScannerRequest& request,
                             CloseScannerCallback callback) = 0;
 
-  // Sets the options described by |request|.  If an error occurs, absl::nullopt
+  // Sets the options described by |request|.  If an error occurs, std::nullopt
   // is returned in the callback.
   virtual void SetOptions(const lorgnette::SetOptionsRequest& request,
                           SetOptionsCallback callback) = 0;
 
   // Gets the config for the scanner described by |request|.  If an error
-  // occurs, absl::nullopt is returned in the callback.
+  // occurs, std::nullopt is returned in the callback.
   virtual void GetCurrentConfig(
       const lorgnette::GetCurrentConfigRequest& request,
       GetCurrentConfigCallback callback) = 0;
 
   // Starts a scan using information in |request| and returns the result using
-  // the provided |callback|.  If an error occurs, absl::nullopt is returned in
+  // the provided |callback|.  If an error occurs, std::nullopt is returned in
   // the callback.
   virtual void StartPreparedScan(
       const lorgnette::StartPreparedScanRequest& request,
       StartPreparedScanCallback callback) = 0;
 
   // Reads the scan data described by |request|.  If an error occurs,
-  // absl::nullopt is returned in the callback.
+  // std::nullopt is returned in the callback.
   virtual void ReadScanData(const lorgnette::ReadScanDataRequest& request,
                             ReadScanDataCallback callback) = 0;
 
@@ -142,7 +142,7 @@ class LorgnetteScannerManager : public KeyedService {
 
   // Request to cancel the scan specified by the JobHandle in |request| and
   // return the result using the provided |callback|.  If an error occurs,
-  // absl::nullopt is returned in the callback.
+  // std::nullopt is returned in the callback.
   virtual void CancelScan(const lorgnette::CancelScanRequest& request,
                           CancelScanCallback callback) = 0;
 };

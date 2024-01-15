@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -17,7 +18,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
 

@@ -226,7 +226,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
                   entry.storage_type),
               ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt);
 
-    absl::optional<BrowsingDataModel::DataOwner> owner =
+    std::optional<BrowsingDataModel::DataOwner> owner =
         delegate()->GetDataOwner(
             entry.data_key, static_cast<BrowsingDataModel::StorageType>(
                                 ChromeBrowsingDataModelDelegate::StorageType::

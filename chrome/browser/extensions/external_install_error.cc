@@ -387,9 +387,9 @@ void ExternalInstallError::OnWebstoreRequestFailure(
 void ExternalInstallError::OnWebstoreResponseParseSuccess(
     const std::string& extension_id,
     const base::Value::Dict& webstore_data) {
-  absl::optional<double> average_rating =
+  std::optional<double> average_rating =
       webstore_data.FindDouble(kAverageRatingKey);
-  absl::optional<int> rating_count = webstore_data.FindInt(kRatingCountKey);
+  std::optional<int> rating_count = webstore_data.FindInt(kRatingCountKey);
   const std::string* localized_user_count = webstore_data.FindString(kUsersKey);
   if (!localized_user_count || !average_rating || !rating_count) {
     // If we don't get a valid webstore response, short circuit, and continue
@@ -398,7 +398,7 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
     return;
   }
 
-  absl::optional<bool> show_user_count =
+  std::optional<bool> show_user_count =
       webstore_data.FindBool(kShowUserCountKey);
 
   prompt_->SetWebstoreData(*localized_user_count,

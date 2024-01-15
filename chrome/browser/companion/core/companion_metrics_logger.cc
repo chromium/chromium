@@ -141,7 +141,7 @@ CompanionMetricsLogger::~CompanionMetricsLogger() {
 }
 
 void CompanionMetricsLogger::RecordOpenTrigger(
-    absl::optional<SidePanelOpenTrigger> open_trigger) {
+    std::optional<SidePanelOpenTrigger> open_trigger) {
   open_trigger_ = open_trigger;
   if (open_trigger.has_value()) {
     base::UmaHistogramEnumeration("Companion.SidePanel.OpenTrigger",

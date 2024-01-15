@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -36,7 +37,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -69,7 +69,7 @@ class FakeIsolatedWebAppValidator : public TestingPrefServiceSimple,
                                     public IsolatedWebAppValidator {
  public:
   explicit FakeIsolatedWebAppValidator(
-      absl::optional<std::string> integrity_block_error)
+      std::optional<std::string> integrity_block_error)
       : IsolatedWebAppValidator(std::make_unique<IsolatedWebAppTrustChecker>(
             // Disambiguate the constructor using the form that takes the
             // already-initialized leftmost base class, rather than the copy
@@ -80,19 +80,19 @@ class FakeIsolatedWebAppValidator : public TestingPrefServiceSimple,
   void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      base::OnceCallback<void(absl::optional<std::string>)> callback) override {
+      base::OnceCallback<void(std::optional<std::string>)> callback) override {
     std::move(callback).Run(integrity_block_error_);
   }
 
  private:
-  absl::optional<std::string> integrity_block_error_;
+  std::optional<std::string> integrity_block_error_;
 };
 
 class FakeSignatureVerifier
     : public web_package::SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<VerifierError> error,
+      std::optional<VerifierError> error,
       base::RepeatingClosure on_verify_signatures = base::DoNothing())
       : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
@@ -106,7 +106,7 @@ class FakeSignatureVerifier
   }
 
  private:
-  absl::optional<VerifierError> error_;
+  std::optional<VerifierError> error_;
   base::RepeatingClosure on_verify_signatures_;
 };
 
@@ -149,11 +149,11 @@ class IsolatedWebAppResponseReaderFactoryTest : public ::testing::Test {
     integrity_block_->signature_stack = std::move(signature_stack);
 
     factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-        std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
+        std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
         base::BindRepeating(
             []() -> std::unique_ptr<
                      web_package::SignedWebBundleSignatureVerifier> {
-              return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
+              return std::make_unique<FakeSignatureVerifier>(std::nullopt);
             }));
 
     CHECK(temp_dir_.CreateUniqueTempDir());
@@ -190,8 +190,7 @@ class IsolatedWebAppResponseReaderFactoryTest : public ::testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   base::FilePath web_bundle_path_;
-  base::test::RepeatingTestFuture<absl::optional<GURL>>
-      on_create_parser_future_;
+  base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future_;
 
   const web_package::SignedWebBundleId kWebBundleId =
       *web_package::SignedWebBundleId::Create(
@@ -263,7 +262,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
       base::BindRepeating(
           []() -> std::unique_ptr<
                    web_package::SignedWebBundleSignatureVerifier> {
-            return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
+            return std::make_unique<FakeSignatureVerifier>(std::nullopt);
           }));
 
   base::test::TestFuture<ReaderResult> reader_future;
@@ -301,7 +300,7 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
   base::HistogramTester histogram_tester;
 
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
+      std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
       base::BindRepeating(
           [](VerifierError error)
               -> std::unique_ptr<

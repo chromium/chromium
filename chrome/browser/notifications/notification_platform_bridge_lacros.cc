@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/notification_platform_bridge_lacros.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -132,7 +132,7 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->notifier_id->title = notification.notifier_id().title;
   mojo_note->notifier_id->profile_id = notification.notifier_id().profile_id;
 
-  const absl::optional<base::FilePath>& image_path =
+  const std::optional<base::FilePath>& image_path =
       notification.rich_notification_data().image_path;
   if (image_path.has_value()) {
     mojo_note->image_path = image_path;
@@ -182,7 +182,7 @@ class NotificationPlatformBridgeLacros::RemoteNotificationDelegate
 
   void OnNotificationButtonClicked(
       uint32_t button_index,
-      const absl::optional<::std::u16string>& reply) override {
+      const std::optional<::std::u16string>& reply) override {
     bridge_delegate_->HandleNotificationButtonClicked(
         notification_id_, base::checked_cast<int>(button_index), reply);
   }

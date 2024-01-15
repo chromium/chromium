@@ -68,7 +68,7 @@ bool IsAccessCodeCastEnabled() {
 // is intentionally unused, but it is necessary to match the AddSinkCallback
 // type.
 void AddRememberedSinkMetricsCallback(AddSinkResultCode result,
-                                      absl::optional<std::string> unused) {
+                                      std::optional<std::string> unused) {
   AccessCodeCastMetrics::RecordAddSinkResult(
       true, AddSinkResultMetricsHelper(result));
 }
@@ -340,7 +340,7 @@ void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
     // media_router logger. Instead, this will error will be surfaced in
     // AccessCodeCast histograms.
     std::move(callback).Run(AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
@@ -349,7 +349,7 @@ void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
         "to any network.",
         "");
     std::move(callback).Run(AddSinkResultCode::SERVICE_NOT_PRESENT,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   discovery_server_interface_ =
@@ -378,24 +378,24 @@ void AccessCodeCastSinkService::AddSinkToMediaRouter(
 
 void AccessCodeCastSinkService::OnAccessCodeValidated(
     AddSinkResultCallback add_sink_callback,
-    absl::optional<DiscoveryDevice> discovery_device,
+    std::optional<DiscoveryDevice> discovery_device,
     AddSinkResultCode result_code) {
   if (result_code != AddSinkResultCode::OK) {
-    std::move(add_sink_callback).Run(result_code, absl::nullopt);
+    std::move(add_sink_callback).Run(result_code, std::nullopt);
     return;
   }
   if (!discovery_device.has_value()) {
     std::move(add_sink_callback)
-        .Run(AddSinkResultCode::EMPTY_RESPONSE, absl::nullopt);
+        .Run(AddSinkResultCode::EMPTY_RESPONSE, std::nullopt);
     return;
   }
-  std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
+  std::pair<std::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
       creation_result = CreateAccessCodeMediaSink(discovery_device.value());
 
   if (!creation_result.first.has_value() ||
       creation_result.second != CreateCastMediaSinkResult::kOk) {
     std::move(add_sink_callback)
-        .Run(AddSinkResultCode::SINK_CREATION_ERROR, absl::nullopt);
+        .Run(AddSinkResultCode::SINK_CREATION_ERROR, std::nullopt);
     return;
   }
   auto media_sink = creation_result.first.value();
@@ -491,15 +491,15 @@ void AccessCodeCastSinkService::OpenChannelWithParams(
                      CreateCastSocketOpenParams(sink)));
 }
 
-absl::optional<const MediaRoute> AccessCodeCastSinkService::GetActiveRoute(
+std::optional<const MediaRoute> AccessCodeCastSinkService::GetActiveRoute(
     const MediaSink::Id& sink_id) {
   if (!media_router_)
-    return absl::nullopt;
+    return std::nullopt;
   auto routes = media_router_->GetCurrentRoutes();
   auto route_it =
       base::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
   if (route_it == routes.end())
-    return absl::nullopt;
+    return std::nullopt;
   return *route_it;
 }
 
@@ -519,7 +519,7 @@ void AccessCodeCastSinkService::OnChannelOpenedResult(
   if (!channel_opened) {
     LogError("The channel failed to open.", sink.id());
     std::move(add_sink_callback)
-        .Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, absl::nullopt);
+        .Run(AddSinkResultCode::CHANNEL_OPEN_ERROR, std::nullopt);
     return;
   }
   LogInfo("The channel successfully opened.", sink.id());
@@ -646,7 +646,7 @@ void AccessCodeCastSinkService::ValidateStoredDevices(
       continue;
     }
 
-    const absl::optional<MediaSinkInternal> media_sink =
+    const std::optional<MediaSinkInternal> media_sink =
         ParseValueDictIntoMediaSinkInternal(*dict_value);
     if (!media_sink.has_value()) {
       LogWarning(
@@ -733,7 +733,7 @@ void AccessCodeCastSinkService::CalculateDurationTillExpiration(
 void AccessCodeCastSinkService::DoCalculateDurationTillExpiration(
     const MediaSink::Id& sink_id,
     base::OnceCallback<void(base::TimeDelta)> on_duration_calculated_callback,
-    absl::optional<base::Time> fetched_device_added_time) {
+    std::optional<base::Time> fetched_device_added_time) {
   if (!fetched_device_added_time.has_value()) {
     LogWarning(
         "We couldn't fetch the stored duration for some reason, default to "

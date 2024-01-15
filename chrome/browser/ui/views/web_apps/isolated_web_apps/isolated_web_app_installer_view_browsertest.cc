@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/test/widget_test.h"
 
@@ -50,7 +50,7 @@ using Step = IsolatedWebAppInstallerModel::Step;
 struct TestParam {
   std::string test_suffix;
   Step step;
-  absl::optional<IsolatedWebAppInstallerModel::Dialog> dialog = absl::nullopt;
+  std::optional<IsolatedWebAppInstallerModel::Dialog> dialog = std::nullopt;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
 };

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
@@ -102,7 +102,7 @@ class CrosSettings {
   bool IsUserAllowlisted(
       const std::string& username,
       bool* wildcard_match,
-      const absl::optional<user_manager::UserType>& user_type) const;
+      const std::optional<user_manager::UserType>& user_type) const;
 
   // Helper function for the allowlist op. Implemented here because we will need
   // this in a few places. The functions searches for |email| in the pref |path|

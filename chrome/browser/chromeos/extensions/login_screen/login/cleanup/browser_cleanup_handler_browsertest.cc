@@ -88,8 +88,8 @@ class BrowserCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   void RunBrowserCleanupHandler() {
     base::RunLoop run_loop;
     auto success_check_callback = base::BindLambdaForTesting(
-        [&](const absl::optional<std::string>& error) {
-          EXPECT_EQ(error, absl::nullopt);
+        [&](const std::optional<std::string>& error) {
+          EXPECT_EQ(error, std::nullopt);
           run_loop.QuitClosure().Run();
         });
 

@@ -42,7 +42,7 @@ constexpr char kHostname[] = "direct-sockets.com";
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 std::string GenerateManifest(
-    absl::optional<base::Value::Dict> socket_permissions = {}) {
+    std::optional<base::Value::Dict> socket_permissions = {}) {
   base::Value::Dict manifest;
   manifest.Set(extensions::manifest_keys::kName,
                "Direct Sockets in Chrome Apps");
@@ -119,7 +119,7 @@ class UdpEchoTestServer : public TestServer {
 
  private:
   std::unique_ptr<extensions::TestUdpEchoServer> udp_echo_server_;
-  absl::optional<uint16_t> port_;
+  std::optional<uint16_t> port_;
 };
 
 template <typename TestHarness,

@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   {
     const GURL kStartUrl = GURL("https://www.example.com/start_url");
     const webapps::AppId kWebAppId =
-        web_app::GenerateAppId(absl::nullopt, kStartUrl);
+        web_app::GenerateAppId(std::nullopt, kStartUrl);
     web_app::ExternalInstallOptions options(
         GURL("https://www.example.com/install_url"),
         web_app::mojom::UserDisplayMode::kStandalone,

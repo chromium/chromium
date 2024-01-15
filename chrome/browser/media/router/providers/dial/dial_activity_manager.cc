@@ -55,7 +55,7 @@ GURL GetApplicationInstanceURL(
 }  // namespace
 
 DialLaunchInfo::DialLaunchInfo(const std::string& app_name,
-                               const absl::optional<std::string>& post_data,
+                               const std::optional<std::string>& post_data,
                                const std::string& client_id,
                                const GURL& app_launch_url)
     : app_name(app_name),
@@ -83,7 +83,7 @@ std::unique_ptr<DialActivity> DialActivity::From(
     return nullptr;
 
   std::string client_id;
-  absl::optional<std::string> post_data;
+  std::optional<std::string> post_data;
   // Note: QueryIterator stores the URL by reference, so we must not give it a
   // temporary object.
   for (net::QueryIterator query_it(url); !query_it.IsAtEnd();
@@ -198,9 +198,9 @@ void DialActivityManager::LaunchApp(
   const DialLaunchInfo& launch_info = record->activity.launch_info;
 
   // |launch_parameter| overrides original POST data, if it exists.
-  const absl::optional<std::string>& post_data = message.launch_parameter
-                                                     ? message.launch_parameter
-                                                     : launch_info.post_data;
+  const std::optional<std::string>& post_data = message.launch_parameter
+                                                    ? message.launch_parameter
+                                                    : launch_info.post_data;
   auto fetcher =
       CreateFetcher(base::BindOnce(&DialActivityManager::OnLaunchSuccess,
                                    base::Unretained(this), route_id),
@@ -212,7 +212,7 @@ void DialActivityManager::LaunchApp(
           std::move(fetcher), std::move(callback));
 }
 
-std::pair<absl::optional<std::string>, mojom::RouteRequestResultCode>
+std::pair<std::optional<std::string>, mojom::RouteRequestResultCode>
 DialActivityManager::CanStopApp(const MediaRoute::Id& route_id) const {
   auto record_it = records_.find(route_id);
   if (record_it == records_.end())
@@ -223,7 +223,7 @@ DialActivityManager::CanStopApp(const MediaRoute::Id& route_id) const {
     return {"A pending request already exists",
             mojom::RouteRequestResultCode::REDUNDANT_REQUEST};
   }
-  return {absl::nullopt, mojom::RouteRequestResultCode::OK};
+  return {std::nullopt, mojom::RouteRequestResultCode::OK};
 }
 
 void DialActivityManager::StopApp(
@@ -240,7 +240,7 @@ void DialActivityManager::StopApp(
   // as if it never launched.
   if (record->state != DialActivityManager::Record::State::kLaunched) {
     records_.erase(record_it);
-    std::move(callback).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
+    std::move(callback).Run(std::nullopt, mojom::RouteRequestResultCode::OK);
     return;
   }
 
@@ -299,7 +299,7 @@ void DialActivityManager::OnLaunchSuccess(const MediaRoute::Id& route_id,
 
 void DialActivityManager::OnLaunchError(const MediaRoute::Id& route_id,
                                         const std::string& message,
-                                        absl::optional<int> response_code) {
+                                        std::optional<int> response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto record_it = records_.find(route_id);
   if (record_it == records_.end())
@@ -322,12 +322,12 @@ void DialActivityManager::OnStopSuccess(const MediaRoute::Id& route_id,
   auto& record = record_it->second;
   auto cb = std::move(record->pending_stop_request->callback);
   records_.erase(record_it);
-  std::move(cb).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
+  std::move(cb).Run(std::nullopt, mojom::RouteRequestResultCode::OK);
 }
 
 void DialActivityManager::OnStopError(const MediaRoute::Id& route_id,
                                       const std::string& message,
-                                      absl::optional<int> response_code) {
+                                      std::optional<int> response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto record_it = records_.find(route_id);
   if (record_it == records_.end())

@@ -30,7 +30,6 @@
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::Time;
 
@@ -43,7 +42,7 @@ const int kCompatibleVersionNumber = 5;
 
 class TestDatabase : public DIPSDatabase {
  public:
-  explicit TestDatabase(const absl::optional<base::FilePath>& db_path)
+  explicit TestDatabase(const std::optional<base::FilePath>& db_path)
       : DIPSDatabase(db_path) {}
   void LogDatabaseMetricsForTesting() { LogDatabaseMetrics(); }
 };
@@ -76,7 +75,7 @@ class DIPSDatabaseTest : public testing::Test {
   // Test setup.
   void SetUp() override {
     if (in_memory_) {
-      db_ = std::make_unique<TestDatabase>(absl::nullopt);
+      db_ = std::make_unique<TestDatabase>(std::nullopt);
     } else {
       ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
       db_path_ = temp_dir_.GetPath().AppendASCII("DIPS.db");
@@ -184,7 +183,7 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
       "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
       "first_bounce_time,last_bounce_time) VALUES ('',2,4,1,5)"));
   EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces), 1u);
-  EXPECT_EQ(db_->Read(""), absl::nullopt);
+  EXPECT_EQ(db_->Read(""), std::nullopt);
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_EmptySite_InDb, 1);
   // Verify the entry was deleted during the read attempt.
@@ -193,7 +192,7 @@ TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
 
 TEST_P(DIPSDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
   base::HistogramTester histograms;
-  EXPECT_EQ(db_->Read(""), absl::nullopt);
+  EXPECT_EQ(db_->Read(""), std::nullopt);
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 DIPSErrorCode::kRead_EmptySite_NotInDb, 1);
 }
@@ -264,7 +263,7 @@ class DIPSDatabaseAllColumnTest
                       column_ == kWebAuthnAssertion ? times : TimestampRange());
   }
 
-  TimestampRange ReadValueForVariableColumn(absl::optional<StateValue> value) {
+  TimestampRange ReadValueForVariableColumn(std::optional<StateValue> value) {
     switch (column_) {
       case ColumnType::kSiteStorage:
         return value->site_storage_times;
@@ -694,22 +693,22 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
   AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() + tiny_delta);
-  EXPECT_EQ(db_->Read("case1.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("case1.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case2.test").has_value());
-  EXPECT_EQ(db_->Read("case3.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case4.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case5.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("case3.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case4.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case5.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
   AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() +
                 tiny_delta * 2);
-  EXPECT_EQ(db_->Read("case1.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case2.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case3.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case4.test"), absl::nullopt);
-  EXPECT_EQ(db_->Read("case5.test"), absl::nullopt);
+  EXPECT_EQ(db_->Read("case1.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case2.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case3.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case4.test"), std::nullopt);
+  EXPECT_EQ(db_->Read("case5.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 }
 
@@ -934,7 +933,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
     // protected) after WAA expiry:
     AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
     EXPECT_THAT(query.Run(), testing::IsEmpty());
-    EXPECT_EQ(db_->Read(site), absl::nullopt);
+    EXPECT_EQ(db_->Read(site), std::nullopt);
   }
 
   // Set up an event that happens after WAA expired and the old entry cleared.
@@ -1027,7 +1026,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
     // protected) after WAA expiry:
     AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
     EXPECT_THAT(query.Run(), testing::IsEmpty());
-    EXPECT_EQ(db_->Read(site), absl::nullopt);
+    EXPECT_EQ(db_->Read(site), std::nullopt);
   }
 
   // Set up an event that happens after WAA expired and the old entry cleared.
@@ -1089,7 +1088,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaAfterGracePeriod) {
   // after WAA expiry:
   AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  EXPECT_EQ(db_->Read(site), absl::nullopt);
+  EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
 TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
@@ -1119,7 +1118,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
   // after WAA expiry:
   AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  EXPECT_EQ(db_->Read(site), absl::nullopt);
+  EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
 TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
@@ -1149,7 +1148,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
   // after interaction expiry:
   AdvanceTimeTo(interaction_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  EXPECT_EQ(db_->Read(site), absl::nullopt);
+  EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(

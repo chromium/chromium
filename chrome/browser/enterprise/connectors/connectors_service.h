@@ -42,13 +42,13 @@ class ConnectorsService : public KeyedService {
   ~ConnectorsService() override;
 
   // Accessors that call the corresponding method in ConnectorsManager.
-  absl::optional<ReportingSettings> GetReportingSettings(
+  std::optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
-  absl::optional<AnalysisSettings> GetAnalysisSettings(
+  std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<AnalysisSettings> GetAnalysisSettings(
+  std::optional<AnalysisSettings> GetAnalysisSettings(
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
       AnalysisConnector connector);
@@ -60,12 +60,12 @@ class ConnectorsService : public KeyedService {
   bool DelayUntilVerdict(AnalysisConnector connector);
 
   // Gets custom message if set by the admin.
-  absl::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
-                                                  const std::string& tag);
+  std::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
+                                                 const std::string& tag);
 
   // Gets custom learn more URL if provided by the admin.
-  absl::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
-                                       const std::string& tag);
+  std::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
+                                      const std::string& tag);
 
   // Returns true if the admin enabled Bypass Justification.
   bool GetBypassJustificationRequired(AnalysisConnector connector,
@@ -84,9 +84,9 @@ class ConnectorsService : public KeyedService {
       AnalysisConnector connector);
 
   // DM token accessor function for real-time URL checks. Returns a profile or
-  // browser DM token depending on the policy scope, and absl::nullopt if there
+  // browser DM token depending on the policy scope, and std::nullopt if there
   // is no token to use.
-  absl::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+  std::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
 
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
@@ -119,16 +119,16 @@ class ConnectorsService : public KeyedService {
     policy::PolicyScope scope;
   };
 
-  absl::optional<AnalysisSettings> GetCommonAnalysisSettings(
-      absl::optional<AnalysisSettings> settings,
+  std::optional<AnalysisSettings> GetCommonAnalysisSettings(
+      std::optional<AnalysisSettings> settings,
       AnalysisConnector connector);
 
   // Returns the DM token to use with the given |scope_pref|. That pref should
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
-  absl::optional<DmToken> GetDmToken(const char* scope_pref) const;
-  absl::optional<DmToken> GetBrowserDmToken() const;
+  std::optional<DmToken> GetDmToken(const char* scope_pref) const;
+  std::optional<DmToken> GetBrowserDmToken() const;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<DmToken> GetProfileDmToken() const;
+  std::optional<DmToken> GetProfileDmToken() const;
 
 #endif
 

@@ -105,7 +105,7 @@ void AuthSessionRequest::StartNewAuthSession(
   // Canonicalize the scheme so that it will compare correctly to the GURLs that
   // are visited later. Bail if it is invalid.
   NSString* raw_scheme = request.callbackURLScheme;
-  absl::optional<std::string> canonical_scheme =
+  std::optional<std::string> canonical_scheme =
       CanonicalizeScheme(base::SysNSStringToUTF8(raw_scheme));
   if (!canonical_scheme) {
     error_string =
@@ -167,7 +167,7 @@ void AuthSessionRequest::CancelAuthSession(
 }
 
 // static
-absl::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
+std::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
     std::string scheme) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
@@ -175,7 +175,7 @@ absl::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
       scheme.data(), url::Component(0, static_cast<int>(scheme.size())),
       &canon_output, &component);
   if (!result)
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::string(canon_output.data() + component.begin, component.len);
 }

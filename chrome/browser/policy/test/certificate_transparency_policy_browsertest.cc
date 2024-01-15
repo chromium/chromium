@@ -58,7 +58,7 @@ class CertificateTransparencyPolicyTest : public SafeBrowsingPolicyTest {
 
   ~CertificateTransparencyPolicyTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 };
 

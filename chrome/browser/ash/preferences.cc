@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -75,7 +76,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -1358,7 +1358,7 @@ void Preferences::UpdateStatusChanged(
   }
 }
 
-void Preferences::OnIsConsumerAutoUpdateEnabled(absl::optional<bool> enabled) {
+void Preferences::OnIsConsumerAutoUpdateEnabled(std::optional<bool> enabled) {
   DVLOG(1) << "OnIsConsumerAutoUpdateEnabled";
   if (!enabled.has_value()) {
     VLOG(1) << "Failed to retrieve consumer auto update feature value.";

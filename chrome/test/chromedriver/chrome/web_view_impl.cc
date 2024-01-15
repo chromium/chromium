@@ -66,9 +66,8 @@ struct ElementId {
   explicit operator bool() const { return IsValid(); }
 };
 
-absl::optional<std::string> GetBackendNodeIdKey(
-    const base::Value::Dict& element,
-    bool w3c_compliant) {
+std::optional<std::string> GetBackendNodeIdKey(const base::Value::Dict& element,
+                                               bool w3c_compliant) {
   if (element.contains(kShadowRootKey)) {
     return kShadowRootKey;
   }
@@ -78,7 +77,7 @@ absl::optional<std::string> GetBackendNodeIdKey(
   if (!w3c_compliant && element.contains(kElementKey)) {
     return kElementKey;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ElementId GetElementId(const base::Value::Dict& element, std::string key) {
@@ -108,7 +107,7 @@ ElementId GetElementId(const base::Value::Dict& element, std::string key) {
 }
 
 ElementId GetElementId(const base::Value::Dict& element, bool w3c_compliant) {
-  absl::optional<std::string> key = GetBackendNodeIdKey(element, w3c_compliant);
+  std::optional<std::string> key = GetBackendNodeIdKey(element, w3c_compliant);
   if (!key) {
     return ElementId{};
   }
@@ -313,12 +312,12 @@ Status ResolveWeakReferences(base::Value::List& nodes) {
       continue;
     }
     const base::Value::Dict& node = nodes[k].GetDict();
-    absl::optional<int> weak_node_ref =
+    std::optional<int> weak_node_ref =
         node.FindIntByDottedPath("weakLocalObjectReference");
     if (!weak_node_ref) {
       continue;
     }
-    absl::optional<int> maybe_backend_node_id =
+    std::optional<int> maybe_backend_node_id =
         node.FindIntByDottedPath("value.backendNodeId");
     if (!maybe_backend_node_id) {
       continue;
@@ -331,12 +330,12 @@ Status ResolveWeakReferences(base::Value::List& nodes) {
       continue;
     }
     const base::Value::Dict& node = nodes[k].GetDict();
-    absl::optional<int> weak_node_ref =
+    std::optional<int> weak_node_ref =
         node.FindIntByDottedPath("weakLocalObjectReference");
     if (!weak_node_ref) {
       continue;
     }
-    absl::optional<int> maybe_backend_node_id =
+    std::optional<int> maybe_backend_node_id =
         node.FindIntByDottedPath("value.backendNodeId");
     if (maybe_backend_node_id) {
       continue;
@@ -369,7 +368,7 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateTopLevelWebView(
     const bool w3c_compliant,
     const BrowserInfo* browser_info,
     std::unique_ptr<DevToolsClient> client,
-    absl::optional<MobileDevice> mobile_device,
+    std::optional<MobileDevice> mobile_device,
     std::string page_load_strategy) {
   return std::make_unique<WebViewImpl>(
       id, w3c_compliant, nullptr, browser_info, std::move(client),
@@ -403,7 +402,7 @@ WebViewImpl::WebViewImpl(const std::string& id,
                          const WebViewImpl* parent,
                          const BrowserInfo* browser_info,
                          std::unique_ptr<DevToolsClient> client,
-                         absl::optional<MobileDevice> mobile_device,
+                         std::optional<MobileDevice> mobile_device,
                          std::string page_load_strategy)
     : id_(id),
       w3c_compliant_(w3c_compliant),
@@ -466,7 +465,7 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateChild(
       std::make_unique<DevToolsClientImpl>(session_id, session_id);
   std::unique_ptr<WebViewImpl> child = std::make_unique<WebViewImpl>(
       target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
-      absl::nullopt, "");
+      std::nullopt, "");
   if (!IsNonBlocking()) {
     // Find Navigation Tracker for the top of the WebViewImpl hierarchy
     const WebViewImpl* current_view = this;
@@ -511,7 +510,7 @@ Status WebViewImpl::GetUrl(std::string* url) {
                                                    params, &result);
   if (status.IsError())
     return status;
-  absl::optional<int> current_index = result.FindInt("currentIndex");
+  std::optional<int> current_index = result.FindInt("currentIndex");
   if (!current_index)
     return Status(kUnknownError, "navigation history missing currentIndex");
   base::Value::List* entries = result.FindList("entries");
@@ -609,7 +608,7 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   if (status.IsError())
     return status;
 
-  absl::optional<int> current_index = result.FindInt("currentIndex");
+  std::optional<int> current_index = result.FindInt("currentIndex");
   if (!current_index)
     return Status(kUnknownError, "DevTools didn't return currentIndex");
 
@@ -627,7 +626,7 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   }
 
   base::Value& entry = (*entries)[*current_index + delta];
-  absl::optional<int> entry_id = entry.GetDict().FindInt("id");
+  std::optional<int> entry_id = entry.GetDict().FindInt("id");
   if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");
   params.Set("entryId", *entry_id);
@@ -836,7 +835,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
                   "first element in result.deepSerializedValue.value list must "
                   "contain a string");
   }
-  absl::optional<base::Value> maybe_call_result =
+  std::optional<base::Value> maybe_call_result =
       base::JSONReader::Read(*serialized_value, base::JSON_PARSE_RFC);
   if (!maybe_call_result) {
     return Status{kUnknownError,
@@ -851,7 +850,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   }
   base::Value::Dict& call_result = maybe_call_result->GetDict();
 
-  absl::optional<int> status_code = call_result.FindInt("status");
+  std::optional<int> status_code = call_result.FindInt("status");
   if (!status_code) {
     return Status(kUnknownError, "call function result missing int 'status'");
   }
@@ -1452,7 +1451,7 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
   if (!element.is_dict())
     return Status(kUnknownError, "'element' is not a dictionary");
 
-  absl::optional<std::string> maybe_key =
+  std::optional<std::string> maybe_key =
       GetBackendNodeIdKey(element.GetDict(), w3c_compliant_);
   if (!maybe_key) {
     return Status{kNoSuchElement, "invalid element id"};
@@ -1538,7 +1537,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     }
 
     // figure out how many files there are
-    absl::optional<int> number_of_files;
+    std::optional<int> number_of_files;
     {
       base::Value::Dict cmd_result;
       base::Value::Dict params;
@@ -1737,7 +1736,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
     base::Value::Dict* result_info = query_value->GetIfDict();
     if (!result_info)
       return Status(kUnknownError, "async result info is not a dictionary");
-    absl::optional<int> status_code = result_info->FindInt("status");
+    std::optional<int> status_code = result_info->FindInt("status");
     if (!status_code)
       return Status(kUnknownError, "async result info has no int 'status'");
     if (*status_code != kOk) {
@@ -1865,7 +1864,7 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     base::Value::Dict& arg_dict,
     base::Value::List& nodes) {
   Status status{kOk};
-  absl::optional<std::string> maybe_key =
+  std::optional<std::string> maybe_key =
       GetBackendNodeIdKey(arg_dict, w3c_compliant);
   if (!maybe_key) {
     for (auto it = arg_dict.begin(); status.IsOk() && it != arg_dict.end();
@@ -2018,10 +2017,10 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
   }
   if (res.is_dict()) {
     base::Value::Dict& dict = res.GetDict();
-    absl::optional<std::string> maybe_key =
+    std::optional<std::string> maybe_key =
         GetBackendNodeIdKey(dict, w3c_compliant_);
     if (maybe_key) {
-      absl::optional<int> maybe_node_idx = dict.FindInt(*maybe_key);
+      std::optional<int> maybe_node_idx = dict.FindInt(*maybe_key);
       if (!maybe_node_idx) {
         return Status{kUnknownError, "node index is missing"};
       }
@@ -2033,7 +2032,7 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
         return Status{kUnknownError, "serialized node is not a dictionary"};
       }
       const base::Value::Dict& node = nodes[*maybe_node_idx].GetDict();
-      absl::optional<int> maybe_backend_node_id =
+      std::optional<int> maybe_backend_node_id =
           node.FindIntByDottedPath("value.backendNodeId");
       if (!maybe_backend_node_id) {
         return Status{kUnknownError, "backendNodeId is missing in a node"};
@@ -2146,7 +2145,7 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
   if (*type == "undefined") {
     *result = std::make_unique<base::Value>();
   } else {
-    absl::optional<base::Value> value = temp_result.Extract("value");
+    std::optional<base::Value> value = temp_result.Extract("value");
     if (!value)
       return Status(kUnknownError, "Runtime.evaluate missing 'value'");
     *result = base::Value::ToUniquePtrValue(std::move(*value));
@@ -2159,7 +2158,7 @@ Status ParseCallFunctionResult(const base::Value& temp_result,
   const base::Value::Dict* dict = temp_result.GetIfDict();
   if (!dict)
     return Status(kUnknownError, "call function result must be a dictionary");
-  absl::optional<int> status_code = dict->FindInt("status");
+  std::optional<int> status_code = dict->FindInt("status");
   if (!status_code) {
     return Status(kUnknownError,
                   "call function result missing int 'status'");

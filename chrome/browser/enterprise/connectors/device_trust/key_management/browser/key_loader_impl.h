@@ -42,7 +42,7 @@ class KeyLoaderImpl : public KeyLoader {
   void OnKeyUploadRequestCreated(
       scoped_refptr<SigningKeyPair> key_pair,
       LoadKeyCallback callback,
-      absl::optional<const KeyUploadRequest> upload_request);
+      std::optional<const KeyUploadRequest> upload_request);
 
   // Builds the load key result using the HTTP response `status_code` and
   // `key_pair`,  and returns the result to the `callback`.

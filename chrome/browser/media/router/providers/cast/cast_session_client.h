@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
@@ -30,7 +30,7 @@ class CastSessionClient {
   virtual ~CastSessionClient();
 
   const std::string& client_id() const { return client_id_; }
-  const absl::optional<std::string>& session_id() const { return session_id_; }
+  const std::optional<std::string>& session_id() const { return session_id_; }
   const url::Origin& origin() const { return origin_; }
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
@@ -48,7 +48,7 @@ class CastSessionClient {
   // is used to look up the sequence number of a previous request, which is
   // included in the outgoing message.
   virtual void SendMediaMessageToClient(const base::Value::Dict& payload,
-                                        absl::optional<int> request_id) = 0;
+                                        std::optional<int> request_id) = 0;
 
   // Changes the PresentationConnection state to CLOSED/TERMINATED and resets
   // PresentationConnection message pipes.
@@ -72,7 +72,7 @@ class CastSessionClient {
   virtual void SendErrorCodeToClient(
       int sequence_number,
       CastInternalMessage::ErrorCode error_code,
-      absl::optional<std::string> description) = 0;
+      std::optional<std::string> description) = 0;
 
   // NOTE: This is current only called from SendErrorCodeToClient, but based on
   // the old code this method based on, it seems likely it will have other
@@ -82,7 +82,7 @@ class CastSessionClient {
 
  private:
   std::string client_id_;
-  absl::optional<std::string> session_id_;
+  std::optional<std::string> session_id_;
 
   // The origin and FrameTreeNode ID parameters originally passed to the
   // CreateRoute method of the MediaRouteProvider Mojo interface.

@@ -80,7 +80,7 @@ class TestInputMethodManager : public im::MockInputMethodManager {
           /*is_login_keyboard=*/false,
           /*options_page_url=*/GURL(),
           /*input_view_url=*/GURL(),
-          /*handwriting_language=*/absl::nullopt);
+          /*handwriting_language=*/std::nullopt);
     }
 
     const std::vector<std::string>& GetEnabledInputMethodIds() const override {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 struct WebAppInstallInfo;
@@ -49,7 +49,7 @@ namespace web_app {
 class ManifestUpdateCheckCommand
     : public WebAppCommand<AppLock,
                            ManifestUpdateCheckResult,
-                           absl::optional<WebAppInstallInfo>>,
+                           std::optional<WebAppInstallInfo>>,
       public content::WebContentsObserver {
  public:
   // TODO(crbug.com/1409710): Merge ManifestUpdateDataFetchCommand and
@@ -57,7 +57,7 @@ class ManifestUpdateCheckCommand
   // early exit results to the caller.
   using CompletedCallback = base::OnceCallback<void(
       ManifestUpdateCheckResult check_result,
-      absl::optional<WebAppInstallInfo> new_install_info)>;
+      std::optional<WebAppInstallInfo> new_install_info)>;
 
   ManifestUpdateCheckCommand(
       const GURL& url,

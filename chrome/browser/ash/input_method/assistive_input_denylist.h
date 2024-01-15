@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_INPUT_DENYLIST_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_INPUT_DENYLIST_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {

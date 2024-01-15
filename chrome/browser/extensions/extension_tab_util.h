@@ -61,13 +61,13 @@ class ExtensionTabUtil {
     ~OpenTabParams();
 
     bool create_browser_if_needed = false;
-    absl::optional<int> window_id;
-    absl::optional<int> opener_tab_id;
-    absl::optional<std::string> url;
-    absl::optional<bool> active;
-    absl::optional<bool> pinned;
-    absl::optional<int> index;
-    absl::optional<int> bookmark_id;
+    std::optional<int> window_id;
+    std::optional<int> opener_tab_id;
+    std::optional<std::string> url;
+    std::optional<bool> active;
+    std::optional<bool> pinned;
+    std::optional<int> index;
+    std::optional<int> bookmark_id;
   };
 
   // Opens a new tab given an extension function |function| and creation

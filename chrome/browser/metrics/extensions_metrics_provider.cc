@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -34,7 +35,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 using extensions::Extension;
@@ -392,12 +392,12 @@ int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
   return output % kExtensionListBuckets;
 }
 
-absl::optional<extensions::ExtensionSet>
+std::optional<extensions::ExtensionSet>
 ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
   // Some profiles cannot have extensions, such as the System Profile.
   if (!profile || extensions::ChromeContentBrowserClientExtensionsPart::
                       AreExtensionsDisabledForProfile(profile)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   extensions::ExtensionRegistry* registry =
@@ -453,7 +453,7 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
   // time when this metric is generated.
   std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
   for (size_t i = 0u; i < profiles.size() && state < OFF_STORE; ++i) {
-    absl::optional<extensions::ExtensionSet> extensions =
+    std::optional<extensions::ExtensionSet> extensions =
         GetInstalledExtensions(profiles[i]);
     if (!extensions)
       continue;
@@ -479,7 +479,7 @@ void ExtensionsMetricsProvider::ProvideOccupiedBucketMetric(
   // profiles.
   Profile* profile = cached_profile_.GetMetricsProfile();
 
-  absl::optional<extensions::ExtensionSet> extensions =
+  std::optional<extensions::ExtensionSet> extensions =
       GetInstalledExtensions(profile);
   if (!extensions)
     return;

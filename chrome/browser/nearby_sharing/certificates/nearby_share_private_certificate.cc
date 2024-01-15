@@ -58,7 +58,7 @@ std::vector<uint8_t> CreateCertificateIdFromSecretKey(
 
 // Creates an HMAC from |metadata_encryption_key| to be used as a key commitment
 // in certificates.
-absl::optional<std::vector<uint8_t>> CreateMetadataEncryptionKeyTag(
+std::optional<std::vector<uint8_t>> CreateMetadataEncryptionKeyTag(
     base::span<const uint8_t> metadata_encryption_key) {
   // This array of 0x00 is used to conform with the GmsCore implementation.
   std::vector<uint8_t> key(kNearbyShareNumBytesMetadataEncryptionKeyTag, 0x00);
@@ -66,7 +66,7 @@ absl::optional<std::vector<uint8_t>> CreateMetadataEncryptionKeyTag(
   std::vector<uint8_t> result(kNearbyShareNumBytesMetadataEncryptionKeyTag);
   crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
   if (!hmac.Init(key) || !hmac.Sign(metadata_encryption_key, result))
-    return absl::nullopt;
+    return std::nullopt;
 
   return result;
 }
@@ -80,15 +80,15 @@ std::string EncodeString(const std::string& unencoded_string) {
   return encoded_string;
 }
 
-absl::optional<std::string> DecodeString(const std::string* encoded_string) {
+std::optional<std::string> DecodeString(const std::string* encoded_string) {
   if (!encoded_string)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string decoded_string;
   if (!base::Base64UrlDecode(*encoded_string,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &decoded_string)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return decoded_string;
@@ -98,12 +98,12 @@ std::string BytesToEncodedString(const std::vector<uint8_t>& bytes) {
   return EncodeString(std::string(bytes.begin(), bytes.end()));
 }
 
-absl::optional<std::vector<uint8_t>> EncodedStringToBytes(
+std::optional<std::vector<uint8_t>> EncodedStringToBytes(
     const std::string* str) {
-  absl::optional<std::string> decoded_str = DecodeString(str);
-  return decoded_str ? absl::make_optional<std::vector<uint8_t>>(
+  std::optional<std::string> decoded_str = DecodeString(str);
+  return decoded_str ? std::make_optional<std::vector<uint8_t>>(
                            decoded_str->begin(), decoded_str->end())
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
 std::string SaltsToString(const std::set<std::vector<uint8_t>>& salts) {
@@ -228,13 +228,13 @@ NearbySharePrivateCertificate& NearbySharePrivateCertificate::operator=(
 
 NearbySharePrivateCertificate::~NearbySharePrivateCertificate() = default;
 
-absl::optional<NearbyShareEncryptedMetadataKey>
+std::optional<NearbyShareEncryptedMetadataKey>
 NearbySharePrivateCertificate::EncryptMetadataKey() {
-  absl::optional<std::vector<uint8_t>> salt = GenerateUnusedSalt();
+  std::optional<std::vector<uint8_t>> salt = GenerateUnusedSalt();
   if (!salt) {
     CD_LOG(ERROR, Feature::NS)
         << "Encryption failed: Salt generation unsuccessful.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::unique_ptr<crypto::Encryptor> encryptor =
@@ -242,7 +242,7 @@ NearbySharePrivateCertificate::EncryptMetadataKey() {
   if (!encryptor) {
     CD_LOG(ERROR, Feature::NS)
         << "Encryption failed: Could not create CTR encryptor.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK_EQ(kNearbyShareNumBytesMetadataEncryptionKey,
@@ -251,13 +251,13 @@ NearbySharePrivateCertificate::EncryptMetadataKey() {
   if (!encryptor->Encrypt(metadata_encryption_key_, &encrypted_metadata_key)) {
     CD_LOG(ERROR, Feature::NS)
         << "Encryption failed: Could not encrypt metadata key.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return NearbyShareEncryptedMetadataKey(*salt, encrypted_metadata_key);
 }
 
-absl::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
+std::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
     base::span<const uint8_t> payload) const {
   std::unique_ptr<crypto::ECSignatureCreator> signer(
       crypto::ECSignatureCreator::Create(key_pair_.get()));
@@ -265,7 +265,7 @@ absl::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
   std::vector<uint8_t> signature;
   if (!signer->Sign(payload, &signature)) {
     CD_LOG(ERROR, Feature::NS) << "Signing failed.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return signature;
@@ -278,27 +278,27 @@ std::vector<uint8_t> NearbySharePrivateCertificate::HashAuthenticationToken(
       base::as_bytes(base::make_span(secret_key_->key())));
 }
 
-absl::optional<nearby::sharing::proto::PublicCertificate>
+std::optional<nearby::sharing::proto::PublicCertificate>
 NearbySharePrivateCertificate::ToPublicCertificate() const {
   std::vector<uint8_t> public_key;
   if (!key_pair_->ExportPublicKey(&public_key)) {
     CD_LOG(ERROR, Feature::NS) << "Failed to export public key.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::vector<uint8_t>> encrypted_metadata_bytes =
+  std::optional<std::vector<uint8_t>> encrypted_metadata_bytes =
       EncryptMetadata();
   if (!encrypted_metadata_bytes) {
     CD_LOG(ERROR, Feature::NS) << "Failed to encrypt metadata.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<std::vector<uint8_t>> metadata_encryption_key_tag =
+  std::optional<std::vector<uint8_t>> metadata_encryption_key_tag =
       CreateMetadataEncryptionKeyTag(metadata_encryption_key_);
   if (!metadata_encryption_key_tag) {
     CD_LOG(ERROR, Feature::NS)
         << "Failed to compute metadata encryption key tag.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::TimeDelta not_before_offset =
@@ -362,43 +362,43 @@ base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
       .Set(kConsumedSalts, SaltsToString(consumed_salts_));
 }
 
-absl::optional<NearbySharePrivateCertificate>
+std::optional<NearbySharePrivateCertificate>
 NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
-  absl::optional<int> int_opt;
+  std::optional<int> int_opt;
   const std::string* str_ptr;
-  absl::optional<std::string> str_opt;
-  absl::optional<base::Time> time_opt;
-  absl::optional<std::vector<uint8_t>> bytes_opt;
+  std::optional<std::string> str_opt;
+  std::optional<base::Time> time_opt;
+  std::optional<std::vector<uint8_t>> bytes_opt;
 
   int_opt = dict.FindInt(kVisibility);
   if (!int_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   nearby_share::mojom::Visibility visibility =
       static_cast<nearby_share::mojom::Visibility>(*int_opt);
 
   time_opt = base::ValueToTime(dict.Find(kNotBefore));
   if (!time_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Time not_before = *time_opt;
 
   time_opt = base::ValueToTime(dict.Find(kNotAfter));
   if (!time_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Time not_after = *time_opt;
 
   bytes_opt = EncodedStringToBytes(dict.FindString(kKeyPair));
   if (!bytes_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::unique_ptr<crypto::ECPrivateKey> key_pair =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(*bytes_opt);
 
   str_opt = DecodeString(dict.FindString(kSecretKey));
   if (!str_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::unique_ptr<crypto::SymmetricKey> secret_key =
       crypto::SymmetricKey::Import(crypto::SymmetricKey::Algorithm::AES,
@@ -406,27 +406,27 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
 
   bytes_opt = EncodedStringToBytes(dict.FindString(kMetadataEncryptionKey));
   if (!bytes_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<uint8_t> metadata_encryption_key = *bytes_opt;
 
   bytes_opt = EncodedStringToBytes(dict.FindString(kId));
   if (!bytes_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<uint8_t> id = *bytes_opt;
 
   str_opt = DecodeString(dict.FindString(kUnencryptedMetadata));
   if (!str_opt)
-    return absl::nullopt;
+    return std::nullopt;
 
   nearby::sharing::proto::EncryptedMetadata unencrypted_metadata;
   if (!unencrypted_metadata.ParseFromString(*str_opt))
-    return absl::nullopt;
+    return std::nullopt;
 
   str_ptr = dict.FindString(kConsumedSalts);
   if (!str_ptr)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::set<std::vector<uint8_t>> consumed_salts = StringToSalts(*str_ptr);
 
@@ -436,11 +436,11 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
       std::move(unencrypted_metadata), std::move(consumed_salts));
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 NearbySharePrivateCertificate::GenerateUnusedSalt() {
   if (consumed_salts_.size() >= kNearbyShareMaxNumMetadataEncryptionKeySalts) {
     CD_LOG(ERROR, Feature::NS) << "All salts exhausted for certificate.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (size_t attempt = 0;
@@ -464,10 +464,10 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
   CD_LOG(ERROR, Feature::NS)
       << "Salt generation exceeded max number of retries. This is "
          "highly improbable.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 NearbySharePrivateCertificate::EncryptMetadata() const {
   // Init() keeps a reference to the input key, so that reference must outlive
   // the lifetime of |aead|.

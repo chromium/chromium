@@ -63,7 +63,7 @@ constexpr char kResultHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.Result";
 
 std::string GetSerializedSignedChallenge(const std::string& response) {
-  absl::optional<base::Value> data = base::JSONReader::Read(
+  std::optional<base::Value> data = base::JSONReader::Read(
       response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   // If json is malformed or it doesn't include the needed field return

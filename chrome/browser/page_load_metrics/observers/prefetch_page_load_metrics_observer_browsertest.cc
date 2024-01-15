@@ -67,7 +67,7 @@ class PrefetchPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void VerifyUKMEntry(const std::string& metric_name,
-                      absl::optional<int64_t> expected_value) {
+                      std::optional<int64_t> expected_value) {
     auto entries = ukm_recorder_->GetEntriesByName(
         ukm::builders::PrefetchProxy::kEntryName);
     ASSERT_EQ(1U, entries.size());

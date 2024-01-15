@@ -58,7 +58,7 @@ bool WebAppSettingsPolicyHandler::CheckPolicySettings(
 
     // Show error during policy parsing if force_unregister_os_integration is
     // provided with a wildcard manifest id.
-    absl::optional<bool> force_unregistration_value =
+    std::optional<bool> force_unregistration_value =
         it->GetDict().FindBool(kForceUnregisterOsIntegration);
     if (force_unregistration_value.has_value()) {
       errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,

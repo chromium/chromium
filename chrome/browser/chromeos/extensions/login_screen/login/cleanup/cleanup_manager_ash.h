@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_CLEANUP_MANAGER_ASH_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_CLEANUP_MANAGER_ASH_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 

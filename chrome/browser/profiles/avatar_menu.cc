@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profiles/avatar_menu.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
@@ -27,7 +29,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -152,26 +153,26 @@ const AvatarMenu::Item& AvatarMenu::GetItemAt(size_t index) const {
 
 size_t AvatarMenu::GetIndexOfItemWithProfilePathForTesting(
     const base::FilePath& path) const {
-  absl::optional<size_t> index = profile_list_->MenuIndexFromProfilePath(path);
+  std::optional<size_t> index = profile_list_->MenuIndexFromProfilePath(path);
   DCHECK(index.has_value());
   return index.value();
 }
 
-absl::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
+std::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
   // During singleton profile deletion, this function can be called with no
   // profiles in the model - crbug.com/102278 .
   if (profile_list_->GetNumberOfItems() == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   Profile* active_profile = browser_
                                 ? browser_->profile()
                                 : ProfileManager::GetLastUsedProfileIfLoaded();
 
   if (!active_profile)
-    return absl::nullopt;
+    return std::nullopt;
 
   // The profile may be missing from the menu (e.g. omitted profile, guest).
-  absl::optional<size_t> index =
+  std::optional<size_t> index =
       profile_list_->MenuIndexFromProfilePath(active_profile->GetPath());
 
   DCHECK(!index.has_value() ||
@@ -197,7 +198,7 @@ bool AvatarMenu::ShouldShowAddNewProfileLink() const {
 }
 
 bool AvatarMenu::ShouldShowEditProfileLink() const {
-  absl::optional<size_t> active_profile_index = GetActiveProfileIndex();
+  std::optional<size_t> active_profile_index = GetActiveProfileIndex();
   if (!active_profile_index)
     return false;
 

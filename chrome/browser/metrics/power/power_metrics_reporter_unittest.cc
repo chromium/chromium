@@ -76,12 +76,12 @@ using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 class FakeBatteryLevelProvider : public base::BatteryLevelProvider {
  public:
   explicit FakeBatteryLevelProvider(
-      std::queue<absl::optional<base::BatteryLevelProvider::BatteryState>>*
+      std::queue<std::optional<base::BatteryLevelProvider::BatteryState>>*
           battery_states)
       : battery_states_(battery_states) {}
 
   void GetBatteryState(
-      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback)
+      base::OnceCallback<void(const std::optional<BatteryState>&)> callback)
       override {
     DCHECK(!battery_states_->empty());
     auto state = battery_states_->front();
@@ -90,7 +90,7 @@ class FakeBatteryLevelProvider : public base::BatteryLevelProvider {
   }
 
  private:
-  raw_ptr<std::queue<absl::optional<base::BatteryLevelProvider::BatteryState>>>
+  raw_ptr<std::queue<std::optional<base::BatteryLevelProvider::BatteryState>>>
       battery_states_;
 };
 
@@ -224,7 +224,7 @@ class PowerMetricsReporterUnitTest : public PowerMetricsReporterUnitTestBase {
   }
 
  protected:
-  std::queue<absl::optional<base::BatteryLevelProvider::BatteryState>>
+  std::queue<std::optional<base::BatteryLevelProvider::BatteryState>>
       battery_states_;
 };
 
@@ -547,7 +547,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   process_monitor_.SetMetricsToReturn({});
 
   // A nullopt battery value indicates that the battery level is unavailable.
-  battery_states_.push(absl::nullopt);
+  battery_states_.push(std::nullopt);
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
@@ -577,9 +577,9 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
   battery_states_.push(base::BatteryLevelProvider::BatteryState{
       .battery_count = 0,
       .is_external_power_connected = true,
-      .current_capacity = absl::nullopt,
-      .full_charged_capacity = absl::nullopt,
-      .charge_unit = absl::nullopt,
+      .current_capacity = std::nullopt,
+      .full_charged_capacity = std::nullopt,
+      .charge_unit = std::nullopt,
       .capture_time = base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;

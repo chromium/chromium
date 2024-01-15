@@ -59,7 +59,7 @@ void StatsReportingController::SetEnabled(Profile* profile, bool enabled) {
 
 bool StatsReportingController::IsEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<base::Value> value = GetValue();
+  std::optional<base::Value> value = GetValue();
   return value.has_value() && value->is_bool() && value->GetBool();
 }
 

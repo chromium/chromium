@@ -727,10 +727,10 @@ void MarkPreinstalledAppAsUninstalled(Profile* profile,
   EnsureContains(update.Get(), app_id);
 }
 
-absl::optional<bool> DeviceHasStylusEnabledTouchscreen() {
+std::optional<bool> DeviceHasStylusEnabledTouchscreen() {
   if (!ui::DeviceDataManager::HasInstance() ||
       !ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (const ui::TouchscreenDevice& device :

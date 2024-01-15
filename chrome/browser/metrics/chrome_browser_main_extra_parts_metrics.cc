@@ -127,7 +127,7 @@ constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
 void RecordMemoryMetrics();
 
 // Gets the delay for logging memory related metrics for testing.
-absl::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
+std::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
   int test_delay_in_minutes;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -137,7 +137,7 @@ absl::optional<base::TimeDelta> GetDelayForNextMemoryLogTest() {
                         &test_delay_in_minutes)) {
     return base::Minutes(test_delay_in_minutes);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Records memory metrics after a delay.

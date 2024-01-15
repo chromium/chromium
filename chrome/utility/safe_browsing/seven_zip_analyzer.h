@@ -8,12 +8,13 @@
 #ifndef CHROME_UTILITY_SAFE_BROWSING_SEVEN_ZIP_ANALYZER_H_
 #define CHROME_UTILITY_SAFE_BROWSING_SEVEN_ZIP_ANALYZER_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
 #include "chrome/utility/safe_browsing/archive_analyzer.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
 namespace safe_browsing {
@@ -46,7 +47,7 @@ class SevenZipAnalyzer : public seven_zip::Delegate, public ArchiveAnalyzer {
   base::File temp_file_;
   base::File temp_file2_;
   std::unique_ptr<seven_zip::SevenZipReader> reader_;
-  absl::optional<base::MemoryMappedFile> mapped_file_;
+  std::optional<base::MemoryMappedFile> mapped_file_;
 
   bool awaiting_nested_ = false;
 

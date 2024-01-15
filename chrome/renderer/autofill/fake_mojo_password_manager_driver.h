@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_AUTOFILL_FAKE_MOJO_PASSWORD_MANAGER_DRIVER_H_
 #define CHROME_RENDERER_AUTOFILL_FAKE_MOJO_PASSWORD_MANAGER_DRIVER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeMojoPasswordManagerDriver
     : public autofill::mojom::PasswordManagerDriver {
@@ -70,7 +70,7 @@ class FakeMojoPasswordManagerDriver
     return called_password_form_submitted_ && form_data_submitted_;
   }
 
-  const absl::optional<autofill::FormData>& form_data_submitted() const {
+  const std::optional<autofill::FormData>& form_data_submitted() const {
     return form_data_submitted_;
   }
 
@@ -78,7 +78,7 @@ class FakeMojoPasswordManagerDriver
     return called_dynamic_form_submission_;
   }
 
-  const absl::optional<autofill::FormData>& form_data_maybe_submitted() const {
+  const std::optional<autofill::FormData>& form_data_maybe_submitted() const {
     return form_data_maybe_submitted_;
   }
 
@@ -86,7 +86,7 @@ class FakeMojoPasswordManagerDriver
     return called_password_forms_parsed_;
   }
 
-  const absl::optional<std::vector<autofill::FormData>>& form_data_parsed()
+  const std::optional<std::vector<autofill::FormData>>& form_data_parsed()
       const {
     return form_data_parsed_;
   }
@@ -95,18 +95,18 @@ class FakeMojoPasswordManagerDriver
     return called_password_forms_rendered_;
   }
 
-  const absl::optional<std::vector<autofill::FormData>>& form_data_rendered()
+  const std::optional<std::vector<autofill::FormData>>& form_data_rendered()
       const {
     return form_data_rendered_;
   }
 
   void reset_password_forms_calls() {
     called_password_forms_parsed_ = false;
-    form_data_parsed_ = absl::nullopt;
+    form_data_parsed_ = std::nullopt;
     called_password_forms_rendered_ = false;
-    form_data_rendered_ = absl::nullopt;
+    form_data_rendered_ = std::nullopt;
     called_password_form_submitted_ = false;
-    form_data_submitted_ = absl::nullopt;
+    form_data_submitted_ = std::nullopt;
     called_inform_about_user_input_count_ = false;
   }
 
@@ -122,13 +122,13 @@ class FakeMojoPasswordManagerDriver
     return called_save_generation_field_;
   }
 
-  const absl::optional<std::u16string>& save_generation_field() const {
+  const std::optional<std::u16string>& save_generation_field() const {
     return save_generation_field_;
   }
 
   void reset_save_generation_field() {
     called_save_generation_field_ = false;
-    save_generation_field_ = absl::nullopt;
+    save_generation_field_ = std::nullopt;
   }
 
   int called_check_safe_browsing_reputation_cnt() const {
@@ -180,19 +180,19 @@ class FakeMojoPasswordManagerDriver
   // Records whether PasswordFormSubmitted() gets called.
   bool called_password_form_submitted_ = false;
   // Records data received via PasswordFormSubmitted() call.
-  absl::optional<autofill::FormData> form_data_submitted_;
+  std::optional<autofill::FormData> form_data_submitted_;
   // Records data received via ShowManualFallbackForSaving() call.
-  absl::optional<autofill::FormData> form_data_maybe_submitted_;
+  std::optional<autofill::FormData> form_data_maybe_submitted_;
   // Records whether DynamicFormSubmission() gets called.
   bool called_dynamic_form_submission_ = false;
   // Records whether PasswordFormsParsed() gets called.
   bool called_password_forms_parsed_ = false;
   // Records if the list received via PasswordFormsParsed() call was empty.
-  absl::optional<std::vector<autofill::FormData>> form_data_parsed_;
+  std::optional<std::vector<autofill::FormData>> form_data_parsed_;
   // Records whether PasswordFormsRendered() gets called.
   bool called_password_forms_rendered_ = false;
   // Records data received via PasswordFormsRendered() call.
-  absl::optional<std::vector<autofill::FormData>> form_data_rendered_;
+  std::optional<std::vector<autofill::FormData>> form_data_rendered_;
   // Records whether RecordSavePasswordProgress() gets called.
   bool called_record_save_progress_ = false;
   // Records whether UserModifiedPasswordField() gets called.
@@ -200,7 +200,7 @@ class FakeMojoPasswordManagerDriver
   // Records whether SaveGenerationFieldDetectedByClassifier() gets called.
   bool called_save_generation_field_ = false;
   // Records data received via SaveGenerationFieldDetectedByClassifier() call.
-  absl::optional<std::u16string> save_generation_field_;
+  std::optional<std::u16string> save_generation_field_;
 
   // Records number of times CheckSafeBrowsingReputation() gets called.
   int called_check_safe_browsing_reputation_cnt_ = 0;

@@ -182,7 +182,7 @@ bool IsPinnedToTaskbarHelper::DirectoryContainsPinnedShortcutForProgram(
   for (base::FilePath shortcut = shortcut_enum.Next(); !shortcut.empty();
        shortcut = shortcut_enum.Next()) {
     if (IsShortcutForProgram(shortcut, program_compare)) {
-      absl::optional<bool> is_pinned = IsShortcutPinnedToTaskbar(shortcut);
+      std::optional<bool> is_pinned = IsShortcutPinnedToTaskbar(shortcut);
       if (is_pinned == true)
         return true;
       // Fall back to checking for the taskbar verb on versions of Windows that

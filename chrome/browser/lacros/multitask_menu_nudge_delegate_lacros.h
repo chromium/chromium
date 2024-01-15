@@ -42,7 +42,7 @@ class MultitaskMenuNudgeDelegateLacros
   // `callback`, which is part of a barrier callback.
   void OnGetPreference(base::OnceCallback<void(PrefPair)> callback,
                        crosapi::mojom::PrefPath pref_path,
-                       absl::optional<base::Value> value);
+                       std::optional<base::Value> value);
 
   // Callback ran when we got both our prefs from the pref service. Parses the
   // values and then uses `callback` to send them to the prefs requester.

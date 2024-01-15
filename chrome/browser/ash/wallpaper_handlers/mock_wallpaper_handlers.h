@@ -87,7 +87,7 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
   // GooglePhotosAlbumsFetcher:
   MOCK_METHOD(void,
               AddRequestAndStartIfNecessary,
-              (const absl::optional<std::string>& resume_token,
+              (const std::optional<std::string>& resume_token,
                base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback),
               (override));
 
@@ -97,7 +97,7 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
               (override));
 
   // Overridden to increase visibility.
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
@@ -119,7 +119,7 @@ class MockGooglePhotosSharedAlbumsFetcher
   // GooglePhotosSharedAlbumsFetcher:
   MOCK_METHOD(void,
               AddRequestAndStartIfNecessary,
-              (const absl::optional<std::string>& resume_token,
+              (const std::optional<std::string>& resume_token,
                base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback),
               (override));
 
@@ -129,7 +129,7 @@ class MockGooglePhotosSharedAlbumsFetcher
               (override));
 
   // Overridden to increase visibility.
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
@@ -158,7 +158,7 @@ class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {
               (override));
 
   // Overridden to increase visibility.
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosEnablementState& result) override;
 };
 
@@ -178,9 +178,9 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
   // GooglePhotosPhotosFetcher:
   MOCK_METHOD(void,
               AddRequestAndStartIfNecessary,
-              (const absl::optional<std::string>& item_id,
-               const absl::optional<std::string>& album_id,
-               const absl::optional<std::string>& resume_token,
+              (const std::optional<std::string>& item_id,
+               const std::optional<std::string>& album_id,
+               const std::optional<std::string>& resume_token,
                bool shuffle,
                base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback),
               (override));
@@ -191,7 +191,7 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
               (override));
 
   // Overridden to increase visibility.
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosPhotosCbkArgs& result) override;
 };
 

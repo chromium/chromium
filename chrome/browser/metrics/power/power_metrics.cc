@@ -134,34 +134,34 @@ int64_t CalculateDischargeRateRelative(
 }
 
 BatteryDischarge GetBatteryDischargeDuringInterval(
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         previous_battery_state,
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state,
     base::TimeDelta interval_duration) {
   if (!previous_battery_state.has_value() || !new_battery_state.has_value()) {
-    return {BatteryDischargeMode::kRetrievalError, absl::nullopt};
+    return {BatteryDischargeMode::kRetrievalError, std::nullopt};
   }
   if (previous_battery_state->is_external_power_connected !=
           new_battery_state->is_external_power_connected ||
       previous_battery_state->battery_count !=
           new_battery_state->battery_count) {
-    return {BatteryDischargeMode::kStateChanged, absl::nullopt};
+    return {BatteryDischargeMode::kStateChanged, std::nullopt};
   }
   if (new_battery_state->battery_count == 0) {
-    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
+    return {BatteryDischargeMode::kNoBattery, std::nullopt};
   }
   if (new_battery_state->is_external_power_connected) {
-    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
+    return {BatteryDischargeMode::kPluggedIn, std::nullopt};
   }
   if (new_battery_state->battery_count > 1) {
-    return {BatteryDischargeMode::kMultipleBatteries, absl::nullopt};
+    return {BatteryDischargeMode::kMultipleBatteries, std::nullopt};
   }
   if ((previous_battery_state->charge_unit ==
        base::BatteryLevelProvider::BatteryLevelUnit::kRelative) ||
       (new_battery_state->charge_unit ==
        base::BatteryLevelProvider::BatteryLevelUnit::kRelative)) {
-    return {BatteryDischargeMode::kInsufficientResolution, absl::nullopt};
+    return {BatteryDischargeMode::kInsufficientResolution, std::nullopt};
   }
 
   // TODO(crbug.com/1191045): Change CHECK to DCHECK in October 2022 after
@@ -178,13 +178,13 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   // discharge rate for this duration would be misleading.
   if (previous_battery_state->current_capacity ==
       previous_battery_state->full_charged_capacity) {
-    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
+    return {BatteryDischargeMode::kMacFullyCharged, std::nullopt};
   }
 #endif
 
   if (previous_battery_state->full_charged_capacity.value() == 0 ||
       new_battery_state->full_charged_capacity.value() == 0) {
-    return {BatteryDischargeMode::kFullChargedCapacityIsZero, absl::nullopt};
+    return {BatteryDischargeMode::kFullChargedCapacityIsZero, std::nullopt};
   }
 
   const auto discharge_rate_mw = CalculateDischargeRateMilliwatts(
@@ -196,7 +196,7 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   // correspond to a discharge amount of 1000/60 ~ 17 mWh every 1 minute
   // interval.
   static const int64_t kMaximumGranularityInMilliwattHours = 17;
-  absl::optional<int64_t> discharge_rate_with_precise_granularity;
+  std::optional<int64_t> discharge_rate_with_precise_granularity;
   if (previous_battery_state->battery_discharge_granularity.has_value() &&
       previous_battery_state->battery_discharge_granularity.value() <=
           kMaximumGranularityInMilliwattHours &&
@@ -211,7 +211,7 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
       *previous_battery_state, *new_battery_state, interval_duration);
 
   if (discharge_rate_relative < 0 || discharge_rate_mw < 0) {
-    return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
+    return {BatteryDischargeMode::kBatteryLevelIncreased, std::nullopt};
   }
   return {
     .mode = BatteryDischargeMode::kDischarging,

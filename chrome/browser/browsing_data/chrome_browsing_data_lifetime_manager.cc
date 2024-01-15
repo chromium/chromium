@@ -151,7 +151,7 @@ class BrowsingDataRemoverObserver
 uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+    std::optional<browsing_data::PolicyDataType> policy_data_type =
         browsing_data::NameToPolicyDataType(data_type.GetString());
     if (!policy_data_type.has_value()) {
       continue;
@@ -173,7 +173,7 @@ uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
 uint64_t GetRemoveMask(const base::Value::List& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
-    absl::optional<browsing_data::PolicyDataType> policy_data_type =
+    std::optional<browsing_data::PolicyDataType> policy_data_type =
         browsing_data::NameToPolicyDataType(data_type.GetString());
     if (!policy_data_type.has_value()) {
       continue;

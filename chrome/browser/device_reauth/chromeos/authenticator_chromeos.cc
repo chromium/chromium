@@ -68,7 +68,7 @@ void AuthenticatorChromeOS::AuthenticateUser(
       lacros_service->GetRemote<chromeos::auth::mojom::InSessionAuth>()
           ->RequestToken(
               chromeos::auth::mojom::Reason::kAccessPasswordManager,
-              absl::nullopt,
+              std::nullopt,
               base::BindOnce(&OnRequestToken, std::move(result_callback)));
     } else {
       lacros_service->GetRemote<chromeos::auth::mojom::InSessionAuth>()

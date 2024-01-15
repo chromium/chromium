@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 

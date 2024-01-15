@@ -104,7 +104,7 @@ void OpenExternal(Profile* profile, const GURL& url) {
   // ChromeContentBrowserClient::HandleExternalProtocol.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  absl::optional<guest_os::GuestOsUrlHandler> handler =
+  std::optional<guest_os::GuestOsUrlHandler> handler =
       guest_os::GuestOsUrlHandler::GetForUrl(profile, url);
   if (handler) {
     handler->Handle(profile, url);

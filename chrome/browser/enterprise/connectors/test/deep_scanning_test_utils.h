@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_TEST_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_DEEP_SCANNING_TEST_UTILS_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class MockCloudPolicyClient;
@@ -48,7 +48,7 @@ class EventReportValidator {
       const std::string& expected_result,
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
-      const absl::optional<std::string>& expected_scan_id);
+      const std::optional<std::string>& expected_scan_id);
 
   void ExpectSensitiveDataEvent(
       const std::string& expected_url,
@@ -60,7 +60,7 @@ class EventReportValidator {
       const std::string& expected_trigger,
       const ContentAnalysisResponse::Result& expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      absl::optional<int64_t> expected_content_size,
+      std::optional<int64_t> expected_content_size,
       const std::string& expected_result,
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
@@ -190,36 +190,36 @@ class EventReportValidator {
   void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
-                     const absl::optional<std::string>& expected_value);
+                     const std::optional<std::string>& expected_value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
-                     const absl::optional<std::u16string>& expected_value);
+                     const std::optional<std::u16string>& expected_value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
-                     const absl::optional<int>& expected_value);
+                     const std::optional<int>& expected_value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
-                     const absl::optional<bool>& expected_value);
+                     const std::optional<bool>& expected_value);
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
 
   std::string event_key_;
-  absl::optional<std::string> url_;
-  absl::optional<std::string> tab_url_;
-  absl::optional<std::string> source_;
-  absl::optional<std::string> destination_;
-  absl::optional<std::string> trigger_ = absl::nullopt;
-  absl::optional<std::string> threat_type_ = absl::nullopt;
-  absl::optional<std::string> unscanned_reason_ = absl::nullopt;
-  absl::optional<int64_t> content_size_ = absl::nullopt;
+  std::optional<std::string> url_;
+  std::optional<std::string> tab_url_;
+  std::optional<std::string> source_;
+  std::optional<std::string> destination_;
+  std::optional<std::string> trigger_ = std::nullopt;
+  std::optional<std::string> threat_type_ = std::nullopt;
+  std::optional<std::string> unscanned_reason_ = std::nullopt;
+  std::optional<int64_t> content_size_ = std::nullopt;
   raw_ptr<const std::set<std::string>> mimetypes_ = nullptr;
   std::string username_;
   std::string profile_identifier_;
-  absl::optional<bool> is_federated_ = absl::nullopt;
-  absl::optional<std::string> federated_origin_ = absl::nullopt;
-  absl::optional<std::u16string> login_user_name_ = absl::nullopt;
-  absl::optional<std::vector<std::pair<std::string, std::u16string>>>
-      password_breach_identities_ = absl::nullopt;
+  std::optional<bool> is_federated_ = std::nullopt;
+  std::optional<std::string> federated_origin_ = std::nullopt;
+  std::optional<std::u16string> login_user_name_ = std::nullopt;
+  std::optional<std::vector<std::pair<std::string, std::u16string>>>
+      password_breach_identities_ = std::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use maps to ensure all of them

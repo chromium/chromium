@@ -89,7 +89,7 @@ class EnabledPolicyBrowsertest
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
-    if (absl::optional<std::string> policy = GetOverridesPolicy();
+    if (std::optional<std::string> policy = GetOverridesPolicy();
         policy.has_value()) {
       SetPolicyValue(GetOverridesPolicyName(),
                      base::JSONReader::Read(policy.value()));
@@ -131,8 +131,8 @@ class EnabledPolicyBrowsertest
   }
 
  protected:
-  virtual absl::optional<std::string> GetOverridesPolicy() {
-    return absl::nullopt;
+  virtual std::optional<std::string> GetOverridesPolicy() {
+    return std::nullopt;
   }
 
   // Sets the state of the RelatedWebsiteSetsEnabled Policy to
@@ -198,7 +198,7 @@ class EnabledPolicyBrowsertest
   }
 
  private:
-  void SetPolicyValue(const char* key, absl::optional<base::Value> value) {
+  void SetPolicyValue(const char* key, std::optional<base::Value> value) {
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
     // POLICY_SCOPE_USER - since this policy is per profile, not on local state
     // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise policy
@@ -286,9 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OverridesPolicyEmptyBrowsertest : public EnabledPolicyBrowsertest {
  public:
-  absl::optional<std::string> GetOverridesPolicy() override {
-    return R"( {} )";
-  }
+  std::optional<std::string> GetOverridesPolicy() override { return R"( {} )"; }
 };
 
 IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest, CheckMemberships) {
@@ -323,7 +321,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OverridesPolicyReplacementBrowsertest : public EnabledPolicyBrowsertest {
  public:
-  absl::optional<std::string> GetOverridesPolicy() override {
+  std::optional<std::string> GetOverridesPolicy() override {
     return R"(
         {
           "replacements": [
@@ -372,7 +370,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OverridesPolicyAdditionBrowsertest : public EnabledPolicyBrowsertest {
  public:
-  absl::optional<std::string> GetOverridesPolicy() override {
+  std::optional<std::string> GetOverridesPolicy() override {
     return R"(
         {
           "replacements": [],
@@ -422,7 +420,7 @@ INSTANTIATE_TEST_SUITE_P(
 class OverridesPolicyReplacementAndAdditionBrowsertest
     : public EnabledPolicyBrowsertest {
  public:
-  absl::optional<std::string> GetOverridesPolicy() override {
+  std::optional<std::string> GetOverridesPolicy() override {
     return R"(
         {
           "replacements": [

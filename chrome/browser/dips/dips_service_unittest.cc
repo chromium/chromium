@@ -233,8 +233,8 @@ class DIPSServiceStateRemovalTest : public testing::Test {
   // not provided, |third_party_url| is allowed when embedded by any site. If
   // |third_party_url| is not provided, any sites embedded under
   // |first_party_url| are excepted.
-  void Add3PCException(const absl::optional<GURL>& first_party_url,
-                       const absl::optional<GURL>& third_party_url) {
+  void Add3PCException(const std::optional<GURL>& first_party_url,
+                       const std::optional<GURL>& third_party_url) {
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
@@ -429,7 +429,7 @@ TEST_F(DIPSServiceStateRemovalTest,
   GURL excepted_3p_url("https://excepted-as-3p.com");
   GURL non_excepted_url("https://not-excepted.com");
 
-  Add3PCException(absl::nullopt, excepted_3p_url);
+  Add3PCException(std::nullopt, excepted_3p_url);
 
   int stateful_bounce_count = 0;
   base::RepeatingCallback<void(const GURL&)> increment_bounce =
@@ -478,7 +478,7 @@ TEST_F(DIPSServiceStateRemovalTest,
   GURL redirect_url_2("https://redirect-2.com");
   GURL redirect_url_3("https://redirect-3.com");
 
-  Add3PCException(excepted_1p_url, absl::nullopt);
+  Add3PCException(excepted_1p_url, std::nullopt);
   Add3PCException(scoped_excepted_1p_url, redirect_url_1);
 
   int stateful_bounce_count = 0;
@@ -878,7 +878,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs1P) {
   // Record a bounce.
   GURL url("https://example.com");
   GURL excepted_1p_url("https://initial.com");
-  Add3PCException(excepted_1p_url, absl::nullopt);
+  Add3PCException(excepted_1p_url, std::nullopt);
   base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       url, excepted_1p_url, GURL("https://final.com"), bounce_time, true,
@@ -913,7 +913,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs3P) {
 
   // Record a bounce.
   GURL excepted_3p_url("https://example.com");
-  Add3PCException(absl::nullopt, excepted_3p_url);
+  Add3PCException(std::nullopt, excepted_3p_url);
   base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(2);
   GetService()->RecordBounceForTesting(
       excepted_3p_url, GURL("https://initial.com"), GURL("https://final.com"),

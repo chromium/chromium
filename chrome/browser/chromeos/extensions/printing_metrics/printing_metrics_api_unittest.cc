@@ -135,7 +135,7 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_OnePrintJob) {
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1u, result->GetList().size());
-  absl::optional<api::printing_metrics::PrintJobInfo> print_job_info =
+  std::optional<api::printing_metrics::PrintJobInfo> print_job_info =
       api::printing_metrics::PrintJobInfo::FromValue(result->GetList()[0]);
   ASSERT_TRUE(print_job_info.has_value());
 
@@ -160,11 +160,11 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_TwoPrintJobs) {
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(2u, result->GetList().size());
-  absl::optional<api::printing_metrics::PrintJobInfo> print_job_info1 =
+  std::optional<api::printing_metrics::PrintJobInfo> print_job_info1 =
       api::printing_metrics::PrintJobInfo::FromValue(result->GetList()[0]);
   ASSERT_TRUE(print_job_info1.has_value());
   EXPECT_EQ(kTitle1, print_job_info1->title);
-  absl::optional<api::printing_metrics::PrintJobInfo> print_job_info2 =
+  std::optional<api::printing_metrics::PrintJobInfo> print_job_info2 =
       api::printing_metrics::PrintJobInfo::FromValue(result->GetList()[1]);
   ASSERT_TRUE(print_job_info2.has_value());
   EXPECT_EQ(kTitle2, print_job_info2->title);

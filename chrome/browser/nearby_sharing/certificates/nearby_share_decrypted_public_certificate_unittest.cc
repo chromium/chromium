@@ -4,11 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 
+#include <optional>
+
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
@@ -27,7 +28,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt) {
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
   proto_cert.set_for_self_share(true);
 
-  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
+  std::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           proto_cert, GetNearbyShareTestEncryptedMetadataKey());
   EXPECT_TRUE(cert);
@@ -78,7 +79,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt_InvalidDataFailure) {
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Verify) {
-  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
+  std::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
           GetNearbyShareTestEncryptedMetadataKey());
@@ -92,7 +93,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify_InitFailure) {
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility);
   proto_cert.set_public_key("invalid public key");
 
-  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
+  std::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           proto_cert, GetNearbyShareTestEncryptedMetadataKey());
   ASSERT_TRUE(cert);
@@ -101,7 +102,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify_InitFailure) {
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, Verify_WrongSignature) {
-  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
+  std::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
           GetNearbyShareTestEncryptedMetadataKey());
@@ -111,7 +112,7 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Verify_WrongSignature) {
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest, HashAuthenticationToken) {
-  absl::optional<NearbyShareDecryptedPublicCertificate> cert =
+  std::optional<NearbyShareDecryptedPublicCertificate> cert =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
           GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
           GetNearbyShareTestEncryptedMetadataKey());

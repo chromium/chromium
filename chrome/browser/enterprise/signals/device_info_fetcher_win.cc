@@ -84,8 +84,8 @@ std::string GetComputerName() {
 
 // Retrieves the state of the screen locking feature from the screen saver
 // settings.
-absl::optional<bool> GetScreenLockStatus() {
-  absl::optional<bool> status;
+std::optional<bool> GetScreenLockStatus() {
+  std::optional<bool> status;
   BOOL value = FALSE;
   if (::SystemParametersInfo(SPI_GETSCREENSAVESECURE, 0, &value, 0))
     status = static_cast<bool>(value);
@@ -93,8 +93,8 @@ absl::optional<bool> GetScreenLockStatus() {
 }
 
 // Checks if locking is enabled at the currently active power scheme.
-absl::optional<bool> GetConsoleLockStatus() {
-  absl::optional<bool> status;
+std::optional<bool> GetConsoleLockStatus() {
+  std::optional<bool> status;
   SYSTEM_POWER_STATUS sps;
   // https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-getsystempowerstatus
   // Retrieves the power status of the system. The status indicates whether the
@@ -139,11 +139,11 @@ absl::optional<bool> GetConsoleLockStatus() {
 // Gets cumulative screen locking policy based on the screen saver and console
 // lock status.
 SettingValue GetScreenlockSecured() {
-  const absl::optional<bool> screen_lock_status = GetScreenLockStatus();
+  const std::optional<bool> screen_lock_status = GetScreenLockStatus();
   if (screen_lock_status.value_or(false))
     return SettingValue::ENABLED;
 
-  const absl::optional<bool> console_lock_status = GetConsoleLockStatus();
+  const std::optional<bool> console_lock_status = GetConsoleLockStatus();
   if (console_lock_status.value_or(false))
     return SettingValue::ENABLED;
 
@@ -155,8 +155,8 @@ SettingValue GetScreenlockSecured() {
 }
 
 // Returns the volume where the Windows OS is installed.
-absl::optional<std::wstring> GetOsVolume() {
-  absl::optional<std::wstring> volume;
+std::optional<std::wstring> GetOsVolume() {
+  std::optional<std::wstring> volume;
   base::FilePath windows_dir;
   if (base::PathService::Get(base::DIR_WINDOWS, &windows_dir) &&
       windows_dir.IsAbsolute()) {
@@ -210,7 +210,7 @@ bool GetPropVariantAsInt64(PROPVARIANT variant, int64_t* out_value) {
 SettingValue GetDiskEncrypted() {
   // |volume| has to be a |wstring| because SHCreateItemFromParsingName() only
   // accepts |PCWSTR| which is |wchar_t*|.
-  absl::optional<std::wstring> volume = GetOsVolume();
+  std::optional<std::wstring> volume = GetOsVolume();
   if (!volume.has_value())
     return SettingValue::UNKNOWN;
 
@@ -277,9 +277,9 @@ std::vector<std::string> GetMacAddresses() {
   return mac_addresses;
 }
 
-absl::optional<std::string> GetWindowsMachineDomain() {
+std::optional<std::string> GetWindowsMachineDomain() {
   if (!base::win::IsEnrolledToDomain())
-    return absl::nullopt;
+    return std::nullopt;
   std::string domain;
   ::DSROLE_PRIMARY_DOMAIN_INFO_BASIC* info = nullptr;
   if (::DsRoleGetPrimaryDomainInformation(nullptr,
@@ -289,15 +289,15 @@ absl::optional<std::string> GetWindowsMachineDomain() {
       domain = base::WideToUTF8(info->DomainNameFlat);
     ::DsRoleFreeMemory(info);
   }
-  return domain.empty() ? absl::nullopt : absl::make_optional(domain);
+  return domain.empty() ? std::nullopt : std::make_optional(domain);
 }
 
-absl::optional<std::string> GetWindowsUserDomain() {
+std::optional<std::string> GetWindowsUserDomain() {
   WCHAR username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
   DWORD username_length = sizeof(username);
   if (!::GetUserNameExW(::NameSamCompatible, username, &username_length) ||
       username_length <= 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // The string corresponds to DOMAIN\USERNAME. If there isn't a domain, the
   // domain name is replaced by the name of the machine, so the function
@@ -306,8 +306,8 @@ absl::optional<std::string> GetWindowsUserDomain() {
   std::string domain = username_str.substr(0, username_str.find("\\"));
 
   return domain == base::ToUpperASCII(GetComputerNameW())
-             ? absl::nullopt
-             : absl::make_optional(domain);
+             ? std::nullopt
+             : std::make_optional(domain);
 }
 
 std::string GetSecurityPatchLevel() {

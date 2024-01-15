@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(SafetyHubExtensionSettingsUIBrowserTest,
   SafetyHubMenuNotificationService* notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   // No unpublished extensions yet, so there shouldn't be a menu notifications.
-  absl::optional<MenuNotificationEntry> notification =
+  std::optional<MenuNotificationEntry> notification =
       notification_service->GetNotificationToShow();
   ASSERT_FALSE(notification.has_value());
 

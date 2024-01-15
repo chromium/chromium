@@ -309,7 +309,7 @@ void NearbyConnectionsManagerImpl::StopDiscovery() {
 void NearbyConnectionsManagerImpl::Connect(
     std::vector<uint8_t> endpoint_info,
     const std::string& endpoint_id,
-    absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
+    std::optional<std::vector<uint8_t>> bluetooth_mac_address,
     DataUsage data_usage,
     NearbyConnectionCallback callback) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
@@ -350,8 +350,8 @@ void NearbyConnectionsManagerImpl::Connect(
       service_id_, endpoint_info, endpoint_id,
       ConnectionOptions::New(std::move(allowed_mediums),
                              std::move(bluetooth_mac_address),
-                             /*keep_alive_interval_millis=*/absl::nullopt,
-                             /*keep_alive_timeout_millis=*/absl::nullopt),
+                             /*keep_alive_interval_millis=*/std::nullopt,
+                             /*keep_alive_timeout_millis=*/std::nullopt),
       std::move(lifecycle_listener),
       base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionRequested,
                      weak_ptr_factory_.GetWeakPtr(), endpoint_id));
@@ -509,7 +509,7 @@ void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
           PayloadTransferUpdate::New(payload_id, PayloadStatus::kCanceled,
                                      /*total_bytes=*/0,
                                      /*bytes_transferred=*/0),
-          /*upgraded_medium=*/absl::nullopt);
+          /*upgraded_medium=*/std::nullopt);
     }
   }
 
@@ -537,23 +537,22 @@ void NearbyConnectionsManagerImpl::ClearIncomingPayloads() {
   incoming_payloads_.clear();
 }
 
-absl::optional<std::string>
-NearbyConnectionsManagerImpl::GetAuthenticationToken(
+std::optional<std::string> NearbyConnectionsManagerImpl::GetAuthenticationToken(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
   if (it == connection_info_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return it->second->authentication_token;
 }
 
-absl::optional<std::vector<uint8_t>>
+std::optional<std::vector<uint8_t>>
 NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
   if (it == connection_info_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return it->second->raw_authentication_token;
@@ -1038,12 +1037,12 @@ void NearbyConnectionsManagerImpl::Reset() {
   pending_outgoing_connections_.clear();
 }
 
-absl::optional<nearby::connections::mojom::Medium>
+std::optional<nearby::connections::mojom::Medium>
 NearbyConnectionsManagerImpl::GetUpgradedMedium(
     const std::string& endpoint_id) const {
   const auto it = current_upgraded_mediums_.find(endpoint_id);
   if (it == current_upgraded_mediums_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return it->second;

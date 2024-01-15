@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/structured/metadata_processor_ash.h"
 
+#include <optional>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/feature_list.h"
@@ -39,7 +41,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 namespace em = enterprise_management;
@@ -64,22 +65,22 @@ constexpr uint64_t kCrosEventsHash = UINT64_C(12657197978410187837);
 // The name hash of "chrome::CrOSEvents::NoMetricsEvent".
 constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
 
-absl::optional<em::PolicyData::MarketSegment> GetMarketSegment(
+std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     DeviceSegment device_segment) {
   switch (device_segment) {
     case StructuredDataProto::UNKNOWN:
     case StructuredDataProto::CONSUMER:
-      return absl::nullopt;
+      return std::nullopt;
     case StructuredDataProto::EDUCATION:
       return em::PolicyData::ENROLLED_EDUCATION;
     case StructuredDataProto::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
+std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     PrimaryUserSegment primary_user_segment) {
   switch (primary_user_segment) {
     case StructuredEventProto::K12:
@@ -95,13 +96,13 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case StructuredEventProto::MANAGED_GUEST_SESSION:
     case StructuredEventProto::DEMO_MODE:
     case StructuredEventProto::UNKNOWN_PRIMARY_USER_TYPE:
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<AccountId> GetPrimaryAccountId() {
+std::optional<AccountId> GetPrimaryAccountId() {
   return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
                                         FakeGaiaMixin::kEnterpriseUser1GaiaId);
 }
@@ -124,12 +125,12 @@ class TestCase {
 
   DeviceSegment GetDeviceSegment() const { return device_segment_; }
 
-  absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment()
+  std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment()
       const {
     return ::GetMetricsLogSegment(primary_user_segment_);
   }
 
-  absl::optional<em::PolicyData::MarketSegment> GetMarketSegment() const {
+  std::optional<em::PolicyData::MarketSegment> GetMarketSegment() const {
     return ::GetMarketSegment(device_segment_);
   }
 
@@ -239,7 +240,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
     // Add an account with DeviceLocalAccount::Type::TYPE_PUBLIC_SESSION.
     AddPublicSessionToDevicePolicy(kAccountId1);
 
-    absl::optional<em::PolicyData::MarketSegment> market_segment =
+    std::optional<em::PolicyData::MarketSegment> market_segment =
         GetParam().GetMarketSegment();
     if (market_segment) {
       device_policy()->policy_data().set_market_segment(market_segment.value());
@@ -270,7 +271,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
   }
 
   void LogInUser() {
-    absl::optional<em::PolicyData::MetricsLogSegment> log_segment =
+    std::optional<em::PolicyData::MetricsLogSegment> log_segment =
         GetParam().GetMetricsLogSegment();
     if (log_segment) {
       logged_in_user_mixin_.GetUserPolicyMixin()
@@ -354,7 +355,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
                                                    /*setup_profile=*/false};
 
   // Helper function to find an event in an already build Uma Proto.
-  static absl::optional<StructuredEventProto> FindEvent(
+  static std::optional<StructuredEventProto> FindEvent(
       const StructuredDataProto& structured_data,
       uint64_t project_name_hash,
       uint64_t event_name_hash) {
@@ -364,7 +365,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
         return event;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  private:
@@ -433,7 +434,7 @@ IN_PROC_BROWSER_TEST_P(MetadataProcessorTest, DISABLED_UserMetadata) {
   const StructuredDataProto& structured_data = uma_proto->structured_data();
   EXPECT_EQ(structured_data.device_segment(), GetParam().GetDeviceSegment());
 
-  absl::optional<StructuredEventProto> event =
+  std::optional<StructuredEventProto> event =
       FindEvent(structured_data, kCrosEventsHash, kNoMetricsEventHash);
   ASSERT_TRUE(event.has_value());
 

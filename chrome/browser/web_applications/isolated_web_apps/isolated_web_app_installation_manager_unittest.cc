@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -40,7 +41,6 @@
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -56,7 +56,7 @@ using ::testing::Optional;
 using ::testing::VariantWith;
 
 using MaybeIwaLocation =
-    base::expected<absl::optional<IsolatedWebAppLocation>, std::string>;
+    base::expected<std::optional<IsolatedWebAppLocation>, std::string>;
 
 class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
  public:
@@ -65,7 +65,7 @@ class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
   void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
@@ -100,8 +100,8 @@ class ScopedWorkingDirectoryWithFile {
 };
 
 base::CommandLine CreateCommandLine(
-    absl::optional<base::StringPiece> proxy_flag_value,
-    absl::optional<base::FilePath> bundle_flag_value) {
+    std::optional<base::StringPiece> proxy_flag_value,
+    std::optional<base::FilePath> bundle_flag_value) {
   base::CommandLine command_line{base::CommandLine::NoProgram::NO_PROGRAM};
   if (proxy_flag_value.has_value()) {
     command_line.AppendSwitchASCII("install-isolated-web-app-from-url",
@@ -155,7 +155,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
       KeepAliveRestartOption::DISABLED);
   manager().OnReportInstallationResultForTesting(future.GetCallback());
   manager().InstallFromCommandLine(
-      CreateCommandLine("http://example.com:12345", absl::nullopt),
+      CreateCommandLine("http://example.com:12345", std::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
   EXPECT_THAT(future.Take(),
@@ -175,7 +175,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
       KeepAliveRestartOption::DISABLED);
   manager().OnReportInstallationResultForTesting(future.GetCallback());
   manager().InstallFromCommandLine(
-      CreateCommandLine("http://example.com:12345", absl::nullopt),
+      CreateCommandLine("http://example.com:12345", std::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
   EXPECT_THAT(
@@ -198,7 +198,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
       KeepAliveRestartOption::DISABLED);
   manager().OnReportInstallationResultForTesting(future.GetCallback());
   manager().InstallFromCommandLine(
-      CreateCommandLine("http://example.com:12345", absl::nullopt),
+      CreateCommandLine("http://example.com:12345", std::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
   EXPECT_THAT(
@@ -210,24 +210,24 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
        NoInstallationWhenProxyFlagAbsentAndBundleFlagAbsent) {
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(absl::nullopt, absl::nullopt), future.GetCallback());
-  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
+      CreateCommandLine(std::nullopt, std::nullopt), future.GetCallback());
+  EXPECT_THAT(future.Get(), ValueIs(Eq(std::nullopt)));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerTest,
        NoInstallationWhenProxyFlagAbsentAndBundleFlagEmpty) {
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(absl::nullopt, base::FilePath::FromUTF8Unsafe("")),
+      CreateCommandLine(std::nullopt, base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
+  EXPECT_THAT(future.Get(), ValueIs(Eq(std::nullopt)));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerTest,
        ErrorWhenProxyFlagAbsentAndBundleFlagInvalid) {
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(absl::nullopt,
+      CreateCommandLine(std::nullopt,
                         base::FilePath::FromUTF8Unsafe("does_not_exist.wbn)")),
       future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid path provided")));
@@ -238,7 +238,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   ScopedWorkingDirectoryWithFile cwd;
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(absl::nullopt, cwd.directory()), future.GetCallback());
+      CreateCommandLine(std::nullopt, cwd.directory()), future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid path provided")));
 }
 
@@ -247,7 +247,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   ScopedWorkingDirectoryWithFile cwd;
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(absl::nullopt, cwd.existing_file_name()),
+      CreateCommandLine(std::nullopt, cwd.existing_file_name()),
       future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(Optional(VariantWith<DevModeBundle>(
@@ -259,7 +259,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   ScopedWorkingDirectoryWithFile cwd;
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(absl::nullopt, cwd.existing_file_path()),
+      CreateCommandLine(std::nullopt, cwd.existing_file_path()),
       future.GetCallback());
   EXPECT_THAT(future.Get(),
               ValueIs(Optional(VariantWith<DevModeBundle>(
@@ -270,10 +270,10 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
        NoInstallationWhenProxyFlagEmptyAndBundleFlagAbsent) {
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine("", absl::nullopt),
+      CreateCommandLine("", std::nullopt),
 
       future.GetCallback());
-  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
+  EXPECT_THAT(future.Get(), ValueIs(Eq(std::nullopt)));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerTest,
@@ -282,7 +282,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
       CreateCommandLine("", base::FilePath::FromUTF8Unsafe("")),
       future.GetCallback());
-  EXPECT_THAT(future.Get(), ValueIs(Eq(absl::nullopt)));
+  EXPECT_THAT(future.Get(), ValueIs(Eq(std::nullopt)));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerTest,
@@ -310,7 +310,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagAbsent) {
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine("invalid", absl::nullopt), future.GetCallback());
+      CreateCommandLine("invalid", std::nullopt), future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Invalid URL")));
 }
 
@@ -348,7 +348,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   constexpr base::StringPiece kUrl = "http://example.com";
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(kUrl, absl::nullopt), future.GetCallback());
+      CreateCommandLine(kUrl, std::nullopt), future.GetCallback());
   EXPECT_THAT(future.Get(), ValueIs(Optional(VariantWith<DevModeProxy>(_))));
   EXPECT_TRUE(absl::get<DevModeProxy>(**future.Get())
                   .proxy_url.IsSameOriginWith(GURL(kUrl)));
@@ -359,7 +359,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   constexpr base::StringPiece kUrl = "http://example.com:12345";
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine(kUrl, absl::nullopt), future.GetCallback());
+      CreateCommandLine(kUrl, std::nullopt), future.GetCallback());
   EXPECT_THAT(future.Get(), ValueIs(Optional(VariantWith<DevModeProxy>(_))));
   EXPECT_TRUE(absl::get<DevModeProxy>(**future.Get())
                   .proxy_url.IsSameOriginWith(GURL(kUrl)));
@@ -369,7 +369,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
        ErrorWhenProxyFlagHasPathAndBundleFlagInValid) {
   base::test::TestFuture<MaybeIwaLocation> future;
   IsolatedWebAppInstallationManager::GetIsolatedWebAppLocationFromCommandLine(
-      CreateCommandLine("http://example.com/path", absl::nullopt),
+      CreateCommandLine("http://example.com/path", std::nullopt),
       future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(HasSubstr("Non-origin URL provided")));
 }

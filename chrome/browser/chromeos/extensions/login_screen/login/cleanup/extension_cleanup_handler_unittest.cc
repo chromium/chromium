@@ -170,8 +170,8 @@ TEST_F(ExtensionCleanupHandlerUnittest, Cleanup) {
 
   base::RunLoop run_loop;
   extension_cleanup_handler_->Cleanup(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
-        EXPECT_EQ(error, absl::nullopt);
+      base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
+        EXPECT_EQ(error, std::nullopt);
         run_loop.QuitClosure().Run();
       }));
   run_loop.Run();

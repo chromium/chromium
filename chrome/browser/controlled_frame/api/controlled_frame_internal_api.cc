@@ -21,7 +21,7 @@ ExtensionFunction::ResponseAction
 ControlledFrameInternalContextMenusCreateFunction::Run() {
   CHECK(!extension())
       << "controlledFrame should only be available to Isolated Web Apps.";
-  absl::optional<webview::ContextMenusCreate::Params> params =
+  std::optional<webview::ContextMenusCreate::Params> params =
       webview::ContextMenusCreate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -45,7 +46,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/mojom/context_type.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -130,9 +130,9 @@ api::windows::Window CreateWindowModelHelper(
 
 api::sessions::Session CreateSessionModelHelper(
     int last_modified,
-    absl::optional<api::tabs::Tab> tab,
-    absl::optional<api::windows::Window> window,
-    absl::optional<api::tab_groups::TabGroup> group) {
+    std::optional<api::tabs::Tab> tab,
+    std::optional<api::windows::Window> window,
+    std::optional<api::tab_groups::TabGroup> group) {
   api::sessions::Session session_struct;
   session_struct.last_modified = last_modified;
   if (tab) {
@@ -187,9 +187,9 @@ api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
 
 api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
     const sessions::TabRestoreService::Entry& entry) {
-  absl::optional<api::tabs::Tab> tab;
-  absl::optional<api::windows::Window> window;
-  absl::optional<api::tab_groups::TabGroup> group;
+  std::optional<api::tabs::Tab> tab;
+  std::optional<api::windows::Window> window;
+  std::optional<api::tab_groups::TabGroup> group;
   switch (entry.type) {
     case sessions::TabRestoreService::TAB:
       tab = CreateTabModel(
@@ -208,7 +208,7 @@ api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
 }
 
 ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
-  absl::optional<GetRecentlyClosed::Params> params =
+  std::optional<GetRecentlyClosed::Params> params =
       GetRecentlyClosed::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   int max_results = api::sessions::MAX_SESSION_RESULTS;
@@ -267,7 +267,7 @@ api::tabs::Tab SessionsGetDevicesFunction::CreateTabModel(
       tab.pinned, active, extension(), source_context_type());
 }
 
-absl::optional<api::windows::Window>
+std::optional<api::windows::Window>
 SessionsGetDevicesFunction::CreateWindowModel(
     const sessions::SessionWindow& window,
     const std::string& session_tag) {
@@ -276,7 +276,7 @@ SessionsGetDevicesFunction::CreateWindowModel(
   // Ignore app popup window for now because we do not have a corresponding
   // api::windows::WindowType value.
   if (window.type == sessions::SessionWindow::TYPE_APP_POPUP)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Prune tabs that are not syncable or are NewTabPage. Then, sort the tabs
   // from most recent to least recent.
@@ -294,7 +294,7 @@ SessionsGetDevicesFunction::CreateWindowModel(
     tabs_in_window.push_back(tab.get());
   }
   if (tabs_in_window.empty())
-    return absl::nullopt;
+    return std::nullopt;
   std::sort(tabs_in_window.begin(), tabs_in_window.end(), SortTabsByRecency);
 
   std::vector<api::tabs::Tab> tabs;
@@ -359,27 +359,26 @@ SessionsGetDevicesFunction::CreateWindowModel(
   return window_struct;
 }
 
-absl::optional<api::sessions::Session>
+std::optional<api::sessions::Session>
 SessionsGetDevicesFunction::CreateSessionModel(
     const sessions::SessionWindow& window,
     const std::string& session_tag) {
-  absl::optional<api::windows::Window> window_model =
+  std::optional<api::windows::Window> window_model =
       CreateWindowModel(window, session_tag);
   // There is a chance that after pruning uninteresting tabs the window will be
   // empty.
   if (!window_model)
-    return absl::nullopt;
+    return std::nullopt;
 
-  return CreateSessionModelHelper(window.timestamp.ToTimeT(), absl::nullopt,
-                                  std::move(window_model), absl::nullopt);
+  return CreateSessionModelHelper(window.timestamp.ToTimeT(), std::nullopt,
+                                  std::move(window_model), std::nullopt);
 }
 
 api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
     const sync_sessions::SyncedSession* session) {
   int max_results = api::sessions::MAX_SESSION_RESULTS;
   // Already validated in RunAsync().
-  absl::optional<GetDevices::Params> params =
-      GetDevices::Params::Create(args());
+  std::optional<GetDevices::Params> params = GetDevices::Params::Create(args());
   if (params->filter && params->filter->max_results)
     max_results = *params->filter->max_results;
 
@@ -391,7 +390,7 @@ api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
        it != session->windows.end() &&
        static_cast<int>(device_struct.sessions.size()) < max_results;
        ++it) {
-    absl::optional<api::sessions::Session> session_model = CreateSessionModel(
+    std::optional<api::sessions::Session> session_model = CreateSessionModel(
         it->second->wrapped_window, session->GetSessionTag());
     if (session_model)
       device_struct.sessions.push_back(std::move(*session_model));
@@ -415,8 +414,7 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
         GetDevices::Results::Create(std::vector<api::sessions::Device>())));
   }
 
-  absl::optional<GetDevices::Params> params =
-      GetDevices::Params::Create(args());
+  std::optional<GetDevices::Params> params = GetDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->filter && params->filter->max_results) {
     EXTENSION_FUNCTION_VALIDATE(*params->filter->max_results >= 0 &&
@@ -440,9 +438,8 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::GetRestoredTabResult(
                                             contents);
   api::tabs::Tab tab = ExtensionTabUtil::CreateTabObject(
       contents, scrub_tab_behavior, extension());
-  api::sessions::Session restored_session =
-      CreateSessionModelHelper(base::Time::Now().ToTimeT(), std::move(tab),
-                               absl::nullopt, absl::nullopt);
+  api::sessions::Session restored_session = CreateSessionModelHelper(
+      base::Time::Now().ToTimeT(), std::move(tab), std::nullopt, std::nullopt);
   return ArgumentList(Restore::Results::Create(restored_session));
 }
 
@@ -458,12 +455,12 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
       ExtensionTabUtil::CreateWindowValueForExtension(
           *browser, extension(), ExtensionTabUtil::kPopulateTabs,
           source_context_type());
-  absl::optional<api::windows::Window> window =
+  std::optional<api::windows::Window> window =
       api::windows::Window::FromValue(window_value);
   DCHECK(window);
   return ArgumentList(Restore::Results::Create(
-      CreateSessionModelHelper(base::Time::Now().ToTimeT(), absl::nullopt,
-                               std::move(*window), absl::nullopt)));
+      CreateSessionModelHelper(base::Time::Now().ToTimeT(), std::nullopt,
+                               std::move(*window), std::nullopt)));
 }
 
 ExtensionFunction::ResponseValue
@@ -594,7 +591,7 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
 }
 
 ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
-  absl::optional<Restore::Params> params = Restore::Params::Create(args());
+  std::optional<Restore::Params> params = Restore::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

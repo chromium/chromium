@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace task_manager {
 
@@ -31,7 +31,7 @@ class ArcSharedSampler {
   using MemoryFootprintBytes = uint64_t;
 
   using OnSamplingCompleteCallback =
-      base::RepeatingCallback<void(absl::optional<MemoryFootprintBytes>)>;
+      base::RepeatingCallback<void(std::optional<MemoryFootprintBytes>)>;
 
   // Registers task group specific callback.
   void RegisterCallback(base::ProcessId process_id,

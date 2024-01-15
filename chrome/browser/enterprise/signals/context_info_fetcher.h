@@ -44,13 +44,13 @@ struct ContextInfo {
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
   bool site_isolation_enabled;
   bool built_in_dns_client_enabled;
-  absl::optional<safe_browsing::PasswordProtectionTrigger>
+  std::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger;
   bool chrome_remote_desktop_app_blocked;
-  absl::optional<bool> third_party_blocking_enabled;
+  std::optional<bool> third_party_blocking_enabled;
   SettingValue os_firewall;
   std::vector<std::string> system_dns_servers;
-  absl::optional<std::string> enterprise_profile_id;
+  std::optional<std::string> enterprise_profile_id;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()

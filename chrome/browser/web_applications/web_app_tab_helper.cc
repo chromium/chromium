@@ -66,7 +66,7 @@ WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   return *launch_queue_;
 }
 
-void WebAppTabHelper::SetAppId(absl::optional<webapps::AppId> app_id) {
+void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
   // Empty string should not be used to indicate "no app ID".
   DCHECK(!app_id || !app_id->empty());
   DCHECK(!app_id || provider_->registrar_unsafe().IsInstalled(*app_id) ||
@@ -75,7 +75,7 @@ void WebAppTabHelper::SetAppId(absl::optional<webapps::AppId> app_id) {
     return;
   }
 
-  absl::optional<webapps::AppId> previous_app_id = std::move(app_id_);
+  std::optional<webapps::AppId> previous_app_id = std::move(app_id_);
   app_id_ = std::move(app_id);
 
   OnAssociatedAppChanged(previous_app_id, app_id_);
@@ -144,7 +144,7 @@ bool WebAppTabHelper::IsInAppWindow() const {
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       FindAppWithUrlInScope(web_contents()->GetURL());
   if (app_id == installed_app_id)
     SetAppId(app_id);
@@ -153,17 +153,17 @@ void WebAppTabHelper::OnWebAppInstalled(
 void WebAppTabHelper::OnWebAppWillBeUninstalled(
     const webapps::AppId& uninstalled_app_id) {
   if (app_id_ == uninstalled_app_id)
-    SetAppId(absl::nullopt);
+    SetAppId(std::nullopt);
 }
 
 void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
-  SetAppId(absl::nullopt);
+  SetAppId(std::nullopt);
 }
 
 void WebAppTabHelper::OnAssociatedAppChanged(
-    const absl::optional<webapps::AppId>& previous_app_id,
-    const absl::optional<webapps::AppId>& new_app_id) {
+    const std::optional<webapps::AppId>& previous_app_id,
+    const std::optional<webapps::AppId>& new_app_id) {
   provider_->ui_manager().NotifyOnAssociatedAppChanged(
       web_contents(), previous_app_id, new_app_id);
 
@@ -212,7 +212,7 @@ void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
       url, base::DoNothing());
 }
 
-absl::optional<webapps::AppId> WebAppTabHelper::FindAppWithUrlInScope(
+std::optional<webapps::AppId> WebAppTabHelper::FindAppWithUrlInScope(
     const GURL& url) const {
   return provider_->registrar_unsafe().FindAppWithUrlInScope(url);
 }

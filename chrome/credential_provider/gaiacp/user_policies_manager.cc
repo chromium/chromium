@@ -218,7 +218,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   // Make the fetch policies HTTP request.
-  absl::optional<base::Value> request_result;
+  std::optional<base::Value> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       user_policies_url, access_token, {}, {},
       kDefaultFetchPoliciesRequestTimeout, kMaxNumHttpRetries, &request_result);
@@ -286,7 +286,7 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
   policy_file->Read(0, buffer.data(), buffer.size());
   policy_file.reset();
 
-  absl::optional<base::Value> policy_data =
+  std::optional<base::Value> policy_data =
       base::JSONReader::Read(base::StringPiece(buffer.data(), buffer.size()),
                              base::JSON_ALLOW_TRAILING_COMMAS);
   if (!policy_data || !policy_data->is_dict()) {

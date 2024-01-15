@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -50,7 +51,6 @@
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -85,7 +85,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
   for (int i = 0; i < num_apps; ++i) {
     const auto url = base_url + base::NumberToString(i);
     const webapps::AppId app_id =
-        GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
+        GenerateAppId(/*manifest_id=*/std::nullopt, GURL(url));
 
     auto web_app = std::make_unique<WebApp>(app_id);
     web_app->AddSource(WebAppManagement::kSync);
@@ -264,15 +264,15 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
 
   const GURL start_url = GURL("https://example.com/path");
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   const std::string name = "Name";
   const std::string description = "Description";
   const GURL scope = GURL("https://example.com/scope");
-  const absl::optional<SkColor> theme_color = 0xAABBCCDD;
+  const std::optional<SkColor> theme_color = 0xAABBCCDD;
 
   const GURL start_url2 = GURL("https://example.com/path2");
   const webapps::AppId app_id2 =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url2);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url2);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   auto web_app2 = std::make_unique<WebApp>(app_id2);
@@ -540,10 +540,10 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
 
   const GURL start_url = GURL("https://example.com/path");
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   const std::string name = "Name";
   const std::string description = "Description";
-  const absl::optional<SkColor> theme_color = 0xAABBCCDD;
+  const std::optional<SkColor> theme_color = 0xAABBCCDD;
   const auto display_mode = DisplayMode::kMinimalUi;
   const auto user_display_mode = mojom::UserDisplayMode::kStandalone;
   std::vector<DisplayMode> display_mode_override;
@@ -625,11 +625,11 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
   const GURL app3_scope("https://not-example.com/app");
 
   const webapps::AppId app1_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app1_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app1_scope);
   const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app2_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app2_scope);
   const webapps::AppId app3_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
 
   std::vector<webapps::AppId> in_scope =
       registrar().FindAppsInScope(origin_scope);
@@ -691,28 +691,28 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   const GURL app4_scope("https://app-four.com/");
 
   const webapps::AppId app1_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app1_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app1_scope);
   const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app2_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app2_scope);
   const webapps::AppId app3_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
   const webapps::AppId app4_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
 
   auto app1 = test::CreateWebApp(app1_scope);
   app1->SetScope(app1_scope);
   RegisterApp(std::move(app1));
 
-  absl::optional<webapps::AppId> app2_match =
+  std::optional<webapps::AppId> app2_match =
       registrar().FindAppWithUrlInScope(app2_scope);
   DCHECK(app2_match);
   EXPECT_EQ(*app2_match, app1_id);
 
-  absl::optional<webapps::AppId> app3_match =
+  std::optional<webapps::AppId> app3_match =
       registrar().FindAppWithUrlInScope(app3_scope);
   EXPECT_FALSE(app3_match);
 
-  absl::optional<webapps::AppId> app4_match =
+  std::optional<webapps::AppId> app4_match =
       registrar().FindAppWithUrlInScope(app4_scope);
   EXPECT_FALSE(app4_match);
 
@@ -729,11 +729,11 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
   app4->SetIsUninstalling(true);
   RegisterApp(std::move(app4));
 
-  absl::optional<webapps::AppId> origin_match =
+  std::optional<webapps::AppId> origin_match =
       registrar().FindAppWithUrlInScope(origin_scope);
   EXPECT_FALSE(origin_match);
 
-  absl::optional<webapps::AppId> app1_match =
+  std::optional<webapps::AppId> app1_match =
       registrar().FindAppWithUrlInScope(app1_scope);
   DCHECK(app1_match);
   EXPECT_EQ(*app1_match, app1_id);
@@ -775,21 +775,21 @@ TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
   const GURL app3_launch("https://not-example.com/app/launch");
 
   const webapps::AppId app1_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app1_launch);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app1_launch);
   const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app2_launch);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app2_launch);
   const webapps::AppId app3_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_launch);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_launch);
 
   // Implicit scope "https://example.com/app/"
   auto app1 = test::CreateWebApp(app1_launch);
   RegisterApp(std::move(app1));
 
-  absl::optional<webapps::AppId> app2_match =
+  std::optional<webapps::AppId> app2_match =
       registrar().FindAppWithUrlInScope(app2_page);
   EXPECT_FALSE(app2_match);
 
-  absl::optional<webapps::AppId> app3_match =
+  std::optional<webapps::AppId> app3_match =
       registrar().FindAppWithUrlInScope(app3_page);
   EXPECT_FALSE(app3_match);
 
@@ -799,18 +799,18 @@ TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
   auto app3 = test::CreateWebApp(app3_launch);
   RegisterApp(std::move(app3));
 
-  absl::optional<webapps::AppId> app1_match =
+  std::optional<webapps::AppId> app1_match =
       registrar().FindAppWithUrlInScope(app1_page);
   DCHECK(app1_match);
-  EXPECT_EQ(app1_match, absl::optional<webapps::AppId>(app1_id));
+  EXPECT_EQ(app1_match, std::optional<webapps::AppId>(app1_id));
 
   app2_match = registrar().FindAppWithUrlInScope(app2_page);
   DCHECK(app2_match);
-  EXPECT_EQ(app2_match, absl::optional<webapps::AppId>(app2_id));
+  EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app2_id));
 
   app3_match = registrar().FindAppWithUrlInScope(app3_page);
   DCHECK(app3_match);
-  EXPECT_EQ(app3_match, absl::optional<webapps::AppId>(app3_id));
+  EXPECT_EQ(app3_match, std::optional<webapps::AppId>(app3_id));
 }
 
 TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
@@ -821,7 +821,7 @@ TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
   const GURL app2_scope("https://example.com/app");
   const GURL app2_page("https://example.com/app/specific/page2");
   const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app2_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app2_scope);
 
   const GURL app3_launch("https://example.com/app/specific/launch3");
 
@@ -835,10 +835,10 @@ TEST_F(WebAppRegistrarTest, FindPwaOverShortcut) {
   auto app3 = test::CreateWebApp(app3_launch);
   RegisterApp(std::move(app3));
 
-  absl::optional<webapps::AppId> app2_match =
+  std::optional<webapps::AppId> app2_match =
       registrar().FindAppWithUrlInScope(app2_page);
   DCHECK(app2_match);
-  EXPECT_EQ(app2_match, absl::optional<webapps::AppId>(app2_id));
+  EXPECT_EQ(app2_match, std::optional<webapps::AppId>(app2_id));
 }
 
 TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {
@@ -947,7 +947,7 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
 
   const GURL start_url("https://example.com");
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   const WebApp* app = nullptr;
   {
     auto new_app = test::CreateWebApp(start_url);
@@ -1878,22 +1878,22 @@ TEST_F(WebAppRegistrarTest_Shortstand, CannotFindShortcutWithUrlInScope) {
   const GURL shortcut3_launch("https://not-example.com/shortcut/launch");
 
   const webapps::AppId shortcut1_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, shortcut1_launch);
+      GenerateAppId(/*manifest_id=*/std::nullopt, shortcut1_launch);
   const webapps::AppId shortcut2_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, shortcut2_launch);
+      GenerateAppId(/*manifest_id=*/std::nullopt, shortcut2_launch);
   const webapps::AppId shortcut3_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, shortcut3_launch);
+      GenerateAppId(/*manifest_id=*/std::nullopt, shortcut3_launch);
 
   // Implicit scope "https://example.com/shortcut/"
   auto shortcut1 = test::CreateWebApp(shortcut1_launch);
   shortcut1->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   RegisterApp(std::move(shortcut1));
 
-  absl::optional<webapps::AppId> shortcut2_match =
+  std::optional<webapps::AppId> shortcut2_match =
       registrar().FindAppWithUrlInScope(shortcut2_page);
   EXPECT_FALSE(shortcut2_match);
 
-  absl::optional<webapps::AppId> shortcut3_match =
+  std::optional<webapps::AppId> shortcut3_match =
       registrar().FindAppWithUrlInScope(shortcut3_page);
   EXPECT_FALSE(shortcut3_match);
 
@@ -1905,7 +1905,7 @@ TEST_F(WebAppRegistrarTest_Shortstand, CannotFindShortcutWithUrlInScope) {
   shortcut3->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   RegisterApp(std::move(shortcut3));
 
-  absl::optional<webapps::AppId> shortcut1_match =
+  std::optional<webapps::AppId> shortcut1_match =
       registrar().FindAppWithUrlInScope(shortcut1_page);
   EXPECT_FALSE(shortcut1_match);
 
@@ -1929,28 +1929,28 @@ TEST_F(WebAppRegistrarTest_Shortstand, CanFindAppWithUrlInScope) {
   const GURL app4_scope("https://app-four.com/");
 
   const webapps::AppId app1_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app1_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app1_scope);
   const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app2_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app2_scope);
   const webapps::AppId app3_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
   const webapps::AppId app4_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+      GenerateAppId(/*manifest_id=*/std::nullopt, app3_scope);
 
   auto app1 = test::CreateWebApp(app1_scope);
   app1->SetScope(app1_scope);
   RegisterApp(std::move(app1));
 
-  absl::optional<webapps::AppId> app2_match =
+  std::optional<webapps::AppId> app2_match =
       registrar().FindAppWithUrlInScope(app2_scope);
   DCHECK(app2_match);
   EXPECT_EQ(*app2_match, app1_id);
 
-  absl::optional<webapps::AppId> app3_match =
+  std::optional<webapps::AppId> app3_match =
       registrar().FindAppWithUrlInScope(app3_scope);
   EXPECT_FALSE(app3_match);
 
-  absl::optional<webapps::AppId> app4_match =
+  std::optional<webapps::AppId> app4_match =
       registrar().FindAppWithUrlInScope(app4_scope);
   EXPECT_FALSE(app4_match);
 
@@ -1967,11 +1967,11 @@ TEST_F(WebAppRegistrarTest_Shortstand, CanFindAppWithUrlInScope) {
   app4->SetIsUninstalling(true);
   RegisterApp(std::move(app4));
 
-  absl::optional<webapps::AppId> origin_match =
+  std::optional<webapps::AppId> origin_match =
       registrar().FindAppWithUrlInScope(origin_scope);
   EXPECT_FALSE(origin_match);
 
-  absl::optional<webapps::AppId> app1_match =
+  std::optional<webapps::AppId> app1_match =
       registrar().FindAppWithUrlInScope(app1_scope);
   DCHECK(app1_match);
   EXPECT_EQ(*app1_match, app1_id);

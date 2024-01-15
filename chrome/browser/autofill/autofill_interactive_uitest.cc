@@ -369,7 +369,7 @@ class ValueWaiter {
       : waiterId_(waiterId), execution_target_(execution_target) {}
 
   // Returns the non-empty value of the observed form-control element, or
-  // absl::nullopt if no value change is observed before `timeout`.
+  // std::nullopt if no value change is observed before `timeout`.
   [[nodiscard]] std::optional<std::string> Wait(
       base::TimeDelta timeout = kDefaultTimeout) && {
     const std::string kFunction = R"(
@@ -415,8 +415,8 @@ class ValueWaiter {
                                           waiterId_, timeout.InMilliseconds());
     content::EvalJsResult r =
         content::EvalJs(execution_target_, kFunction + call);
-    return !r.value.is_none() ? absl::make_optional(r.ExtractString())
-                              : absl::nullopt;
+    return !r.value.is_none() ? std::make_optional(r.ExtractString())
+                              : std::nullopt;
   }
 
  private:
@@ -2677,7 +2677,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   // Select element on `other` and wait for `onchange` event.
   ValueWaiter onchange_waiter =
-      ListenForValueChange("other", absl::nullopt, GetWebContents());
+      ListenForValueChange("other", std::nullopt, GetWebContents());
   ASSERT_TRUE(FocusField(GetElementById("other"), GetWebContents()));
   EXPECT_EQ("First", GetFieldValueById("other"));
   FillElementWithValue("other", "Second");

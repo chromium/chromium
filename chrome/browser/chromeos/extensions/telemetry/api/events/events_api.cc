@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
@@ -14,7 +16,6 @@
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -71,7 +72,7 @@ bool EventsApiFunctionBase::IsCrosApiAvailable() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 template <class Params>
-absl::optional<Params> EventsApiFunctionBase::GetParams() {
+std::optional<Params> EventsApiFunctionBase::GetParams() {
   auto params = Params::Create(args());
   if (!params) {
     SetBadMessage();

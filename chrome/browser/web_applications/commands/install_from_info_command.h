@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_FROM_INFO_COMMAND_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
@@ -52,7 +52,7 @@ class InstallFromInfoCommand
                          bool overwrite_existing_manifest_fields,
                          webapps::WebappInstallSource install_surface,
                          OnceInstallCallback install_callback,
-                         absl::optional<WebAppInstallParams> install_params);
+                         std::optional<WebAppInstallParams> install_params);
 
   ~InstallFromInfoCommand() override;
 

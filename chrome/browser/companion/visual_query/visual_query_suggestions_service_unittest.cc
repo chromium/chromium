@@ -52,7 +52,7 @@ class VisualQuerySuggestionsServiceTest : public ::testing::Test {
     service_ = std::make_unique<VisualQuerySuggestionsService>(
         test_model_provider_.get(), background_task_runner);
 
-    absl::optional<optimization_guide::proto::Any> model_metadata;
+    std::optional<optimization_guide::proto::Any> model_metadata;
 
     model_info_ = optimization_guide::TestModelInfoBuilder()
                       .SetModelFilePath(model_file_path())
@@ -148,7 +148,7 @@ TEST_F(VisualQuerySuggestionsServiceTest, OnModelUpdated_NullModelUpdate) {
       base::BindOnce(&GetModelWithMetadataCallback);
   service_->OnModelUpdated(optimization_guide::proto::OptimizationTarget::
                                OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
-                           absl::nullopt);
+                           std::nullopt);
   service_->RegisterModelUpdateCallback(std::move(callback2));
   task_environment_.RunUntilIdle();
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_CONTACTS_NEARBY_SHARE_CONTACT_DOWNLOADER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
@@ -65,8 +65,7 @@ class NearbyShareContactDownloaderImpl : public NearbyShareContactDownloader {
   // NearbyShareContactDownloader:
   void OnRun() override;
 
-  void CallListContactPeople(
-      const absl::optional<std::string>& next_page_token);
+  void CallListContactPeople(const std::optional<std::string>& next_page_token);
   void OnListContactPeopleSuccess(
       const nearby::sharing::proto::ListContactPeopleResponse& response);
   void OnListContactPeopleFailure(ash::nearby::NearbyHttpError error);

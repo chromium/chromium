@@ -167,7 +167,7 @@ void LoadingStatsCollector::RecordPreconnectStats(
 
 void LoadingStatsCollector::RecordPageRequestSummary(
     const PageRequestSummary& summary,
-    const absl::optional<OptimizationGuidePrediction>&
+    const std::optional<OptimizationGuidePrediction>&
         optimization_guide_prediction) {
   const GURL& initial_url = summary.initial_url;
 

@@ -28,14 +28,14 @@
 namespace cups_proxy {
 namespace {
 
-// Returns absl::nullopt on failure.
-absl::optional<std::string> GetTestFile(std::string test_name) {
+// Returns std::nullopt on failure.
+std::optional<std::string> GetTestFile(std::string test_name) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Build file path.
   base::FilePath path;
   if (!base::PathService::Get(Paths::DIR_TEST_DATA, &path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   path = path.Append(FILE_PATH_LITERAL(test_name))
@@ -44,7 +44,7 @@ absl::optional<std::string> GetTestFile(std::string test_name) {
   // Read in file contents.
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return contents;
@@ -233,7 +233,7 @@ class SocketManagerTest : public testing::Test {
 // All socket accesses are resolved synchronously.
 TEST_F(SocketManagerTest, SyncEverything) {
   // Read request & response
-  absl::optional<std::string> http_handshake = GetTestFile("basic_handshake");
+  std::optional<std::string> http_handshake = GetTestFile("basic_handshake");
   EXPECT_TRUE(http_handshake);
 
   // Pre-load |socket_| with request/response.

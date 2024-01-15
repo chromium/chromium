@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_NEARBY_SHARING_ATTACHMENT_INFO_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "base/files/file.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Ties associated information to an Attachment.
 struct AttachmentInfo {
@@ -19,7 +20,7 @@ struct AttachmentInfo {
   AttachmentInfo(AttachmentInfo&&);
   AttachmentInfo& operator=(AttachmentInfo&&);
 
-  absl::optional<int64_t> payload_id;
+  std::optional<int64_t> payload_id;
   std::string text_body;
   base::FilePath file_path;
 };

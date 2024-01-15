@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_INSTALL_OBSERVER_H_
 
+#include <optional>
 #include <string>
 
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {
@@ -76,9 +76,9 @@ class InstallObserver {
 
   // Called when the app list is reordered. If |extension_id| is set, it
   // indicates the extension ID that was re-ordered.
-  virtual void OnAppsReordered(
-      content::BrowserContext* context,
-      const absl::optional<ExtensionId>& extension_id) {}
+  virtual void OnAppsReordered(content::BrowserContext* context,
+                               const std::optional<ExtensionId>& extension_id) {
+  }
 
   // Notifies observers that the observed object is going away.
   virtual void OnShutdown() {}

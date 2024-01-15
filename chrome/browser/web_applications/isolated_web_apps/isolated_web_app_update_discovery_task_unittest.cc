@@ -277,10 +277,9 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
     SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
   }
 
-  void InstallIwa(
-      const base::Version installed_version,
-      const absl::optional<WebApp::IsolationData::PendingUpdateInfo>&
-          pending_update_info = absl::nullopt) {
+  void InstallIwa(const base::Version installed_version,
+                  const std::optional<WebApp::IsolationData::PendingUpdateInfo>&
+                      pending_update_info = std::nullopt) {
     AddDummyIsolatedAppToRegistry(
         profile(), url_info_.origin().GetURL(), "installed iwa",
         WebApp::IsolationData(installed_bundle_location_, installed_version,
@@ -369,7 +368,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
                               Eq(installed_bundle_location_),
                               Eq(base::Version("1.0.0")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(absl::nullopt))))
+                              /*pending_update_info=*/Eq(std::nullopt))))
       << task.AsDebugValue();
 }
 

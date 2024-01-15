@@ -183,9 +183,9 @@ class InstallerDialogView : public views::BoxLayoutView {
   InstallerDialogView(const ui::ImageModel& icon_model,
                       const ToU16String& title,
                       int subtitle_id,
-                      std::optional<ToU16String> subtitle_param = absl::nullopt,
+                      std::optional<ToU16String> subtitle_param = std::nullopt,
                       std::optional<base::RepeatingClosure>
-                          subtitle_link_callback = absl::nullopt) {
+                          subtitle_link_callback = std::nullopt) {
     SetOrientation(views::BoxLayout::Orientation::kVertical);
     SetInsideBorderInsets(views::LayoutProvider::Get()->GetInsetsMetric(
         views::InsetsMetric::INSETS_DIALOG));
@@ -217,9 +217,9 @@ class InstallerDialogView : public views::BoxLayoutView {
   }
 
   void SetSubtitle(int subtitle_id,
-                   std::optional<ToU16String> subtitle_param = absl::nullopt,
+                   std::optional<ToU16String> subtitle_param = std::nullopt,
                    std::optional<base::RepeatingClosure>
-                       subtitle_link_callback = absl::nullopt) {
+                       subtitle_link_callback = std::nullopt) {
     if (subtitle_param.has_value()) {
       size_t offset;
       subtitle_label_->SetText(l10n_util::GetStringFUTF16(

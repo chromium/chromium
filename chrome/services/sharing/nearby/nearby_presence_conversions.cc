@@ -243,7 +243,7 @@ mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
   // TODO(b/276642472): Properly plumb type and stable_device_id.
   return mojom::PresenceDevice::New(device.GetEndpointId(), std::move(actions),
-                                    /*stable_device_id=*/absl::nullopt,
+                                    /*stable_device_id=*/std::nullopt,
                                     MetadataToMojom(device.GetMetadata()));
 }
 

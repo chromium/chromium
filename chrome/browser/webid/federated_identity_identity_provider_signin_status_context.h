@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS_CONTEXT_H_
 #define CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS_CONTEXT_H_
 
-#include "components/permissions/object_permission_context_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
-
+#include <optional>
 #include <string>
+
+#include "components/permissions/object_permission_context_base.h"
+#include "url/origin.h"
 
 namespace content {
 class BrowserContext;
@@ -33,8 +33,8 @@ class FederatedIdentityIdentityProviderSigninStatusContext
       const FederatedIdentityIdentityProviderSigninStatusContext&) = delete;
 
   // Returns the sign-in status for the passed-in `identity_provider`. Returns
-  // absl::nullopt if there isn't a stored sign-in status.
-  absl::optional<bool> GetSigninStatus(const url::Origin& identity_provider);
+  // std::nullopt if there isn't a stored sign-in status.
+  std::optional<bool> GetSigninStatus(const url::Origin& identity_provider);
 
   // Stores the sign-in status for the passed-in `identity_provider`.
   void SetSigninStatus(const url::Origin& identity_provider,

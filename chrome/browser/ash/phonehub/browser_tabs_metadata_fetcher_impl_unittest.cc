@@ -82,7 +82,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   using BrowserTabMetadata = BrowserTabsModel::BrowserTabMetadata;
 
   void OnBrowserTabMetadataFetched(
-      absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
+      std::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
           browser_tab_metadatas) {
     actual_browser_tabs_metadata_ = browser_tab_metadatas;
   }
@@ -171,7 +171,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
     }
   }
 
-  const absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>&
+  const std::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>&
   actual_browser_tabs_metadata() const {
     return actual_browser_tabs_metadata_;
   }
@@ -180,7 +180,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   testing::NiceMock<MockHistoryUiFaviconRequestHandler>
       favicon_request_handler_;
   BrowserTabsMetadataFetcherImpl browser_tabs_metadata_job_;
-  absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
+  std::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
       actual_browser_tabs_metadata_;
   SyncedSessionClientAsh synced_session_client_ash_;
 

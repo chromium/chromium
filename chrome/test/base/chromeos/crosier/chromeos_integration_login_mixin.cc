@@ -54,7 +54,7 @@ class FakeSessionManagerClientBrowserHelper
  private:
   // Optionally, use FakeSessionManagerClient if a test only needs the stub
   // user session.
-  absl::optional<ash::ScopedFakeSessionManagerClient>
+  std::optional<ash::ScopedFakeSessionManagerClient>
       scoped_fake_session_manager_client_;
 };
 }  // namespace
@@ -119,7 +119,7 @@ bool ChromeOSIntegrationLoginMixin::IsCryptohomeMounted() const {
   base::RunLoop run_loop;
   ash::UserDataAuthClient::Get()->IsMounted(
       request, base::BindLambdaForTesting(
-                   [&](absl::optional<user_data_auth::IsMountedReply> result) {
+                   [&](std::optional<user_data_auth::IsMountedReply> result) {
                      if (!result.has_value()) {
                        LOG(ERROR) << "Failed to call IsMounted.";
                        is_mounted = false;

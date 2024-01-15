@@ -77,9 +77,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   bool IsFirstPartySetsDataAccessManaged() const override;
   base::flat_map<net::SchemefulSite, net::SchemefulSite>
   GetSampleFirstPartySets() const override;
-  absl::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  std::optional<net::SchemefulSite> GetFirstPartySetOwner(
       const GURL& site_url) const override;
-  absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
       const GURL& site_url) const override;
   bool IsPartOfManagedFirstPartySet(
       const net::SchemefulSite& site) const override;

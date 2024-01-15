@@ -47,7 +47,7 @@ InstallPlaceholderJob::InstallPlaceholderJob(
     : profile_(*profile),
       debug_value_(debug_value),
       // For placeholder installs, the install_url is treated as the start_url.
-      app_id_(GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+      app_id_(GenerateAppId(/*manifest_id_path=*/std::nullopt,
                             install_options.install_url)),
       lock_(lock),
       install_options_(install_options),
@@ -94,7 +94,7 @@ void InstallPlaceholderJob::OnUrlLoaded(
     return;
   }
 
-  FinalizeInstall(/*bitmaps=*/absl::nullopt);
+  FinalizeInstall(/*bitmaps=*/std::nullopt);
 }
 
 void InstallPlaceholderJob::FetchCustomIcon(const GURL& url, int retries_left) {
@@ -123,7 +123,7 @@ void InstallPlaceholderJob::OnCustomIconFetched(
   if (retries_left <= 0) {
     // Download failed.
     debug_value_->Set("custom_icon_download_success", false);
-    FinalizeInstall(absl::nullopt);
+    FinalizeInstall(std::nullopt);
     return;
   }
   // Retry download.
@@ -135,7 +135,7 @@ void InstallPlaceholderJob::OnCustomIconFetched(
 }
 
 void InstallPlaceholderJob::FinalizeInstall(
-    absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
+    std::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
         bitmaps) {
   // For placeholder installs, the install_url is treated as the start_url.
   WebAppInstallInfo web_app_info(

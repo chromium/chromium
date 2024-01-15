@@ -62,9 +62,9 @@ void WriteTask(base::FilePath file_path,
 }
 
 void ReadTask(base::FilePath file_path,
-              base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+              base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                   post_read_task) {
-  absl::optional<std::vector<uint8_t>> read_data =
+  std::optional<std::vector<uint8_t>> read_data =
       base::ReadFileToBytes(file_path);
 
   if (!read_data.has_value()) {
@@ -121,7 +121,7 @@ void JpegThumbnailHelper::Write(
 
 void JpegThumbnailHelper::Read(
     TabId tab_id,
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
         post_read_task) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   base::FilePath file_path = GetJpegFilePath(tab_id);

@@ -152,7 +152,7 @@ class TestServiceWorkerContextObserver
 
   void WaitForWorkerStop() {
     stopped_run_loop_.Run();
-    EXPECT_EQ(running_version_id_, absl::nullopt);
+    EXPECT_EQ(running_version_id_, std::nullopt);
   }
 
   int64_t GetServiceWorkerVersionId() { return running_version_id_.value(); }
@@ -181,7 +181,7 @@ class TestServiceWorkerContextObserver
       return;
     }
     stopped_run_loop_.Quit();
-    running_version_id_ = absl::nullopt;
+    running_version_id_ = std::nullopt;
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
@@ -192,7 +192,7 @@ class TestServiceWorkerContextObserver
   base::RunLoop started_run_loop_;
   base::RunLoop activated_run_loop_;
   base::RunLoop stopped_run_loop_;
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
@@ -1241,7 +1241,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_TRUE(maybe_indicator_notification->pinned());
     display_service_for_system_notification_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
-        /*action_index=*/0, /*reply=*/absl::nullopt);
+        /*action_index=*/0, /*reply=*/std::nullopt);
     auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/usbDevices");
 #else

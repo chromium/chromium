@@ -95,7 +95,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   ~FilesRequestHandler() override;
 
   void ReportWarningBypass(
-      absl::optional<std::u16string> user_justification) override;
+      std::optional<std::u16string> user_justification) override;
 
  protected:
   FilesRequestHandler(

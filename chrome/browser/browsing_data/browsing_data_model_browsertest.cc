@@ -1671,8 +1671,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   std::unique_ptr<net::CanonicalCookie> data_key = net::CanonicalCookie::Create(
       testOrigin.GetURL(), "foo=bar; Path=/browsing_data", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   ValidateBrowsingDataEntries(browsing_data_model.get(),
                               {{kTestHost,
                                 *(data_key.get()),

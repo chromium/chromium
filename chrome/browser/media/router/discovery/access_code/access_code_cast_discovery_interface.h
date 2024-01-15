@@ -32,7 +32,7 @@ class AccessCodeCastDiscoveryInterface {
   using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 
   using DiscoveryDeviceCallback =
-      base::OnceCallback<void(absl::optional<DiscoveryDevice>,
+      base::OnceCallback<void(std::optional<DiscoveryDevice>,
                               access_code_cast::mojom::AddSinkResultCode)>;
 
   using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
@@ -53,7 +53,7 @@ class AccessCodeCastDiscoveryInterface {
   // validate given |access_code| with the discovery server. The status
   // of this attempt will be stored in the |callback| -- either returning an
   // error or the actual DiscoveryDevice found on the discovery server.
-  // |absl::optional<DiscoveryDevice>| will always have a value if an
+  // |std::optional<DiscoveryDevice>| will always have a value if an
   // AddSinkResultCode::OK is returned.
   void ValidateDiscoveryAccessCode(DiscoveryDeviceCallback callback);
 
@@ -93,7 +93,7 @@ class AccessCodeCastDiscoveryInterface {
       chrome_browser_media::proto::NetworkInfo* network_proto,
       const std::string& value,
       const std::string& key);
-  std::pair<absl::optional<DiscoveryDevice>, AddSinkResultCode>
+  std::pair<std::optional<DiscoveryDevice>, AddSinkResultCode>
   ConstructDiscoveryDeviceFromJson(base::Value json_response);
   void HandleDiscoveryDeviceJsonError(const std::string& field_missing);
   void HandleServerResponse(std::unique_ptr<EndpointResponse> response);
@@ -105,8 +105,7 @@ class AccessCodeCastDiscoveryInterface {
   void ReportErrorViaCallback(AddSinkResultCode error);
 
   AddSinkResultCode GetErrorFromResponse(const base::Value& response);
-  AddSinkResultCode IsResponseValid(
-      const absl::optional<base::Value>& response);
+  AddSinkResultCode IsResponseValid(const std::optional<base::Value>& response);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   // Access code passed down from the WebUI and used in the construction of the

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 
+#include <optional>
+
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
@@ -13,7 +15,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -38,8 +39,8 @@ class FakeReceiveObserver : public nearby_share::mojom::ReceiveObserver {
     on_start_advertising_failure_called_ = true;
   }
 
-  absl::optional<nearby_share::mojom::TransferMetadata> last_metadata_;
-  absl::optional<bool> in_high_visibility_;
+  std::optional<nearby_share::mojom::TransferMetadata> last_metadata_;
+  std::optional<bool> in_high_visibility_;
   ShareTarget last_share_target_;
   bool on_nearby_process_stopped_called_ = false;
   bool on_start_advertising_failure_called_ = false;
@@ -213,7 +214,7 @@ TEST_F(NearbyReceiveManagerTest,
   // Simulate the sender canceling before we accept the share target and causing
   // the accept to fail before hitting the service.
   TransferMetadata transfer_metadata_final(TransferMetadata::Status::kCancelled,
-                                           1.f, absl::nullopt, true, true);
+                                           1.f, std::nullopt, true, true);
   receive_manager_.OnTransferUpdate(share_target_, transfer_metadata_final);
   FlushMojoMessages();
 
@@ -235,7 +236,7 @@ TEST_F(NearbyReceiveManagerTest,
   // Simulate the sender canceling before we reject the share target and causing
   // the reject to fail before hitting the service.
   TransferMetadata transfer_metadata_final(TransferMetadata::Status::kCancelled,
-                                           1.f, absl::nullopt, true, true);
+                                           1.f, std::nullopt, true, true);
   receive_manager_.OnTransferUpdate(share_target_, transfer_metadata_final);
   FlushMojoMessages();
 
@@ -268,7 +269,7 @@ TEST_F(NearbyReceiveManagerTest, OnHighVisibilityChangedObserver) {
   ASSERT_TRUE(observer_.in_high_visibility_.has_value());
   EXPECT_FALSE(*observer_.in_high_visibility_);
 
-  observer_.in_high_visibility_ = absl::nullopt;
+  observer_.in_high_visibility_ = std::nullopt;
 
   receive_manager_.OnHighVisibilityChanged(true);
   FlushMojoMessages();

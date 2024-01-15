@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -96,7 +96,7 @@ base::expected<std::unique_ptr<SafeWebBundleParserConnection>,
                UnusableSwbnFileError>
 SafeWebBundleParserConnection::CreateSafeWebBundleParserConnection(
     const base::File* web_bundle_file,
-    absl::optional<GURL> base_url) {
+    std::optional<GURL> base_url) {
   if (!web_bundle_file->IsValid()) {
     auto error = UnusableSwbnFileError(
         UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError,
@@ -123,7 +123,7 @@ SafeWebBundleParserConnection::CreateSafeWebBundleParserConnection(
 
 SafeWebBundleParserConnection::SafeWebBundleParserConnection(
     const base::File* web_bundle_file,
-    absl::optional<GURL> base_url)
+    std::optional<GURL> base_url)
     : web_bundle_file_(*web_bundle_file), base_url_(std::move(base_url)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kDisconnected);
@@ -203,7 +203,7 @@ void SafeWebBundleParserConnection::OnClosed(base::OnceClosure close_callback) {
 
 SignedWebBundleReader::SignedWebBundleReader(
     const base::FilePath& web_bundle_path,
-    const absl::optional<GURL>& base_url,
+    const std::optional<GURL>& base_url,
     std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
         signature_verifier)
     : signature_verifier_(std::move(signature_verifier)),
@@ -220,7 +220,7 @@ SignedWebBundleReader::~SignedWebBundleReader() {
 // static
 std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
     const base::FilePath& web_bundle_path,
-    const absl::optional<GURL>& base_url,
+    const std::optional<GURL>& base_url,
     std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
         signature_verifier) {
   return base::WrapUnique(new SignedWebBundleReader(
@@ -391,7 +391,7 @@ void SignedWebBundleReader::OnSignaturesVerified(
     const base::TimeTicks& verification_start_time,
     uint64_t file_length,
     ReadErrorCallback callback,
-    absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
+    std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
         verification_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
@@ -457,7 +457,7 @@ void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
       base::BindOnce(std::move(callback), base::unexpected(std::move(error))));
 }
 
-const absl::optional<GURL>& SignedWebBundleReader::GetPrimaryURL() const {
+const std::optional<GURL>& SignedWebBundleReader::GetPrimaryURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
 
@@ -670,19 +670,19 @@ SignedWebBundleReader::SignatureVerificationAction::Abort(
 SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
     SignatureVerificationAction::ContinueAndVerifySignatures() {
   return SignatureVerificationAction(Type::kContinueAndVerifySignatures,
-                                     absl::nullopt);
+                                     std::nullopt);
 }
 
 // static
 SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
     SignatureVerificationAction::ContinueAndSkipSignatureVerification() {
   return SignatureVerificationAction(
-      Type::kContinueAndSkipSignatureVerification, absl::nullopt);
+      Type::kContinueAndSkipSignatureVerification, std::nullopt);
 }
 
 SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
     Type type,
-    absl::optional<std::string> abort_message)
+    std::optional<std::string> abort_message)
     : type_(type), abort_message_(abort_message) {}
 
 SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
@@ -713,7 +713,7 @@ void UnsecureReader::OnFileOpened(base::File file) {
 
   auto connection = internal::SafeWebBundleParserConnection::
       CreateSafeWebBundleParserConnection(&file_.value(),
-                                          /*base_url=*/absl::nullopt);
+                                          /*base_url=*/std::nullopt);
   if (!connection.has_value()) {
     ReturnError(connection.error());
     return;

@@ -85,8 +85,8 @@ const Platform* kPlatformsWithReducedUserAgentSupport[] = {
 
 Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
                                 DeviceMetrics* device_metrics) {
-  absl::optional<int> maybe_width = device_metrics_dict.FindInt("width");
-  absl::optional<int> maybe_height = device_metrics_dict.FindInt("height");
+  std::optional<int> maybe_width = device_metrics_dict.FindInt("width");
+  std::optional<int> maybe_height = device_metrics_dict.FindInt("height");
   if (!maybe_width) {
     return Status(kUnknownError,
                   "malformed device width: should be an integer");
@@ -95,17 +95,17 @@ Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
     return Status(kUnknownError,
                   "malformed device height: should be an integer");
   }
-  absl::optional<double> maybe_device_scale_factor =
+  std::optional<double> maybe_device_scale_factor =
       device_metrics_dict.FindDouble("deviceScaleFactor");
   if (!maybe_device_scale_factor) {
     return Status(kUnknownError,
                   "malformed device scale factor: should be a double");
   }
-  absl::optional<bool> touch = device_metrics_dict.FindBool("touch");
+  std::optional<bool> touch = device_metrics_dict.FindBool("touch");
   if (!touch) {
     return Status(kUnknownError, "malformed touch: should be a bool");
   }
-  absl::optional<bool> mobile = device_metrics_dict.FindBool("mobile");
+  std::optional<bool> mobile = device_metrics_dict.FindBool("mobile");
   if (!mobile) {
     return Status(kUnknownError, "malformed mobile: should be a bool");
   }
@@ -116,7 +116,7 @@ Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
 
 Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
                               ClientHints* client_hints) {
-  absl::optional<bool> mobile = client_hints_dict.FindBool("mobile");
+  std::optional<bool> mobile = client_hints_dict.FindBool("mobile");
   if (!mobile.has_value()) {
     return Status(kUnknownError,
                   "malformed clientHints.mobile: should be a boolean");
@@ -148,7 +148,7 @@ Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
     return Status(kUnknownError,
                   "malformed clientHints.bitness: should be a string");
   }
-  absl::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
+  std::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
   if (!wow64.has_value()) {
     return Status(kUnknownError,
                   "malformed clientHints.wow64: should be a boolean");

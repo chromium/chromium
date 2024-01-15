@@ -54,7 +54,7 @@ class FontPrewarmerTabHelper
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  absl::optional<int> expected_render_process_host_id_;
+  std::optional<int> expected_render_process_host_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

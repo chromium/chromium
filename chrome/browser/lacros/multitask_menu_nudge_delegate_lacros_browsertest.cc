@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(MultitaskMenuNudgeDelegateLacrosBrowserTest, Basics) {
   auto& prefs =
       chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>();
 
-  base::test::TestFuture<absl::optional<base::Value>> int_value_future;
+  base::test::TestFuture<std::optional<base::Value>> int_value_future;
   prefs->GetPref(
       crosapi::mojom::PrefPath::kMultitaskMenuNudgeClamshellShownCount,
       int_value_future.GetCallback());
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(MultitaskMenuNudgeDelegateLacrosBrowserTest, Basics) {
       base::TimeToValue(expected_time), set_future.GetCallback());
   EXPECT_TRUE(set_future.Wait());
 
-  base::test::TestFuture<absl::optional<base::Value>> time_value_future;
+  base::test::TestFuture<std::optional<base::Value>> time_value_future;
   prefs->GetPref(
       crosapi::mojom::PrefPath::kMultitaskMenuNudgeClamshellShownCount,
       int_value_future.GetCallback());

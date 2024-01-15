@@ -197,7 +197,7 @@ bool CanPreProvision(bool is_per_application_provisioning_supported,
   if (!token_value)
     return false;
 
-  absl::optional<base::Time> expiration_time = base::ValueToTime(*token_value);
+  std::optional<base::Time> expiration_time = base::ValueToTime(*token_value);
   if (!expiration_time) {
     RemoveExpirableToken(origin_id_dict);
     return false;
@@ -327,7 +327,7 @@ class MediaDrmProvisionHelper {
     const bool success = L1_success || L3_success;
     LOG_IF(WARNING, !success) << "Failed to provision origin ID";
     std::move(complete_callback_)
-        .Run(success ? absl::make_optional(origin_id_) : absl::nullopt);
+        .Run(success ? std::make_optional(origin_id_) : std::nullopt);
     delete this;
   }
 
@@ -358,7 +358,7 @@ void StartProvisioning(
 
   if (!pending_shared_url_loader_factory) {
     // No fetcher available, so don't bother trying to provision.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -470,7 +470,7 @@ MediaDrmOriginIdManager::~MediaDrmOriginIdManager() {
   // Reject any pending requests.
   while (!pending_provisioned_origin_id_cbs_.empty()) {
     std::move(pending_provisioned_origin_id_cbs_.front())
-        .Run(GetOriginIdStatus::kFailure, absl::nullopt);
+        .Run(GetOriginIdStatus::kFailure, std::nullopt);
     pending_provisioned_origin_id_cbs_.pop();
   }
 }
@@ -650,7 +650,7 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
       pending_requests.swap(pending_provisioned_origin_id_cbs_);
       while (!pending_requests.empty()) {
         std::move(pending_requests.front())
-            .Run(GetOriginIdStatus::kFailure, absl::nullopt);
+            .Run(GetOriginIdStatus::kFailure, std::nullopt);
         pending_requests.pop();
       }
     }

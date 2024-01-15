@@ -42,7 +42,7 @@ bool operator!=(const CollectionInfo& lhs, const CollectionInfo& rhs) {
 
 CollectionInfo CollectionInfo::CreateFromProto(
     const ntp::background::Collection& collection,
-    absl::optional<GURL> preview_image_url) {
+    std::optional<GURL> preview_image_url) {
   CollectionInfo collection_info;
   collection_info.collection_id = collection.collection_id();
   collection_info.collection_name = collection.collection_name();

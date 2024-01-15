@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/hash/hash.h"
@@ -30,7 +31,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -355,7 +355,7 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
       static_cast<int>(anchor.metrics->ratio_distance_root_top * 100);
 
   inputs.is_same_origin = anchor.metrics->is_same_host;
-  auto to_timedelta = [this](absl::optional<base::TimeTicks> ts) {
+  auto to_timedelta = [this](std::optional<base::TimeTicks> ts) {
     return ts.has_value() ? NowTicks() - ts.value() : base::TimeDelta();
   };
   inputs.entered_viewport_to_left_viewport =

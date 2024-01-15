@@ -119,7 +119,7 @@ ChromeJsErrorReportProcessor::GetCrashReporterArgvStart() {
 
 std::string ChromeJsErrorReportProcessor::ParamsToCrashReporterString(
     const ParameterMap& params,
-    const absl::optional<std::string>& stack_trace) {
+    const std::optional<std::string>& stack_trace) {
   std::string result;
   for (const auto& param : params) {
     std::string key = param.first;
@@ -141,7 +141,7 @@ std::string ChromeJsErrorReportProcessor::ParamsToCrashReporterString(
 
 void ChromeJsErrorReportProcessor::SendReportViaCrashReporter(
     ParameterMap params,
-    absl::optional<std::string> stack_trace,
+    std::optional<std::string> stack_trace,
     base::ScopedClosureRunner callback_runner) {
   base::ScopedClosureRunner cleanup;
   base::File output(GetMemfdOrTempFile(cleanup, force_non_memfd_for_test_));
@@ -195,7 +195,7 @@ void ChromeJsErrorReportProcessor::SendReportViaCrashReporter(
 
 void ChromeJsErrorReportProcessor::SendReport(
     ParameterMap params,
-    absl::optional<std::string> stack_trace,
+    std::optional<std::string> stack_trace,
     bool send_to_production_servers,
     base::ScopedClosureRunner callback_runner,
     base::Time report_time,

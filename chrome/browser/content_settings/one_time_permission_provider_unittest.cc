@@ -447,7 +447,7 @@ TEST_P(OneTimePermissionProviderExpiryTest, RenewContentSetting_Noop) {
   base::Time original_expiration = metadata.expiration();
 
   EXPECT_FALSE(one_time_permission_provider_->RenewContentSetting(
-      primary_url, primary_url, ContentSettingsType::GEOLOCATION, absl::nullopt,
+      primary_url, primary_url, ContentSettingsType::GEOLOCATION, std::nullopt,
       content_settings::PartitionKey::GetDefaultForTesting()));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,

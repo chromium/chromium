@@ -16,17 +16,17 @@
 #include "ui/views/view_class_properties.h"
 
 ToolbarChipButton::ToolbarChipButton(PressedCallback callback,
-                                     absl::optional<Edge> flat_edge)
+                                     std::optional<Edge> flat_edge)
     : ToolbarButton(std::move(callback)), flat_edge_(flat_edge) {}
 
 ToolbarChipButton::~ToolbarChipButton() = default;
 
-absl::optional<ToolbarButton::Edge> ToolbarChipButton::GetFlatEdge() const {
+std::optional<ToolbarButton::Edge> ToolbarChipButton::GetFlatEdge() const {
   return flat_edge_;
 }
 
 void ToolbarChipButton::SetFlatEdge(
-    absl::optional<ToolbarButton::Edge> flat_edge) {
+    std::optional<ToolbarButton::Edge> flat_edge) {
   flat_edge_ = flat_edge;
   UpdateColorsAndInsets();
 }

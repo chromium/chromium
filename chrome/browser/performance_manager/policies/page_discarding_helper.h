@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +22,6 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url_matcher {
 class URLMatcher;
@@ -135,7 +136,7 @@ class PageDiscardingHelper : public GraphOwned,
   // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
   // there about its usage.
   void DiscardMultiplePages(
-      absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
+      std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
       DiscardReason discard_reason,
@@ -188,7 +189,7 @@ class PageDiscardingHelper : public GraphOwned,
   // there's been at least one successful discard or if there's no more discard
   // candidates.
   void PostDiscardAttemptCallback(
-      absl::optional<memory_pressure::ReclaimTarget> reclaim_target,
+      std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
       DiscardReason discard_reason,

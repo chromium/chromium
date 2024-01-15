@@ -14,7 +14,7 @@
 #include "extensions/browser/extension_function.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,7 +50,7 @@ class SharedStoragePrivateGetFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGet(absl::optional<base::Value> storage);
+  void OnGet(std::optional<base::Value> storage);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
@@ -71,7 +71,7 @@ class SharedStoragePrivateSetFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGet(base::Value::Dict to_add, absl::optional<base::Value> items);
+  void OnGet(base::Value::Dict to_add, std::optional<base::Value> items);
   void OnSet();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
@@ -93,8 +93,7 @@ class SharedStoragePrivateRemoveFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGet(std::vector<std::string> keys,
-             absl::optional<base::Value> storage);
+  void OnGet(std::vector<std::string> keys, std::optional<base::Value> storage);
   void OnSet();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };

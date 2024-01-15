@@ -4,6 +4,8 @@
 
 #include "chrome/browser/permissions/pref_based_quiet_permission_ui_selector.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -15,7 +17,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -60,7 +61,7 @@ class PrefBasedQuietPermissionUiSelectorTest : public testing::Test {
 TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
   const struct {
     bool quiet_ui_enabled_in_prefs;
-    absl::optional<QuietUiReason> expected_reason;
+    std::optional<QuietUiReason> expected_reason;
   } kTests[] = {
       {false, Decision::UseNormalUi()},
       {true, QuietUiReason::kEnabledInPrefs},
@@ -79,7 +80,7 @@ TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
     base::RunLoop callback_loop;
     base::MockCallback<PrefBasedQuietPermissionUiSelector::DecisionMadeCallback>
         mock_callback;
-    Decision actual_decison(absl::nullopt, absl::nullopt);
+    Decision actual_decison(std::nullopt, std::nullopt);
 
     // Make a request and wait for the callback.
     EXPECT_CALL(mock_callback, Run)

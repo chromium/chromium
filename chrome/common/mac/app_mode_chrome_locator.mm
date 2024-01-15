@@ -7,6 +7,7 @@
 #import <AppKit/AppKit.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <optional>
 #include <set>
 
 #include "base/apple/bridging.h"
@@ -16,7 +17,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/mac/app_mode_common.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_mode {
 
@@ -27,7 +27,7 @@ struct PathAndStructure {
   bool is_new_app_structure;
 };
 
-absl::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
+std::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
     NSString* bundle_path,
     NSString* version) {
   // NEW STYLE:
@@ -54,7 +54,7 @@ absl::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
     return PathAndStructure{path, false};
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsPathValidForBundle(const base::FilePath& bundle_path,
@@ -149,7 +149,7 @@ bool GetChromeBundleInfo(const base::FilePath& chrome_bundle,
     return false;
 
   // Try to get the version requested, if present.
-  absl::optional<PathAndStructure> framework_path_and_structure;
+  std::optional<PathAndStructure> framework_path_and_structure;
   if (!version_str.empty()) {
     framework_path_and_structure = GetFrameworkDylibPathAndStructure(
         cr_bundle_path, base::SysUTF8ToNSString(version_str));

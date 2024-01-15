@@ -746,7 +746,7 @@ void ComposeSession::RefreshInnerText() {
 
   ++current_inner_text_request_id_;
   content_extraction::GetInnerText(
-      *web_contents_->GetPrimaryMainFrame(), /*node_id*/ absl::nullopt,
+      *web_contents_->GetPrimaryMainFrame(), /*node_id*/ std::nullopt,
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
           weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));

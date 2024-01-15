@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_UKM_HELPER_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -72,9 +72,9 @@ class VideoConferenceUkmHelper {
   uint64_t microphone_capture_duration_ = 0;
   uint64_t screen_capture_duration_ = 0;
 
-  absl::optional<base::Time> prev_camera_capture_time_ = absl::nullopt;
-  absl::optional<base::Time> prev_microphone_capture_time_ = absl::nullopt;
-  absl::optional<base::Time> prev_screen_capture_time_ = absl::nullopt;
+  std::optional<base::Time> prev_camera_capture_time_ = std::nullopt;
+  std::optional<base::Time> prev_microphone_capture_time_ = std::nullopt;
+  std::optional<base::Time> prev_screen_capture_time_ = std::nullopt;
 };
 
 }  // namespace video_conference

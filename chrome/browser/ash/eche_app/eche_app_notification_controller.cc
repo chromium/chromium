@@ -65,8 +65,8 @@ void EcheAppNotificationController::LaunchTryAgain() {
 }
 
 void EcheAppNotificationController::ShowNotificationFromWebUI(
-    const absl::optional<std::u16string>& title,
-    const absl::optional<std::u16string>& message,
+    const std::optional<std::u16string>& title,
+    const std::optional<std::u16string>& message,
     absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
                   mojom::WebNotificationType> type) {
   auto web_type = absl::get<mojom::WebNotificationType>(type);

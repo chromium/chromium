@@ -97,7 +97,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
   auto url_overrides = std::make_unique<URLOverrides>();
   auto property_map =
       std::map<const char*,
-               std::reference_wrapper<const absl::optional<std::string>>>{
+               std::reference_wrapper<const std::optional<std::string>>>{
           {UrlOverrideInfo::kNewtab,
            std::ref(manifest_keys.chrome_url_overrides.newtab)},
           {UrlOverrideInfo::kBookmarks,

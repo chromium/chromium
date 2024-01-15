@@ -140,7 +140,7 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // testing. The requirements are that (1) it be a valid platform app, and (2)
   // it contain no permissions dictionary.
   std::string error;
-  absl::optional<base::Value::Dict> platform_app_manifest =
+  std::optional<base::Value::Dict> platform_app_manifest =
       LoadManifest("init_valid_platform_app.json", &error);
   ASSERT_TRUE(platform_app_manifest);
 

@@ -23,7 +23,7 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer {
 
   // nearby::api::ble_v2::GattServer:
   BluetoothAdapter& GetBlePeripheral() override;
-  absl::optional<api::ble_v2::GattCharacteristic> CreateCharacteristic(
+  std::optional<api::ble_v2::GattCharacteristic> CreateCharacteristic(
       const Uuid& service_uuid,
       const Uuid& characteristic_uuid,
       api::ble_v2::GattCharacteristic::Permission permission,

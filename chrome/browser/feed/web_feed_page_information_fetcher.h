@@ -46,7 +46,7 @@ class WebFeedPageInformationFetcher
   ~WebFeedPageInformationFetcher();
 
   void CallCallbackIfReady();
-  void OnCanonicalUrlFetched(const absl::optional<::GURL>& url);
+  void OnCanonicalUrlFetched(const std::optional<::GURL>& url);
   void OnRssFetched(std::vector<GURL> rss_urls);
 
   WebFeedPageInformation page_info_;

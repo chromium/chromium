@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::platform_keys {
 
@@ -144,9 +144,9 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in
 // |key_info|. This supports both RSA and EC keys.
-// Returns absl::nullopt if the key is of an unsupported type (so not RSA or
+// Returns std::nullopt if the key is of an unsupported type (so not RSA or
 // EC).
-absl::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
+std::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
     const PublicKeyInfo& key_info);
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in

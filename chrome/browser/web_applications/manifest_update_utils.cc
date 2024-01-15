@@ -133,7 +133,7 @@ ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
   }
 }
 
-absl::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
+std::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
     const IconBitmaps& existing_app_icon_bitmaps,
     const IconBitmaps& new_app_icon_bitmaps) {
   for (IconPurpose purpose : kIconPurposes) {
@@ -161,7 +161,7 @@ absl::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void RecordIconDownloadMetrics(IconsDownloadedResult result,

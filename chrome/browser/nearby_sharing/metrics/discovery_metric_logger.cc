@@ -18,7 +18,7 @@ void DiscoveryMetricLogger::OnShareTargetDiscoveryStarted() {
 }
 
 void DiscoveryMetricLogger::OnShareTargetDiscoveryStopped() {
-  discovery_start_ = absl::nullopt;
+  discovery_start_ = std::nullopt;
 }
 
 // TODO(b/266739400): Test this once there is Structured Metrics unittesting

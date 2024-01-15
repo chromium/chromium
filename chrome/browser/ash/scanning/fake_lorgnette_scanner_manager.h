@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
 #define CHROME_BROWSER_ASH_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -61,62 +61,62 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
 
   // Sets the response returned by GetScannerInfoList().
   void SetGetScannerInfoListResponse(
-      const absl::optional<lorgnette::ListScannersResponse>& response);
+      const std::optional<lorgnette::ListScannersResponse>& response);
 
   // Sets the response returned by GetScannerCapabilities().
   void SetGetScannerCapabilitiesResponse(
-      const absl::optional<lorgnette::ScannerCapabilities>&
+      const std::optional<lorgnette::ScannerCapabilities>&
           scanner_capabilities);
 
   // Sets the response returned by OpenScanner().
   void SetOpenScannerResponse(
-      const absl::optional<lorgnette::OpenScannerResponse>& response);
+      const std::optional<lorgnette::OpenScannerResponse>& response);
 
   // Sets the response returned by CloseScanner().
   void SetCloseScannerResponse(
-      const absl::optional<lorgnette::CloseScannerResponse>& response);
+      const std::optional<lorgnette::CloseScannerResponse>& response);
 
   // Sets the response returned by SetOptions().
   void SetSetOptionsResponse(
-      const absl::optional<lorgnette::SetOptionsResponse>& response);
+      const std::optional<lorgnette::SetOptionsResponse>& response);
 
   // Sets the response returned by GetCurrentConfig().
   void SetGetCurrentConfigResponse(
-      const absl::optional<lorgnette::GetCurrentConfigResponse>& response);
+      const std::optional<lorgnette::GetCurrentConfigResponse>& response);
 
   // Sets the response returned by StartPreparedScan().
   void SetStartPreparedScanResponse(
-      const absl::optional<lorgnette::StartPreparedScanResponse>& response);
+      const std::optional<lorgnette::StartPreparedScanResponse>& response);
 
   // Sets the response returned by ReadScanData().
   void SetReadScanDataResponse(
-      const absl::optional<lorgnette::ReadScanDataResponse>& response);
+      const std::optional<lorgnette::ReadScanDataResponse>& response);
 
   // Sets the response returned by Scan().
   void SetScanResponse(
-      const absl::optional<std::vector<std::string>>& scan_data);
+      const std::optional<std::vector<std::string>>& scan_data);
 
   // Sets the response returned by CancelScan().
   void SetCancelScanResponse(
-      const absl::optional<lorgnette::CancelScanResponse>& response);
+      const std::optional<lorgnette::CancelScanResponse>& response);
 
   // Optionally sets `scan_data` if a matching set of scan settings is found.
   void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
 
  private:
   std::vector<std::string> scanner_names_;
-  absl::optional<lorgnette::ListScannersResponse> list_scanners_response_;
-  absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
-  absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
-  absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
-  absl::optional<lorgnette::SetOptionsResponse> set_options_response_;
-  absl::optional<lorgnette::GetCurrentConfigResponse>
+  std::optional<lorgnette::ListScannersResponse> list_scanners_response_;
+  std::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
+  std::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
+  std::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
+  std::optional<lorgnette::SetOptionsResponse> set_options_response_;
+  std::optional<lorgnette::GetCurrentConfigResponse>
       get_current_config_response_;
-  absl::optional<lorgnette::StartPreparedScanResponse>
+  std::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
-  absl::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
-  absl::optional<lorgnette::CancelScanResponse> cancel_scan_response_;
-  absl::optional<std::vector<std::string>> scan_data_;
+  std::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
+  std::optional<lorgnette::CancelScanResponse> cancel_scan_response_;
+  std::optional<std::vector<std::string>> scan_data_;
 };
 
 }  // namespace ash

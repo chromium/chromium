@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -57,7 +58,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -370,7 +370,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           /*shared_tab=*/false,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
-          /*focus_target=*/absl::nullopt, /*ui=*/nullptr,
+          /*focus_target=*/std::nullopt, /*ui=*/nullptr,
           TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 

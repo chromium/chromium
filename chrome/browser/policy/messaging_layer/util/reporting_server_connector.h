@@ -122,7 +122,7 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   void OnCoreDestruction(::policy::CloudPolicyCore* core) override;
 
   void UploadEncryptedReportInternal(base::Value::Dict merging_payload,
-                                     absl::optional<base::Value::Dict> context,
+                                     std::optional<base::Value::Dict> context,
                                      ResponseCallback callback);
 
   // Manages reporting accumulated payload sizes per hour via UMA.

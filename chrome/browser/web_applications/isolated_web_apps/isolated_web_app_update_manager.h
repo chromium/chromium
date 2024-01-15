@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_UPDATE_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -125,7 +125,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
       base::OnceCallback<void(base::expected<base::Version, std::string>)>
           callback);
 
-  absl::optional<base::TimeTicks> GetNextUpdateDiscoveryTimeForTesting() const {
+  std::optional<base::TimeTicks> GetNextUpdateDiscoveryTimeForTesting() const {
     return next_update_discovery_check_.GetScheduledTime();
   }
 
@@ -269,15 +269,15 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     void ScheduleWithJitter(const base::TimeDelta& base_delay,
                             base::OnceClosure callback);
 
-    absl::optional<base::TimeTicks> GetScheduledTime() const;
+    std::optional<base::TimeTicks> GetScheduledTime() const;
     bool IsScheduled() const;
     void Reset();
 
     base::Value AsDebugValue() const;
 
    private:
-    absl::optional<std::pair<base::TimeTicks,
-                             std::unique_ptr<base::CancelableOnceClosure>>>
+    std::optional<std::pair<base::TimeTicks,
+                            std::unique_ptr<base::CancelableOnceClosure>>>
         next_check_;
   };
 

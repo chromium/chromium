@@ -64,7 +64,7 @@ class AutoPictureInPictureTabHelper
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override {}
+      const std::optional<media_session::MediaMetadata>& metadata) override {}
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
       override;
@@ -73,7 +73,7 @@ class AutoPictureInPictureTabHelper
                            std::vector<media_session::MediaImage>>& images)
       override {}
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override {}
+      const std::optional<media_session::MediaPosition>& position) override {}
 
   // Returns true if the tab is in PiP mode, and PiP was started by auto-pip.
   bool IsInAutoPictureInPicture() const;

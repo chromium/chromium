@@ -42,7 +42,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
-    absl::optional<WebAppInstallParams> install_params)
+    std::optional<WebAppInstallParams> install_params)
     : WebAppCommand<AppLock, const webapps::AppId&, webapps::InstallResultCode>(
           "InstallFromInfoCommand",
           AppLockDescription(GetAppIdWithBackup(*install_info)),

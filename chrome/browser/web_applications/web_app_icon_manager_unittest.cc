@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,7 +39,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -1016,19 +1016,19 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
   AddAppToRegistry(std::move(web_app));
 
   EXPECT_FALSE(icon_manager().HasSmallestIcon(app_id, {IconPurpose::ANY}, 70));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             icon_manager().FindIconMatchBigger(app_id, {IconPurpose::ANY}, 70));
 
   EXPECT_FALSE(icon_manager().HasSmallestIcon(
       app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, 70));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             icon_manager().FindIconMatchBigger(
                 app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, 70));
 
   EXPECT_FALSE(
       icon_manager().HasSmallestIcon(app_id, {IconPurpose::MASKABLE}, 40));
-  EXPECT_EQ(absl::nullopt, icon_manager().FindIconMatchBigger(
-                               app_id, {IconPurpose::MASKABLE}, 40));
+  EXPECT_EQ(std::nullopt, icon_manager().FindIconMatchBigger(
+                              app_id, {IconPurpose::MASKABLE}, 40));
 
   EXPECT_TRUE(icon_manager().HasSmallestIcon(
       app_id, {IconPurpose::MASKABLE, IconPurpose::ANY}, 40));
@@ -1085,10 +1085,10 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
 }
 
 TEST_F(WebAppIconManagerTest, DeleteData_Success) {
-  const webapps::AppId app1_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                                               GURL("https://example.com/"));
-  const webapps::AppId app2_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                                               GURL("https://example.org/"));
+  const webapps::AppId app1_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL("https://example.com/"));
+  const webapps::AppId app2_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL("https://example.org/"));
 
   const std::vector<int> sizes_px{icon_size::k128};
   const std::vector<SkColor> colors{SK_ColorMAGENTA};
@@ -1131,8 +1131,8 @@ TEST_F(WebAppIconManagerTest, DeleteData_Success) {
 }
 
 TEST_F(WebAppIconManagerTest, DeleteData_Failure) {
-  const webapps::AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                                              GURL("https://example.com/"));
+  const webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL("https://example.com/"));
 
   file_utils().SetNextDeleteFileRecursivelyResult(false);
 
@@ -1642,7 +1642,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
       {ui::k100Percent, ui::k200Percent, ui::k300Percent});
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
-  web_app->SetThemeColor(absl::make_optional(SK_ColorBLUE));
+  web_app->SetThemeColor(std::make_optional(SK_ColorBLUE));
 
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1688,7 +1688,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
       {ui::k200Percent, ui::k300Percent});
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
-  web_app->SetThemeColor(absl::make_optional(SK_ColorGREEN));
+  web_app->SetThemeColor(std::make_optional(SK_ColorGREEN));
 
   const webapps::AppId app_id = web_app->app_id();
 
@@ -1724,7 +1724,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
       {ui::k100Percent, ui::k300Percent});
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
-  web_app->SetThemeColor(absl::nullopt);
+  web_app->SetThemeColor(std::nullopt);
 
   const webapps::AppId app_id = web_app->app_id();
 

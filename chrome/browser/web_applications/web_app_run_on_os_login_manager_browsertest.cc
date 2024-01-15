@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
                            Eq("run_on_os_login_notifier")))));
 
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                      kRunOnOsLoginNotificationId,
-                                      absl::nullopt, absl::nullopt);
+                                      kRunOnOsLoginNotificationId, std::nullopt,
+                                      std::nullopt);
 
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();

@@ -28,7 +28,7 @@ const char kSubAppIdConcatenation[] = ":";
 
 std::string MaybeConcatenateParentAppManifestId(
     const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   if (parent_manifest_id.has_value()) {
     CHECK(parent_manifest_id->is_valid());
     CHECK_NE(parent_manifest_id.value(), manifest_id)
@@ -68,9 +68,9 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name) {
 }
 
 webapps::AppId GenerateAppId(
-    const absl::optional<std::string>& manifest_id_path,
+    const std::optional<std::string>& manifest_id_path,
     const GURL& start_url,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   if (!manifest_id_path) {
     return GenerateAppIdFromManifestId(
         GenerateManifestIdFromStartUrlOnly(start_url), parent_manifest_id);
@@ -82,14 +82,14 @@ webapps::AppId GenerateAppId(
 
 webapps::AppId GenerateAppIdFromManifest(
     const blink::mojom::Manifest& manifest,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   CHECK(manifest.id.is_valid());
   return GenerateAppIdFromManifestId(manifest.id, parent_manifest_id);
 }
 
 webapps::AppId GenerateAppIdFromManifestId(
     const webapps::ManifestId& manifest_id,
-    const absl::optional<webapps::ManifestId>& parent_manifest_id) {
+    const std::optional<webapps::ManifestId>& parent_manifest_id) {
   // The app ID is hashed twice: here and in GenerateId.
   // The double-hashing is for historical reasons and it needs to stay
   // this way for backwards compatibility. (Back then, a web app's input to the
@@ -129,14 +129,13 @@ bool IsValidWebAppUrl(const GURL& app_url) {
           (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
 }
 
-absl::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
-    Profile* profile,
-    const GURL& url,
-    bool window_only) {
+std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,
+                                                             const GURL& url,
+                                                             bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   return provider ? provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
                         url, window_only)
-                  : absl::nullopt;
+                  : std::nullopt;
 }
 
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {

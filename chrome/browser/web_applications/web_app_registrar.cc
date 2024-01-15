@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -46,7 +47,6 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "url/gurl.h"
@@ -85,7 +85,7 @@ WebAppRegistrar::~WebAppRegistrar() {
 
 bool WebAppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
   return IsLocallyInstalled(
-      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url));
+      GenerateAppId(/*manifest_id=*/std::nullopt, start_url));
 }
 
 blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
@@ -119,7 +119,7 @@ bool WebAppRegistrar::IsPlaceholderApp(
 // TODO(crbug.com/1434692): Revert changes back to old code
 // once the system starts enforcing a single install URL per
 // app_id.
-absl::optional<webapps::AppId> WebAppRegistrar::LookupPlaceholderAppId(
+std::optional<webapps::AppId> WebAppRegistrar::LookupPlaceholderAppId(
     const GURL& install_url,
     const WebAppManagement::Type source_type) const {
   for (const WebApp& web_app : GetApps()) {
@@ -136,7 +136,7 @@ absl::optional<webapps::AppId> WebAppRegistrar::LookupPlaceholderAppId(
       return web_app.app_id();
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WebAppRegistrar::AddObserver(WebAppRegistrarObserver* observer) {
@@ -260,13 +260,13 @@ WebAppRegistrar::GetExternallyInstalledApps(
   return installed_apps;
 }
 
-absl::optional<webapps::AppId> WebAppRegistrar::LookupExternalAppId(
+std::optional<webapps::AppId> WebAppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
-  absl::optional<webapps::AppId> app_id = LookUpAppIdByInstallUrl(install_url);
+  std::optional<webapps::AppId> app_id = LookUpAppIdByInstallUrl(install_url);
   if (app_id.has_value())
     return app_id;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool WebAppRegistrar::HasExternalApp(const webapps::AppId& app_id) const {
@@ -314,7 +314,7 @@ GURL WebAppRegistrar::GetAppLaunchUrl(const webapps::AppId& app_id) const {
 }
 
 GURL WebAppRegistrar::GetAppScope(const webapps::AppId& app_id) const {
-  absl::optional<GURL> scope = GetAppScopeInternal(app_id);
+  std::optional<GURL> scope = GetAppScopeInternal(app_id);
   if (scope)
     return *scope;
   return GetAppStartUrl(app_id).GetWithoutFilename();
@@ -347,7 +347,7 @@ size_t WebAppRegistrar::GetAppExtendedScopeScore(
     return 0;
   }
 
-  absl::optional<std::string> origin_str;
+  std::optional<std::string> origin_str;
 
   for (const auto& scope_extension : GetValidatedScopeExtensions(app_id)) {
     if (origin.IsSameOriginWith(scope_extension.origin)) {
@@ -408,14 +408,14 @@ size_t WebAppRegistrar::GetUrlInAppScopeScore(
   return score;
 }
 
-absl::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
+std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
     const GURL& url) const {
   if (!url.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
 
   const std::string url_spec = url.spec();
 
-  absl::optional<webapps::AppId> best_app_id;
+  std::optional<webapps::AppId> best_app_id;
   size_t best_score = 0U;
   bool best_app_is_shortcut = true;
 
@@ -438,7 +438,7 @@ absl::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
   // With project shortstand, shortcuts are no longer considered apps,
   // so we should ignore results within the scope of shortcuts.
   if (chromeos::features::IsCrosShortstandEnabled() && best_app_is_shortcut) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return best_app_id;
@@ -482,12 +482,12 @@ std::vector<webapps::AppId> WebAppRegistrar::FindAppsInScope(
   return in_scope;
 }
 
-absl::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
+std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
     const GURL& url,
     bool window_only) const {
   const std::string url_spec = url.spec();
 
-  absl::optional<webapps::AppId> best_app_id;
+  std::optional<webapps::AppId> best_app_id;
   size_t best_score = 0U;
   bool best_app_is_shortcut = true;
 
@@ -564,7 +564,7 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     return DisplayMode::kBrowser;
 
   auto app_display_mode = GetAppDisplayMode(app_id);
-  absl::optional<mojom::UserDisplayMode> user_display_mode =
+  std::optional<mojom::UserDisplayMode> user_display_mode =
       GetAppUserDisplayMode(app_id);
   if (app_display_mode == DisplayMode::kUndefined ||
       !user_display_mode.has_value()) {
@@ -609,8 +609,7 @@ GURL WebAppRegistrar::GetAppNewTabUrl(const webapps::AppId& app_id) const {
       return GURL::EmptyGURL();
 
     if (web_app->tab_strip()) {
-      absl::optional<GURL> url =
-          web_app->tab_strip().value().new_tab_button.url;
+      std::optional<GURL> url = web_app->tab_strip().value().new_tab_button.url;
       if (url.has_value())
         return url.value();
     }
@@ -619,12 +618,12 @@ GURL WebAppRegistrar::GetAppNewTabUrl(const webapps::AppId& app_id) const {
   return GetAppStartUrl(app_id);
 }
 
-absl::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
+std::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
     const webapps::AppId& app_id) const {
   if (IsTabbedWindowModeEnabled(app_id)) {
     const WebApp* web_app = GetAppById(app_id);
     if (!web_app)
-      return absl::nullopt;
+      return std::nullopt;
 
     if (web_app->tab_strip() &&
         absl::holds_alternative<blink::Manifest::HomeTabParams>(
@@ -633,15 +632,15 @@ absl::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
     }
   }
   // Apps with home_tab set to 'auto' will not have a home tab.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<proto::WebAppOsIntegrationState>
+std::optional<proto::WebAppOsIntegrationState>
 WebAppRegistrar::GetAppCurrentOsIntegrationState(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app)
-    return absl::nullopt;
+    return std::nullopt;
 
   return web_app->current_os_integration_states();
 }
@@ -769,7 +768,7 @@ base::WeakPtr<WebAppRegistrar> WebAppRegistrar::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-absl::optional<webapps::AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
+std::optional<webapps::AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
     const GURL& install_url) const {
   for (const WebApp& web_app : GetApps()) {
     for (auto it : web_app.management_to_external_config_map()) {
@@ -778,7 +777,7 @@ absl::optional<webapps::AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
@@ -1003,12 +1002,12 @@ WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
   return partitions;
 }
 
-absl::optional<content::StoragePartitionConfig>
+std::optional<content::StoragePartitionConfig>
 WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
     const IsolatedWebAppUrlInfo& url_info,
     const std::string& partition_name) {
   if (!IsInstalled(url_info.app_id())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   isolated_web_app_in_memory_controlled_frame_partitions_[url_info.app_id()]
@@ -1087,7 +1086,7 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
   return app_and_install_time.front().first == app_id;
 }
 
-absl::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
+std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
     const GURL& url) const {
   // Nested apps remove that URL space from the parent app, so links from a
   // nested app cannot be captured by a parent app. Even so, there can be
@@ -1114,14 +1113,14 @@ absl::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
     top_apps = {app_id};
   }
   if (top_apps.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   for (const webapps::AppId& app_id : top_apps) {
     if (CapturesLinksInScope(app_id)) {
       return app_id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
@@ -1242,28 +1241,28 @@ std::string WebAppRegistrar::GetAppDescription(
   return web_app ? web_app->untranslated_description() : std::string();
 }
 
-absl::optional<SkColor> WebAppRegistrar::GetAppThemeColor(
+std::optional<SkColor> WebAppRegistrar::GetAppThemeColor(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->theme_color() : absl::nullopt;
+  return web_app ? web_app->theme_color() : std::nullopt;
 }
 
-absl::optional<SkColor> WebAppRegistrar::GetAppDarkModeThemeColor(
+std::optional<SkColor> WebAppRegistrar::GetAppDarkModeThemeColor(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->dark_mode_theme_color() : absl::nullopt;
+  return web_app ? web_app->dark_mode_theme_color() : std::nullopt;
 }
 
-absl::optional<SkColor> WebAppRegistrar::GetAppBackgroundColor(
+std::optional<SkColor> WebAppRegistrar::GetAppBackgroundColor(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->background_color() : absl::nullopt;
+  return web_app ? web_app->background_color() : std::nullopt;
 }
 
-absl::optional<SkColor> WebAppRegistrar::GetAppDarkModeBackgroundColor(
+std::optional<SkColor> WebAppRegistrar::GetAppDarkModeBackgroundColor(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->dark_mode_background_color() : absl::nullopt;
+  return web_app ? web_app->dark_mode_background_color() : std::nullopt;
 }
 
 const GURL& WebAppRegistrar::GetAppStartUrl(
@@ -1335,19 +1334,19 @@ bool WebAppRegistrar::ExpectThatFileHandlersAreRegisteredWithOs(
          OsIntegrationState::kEnabled;
 }
 
-absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
+std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   if (!web_app)
-    return absl::nullopt;
+    return std::nullopt;
 
   // TODO(crbug.com/1469482): Record shortcut distinction explicitly instead of
   // using scope.
   // Shortcuts on the WebApp system have empty scopes, while the implementation
-  // of IsShortcutApp just checks if the scope is |absl::nullopt|, so make sure
-  // we return |absl::nullopt| rather than an empty scope.
+  // of IsShortcutApp just checks if the scope is |std::nullopt|, so make sure
+  // we return |std::nullopt| rather than an empty scope.
   if (web_app->scope().is_empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return web_app->scope();
 }
@@ -1358,11 +1357,11 @@ DisplayMode WebAppRegistrar::GetAppDisplayMode(
   return web_app ? web_app->display_mode() : DisplayMode::kUndefined;
 }
 
-absl::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
+std::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   if (web_app == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1429,11 +1428,11 @@ base::Time WebAppRegistrar::GetAppFirstInstallTime(
   return web_app ? web_app->first_install_time() : base::Time();
 }
 
-absl::optional<webapps::WebappInstallSource>
+std::optional<webapps::WebappInstallSource>
 WebAppRegistrar::GetLatestAppInstallSource(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app)
-    return absl::nullopt;
+    return std::nullopt;
 
   return web_app->latest_install_source();
 }
@@ -1509,12 +1508,12 @@ ValueWithPolicy<RunOnOsLoginMode> WebAppRegistrar::GetAppRunOnOsLoginMode(
   }
 }
 
-absl::optional<RunOnOsLoginMode>
+std::optional<RunOnOsLoginMode>
 WebAppRegistrar::GetExpectedRunOnOsLoginOsIntegrationState(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->run_on_os_login_os_integration_state()
-                 : absl::nullopt;
+                 : std::nullopt;
 }
 
 bool WebAppRegistrar::GetWindowControlsOverlayEnabled(

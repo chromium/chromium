@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -55,7 +56,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -131,10 +131,10 @@ const std::string GetMirroringNamespace(const base::Value::Dict& message) {
   }
 }
 
-absl::optional<MirroringActivity::MirroringType> GetMirroringType(
+std::optional<MirroringActivity::MirroringType> GetMirroringType(
     const MediaRoute& route) {
   if (!route.is_local()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto source = route.media_source();
@@ -152,7 +152,7 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
 
   if (!source.url().is_valid()) {
     NOTREACHED() << "Invalid source: " << source;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (source.IsCastPresentationUrl()) {
@@ -163,14 +163,14 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
       return MirroringActivity::MirroringType::kTab;
     } else {
       NOTREACHED() << "Non-mirroring Cast app: " << source;
-      return absl::nullopt;
+      return std::nullopt;
     }
   } else if (source.url().SchemeIsHTTPOrHTTPS()) {
     return MirroringActivity::MirroringType::kOffscreenTab;
   }
 
   NOTREACHED() << "Invalid source: " << source;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
@@ -182,11 +182,11 @@ bool ShouldForceLetterboxing(base::StringPiece model_name) {
   return model_name.find("Nest Hub") != base::StringPiece::npos;
 }
 
-absl::optional<int> GetExceededPlayoutDelayPacketPercent(
+std::optional<int> GetExceededPlayoutDelayPacketPercent(
     const base::Value::List* network_latency_ms_histo,
     int64_t target_playout_delay) {
   if (!network_latency_ms_histo) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static constexpr char kOverflowBucketPrefix[] = ">=";
@@ -223,10 +223,10 @@ absl::optional<int> GetExceededPlayoutDelayPacketPercent(
   if (all_count > 0) {
     return exceeded_count * 100 / all_count;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<double> LookupStat(
+std::optional<double> LookupStat(
     const base::Value::Dict& mirroring_stats,
     media::cast::StatsEventSubscriber::CastStat cast_stat) {
   const std::string key =
@@ -236,7 +236,7 @@ absl::optional<double> LookupStat(
 
 void MaybeRecordLatencyHistogram(const char* fmt,
                                  const char* streaming_type,
-                                 absl::optional<double> value) {
+                                 std::optional<double> value) {
   if (value) {
     const std::string name =
         base::StringPrintfNonConstexpr(fmt, streaming_type);
@@ -246,7 +246,7 @@ void MaybeRecordLatencyHistogram(const char* fmt,
 
 void MaybeRecordMemoryHistogram(const char* fmt,
                                 const char* streaming_type,
-                                absl::optional<double> value) {
+                                std::optional<double> value) {
   if (value) {
     const std::string name =
         base::StringPrintfNonConstexpr(fmt, streaming_type);
@@ -267,28 +267,28 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
           ? kHistogramTypeAudio
           : kHistogramTypeVideo;
 
-  const absl::optional<double> transmission_kbps = LookupStat(
+  const std::optional<double> transmission_kbps = LookupStat(
       *mirroring_stats, media::cast::StatsEventSubscriber::TRANSMISSION_KBPS);
   MaybeRecordMemoryHistogram(kHistogramTransmissionKbps, streaming_type,
                              transmission_kbps);
 
-  const absl::optional<double> avg_encode_time_ms = LookupStat(
+  const std::optional<double> avg_encode_time_ms = LookupStat(
       *mirroring_stats, media::cast::StatsEventSubscriber::AVG_ENCODE_TIME_MS);
   MaybeRecordLatencyHistogram(kHistogramAverageEncodeTime, streaming_type,
                               avg_encode_time_ms);
 
-  const absl::optional<double> avg_capture_latency_ms =
+  const std::optional<double> avg_capture_latency_ms =
       LookupStat(*mirroring_stats,
                  media::cast::StatsEventSubscriber::AVG_CAPTURE_LATENCY_MS);
   MaybeRecordLatencyHistogram(kHistogramAverageCaptureLatency, streaming_type,
                               avg_capture_latency_ms);
 
-  const absl::optional<double> avg_end_to_end_latency_ms = LookupStat(
+  const std::optional<double> avg_end_to_end_latency_ms = LookupStat(
       *mirroring_stats, media::cast::StatsEventSubscriber::AVG_E2E_LATENCY_MS);
   MaybeRecordLatencyHistogram(kHistogramAverageEndToEndLatency, streaming_type,
                               avg_end_to_end_latency_ms);
 
-  const absl::optional<double> avg_network_latency_ms =
+  const std::optional<double> avg_network_latency_ms =
       LookupStat(*mirroring_stats,
                  media::cast::StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
   MaybeRecordLatencyHistogram(kHistogramAverageNetworkLatency, streaming_type,
@@ -318,7 +318,7 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
           media::cast::StatsEventSubscriber::NETWORK_LATENCY_MS_HISTO);
   const base::Value::List* network_latency_ms_histo =
       mirroring_stats->FindList(network_latency_ms_histo_key);
-  absl::optional<int> exceeded_playout_percent =
+  std::optional<int> exceeded_playout_percent =
       GetExceededPlayoutDelayPacketPercent(network_latency_ms_histo,
                                            target_playout_delay);
   if (exceeded_playout_percent.has_value()) {
@@ -579,7 +579,7 @@ void MirroringActivity::OnSourceChanged() {
     return;
   }
 
-  absl::optional<int> frame_tree_node_id = host_->GetTabSourceId();
+  std::optional<int> frame_tree_node_id = host_->GetTabSourceId();
   if (!source_changed_callback_ || !frame_tree_node_id ||
       frame_tree_node_id == frame_tree_node_id_) {
     return;

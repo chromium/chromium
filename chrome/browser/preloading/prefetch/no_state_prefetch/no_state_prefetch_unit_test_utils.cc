@@ -16,7 +16,7 @@ FakeNoStatePrefetchContents::FakeNoStatePrefetchContents(
     UnitTestNoStatePrefetchManager* test_no_state_prefetch_manager,
     const GURL& url,
     Origin origin,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     FinalStatus expected_final_status)
     : NoStatePrefetchContents(
           std::make_unique<ChromeNoStatePrefetchContentsDelegate>(),
@@ -109,7 +109,7 @@ UnitTestNoStatePrefetchManager::CreateNextNoStatePrefetchContents(
 FakeNoStatePrefetchContents*
 UnitTestNoStatePrefetchManager::CreateNextNoStatePrefetchContents(
     const GURL& url,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     Origin origin,
     FinalStatus expected_final_status) {
   return SetNextNoStatePrefetchContents(
@@ -182,7 +182,7 @@ std::unique_ptr<NoStatePrefetchContents>
 UnitTestNoStatePrefetchManager::CreateNoStatePrefetchContents(
     const GURL& url,
     const content::Referrer& referrer,
-    const absl::optional<url::Origin>& initiator_origin,
+    const std::optional<url::Origin>& initiator_origin,
     Origin origin) {
   CHECK(next_no_state_prefetch_contents_);
   EXPECT_EQ(url, next_no_state_prefetch_contents_->prefetch_url());

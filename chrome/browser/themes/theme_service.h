@@ -201,8 +201,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   virtual BrowserColorScheme GetBrowserColorScheme() const;
 
   // Sets/gets the browser user color preference.
-  virtual void SetUserColor(absl::optional<SkColor> user_color);
-  virtual absl::optional<SkColor> GetUserColor() const;
+  virtual void SetUserColor(std::optional<SkColor> user_color);
+  virtual std::optional<SkColor> GetUserColor() const;
 
   // Sets/gets the browser kSchemeVariant preference.
   void SetBrowserColorVariant(ui::mojom::BrowserColorVariant color_variant);

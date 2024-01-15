@@ -82,7 +82,7 @@ void Provider::InitProfileState() {
   InstallState state = static_cast<InstallState>(
       profile_->GetPrefs()->GetInteger(prefs::kPreinstalledAppsInstallState));
 
-  absl::optional<InstallState> new_install_state;
+  std::optional<InstallState> new_install_state;
 
   switch (state) {
     case kUnknown: {

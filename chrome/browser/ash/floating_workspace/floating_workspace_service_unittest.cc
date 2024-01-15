@@ -86,7 +86,7 @@ std::unique_ptr<app_restore::RestoreData> CreateRestoreData(
 
       app_restore::WindowInfo window_info;
       window_info.activation_index =
-          absl::make_optional<int32_t>(activation_index_counter++);
+          std::make_optional<int32_t>(activation_index_counter++);
 
       restore_data->ModifyWindowInfo(app_id, window_id, window_info);
     }
@@ -114,7 +114,7 @@ class MockDesksClient : public DesksClient {
               GetAllDesks,
               (),
               (override));
-  MOCK_METHOD((absl::optional<DesksClient::DeskActionError>),
+  MOCK_METHOD((std::optional<DesksClient::DeskActionError>),
               RemoveDesk,
               (const base::Uuid& desk_uuid, ash::DeskCloseType close_type),
               (override));
@@ -122,10 +122,9 @@ class MockDesksClient : public DesksClient {
 
   void CaptureActiveDesk(CaptureActiveDeskAndSaveTemplateCallback callback,
                          ash::DeskTemplateType template_type) override {
-    std::move(callback).Run(absl::nullopt,
-                            captured_desk_template_ != nullptr
-                                ? captured_desk_template_->Clone()
-                                : nullptr);
+    std::move(callback).Run(std::nullopt, captured_desk_template_ != nullptr
+                                              ? captured_desk_template_->Clone()
+                                              : nullptr);
   }
 
   void LaunchAppsFromTemplate(
@@ -299,7 +298,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
   bool HasNotificationFor(const std::string& id) {
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         display_service()->GetNotification(id);
     return notification.has_value();
   }
@@ -697,7 +696,7 @@ TEST_F(FloatingWorkspaceServiceTest,
   display_service()->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationForRestoreAfterError,
       static_cast<int>(RestoreFromErrorNotificationButtonIndex::kRestore),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
@@ -745,7 +744,7 @@ TEST_F(FloatingWorkspaceServiceTest,
   display_service()->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationForRestoreAfterError,
       static_cast<int>(RestoreFromErrorNotificationButtonIndex::kCancel),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_FALSE(mock_desks_client()->restored_desk_template());
   scoped_feature_list().Reset();
 }
@@ -1303,7 +1302,7 @@ TEST_F(FloatingWorkspaceServiceTest,
   display_service()->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationForRestoreAfterError,
       static_cast<int>(RestoreFromErrorNotificationButtonIndex::kRestore),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));

@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetThumbnailTest) {
   drive_service->GetThumbnail(
       base::FilePath("/bar"), true,
       base::BindLambdaForTesting(
-          [=](const absl::optional<std::vector<uint8_t>>& image) {
+          [=](const std::optional<std::vector<uint8_t>>& image) {
             ASSERT_FALSE(image.has_value());
             quit_closure.Run();
           }));
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
         ->LocateFilesByItemIds(
             {"qwertyqwerty", "foobar"},
             base::BindLambdaForTesting(
-                [=](absl::optional<
+                [=](std::optional<
                     std::vector<drivefs::mojom::FilePathOrErrorPtr>> result) {
                   ASSERT_EQ(2u, result->size());
                   EXPECT_EQ(relative_file_path, base::FilePath("/").Append(

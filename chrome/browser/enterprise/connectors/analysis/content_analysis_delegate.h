@@ -182,7 +182,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
   void BypassWarnings(
-      absl::optional<std::u16string> user_justification) override;
+      std::optional<std::u16string> user_justification) override;
 
   // Called when the user decides to cancel the file upload. This will stop the
   // upload to Chrome since the scan wasn't allowed to complete. If `warning` is
@@ -190,15 +190,15 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // "CancelledByUser" metrics should not be recorded.
   void Cancel(bool warning) override;
 
-  absl::optional<std::u16string> GetCustomMessage() const override;
+  std::optional<std::u16string> GetCustomMessage() const override;
 
-  absl::optional<GURL> GetCustomLearnMoreUrl() const override;
+  std::optional<GURL> GetCustomLearnMoreUrl() const override;
 
   bool BypassRequiresJustification() const override;
 
   std::u16string GetBypassJustificationLabel() const override;
 
-  absl::optional<std::u16string> OverrideCancelButtonText() const override;
+  std::optional<std::u16string> OverrideCancelButtonText() const override;
 
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies

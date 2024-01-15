@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,7 +35,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -88,23 +88,23 @@ bool IsReported(RestrictionLevelAndUrl restriction_info) {
 
 // Maps restriction to the correct suffix used for logging WarnProceeded
 // metrics. Returns the suffix for supported restrictions and null otherwise.
-const absl::optional<std::string> RestrictionToWarnProceededUMASuffix(
+const std::optional<std::string> RestrictionToWarnProceededUMASuffix(
     DlpRulesManager::Restriction restriction) {
   switch (restriction) {
     case DlpRulesManager::Restriction::kScreenShare:
-      return absl::make_optional(
+      return std::make_optional(
           data_controls::dlp::kScreenShareWarnProceededUMA);
     case DlpRulesManager::Restriction::kPrinting:
-      return absl::make_optional(data_controls::dlp::kPrintingWarnProceededUMA);
+      return std::make_optional(data_controls::dlp::kPrintingWarnProceededUMA);
     case DlpRulesManager::Restriction::kScreenshot:
-      return absl::make_optional(
+      return std::make_optional(
           data_controls::dlp::kScreenshotWarnProceededUMA);
     case DlpRulesManager::Restriction::kUnknownRestriction:
     case DlpRulesManager::Restriction::kClipboard:
     case DlpRulesManager::Restriction::kPrivacyScreen:
     case DlpRulesManager::Restriction::kFiles:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

@@ -24,12 +24,12 @@ namespace {
 
 // Creating the request object involves generating a signature which may be
 // resource intensive. It is, therefore, on a background thread.
-absl::optional<const KeyUploadRequest> CreateRequest(
+std::optional<const KeyUploadRequest> CreateRequest(
     const GURL& dm_server_url,
     const std::string& dm_token,
     scoped_refptr<SigningKeyPair> key_pair) {
   if (!key_pair) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return KeyUploadRequest::Create(dm_server_url, dm_token, *key_pair);
 }
@@ -104,7 +104,7 @@ void KeyLoaderImpl::SynchronizePublicKey(LoadKeyCallback callback,
 void KeyLoaderImpl::OnKeyUploadRequestCreated(
     scoped_refptr<SigningKeyPair> key_pair,
     LoadKeyCallback callback,
-    absl::optional<const KeyUploadRequest> upload_request) {
+    std::optional<const KeyUploadRequest> upload_request) {
   if (!upload_request) {
     LogSynchronizationError(DTSynchronizationError::kCannotBuildRequest);
     std::move(callback).Run(DTCLoadKeyResult(std::move(key_pair)));

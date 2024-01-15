@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_IMAGE_DOWNLOAD_CLIENT_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_IMAGE_DOWNLOAD_CLIENT_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 struct CompletionInfo;
@@ -65,7 +65,7 @@ class PluginVmImageDownloadClient : public download::Client {
   void GetUploadData(const std::string& guid,
                      download::GetUploadDataCallback callback) override;
 
-  absl::optional<double> GetFractionComplete(int64_t bytes_downloaded);
+  std::optional<double> GetFractionComplete(int64_t bytes_downloaded);
 };
 
 }  // namespace plugin_vm

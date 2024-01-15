@@ -35,7 +35,7 @@ constexpr auto kAnotherPolicyDomain =
 
 base::Value::Dict CreateDict(const std::string& json) {
   auto dict = base::JSONReader::Read(json);
-  EXPECT_NE(dict, absl::nullopt) << "Invalid json: '" << json << "'";
+  EXPECT_NE(dict, std::nullopt) << "Invalid json: '" << json << "'";
   return std::move(dict.value()).TakeDict();
 }
 
@@ -100,7 +100,7 @@ class FakeSettingsObserver {
   void OnSettingsChanged(
       const std::string& extension_id,
       StorageAreaNamespace storage_area,
-      absl::optional<api::storage::AccessLevel> session_access_level,
+      std::optional<api::storage::AccessLevel> session_access_level,
       base::Value changes) {
     future_.AddValue(extension_id);
   }

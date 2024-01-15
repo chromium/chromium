@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -14,7 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -62,7 +62,7 @@ class PromoService : public KeyedService {
 
   // Returns the currently cached middle-slot PromoData, if any. Virtual for
   // testing.
-  virtual const absl::optional<PromoData>& promo_data() const;
+  virtual const std::optional<PromoData>& promo_data() const;
   Status promo_status() const { return promo_status_; }
 
   // Requests an asynchronous refresh from the network. After the update
@@ -83,7 +83,7 @@ class PromoService : public KeyedService {
   GURL GetLoadURLForTesting() const;
 
  protected:
-  void PromoDataLoaded(Status status, const absl::optional<PromoData>& data);
+  void PromoDataLoaded(Status status, const std::optional<PromoData>& data);
 
  private:
   void OnLoadDone(std::unique_ptr<std::string> response_body);
@@ -100,7 +100,7 @@ class PromoService : public KeyedService {
 
   base::ObserverList<PromoServiceObserver, true>::Unchecked observers_;
 
-  absl::optional<PromoData> promo_data_;
+  std::optional<PromoData> promo_data_;
   Status promo_status_ = Status::NOT_UPDATED;
 
   raw_ptr<Profile> profile_;

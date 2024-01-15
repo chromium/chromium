@@ -109,7 +109,7 @@ class MockNetworkContext : public network::TestNetworkContext {
             .second);
     if (!enabled_proxy_testing_) {
       // We don't want to test proxy, return that the proxy is disabled.
-      CompleteProxyLookup(url, absl::nullopt);
+      CompleteProxyLookup(url, std::nullopt);
     }
   }
 
@@ -125,15 +125,15 @@ class MockNetworkContext : public network::TestNetworkContext {
       return;
     }
     it->second->OnComplete(result, net::ResolveErrorInfo(result),
-                           /*resolved_addresses=*/absl::nullopt,
-                           /*endpoint_results_with_metadata=*/absl::nullopt);
+                           /*resolved_addresses=*/std::nullopt,
+                           /*endpoint_results_with_metadata=*/std::nullopt);
     resolve_host_clients_.erase(it);
     // Wait for OnComplete() to be executed on the UI thread.
     base::RunLoop().RunUntilIdle();
   }
 
   void CompleteProxyLookup(const GURL& url,
-                           const absl::optional<net::ProxyInfo>& result) {
+                           const std::optional<net::ProxyInfo>& result) {
     if (IsHangingHost(url))
       return;
 
@@ -1065,7 +1065,7 @@ TEST_F(PreconnectManagerTest, TestSuccessfulHostLookupAfterProxyLookupFailure) {
                                              GetDirectProxyInfo());
   // Second URL proxy lookup failed.
   mock_network_context_->CompleteProxyLookup(origin_to_preconnect2.GetURL(),
-                                             absl::nullopt);
+                                             std::nullopt);
   Mock::VerifyAndClearExpectations(mock_network_context_.get());
 
   EXPECT_CALL(*mock_network_context_,
@@ -1102,7 +1102,7 @@ TEST_F(PreconnectManagerTest, TestBothProxyAndHostLookupFailed) {
   EXPECT_CALL(*mock_network_context_,
               ResolveHostProxy(origin_to_preconnect.host()));
   mock_network_context_->CompleteProxyLookup(origin_to_preconnect.GetURL(),
-                                             absl::nullopt);
+                                             std::nullopt);
   Mock::VerifyAndClearExpectations(mock_network_context_.get());
 
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));

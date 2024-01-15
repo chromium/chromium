@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -148,7 +148,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // size_px is usually filled up with kLauncherIconSize (see
   // chrome/browser/web_applications/web_app_icon_generator.h for more
   // information), which is 128.
-  absl::optional<SkColor> GetShortcutIconTopLeftColor(
+  std::optional<SkColor> GetShortcutIconTopLeftColor(
       Profile* profile,
       base::FilePath shortcut_dir,
       const webapps::AppId& app_id,

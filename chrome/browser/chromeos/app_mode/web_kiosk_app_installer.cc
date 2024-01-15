@@ -4,13 +4,14 @@
 
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using crosapi::mojom::WebKioskInstallState;
@@ -53,7 +54,7 @@ void WebKioskAppInstaller::GetInstallState(InstallStateCallback callback) {
   auto app_id = web_app_provider().registrar_unsafe().LookUpAppIdByInstallUrl(
       install_url_);
   if (!app_id || app_id->empty()) {
-    std::move(callback).Run(WebKioskInstallState::kNotInstalled, absl::nullopt);
+    std::move(callback).Run(WebKioskInstallState::kNotInstalled, std::nullopt);
     return;
   }
 
@@ -66,7 +67,7 @@ void WebKioskAppInstaller::GetInstallState(InstallStateCallback callback) {
   if (is_placeholder_app) {
     SYSLOG(INFO) << "Placeholder app installed. Trying to reinstall...";
     std::move(callback).Run(WebKioskInstallState::kPlaceholderInstalled,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -89,7 +90,7 @@ void WebKioskAppInstaller::OnExternalInstallCompleted(
 
   if (!webapps::IsSuccess(result.code)) {
     SYSLOG(ERROR) << "Failed to install Kiosk web app, code " << result.code;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,7 +28,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -54,7 +55,7 @@ class CertVerifierServiceCACertificatesPolicyTest
       certs_value.GetList().Append(b64_cert);
       policy::PolicyMap policies;
       SetPolicy(&policies, policy::key::kCACertificates,
-                absl::make_optional(std::move(certs_value)));
+                std::make_optional(std::move(certs_value)));
       UpdateProviderPolicy(policies);
     }
   }
@@ -103,7 +104,7 @@ class CertVerifierServiceCADistrustedCertificatesPolicyTest
     policy::PolicyMap policies;
     // Distrust the test server certificate
     SetPolicy(&policies, policy::key::kCADistrustedCertificates,
-              absl::make_optional(std::move(certs_value)));
+              std::make_optional(std::move(certs_value)));
     UpdateProviderPolicy(policies);
   }
 };
@@ -144,14 +145,14 @@ class CertVerifierServiceCATrustedDistrustedCertificatesPolicyTest
       base::Value certs_value(base::Value::Type::LIST);
       certs_value.GetList().Append(b64_cert);
       SetPolicy(&policies, policy::key::kCADistrustedCertificates,
-                absl::make_optional(std::move(certs_value)));
+                std::make_optional(std::move(certs_value)));
     }
     // Trust the test server certificate
     {
       base::Value certs_value(base::Value::Type::LIST);
       certs_value.GetList().Append(b64_cert);
       SetPolicy(&policies, policy::key::kCACertificates,
-                absl::make_optional(std::move(certs_value)));
+                std::make_optional(std::move(certs_value)));
     }
     UpdateProviderPolicy(policies);
   }
@@ -205,7 +206,7 @@ class CertVerifierServiceCAHintCertificatesPolicyTest
       certs_value.GetList().Append(b64_cert);
       policy::PolicyMap policies;
       SetPolicy(&policies, policy::key::kCAHintCertificates,
-                absl::make_optional(std::move(certs_value)));
+                std::make_optional(std::move(certs_value)));
       UpdateProviderPolicy(policies);
     }
   }
@@ -251,7 +252,7 @@ class CertVerifierServiceChromeRootStoreOptionalTest
 
   void TearDownOnMainThread() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
     content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
         previous_use_chrome_root_store_, base::DoNothing());
   }
@@ -327,7 +328,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<
-          std::tuple<bool, absl::optional<bool>>> {
+          std::tuple<bool, std::optional<bool>>> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatureState(
@@ -342,12 +343,12 @@ class CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest
     }
   }
 
-  void SetPolicyValue(absl::optional<bool> value) {
+  void SetPolicyValue(std::optional<bool> value) {
     policy::PolicyMap policies;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     SetPolicy(&policies, policy::key::kEnforceLocalAnchorConstraintsEnabled,
-              absl::optional<base::Value>(value));
+              std::optional<base::Value>(value));
 #endif
     UpdateProviderPolicy(policies);
   }
@@ -367,7 +368,7 @@ class CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest
 
     // Unset the policy, the value used should go back to the one set by the
     // feature flag.
-    SetPolicyValue(absl::nullopt);
+    SetPolicyValue(std::nullopt);
     EXPECT_EQ(feature_enforce_local_anchor_constraints(),
               net::IsLocalAnchorConstraintsEnforcementEnabled());
 #endif
@@ -377,7 +378,7 @@ class CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest
     return std::get<0>(GetParam());
   }
 
-  absl::optional<bool> policy_enforce_local_anchor_constraints() const {
+  std::optional<bool> policy_enforce_local_anchor_constraints() const {
     return std::get<1>(GetParam());
   }
 
@@ -415,7 +416,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest,
     ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(absl::nullopt
+                       ::testing::Values(std::nullopt
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                                          ,

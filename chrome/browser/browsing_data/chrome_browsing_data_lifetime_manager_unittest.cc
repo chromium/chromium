@@ -5,6 +5,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +30,6 @@
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 std::unique_ptr<KeyedService> CreateTestSyncService(

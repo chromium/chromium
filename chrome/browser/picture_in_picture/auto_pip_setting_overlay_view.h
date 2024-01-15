@@ -113,7 +113,7 @@ class AutoPipSettingOverlayView : public views::View,
 
   // Optional closure to re-enable input events, to be run when the user
   // dismisses the UI via any button.  Only used for document pip.
-  absl::optional<content::WebContents::ScopedIgnoreInputEvents>
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
 
   base::WeakPtrFactory<AutoPipSettingOverlayView> weak_factory_{this};

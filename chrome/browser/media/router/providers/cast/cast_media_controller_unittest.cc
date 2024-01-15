@@ -368,9 +368,9 @@ TEST_F(CastMediaControllerTest, IgnoreInvalidUpdate) {
 TEST_F(CastMediaControllerTest, UpdateMediaImages) {
   mojom::MediaStatusPtr expected_status = CreateSampleMediaStatus();
   expected_status->images.emplace_back(
-      absl::in_place, GURL("https://example.com/1.png"), gfx::Size(123, 456));
+      std::in_place, GURL("https://example.com/1.png"), gfx::Size(123, 456));
   expected_status->images.emplace_back(
-      absl::in_place, GURL("https://example.com/2.png"), gfx::Size(789, 0));
+      std::in_place, GURL("https://example.com/2.png"), gfx::Size(789, 0));
   const mojom::MediaImage& image1 = *expected_status->images.at(0);
   const mojom::MediaImage& image2 = *expected_status->images.at(1);
 
@@ -381,7 +381,7 @@ TEST_F(CastMediaControllerTest, UpdateMediaImages) {
         EXPECT_EQ(image1.size->width(), status->images.at(0)->size->width());
         EXPECT_EQ(image1.size->height(), status->images.at(0)->size->height());
         EXPECT_EQ(image2.url.spec(), status->images.at(1)->url.spec());
-        EXPECT_EQ(absl::nullopt, status->images.at(1)->size);
+        EXPECT_EQ(std::nullopt, status->images.at(1)->size);
       });
   SetMediaStatus(*expected_status);
   VerifyAndClearExpectations();
@@ -391,7 +391,7 @@ TEST_F(CastMediaControllerTest, IgnoreInvalidImage) {
   // Set one valid image and one invalid image.
   mojom::MediaStatusPtr expected_status = CreateSampleMediaStatus();
   expected_status->images.emplace_back(
-      absl::in_place, GURL("https://example.com/1.png"), gfx::Size(123, 456));
+      std::in_place, GURL("https://example.com/1.png"), gfx::Size(123, 456));
   const mojom::MediaImage& valid_image = *expected_status->images.at(0);
   Value::Dict status_value = CreateMediaStatus(*expected_status);
   status_value.FindListByDottedPath("media.metadata.images")

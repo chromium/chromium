@@ -46,7 +46,7 @@ std::string ReadAppLocale() {
     return std::string();
   }
 
-  absl::optional<base::Value> settings = base::JSONReader::Read(input);
+  std::optional<base::Value> settings = base::JSONReader::Read(input);
   if (!settings.has_value()) {
     return std::string();
   }

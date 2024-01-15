@@ -92,7 +92,7 @@ void DevicePinnedNotificationTestBase::SimulateButtonClick(Profile* profile) {
   display_service_->SimulateClick(
       NotificationHandler::Type::TRANSIENT,
       device_pinned_notification_renderer->GetNotificationId(profile),
-      /*action_index=*/0, /*reply=*/absl::nullopt);
+      /*action_index=*/0, /*reply=*/std::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

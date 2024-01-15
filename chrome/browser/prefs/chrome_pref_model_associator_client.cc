@@ -43,8 +43,8 @@ base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (pref_name == ash::prefs::kTimeOfLastSessionActivation) {
-    absl::optional<base::Time> local_time = base::ValueToTime(local_value);
-    absl::optional<base::Time> server_time = base::ValueToTime(server_value);
+    std::optional<base::Time> local_time = base::ValueToTime(local_value);
+    std::optional<base::Time> server_time = base::ValueToTime(server_value);
     // Case: Both values have expected type.
     if (local_time && server_time) {
       return base::TimeToValue(std::max(*local_time, *server_time));

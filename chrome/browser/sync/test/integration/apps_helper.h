@@ -156,9 +156,8 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
                                bool state) override;
 
   // Implementation of extensions::InstallObserver.
-  void OnAppsReordered(
-      content::BrowserContext* context,
-      const absl::optional<std::string>& extension_id) override;
+  void OnAppsReordered(content::BrowserContext* context,
+                       const std::optional<std::string>& extension_id) override;
 
  protected:
   std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;

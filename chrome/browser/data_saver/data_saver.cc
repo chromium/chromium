@@ -3,23 +3,25 @@
 // found in the LICENSE file.
 
 #include "data_saver.h"
+
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/DataSaverOSSetting_jni.h"
 #endif
 
 namespace {
-absl::optional<bool> g_override_data_saver_for_testing;
+std::optional<bool> g_override_data_saver_for_testing;
 #if BUILDFLAG(IS_ANDROID)
 // Whether the Data Saver Android setting was set last time we checked it.
 // This can be a global variable because this is an OS setting that does not
 // vary based on Chrome profiles.
-absl::optional<bool> g_cached_data_saver_setting;
+std::optional<bool> g_cached_data_saver_setting;
 base::TimeTicks g_last_setting_check_time;
 
 bool IsDataSaverEnabledBlockingCall() {
@@ -38,7 +40,7 @@ void OverrideIsDataSaverEnabledForTesting(bool flag) {
 }
 
 void ResetIsDataSaverEnabledForTesting() {
-  g_override_data_saver_for_testing = absl::nullopt;
+  g_override_data_saver_for_testing = std::nullopt;
 }
 
 void FetchDataSaverOSSettingAsynchronously() {

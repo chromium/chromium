@@ -232,7 +232,7 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
 
   std::unique_ptr<optimization_guide::ModelInfo>
   CreateOptimizationGuideModelInfo(
-      absl::optional<proto::SegmentationModelMetadata>
+      std::optional<proto::SegmentationModelMetadata>
           segmentation_model_metadata) {
     auto model_info_builder = optimization_guide::TestModelInfoBuilder();
     if (segmentation_model_metadata.has_value()) {
@@ -240,7 +240,7 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
       segmentation_model_metadata.value().SerializeToString(
           &serialized_metadata);
       optimization_guide::proto::Any any_proto;
-      auto any = absl::make_optional(any_proto);
+      auto any = std::make_optional(any_proto);
       any->set_value(serialized_metadata);
       any->set_type_url(
           "type.googleapis.com/"
@@ -551,7 +551,7 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
  protected:
   ukm::TestUkmRecorder ukm_recorder_;
   UkmDataManagerTestUtils utils_;
-  absl::optional<ModelProvider::Request> input_feature_in_last_execution_;
+  std::optional<ModelProvider::Request> input_feature_in_last_execution_;
 };
 
 // This test is disabled in CrOS because CrOS creates a signin profile that uses

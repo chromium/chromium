@@ -32,9 +32,9 @@ class MediaRouterDesktop;
 class MockMediaRouteProvider : public mojom::MediaRouteProvider {
  public:
   using RouteCallback =
-      base::OnceCallback<void(const absl::optional<MediaRoute>&,
+      base::OnceCallback<void(const std::optional<MediaRoute>&,
                               mojom::RoutePresentationConnectionPtr,
-                              const absl::optional<std::string>&,
+                              const std::optional<std::string>&,
                               mojom::RouteRequestResultCode)>;
 
   MockMediaRouteProvider();
@@ -130,7 +130,7 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
 
  private:
   // The route that is passed into callbacks.
-  absl::optional<MediaRoute> route_;
+  std::optional<MediaRoute> route_;
 };
 
 class MockMediaStatusObserver : public mojom::MediaStatusObserver {

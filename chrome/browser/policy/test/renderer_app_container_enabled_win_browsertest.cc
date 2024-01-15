@@ -36,7 +36,7 @@ namespace policy {
 class RendererAppContainerEnabledTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<
-          /*policy::key::kRendererAppContainerEnabled=*/absl::optional<bool>> {
+          /*policy::key::kRendererAppContainerEnabled=*/std::optional<bool>> {
  public:
   // InProcessBrowserTest implementation:
   void SetUp() override {
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(RendererAppContainerEnabledTest, IsRespected) {
   for (const base::Value& process_value : *process_list) {
     const base::Value::Dict* process = process_value.GetIfDict();
     ASSERT_TRUE(process);
-    absl::optional<double> pid = process->FindDouble("processId");
+    std::optional<double> pid = process->FindDouble("processId");
     ASSERT_TRUE(pid.has_value());
     if (base::checked_cast<base::ProcessId>(pid.value()) != renderer_process_id)
       continue;
@@ -149,6 +149,6 @@ INSTANTIATE_TEST_SUITE_P(
     NotSet,
     RendererAppContainerEnabledTest,
     ::testing::Values(
-        /*policy::key::kRendererAppContainerEnabled=*/absl::nullopt));
+        /*policy::key::kRendererAppContainerEnabled=*/std::nullopt));
 
 }  // namespace policy

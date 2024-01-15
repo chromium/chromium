@@ -5,11 +5,12 @@
 #ifndef CHROME_RENDERER_RENDER_FRAME_FONT_FAMILY_ACCESSOR_H_
 #define CHROME_RENDERER_RENDER_FRAME_FONT_FAMILY_ACCESSOR_H_
 
+#include <optional>
+
 #include "chrome/common/font_prewarmer.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/win/web_font_family_names.h"
 
 namespace content {
@@ -59,7 +60,7 @@ class RenderFrameFontFamilyAccessor
 
   void RunCallback(GetFontFamilyNamesCallback callback);
 
-  absl::optional<blink::WebFontFamilyNames> family_names_;
+  std::optional<blink::WebFontFamilyNames> family_names_;
   GetFontFamilyNamesCallback callback_;
   mojo::AssociatedReceiver<chrome::mojom::RenderFrameFontFamilyAccessor>
       receiver_;

@@ -36,7 +36,7 @@ void FakeDocumentScanAsh::ScanFirstPage(const std::string& scanner_name,
                             scan_data_.value()[0]);
   } else {
     std::move(callback).Run(crosapi::mojom::ScanFailureMode::kDeviceBusy,
-                            absl::nullopt);
+                            std::nullopt);
   }
 }
 
@@ -329,7 +329,7 @@ void FakeDocumentScanAsh::SetGetScannerNamesResponse(
 }
 
 void FakeDocumentScanAsh::SetScanResponse(
-    const absl::optional<std::vector<std::string>>& scan_data) {
+    const std::optional<std::vector<std::string>>& scan_data) {
   if (scan_data.has_value()) {
     DCHECK(!scan_data.value().empty());
   }

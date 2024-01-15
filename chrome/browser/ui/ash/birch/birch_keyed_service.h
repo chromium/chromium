@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_KEYED_SERVICE_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -34,7 +35,7 @@ class BirchKeyedService : public KeyedService,
   void OnFileSuggestionUpdated(FileSuggestionType type) override;
 
   void OnSuggestedFileDataUpdated(
-      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
+      const std::optional<std::vector<FileSuggestData>>& suggest_results);
 
  private:
   void OnFileInfoRetrieved(std::vector<BirchFileItem> file_items);

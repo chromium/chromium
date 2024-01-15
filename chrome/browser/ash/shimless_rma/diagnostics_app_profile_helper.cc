@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/verifier_formats.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
@@ -114,10 +114,10 @@ struct PrepareDiagnosticsAppProfileState {
   scoped_refptr<extensions::CrxInstaller> crx_installer = nullptr;
   // Result.
   raw_ptr<content::BrowserContext> context;
-  absl::optional<std::string> extension_id;
-  absl::optional<web_package::SignedWebBundleId> iwa_id;
-  absl::optional<std::string> name;
-  absl::optional<std::string> permission_message;
+  std::optional<std::string> extension_id;
+  std::optional<web_package::SignedWebBundleId> iwa_id;
+  std::optional<std::string> name;
+  std::optional<std::string> permission_message;
 };
 
 PrepareDiagnosticsAppProfileState::PrepareDiagnosticsAppProfileState() =
@@ -200,7 +200,7 @@ void InstallIsolatedWebApp(
   state->delegate->GetWebAppCommandScheduler(state->context)
       ->InstallIsolatedWebApp(
           url_info, location,
-          /*expected_version=*/absl::nullopt, /*optional_keep_alive=*/nullptr,
+          /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
           /*optional_profile_keep_alive=*/nullptr,
           base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
 }
@@ -253,7 +253,7 @@ void CheckExtensionIsReady(
 
 void OnExtensionInstalled(
     std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
-    const absl::optional<extensions::CrxInstallError>& error) {
+    const std::optional<extensions::CrxInstallError>& error) {
   CHECK(state->context);
   CHECK(state->crx_installer);
 
@@ -287,7 +287,7 @@ void OnExtensionInstalled(
   extensions::PermissionMessages permission_messages =
       extension->permissions_data()->GetPermissionMessages();
   if (permission_messages.empty()) {
-    state->permission_message = absl::nullopt;
+    state->permission_message = std::nullopt;
   } else {
     std::u16string message;
     for (const auto& permission_message : permission_messages) {

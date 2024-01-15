@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FIRST_PARTY_SETS_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
 #define CHROME_BROWSER_FIRST_PARTY_SETS_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -43,7 +43,7 @@ class ScopedMockFirstPartySetsHandler : public content::FirstPartySetsHandler {
   bool IsEnabled() const override;
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
-  absl::optional<net::FirstPartySetEntry> FindEntry(
+  std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
   void GetContextConfigForPolicy(

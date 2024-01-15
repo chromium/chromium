@@ -29,19 +29,19 @@ bool BleV2GattClient::DiscoverServiceAndCharacteristics(
   return false;
 }
 
-absl::optional<api::ble_v2::GattCharacteristic>
+std::optional<api::ble_v2::GattCharacteristic>
 BleV2GattClient::GetCharacteristic(const Uuid& service_uuid,
                                    const Uuid& characteristic_uuid) {
   // TODO(b/311430390): Implement this function.
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> BleV2GattClient::ReadCharacteristic(
+std::optional<std::string> BleV2GattClient::ReadCharacteristic(
     const api::ble_v2::GattCharacteristic& characteristic) {
   // TODO(b/311430390): Implement this function.
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool BleV2GattClient::WriteCharacteristic(

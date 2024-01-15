@@ -157,7 +157,7 @@ bool IsTabletFormFactor() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-absl::optional<bool> HasStylusEnabledTouchscreen() {
+std::optional<bool> HasStylusEnabledTouchscreen() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()
       ->DeviceProperties()
@@ -459,7 +459,7 @@ SynchronizeDecision GetSynchronizeDecision(
 
   // Only install if device has a built-in touch screen with stylus support.
   if (options.disable_if_touchscreen_with_stylus_not_supported) {
-    absl::optional<bool> has_stylus = HasStylusEnabledTouchscreen();
+    std::optional<bool> has_stylus = HasStylusEnabledTouchscreen();
 
     if (!has_stylus.has_value()) {
       return {.type = SynchronizeDecision::kIgnore,

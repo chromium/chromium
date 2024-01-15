@@ -262,18 +262,18 @@ void CheckClientDownloadRequest::LogDeepScanningPrompt(bool did_prompt) const {
   }
 }
 
-absl::optional<enterprise_connectors::AnalysisSettings>
+std::optional<enterprise_connectors::AnalysisSettings>
 CheckClientDownloadRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
   // If the download was destroyed, we can't upload it.
   if (reason == REASON_DOWNLOAD_DESTROYED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If the download already has a scanning response attached, there is no need
   // to try and upload it again.
   if (item_->GetUserData(enterprise_connectors::ScanResult::kKey)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If the download is considered dangerous, don't upload the binary to show
@@ -281,7 +281,7 @@ CheckClientDownloadRequest::ShouldUploadBinary(
   if (reason == REASON_DOWNLOAD_DANGEROUS ||
       reason == REASON_DOWNLOAD_DANGEROUS_HOST ||
       reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto settings = DeepScanningRequest::ShouldUploadBinary(item_);
@@ -291,7 +291,7 @@ CheckClientDownloadRequest::ShouldUploadBinary(
   if (settings && reason == REASON_ALLOWLISTED_URL) {
     settings->tags.erase("malware");
     if (settings->tags.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -310,11 +310,11 @@ void CheckClientDownloadRequest::UploadBinary(
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY, result,
-        std::move(settings), /*password=*/absl::nullopt);
+        std::move(settings), /*password=*/std::nullopt);
   } else {
     service()->UploadForDeepScanning(
         item_, callback_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        result, std::move(settings), /*password=*/absl::nullopt);
+        result, std::move(settings), /*password=*/std::nullopt);
   }
 }
 

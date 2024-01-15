@@ -17,7 +17,7 @@ BluetoothAdapter& BleV2GattServer::GetBlePeripheral() {
   return *bluetooth_adapter_;
 }
 
-absl::optional<api::ble_v2::GattCharacteristic>
+std::optional<api::ble_v2::GattCharacteristic>
 BleV2GattServer::CreateCharacteristic(
     const Uuid& service_uuid,
     const Uuid& characteristic_uuid,
@@ -27,7 +27,7 @@ BleV2GattServer::CreateCharacteristic(
   // a GATT Characteristic and construct a `GattCharacteristic` on the success
   // of creation.
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool BleV2GattServer::UpdateCharacteristic(

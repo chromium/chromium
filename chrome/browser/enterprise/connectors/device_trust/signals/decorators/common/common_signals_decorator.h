@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_COMMON_SIGNALS_DECORATOR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_COMMON_SIGNALS_DECORATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -37,8 +37,8 @@ class CommonSignalsDecorator : public SignalsDecorator {
   // involve expensive operations such as reading from disk. Since these signals
   // are not expected to change throughout the browser's lifetime, they will be
   // cached in this decorator.
-  absl::optional<std::string> cached_device_model_;
-  absl::optional<std::string> cached_device_manufacturer_;
+  std::optional<std::string> cached_device_model_;
+  std::optional<std::string> cached_device_manufacturer_;
 
   base::WeakPtrFactory<CommonSignalsDecorator> weak_ptr_factory_{this};
 };

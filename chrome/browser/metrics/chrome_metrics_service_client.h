@@ -128,8 +128,8 @@ class ChromeMetricsServiceClient
   bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void InitPerUserMetrics() override;
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) override;
-  absl::optional<bool> GetCurrentUserMetricsConsent() const override;
-  absl::optional<std::string> GetCurrentUserId() const override;
+  std::optional<bool> GetCurrentUserMetricsConsent() const override;
+  std::optional<std::string> GetCurrentUserId() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ukm::HistoryDeleteObserver:

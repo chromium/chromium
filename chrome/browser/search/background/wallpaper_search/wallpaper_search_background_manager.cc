@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -47,14 +47,14 @@ void DeleteWallpaperSearchImage(const std::string& id,
       base::GetDeleteFileCallback(path));
 }
 
-absl::optional<HistoryEntry> GetHistoryEntryFromPrefValue(
+std::optional<HistoryEntry> GetHistoryEntryFromPrefValue(
     const base::Value& pref_value) {
   if (pref_value.is_dict()) {
     const base::Value::Dict& pref_dict = pref_value.GetDict();
     const std::string* id_string =
         pref_dict.FindString(kWallpaperSearchHistoryId);
     if (id_string) {
-      absl::optional<base::Token> id = base::Token::FromString(*id_string);
+      std::optional<base::Token> id = base::Token::FromString(*id_string);
       if (id.has_value()) {
         HistoryEntry history_entry = HistoryEntry(*id);
         const std::string* subject_string =
@@ -76,7 +76,7 @@ absl::optional<HistoryEntry> GetHistoryEntryFromPrefValue(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::Value::Dict GetHistoryEntryDict(const HistoryEntry& history_entry) {
@@ -199,7 +199,7 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
     // Do not update theme image unless it is different from the current.
     // Otherwise, we end up deleting the image file as part of the cleanup
     // of the last theme.
-    absl::optional<CustomBackground> current_theme =
+    std::optional<CustomBackground> current_theme =
         ntp_custom_background_service_->GetCustomBackground();
     if (!current_theme.has_value() ||
         !current_theme->local_background_id.has_value() ||
@@ -222,10 +222,10 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
   }
 }
 
-absl::optional<base::Token>
+std::optional<base::Token>
 WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
     const HistoryEntry& history_entry) {
-  absl::optional<CustomBackground> current_theme =
+  std::optional<CustomBackground> current_theme =
       ntp_custom_background_service_->GetCustomBackground();
   if (current_theme.has_value() &&
       current_theme->local_background_id.has_value() &&
@@ -256,7 +256,7 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
                            std::move(new_history));
     return history_entry.id;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(

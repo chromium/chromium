@@ -88,7 +88,7 @@ void SendSafeBrowsingDownloadReport(
       g_browser_process->safe_browsing_service();
   if (sb_service) {
     sb_service->SendDownloadReport(item, report_type, did_proceed,
-                                   /*show_download_in_folder=*/absl::nullopt);
+                                   /*show_download_in_folder=*/std::nullopt);
   }
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)

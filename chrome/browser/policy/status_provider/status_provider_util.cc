@@ -89,7 +89,7 @@ void GetOffHoursStatus(base::Value::Dict* dict) {
 void GetUserManager(base::Value::Dict* dict, Profile* profile) {
   CHECK(profile);
 
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
   if (account_manager) {
     dict->Set(policy::kEnterpriseDomainManagerKey, *account_manager);

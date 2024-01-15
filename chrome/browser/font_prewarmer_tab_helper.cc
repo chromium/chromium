@@ -4,6 +4,7 @@
 
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -32,7 +33,6 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace {

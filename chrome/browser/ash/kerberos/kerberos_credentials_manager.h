@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_H_
 #define CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -120,7 +120,7 @@ class KerberosCredentialsManager : public KeyedService,
   // existing account is updated.
   void AddAccountAndAuthenticate(std::string principal_name,
                                  bool is_managed,
-                                 const absl::optional<std::string>& password,
+                                 const std::optional<std::string>& password,
                                  bool remember_password,
                                  const std::string& krb5_conf,
                                  bool allow_existing,

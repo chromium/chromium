@@ -31,7 +31,7 @@ Status GetCertificatesExecutionWaiter::status() {
   return Get<1>();
 }
 
-absl::optional<bool> IsKeyOnTokenExecutionWaiter::on_slot() {
+std::optional<bool> IsKeyOnTokenExecutionWaiter::on_slot() {
   return Get<0>();
 }
 

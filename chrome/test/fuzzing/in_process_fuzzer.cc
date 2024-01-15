@@ -41,7 +41,7 @@ InProcessFuzzer::GetChromiumCommandLineArguments() {
 }
 
 void InProcessFuzzer::SetUp() {
-  absl::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
+  std::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
   if (options_.run_loop_timeout) {
     scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
   }

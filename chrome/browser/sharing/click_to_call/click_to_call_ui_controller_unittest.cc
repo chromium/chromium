@@ -51,7 +51,7 @@ class ClickToCallUiControllerTest : public testing::Test {
         }));
     ClickToCallUiController::ShowDialog(
         web_contents_.get(),
-        /*initiating_origin=*/absl::nullopt,
+        /*initiating_origin=*/std::nullopt,
         /*initiator_document=*/content::WeakDocumentPtr(),
         GURL(base::StrCat({"tel:", kPhoneNumber})), false, u"TestApp");
     controller_ = ClickToCallUiController::GetOrCreateFromWebContents(

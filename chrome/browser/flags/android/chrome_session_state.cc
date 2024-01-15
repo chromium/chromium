@@ -94,14 +94,14 @@ void RegisterActivityTypePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kLastActivityTypePref, -1);
 }
 
-absl::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
+std::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
     PrefService* local_state) {
   auto value = local_state->GetInteger(kLastActivityTypePref);
   if (value >= static_cast<int>(ActivityType::kTabbed) &&
       value <= static_cast<int>(ActivityType::kMaxValue)) {
     return static_cast<ActivityType>(value);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SaveActivityTypeToLocalState(PrefService* local_state,

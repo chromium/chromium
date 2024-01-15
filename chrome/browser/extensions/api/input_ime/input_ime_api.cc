@@ -115,7 +115,7 @@ void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
 }
 
 ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
-  absl::optional<KeyEventHandled::Params> params =
+  std::optional<KeyEventHandled::Params> params =
       KeyEventHandled::Params::Create(args());
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
@@ -134,7 +134,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  absl::optional<SetComposition::Params> parent_params =
+  std::optional<SetComposition::Params> parent_params =
       SetComposition::Params::Create(args());
   const SetComposition::Params::Parameters& params = parent_params->parameters;
   std::vector<InputMethodEngine::SegmentInfo> segments;
@@ -178,7 +178,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  absl::optional<CommitText::Params> parent_params =
+  std::optional<CommitText::Params> parent_params =
       CommitText::Params::Create(args());
   const CommitText::Params::Parameters& params = parent_params->parameters;
   if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
@@ -198,7 +198,7 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  absl::optional<SendKeyEvents::Params> parent_params =
+  std::optional<SendKeyEvents::Params> parent_params =
       SendKeyEvents::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parent_params);
   const SendKeyEvents::Params::Parameters& params = parent_params->parameters;

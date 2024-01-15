@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -37,7 +38,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -122,7 +122,7 @@ base::Value::Dict ReportingServerConnector::TestEnvironment::request_body(
   CHECK(request.request_body);
   CHECK(request.request_body->elements());
 
-  absl::optional<base::Value> body =
+  std::optional<base::Value> body =
       base::JSONReader::Read(request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()

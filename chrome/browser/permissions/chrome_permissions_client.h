@@ -59,11 +59,11 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void TriggerPromptHatsSurveyIfEnabled(
       content::WebContents* web_contents,
       permissions::RequestType request_type,
-      absl::optional<permissions::PermissionAction> action,
+      std::optional<permissions::PermissionAction> action,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       permissions::PermissionRequestGestureType gesture_type,
-      absl::optional<base::TimeDelta> prompt_display_duration,
+      std::optional<base::TimeDelta> prompt_display_duration,
       bool is_post_prompt,
       const GURL& gurl,
       base::OnceCallback<void()> hats_shown_callback_) override;
@@ -80,19 +80,19 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       permissions::PermissionRequestGestureType gesture_type,
-      absl::optional<QuietUiReason> quiet_ui_reason,
+      std::optional<QuietUiReason> quiet_ui_reason,
       base::TimeDelta prompt_display_duration,
       content::WebContents* web_contents) override;
-  absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
+  std::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
-  absl::optional<bool> HasPreviouslyAutoRevokedPermission(
+  std::optional<bool> HasPreviouslyAutoRevokedPermission(
       content::BrowserContext* browser_context,
       const GURL& origin,
       ContentSettingsType permission) override;
-  absl::optional<url::Origin> GetAutoApprovalOrigin() override;
+  std::optional<url::Origin> GetAutoApprovalOrigin() override;
   bool CanBypassEmbeddingOriginCheck(const GURL& requesting_origin,
                                      const GURL& embedding_origin) override;
-  absl::optional<GURL> OverrideCanonicalOrigin(
+  std::optional<GURL> OverrideCanonicalOrigin(
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
   // Checks if `requesting_origin` and `embedding_origin` are the new tab page

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_
 #define CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_
 
+#include <optional>
+
 #include "components/sync_device_info/device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -35,7 +36,7 @@ namespace internal {
 
 // PaaskInfoFromCBOR parses a CBOR-encoded linking structure from Play Services
 // into the structure used by Sync.
-absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
+std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
     base::span<const uint8_t> cbor);
 
 // CBORFromPaaskInfo does the inverse of `PaaskInfoFromCBOR`.

@@ -71,13 +71,13 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     Callback callback,
     bool user_exists,
     std::unique_ptr<ash::UserContext> user_context,
-    absl::optional<ash::AuthenticationError> error) {
+    std::optional<ash::AuthenticationError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(user_exists);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to start auth session, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(absl::nullopt, *error);
+    std::move(callback).Run(std::nullopt, *error);
     return;
   }
 
@@ -87,8 +87,8 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
   if (!password_factor) {
     LOG(ERROR) << "Could not find password key";
     std::move(callback).Run(
-        absl::nullopt, ash::AuthenticationError(
-                           user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
+        std::nullopt, ash::AuthenticationError(
+                          user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
     return;
   }
 
@@ -104,12 +104,12 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
 void QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated(
     Callback callback,
     std::unique_ptr<ash::UserContext> user_context,
-    absl::optional<ash::AuthenticationError> error) {
+    std::optional<ash::AuthenticationError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to authenticate with password, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(absl::nullopt, *error);
+    std::move(callback).Run(std::nullopt, *error);
     return;
   }
 
@@ -124,12 +124,12 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated(
 void QuickUnlockPrivateGetAuthTokenHelper::OnAuthFactorsConfiguration(
     Callback callback,
     std::unique_ptr<ash::UserContext> user_context,
-    absl::optional<ash::AuthenticationError> error) {
+    std::optional<ash::AuthenticationError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to load auth factors configuration, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(absl::nullopt, *error);
+    std::move(callback).Run(std::nullopt, *error);
     return;
   }
 
@@ -155,7 +155,7 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthFactorsConfiguration(
   token_info.lifetime_seconds =
       cryptohome::kAuthsessionInitialLifetime.InSeconds();
 
-  std::move(callback).Run(std::move(token_info), absl::nullopt);
+  std::move(callback).Run(std::move(token_info), std::nullopt);
 }
 
 }  // namespace extensions

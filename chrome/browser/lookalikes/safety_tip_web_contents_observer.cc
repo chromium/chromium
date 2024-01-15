@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,7 +21,6 @@
 #include "content/public/common/page_visibility_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -96,7 +96,7 @@ void RecordPostFlagCheckHistogram(security_state::SafetyTipStatus status) {
 // Records a histogram that embeds the safety tip status along with whether the
 // navigation was initiated cross- or same-origin.
 void RecordSafetyTipStatusWithInitiatorOriginInfo(
-    const absl::optional<url::Origin>& committed_initiator_origin,
+    const std::optional<url::Origin>& committed_initiator_origin,
     const GURL& committed_url,
     const GURL& current_url,
     security_state::SafetyTipStatus status) {

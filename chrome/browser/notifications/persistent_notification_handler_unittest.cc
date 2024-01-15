@@ -118,7 +118,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
       std::make_unique<PersistentNotificationHandler>();
 
   handler->OnClick(&profile_, origin_, kExampleNotificationId,
-                   absl::nullopt /* action_index */, absl::nullopt /* reply */,
+                   std::nullopt /* action_index */, std::nullopt /* reply */,
                    base::DoNothing());
 }
 
@@ -152,7 +152,7 @@ TEST_F(PersistentNotificationHandlerTest,
 
     display_service_tester_.SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, kExampleNotificationId,
-        absl::nullopt /* action_index */, absl::nullopt /* reply */);
+        std::nullopt /* action_index */, std::nullopt /* reply */);
   }
 
   EXPECT_FALSE(display_service_tester_.GetNotification(kExampleNotificationId));

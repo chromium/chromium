@@ -85,7 +85,7 @@ bool TryOpenUrl(const GURL& url,
 
   // Handle capturing system apps directly, as otherwise an additional empty
   // browser window could be created.
-  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
+  const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(profile, url);
   if (capturing_system_app_type) {
     ash::SystemAppLaunchParams swa_params;

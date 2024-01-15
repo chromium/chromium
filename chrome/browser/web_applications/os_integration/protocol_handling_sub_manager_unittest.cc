@@ -580,8 +580,8 @@ TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
             std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
   }
 
-  absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
-      scoped_supress = absl::nullopt;
+  std::optional<OsIntegrationManager::ScopedSuppressForTesting> scoped_supress =
+      std::nullopt;
   scoped_supress.emplace();
   test::UninstallAllWebApps(profile());
   // Protocol Handlers should still be registered with the OS, even though the

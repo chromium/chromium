@@ -26,7 +26,7 @@ namespace policy {
 class NetworkServiceSandboxEnabledTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<
-          /*policy::key::kNetworkServiceSandboxEnabled=*/absl::optional<bool>> {
+          /*policy::key::kNetworkServiceSandboxEnabled=*/std::optional<bool>> {
  public:
   // InProcessBrowserTest implementation:
   void SetUp() override {
@@ -80,6 +80,6 @@ INSTANTIATE_TEST_SUITE_P(
     NotSet,
     NetworkServiceSandboxEnabledTest,
     ::testing::Values(
-        /*policy::key::kNetworkServiceSandboxEnabled=*/absl::nullopt));
+        /*policy::key::kNetworkServiceSandboxEnabled=*/std::nullopt));
 
 }  // namespace policy

@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
+
 #include <unistd.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_network_context.h"
-#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/services/wilco_dtc_supportd/public/mojom/wilco_dtc_supportd.mojom.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -25,7 +28,6 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::StrictMock;
 
@@ -129,7 +131,7 @@ class FakeMojoWilcoDtcSupportdServiceFactory final
       chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
       self_receiver_{this};
 
-  absl::optional<PendingGetServiceCall> pending_get_service_call_;
+  std::optional<PendingGetServiceCall> pending_get_service_call_;
 };
 
 // Fake implementation of the WilcoDtcSupportdBridge delegate that simulates
@@ -294,7 +296,7 @@ TEST_F(WilcoDtcSupportdBridgeTest, SuccessfulBootstrap) {
   // GetService Mojo call on the WilcoDtcSupportdServiceFactory interface.
   wilco_dtc_supportd_dbus_client()->SetBootstrapMojoConnectionResult(true);
   wilco_dtc_supportd_dbus_client()->SetBootstrapMojoConnectionResult(
-      absl::nullopt);
+      std::nullopt);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(is_mojo_factory_get_service_call_in_flight());
 
@@ -339,7 +341,7 @@ TEST_F(WilcoDtcSupportdBridgeTest, DBusBootstrapMojoConnectionError) {
                      ->bootstrap_mojo_connection_in_flight_call_count());
     wilco_dtc_supportd_dbus_client()->SetBootstrapMojoConnectionResult(false);
     wilco_dtc_supportd_dbus_client()->SetBootstrapMojoConnectionResult(
-        absl::nullopt);
+        std::nullopt);
     task_environment_.RunUntilIdle();
 
     // Verify that no new BootstrapMojoConnection call is made immediately after

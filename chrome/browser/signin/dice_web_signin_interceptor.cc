@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -77,7 +78,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -206,14 +206,14 @@ bool IsRequiredExtendedAccountInfoAvailable(const AccountInfo& account_info) {
 // Returns true if enterprise separation is required.
 // Returns false is enterprise separation is not required.
 // Returns no value if info is required to determine if enterprise separation
-// is required. If `profile_separation_policies` is `absl::nullopt` then the
+// is required. If `profile_separation_policies` is `std::nullopt` then the
 // user cloud profile separation policies have not yet been fetched.
-absl::optional<bool> EnterpriseSeparationMaybeRequired(
+std::optional<bool> EnterpriseSeparationMaybeRequired(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     const std::string& email,
     bool is_new_account_interception,
-    const absl::optional<policy::ProfileSeparationPolicies>&
+    const std::optional<policy::ProfileSeparationPolicies>&
         intercepted_profile_separation_policies,
     bool expects_intercepted_profile_separation_policies_for_testing) {
   CoreAccountInfo primary_core_account_info =
@@ -240,7 +240,7 @@ absl::optional<bool> EnterpriseSeparationMaybeRequired(
   // If the account info is not found, we need to wait for the info to be
   // available.
   if (!IsRequiredExtendedAccountInfoAvailable(intercepted_account_info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // If the intercepted account is not managed, no interception required.
   if (!intercepted_account_info.IsManaged()) {
@@ -274,7 +274,7 @@ absl::optional<bool> EnterpriseSeparationMaybeRequired(
       !intercepted_profile_separation_policies.has_value() &&
       (g_browser_process->system_network_context_manager() ||
        expects_intercepted_profile_separation_policies_for_testing)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return false;
@@ -328,7 +328,7 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kChromeSigninInterceptionShownCountPref);
 }
 
-absl::optional<SigninInterceptionHeuristicOutcome>
+std::optional<SigninInterceptionHeuristicOutcome>
 DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_new_account,
     bool is_sync_signin,
@@ -348,16 +348,16 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   auto enforce_enterprise_separation = EnterpriseSeparationMaybeRequired(
       profile_, identity_manager_, email, is_new_account,
-      /*intercepted_profile_separation_policies=*/absl::nullopt,
+      /*intercepted_profile_separation_policies=*/std::nullopt,
       /*expects_intercepted_profile_separation_policies_for_testing=*/
       intercepted_account_profile_separation_policies_response_for_testing_
           .has_value());
 
   // If we do not have all the information to enforce or not enterprise profile
-  // separation, return `absl::nullopt` so that we can try and get more info on
+  // separation, return `std::nullopt` so that we can try and get more info on
   // the intercepted account.
   if (!enforce_enterprise_separation) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!enforce_enterprise_separation.value()) {
@@ -412,7 +412,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     if (should_show_chrome_signin_bubble ==
         ShouldShowChromeSigninBubbleWithReason::
             kShouldNotShowUnknownAccessPoint) {
-      return absl::nullopt;
+      return std::nullopt;
     } else if (should_show_chrome_signin_bubble ==
                ShouldShowChromeSigninBubbleWithReason::kShouldShow) {
       return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
@@ -444,7 +444,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
         kAbortUserDeclinedProfileForAccount;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
@@ -508,7 +508,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   DCHECK(!account_info.IsEmpty()) << "Intercepting unknown account.";
   const ProfileAttributesEntry* entry = nullptr;
-  absl::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
+  std::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
                           /*record_signin_metrics=*/true, &entry);
   state_->account_id_ = account_id;
@@ -779,8 +779,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   DCHECK_EQ(info.account_id, state_->account_id_);
   DCHECK(IsRequiredExtendedAccountInfoAvailable(info));
 
-  absl::optional<WebSigninInterceptor::SigninInterceptionType>
-      interception_type;
+  std::optional<WebSigninInterceptor::SigninInterceptionType> interception_type;
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -1002,7 +1001,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
           base::BindOnce(
               &DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
               base::Unretained(this),
-              absl::optional<ProfilePresets>(std::move(profile_presets))));
+              std::optional<ProfilePresets>(std::move(profile_presets))));
 }
 
 void DiceWebSigninInterceptor::OnChromeSigninChoice(
@@ -1054,11 +1053,11 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, state_->account_id_, profile_path,
           base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
-                         base::Unretained(this), absl::nullopt));
+                         base::Unretained(this), std::nullopt));
 }
 
 void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
-    absl::optional<ProfilePresets> profile_presets,
+    std::optional<ProfilePresets> profile_presets,
     Profile* new_profile) {
   DCHECK(state_->dice_signed_in_profile_creator_);
   state_->dice_signed_in_profile_creator_.reset();
@@ -1206,7 +1205,7 @@ void DiceWebSigninInterceptor::IncrementEmailToCountDictionaryPref(
   // a single pref where the email hash maps to multiple values.
   ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_name);
   std::string key = GetPersistentEmailHash(email);
-  absl::optional<int> declined_count = update->FindInt(key);
+  std::optional<int> declined_count = update->FindInt(key);
 
   update->Set(key, declined_count.value_or(0) + 1);
 }
@@ -1217,7 +1216,7 @@ void DiceWebSigninInterceptor::
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               kChromeSigninInterceptionDeclinedPref);
   std::string key = GetPersistentEmailHash(email);
-  absl::optional<int> declined_count = update->FindInt(key);
+  std::optional<int> declined_count = update->FindInt(key);
 
   base::UmaHistogramCounts100(
       "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept",
@@ -1231,7 +1230,7 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
     const std::string& email) const {
   const base::Value::Dict& pref_data =
       profile_->GetPrefs()->GetDict(kProfileCreationInterceptionDeclinedPref);
-  absl::optional<int> declined_count =
+  std::optional<int> declined_count =
       pref_data.FindInt(GetPersistentEmailHash(email));
   // Check if the user declined 2 times.
   constexpr int kMaxProfileCreationDeclinedCount = 2;
@@ -1243,7 +1242,7 @@ size_t DiceWebSigninInterceptor::GetChromeSigninBubbleShownCount(
     const std::string& email) const {
   const base::Value::Dict& pref_data =
       profile_->GetPrefs()->GetDict(kChromeSigninInterceptionShownCountPref);
-  absl::optional<int> bubble_shown_count =
+  std::optional<int> bubble_shown_count =
       pref_data.FindInt(GetPersistentEmailHash(email));
 
   return bubble_shown_count.value_or(0);

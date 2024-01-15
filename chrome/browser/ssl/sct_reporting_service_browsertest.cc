@@ -143,7 +143,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   }
   ~SCTReportingServiceBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 
   SCTReportingServiceBrowserTest(const SCTReportingServiceBrowserTest&) =
@@ -234,7 +234,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   void TearDownOnMainThread() override {
     // Reset the retry delay override.
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test_->SetSCTAuditingRetryDelay(absl::nullopt);
+    network_service_test_->SetSCTAuditingRetryDelay(std::nullopt);
 
     CertVerifierBrowserTest::TearDownOnMainThread();
   }

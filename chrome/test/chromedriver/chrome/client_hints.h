@@ -48,12 +48,12 @@ struct ClientHints {
   // Servier and client code can figure out the browser brand and version using
   // this hint.
   // We prefer defaulting to the browser provided value.
-  absl::optional<std::vector<BrandVersion>> brands;
+  std::optional<std::vector<BrandVersion>> brands;
   // Optional high entropy "full version" client hint.
   // Maps to Sec-CH-UA-Full-Version-List header value
   // Available via navigator.userAgentData.getHighEntropyData() JS call.
   // We prefer defaulting to the browser provided value.
-  absl::optional<std::vector<BrandVersion>> full_version_list;
+  std::optional<std::vector<BrandVersion>> full_version_list;
   // Mandatory "platform" client hint.
   // Maps to Sec-CH-UA-Platform header value.
   // Maps to navigator.userAgentData.platform JS value.

@@ -280,7 +280,7 @@ TEST_F(RealtimeReportingClientTestBase,
        TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
   base::Value::Dict event;
   device_signals::SignalsAggregationResponse response;
-  response.agent_signals_response = absl::nullopt;
+  response.agent_signals_response = std::nullopt;
   AddCrowdstrikeSignalsToEvent(event, response);
   EXPECT_EQ(event.Find("securityAgents"), nullptr);
 }

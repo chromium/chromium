@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -40,7 +41,6 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -111,7 +111,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   app->SetUserLaunchOrdinal(
       syncer::StringOrdinal(sync_data.user_launch_ordinal()));
 
-  absl::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
+  std::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
       ParseSyncFallbackDataStruct(sync_data);
   if (!parsed_sync_fallback_data.has_value()) {
     // ParseSyncFallbackDataStruct() reports any errors.
@@ -230,7 +230,7 @@ void WebAppSyncBridge::SetAppIsDisabled(AppLock& lock,
       return;
     }
 
-    absl::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
+    std::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
     DCHECK(cros_data.has_value());
 
     if (cros_data->is_disabled != is_disabled) {
@@ -720,7 +720,7 @@ WebAppSyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   CHECK(change_processor()->IsTrackingMetadata());
@@ -748,11 +748,10 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
     on_sync_connected_.Signal();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
-WebAppSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<syncer::ModelError> WebAppSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   // `change_processor()->IsTrackingMetadata()` may be false if the sync
@@ -778,7 +777,7 @@ WebAppSyncBridge::ApplyIncrementalSyncChanges(
     on_sync_connected_.Signal();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WebAppSyncBridge::GetData(StorageKeyList storage_keys,

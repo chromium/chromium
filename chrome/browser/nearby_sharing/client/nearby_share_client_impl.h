@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_CLIENT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -88,8 +88,8 @@ class NearbyShareClientImpl : public NearbyShareClient {
   void MakeApiCall(
       const GURL& request_url,
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)>&& response_callback,
       ErrorCallback&& error_callback,
@@ -100,8 +100,8 @@ class NearbyShareClientImpl : public NearbyShareClient {
   template <class ResponseProto>
   void OnAccessTokenFetched(
       RequestType request_type,
-      const absl::optional<std::string>& serialized_request,
-      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
+      const std::optional<std::string>& serialized_request,
+      const std::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)>&& response_callback,
       GoogleServiceAuthError error,

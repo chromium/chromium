@@ -46,7 +46,7 @@ const char kContentCodingAes128Gcm[] = "aes128gcm";
 // Other constants.
 const char kContentEncodingOctetStream[] = "application/octet-stream";
 
-absl::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
+std::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
   base::Value::Dict claims;
   claims.Set(kClaimsKeyAudience, base::Value(kFCMServerAudience));
 
@@ -55,17 +55,17 @@ absl::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
           .InSeconds();
   // TODO: Year 2038 problem, base::Value does not support int64_t.
   if (exp > INT_MAX)
-    return absl::nullopt;
+    return std::nullopt;
 
   claims.Set(kClaimsKeyExpirationTime, base::Value(static_cast<int32_t>(exp)));
 
-  absl::optional<std::string> jwt = CreateJSONWebToken(claims, vapid_key);
+  std::optional<std::string> jwt = CreateJSONWebToken(claims, vapid_key);
   if (!jwt)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string public_key;
   if (!gcm::GetRawPublicKey(*vapid_key, &public_key))
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string base64_public_key;
   base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
@@ -152,7 +152,7 @@ void WebPushSender::SendMessage(const std::string& fcm_token,
   DCHECK(vapid_key);
   DCHECK_LE(message.time_to_live, message.kMaximumTTL);
 
-  absl::optional<std::string> auth_header = GetAuthHeader(vapid_key);
+  std::optional<std::string> auth_header = GetAuthHeader(vapid_key);
   if (!auth_header) {
     DLOG(ERROR) << "Failed to create JWT";
     InvokeWebPushCallback(std::move(callback),

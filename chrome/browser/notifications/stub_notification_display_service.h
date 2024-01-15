@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPLAY_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/common/notifications/notification_operation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace content {
@@ -38,9 +38,9 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       NotificationHandler::Type notification_type,
       const GURL& origin,
       const std::string& notification_id,
-      const absl::optional<int>& action_index,
-      const absl::optional<std::u16string>& reply,
-      const absl::optional<bool>& by_user)>
+      const std::optional<int>& action_index,
+      const std::optional<std::u16string>& reply,
+      const std::optional<bool>& by_user)>
       ProcessNotificationOperationCallback;
 
   explicit StubNotificationDisplayService(Profile* profile);
@@ -60,7 +60,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   std::vector<message_center::Notification> GetDisplayedNotificationsForType(
       NotificationHandler::Type type) const;
 
-  absl::optional<message_center::Notification> GetNotification(
+  std::optional<message_center::Notification> GetNotification(
       const std::string& notification_id);
 
   const NotificationCommon::Metadata* GetMetadataForNotification(
@@ -70,8 +70,8 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   // on, optionally with the given |action_index| and |reply|.
   void SimulateClick(NotificationHandler::Type notification_type,
                      const std::string& notification_id,
-                     absl::optional<int> action_index,
-                     absl::optional<std::u16string> reply);
+                     std::optional<int> action_index,
+                     std::optional<std::u16string> reply);
 
   // Simulates a click on the settings button of the notification identified by
   // |notification_id|.
@@ -110,9 +110,9 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       NotificationHandler::Type notification_type,
       const GURL& origin,
       const std::string& notification_id,
-      const absl::optional<int>& action_index,
-      const absl::optional<std::u16string>& reply,
-      const absl::optional<bool>& by_user) override;
+      const std::optional<int>& action_index,
+      const std::optional<std::u16string>& reply,
+      const std::optional<bool>& by_user) override;
 
  private:
   // Data to store for a notification that's being shown through this service.

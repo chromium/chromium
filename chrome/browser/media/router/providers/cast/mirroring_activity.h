@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_MIRRORING_ACTIVITY_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_MIRRORING_ACTIVITY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace media_router {
@@ -208,15 +208,15 @@ class MirroringActivity : public CastActivity,
   // Info for mirroring state transitions like pause / resume.
   mojom::MediaStatusPtr media_status_;
   int mirroring_pause_count_ = 0;
-  absl::optional<base::Time> mirroring_pause_timestamp_;
+  std::optional<base::Time> mirroring_pause_timestamp_;
 
   // Set before and after a mirroring session is established, for metrics.
-  absl::optional<base::Time> will_start_mirroring_timestamp_;
-  absl::optional<base::Time> did_start_mirroring_timestamp_;
+  std::optional<base::Time> will_start_mirroring_timestamp_;
+  std::optional<base::Time> did_start_mirroring_timestamp_;
 
-  const absl::optional<MirroringType> mirroring_type_;
+  const std::optional<MirroringType> mirroring_type_;
 
-  absl::optional<base::TimeDelta> target_playout_delay_;
+  std::optional<base::TimeDelta> target_playout_delay_;
 
   // The FrameTreeNode ID to retrieve the WebContents of the tab to mirror.
   int frame_tree_node_id_;

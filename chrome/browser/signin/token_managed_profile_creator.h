@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_TOKEN_MANAGED_PROFILE_CREATOR_H_
 #define CHROME_BROWSER_SIGNIN_TOKEN_MANAGED_PROFILE_CREATOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin_util {
 class CookiesMover;

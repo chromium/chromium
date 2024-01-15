@@ -92,7 +92,7 @@ constexpr char kOriginTrialPublicKeyForTesting[] =
 
 std::string CreateFetchScript(
     const GURL& resource,
-    absl::optional<base::Value::Dict> request_init = absl::nullopt) {
+    std::optional<base::Value::Dict> request_init = std::nullopt) {
   const char kFetchScriptTemplate[] = R"(
     fetch($1, $2)
       .then(response => response.text())
@@ -107,7 +107,7 @@ std::string CreateFetchScript(
 std::string PopString(content::DOMMessageQueue* message_queue) {
   std::string json;
   EXPECT_TRUE(message_queue->WaitForMessage(&json));
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
   EXPECT_TRUE(value->is_string());
   return value->GetString();

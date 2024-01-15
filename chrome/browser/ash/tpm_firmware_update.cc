@@ -42,12 +42,12 @@ std::set<Mode> GetModesFromSetting(const base::Value* settings) {
     return modes;
 
   const base::Value::Dict& settings_dict = settings->GetDict();
-  absl::optional<bool> allow_powerwash =
+  std::optional<bool> allow_powerwash =
       settings_dict.FindBool(kSettingsKeyAllowPowerwash);
   if (allow_powerwash && *allow_powerwash) {
     modes.insert(Mode::kPowerwash);
   }
-  absl::optional<bool> allow_preserve_device_state =
+  std::optional<bool> allow_preserve_device_state =
       settings_dict.FindBool(kSettingsKeyAllowPreserveDeviceState);
   if (allow_preserve_device_state && *allow_preserve_device_state) {
     modes.insert(Mode::kPreserveDeviceState);

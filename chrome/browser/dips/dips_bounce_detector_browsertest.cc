@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   observer.Wait();
 
   // Verify interaction was recorded for d.test, before proceeding.
-  absl::optional<StateValue> state =
+  std::optional<StateValue> state =
       GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->user_interaction_times.has_value());
@@ -2535,7 +2535,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify web authn assertion was recorded for `authn_hostname`, before
   // proceeding.
-  absl::optional<StateValue> state =
+  std::optional<StateValue> state =
       GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_FALSE(state->user_interaction_times.has_value());

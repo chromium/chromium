@@ -91,7 +91,7 @@ HatsServiceDesktop::DelayedSurveyTask::DelayedSurveyTask(
     NavigationBehaviour navigation_behaviour,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    absl::optional<std::string_view> supplied_trigger_id)
+    std::optional<std::string_view> supplied_trigger_id)
     : hats_service_(hats_service),
       trigger_(trigger),
       product_specific_bits_data_(product_specific_bits_data),
@@ -189,7 +189,7 @@ void HatsServiceDesktop::LaunchSurveyForWebContents(
     const SurveyStringData& product_specific_string_data,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const absl::optional<std::string_view>& supplied_trigger_id) {
+    const std::optional<std::string_view>& supplied_trigger_id) {
   if (ShouldShowSurvey(trigger) && web_contents &&
       web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     LaunchSurveyForBrowser(chrome::FindBrowserWithTab(web_contents), trigger,
@@ -223,7 +223,7 @@ bool HatsServiceDesktop::LaunchDelayedSurveyForWebContents(
     NavigationBehaviour navigation_behaviour,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const absl::optional<std::string_view>& supplied_trigger_id) {
+    const std::optional<std::string_view>& supplied_trigger_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (survey_configs_by_triggers_.find(trigger) ==
       survey_configs_by_triggers_.end()) {
@@ -561,7 +561,7 @@ void HatsServiceDesktop::LaunchSurveyForBrowser(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    const absl::optional<std::string_view>& supplied_trigger_id) {
+    const std::optional<std::string_view>& supplied_trigger_id) {
   if (!browser ||
       (!browser->is_type_normal() && !browser->is_type_devtools()) ||
       !profiles::IsRegularOrGuestSession(browser)) {
@@ -599,7 +599,7 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data,
-    const absl::optional<std::string_view>& supplied_trigger_id) {
+    const std::optional<std::string_view>& supplied_trigger_id) {
   // Check the survey status in profile first.
   // We record the survey's over capacity information in user profile to avoid
   // duplicated checks since the survey won't change once it is full.

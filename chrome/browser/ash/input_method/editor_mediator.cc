@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/input_method/editor_text_query_provider_for_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -152,8 +152,8 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
-  HandleTrigger(/*preset_query_id=*/absl::nullopt,
-                /*freeform_text=*/absl::nullopt);
+  HandleTrigger(/*preset_query_id=*/std::nullopt,
+                /*freeform_text=*/std::nullopt);
 }
 
 void EditorMediator::ShowUI() {
@@ -173,8 +173,8 @@ void EditorMediator::OnPromoCardDeclined() {
 }
 
 void EditorMediator::HandleTrigger(
-    absl::optional<std::string_view> preset_query_id,
-    absl::optional<std::string_view> freeform_text) {
+    std::optional<std::string_view> preset_query_id,
+    std::optional<std::string_view> freeform_text) {
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,

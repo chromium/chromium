@@ -48,7 +48,7 @@ class UserDelegateImplTest : public testing::Test {
  protected:
   void CreateDelegate(
       bool is_managed_user = true,
-      absl::optional<base::FilePath> profile_path = absl::nullopt) {
+      std::optional<base::FilePath> profile_path = std::nullopt) {
     TestingProfile::Builder builder;
     builder.OverridePolicyConnectorIsManagedForTesting(is_managed_user);
 

@@ -71,7 +71,7 @@ class PermissionContextBasePermissionsPolicyTest
           feature,
           std::vector({*blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin)))}),
-          /*self_if_matches=*/absl::nullopt,
+          /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }
@@ -100,7 +100,7 @@ class PermissionContextBasePermissionsPolicyTest
               url::Origin::Create(GURL(origin))));
     }
     navigation->SetPermissionsPolicyHeader(
-        {{feature, parsed_origins, /*self_if_matches=*/absl::nullopt,
+        {{feature, parsed_origins, /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false}});
     navigation->Commit();

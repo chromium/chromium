@@ -1392,7 +1392,7 @@ TEST_F(ShellUtilRegistryTest, ToAndFromCommandLineArgument) {
   EXPECT_EQ(L"mailto:app_progid2,web+test:app_progid1", command_line);
 
   // Ensure the above command line arguments parse correctly.
-  absl::optional<ShellUtil::ProtocolAssociations> parsed_protocol_associations =
+  std::optional<ShellUtil::ProtocolAssociations> parsed_protocol_associations =
       ShellUtil::ProtocolAssociations::FromCommandLineArgument(command_line);
   ASSERT_TRUE(parsed_protocol_associations.has_value());
   EXPECT_EQ(protocol_associations.associations,

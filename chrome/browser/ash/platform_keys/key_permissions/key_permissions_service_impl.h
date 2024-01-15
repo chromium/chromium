@@ -67,7 +67,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
       std::vector<uint8_t> public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,
       const std::vector<chromeos::platform_keys::TokenId>& key_locations,
-      absl::optional<bool> corporate_key,
+      std::optional<bool> corporate_key,
       chromeos::platform_keys::Status status);
 
   void IsCorporateKeyWithLocations(
@@ -76,7 +76,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
       const std::vector<chromeos::platform_keys::TokenId>& key_locations,
       chromeos::platform_keys::Status key_locations_retrieval_status);
   void IsCorporateKeyWithKpmResponse(IsCorporateKeyCallback callback,
-                                     absl::optional<bool> allowed,
+                                     std::optional<bool> allowed,
                                      chromeos::platform_keys::Status status);
 
   void SetCorporateKeyWithLocations(

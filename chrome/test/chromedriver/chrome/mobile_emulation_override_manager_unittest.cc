@@ -22,9 +22,9 @@ const int mock_chrome_version = 115;
 void AssertDeviceMetricsCommand(const Command& command,
                                 const DeviceMetrics& device_metrics) {
   ASSERT_EQ("Emulation.setDeviceMetricsOverride", command.method);
-  absl::optional<int> width = command.params.FindInt("width");
+  std::optional<int> width = command.params.FindInt("width");
 
-  absl::optional<int> height = command.params.FindInt("height");
+  std::optional<int> height = command.params.FindInt("height");
   ASSERT_TRUE(width);
   ASSERT_TRUE(height);
   ASSERT_THAT(command.params.FindBool("mobile"),
@@ -36,7 +36,7 @@ void AssertDeviceMetricsCommand(const Command& command,
 }
 
 void AssertBrandsAndVersions(
-    absl::optional<std::vector<BrandVersion>> expected_list,
+    std::optional<std::vector<BrandVersion>> expected_list,
     const base::Value::List* actual_list) {
   // Testing expected_list.has_value <=> actual_list != nullptr by parts:
   // Testing that expected_list.has_value => actual_list != nullptr

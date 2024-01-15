@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {
 
@@ -145,12 +145,12 @@ mojom::ConnectionResponseFramePtr GetConnectionResponseFrame(
 
 mojom::PairedKeyEncryptionFramePtr GetPairedKeyEncryptionFrame(
     const sharing::nearby::PairedKeyEncryptionFrame& proto_frame) {
-  absl::optional<std::vector<uint8_t>> optional_signed_data =
+  std::optional<std::vector<uint8_t>> optional_signed_data =
       proto_frame.has_optional_signed_data()
-          ? absl::make_optional<std::vector<uint8_t>>(
+          ? std::make_optional<std::vector<uint8_t>>(
                 proto_frame.optional_signed_data().begin(),
                 proto_frame.optional_signed_data().end())
-          : absl::nullopt;
+          : std::nullopt;
 
   return mojom::PairedKeyEncryptionFrame::New(
       std::vector<uint8_t>(proto_frame.signed_data().begin(),

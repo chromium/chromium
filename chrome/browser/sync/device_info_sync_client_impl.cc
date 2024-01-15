@@ -66,21 +66,21 @@ bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
 }
 
 // syncer::DeviceInfoSyncClient:
-absl::optional<syncer::DeviceInfo::SharingInfo>
+std::optional<syncer::DeviceInfo::SharingInfo>
 DeviceInfoSyncClientImpl::GetLocalSharingInfo() const {
   return SharingSyncPreference::GetLocalSharingInfoForSync(
       profile_->GetPrefs());
 }
 
 // syncer::DeviceInfoSyncClient:
-absl::optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
+std::optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
     const {
   return SyncInvalidationsServiceFactory::GetForProfile(profile_)
       ->GetFCMRegistrationToken();
 }
 
 // syncer::DeviceInfoSyncClient:
-absl::optional<syncer::ModelTypeSet>
+std::optional<syncer::ModelTypeSet>
 DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
   return SyncInvalidationsServiceFactory::GetForProfile(profile_)
       ->GetInterestedDataTypes();

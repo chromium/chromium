@@ -58,7 +58,7 @@ class SiteDataCountingHelperTest : public testing::Test {
               url, "name", "A=1", url.host(), url.path(), creation_time,
               base::Time(), creation_time, url.SchemeIsCryptographic(), false,
               net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-              absl::nullopt);
+              std::nullopt);
       net::CookieOptions options;
       options.set_include_httponly();
       cookie_manager->SetCanonicalCookie(
@@ -89,7 +89,7 @@ class SiteDataCountingHelperTest : public testing::Test {
 
       bool success = false;
       base::RunLoop put_run_loop;
-      area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
+      area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt,
                 "source", base::BindLambdaForTesting([&](bool success_in) {
                   success = success_in;
                   put_run_loop.Quit();

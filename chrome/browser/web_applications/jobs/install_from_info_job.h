@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_INSTALL_FROM_INFO_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -50,7 +50,7 @@ class InstallFromInfoJob {
                      std::unique_ptr<WebAppInstallInfo> install_info,
                      bool overwrite_existing_manifest_fields,
                      webapps::WebappInstallSource install_surface,
-                     absl::optional<WebAppInstallParams> install_params,
+                     std::optional<WebAppInstallParams> install_params,
                      ResultCallback install_callback);
 
   ~InstallFromInfoJob();
@@ -68,7 +68,7 @@ class InstallFromInfoJob {
   const webapps::AppId app_id_;
   const bool overwrite_existing_manifest_fields_;
   const webapps::WebappInstallSource install_surface_;
-  const absl::optional<WebAppInstallParams> install_params_;
+  const std::optional<WebAppInstallParams> install_params_;
 
   raw_ptr<WithAppResources> lock_with_app_resources_ = nullptr;
 

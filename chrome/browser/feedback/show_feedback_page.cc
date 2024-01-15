@@ -184,7 +184,7 @@ void OnLacrosActiveTabUrlFetched(
     const std::string& extra_diagnostics,
     base::Value::Dict autofill_metadata,
     base::Value::Dict ai_metadata,
-    const absl::optional<GURL>& active_tab_url) {
+    const std::optional<GURL>& active_tab_url) {
   GURL page_url;
   if (active_tab_url)
     page_url = *active_tab_url;

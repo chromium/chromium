@@ -191,7 +191,7 @@ void DlpAsh::OnScreenShareStopped(const std::string& label,
   dlp_content_manager->OnScreenShareStopped(label, media_id);
 }
 
-void DlpAsh::ShowBlockedFiles(absl::optional<uint64_t> task_id,
+void DlpAsh::ShowBlockedFiles(std::optional<uint64_t> task_id,
                               const std::vector<base::FilePath>& blocked_files,
                               mojom::FileAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

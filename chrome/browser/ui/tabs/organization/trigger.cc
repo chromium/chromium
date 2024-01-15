@@ -29,7 +29,7 @@ float ScoringFunction(float sensitivity_threshold, TabStripModel* const model) {
   for (int i = 0; i < model->count(); i++) {
     const TabData tab = TabData(model, model->GetWebContentsAt(i));
     if (service) {
-      const absl::optional<float> score =
+      const std::optional<float> score =
           service->tab_sensitivity_cache()->GetScore(tab.original_url());
       if (score && score.value() > sensitivity_threshold) {
         continue;

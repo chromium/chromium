@@ -54,7 +54,7 @@ void WritePredictionToConsoleLog(
 
 NavigationPredictorKeyedService::Prediction::Prediction(
     content::WebContents* web_contents,
-    const absl::optional<GURL>& source_document_url,
+    const std::optional<GURL>& source_document_url,
     PredictionSource prediction_source,
     const std::vector<GURL>& sorted_predicted_urls)
     : web_contents_(web_contents),
@@ -98,7 +98,7 @@ NavigationPredictorKeyedService::Prediction::operator=(
 
 NavigationPredictorKeyedService::Prediction::~Prediction() = default;
 
-const absl::optional<GURL>&
+const std::optional<GURL>&
 NavigationPredictorKeyedService::Prediction::source_document_url() const {
   DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
             prediction_source_);

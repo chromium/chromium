@@ -1508,7 +1508,7 @@ bool IsValidOutput(manta::proto::OutputData output,
 
 manta::proto::Request CreateMantaRequest(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-    absl::optional<uint32_t> generation_seed,
+    std::optional<uint32_t> generation_seed,
     int num_output,
     manta::proto::ImageResolution target_resolution) {
   manta::proto::Request request;

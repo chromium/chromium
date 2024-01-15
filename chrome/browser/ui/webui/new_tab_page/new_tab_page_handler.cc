@@ -778,7 +778,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
   for (const auto& module_id : module_ids) {
     const base::Value::Dict& interacted_counts_dict =
         profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
-    absl::optional<int> interacted_count =
+    std::optional<int> interacted_count =
         interacted_counts_dict.FindInt(module_id);
     if (interacted_count.value_or(0) != 0) {
       continue;
@@ -786,7 +786,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
 
     const base::Value::Dict& loaded_counts_dict =
         profile_->GetPrefs()->GetDict(prefs::kNtpModulesLoadedCountDict);
-    absl::optional<int> loaded_count = loaded_counts_dict.FindInt(module_id);
+    std::optional<int> loaded_count = loaded_counts_dict.FindInt(module_id);
     if (loaded_count.value_or(0) >= module_ignored_criteria_threshold) {
       const auto survey_delay_time_ms = base::GetFieldTrialParamByFeatureAsInt(
           features::kHappinessTrackingSurveysForDesktopNtpModules,
@@ -1525,7 +1525,7 @@ void NewTabPageHandler::IncrementDictPrefKeyCount(const std::string& pref_name,
                                                   const std::string& key) {
   const base::Value::Dict& counts_dict =
       profile_->GetPrefs()->GetDict(pref_name);
-  absl::optional<int> count = counts_dict.FindInt(key);
+  std::optional<int> count = counts_dict.FindInt(key);
   ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_name);
   update->Set(key,
               count.has_value()

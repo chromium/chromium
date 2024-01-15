@@ -746,7 +746,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   ASSERT_TRUE(tmp);
   ASSERT_EQ(params.selection_text, base::UTF8ToUTF16(*tmp));
 
-  absl::optional<bool> editable = info_dict.FindBool("editable");
+  std::optional<bool> editable = info_dict.FindBool("editable");
   ASSERT_TRUE(editable.has_value());
   ASSERT_EQ(params.is_editable, editable.value());
 

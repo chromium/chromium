@@ -99,7 +99,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     SharingSendMessageResult result,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
   if (result != SharingSendMessageResult::kSuccessful) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
     RecordWebOTPCrossDeviceFailure(
         WebOTPCrossDeviceFailure::kSharingMessageFailure);
@@ -109,7 +109,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
   DCHECK(response);
   DCHECK(response->has_sms_fetch_response());
   if (response->sms_fetch_response().has_failure_type()) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             static_cast<content::SmsFetchFailureType>(
                                 response->sms_fetch_response().failure_type()));
     RecordWebOTPCrossDeviceFailure(
@@ -123,7 +123,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
 
   std::move(callback).Run(std::move(origin_list),
                           response->sms_fetch_response().one_time_code(),
-                          absl::nullopt);
+                          std::nullopt);
   RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoFailure);
 }
 
@@ -136,7 +136,7 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
                                 /*value_max=*/20);
 
   if (devices.empty()) {
-    std::move(callback).Run(absl::nullopt, absl::nullopt,
+    std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
     RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kNoRemoteDevice);
     return base::NullCallback();

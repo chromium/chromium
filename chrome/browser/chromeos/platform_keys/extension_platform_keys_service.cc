@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -293,7 +293,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
                                         crosapi::mojom::KeystoreError error) {
     if (!is_error) {
       std::move(callback_).Run(std::move(public_key_spki_der_),
-                               /*error=*/absl::nullopt);
+                               /*error=*/std::nullopt);
       DoStep();
       return;
     }
@@ -409,7 +409,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // multiple times, also updates the permission to prevent any future signing
   // operation of that extension using that same key. If an error occurs, an
   // error status is passed to |callback|.
-  SignTask(absl::optional<platform_keys::TokenId> token_id,
+  SignTask(std::optional<platform_keys::TokenId> token_id,
            std::vector<uint8_t> data,
            std::vector<uint8_t> public_key_spki_der,
            platform_keys::KeyType key_type,
@@ -558,7 +558,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       case KeystoreBinaryResult::Tag::kBlob:
         std::move(callback_).Run(
             /*signature=*/std::move(result->get_blob()),
-            /*error=*/absl::nullopt);
+            /*error=*/std::nullopt);
         break;
     }
     DoStep();
@@ -566,7 +566,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
 
-  absl::optional<platform_keys::TokenId> token_id_;
+  std::optional<platform_keys::TokenId> token_id_;
   const std::vector<uint8_t> data_;
   const std::vector<uint8_t> public_key_spki_der_;
 
@@ -862,7 +862,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       selection->assign(matches_.begin(), matches_.end());
     }
 
-    std::move(callback_).Run(std::move(selection), /*error=*/absl::nullopt);
+    std::move(callback_).Run(std::move(selection), /*error=*/std::nullopt);
     DoStep();
   }
 
@@ -969,7 +969,7 @@ bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
 }
 
 void ExtensionPlatformKeysService::SignDigest(
-    absl::optional<platform_keys::TokenId> token_id,
+    std::optional<platform_keys::TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     platform_keys::KeyType key_type,
@@ -990,7 +990,7 @@ void ExtensionPlatformKeysService::SignDigest(
 }
 
 void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
-    absl::optional<platform_keys::TokenId> token_id,
+    std::optional<platform_keys::TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     std::string extension_id,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_deref.h"
@@ -55,7 +56,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -300,14 +300,14 @@ class IsolatedWebAppBrowsingDataClearingTest
       const GURL& url,
       const base::Time time,
       const std::string& cookie_line,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+      const std::optional<net::CookiePartitionKey>& cookie_partition_key) {
     mojo::Remote<network::mojom::CookieManager> cookie_manager;
     storage_partition->GetNetworkContext()->GetCookieManager(
         cookie_manager.BindNewPipeAndPassReceiver());
 
-    auto cookie_obj = net::CanonicalCookie::Create(
-        url, cookie_line, time, /*server_time=*/absl::nullopt,
-        cookie_partition_key);
+    auto cookie_obj = net::CanonicalCookie::Create(url, cookie_line, time,
+                                                   /*server_time=*/std::nullopt,
+                                                   cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;
     cookie_manager->SetCanonicalCookie(*cookie_obj, url,
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
     ASSERT_TRUE(partition);
     // Unpartitioned Cookie
     ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
-                          "A=0", absl::nullopt));
+                          "A=0", std::nullopt));
     // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
         partition, GURL("https://c.com"), base::Time::Now(),
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     ASSERT_TRUE(partition);
     // Unpartitioned Cookie
     ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
-                          "A=0", absl::nullopt));
+                          "A=0", std::nullopt));
     // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
         partition, GURL("https://c.com"), base::Time::Now(),
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     ASSERT_TRUE(partition);
     // Unpartitioned Cookie
     ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
-                          "A=0", absl::nullopt));
+                          "A=0", std::nullopt));
     // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
         partition, GURL("https://c.com"), base::Time::Now(),
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
       // Set a partitioned and an unpartitioned cookie for each storage
       // partition. Unpartitioned Cookie
       ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), cookie.time,
-                            cookie.data, absl::nullopt));
+                            cookie.data, std::nullopt));
       // Partitioned Cookie
       ASSERT_TRUE(SetCookie(
           partition, GURL("https://c.com"), cookie.time,

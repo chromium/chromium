@@ -105,7 +105,7 @@ NotificationDisplayServiceTester::GetDisplayedNotificationsForType(
   return display_service_->GetDisplayedNotificationsForType(type);
 }
 
-absl::optional<message_center::Notification>
+std::optional<message_center::Notification>
 NotificationDisplayServiceTester::GetNotification(
     const std::string& notification_id) const {
   return display_service_->GetNotification(notification_id);
@@ -120,8 +120,8 @@ NotificationDisplayServiceTester::GetMetadataForNotification(
 void NotificationDisplayServiceTester::SimulateClick(
     NotificationHandler::Type notification_type,
     const std::string& notification_id,
-    absl::optional<int> action_index,
-    absl::optional<std::u16string> reply) {
+    std::optional<int> action_index,
+    std::optional<std::u16string> reply) {
   display_service_->SimulateClick(notification_type, notification_id,
                                   std::move(action_index), std::move(reply));
 }

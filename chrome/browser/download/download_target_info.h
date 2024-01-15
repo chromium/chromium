@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -12,7 +13,6 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct DownloadTargetInfo {
   DownloadTargetInfo();

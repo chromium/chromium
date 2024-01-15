@@ -538,7 +538,7 @@ void DownloadOfflineContentProvider::GetAllDownloads(
 
 void DownloadOfflineContentProvider::UpdateObservers(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   NotifyItemUpdated(item, update_delta);
 }
 
@@ -578,9 +578,9 @@ void DownloadOfflineContentProvider::RunGetItemByIdCallback(
   DownloadItem* item = GetDownload(id.id);
   auto offline_item =
       item && ShouldShowDownloadItem(item)
-          ? absl::make_optional(
+          ? std::make_optional(
                 OfflineItemUtils::CreateOfflineItem(name_space_, item))
-          : absl::nullopt;
+          : std::nullopt;
 
   std::move(callback).Run(offline_item);
 }

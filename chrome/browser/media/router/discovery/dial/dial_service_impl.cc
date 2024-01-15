@@ -64,7 +64,7 @@ namespace media_router {
 void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const absl::optional<net::NetworkInterfaceList>& networks) {
+    const std::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&DialServiceImpl::SendNetworkList,
@@ -454,7 +454,7 @@ void DialServiceImpl::StartDiscovery() {
 }
 
 void DialServiceImpl::SendNetworkList(
-    const absl::optional<NetworkInterfaceList>& networks) {
+    const std::optional<NetworkInterfaceList>& networks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   using InterfaceIndexAddressFamily = std::pair<uint32_t, net::AddressFamily>;

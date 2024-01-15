@@ -5,6 +5,7 @@
 #include "chrome/services/printing/print_backend_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/threading/thread_restrictions.h"
@@ -128,7 +128,7 @@ struct RenderData {
   std::unique_ptr<Metafile> metafile;
 };
 
-absl::optional<RenderData> PrepareRenderData(
+std::optional<RenderData> PrepareRenderData(
     int document_cookie,
     mojom::MetafileDataType page_data_type,
     const base::ReadOnlySharedMemoryRegion& serialized_data) {
@@ -136,7 +136,7 @@ absl::optional<RenderData> PrepareRenderData(
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "Failure printing document " << document_cookie
                 << ", cannot map input.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   RenderData render_data;
@@ -156,7 +156,7 @@ absl::optional<RenderData> PrepareRenderData(
   if (!render_data.metafile->InitFromData(data)) {
     DLOG(ERROR) << "Failure printing document " << document_cookie
                 << ", unable to initialize.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return render_data;
 }
@@ -232,7 +232,7 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
   DVLOG(1) << "Render printed page " << page_index << " for document "
            << document_->cookie();
 
-  absl::optional<RenderData> render_data =
+  std::optional<RenderData> render_data =
       PrepareRenderData(document_->cookie(), page_data_type, serialized_page);
   if (!render_data) {
     DLOG(ERROR) << "Failure preparing render data for document "
@@ -263,7 +263,7 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedDocument(
 
   DVLOG(1) << "Render printed document " << document_->cookie();
 
-  absl::optional<RenderData> render_data =
+  std::optional<RenderData> render_data =
       PrepareRenderData(document_->cookie(), data_type, serialized_document);
   if (!render_data) {
     DLOG(ERROR) << "Failure preparing render data for document "
@@ -606,7 +606,7 @@ void PrintBackendServiceImpl::GetPaperPrintableArea(
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
       printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
 
-  absl::optional<gfx::Rect> printable_area_um =
+  std::optional<gfx::Rect> printable_area_um =
       print_backend_->GetPaperPrintableArea(printer_name, media.vendor_id,
                                             media.size_microns);
   std::move(callback).Run(printable_area_um.value_or(gfx::Rect()));
@@ -717,7 +717,7 @@ void PrintBackendServiceImpl::StartPrinting(
     int document_cookie,
     const std::u16string& document_name,
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-    const absl::optional<PrintSettings>& settings,
+    const std::optional<PrintSettings>& settings,
 #endif
     mojom::PrintBackendService::StartPrintingCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)

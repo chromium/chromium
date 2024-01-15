@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_IMPL_H_
 #define CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_IMPL_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +19,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_database.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

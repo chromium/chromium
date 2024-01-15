@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TPCD_EXPERIMENT_ELIGIBILITY_SERVICE_H_
 #define CHROME_BROWSER_TPCD_EXPERIMENT_ELIGIBILITY_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,7 +14,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace privacy_sandbox {
 class TrackingProtectionOnboarding;
@@ -82,7 +83,7 @@ class EligibilityService
   // Set in the constructor, it will always have a value past that point. An
   // optional is used since the user preferences are sometimes reset before
   // setting the `profile_eligibility_`.
-  absl::optional<privacy_sandbox::TpcdExperimentEligibility>
+  std::optional<privacy_sandbox::TpcdExperimentEligibility>
       profile_eligibility_;
 
   base::ScopedObservation<

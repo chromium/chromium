@@ -199,7 +199,7 @@ void ReportAnalysisConnectorWarningBypass(
     DeepScanAccessPoint access_point,
     const int64_t content_size,
     const enterprise_connectors::ContentAnalysisResponse& response,
-    absl::optional<std::u16string> user_justification) {
+    std::optional<std::u16string> user_justification) {
   DCHECK(base::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
@@ -324,8 +324,8 @@ void RecordDeepScanMetrics(bool is_cloud,
 }
 
 enterprise_connectors::ContentAnalysisResponse
-SimpleContentAnalysisResponseForTesting(absl::optional<bool> dlp_success,
-                                        absl::optional<bool> malware_success) {
+SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
+                                        std::optional<bool> malware_success) {
   enterprise_connectors::ContentAnalysisResponse response;
 
   if (dlp_success.has_value()) {

@@ -451,7 +451,7 @@ PrivacySandboxServiceImpl::GetSampleFirstPartySets() const {
   return {};
 }
 
-absl::optional<net::SchemefulSite>
+std::optional<net::SchemefulSite>
 PrivacySandboxServiceImpl::GetFirstPartySetOwner(const GURL& site_url) const {
   // If FPS is not affecting cookie access, then there are effectively no
   // first party sets.
@@ -459,7 +459,7 @@ PrivacySandboxServiceImpl::GetFirstPartySetOwner(const GURL& site_url) const {
         cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK &&
         base::FeatureList::IsEnabled(
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Return the owner according to the sample sets if they're provided.
@@ -471,28 +471,28 @@ PrivacySandboxServiceImpl::GetFirstPartySetOwner(const GURL& site_url) const {
     base::flat_map<net::SchemefulSite, net::SchemefulSite>::const_iterator
         site_entry = sets.find(schemeful_site);
     if (site_entry == sets.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return site_entry->second;
   }
 
-  absl::optional<net::FirstPartySetEntry> site_entry =
+  std::optional<net::FirstPartySetEntry> site_entry =
       first_party_sets_policy_service_->FindEntry(net::SchemefulSite(site_url));
   if (!site_entry.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return site_entry->primary();
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 PrivacySandboxServiceImpl::GetFirstPartySetOwnerForDisplay(
     const GURL& site_url) const {
-  absl::optional<net::SchemefulSite> site_owner =
+  std::optional<net::SchemefulSite> site_owner =
       GetFirstPartySetOwner(site_url);
   if (!site_owner.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return url_formatter::IDNToUnicode(site_owner->GetURL().host());

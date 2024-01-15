@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -52,7 +53,6 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "ui/gfx/favicon_size.h"
@@ -131,7 +131,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
  public:
   FaviconChangeObserver(BookmarkModel* model,
                         const BookmarkNode* node,
-                        const absl::optional<GURL>& expected_icon_url)
+                        const std::optional<GURL>& expected_icon_url)
       : model_(model), node_(node), expected_icon_url_(expected_icon_url) {
     model->AddObserver(this);
   }
@@ -199,7 +199,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
  private:
   const raw_ptr<BookmarkModel> model_;
   const raw_ptr<const BookmarkNode> node_;
-  const absl::optional<GURL> expected_icon_url_;
+  const std::optional<GURL> expected_icon_url_;
 
   base::RunLoop run_loop_;
 };
@@ -277,14 +277,14 @@ struct FaviconData {
 
 // Gets the favicon and icon URL associated with |node| in |model|. Returns
 // nullopt if the favicon is still loading.
-absl::optional<FaviconData> GetFaviconData(BookmarkModel* model,
-                                           const BookmarkNode* node) {
+std::optional<FaviconData> GetFaviconData(BookmarkModel* model,
+                                          const BookmarkNode* node) {
   // We may need to wait for the favicon to be loaded via
   // BookmarkModel::GetFavicon(), which is an asynchronous operation.
   if (!node->is_favicon_loaded()) {
     model->GetFavicon(node);
     // Favicon still loading, no data available just yet.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Favicon loaded: return actual image, if there is one (the no-favicon case
@@ -344,7 +344,7 @@ void DeleteFaviconMappingsImpl(Profile* profile,
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
 
   FaviconChangeObserver observer(model, node,
-                                 /*expected_icon_url=*/absl::nullopt);
+                                 /*expected_icon_url=*/std::nullopt);
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
@@ -371,8 +371,8 @@ bool FaviconsMatch(BookmarkModel* model_a,
   DCHECK(!node_a->is_folder());
   DCHECK(!node_b->is_folder());
 
-  absl::optional<FaviconData> favicon_data_a = GetFaviconData(model_a, node_a);
-  absl::optional<FaviconData> favicon_data_b = GetFaviconData(model_b, node_b);
+  std::optional<FaviconData> favicon_data_a = GetFaviconData(model_a, node_a);
+  std::optional<FaviconData> favicon_data_b = GetFaviconData(model_b, node_b);
 
   // If either of the two favicons is still loading, let's return false now
   // because observers will get notified when the load completes. Note that even

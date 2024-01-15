@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
@@ -24,7 +26,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -94,7 +95,7 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
             mojom::WebNotificationType::INVALID_NOTIFICATION));
     eche_app_manager_factory_->CloseConnectionOrLaunchErrorNotifications();
 
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kEcheAppScreenLockNotifierId);
     ASSERT_TRUE(notification.has_value());
     notification =
@@ -187,7 +188,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const char16_t phone_name[] = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name_1,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name_1,
       visible_name_1, user_id, gfx::Image(), phone_name,
       GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
@@ -200,7 +201,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const char16_t visible_name_2[] = u"Fake App 2";
   const char package_name_2[] = "com.fakeapp2";
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name_2,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name_2,
       visible_name_2, user_id, gfx::Image(), phone_name,
       GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
@@ -216,7 +217,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchedAppInfo) {
   const std::u16string phone_name = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name,
       visible_name, user_id, icon, phone_name, GetAppsLaunchInfoProvider());
 
   std::unique_ptr<LaunchedAppInfo> launched_app_info =
@@ -239,7 +240,7 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   const char16_t phone_name[] = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
+      GetProfile(), /*notification_id=*/std::nullopt, package_name,
       visible_name, user_id, gfx::Image(), phone_name,
       GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete

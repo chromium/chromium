@@ -231,7 +231,7 @@ void RecipesService::OnJsonParsed(
       const base::Value::Dict& recipe_dict = recipe.GetDict();
       const auto* name = recipe_dict.FindString("name");
       const auto* image_url = recipe_dict.FindString("image_url");
-      const absl::optional<int> viewed_timestamp =
+      const std::optional<int> viewed_timestamp =
           recipe_dict.FindIntByDottedPath("viewed_timestamp.seconds");
       const auto* site_name = recipe_dict.FindString("site_name");
       const auto* target_url = recipe_dict.FindString("target_url");

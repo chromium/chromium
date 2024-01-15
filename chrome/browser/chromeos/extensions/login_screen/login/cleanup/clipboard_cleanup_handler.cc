@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h"
 
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace chromeos {
@@ -18,7 +18,7 @@ ClipboardCleanupHandler::~ClipboardCleanupHandler() = default;
 void ClipboardCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
   // ChromeOS only has 1 copy/paste clipboard used on all threads.
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace chromeos

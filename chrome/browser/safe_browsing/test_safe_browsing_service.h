@@ -91,7 +91,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,
-      absl::optional<bool> show_download_in_folder) override;
+      std::optional<bool> show_download_in_folder) override;
 #endif
 
   // ServicesDelegate::ServicesCreator:

@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -30,7 +31,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
@@ -97,7 +97,7 @@ class InstallIsolatedWebAppCommand
   InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -189,9 +189,9 @@ class InstallIsolatedWebAppCommand
 
   IsolatedWebAppUrlInfo url_info_;
   IsolatedWebAppLocation source_location_;
-  absl::optional<IsolatedWebAppLocation> lazy_destination_location_;
+  std::optional<IsolatedWebAppLocation> lazy_destination_location_;
 
-  absl::optional<base::Version> expected_version_;
+  std::optional<base::Version> expected_version_;
   // Populated as part of the installation process based on the version read
   // from the Web Bundle.
   base::Version actual_version_;

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_KEY_LOADER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -48,7 +48,7 @@ class KeyLoader {
     DTCLoadKeyResult& operator=(DTCLoadKeyResult&&);
 
     // HTTP response code from the key upload request.
-    absl::optional<int> status_code = absl::nullopt;
+    std::optional<int> status_code = std::nullopt;
 
     // Loaded signing key pair.
     scoped_refptr<SigningKeyPair> key_pair = nullptr;

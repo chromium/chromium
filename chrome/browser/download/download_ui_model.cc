@@ -478,13 +478,13 @@ bool DownloadUIModel::WasUIWarningShown() const {
 
 void DownloadUIModel::SetWasUIWarningShown(bool was_ui_warning_shown) {}
 
-absl::optional<base::Time> DownloadUIModel::GetEphemeralWarningUiShownTime()
+std::optional<base::Time> DownloadUIModel::GetEphemeralWarningUiShownTime()
     const {
-  return absl::optional<base::Time>();
+  return std::optional<base::Time>();
 }
 
 void DownloadUIModel::SetEphemeralWarningUiShownTime(
-    absl::optional<base::Time> time) {}
+    std::optional<base::Time> time) {}
 
 bool DownloadUIModel::ShouldPreferOpeningInBrowser() {
   return true;
@@ -765,7 +765,7 @@ DownloadUIModel::BubbleUIInfo::SubpageButton::SubpageButton(
     DownloadCommands::Command command,
     std::u16string label,
     bool is_prominent,
-    absl::optional<ui::ColorId> color)
+    std::optional<ui::ColorId> color)
     : command(command),
       label(label),
       is_prominent(is_prominent),
@@ -827,7 +827,7 @@ DownloadUIModel::BubbleUIInfo&
 DownloadUIModel::BubbleUIInfo::AddSecondarySubpageButton(
     const std::u16string& label,
     DownloadCommands::Command command,
-    absl::optional<ui::ColorId> color) {
+    std::optional<ui::ColorId> color) {
   // The subpage of the bubble supports at most 2 buttons. The primary one must
   // come first, then the secondary.
   CHECK(subpage_buttons.size() == 1);
@@ -1422,7 +1422,7 @@ DownloadUIModel::GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing() const {
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE_UNVERIFIED_FILE));
   // Clear the "Learn why Chrome..." link. If the user is not capable of turning
   // on SB, do not show the default link and label.
-  ui_info.learn_more_link = absl::nullopt;
+  ui_info.learn_more_link = std::nullopt;
   if (CanUserTurnOnSafeBrowsing(profile())) {
     ui_info.AddLearnMoreLink(
         IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LABEL,

@@ -248,7 +248,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 
 #if BUILDFLAG(IS_ANDROID)
   base::TimeTicks geo_header_start_timestamp = base::TimeTicks::Now();
-  absl::optional<std::string> geo_header =
+  std::optional<std::string> geo_header =
       GetGeolocationHeaderIfAllowed(resource_request->url, profile);
   if (geo_header) {
     resource_request->headers.AddHeaderFromString(geo_header.value());
@@ -273,7 +273,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
           *resource_request, profile, std::move(wc_getter),
           /*navigation_ui_data=*/nullptr,
           content::RenderFrameHost::kNoFrameTreeNodeId,
-          /*navigation_id=*/absl::nullopt);
+          /*navigation_id=*/std::nullopt);
 
   bool should_defer = false;
   {

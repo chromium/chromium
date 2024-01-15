@@ -5,6 +5,7 @@
 #include "chrome/browser/support_tool/policy_data_collector.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -27,7 +28,6 @@
 #include "components/policy/core/browser/webui/json_generation.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/browser/webui/policy_webui_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
@@ -37,7 +37,7 @@ namespace {
 
 // Returns the PII type that `status_field` is categorised in if it's considered
 // as PII.
-absl::optional<redaction::PIIType> GetPIITypeOfStatusField(
+std::optional<redaction::PIIType> GetPIITypeOfStatusField(
     base::StringPiece status_field) {
   // List of keys in policy status that will be considered as PII and will be
   // redacted selectively.
@@ -65,9 +65,9 @@ absl::optional<redaction::PIIType> GetPIITypeOfStatusField(
         }
       });
   return kPersonallyIdentifiableStatusFields.contains(status_field)
-             ? absl::make_optional(
+             ? std::make_optional(
                    kPersonallyIdentifiableStatusFields.at(status_field))
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 // Opens a file named "policies.json" in `target_directory` and writes
@@ -119,7 +119,7 @@ void PolicyDataCollector::CollectDataAndDetectPII(
   // policy status.
   DetectPIIInPolicyStatus();
 
-  std::move(on_data_collected_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_data_collected_callback).Run(/*error=*/std::nullopt);
 }
 
 void PolicyDataCollector::ExportCollectedDataWithPII(
@@ -156,7 +156,7 @@ void PolicyDataCollector::OnFileWritten(
     std::move(on_exported_callback).Run(error);
     return;
   }
-  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/std::nullopt);
 }
 
 void PolicyDataCollector::OnPolicyValueAndStatusChanged() {}
@@ -164,7 +164,7 @@ void PolicyDataCollector::OnPolicyValueAndStatusChanged() {}
 void PolicyDataCollector::DetectPIIInPolicyStatus() {
   for (auto entry : policy_status_) {
     for (const auto [status_key, status_value] : entry.second.GetDict()) {
-      absl::optional<redaction::PIIType> pii_type =
+      std::optional<redaction::PIIType> pii_type =
           GetPIITypeOfStatusField(status_key);
       if (!pii_type)
         continue;
@@ -186,7 +186,7 @@ void PolicyDataCollector::RedactPIIInPolicyStatus(
   for (std::pair<const std::string&, base::Value&> entry : policy_status_) {
     for (std::pair<const std::string&, base::Value&> status_pair :
          entry.second.GetDict()) {
-      absl::optional<redaction::PIIType> pii_type =
+      std::optional<redaction::PIIType> pii_type =
           GetPIITypeOfStatusField(status_pair.first);
       if (!pii_type || base::Contains(pii_types_to_keep, pii_type.value()))
         continue;

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_sampler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::base::test::EqualsProto;
 using ::testing::ElementsAre;
@@ -75,10 +75,10 @@ class WebsiteUsageTelemetrySamplerTest : public ::testing::Test {
 };
 
 TEST_F(WebsiteUsageTelemetrySamplerTest, NoWebsiteUsageData) {
-  base::test::TestFuture<absl::optional<MetricData>> collected_data_future;
+  base::test::TestFuture<std::optional<MetricData>> collected_data_future;
   website_usage_telemetry_sampler_->MaybeCollect(
       collected_data_future.GetCallback());
-  const absl::optional<MetricData> metric_data_result =
+  const std::optional<MetricData> metric_data_result =
       collected_data_future.Take();
   ASSERT_FALSE(metric_data_result.has_value());
 }
@@ -91,10 +91,10 @@ TEST_F(WebsiteUsageTelemetrySamplerTest, CollectWebsiteUsageData) {
   // Attempt to collect usage data and verify data is deleted from the pref
   // store after it is reported.
   {
-    base::test::TestFuture<absl::optional<MetricData>> collected_data_future;
+    base::test::TestFuture<std::optional<MetricData>> collected_data_future;
     website_usage_telemetry_sampler_->MaybeCollect(
         collected_data_future.GetCallback());
-    const absl::optional<MetricData> metric_data_result =
+    const std::optional<MetricData> metric_data_result =
         collected_data_future.Take();
     ASSERT_TRUE(metric_data_result.has_value());
     const auto& metric_data = metric_data_result.value();
@@ -115,10 +115,10 @@ TEST_F(WebsiteUsageTelemetrySamplerTest, CollectWebsiteUsageData) {
   // Attempt to collect usage data again and verify there is none being
   // reported.
   {
-    base::test::TestFuture<absl::optional<MetricData>> collected_data_future;
+    base::test::TestFuture<std::optional<MetricData>> collected_data_future;
     website_usage_telemetry_sampler_->MaybeCollect(
         collected_data_future.GetCallback());
-    const absl::optional<MetricData> metric_data_result =
+    const std::optional<MetricData> metric_data_result =
         collected_data_future.Take();
     EXPECT_FALSE(metric_data_result.has_value());
   }
@@ -134,10 +134,10 @@ TEST_F(WebsiteUsageTelemetrySamplerTest, CollectMultipleWebsiteUsageData) {
   // Attempt to collect usage data and verify data is deleted from the pref
   // store after it is reported.
   {
-    base::test::TestFuture<absl::optional<MetricData>> collected_data_future;
+    base::test::TestFuture<std::optional<MetricData>> collected_data_future;
     website_usage_telemetry_sampler_->MaybeCollect(
         collected_data_future.GetCallback());
-    const absl::optional<MetricData> metric_data_result =
+    const std::optional<MetricData> metric_data_result =
         collected_data_future.Take();
     ASSERT_TRUE(metric_data_result.has_value());
     const auto& metric_data = metric_data_result.value();
@@ -160,10 +160,10 @@ TEST_F(WebsiteUsageTelemetrySamplerTest, CollectMultipleWebsiteUsageData) {
   // Attempt to collect usage data again and verify there is none being
   // reported.
   {
-    base::test::TestFuture<absl::optional<MetricData>> collected_data_future;
+    base::test::TestFuture<std::optional<MetricData>> collected_data_future;
     website_usage_telemetry_sampler_->MaybeCollect(
         collected_data_future.GetCallback());
-    const absl::optional<MetricData> metric_data_result =
+    const std::optional<MetricData> metric_data_result =
         collected_data_future.Take();
     EXPECT_FALSE(metric_data_result.has_value());
   }
@@ -180,10 +180,10 @@ TEST_F(WebsiteUsageTelemetrySamplerTest,
   profile_manager_.DeleteAllTestingProfiles();
 
   // Attempt to collect usage data and verify there is no data being reported.
-  base::test::TestFuture<absl::optional<MetricData>> collected_data_future;
+  base::test::TestFuture<std::optional<MetricData>> collected_data_future;
   website_usage_telemetry_sampler_->MaybeCollect(
       collected_data_future.GetCallback());
-  const absl::optional<MetricData> metric_data_result =
+  const std::optional<MetricData> metric_data_result =
       collected_data_future.Take();
   EXPECT_FALSE(metric_data_result.has_value());
 }

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -47,7 +47,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   // ui::EventRewriterAsh::Delegate:
   bool RewriteModifierKeys() override;
   bool RewriteMetaTopRowKeyComboEvents(int device_id) const override;
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override;
@@ -62,9 +62,9 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override;
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override;
-  absl::optional<ui::mojom::SimulateRightClickModifier>
+  std::optional<ui::mojom::SimulateRightClickModifier>
   GetRemapRightClickModifier(int device_id) override;
-  absl::optional<ui::mojom::SixPackShortcutModifier>
+  std::optional<ui::mojom::SixPackShortcutModifier>
   GetShortcutModifierForSixPackKey(int device_id,
                                    ui::KeyboardCode key_code) override;
   void NotifyRightClickRewriteBlockedBySetting(
@@ -77,7 +77,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override;
 
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
       int device_id,
       ui::KeyboardCode key_code) override;
 
@@ -91,7 +91,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   // TODO(crbug.com/1440147): Consider clear separation of EventRewriterAsh's
   // test and Delegate's test, then to remove this API.
   void SetExtensionCommandsOverrideForTesting(
-      absl::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
+      std::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
           commands) {
     extension_commands_override_for_testing_ = std::move(commands);
   }
@@ -101,7 +101,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
 
   raw_ptr<PrefService> pref_service_for_testing_;
 
-  absl::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
+  std::optional<base::flat_set<std::pair<ui::KeyboardCode, int>>>
       extension_commands_override_for_testing_;
 
   raw_ptr<wm::ActivationClient, DanglingUntriaged> activation_client_;

@@ -200,7 +200,7 @@ TEST_F(ChromeExtensionNavigationTest,
       })",
       extension_id.c_str());
 
-  absl::optional<base::Value> settings = base::JSONReader::Read(json);
+  std::optional<base::Value> settings = base::JSONReader::Read(json);
   testing_pref_service()->SetManagedPref(
       pref_names::kExtensionManagement,
       base::Value::ToUniquePtrValue(std::move(settings.value())));

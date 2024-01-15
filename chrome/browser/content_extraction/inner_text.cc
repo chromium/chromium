@@ -66,7 +66,7 @@ void OnGotInnerText(base::TimeTicks start_time,
 }  // namespace
 
 void GetInnerText(content::RenderFrameHost& host,
-                  absl::optional<int> node_id,
+                  std::optional<int> node_id,
                   InnerTextCallback callback) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::Remote<blink::mojom::InnerTextAgent> agent;

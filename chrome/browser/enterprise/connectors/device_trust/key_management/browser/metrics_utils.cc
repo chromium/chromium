@@ -93,7 +93,7 @@ DTKeyRotationResult ResultFromStatus(KeyRotationCommand::Status status) {
 }  // namespace
 
 void LogKeyLoadingResult(
-    absl::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata,
+    std::optional<DeviceTrustKeyManager::KeyMetadata> key_metadata,
     LoadPersistedKeyResult result) {
   base::UmaHistogramEnumeration(kLoadPersistedKeyResultHistogram, result);
 

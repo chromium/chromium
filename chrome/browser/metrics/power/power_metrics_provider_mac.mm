@@ -55,7 +55,7 @@ ThermalStateUMA ThermalStateToUmaEnumValue(NSProcessInfoThermalState state) {
 
 void RecordSMCHistogram(base::StringPiece prefix,
                         base::StringPiece suffix,
-                        absl::optional<double> watts) {
+                        std::optional<double> watts) {
   if (watts.has_value()) {
     double milliwatts = watts.value() * 1000;
     base::UmaHistogramCounts100000(base::StrCat({prefix, suffix}), milliwatts);

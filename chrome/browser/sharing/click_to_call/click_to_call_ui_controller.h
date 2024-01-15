@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_UI_CONTROLLER_H_
 #define CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_UI_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -32,7 +32,7 @@ class ClickToCallUiController
   static ClickToCallUiController* GetOrCreateFromWebContents(
       content::WebContents* web_contents);
   static void ShowDialog(content::WebContents* web_contents,
-                         const absl::optional<url::Origin>& initiating_origin,
+                         const std::optional<url::Origin>& initiating_origin,
                          content::WeakDocumentPtr initiator_document,
                          const GURL& url,
                          bool hide_default_handler,

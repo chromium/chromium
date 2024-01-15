@@ -33,6 +33,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include <optional>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
@@ -41,7 +43,6 @@
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/common/signals_features.h"  // nogncheck
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #include "components/content_settings/core/common/pref_names.h"
@@ -218,7 +219,7 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
-  absl::optional<api::enterprise_reporting_private::GetPersistentSecret::Params>
+  std::optional<api::enterprise_reporting_private::GetPersistentSecret::Params>
       params = api::enterprise_reporting_private::GetPersistentSecret::Params::
           Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -271,7 +272,7 @@ EnterpriseReportingPrivateGetDeviceDataFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
-  absl::optional<api::enterprise_reporting_private::GetDeviceData::Params>
+  std::optional<api::enterprise_reporting_private::GetDeviceData::Params>
       params = api::enterprise_reporting_private::GetDeviceData::Params::Create(
           args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -327,7 +328,7 @@ EnterpriseReportingPrivateSetDeviceDataFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
-  absl::optional<api::enterprise_reporting_private::SetDeviceData::Params>
+  std::optional<api::enterprise_reporting_private::SetDeviceData::Params>
       params = api::enterprise_reporting_private::SetDeviceData::Params::Create(
           args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -467,7 +468,7 @@ EnterpriseReportingPrivateGetCertificateFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetCertificateFunction::Run() {
-  absl::optional<api::enterprise_reporting_private::GetCertificate::Params>
+  std::optional<api::enterprise_reporting_private::GetCertificate::Params>
       params =
           api::enterprise_reporting_private::GetCertificate::Params::Create(
               args());
@@ -531,7 +532,7 @@ EnterpriseReportingPrivateEnqueueRecordFunction::Run() {
     return RespondNow(Error(kErrorProfileNotAffiliated));
   }
 
-  absl::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
+  std::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
       params = api::enterprise_reporting_private::EnqueueRecord::Params::Create(
           args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -560,7 +561,7 @@ EnterpriseReportingPrivateEnqueueRecordFunction::Run() {
 }
 
 bool EnterpriseReportingPrivateEnqueueRecordFunction::TryParseParams(
-    absl::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
+    std::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
         params,
     ::reporting::Record& record,
     ::reporting::Priority& priority) {
@@ -652,7 +653,7 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  absl::optional<api::enterprise_reporting_private::GetFileSystemInfo::Params>
+  std::optional<api::enterprise_reporting_private::GetFileSystemInfo::Params>
       params =
           api::enterprise_reporting_private::GetFileSystemInfo::Params::Create(
               args());
@@ -732,9 +733,8 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  absl::optional<api::enterprise_reporting_private::GetSettings::Params>
-      params = api::enterprise_reporting_private::GetSettings::Params::Create(
-          args());
+  std::optional<api::enterprise_reporting_private::GetSettings::Params> params =
+      api::enterprise_reporting_private::GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Verify that all paths strings are UTF8.
@@ -810,7 +810,7 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  absl::optional<api::enterprise_reporting_private::GetAvInfo::Params> params =
+  std::optional<api::enterprise_reporting_private::GetAvInfo::Params> params =
       api::enterprise_reporting_private::GetAvInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -862,9 +862,8 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  absl::optional<api::enterprise_reporting_private::GetHotfixes::Params>
-      params = api::enterprise_reporting_private::GetHotfixes::Params::Create(
-          args());
+  std::optional<api::enterprise_reporting_private::GetHotfixes::Params> params =
+      api::enterprise_reporting_private::GetHotfixes::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(

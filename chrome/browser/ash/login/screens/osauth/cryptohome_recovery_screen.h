@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_CRYPTOHOME_RECOVERY_SCREEN_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +16,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_performer.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -74,7 +74,7 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   void OnAuthSessionExpired();
 
   void OnRefreshFactorsConfiguration(std::unique_ptr<UserContext> user_context,
-                                     absl::optional<AuthenticationError> error);
+                                     std::optional<AuthenticationError> error);
 
   std::unique_ptr<base::OneShotTimer> expiration_timer_;
   AuthFactorEditor auth_factor_editor_;

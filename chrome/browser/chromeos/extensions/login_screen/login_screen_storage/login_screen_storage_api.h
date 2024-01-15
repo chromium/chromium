@@ -25,7 +25,7 @@ class LoginScreenStorageExtensionFunction : public ExtensionFunction {
 
   // When passed as a callback to the LoginScreenStorage `Store` crosapi method,
   // returns its result to the calling extension.
-  void OnDataStored(const absl::optional<std::string>& error_message);
+  void OnDataStored(const std::optional<std::string>& error_message);
 
   // When passed as a callback to the LoginScreenStorage `Retrieve` crosapi
   // method, returns its result to the calling extension.

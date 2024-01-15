@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -53,7 +54,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -262,7 +262,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
 
  private:
 #if BUILDFLAG(IS_WIN)
-  absl::optional<spellcheck::ScopedDisableBrowserSpellCheckerForTesting>
+  std::optional<spellcheck::ScopedDisableBrowserSpellCheckerForTesting>
       disable_browser_spell_checker_;
 #endif
 

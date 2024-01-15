@@ -140,13 +140,13 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
     dismiss_pref_ = prefs::kSecondEolWarningDismissed;
   } else if (FirstWarningDate(eol_date) <= now) {
     if (base::FeatureList::IsEnabled(features::kSuppressFirstEolWarning)) {
-      dismiss_pref_ = absl::nullopt;
+      dismiss_pref_ = std::nullopt;
       return;
     }
     dismiss_pref_ = prefs::kFirstEolWarningDismissed;
   } else {
     // |now| < FirstWarningDate() so don't show anything.
-    dismiss_pref_ = absl::nullopt;
+    dismiss_pref_ = std::nullopt;
     return;
   }
 
@@ -216,8 +216,8 @@ void EolNotification::Close(bool by_user) {
   profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
 }
 
-void EolNotification::Click(const absl::optional<int>& button_index,
-                            const absl::optional<std::u16string>& reply) {
+void EolNotification::Click(const std::optional<int>& button_index,
+                            const std::optional<std::u16string>& reply) {
   if (!button_index) {
     return;
   }

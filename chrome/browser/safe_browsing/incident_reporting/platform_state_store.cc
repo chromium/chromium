@@ -16,8 +16,9 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/platform_state_store.h"
 
+#include <optional>
+
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(USE_PLATFORM_STATE_STORE)
 
@@ -119,7 +120,7 @@ void RestoreFromProtobuf(
 
 #endif  // USE_PLATFORM_STATE_STORE
 
-absl::optional<base::Value::Dict> Load(Profile* profile) {
+std::optional<base::Value::Dict> Load(Profile* profile) {
 #if defined(USE_PLATFORM_STATE_STORE)
   base::Value::Dict value_dict;
   std::string data;
@@ -137,14 +138,14 @@ absl::optional<base::Value::Dict> Load(Profile* profile) {
     case PlatformStateStoreLoadResult::READ_FAILED:
     case PlatformStateStoreLoadResult::PARSE_ERROR:
       // Return nullopt for all error cases.
-      return absl::nullopt;
+      return std::nullopt;
     case PlatformStateStoreLoadResult::NUM_RESULTS:
       NOTREACHED();
       break;
   }
   return value_dict;
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

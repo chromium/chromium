@@ -1481,7 +1481,7 @@ void ChromeMetricsServiceClient::InitPerUserMetrics() {
   }
 }
 
-absl::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
+std::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
     const {
   if (per_user_state_manager_) {
     DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
@@ -1489,17 +1489,17 @@ absl::optional<bool> ChromeMetricsServiceClient::GetCurrentUserMetricsConsent()
         ->GetCurrentUserReportingConsentIfApplicable();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
+std::optional<std::string> ChromeMetricsServiceClient::GetCurrentUserId()
     const {
   if (per_user_state_manager_) {
     DCHECK(base::FeatureList::IsEnabled(ash::features::kPerUserMetrics));
     return per_user_state_manager_->GetCurrentUserId();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)

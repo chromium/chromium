@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/nearby/presence/credential_storage/nearby_presence_credential_storage.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -11,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/nearby/presence/credential_storage/metrics/credential_storage_metrics.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -233,7 +234,7 @@ void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
     // TODO(b/287334363): Emit a failure metric.
     LOG(ERROR) << __func__ << ": failed to retrieve private credentials";
     std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -261,7 +262,7 @@ void NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved(
     // TODO(b/287334363): Emit a failure metric.
     LOG(ERROR) << __func__ << ": failed to retrieve public credentials";
     std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 

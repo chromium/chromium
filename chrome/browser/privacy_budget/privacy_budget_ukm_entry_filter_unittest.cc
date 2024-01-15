@@ -35,9 +35,8 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest,
 
   // By default the filter should reject all Identifiability events:
   base::flat_map<uint64_t, int64_t> events = {{1, 1}, {2, 2}};
-  ukm::mojom::UkmEntryPtr x(absl::in_place, 1,
-                            ukm::builders::Identifiability::kEntryNameHash,
-                            events);
+  ukm::mojom::UkmEntryPtr x(
+      std::in_place, 1, ukm::builders::Identifiability::kEntryNameHash, events);
 
   base::flat_set<uint64_t> filtered;
   EXPECT_FALSE(filter->FilterEntry(x.get(), &filtered));
@@ -53,7 +52,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AllowsOtherMetricsByDefault) {
   auto filter = std::make_unique<PrivacyBudgetUkmEntryFilter>(state.get());
 
   base::flat_map<uint64_t, int64_t> events = {{1, 1}, {2, 2}};
-  ukm::mojom::UkmEntryPtr x(absl::in_place, 1,
+  ukm::mojom::UkmEntryPtr x(std::in_place, 1,
                             ukm::builders::Blink_UseCounter::kEntryNameHash,
                             events);
 
@@ -90,7 +89,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
            .ToUkmMetricHash(),
        static_cast<int64_t>(kUnblockedSurface)}};
   ukm::mojom::UkmEntryPtr ukm_entry(
-      absl::in_place, 1, ukm::builders::Identifiability::kEntryNameHash,
+      std::in_place, 1, ukm::builders::Identifiability::kEntryNameHash,
       metrics);
 
   ASSERT_EQ(2u, ukm_entry->metrics.size());
@@ -116,8 +115,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AddsStudyMetadataToFirstEvent) {
 
   base::flat_map<uint64_t, int64_t> events = {{1, 1}, {2, 2}};
   ukm::mojom::UkmEntryPtr first_entry(
-      absl::in_place, 1, ukm::builders::Identifiability::kEntryNameHash,
-      events);
+      std::in_place, 1, ukm::builders::Identifiability::kEntryNameHash, events);
   ukm::mojom::UkmEntryPtr second_entry = first_entry.Clone();
 
   base::flat_set<uint64_t> removed_hashes;

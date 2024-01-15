@@ -72,7 +72,7 @@ enum class FindAppIdResult { NoMatch, UniqueMatch, NonUniqueMatch };
 FindAppIdResult FindAppId(const base::Value::Dict& prefs,
                           base::StringPiece prefs_key,
                           base::StringPiece search_value,
-                          const absl::optional<GuestId>& guest_id,
+                          const std::optional<GuestId>& guest_id,
                           std::string* result,
                           bool require_startup_notify = false,
                           bool need_display = false,
@@ -85,7 +85,7 @@ FindAppIdResult FindAppId(const base::Value::Dict& prefs,
     }
 
     if (need_display) {
-      const absl::optional<bool> no_display =
+      const std::optional<bool> no_display =
           item.second.GetDict().FindBool(guest_os::prefs::kAppNoDisplayKey);
       if (no_display && *no_display) {
         continue;
@@ -152,8 +152,7 @@ std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
   return token;
 }
 
-std::string GetUnregisteredAppIdPrefix(
-    const absl::optional<std::string> token) {
+std::string GetUnregisteredAppIdPrefix(const std::optional<std::string> token) {
   if (token == kBorealisToken) {
     return borealis::kBorealisAnonymousPrefix;
   }
@@ -200,7 +199,7 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   std::string app_id;
 
   std::string token = GetGuestTokenForWindowId(window_app_id);
-  absl::optional<GuestId> guest_id =
+  std::optional<GuestId> guest_id =
       GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
 
   if (window_startup_id) {
@@ -317,7 +316,7 @@ apps::AppType GetAppType(Profile* profile, base::StringPiece shelf_app_id) {
   }
   const std::string id(shelf_app_id);
   const std::string token = GetGuestTokenForWindowId(&id);
-  absl::optional<GuestId> guest_id =
+  std::optional<GuestId> guest_id =
       GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
   if (guest_id.has_value()) {
     return ToAppType(guest_id->vm_type);

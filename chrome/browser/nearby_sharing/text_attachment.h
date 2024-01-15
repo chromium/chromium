@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TEXT_ATTACHMENT_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TEXT_ATTACHMENT_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Represents a text attachment.
 class TextAttachment : public Attachment {
@@ -18,8 +18,8 @@ class TextAttachment : public Attachment {
 
   TextAttachment(Type type,
                  std::string text_body,
-                 absl::optional<std::string> text_title,
-                 absl::optional<std::string> mime_type);
+                 std::optional<std::string> text_title,
+                 std::optional<std::string> mime_type);
   TextAttachment(int64_t id, Type type, std::string text_title, int64_t size);
   TextAttachment(const TextAttachment&);
   TextAttachment(TextAttachment&&);

@@ -6,18 +6,19 @@
 #define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTION_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A socket-like wrapper around Nearby Connections that allows for asynchronous
 // reads and writes.
 class NearbyConnection {
  public:
   using ReadCallback =
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>> bytes)>;
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>> bytes)>;
 
   NearbyConnection();
   NearbyConnection(const NearbyConnection&) = delete;

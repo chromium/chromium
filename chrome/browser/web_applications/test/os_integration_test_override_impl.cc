@@ -7,6 +7,7 @@
 #include <codecvt>
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -38,7 +39,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -364,7 +364,7 @@ bool OsIntegrationTestOverrideImpl::IsFileExtensionHandled(
   return is_file_handled;
 }
 
-absl::optional<SkColor>
+std::optional<SkColor>
 OsIntegrationTestOverrideImpl::GetShortcutIconTopLeftColor(
     Profile* profile,
     base::FilePath shortcut_dir,
@@ -375,19 +375,19 @@ OsIntegrationTestOverrideImpl::GetShortcutIconTopLeftColor(
   base::FilePath shortcut_path =
       GetShortcutPath(profile, shortcut_dir, app_id, app_name);
   if (!base::PathExists(shortcut_path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return GetIconTopLeftColorFromShortcutFile(shortcut_path);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return IconManagerReadIconTopLeftColorForSize(provider->icon_manager(),
                                                 app_id, size_px);
 #else
   NOTREACHED() << "Not implemented on Fuchsia";
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

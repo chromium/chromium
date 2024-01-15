@@ -51,8 +51,7 @@ void ForceInstalledTestBase::SetUp() {
   ASSERT_TRUE(profile_manager_->SetUp());
   profile_ = profile_manager_->CreateTestingProfile(
       "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
-      /*is_supervised_profile=*/false, absl::nullopt,
-      std::move(policy_service));
+      /*is_supervised_profile=*/false, std::nullopt, std::move(policy_service));
 
   prefs_ = profile_->GetTestingPrefService();
   registry_ = ExtensionRegistry::Get(profile_);

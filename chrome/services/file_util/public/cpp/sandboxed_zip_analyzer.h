@@ -68,7 +68,7 @@ class SandboxedZipAnalyzer {
   const base::FilePath file_path_;
 
   // The password to use for encrypted entries.
-  const absl::optional<std::string> password_;
+  const std::optional<std::string> password_;
 
   // Callback invoked on the UI thread with the file analyze results.
   ResultCallback callback_;

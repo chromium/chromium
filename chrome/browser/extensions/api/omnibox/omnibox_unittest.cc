@@ -66,7 +66,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
   styles_expected.push_back(ACMatchClassification(6, kDim));
   styles_expected.push_back(ACMatchClassification(9, kNone));
 
-  absl::optional<SendSuggestions::Params> params =
+  std::optional<SendSuggestions::Params> params =
       SendSuggestions::Params::Create(list);
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
@@ -89,7 +89,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
                                                         .Set("offset", 1)
                                                         .Set("length", 4)))));
 
-  absl::optional<SendSuggestions::Params> swapped_params =
+  std::optional<SendSuggestions::Params> swapped_params =
       SendSuggestions::Params::Create(swap_list);
   EXPECT_TRUE(swapped_params);
   ASSERT_FALSE(swapped_params->suggest_results.empty());
@@ -141,7 +141,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
   styles_expected.push_back(ACMatchClassification(5, kNone));
   styles_expected.push_back(ACMatchClassification(9, kMatch | kDim));
 
-  absl::optional<SendSuggestions::Params> params =
+  std::optional<SendSuggestions::Params> params =
       SendSuggestions::Params::Create(list);
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
@@ -177,7 +177,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
                                                         .Set("offset", 1)
                                                         .Set("length", 2)))));
 
-  absl::optional<SendSuggestions::Params> moved_params =
+  std::optional<SendSuggestions::Params> moved_params =
       SendSuggestions::Params::Create(moved_list);
   EXPECT_TRUE(moved_params);
   ASSERT_FALSE(moved_params->suggest_results.empty());
@@ -224,7 +224,7 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine2) {
   styles_expected.push_back(ACMatchClassification(0, kUrl | kMatch | kDim));
   styles_expected.push_back(ACMatchClassification(5, kNone));
 
-  absl::optional<SendSuggestions::Params> params =
+  std::optional<SendSuggestions::Params> params =
       SendSuggestions::Params::Create(list);
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
@@ -266,7 +266,7 @@ TEST(ExtensionOmniboxTest, DefaultSuggestResult) {
                                                     .Set("offset", 0)
                                                     .Set("length", 3))));
 
-  absl::optional<SetDefaultSuggestion::Params> params =
+  std::optional<SetDefaultSuggestion::Params> params =
       SetDefaultSuggestion::Params::Create(list);
   EXPECT_TRUE(params);
 }

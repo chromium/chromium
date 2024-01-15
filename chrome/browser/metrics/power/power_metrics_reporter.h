@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_POWER_POWER_METRICS_REPORTER_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/power_monitor/battery_level_provider.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "components/performance_manager/public/power/battery_level_provider_creator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
@@ -69,7 +69,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   PowerMetricsReporter& operator=(const PowerMetricsReporter& rhs) = delete;
   ~PowerMetricsReporter() override;
 
-  absl::optional<base::BatteryLevelProvider::BatteryState>&
+  std::optional<base::BatteryLevelProvider::BatteryState>&
   battery_state_for_testing() {
     return battery_state_;
   }
@@ -79,7 +79,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
  private:
   // Called when the initial battery state is obtained.
   void OnFirstBatteryStateSampled(
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           battery_state);
 
   // Starts the timer for the long interval. On Mac, this will fire for the
@@ -106,7 +106,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   void OnBatteryAndAggregatedProcessMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+      const std::optional<base::BatteryLevelProvider::BatteryState>&
           new_battery_state);
 
   // Called when the long interval (and the short one on Mac) ends.
@@ -148,7 +148,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   raw_ptr<UsageScenarioDataStore> long_usage_scenario_data_store_;
 
   std::unique_ptr<base::BatteryLevelProvider> battery_level_provider_;
-  absl::optional<base::BatteryLevelProvider::BatteryState> battery_state_;
+  std::optional<base::BatteryLevelProvider::BatteryState> battery_state_;
 
   base::TimeTicks interval_begin_;
 

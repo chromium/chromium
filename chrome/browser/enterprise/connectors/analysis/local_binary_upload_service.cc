@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
 
 namespace enterprise_connectors {
@@ -114,7 +114,7 @@ int SendCancelToSDK(
 }
 
 // Sends a request to the local agent and waits for a response.
-absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
+std::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     content_analysis::sdk::ContentAnalysisRequest sdk_request) {
   DVLOG(1) << __func__ << ": token=" << sdk_request.request_token();
@@ -127,7 +127,7 @@ absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
     if (status == 0)
       return response;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 #if defined(_DEBUG)
@@ -497,7 +497,7 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(Request::Id id,
 void LocalBinaryUploadService::HandleResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     safe_browsing::BinaryUploadService::Request::Data data,
-    absl::optional<content_analysis::sdk::ContentAnalysisResponse>
+    std::optional<content_analysis::sdk::ContentAnalysisResponse>
         sdk_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__;

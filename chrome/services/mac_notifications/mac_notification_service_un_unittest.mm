@@ -42,7 +42,7 @@ struct NotificationActionParams {
   NSString* action_identifier;
   NotificationOperation operation;
   int button_index;
-  absl::optional<std::u16string> reply;
+  std::optional<std::u16string> reply;
 };
 
 class MockNotificationActionHandler
@@ -195,7 +195,7 @@ class MacNotificationServiceUNTest : public testing::Test {
   static std::vector<mojom::NotificationIdentifierPtr>
   GetDisplayedNotificationsSync(mojom::MacNotificationService* service,
                                 mojom::ProfileIdentifierPtr profile,
-                                absl::optional<GURL> origin = absl::nullopt) {
+                                std::optional<GURL> origin = std::nullopt) {
     base::test::TestFuture<std::vector<mojom::NotificationIdentifierPtr>>
         displayed;
     service->GetDisplayedNotifications(std::move(profile), origin,
@@ -205,7 +205,7 @@ class MacNotificationServiceUNTest : public testing::Test {
 
   std::vector<mojom::NotificationIdentifierPtr> GetDisplayedNotificationsSync(
       mojom::ProfileIdentifierPtr profile,
-      absl::optional<GURL> origin = absl::nullopt) {
+      std::optional<GURL> origin = std::nullopt) {
     return GetDisplayedNotificationsSync(service_remote_.get(),
                                          std::move(profile), std::move(origin));
   }
@@ -677,7 +677,7 @@ TEST_F(MacNotificationServiceUNTest, InitializeDeliveredNotifications) {
   // creating a new service.
   UNNotificationCategory* category_ns =
       NotificationCategoryManager::CreateCategory(
-          {{{u"Action", /*reply=*/absl::nullopt}}, /*settings_button=*/true});
+          {{{u"Action", /*reply=*/std::nullopt}}, /*settings_button=*/true});
   std::string category_id = base::SysNSStringToUTF8(category_ns.identifier);
   FakeUNNotification* notification =
       CreateNotification("notificationId", "profileId",
@@ -702,15 +702,15 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
   // UNNotificationDefaultActionIdentifier etc. outside an @available block.
   NotificationActionParams kNotificationActionParams[] = {
       {UNNotificationDismissActionIdentifier, NotificationOperation::kClose,
-       kNotificationInvalidButtonIndex, /*reply=*/absl::nullopt},
+       kNotificationInvalidButtonIndex, /*reply=*/std::nullopt},
       {UNNotificationDefaultActionIdentifier, NotificationOperation::kClick,
-       kNotificationInvalidButtonIndex, /*reply=*/absl::nullopt},
+       kNotificationInvalidButtonIndex, /*reply=*/std::nullopt},
       {kNotificationButtonOne, NotificationOperation::kClick,
-       /*button_index=*/0, /*reply=*/absl::nullopt},
+       /*button_index=*/0, /*reply=*/std::nullopt},
       {kNotificationButtonTwo, NotificationOperation::kClick,
-       /*button_index=*/1, /*reply=*/absl::nullopt},
+       /*button_index=*/1, /*reply=*/std::nullopt},
       {kNotificationSettingsButtonTag, NotificationOperation::kSettings,
-       kNotificationInvalidButtonIndex, /*reply=*/absl::nullopt},
+       kNotificationInvalidButtonIndex, /*reply=*/std::nullopt},
       {kNotificationButtonOne, NotificationOperation::kClick,
        /*button_index=*/0, u"reply"},
   };

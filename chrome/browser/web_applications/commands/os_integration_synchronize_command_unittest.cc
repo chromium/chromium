@@ -213,14 +213,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
   install_info->protocol_handlers = {protocol_handler};
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  absl::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
   ASSERT_FALSE(current_states.value().has_protocols_handled());
 
   RunSynchronizeCommand(app_id);
 
-  absl::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> updated_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
@@ -262,14 +262,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
   install_info->file_handlers = file_handlers;
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  absl::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
   ASSERT_FALSE(current_states.value().has_file_handling());
 
   RunSynchronizeCommand(app_id);
 
-  absl::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> updated_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
@@ -302,14 +302,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
       web_app::mojom::UserDisplayMode::kStandalone;
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  absl::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
   ASSERT_FALSE(current_states.value().has_run_on_os_login());
 
   EnableRunOnOsLoginMode(app_id);
 
-  absl::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> updated_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
@@ -343,14 +343,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
       CreateShortcutMenuItemInfoFromBitmaps(shortcuts_menu_icons);
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  absl::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
   ASSERT_FALSE(current_states.value().has_shortcut_menus());
 
   RunSynchronizeCommand(app_id);
 
-  absl::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> updated_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
@@ -404,14 +404,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
 
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  absl::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
   ASSERT_FALSE(current_states.value().has_shortcut());
 
   RunSynchronizeCommand(app_id);
 
-  absl::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> updated_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =
@@ -441,14 +441,14 @@ TEST_P(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
       web_app::mojom::UserDisplayMode::kStandalone;
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  absl::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
   ASSERT_FALSE(current_states.value().has_uninstall_registration());
 
   RunSynchronizeCommand(app_id);
 
-  absl::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> updated_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(updated_states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state =

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_LACROS_WEB_APPS_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
 
@@ -108,8 +108,8 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
-      absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone) override;
+      std::optional<bool> accessing_camera,
+      std::optional<bool> accessing_microphone) override;
 
   void ReturnLaunchResults(
       base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback,

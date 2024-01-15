@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -87,8 +87,7 @@ void DebugdNotificationHandler::CloseNotification() {
   }
 }
 
-void DebugdNotificationHandler::OnButtonClick(
-    absl::optional<int> button_index) {
+void DebugdNotificationHandler::OnButtonClick(std::optional<int> button_index) {
   // Do nothing if the notification body is clicked, not the button.
   if (!button_index)
     return;

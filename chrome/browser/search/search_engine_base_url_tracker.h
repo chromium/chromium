@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SEARCH_SEARCH_ENGINE_BASE_URL_TRACKER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class SearchTermsData;
@@ -59,7 +59,7 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
   // Used to check whether notifications from TemplateURLService indicate a
   // change that affects the default search provider.
   GURL previous_google_base_url_;
-  absl::optional<TemplateURLData> previous_default_search_provider_data_;
+  std::optional<TemplateURLData> previous_default_search_provider_data_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_SEARCH_ENGINE_BASE_URL_TRACKER_H_

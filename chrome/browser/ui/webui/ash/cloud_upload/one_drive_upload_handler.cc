@@ -281,7 +281,7 @@ void OneDriveUploadHandler::OnAbandonedUpload() {
   }
   if (callback_) {
     std::move(callback_).Run(OfficeTaskResult::kFileAlreadyBeingUploaded,
-                             absl::nullopt, 0);
+                             std::nullopt, 0);
   }
 }
 

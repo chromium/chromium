@@ -4,6 +4,7 @@
 
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 UiHierarchyDataCollector::UiHierarchyDataCollector() = default;
@@ -116,7 +116,7 @@ void UiHierarchyDataCollector::CollectDataAndDetectPII(
   data_ = std::move(ui_hierarchy_data.data);
   // `data_` can't be empty.
   DCHECK(!data_.empty());
-  std::move(on_data_collected_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_data_collected_callback).Run(/*error=*/std::nullopt);
 }
 
 void UiHierarchyDataCollector::ExportCollectedDataWithPII(
@@ -146,7 +146,7 @@ void UiHierarchyDataCollector::OnDataExportDone(
     std::move(on_exported_callback).Run(error);
     return;
   }
-  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/std::nullopt);
 }
 
 void UiHierarchyDataCollector::InsertIntoPIIMap(

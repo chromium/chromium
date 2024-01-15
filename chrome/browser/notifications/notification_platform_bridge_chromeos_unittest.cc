@@ -27,7 +27,7 @@ TEST(NotificationPlatformBridgeChromeOsTest, Update) {
   auto initial_delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](int* clicks, absl::optional<int> button_index) { ++*clicks; },
+              [](int* clicks, std::optional<int> button_index) { ++*clicks; },
               &initial_delegate_clicks));
   message_center::Notification initial_notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
@@ -46,7 +46,7 @@ TEST(NotificationPlatformBridgeChromeOsTest, Update) {
   auto updated_delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](int* clicks, absl::optional<int> button_index) { ++*clicks; },
+              [](int* clicks, std::optional<int> button_index) { ++*clicks; },
               &updated_delegate_clicks));
   message_center::Notification updated_notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),

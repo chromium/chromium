@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 
@@ -22,7 +23,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/internal/command_internal.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;

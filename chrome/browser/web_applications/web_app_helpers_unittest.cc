@@ -21,13 +21,13 @@ TEST(WebAppHelpers, GenerateApplicationNameFromURL) {
 
 TEST(WebAppHelpers, GenerateAppId) {
   EXPECT_EQ("fedbieoalmbobgfjapopkghdmhgncnaa",
-            GenerateAppId(/*manifest_id=*/absl::nullopt,
+            GenerateAppId(/*manifest_id=*/std::nullopt,
                           GURL("https://www.chromestatus.com/features")));
 
   // The io2016 example is also walked through at
   // https://play.golang.org/p/VrIq_QKFjiV
   EXPECT_EQ("mjgafbdfajpigcjmkgmeokfbodbcfijl",
-            GenerateAppId(/*manifest_id=*/absl::nullopt,
+            GenerateAppId(/*manifest_id=*/std::nullopt,
                           GURL("https://events.google.com/io2016/"
                                "?utm_source=web_app_manifest")));
 }
@@ -37,7 +37,7 @@ TEST(WebAppHelpers, GenerateAppIdForSubApps) {
   const webapps::ManifestId parent_manifest_id = GURL("https://example.com");
 
   EXPECT_EQ("emdpgjhffapdncpmnindbhiapcohmjga",
-            GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+            GenerateAppId(/*manifest_id_path=*/std::nullopt,
                           GURL(subapp_starturl), parent_manifest_id));
 
   EXPECT_EQ("jaadilplijgkeakjaoplplaeceoommee",

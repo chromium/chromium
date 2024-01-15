@@ -26,7 +26,7 @@ class DuplicateDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
   virtual std::string GetPageURL() const;
 
   // The OTRProfileID of the download. Null if for regular mode.
-  virtual absl::optional<Profile::OTRProfileID> GetOTRProfileID() const;
+  virtual std::optional<Profile::OTRProfileID> GetOTRProfileID() const;
 
   // Whether the duplicate is an in-progress request or completed download.
   virtual bool DuplicateRequestExists() const;

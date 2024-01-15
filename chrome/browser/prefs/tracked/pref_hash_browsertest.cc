@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -41,7 +42,6 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -147,7 +147,7 @@ int GetTrackedPrefHistogramCount(const char* histogram_name,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<base::Value::Dict> ReadPrefsDictionary(
+std::optional<base::Value::Dict> ReadPrefsDictionary(
     const base::FilePath& pref_file) {
   JSONFileValueDeserializer deserializer(pref_file);
   int error_code = JSONFileValueDeserializer::JSON_NO_ERROR;
@@ -156,11 +156,11 @@ absl::optional<base::Value::Dict> ReadPrefsDictionary(
       deserializer.Deserialize(&error_code, &error_str);
   if (!prefs || error_code != JSONFileValueDeserializer::JSON_NO_ERROR) {
     ADD_FAILURE() << "Error #" << error_code << ": " << error_str;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!prefs->is_dict()) {
     ADD_FAILURE();
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*prefs).TakeDict();
 }
@@ -249,12 +249,12 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM,
               base::PathExists(protected_pref_file));
 
-    absl::optional<base::Value::Dict> unprotected_preferences(
+    std::optional<base::Value::Dict> unprotected_preferences(
         ReadPrefsDictionary(unprotected_pref_file));
     if (!unprotected_preferences)
       return false;
 
-    absl::optional<base::Value::Dict> protected_preferences;
+    std::optional<base::Value::Dict> protected_preferences;
     if (protection_level_ > PROTECTION_DISABLED_ON_PLATFORM) {
       protected_preferences = ReadPrefsDictionary(protected_pref_file);
       if (!protected_preferences)
@@ -861,7 +861,7 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
     // Tamper with any installed setting for good.crx
     base::Value::Dict* good_crx_dict = extensions_dict->FindDict(kGoodCrxId);
     ASSERT_TRUE(good_crx_dict);
-    absl::optional<int> good_crx_state = good_crx_dict->FindInt("state");
+    std::optional<int> good_crx_state = good_crx_dict->FindInt("state");
     ASSERT_TRUE(good_crx_state);
     EXPECT_EQ(extensions::Extension::ENABLED, *good_crx_state);
     good_crx_dict->Set("state", extensions::Extension::DISABLED);

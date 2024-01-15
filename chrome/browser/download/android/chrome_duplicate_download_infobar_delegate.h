@@ -52,7 +52,7 @@ class ChromeDuplicateDownloadInfoBarDelegate
   bool Cancel() override;
   std::string GetFilePath() const override;
   void InfoBarDismissed() override;
-  absl::optional<Profile::OTRProfileID> GetOTRProfileID() const override;
+  std::optional<Profile::OTRProfileID> GetOTRProfileID() const override;
 
   // The download item that is requesting the infobar. Could get deleted while
   // the infobar is showing.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
@@ -102,7 +102,7 @@ DeviceTrustConnectorState CreateUnmanagedState() {
 class DeviceTrustAshBrowserTest : public test::DeviceTrustBrowserTestBase {
  protected:
   explicit DeviceTrustAshBrowserTest(
-      absl::optional<DeviceTrustConnectorState> state = absl::nullopt)
+      std::optional<DeviceTrustConnectorState> state = std::nullopt)
       : DeviceTrustBrowserTestBase(std::move(state)) {
     auto mock_challenge_key =
         std::make_unique<ash::attestation::MockTpmChallengeKey>();
@@ -122,12 +122,12 @@ using DeviceTrustBrowserTest = DeviceTrustAshBrowserTest;
 class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
  protected:
   explicit DeviceTrustDesktopBrowserTest(
-      absl::optional<DeviceTrustConnectorState> state)
+      std::optional<DeviceTrustConnectorState> state)
       : DeviceTrustDesktopBrowserTest(true, std::move(state)) {}
 
   explicit DeviceTrustDesktopBrowserTest(
       bool create_preexisting_key = true,
-      absl::optional<DeviceTrustConnectorState> state = absl::nullopt)
+      std::optional<DeviceTrustConnectorState> state = std::nullopt)
       : DeviceTrustBrowserTestBase(std::move(state)),
         create_preexisting_key_(create_preexisting_key) {}
 
@@ -156,12 +156,12 @@ class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
   const bool create_preexisting_key_;
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<DeviceTrustTestEnvironmentWin>
+  std::optional<DeviceTrustTestEnvironmentWin>
       device_trust_test_environment_win_;
 #else  // BUILDFLAG(IS_WIN)
-  absl::optional<ScopedKeyPersistenceDelegateFactory>
+  std::optional<ScopedKeyPersistenceDelegateFactory>
       scoped_persistence_delegate_factory_;
-  absl::optional<ScopedKeyRotationCommandFactory>
+  std::optional<ScopedKeyRotationCommandFactory>
       scoped_rotation_command_factory_;
 #endif
 };
@@ -518,7 +518,7 @@ class DeviceTrustBrowserTestWithConsent
             is_user_inline_flow_enabled());
   }
 
-  absl::optional<enterprise_connectors::DTAttestationPolicyLevel>
+  std::optional<enterprise_connectors::DTAttestationPolicyLevel>
   GetExpectedAttestationPolicyLevel() {
     if (is_user_inline_flow_enabled() && is_device_inline_flow_enabled()) {
       return enterprise_connectors::DTAttestationPolicyLevel::kUserAndBrowser;
@@ -529,10 +529,10 @@ class DeviceTrustBrowserTestWithConsent
     if (is_device_inline_flow_enabled()) {
       return enterprise_connectors::DTAttestationPolicyLevel::kBrowser;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<content::TestNavigationManager> pending_navigation_;
+  std::optional<content::TestNavigationManager> pending_navigation_;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestWithConsent,
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestWithConsent,
           ? DTAttestationResult::kSuccess
           : DTAttestationResult::kSuccessNoSignature;
 
-  absl::optional<enterprise_connectors::DTAttestationPolicyLevel> policy_level =
+  std::optional<enterprise_connectors::DTAttestationPolicyLevel> policy_level =
       GetExpectedAttestationPolicyLevel();
 
   if (ShouldTriggerConsent()) {

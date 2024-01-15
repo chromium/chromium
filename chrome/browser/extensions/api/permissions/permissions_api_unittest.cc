@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -28,7 +29,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -80,7 +80,7 @@ bool RunRequestFunction(
   auto function = base::MakeRefCounted<PermissionsRequestFunction>();
   function->set_user_gesture(true);
   function->set_extension(&extension);
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), args, browser_context,
           api_test_utils::FunctionMode::kNone);
@@ -173,7 +173,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-  absl::optional<base::AutoReset<PermissionsRequestFunction::DialogAction>>
+  std::optional<base::AutoReset<PermissionsRequestFunction::DialogAction>>
       dialog_action_;
 };
 

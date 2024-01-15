@@ -128,8 +128,8 @@ class AudioSourceFetcherImpl
   std::unique_ptr<media::ConvertingAudioFifo> converter_;
 
   // The output params for resampling for the server based speech recognition.
-  absl::optional<media::AudioParameters> server_based_recognition_params_ =
-      absl::nullopt;
+  std::optional<media::AudioParameters> server_based_recognition_params_ =
+      std::nullopt;
   bool is_multi_channel_supported_;
   bool is_server_based_;
 

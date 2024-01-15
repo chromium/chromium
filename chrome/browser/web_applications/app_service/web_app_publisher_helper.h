@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -133,8 +133,8 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
     virtual void ModifyWebAppCapabilityAccess(
         const std::string& app_id,
-        absl::optional<bool> accessing_camera,
-        absl::optional<bool> accessing_microphone) = 0;
+        std::optional<bool> accessing_camera,
+        std::optional<bool> accessing_microphone) = 0;
   };
 
   using LoadIconCallback = base::OnceCallback<void(apps::IconValuePtr)>;
@@ -413,14 +413,14 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void OnLaunchCompleted(
       apps::AppLaunchParams params_for_restore,
       bool is_system_web_app,
-      absl::optional<GURL> override_url,
+      std::optional<GURL> override_url,
       base::OnceCallback<void(content::WebContents*)> on_complete,
       base::WeakPtr<Browser> browser,
       base::WeakPtr<content::WebContents> web_contents,
       apps::LaunchContainer container);
 
   void OnGetWebAppSize(webapps::AppId app_id,
-                       absl::optional<ComputedAppSize> size);
+                       std::optional<ComputedAppSize> size);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

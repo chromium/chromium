@@ -20,7 +20,7 @@ VrGlTestSuite::VrGlTestSuite(int argc, char** argv) : VrTestSuite(argc, argv) {}
 void VrGlTestSuite::Initialize() {
   VrTestSuite::Initialize();
 
-  display_ = gl::GLTestSupport::InitializeGL(absl::nullopt);
+  display_ = gl::GLTestSupport::InitializeGL(std::nullopt);
 
 #if defined(VR_USE_COMMAND_BUFFER)
   // Always enable gpu and oop raster, regardless of platform and denylist.

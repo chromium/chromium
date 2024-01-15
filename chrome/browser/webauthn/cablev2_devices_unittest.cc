@@ -423,7 +423,7 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
   paask_info.id = config.id;
   paask_info.tunnel_server_domain = config.tunnel_server_domain;
 
-  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_opt;
+  std::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_opt;
   if (!config.omit_paask_info) {
     paask_info_opt = paask_info;
   }
@@ -443,7 +443,7 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       /*last_updated_timestamp=*/base::Time::Now(),
       /*pulse_interval=*/base::TimeDelta(),
       /*send_tab_to_self_receiving_enabled=*/false,
-      /*sharing_info=*/absl::nullopt, paask_info_opt,
+      /*sharing_info=*/std::nullopt, paask_info_opt,
       /*fcm_registration_token=*/"fcm_token", syncer::ModelTypeSet());
 }
 

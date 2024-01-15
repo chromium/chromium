@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +17,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -127,7 +128,7 @@ TEST_F(PdfViewerPrivateApiUnitTest, GetStreamInfoValid) {
   auto function = base::MakeRefCounted<PdfViewerPrivateGetStreamInfoFunction>();
   function->SetRenderFrameHost(extension_host());
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
   ASSERT_TRUE(result);

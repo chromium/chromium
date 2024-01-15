@@ -28,9 +28,9 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   using RotateKeyCallback =
       base::OnceCallback<void(DeviceTrustKeyManager::KeyRotationResult)>;
   using ExportPublicKeyCallback =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+      base::OnceCallback<void(std::optional<std::string>)>;
   using SignStringCallback =
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>;
 
   DeviceTrustKeyManagerImpl(
       std::unique_ptr<KeyRotationLauncher> key_rotation_launcher,
@@ -43,7 +43,7 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void ExportPublicKeyAsync(ExportPublicKeyCallback callback) override;
   void SignStringAsync(const std::string& str,
                        SignStringCallback callback) override;
-  absl::optional<KeyMetadata> GetLoadedKeyMetadata() const override;
+  std::optional<KeyMetadata> GetLoadedKeyMetadata() const override;
   bool HasPermanentFailure() const override;
 
  private:
@@ -119,11 +119,11 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
 
   // When set, represents the response code for the synchronization request
   // of `key_pair_`.
-  absl::optional<int> sync_key_response_code_;
+  std::optional<int> sync_key_response_code_;
 
   // If a failure deemed as "permanent" (i.e. no use in retrying) is
   // encountered, the key manager flows will be disabled.
-  absl::optional<PermanentFailure> permanent_failure_;
+  std::optional<PermanentFailure> permanent_failure_;
 
   // List of pending client requests.
   base::OnceClosureList pending_client_requests_;

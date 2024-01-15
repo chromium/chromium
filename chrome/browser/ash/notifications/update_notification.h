@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_UPDATE_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_UPDATE_NOTIFICATION_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -28,7 +29,7 @@ class UpdateNotification {
 
  private:
   // Handles clicks on the notification.
-  void OnNotificationClick(absl::optional<int> button_index);
+  void OnNotificationClick(std::optional<int> button_index);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<UpdateNotificationShowingController> controller_;

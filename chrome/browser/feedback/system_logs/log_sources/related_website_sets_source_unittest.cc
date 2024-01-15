@@ -146,7 +146,7 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
       base::Version("0.0"),
       {{primary1_site,
         {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary,
-                                 absl::nullopt)}},
+                                 std::nullopt)}},
        {associate_site,
         {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated,
                                  0)}}},
@@ -158,10 +158,10 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
   SetContextConfig(net::FirstPartySetsContextConfig(
       {{primary2_site,
         net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kPrimary, absl::nullopt))},
+            primary2_site, net::SiteType::kPrimary, std::nullopt))},
        {service_site,
         net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-            primary2_site, net::SiteType::kService, absl::nullopt))}}));
+            primary2_site, net::SiteType::kService, std::nullopt))}}));
 
   service()->InitForTesting();
   base::Value::List expected =
@@ -199,7 +199,7 @@ TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
       {
           {primary,
            {net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                    absl::nullopt)}},
+                                    std::nullopt)}},
           {associated3,
            {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 2)}},
           {associated1,
@@ -208,13 +208,13 @@ TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
            {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)}},
           {service2,
            {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    absl::nullopt)}},
+                                    std::nullopt)}},
           {service1,
            {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    absl::nullopt)}},
+                                    std::nullopt)}},
           {service3,
            {net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                    absl::nullopt)}},
+                                    std::nullopt)}},
       },
       {}));
 

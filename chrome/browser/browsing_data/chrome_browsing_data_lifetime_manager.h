@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_LIFETIME_MANAGER_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,7 +18,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -57,7 +58,7 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
   // Sets the end time of the period for which data must be deleted, for all
   // configurations. If this is |end_time_for_testing| has no value, use the
   // computed end time from each configuration.
-  void SetEndTimeForTesting(absl::optional<base::Time> end_time_for_testing) {
+  void SetEndTimeForTesting(std::optional<base::Time> end_time_for_testing) {
     end_time_for_testing_ = std::move(end_time_for_testing);
   }
   void SetBrowsingDataRemoverObserverForTesting(
@@ -92,7 +93,7 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
   raw_ptr<Profile> profile_;
   raw_ptr<content::BrowsingDataRemover::Observer, DanglingUntriaged>
       testing_data_remover_observer_ = nullptr;
-  absl::optional<base::Time> end_time_for_testing_;
+  std::optional<base::Time> end_time_for_testing_;
   base::WeakPtrFactory<ChromeBrowsingDataLifetimeManager> weak_ptr_factory_{
       this};
 

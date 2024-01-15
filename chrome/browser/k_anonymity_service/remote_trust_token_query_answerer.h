@@ -52,8 +52,8 @@ class RemoteTrustTokenQueryAnswerer
   // Handle a mojo disconnection. Retries current requests.
   void OnDisconnect();
 
-  absl::optional<HasTrustTokensCallback> pending_has_trust_tokens_request_;
-  absl::optional<HasRedemptionRecordCallback>
+  std::optional<HasTrustTokensCallback> pending_has_trust_tokens_request_;
+  std::optional<HasRedemptionRecordCallback>
       pending_has_redemption_record_request_;
 
   const url::Origin top_frame_origin_;

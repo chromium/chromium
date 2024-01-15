@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
@@ -86,12 +86,12 @@ void TestPasswordsPrivateDelegate::GetPasswordExceptionsList(
   std::move(callback).Run(current_exceptions_);
 }
 
-absl::optional<api::passwords_private::UrlCollection>
+std::optional<api::passwords_private::UrlCollection>
 TestPasswordsPrivateDelegate::GetUrlCollection(const std::string& url) {
   if (url.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::optional<api::passwords_private::UrlCollection>(
+  return std::optional<api::passwords_private::UrlCollection>(
       api::passwords_private::UrlCollection());
 }
 
@@ -159,12 +159,12 @@ void TestPasswordsPrivateDelegate::UndoRemoveSavedPasswordOrException() {
   if (last_deleted_entry_.has_value()) {
     current_entries_.insert(current_entries_.begin(),
                             std::move(last_deleted_entry_.value()));
-    last_deleted_entry_ = absl::nullopt;
+    last_deleted_entry_ = std::nullopt;
     SendSavedPasswordsList();
   } else if (last_deleted_exception_.has_value()) {
     current_exceptions_.insert(current_exceptions_.begin(),
                                std::move(last_deleted_exception_.value()));
-    last_deleted_exception_ = absl::nullopt;
+    last_deleted_exception_ = std::nullopt;
     SendPasswordExceptionsList();
   }
 }

@@ -10,12 +10,12 @@
 
 namespace {
 
-absl::optional<ukm::SourceId> GetUkmSourceId(
+std::optional<ukm::SourceId> GetUkmSourceId(
     content::RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kPrerendering)) {
     // We don't collect UKM while prerendering due to data collection policy.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return render_frame_host->GetPageUkmSourceId();
 }
@@ -193,7 +193,7 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
   }
   DCHECK(ukm_source_id == ukm_source_id_);
 
-  absl::optional<base::TimeDelta> navigation_start_to_now;
+  std::optional<base::TimeDelta> navigation_start_to_now;
   if (!navigation_start_time_.is_null()) {
     navigation_start_to_now = base::TimeTicks::Now() - navigation_start_time_;
   }
@@ -205,8 +205,8 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
   }
 
   auto get_max_time_ms =
-      [this](const absl::optional<base::TimeDelta>& max_time,
-             const absl::optional<base::TimeDelta>& last_navigation_start_to) {
+      [this](const std::optional<base::TimeDelta>& max_time,
+             const std::optional<base::TimeDelta>& last_navigation_start_to) {
         int64_t max_time_ms = -1;
         if (last_navigation_start_to.has_value() &&
             navigation_start_to_click_.has_value()) {

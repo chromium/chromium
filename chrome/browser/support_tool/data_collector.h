@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -17,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The error code that a Support Tool component can return.
 enum class SupportToolErrorCode {
@@ -52,7 +52,7 @@ using PIIMap = std::map<redaction::PIIType, std::set<std::string>>;
 
 // Returns a SupportToolError if an error occurs to the callback.
 using DataCollectorDoneCallback =
-    base::OnceCallback<void(absl::optional<SupportToolError> error)>;
+    base::OnceCallback<void(std::optional<SupportToolError> error)>;
 
 // The DataCollector provides an interface for data sources that the
 // SupportToolHandler uses to collect debug data from multiple sources in Chrome

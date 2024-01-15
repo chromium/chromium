@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_OOP_H_
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_OOP_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
 #error "OOP printing must be enabled"
@@ -40,8 +40,8 @@ class PrintJobWorkerOop : public PrintJobWorker {
   PrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
-      absl::optional<PrintBackendServiceManager::ClientId> client_id,
-      absl::optional<PrintBackendServiceManager::ContextId> context_id,
+      std::optional<PrintBackendServiceManager::ClientId> client_id,
+      std::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
       bool print_from_system_dialog);
   PrintJobWorkerOop(const PrintJobWorkerOop&) = delete;
@@ -60,8 +60,8 @@ class PrintJobWorkerOop : public PrintJobWorker {
   PrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
-      absl::optional<PrintBackendServiceManager::ClientId> client_id,
-      absl::optional<PrintBackendServiceManager::ContextId> context_id,
+      std::optional<PrintBackendServiceManager::ClientId> client_id,
+      std::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
       bool print_from_system_dialog,
       bool simulate_spooling_memory_errors);
@@ -122,12 +122,12 @@ class PrintJobWorkerOop : public PrintJobWorker {
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.
-  absl::optional<PrintBackendServiceManager::ClientId>
+  std::optional<PrintBackendServiceManager::ClientId>
       service_manager_client_id_;
 
   // The printing context identifier related to this print job.
   // Used only from UI thread.
-  absl::optional<PrintBackendServiceManager::ContextId> printing_context_id_;
+  std::optional<PrintBackendServiceManager::ContextId> printing_context_id_;
 
   // The device name used when printing via a service.  Used only from the UI
   // thread.

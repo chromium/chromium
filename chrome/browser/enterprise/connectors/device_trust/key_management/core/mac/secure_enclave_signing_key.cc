@@ -5,7 +5,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_signing_key.h"
 
 #include <Security/Security.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +18,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "crypto/signature_verifier.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -34,7 +35,7 @@ class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
   crypto::SignatureVerifier::SignatureAlgorithm Algorithm() const override;
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override;
   std::vector<uint8_t> GetWrappedKey() const override;
-  absl::optional<std::vector<uint8_t>> SignSlowly(
+  std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override;
 
  private:
@@ -80,13 +81,13 @@ std::vector<uint8_t> SecureEnclaveSigningKey::GetWrappedKey() const {
   return wrapped;
 }
 
-absl::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
+std::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
     base::span<const uint8_t> data) {
   std::vector<uint8_t> signature;
   OSStatus error;
   if (!client_->SignDataWithKey(key_.get(), data, signature, &error)) {
     RecordKeyOperationStatus(KeychainOperation::kSignPayload, key_type_, error);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return signature;

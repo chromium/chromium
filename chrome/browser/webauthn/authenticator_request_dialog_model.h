@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -294,11 +294,11 @@ class AuthenticatorRequestDialogModel
     return transport_availability()->is_ble_powered;
   }
 
-  const absl::optional<std::string>& selected_authenticator_id() const {
+  const std::optional<std::string>& selected_authenticator_id() const {
     return ephemeral_state_.selected_authenticator_id_;
   }
 
-  const absl::optional<std::string>& selected_phone_name() const {
+  const std::optional<std::string>& selected_phone_name() const {
     return ephemeral_state_.selected_phone_name_;
   }
 
@@ -338,7 +338,7 @@ class AuthenticatorRequestDialogModel
   // `nullopt` then it actives the default platform authenticator. Otherwise it
   // actives the platform authenticator of the given type.
   void HideDialogAndDispatchToPlatformAuthenticator(
-      absl::optional<device::AuthenticatorType> type = absl::nullopt);
+      std::optional<device::AuthenticatorType> type = std::nullopt);
 
   // Called when the transport availability info changes.
   void OnTransportAvailabilityChanged(
@@ -550,7 +550,7 @@ class AuthenticatorRequestDialogModel
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
   virtual base::span<const Mechanism> mechanisms() const;
-  absl::optional<int> priority_mechanism_index() const {
+  std::optional<int> priority_mechanism_index() const {
     return ephemeral_state_.priority_mechanism_index_;
   }
 
@@ -568,7 +568,7 @@ class AuthenticatorRequestDialogModel
   // Returns the name of the "priority" paired phone. This is the phone from
   // sync if there are a priori discovered GPM passkeys, or the first phone on
   // the list otherwise.
-  virtual absl::optional<std::u16string> GetPriorityPhoneName() const;
+  virtual std::optional<std::u16string> GetPriorityPhoneName() const;
 
   // StartTransportFlowForTesting moves the UI to focus on the given transport.
   // UI should use |mechanisms()| to enumerate the user-visible mechanisms and
@@ -606,15 +606,15 @@ class AuthenticatorRequestDialogModel
   void FinishCollectToken();
   uint32_t min_pin_length() const { return min_pin_length_; }
   device::pin::PINEntryError pin_error() const { return pin_error_; }
-  absl::optional<int> pin_attempts() const { return pin_attempts_; }
+  std::optional<int> pin_attempts() const { return pin_attempts_; }
 
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
   void OnSampleCollected(int bio_samples_remaining);
   void OnBioEnrollmentDone();
-  absl::optional<int> max_bio_samples() { return max_bio_samples_; }
-  absl::optional<int> bio_samples_remaining() { return bio_samples_remaining_; }
+  std::optional<int> max_bio_samples() { return max_bio_samples_; }
+  std::optional<int> bio_samples_remaining() { return bio_samples_remaining_; }
 
-  absl::optional<int> uv_attempts() const { return uv_attempts_; }
+  std::optional<int> uv_attempts() const { return uv_attempts_; }
 
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
@@ -643,11 +643,11 @@ class AuthenticatorRequestDialogModel
   }
 
   void set_cable_transport_info(
-      absl::optional<bool> extension_is_v2,
+      std::optional<bool> extension_is_v2,
       std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
       base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
           contact_phone_callback,
-      const absl::optional<std::string>& cable_qr_string);
+      const std::optional<std::string>& cable_qr_string);
 
   bool win_native_api_enabled() const {
     return transport_availability_.has_win_native_api_authenticator;
@@ -699,16 +699,16 @@ class AuthenticatorRequestDialogModel
 
     // priority_mechanism_index_ contains an index in `mechanisms_` for the
     // mechanism that should immediately be triggered, if any.
-    absl::optional<size_t> priority_mechanism_index_;
+    std::optional<size_t> priority_mechanism_index_;
 
     // Represents the id of the Bluetooth authenticator that the user is trying
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
-    absl::optional<std::string> selected_authenticator_id_;
+    std::optional<std::string> selected_authenticator_id_;
 
     // The name of the paired phone that was passed to `ContactPhone()`. It is
     // shown on the UI sheet that prompts the user to check their phone for
     // a notification.
-    absl::optional<std::string> selected_phone_name_;
+    std::optional<std::string> selected_phone_name_;
 
     // Stores a list of |AuthenticatorReference| values such that a request can
     // be dispatched dispatched after some UI interaction. This is useful for
@@ -771,8 +771,8 @@ class AuthenticatorRequestDialogModel
   void ContactNextPhoneByName(const std::string& name);
 
   // Returns the index (into `paired_phones_`) of a phone that has been paired
-  // through Chrome Sync, or absl::nullopt if there isn't one.
-  absl::optional<size_t> GetIndexOfMostRecentlyUsedPhoneFromSync() const;
+  // through Chrome Sync, or std::nullopt if there isn't one.
+  std::optional<size_t> GetIndexOfMostRecentlyUsedPhoneFromSync() const;
 
   // SortRecognizedCredentials sorts
   // `transport_availability_.recognized_credentials` into username order.
@@ -787,7 +787,7 @@ class AuthenticatorRequestDialogModel
 
   // IndexOfPriorityMechanism returns the index, in |mechanisms_|, of the
   // Mechanism that should be triggered immediately, if any.
-  absl::optional<size_t> IndexOfPriorityMechanism();
+  std::optional<size_t> IndexOfPriorityMechanism();
 
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged(
@@ -819,7 +819,7 @@ class AuthenticatorRequestDialogModel
   // pending_step_ holds requested steps until the UI is shown. The UI is only
   // shown once the TransportAvailabilityInfo is available, but authenticators
   // may request, e.g., PIN entry prior to that.
-  absl::optional<Step> pending_step_;
+  std::optional<Step> pending_step_;
 
   // after_off_the_record_interstitial_ contains the closure to run if the user
   // accepts the interstitial that warns that platform/caBLE authenticators may
@@ -840,15 +840,15 @@ class AuthenticatorRequestDialogModel
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;
 
-  absl::optional<int> max_bio_samples_;
-  absl::optional<int> bio_samples_remaining_;
+  std::optional<int> max_bio_samples_;
+  std::optional<int> bio_samples_remaining_;
   base::OnceClosure bio_enrollment_callback_;
 
   base::OnceCallback<void(std::u16string)> pin_callback_;
   uint32_t min_pin_length_ = device::kMinPinLength;
   device::pin::PINEntryError pin_error_ = device::pin::PINEntryError::kNoError;
-  absl::optional<int> pin_attempts_;
-  absl::optional<int> uv_attempts_;
+  std::optional<int> pin_attempts_;
+  std::optional<int> uv_attempts_;
 
   base::OnceCallback<void(bool)> attestation_callback_;
 
@@ -873,7 +873,7 @@ class AuthenticatorRequestDialogModel
   std::vector<Mechanism> mechanisms_;
 
   // cable_ui_type_ contains the type of UI to display for a caBLE transaction.
-  absl::optional<CableUIType> cable_ui_type_;
+  std::optional<CableUIType> cable_ui_type_;
 
   // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
   // QR-based pairing. The entries are sorted by name.
@@ -881,7 +881,7 @@ class AuthenticatorRequestDialogModel
 
   // priority_phone_index_ contains an index in `paired_phones_` for the phone
   // that should be dispatched to by default, if any.
-  absl::optional<size_t> priority_phone_index_;
+  std::optional<size_t> priority_phone_index_;
 
   // paired_phones_contacted_ is the same length as |paired_phones_| and
   // contains true whenever the corresponding phone as already been contacted.
@@ -907,7 +907,7 @@ class AuthenticatorRequestDialogModel
   // `cable_connecting_sheet_timer_` to complete.
   bool cable_connecting_ready_to_advance_ = false;
 
-  absl::optional<std::string> cable_qr_string_;
+  std::optional<std::string> cable_qr_string_;
 
   // For MakeCredential requests, the PublicKeyCredentialUserEntity associated
   // with the request.
@@ -947,7 +947,7 @@ class AuthenticatorRequestDialogModel
   // whether or not the this model should consider local biometrics to be
   // available. Biometrics can be unavailable on Macs because they're not
   // present (e.g. a Mac Mini) or because it's a laptop in clamshell mode.
-  absl::optional<bool> local_biometrics_override_for_testing_;
+  std::optional<bool> local_biometrics_override_for_testing_;
 #endif
 
   base::ScopedObservation<webauthn::PasskeyModel,

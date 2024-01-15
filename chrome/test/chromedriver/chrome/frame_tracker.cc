@@ -114,7 +114,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       if (!aux_data->is_dict()) {
         return Status(kUnknownError, method + " has invalid 'auxData' value");
       }
-      if (absl::optional<bool> b = aux_data->GetDict().FindBool("isDefault")) {
+      if (std::optional<bool> b = aux_data->GetDict().FindBool("isDefault")) {
         is_default = *b;
       } else {
         return Status(kUnknownError, method + " has invalid 'isDefault' value");

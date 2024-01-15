@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
-
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
@@ -49,7 +48,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -62,8 +60,8 @@ using UninstallAppsResults = std::vector<std::pair<GURL, bool>>;
 
 ExternalInstallOptions GetInstallOptions(
     const GURL& url,
-    absl::optional<bool> override_previous_user_uninstall =
-        absl::optional<bool>()) {
+    std::optional<bool> override_previous_user_uninstall =
+        std::optional<bool>()) {
   ExternalInstallOptions options(url, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
 
@@ -85,8 +83,8 @@ std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfo(const GURL& url) {
 
 ExternalInstallOptions GetInstallOptionsWithWebAppInfo(
     const GURL& url,
-    absl::optional<bool> override_previous_user_uninstall =
-        absl::optional<bool>()) {
+    std::optional<bool> override_previous_user_uninstall =
+        std::optional<bool>()) {
   ExternalInstallOptions options(url, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.only_use_app_info_factory = true;
@@ -198,7 +196,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
     if (!preempt_registration_callback_)
       return false;
 
-    absl::optional<base::OnceClosure> callback;
+    std::optional<base::OnceClosure> callback;
     preempt_registration_callback_.swap(callback);
     std::move(*callback).Run();
     return true;
@@ -297,7 +295,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
       auto result =
           externally_managed_app_manager_impl_->GetNextInstallationTaskResult(
               install_url);
-      absl::optional<webapps::AppId> app_id;
+      std::optional<webapps::AppId> app_id;
       if (result.code == webapps::InstallResultCode::kSuccessNewInstall) {
         app_id = GenerateAppIdFromManifestId(
             GenerateManifestIdFromStartUrlOnly(install_url));
@@ -322,7 +320,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
           ExternallyManagedAppManager::InstallResult(result.code, app_id));
     }
 
-    void Install(absl::optional<webapps::AppId> placeholder_app_id,
+    void Install(std::optional<webapps::AppId> placeholder_app_id,
                  ResultCallback callback) override {
       externally_managed_app_manager_impl_->OnInstallCalled(install_options());
 
@@ -395,7 +393,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
 
   std::map<GURL, TestTaskResult> next_installation_task_results_;
   std::map<GURL, GURL> next_installation_launch_urls_;
-  absl::optional<base::OnceClosure> preempt_registration_callback_;
+  std::optional<base::OnceClosure> preempt_registration_callback_;
   base::OneShotEvent web_contents_released_event_;
 };
 
@@ -431,7 +429,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
   }
 
   // WebAppCommandScheduler:
-  void RemoveInstallUrl(absl::optional<webapps::AppId> app_id,
+  void RemoveInstallUrl(std::optional<webapps::AppId> app_id,
                         WebAppManagement::Type install_source,
                         const GURL& install_url,
                         webapps::WebappUninstallSource uninstall_source,
@@ -537,8 +535,8 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
       ExternalInstallOptions install_options) {
     base::RunLoop run_loop;
 
-    absl::optional<GURL> url;
-    absl::optional<webapps::InstallResultCode> code;
+    std::optional<GURL> url;
+    std::optional<webapps::InstallResultCode> code;
 
     externally_managed_app_manager_impl().InstallNow(
         std::move(install_options),
@@ -1508,7 +1506,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, AppUninstalled) {
     EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
   }
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       registrar().LookupExternalAppId(kFooWebAppUrl);
   if (app_id.has_value()) {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();

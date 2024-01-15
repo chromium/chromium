@@ -180,7 +180,7 @@ std::string TabCaptureRegistry::AddRequest(
     const GURL& origin,
     content::DesktopMediaID source,
     int caller_render_process_id,
-    absl::optional<int> restrict_to_render_frame_id) {
+    std::optional<int> restrict_to_render_frame_id) {
   std::string device_id;
   LiveRequest* const request = FindRequest(target_contents);
 

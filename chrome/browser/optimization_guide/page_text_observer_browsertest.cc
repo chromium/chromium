@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_text_observer.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -34,7 +35,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 

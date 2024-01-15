@@ -149,12 +149,12 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
   return builder.Build();
 }
 
-absl::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
+std::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
   DCHECK(value);
   v8::MaybeLocal<v8::Int32> maybe_int =
       value->ToInt32(isolate->GetCurrentContext());
   if (maybe_int.IsEmpty())
-    return absl::nullopt;
+    return std::nullopt;
   return maybe_int.ToLocalChecked()->Value();
 }
 
@@ -576,7 +576,7 @@ v8::Local<v8::Value> NewTabPageBindings::GetNtpTheme(v8::Isolate* isolate) {
 void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
                                                v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
-  absl::optional<int> rid = CoerceToInt(isolate, *rid_value);
+  std::optional<int> rid = CoerceToInt(isolate, *rid_value);
   if (!rid.has_value())
     return;
   SearchBox* search_box = GetSearchBoxForCurrentContext();
@@ -599,7 +599,7 @@ void NewTabPageBindings::UndoMostVisitedDeletion(
     v8::Isolate* isolate,
     v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
-  absl::optional<int> rid = CoerceToInt(isolate, *rid_value);
+  std::optional<int> rid = CoerceToInt(isolate, *rid_value);
   if (!rid.has_value())
     return;
   SearchBox* search_box = GetSearchBoxForCurrentContext();

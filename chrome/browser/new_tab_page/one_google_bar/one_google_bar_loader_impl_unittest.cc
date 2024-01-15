@@ -4,6 +4,8 @@
 
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.h"
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -27,7 +29,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_test_helper.h"
@@ -188,7 +189,7 @@ TEST_F(OneGoogleBarLoaderImplTest, RequestReturns) {
   base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
   one_google_bar_loader()->Load(callback.Get());
 
-  absl::optional<OneGoogleBarData> data;
+  std::optional<OneGoogleBarData> data;
   base::RunLoop loop;
   EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::OK, _))
       .WillOnce(DoAll(SaveArg<1>(&data), Quit(&loop)));
@@ -205,7 +206,7 @@ TEST_F(OneGoogleBarLoaderImplTest, HandlesResponsePreamble) {
   base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
   one_google_bar_loader()->Load(callback.Get());
 
-  absl::optional<OneGoogleBarData> data;
+  std::optional<OneGoogleBarData> data;
   base::RunLoop loop;
   EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::OK, _))
       .WillOnce(DoAll(SaveArg<1>(&data), Quit(&loop)));
@@ -246,7 +247,7 @@ TEST_F(OneGoogleBarLoaderImplTest, ParsesFullResponse) {
   base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
   one_google_bar_loader()->Load(callback.Get());
 
-  absl::optional<OneGoogleBarData> data;
+  std::optional<OneGoogleBarData> data;
   base::RunLoop loop;
   EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::OK, _))
       .WillOnce(DoAll(SaveArg<1>(&data), Quit(&loop)));
@@ -271,8 +272,8 @@ TEST_F(OneGoogleBarLoaderImplTest, CoalescesMultipleRequests) {
   one_google_bar_loader()->Load(second_callback.Get());
 
   // Make sure that a single response causes both callbacks to be called.
-  absl::optional<OneGoogleBarData> first_data;
-  absl::optional<OneGoogleBarData> second_data;
+  std::optional<OneGoogleBarData> first_data;
+  std::optional<OneGoogleBarData> second_data;
 
   base::RunLoop loop;
   EXPECT_CALL(first_callback, Run(OneGoogleBarLoader::Status::OK, _))
@@ -294,7 +295,7 @@ TEST_F(OneGoogleBarLoaderImplTest, NetworkErrorIsTransient) {
 
   base::RunLoop loop;
   EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::TRANSIENT_ERROR,
-                            Eq(absl::nullopt)))
+                            Eq(std::nullopt)))
       .WillOnce(Quit(&loop));
   loop.Run();
 }
@@ -307,7 +308,7 @@ TEST_F(OneGoogleBarLoaderImplTest, InvalidJsonErrorIsFatal) {
 
   base::RunLoop loop;
   EXPECT_CALL(callback,
-              Run(OneGoogleBarLoader::Status::FATAL_ERROR, Eq(absl::nullopt)))
+              Run(OneGoogleBarLoader::Status::FATAL_ERROR, Eq(std::nullopt)))
       .WillOnce(Quit(&loop));
   loop.Run();
 }
@@ -323,7 +324,7 @@ TEST_F(OneGoogleBarLoaderImplTest, IncompleteJsonErrorIsFatal) {
 
   base::RunLoop loop;
   EXPECT_CALL(callback,
-              Run(OneGoogleBarLoader::Status::FATAL_ERROR, Eq(absl::nullopt)))
+              Run(OneGoogleBarLoader::Status::FATAL_ERROR, Eq(std::nullopt)))
       .WillOnce(Quit(&loop));
   loop.Run();
 }
@@ -412,7 +413,7 @@ TEST_F(OneGoogleBarLoaderImplTest, ParsesLanguageCode) {
   base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
   one_google_bar_loader()->Load(callback.Get());
 
-  absl::optional<OneGoogleBarData> data;
+  std::optional<OneGoogleBarData> data;
   base::RunLoop loop;
   EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::OK, _))
       .WillOnce(DoAll(SaveArg<1>(&data), Quit(&loop)));

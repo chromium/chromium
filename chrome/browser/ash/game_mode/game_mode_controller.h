@@ -100,8 +100,8 @@ class GameModeController : public aura::client::FocusChangeObserver {
     ~GameModeEnabler();
 
    private:
-    static void OnSetGameMode(absl::optional<GameMode> refresh_of,
-                              absl::optional<GameMode> previous);
+    static void OnSetGameMode(std::optional<GameMode> refresh_of,
+                              std::optional<GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.

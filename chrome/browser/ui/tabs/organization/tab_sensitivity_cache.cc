@@ -21,10 +21,10 @@ TabSensitivityCache::TabSensitivityCache(Profile* profile) : profile_(profile) {
 
 TabSensitivityCache::~TabSensitivityCache() = default;
 
-absl::optional<float> TabSensitivityCache::GetScore(const GURL& url) const {
+std::optional<float> TabSensitivityCache::GetScore(const GURL& url) const {
   const auto it = sensitivy_scores_.find(url);
   if (it == sensitivy_scores_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return it->second;

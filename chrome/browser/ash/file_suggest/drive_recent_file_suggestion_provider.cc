@@ -107,7 +107,7 @@ void DriveRecentFileSuggestionProvider::PerformSearch(
           base::BindOnce(
               &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
               weak_factory_.GetWeakPtr(), std::move(callback)),
-          drive::FileError::FILE_ERROR_ABORT, /*items=*/absl::nullopt));
+          drive::FileError::FILE_ERROR_ABORT, /*items=*/std::nullopt));
 }
 
 void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(
@@ -116,7 +116,7 @@ void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(
 void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
     base::RepeatingClosure callback,
     drive::FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error == drive::FileError::FILE_ERROR_OK && items) {
     for (auto& item : *items) {
       query_result_files_by_path_.emplace(item->path,
@@ -167,7 +167,7 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
     }
 
     results.emplace_back(FileSuggestionType::kDriveFile, path, justification,
-                         timestamp, /*new_score=*/absl::nullopt);
+                         timestamp, /*new_score=*/std::nullopt);
   }
 
   query_result_files_by_path_.clear();

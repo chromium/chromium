@@ -195,7 +195,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,
-      absl::optional<bool> show_download_in_folder);
+      std::optional<bool> show_download_in_folder);
 
   // Sends phishy site report to backend. Returns true if the report is sent
   // successfully.

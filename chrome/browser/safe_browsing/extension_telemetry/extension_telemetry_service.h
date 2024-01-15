@@ -230,7 +230,7 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Given an |extension_id|, retrieves the collected file data from PrefService
   // if available.
-  absl::optional<OffstoreExtensionFileData> RetrieveOffstoreFileDataForReport(
+  std::optional<OffstoreExtensionFileData> RetrieveOffstoreFileDataForReport(
       const extensions::ExtensionId& extension_id);
 
   // Validates offending off-store extension verdicts received in a telemetry

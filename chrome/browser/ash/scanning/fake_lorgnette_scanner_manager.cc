@@ -301,53 +301,52 @@ void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
 }
 
 void FakeLorgnetteScannerManager::SetGetScannerInfoListResponse(
-    const absl::optional<lorgnette::ListScannersResponse>& response) {
+    const std::optional<lorgnette::ListScannersResponse>& response) {
   list_scanners_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetGetScannerCapabilitiesResponse(
-    const absl::optional<lorgnette::ScannerCapabilities>&
-        scanner_capabilities) {
+    const std::optional<lorgnette::ScannerCapabilities>& scanner_capabilities) {
   scanner_capabilities_ = scanner_capabilities;
 }
 
 void FakeLorgnetteScannerManager::SetOpenScannerResponse(
-    const absl::optional<lorgnette::OpenScannerResponse>& response) {
+    const std::optional<lorgnette::OpenScannerResponse>& response) {
   open_scanner_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetCloseScannerResponse(
-    const absl::optional<lorgnette::CloseScannerResponse>& response) {
+    const std::optional<lorgnette::CloseScannerResponse>& response) {
   close_scanner_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetSetOptionsResponse(
-    const absl::optional<lorgnette::SetOptionsResponse>& response) {
+    const std::optional<lorgnette::SetOptionsResponse>& response) {
   set_options_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetGetCurrentConfigResponse(
-    const absl::optional<lorgnette::GetCurrentConfigResponse>& response) {
+    const std::optional<lorgnette::GetCurrentConfigResponse>& response) {
   get_current_config_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetStartPreparedScanResponse(
-    const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
+    const std::optional<lorgnette::StartPreparedScanResponse>& response) {
   start_prepared_scan_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetReadScanDataResponse(
-    const absl::optional<lorgnette::ReadScanDataResponse>& response) {
+    const std::optional<lorgnette::ReadScanDataResponse>& response) {
   read_scan_data_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::SetScanResponse(
-    const absl::optional<std::vector<std::string>>& scan_data) {
+    const std::optional<std::vector<std::string>>& scan_data) {
   scan_data_ = scan_data;
 }
 
 void FakeLorgnetteScannerManager::SetCancelScanResponse(
-    const absl::optional<lorgnette::CancelScanResponse>& response) {
+    const std::optional<lorgnette::CancelScanResponse>& response) {
   cancel_scan_response_ = response;
 }
 

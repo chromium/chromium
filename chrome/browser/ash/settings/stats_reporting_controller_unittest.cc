@@ -91,7 +91,7 @@ class StatsReportingControllerTest : public testing::Test {
   }
 
   void ExpectThatPendingValueIs(bool expected) {
-    absl::optional<base::Value> pending =
+    std::optional<base::Value> pending =
         StatsReportingController::Get()->GetPendingValue();
     EXPECT_TRUE(pending.has_value());
     EXPECT_TRUE(pending->is_bool());
@@ -99,13 +99,13 @@ class StatsReportingControllerTest : public testing::Test {
   }
 
   void ExpectThatPendingValueIsNotSet() {
-    absl::optional<base::Value> pending =
+    std::optional<base::Value> pending =
         StatsReportingController::Get()->GetPendingValue();
     EXPECT_FALSE(pending.has_value());
   }
 
   void ExpectThatSignedStoredValueIs(bool expected) {
-    absl::optional<base::Value> stored =
+    std::optional<base::Value> stored =
         StatsReportingController::Get()->GetSignedStoredValue();
     EXPECT_TRUE(stored.has_value());
     EXPECT_TRUE(stored->is_bool());

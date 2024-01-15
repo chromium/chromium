@@ -8,6 +8,7 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
@@ -18,7 +19,6 @@
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/process_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ProcessMetrics;
@@ -53,7 +53,7 @@ struct ProcessInfo {
   // after the metrics for the first interval is calculated because the
   // subsequent intervals will always take the full duration of
   // kLongIntervalDuration.
-  absl::optional<base::TimeTicks> first_sample_time;
+  std::optional<base::TimeTicks> first_sample_time;
 };
 
 // ProcessMonitor is a tool which allows the sampling of power-related metrics

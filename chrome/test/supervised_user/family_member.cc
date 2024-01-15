@@ -4,6 +4,7 @@
 
 #include "chrome/test/supervised_user/family_member.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 

@@ -245,15 +245,15 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
   // (where it gets via a different mechanism unrelated to history).
   history::HistoryAddPageArgs add_page_args(
       url, timestamp, history::ContextIDForWebContents(web_contents()),
-      /*nav_entry_id=*/0, /*local_navigation_id=*/absl::nullopt,
+      /*nav_entry_id=*/0, /*local_navigation_id=*/std::nullopt,
       /*referrer=*/url, history::RedirectList(), ui::PAGE_TRANSITION_BLOCKED,
       /*hidden=*/false, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*title=*/absl::nullopt,
+      /*title=*/std::nullopt,
       // TODO(crbug.com/1475695): Investigate whether we want to record blocked
       // navigations in the VisitedLinkDatabase, and if so, populate
       // top_level_url with a real value.
-      /*top_level_url=*/absl::nullopt);
+      /*top_level_url=*/std::nullopt);
 
   // Add the entry to the history database.
   Profile* profile =

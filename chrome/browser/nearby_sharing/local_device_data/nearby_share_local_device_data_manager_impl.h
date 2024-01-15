@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/sharing/proto/device_rpc.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
@@ -64,8 +64,8 @@ class NearbyShareLocalDeviceDataManagerImpl
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
   std::string GetDeviceName() const override;
-  absl::optional<std::string> GetFullName() const override;
-  absl::optional<std::string> GetIconUrl() const override;
+  std::optional<std::string> GetFullName() const override;
+  std::optional<std::string> GetIconUrl() const override;
   nearby_share::mojom::DeviceNameValidationResult ValidateDeviceName(
       const std::string& name) override;
   nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
@@ -79,7 +79,7 @@ class NearbyShareLocalDeviceDataManagerImpl
   void OnStart() override;
   void OnStop() override;
 
-  absl::optional<std::string> GetIconToken() const;
+  std::optional<std::string> GetIconToken() const;
 
   // Creates a default device name of the form "<given name>'s <device type>."
   // For example, "Josh's Chromebook." If a given name cannot be found, returns
@@ -89,18 +89,18 @@ class NearbyShareLocalDeviceDataManagerImpl
 
   void OnDownloadDeviceDataRequested();
   void OnDownloadDeviceDataFinished(
-      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response);
   void OnUploadContactsFinished(
       UploadCompleteCallback callback,
-      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response);
   void OnUploadCertificatesFinished(
       UploadCompleteCallback callback,
-      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response);
   void HandleUpdateDeviceResponse(
-      const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+      const std::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response);
 
   raw_ptr<PrefService> pref_service_ = nullptr;

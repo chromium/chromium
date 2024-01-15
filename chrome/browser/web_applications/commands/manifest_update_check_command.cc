@@ -41,13 +41,13 @@ ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     std::unique_ptr<WebAppIconDownloader> icon_downloader)
     : WebAppCommand<AppLock,
                     ManifestUpdateCheckResult,
-                    absl::optional<WebAppInstallInfo>>(
+                    std::optional<WebAppInstallInfo>>(
           "ManifestUpdateCheckCommand",
           AppLockDescription(app_id),
           std::move(callback),
           /*args_for_shutdown=*/
           std::make_tuple(ManifestUpdateCheckResult::kSystemShutdown,
-                          /*new_install_info=*/absl::nullopt)),
+                          /*new_install_info=*/std::nullopt)),
       url_(url),
       app_id_(app_id),
       check_time_(check_time),
@@ -263,7 +263,7 @@ void ManifestUpdateCheckCommand::StashValidatedScopeExtensions(
   }
 
   new_install_info_->validated_scope_extensions =
-      absl::make_optional(std::move(validated_scope_extensions));
+      std::make_optional(std::move(validated_scope_extensions));
   std::move(next_step_callback).Run();
 }
 
@@ -596,9 +596,8 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
   CompleteAndSelfDestruct(
       command_result, check_result,
       check_result == ManifestUpdateCheckResult::kAppUpdateNeeded
-          ? absl::make_optional<WebAppInstallInfo>(
-                std::move(*new_install_info_))
-          : absl::nullopt);
+          ? std::make_optional<WebAppInstallInfo>(std::move(*new_install_info_))
+          : std::nullopt);
 }
 
 }  // namespace web_app

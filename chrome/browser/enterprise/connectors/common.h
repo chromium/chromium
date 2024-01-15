@@ -150,7 +150,7 @@ struct ScanResult : public base::SupportsUserData::Data {
   static const char kKey[];
 
   std::vector<FileMetadata> file_metadata;
-  absl::optional<std::u16string> user_justification;
+  std::optional<std::u16string> user_justification;
 };
 
 // Enum to identify which message to show once scanning is complete. Ordered

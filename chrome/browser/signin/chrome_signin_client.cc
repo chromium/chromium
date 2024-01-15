@@ -71,12 +71,13 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -272,13 +273,13 @@ void ChromeSigninClient::RemoveContentSettingsObserver(
 bool ChromeSigninClient::IsClearPrimaryAccountAllowed(
     bool has_sync_account) const {
   return GetSignoutDecision(has_sync_account,
-                            /*signout_source=*/absl::nullopt) ==
+                            /*signout_source=*/std::nullopt) ==
          SigninClient::SignoutDecision::ALLOW;
 }
 
 bool ChromeSigninClient::IsRevokeSyncConsentAllowed() const {
   return GetSignoutDecision(/*has_sync_account=*/true,
-                            /*signout_source=*/absl::nullopt) !=
+                            /*signout_source=*/std::nullopt) !=
          SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
 }
 
@@ -388,8 +389,8 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
             absl::get<signin_metrics::AccessPoint>(event_source);
 
         // Only record metrics when setting the primary account.
-        absl::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
-        absl::optional<size_t> bar_bookmarks_count =
+        std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
+        std::optional<size_t> bar_bookmarks_count =
             GetBookmarkBarBookmarksCount();
         if (all_bookmarks_count.has_value() &&
             bar_bookmarks_count.has_value()) {
@@ -398,7 +399,7 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
                                 bar_bookmarks_count.value());
         }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-        absl::optional<size_t> extensions_count = GetExtensionsCount();
+        std::optional<size_t> extensions_count = GetExtensionsCount();
         if (extensions_count.has_value()) {
           RecordExtensionsCounts(access_point, consent_level,
                                  extensions_count.value());
@@ -410,7 +411,7 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
 
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     bool has_sync_account,
-    const absl::optional<signin_metrics::ProfileSignout> signout_source) const {
+    const std::optional<signin_metrics::ProfileSignout> signout_source) const {
   // TODO(crbug.com/1366360): Revisit |kAlwaysAllowedSignoutSources| in general
   // and for Lacros main profile.
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
@@ -497,11 +498,11 @@ void ChromeSigninClient::OnTokenFetchComplete(bool token_is_valid) {
 }
 #endif
 
-absl::optional<size_t> ChromeSigninClient::GetAllBookmarksCount() {
+std::optional<size_t> ChromeSigninClient::GetAllBookmarksCount() {
   bookmarks::BookmarkModel* bookmarks =
       BookmarkModelFactory::GetForBrowserContext(profile_);
   if (!bookmarks || !bookmarks->root_node()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Recursive traversal of the root node, counting URLs only.
@@ -518,11 +519,11 @@ absl::optional<size_t> ChromeSigninClient::GetAllBookmarksCount() {
   return count;
 }
 
-absl::optional<size_t> ChromeSigninClient::GetBookmarkBarBookmarksCount() {
+std::optional<size_t> ChromeSigninClient::GetBookmarkBarBookmarksCount() {
   bookmarks::BookmarkModel* bookmarks =
       BookmarkModelFactory::GetForBrowserContext(profile_);
   if (!bookmarks || !bookmarks->bookmark_bar_node()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // It is intended that we only count the visible bookmarks on the bar, meaning
@@ -533,11 +534,11 @@ absl::optional<size_t> ChromeSigninClient::GetBookmarkBarBookmarksCount() {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-absl::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
+std::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistryFactory::GetForBrowserContext(profile_);
   if (!registry) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return registry->enabled_extensions().size();
@@ -558,16 +559,16 @@ absl::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
 // Also note that this will be null for Secondary / non-Main Profiles in
 // Lacros, because they do not start with the Chrome OS Device Account
 // signed-in by default.
-absl::optional<account_manager::Account>
+std::optional<account_manager::Account>
 ChromeSigninClient::GetInitialPrimaryAccount() {
   if (!profile_->IsMainProfile()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const crosapi::mojom::AccountPtr& device_account =
       chromeos::BrowserParamsProxy::Get()->DeviceAccount();
   if (!device_account) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return account_manager::FromMojoAccount(device_account);
@@ -578,9 +579,9 @@ ChromeSigninClient::GetInitialPrimaryAccount() {
 // Returns false for guest session, public session, kiosk, demo mode and Active
 // Directory account.
 // Returns null for secondary / non-main profiles in LaCrOS.
-absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
+std::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
   if (!profile_->IsMainProfile()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const bool is_child_session =
@@ -591,7 +592,7 @@ absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
 
 void ChromeSigninClient::RemoveAccount(
     const account_manager::AccountKey& account_key) {
-  absl::optional<account_manager::Account> device_account =
+  std::optional<account_manager::Account> device_account =
       GetInitialPrimaryAccount();
   if (device_account.has_value() && device_account->key == account_key) {
     DLOG(ERROR)

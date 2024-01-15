@@ -64,7 +64,7 @@ void CleanupManager::SetIsCleanupInProgressForTesting(
 void CleanupManager::OnCleanupHandlerDone(
     base::RepeatingClosure barrier_closure,
     const std::string& handler_name,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   if (error) {
     errors_.push_back(handler_name + ": " + *error);
   }
@@ -78,7 +78,7 @@ void CleanupManager::OnAllCleanupHandlersDone() {
   is_cleanup_in_progress_ = false;
 
   if (errors_.empty()) {
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 

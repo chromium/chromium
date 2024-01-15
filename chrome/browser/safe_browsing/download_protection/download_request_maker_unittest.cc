@@ -52,7 +52,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesUrl) {
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
       /*referrer_chain_data=*/nullptr,
-      /*password=*/absl::nullopt, /*previous_token=*/"", base::DoNothing());
+      /*password=*/std::nullopt, /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
       .WillOnce(Return());
@@ -86,7 +86,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesHash) {
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -121,7 +121,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesLength) {
       /*length=*/123,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -168,7 +168,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesResources) {
       /*length=*/0,
       /*resources=*/resources,
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -209,7 +209,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesUserInitiated) {
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -257,7 +257,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesReferrerChain) {
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
       /*referrer_chain_data=*/&referrer_chain_data,
-      /*password=*/absl::nullopt, /*previous_token=*/"", base::DoNothing());
+      /*password=*/std::nullopt, /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
       .WillOnce(Return());
@@ -302,7 +302,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesStandardProtection) {
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -342,7 +342,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesEnhancedProtection) {
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -379,7 +379,7 @@ TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -416,7 +416,7 @@ TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {
       /*length=*/0,
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
-      /*referrer_chain_data=*/nullptr, /*password=*/absl::nullopt,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
@@ -558,7 +558,7 @@ TEST_F(DownloadRequestMakerTest, NotifiesCallback) {
       /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
       /*is_user_initiated=*/true,
       /*referrer_chain_data=*/nullptr,
-      /*password=*/absl::nullopt, /*previous_token=*/"",
+      /*password=*/std::nullopt, /*previous_token=*/"",
       base::BindLambdaForTesting([&callback_ran](const FileAnalyzer::Results&) {
         callback_ran = true;
       }));

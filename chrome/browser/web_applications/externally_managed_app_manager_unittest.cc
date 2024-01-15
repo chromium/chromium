@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -47,7 +48,6 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
@@ -71,7 +71,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                 -> ExternallyManagedAppManager::InstallResult {
               const GURL& install_url = install_options.install_url;
               if (!app_registrar().GetAppById(GenerateAppId(
-                      /*manifest_id=*/absl::nullopt, install_url))) {
+                      /*manifest_id=*/std::nullopt, install_url))) {
                 std::unique_ptr<WebApp> web_app =
                     test::CreateWebApp(install_url, WebAppManagement::kDefault);
                 web_app->AddInstallURLToManagementExternalConfigMap(
@@ -90,7 +90,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
         base::BindLambdaForTesting(
             [this](const GURL& app_url,
                    ExternalInstallSource install_source) -> bool {
-              absl::optional<webapps::AppId> app_id =
+              std::optional<webapps::AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id.has_value()) {
                 ScopedRegistryUpdate update =
@@ -345,13 +345,13 @@ class ExternallyAppManagerTest : public WebAppTest {
   std::vector<ExternalInstallOptions> CreateExternalInstallOptionsFromTemplate(
       std::vector<GURL> install_urls,
       ExternalInstallSource source,
-      absl::optional<ExternalInstallOptions> template_options = absl::nullopt) {
+      std::optional<ExternalInstallOptions> template_options = std::nullopt) {
     std::vector<ExternalInstallOptions> output;
     base::ranges::transform(
         install_urls, std::back_inserter(output),
         [source, &template_options](const GURL& install_url) {
           ExternalInstallOptions options = template_options.value_or(
-              ExternalInstallOptions(install_url, absl::nullopt, source));
+              ExternalInstallOptions(install_url, std::nullopt, source));
           options.install_url = install_url;
           options.install_source = source;
           return options;
@@ -378,7 +378,7 @@ class ExternallyAppManagerTest : public WebAppTest {
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(install_url);
     install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
-    install_page_state.redirection_url = absl::nullopt;
+    install_page_state.redirection_url = std::nullopt;
 
     install_page_state.opt_metadata =
         FakeWebContentsManager::CreateMetadataWithTitle(u"Basic app title");
@@ -397,7 +397,7 @@ class ExternallyAppManagerTest : public WebAppTest {
         blink::mojom::DisplayMode::kStandalone;
     install_page_state.opt_manifest->short_name = u"Basic app name";
 
-    return GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    return GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
 };
 
@@ -699,7 +699,7 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     auto install_info = std::make_unique<WebAppInstallInfo>();
     install_info->start_url = kStartUrl;
     install_info->title = u"Test user app";
-    absl::optional<webapps::AppId> user_app_id =
+    std::optional<webapps::AppId> user_app_id =
         test::InstallWebApp(profile(), std::move(install_info));
 
     ASSERT_TRUE(user_app_id.has_value());
@@ -749,7 +749,7 @@ TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
 
   // The webapps::AppId should be created from teh install url.
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kInstallUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
   // Install should succeed.
   std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results =
@@ -796,7 +796,7 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
 
   // The webapps::AppId should be created from teh install url.
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kInstallUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
   // Install should succeed.
   std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results =
@@ -843,7 +843,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   }
 
   webapps::AppId placeholder_app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kInstallUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
   auto app_ids = provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(placeholder_app_id));
@@ -893,7 +893,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   }
 
   webapps::AppId placeholder_app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kInstallUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
   auto app_ids = provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(placeholder_app_id));

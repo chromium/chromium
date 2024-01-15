@@ -64,9 +64,9 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
 
   // NearbyShareCertificateStorage
   void GetPublicCertificates(PublicCertificateCallback callback) override;
-  absl::optional<std::vector<NearbySharePrivateCertificate>>
+  std::optional<std::vector<NearbySharePrivateCertificate>>
   GetPrivateCertificates() const override;
-  absl::optional<base::Time> NextPublicCertificateExpirationTime()
+  std::optional<base::Time> NextPublicCertificateExpirationTime()
       const override;
   void ReplacePrivateCertificates(
       const std::vector<NearbySharePrivateCertificate>& private_certificates)

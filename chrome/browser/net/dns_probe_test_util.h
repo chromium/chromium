@@ -100,7 +100,7 @@ class FakeHostResolverNetworkContext : public network::TestNetworkContext {
   ~FakeHostResolverNetworkContext() override;
 
   void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
+      const std::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
 
  private:
@@ -116,7 +116,7 @@ class HangingHostResolverNetworkContext : public network::TestNetworkContext {
   ~HangingHostResolverNetworkContext() override;
 
   void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
+      const std::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
 
  private:

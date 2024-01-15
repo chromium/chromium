@@ -98,7 +98,7 @@ MessageResponse LoadTestMessageHandler::HandleStructuredMessage(
     if (!message) {
       return MissingField(type, "message");
     }
-    absl::optional<bool> passed = msg.FindBool("passed");
+    std::optional<bool> passed = msg.FindBool("passed");
     if (!passed) {
       return MissingField(type, "passed");
     }
@@ -161,7 +161,7 @@ MessageResponse NaClIntegrationMessageHandler::HandleStructuredMessage(
     if (!message) {
       return MissingField(type, "message");
     }
-    absl::optional<bool> passed = msg.FindBool("passed");
+    std::optional<bool> passed = msg.FindBool("passed");
     if (!passed) {
       return MissingField(type, "passed");
     }

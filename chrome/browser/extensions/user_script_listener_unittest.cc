@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/user_script_listener.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -36,7 +37,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -55,14 +55,14 @@ const char kNotMatchingUrl[] = "http://example.com/";
 const ExtensionId kTestExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
 // Yoinked from manifest_unittest.cc.
-absl::optional<base::Value::Dict> LoadManifestFile(const base::FilePath path,
-                                                   std::string* error) {
+std::optional<base::Value::Dict> LoadManifestFile(const base::FilePath path,
+                                                  std::string* error) {
   EXPECT_TRUE(base::PathExists(path));
   JSONFileValueDeserializer deserializer(path);
   std::unique_ptr<base::Value> manifest =
       deserializer.Deserialize(nullptr, error);
   if (!manifest || !manifest->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*manifest).TakeDict();
 }
@@ -75,7 +75,7 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
       AppendASCII("extensions").
       AppendASCII("manifest_tests").
       AppendASCII(filename.c_str());
-  absl::optional<base::Value::Dict> manifest = LoadManifestFile(path, error);
+  std::optional<base::Value::Dict> manifest = LoadManifestFile(path, error);
   if (!manifest) {
     return nullptr;
   }

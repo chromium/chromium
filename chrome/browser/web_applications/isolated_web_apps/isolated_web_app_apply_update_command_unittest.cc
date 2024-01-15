@@ -109,7 +109,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     ASSERT_THAT(base::WriteFile(update_bundle_path_, bundle.data), IsTrue());
   }
 
-  void InstallIwa(absl::optional<WebApp::IsolationData::PendingUpdateInfo>
+  void InstallIwa(std::optional<WebApp::IsolationData::PendingUpdateInfo>
                       pending_update_info) {
     std::unique_ptr<WebApp> isolated_web_app =
         test::CreateWebApp(url_info_.origin().GetURL());
@@ -173,7 +173,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
                     WebApp::IsolationData(
                         installed_location_, installed_version_,
                         /*controlled_frame_partitions=*/{"some-partition"},
-                        /*pending_update_info=*/absl::nullopt)));
+                        /*pending_update_info=*/std::nullopt)));
 
     const IsolatedWebAppLocation installed_app_location =
         web_app->isolation_data()->location;
@@ -228,7 +228,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
           WebApp::IsolationData(
               InstalledBundle({.path = update_bundle_path_}), update_version_,
               /*controlled_frame_partitions=*/{"some-partition"},
-              /*pending_update_info=*/absl::nullopt)));
+              /*pending_update_info=*/std::nullopt)));
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest,
@@ -269,14 +269,14 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstalledAppIsNotIsolated) {
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"), absl::nullopt));
+  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"), std::nullopt));
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest,
        FailsIfInstalledAppHasNoPendingUpdate) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   installed_version_ = base::Version("3.0.0");
-  InstallIwa(/*pending_update_info=*/absl::nullopt);
+  InstallIwa(/*pending_update_info=*/std::nullopt);
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 

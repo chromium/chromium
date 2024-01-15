@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace input_method {
@@ -192,7 +192,7 @@ class AutocorrectManager {
 
     // Records the most recent keypress and if control was down for use in
     // metrics.
-    absl::optional<ui::KeyEvent> last_key_event;
+    std::optional<ui::KeyEvent> last_key_event;
 
     // The range of the current pending autocorrect.
     gfx::Range last_autocorrect_range = gfx::Range();
@@ -219,7 +219,7 @@ class AutocorrectManager {
   // State variable for pending autocorrect, nullopt means no autocorrect
   // suggestion is pending. The state is kept to avoid issue where
   // InputContext returns stale autocorrect range.
-  absl::optional<PendingAutocorrectState> pending_autocorrect_;
+  std::optional<PendingAutocorrectState> pending_autocorrect_;
 
   // Specifies if the last try for hiding undo window failed. This means
   // undo window is possibly visible while it must not be.
@@ -232,22 +232,22 @@ class AutocorrectManager {
   // Holds the currently active engine_id. There are cases where this could be
   // a nullopt, for example, when the object has been constructed and the
   // OnActivate method has not been invoked.
-  absl::optional<std::string> active_engine_id_;
+  std::optional<std::string> active_engine_id_;
 
   // Holds a pending physical keyboard user preference metric ready to be
   // recorded. This metric should be recorded once per input focused, and only
   // if the user is currently using the physical keyboard.
-  absl::optional<PendingPhysicalKeyboardUserPrefMetric>
+  std::optional<PendingPhysicalKeyboardUserPrefMetric>
       pending_user_pref_metric_;
 
   // Holds a pending suggestion provider metric. This metric should be recorded
   // only once per input, and only if the user is currently using the physical
   // keyboard.
-  absl::optional<PendingSuggestionProviderMetric>
+  std::optional<PendingSuggestionProviderMetric>
       pending_suggestion_provider_metric_;
 
   // Holds the suggestion provider enabled for the current input method.
-  absl::optional<ime::AutocorrectSuggestionProvider> suggestion_provider_;
+  std::optional<ime::AutocorrectSuggestionProvider> suggestion_provider_;
 
   // Used to determine if autocorrect should be enabled for a particular input.
   AssistiveInputDenylist denylist_;

@@ -259,10 +259,10 @@ void FastCheckoutClientImpl::InternalStop(bool allow_further_runs) {
   is_running_ = false;
   form_filling_states_.clear();
   form_signatures_to_fill_.clear();
-  selected_autofill_profile_guid_ = absl::nullopt;
-  selected_credit_card_id_ = absl::nullopt;
+  selected_autofill_profile_guid_ = std::nullopt;
+  selected_credit_card_id_ = std::nullopt;
   timeout_timer_.AbandonAndStop();
-  credit_card_form_global_id_ = absl::nullopt;
+  credit_card_form_global_id_ = std::nullopt;
   run_id_ = 0;
   // Reset UI related state.
   fast_checkout_controller_.reset();
@@ -521,7 +521,7 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
   }
   if (!autofill_manager_->form_structures().contains(
           credit_card_form_global_id_.value())) {
-    credit_card_form_global_id_ = absl::nullopt;
+    credit_card_form_global_id_ = std::nullopt;
     return;
   }
   const std::unique_ptr<autofill::FormStructure>& form =
@@ -531,7 +531,7 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true)) {
     FillCreditCardForm(*form, *field, card, cvc);
   }
-  credit_card_form_global_id_ = absl::nullopt;
+  credit_card_form_global_id_ = std::nullopt;
 }
 
 void FastCheckoutClientImpl::OnFullCardRequestFailed(

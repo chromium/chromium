@@ -90,7 +90,7 @@ void NetworkServiceQuicPacketWriter::SetWritable() {
   UpdateIsWriteBlocked();
 }
 
-absl::optional<int> NetworkServiceQuicPacketWriter::MessageTooBigErrorCode()
+std::optional<int> NetworkServiceQuicPacketWriter::MessageTooBigErrorCode()
     const {
   return net::ERR_MSG_TOO_BIG;
 }

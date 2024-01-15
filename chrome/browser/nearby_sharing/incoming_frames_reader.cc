@@ -33,17 +33,17 @@ IncomingFramesReader::IncomingFramesReader(
 IncomingFramesReader::~IncomingFramesReader() = default;
 
 void IncomingFramesReader::ReadFrame(
-    base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
+    base::OnceCallback<void(std::optional<sharing::mojom::V1FramePtr>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_);
   DCHECK(!is_process_stopped_);
 
   callback_ = std::move(callback);
-  frame_type_ = absl::nullopt;
+  frame_type_ = std::nullopt;
 
   // Check in cache for frame.
-  absl::optional<sharing::mojom::V1FramePtr> cached_frame =
+  std::optional<sharing::mojom::V1FramePtr> cached_frame =
       GetCachedFrame(frame_type_);
   if (cached_frame) {
     Done(std::move(cached_frame));
@@ -55,14 +55,14 @@ void IncomingFramesReader::ReadFrame(
 
 void IncomingFramesReader::ReadFrame(
     sharing::mojom::V1Frame::Tag frame_type,
-    base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
+    base::OnceCallback<void(std::optional<sharing::mojom::V1FramePtr>)>
         callback,
     base::TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_);
   DCHECK(!is_process_stopped_);
   if (!connection_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -75,7 +75,7 @@ void IncomingFramesReader::ReadFrame(
       FROM_HERE, base::BindOnce(timeout_callback_.callback()), timeout);
 
   // Check in cache for frame.
-  absl::optional<sharing::mojom::V1FramePtr> cached_frame =
+  std::optional<sharing::mojom::V1FramePtr> cached_frame =
       GetCachedFrame(frame_type_);
   if (cached_frame) {
     Done(std::move(cached_frame));
@@ -88,7 +88,7 @@ void IncomingFramesReader::ReadFrame(
 void IncomingFramesReader::OnNearbyProcessStopped(
     ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   is_process_stopped_ = true;
-  Done(absl::nullopt);
+  Done(std::nullopt);
 }
 
 void IncomingFramesReader::ReadNextFrame() {
@@ -103,11 +103,11 @@ void IncomingFramesReader::OnTimeout() {
 
   CD_LOG(WARNING, Feature::NS)
       << __func__ << ": Timed out reading from NearbyConnection.";
-  Done(absl::nullopt);
+  Done(std::nullopt);
 }
 
 void IncomingFramesReader::OnDataReadFromConnection(
-    absl::optional<std::vector<uint8_t>> bytes) {
+    std::optional<std::vector<uint8_t>> bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!callback_) {
@@ -116,7 +116,7 @@ void IncomingFramesReader::OnDataReadFromConnection(
 
   if (!bytes) {
     CD_LOG(WARNING, Feature::NS) << __func__ << ": Failed to read frame";
-    Done(absl::nullopt);
+    Done(std::nullopt);
     return;
   }
 
@@ -127,7 +127,7 @@ void IncomingFramesReader::OnDataReadFromConnection(
     CD_LOG(WARNING, Feature::NS)
         << __func__
         << ": Cannot decode frame. Not currently bound to nearby process";
-    Done(absl::nullopt);
+    Done(std::nullopt);
     return;
   }
 
@@ -166,18 +166,18 @@ void IncomingFramesReader::OnFrameDecoded(sharing::mojom::FramePtr frame) {
 }
 
 void IncomingFramesReader::Done(
-    absl::optional<sharing::mojom::V1FramePtr> frame) {
+    std::optional<sharing::mojom::V1FramePtr> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  frame_type_ = absl::nullopt;
+  frame_type_ = std::nullopt;
   timeout_callback_.Cancel();
   if (callback_) {
     std::move(callback_).Run(std::move(frame));
   }
 }
 
-absl::optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
-    absl::optional<sharing::mojom::V1Frame::Tag> frame_type) {
+std::optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
+    std::optional<sharing::mojom::V1Frame::Tag> frame_type) {
   CD_LOG(VERBOSE, Feature::NS) << __func__ << ": Fetching cached frame";
   if (frame_type)
     CD_LOG(VERBOSE, Feature::NS)
@@ -187,7 +187,7 @@ absl::optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
       frame_type ? cached_frames_.find(*frame_type) : cached_frames_.begin();
 
   if (iter == cached_frames_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Successfully read cached frame";

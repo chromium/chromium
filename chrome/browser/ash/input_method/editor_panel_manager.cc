@@ -111,18 +111,18 @@ void EditorPanelManager::OnPromoCardDeclined() {
 }
 
 void EditorPanelManager::StartEditingFlow() {
-  delegate_->HandleTrigger(/*preset_query_id=*/absl::nullopt,
-                           /*freeform_text=*/absl::nullopt);
+  delegate_->HandleTrigger(/*preset_query_id=*/std::nullopt,
+                           /*freeform_text=*/std::nullopt);
 }
 
 void EditorPanelManager::StartEditingFlowWithPreset(
     const std::string& text_query_id) {
   delegate_->HandleTrigger(/*preset_query_id=*/text_query_id,
-                           /*freeform_text=*/absl::nullopt);
+                           /*freeform_text=*/std::nullopt);
 }
 
 void EditorPanelManager::StartEditingFlowWithFreeform(const std::string& text) {
-  delegate_->HandleTrigger(/*preset_query_id=*/absl::nullopt,
+  delegate_->HandleTrigger(/*preset_query_id=*/std::nullopt,
                            /*freeform_text=*/text);
 }
 

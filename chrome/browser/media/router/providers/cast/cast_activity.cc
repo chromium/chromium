@@ -111,7 +111,7 @@ void CastActivity::SendMessageToClient(
 
 void CastActivity::SendMediaStatusToClients(
     const base::Value::Dict& media_status,
-    absl::optional<int> request_id) {
+    std::optional<int> request_id) {
   for (auto& client : connected_clients_)
     client.second->SendMediaMessageToClient(media_status, request_id);
 }
@@ -127,10 +127,10 @@ void CastActivity::TerminatePresentationConnections() {
     client.second->TerminateConnection();
 }
 
-absl::optional<int> CastActivity::SendMediaRequestToReceiver(
+std::optional<int> CastActivity::SendMediaRequestToReceiver(
     const CastInternalMessage& cast_message) {
   NOTIMPLEMENTED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 cast_channel::Result CastActivity::SendAppMessageToReceiver(

@@ -64,8 +64,8 @@ class EditorMediator : public EditorEventSink,
   // TODO(b/301869966): Consider removing default parameters once the context
   // menu Orca entry is removed.
   void HandleTrigger(
-      absl::optional<std::string_view> preset_query_id = absl::nullopt,
-      absl::optional<std::string_view> freeform_text = absl::nullopt) override;
+      std::optional<std::string_view> preset_query_id = std::nullopt,
+      std::optional<std::string_view> freeform_text = std::nullopt) override;
   EditorMode GetEditorMode() const override;
   // This method is currently used for metric purposes to understand the ratio
   // of requests being blocked vs. the potential requests that can be

@@ -87,7 +87,7 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
 #if BUILDFLAG(IS_WIN)
   // Try to get the 'us-en' font name. If it is failing, use the first name
   // available.
-  absl::optional<std::string> localized_font_name =
+  std::optional<std::string> localized_font_name =
       gfx::win::RetrieveLocalizedFontName(*font_name, "us-en");
   if (!localized_font_name)
     localized_font_name = gfx::win::RetrieveLocalizedFontName(*font_name, "");
@@ -266,7 +266,7 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  absl::optional<fonts::ClearFont::Params> params =
+  std::optional<fonts::ClearFont::Params> params =
       fonts::ClearFont::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -282,7 +282,7 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
-  absl::optional<fonts::GetFont::Params> params =
+  std::optional<fonts::GetFont::Params> params =
       fonts::GetFont::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -320,7 +320,7 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  absl::optional<fonts::SetFont::Params> params =
+  std::optional<fonts::SetFont::Params> params =
       fonts::SetFont::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

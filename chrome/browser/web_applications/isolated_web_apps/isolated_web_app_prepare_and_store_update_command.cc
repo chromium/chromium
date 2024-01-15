@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -40,7 +41,6 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
@@ -355,7 +355,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess(
       lazy_destination_update_info_.value().location();
   // Reset the lazy_destination_update_info_ to prevent cleanup in the
   // destructor.
-  lazy_destination_update_info_ = absl::nullopt;
+  lazy_destination_update_info_ = std::nullopt;
   CompleteAndSelfDestruct(CommandResult::kSuccess,
                           IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
                               update_version, location));
@@ -369,7 +369,7 @@ Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
     IsolatedWebAppLocation location,
-    absl::optional<base::Version> expected_version)
+    std::optional<base::Version> expected_version)
     : location_(std::move(location)),
       expected_version_(std::move(expected_version)) {}
 

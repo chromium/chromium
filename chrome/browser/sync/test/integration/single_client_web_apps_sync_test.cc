@@ -86,7 +86,7 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   void InjectWebAppEntityToFakeServer(
       const std::string& app_id,
       const GURL& url,
-      absl::optional<std::string> relative_manifest_id = absl::nullopt) {
+      std::optional<std::string> relative_manifest_id = std::nullopt) {
     sync_pb::EntitySpecifics entity_specifics;
     entity_specifics.mutable_web_app()->set_name(app_id);
     entity_specifics.mutable_web_app()->set_start_url(url.spec());
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithValidIdSyncInstalled) {
   GURL url("https://example.com/");
-  const std::string app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
+  const std::string app_id = GenerateAppId(/*manifest_id=*/std::nullopt, url);
   InjectWebAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
       apps_helper::InstallWebApp(GetProfile(0), info);
 
   const std::string expected_app_id = GenerateAppId(
-      /*manifest_id=*/absl::nullopt, GURL("https://example.com/explicit_id"));
+      /*manifest_id=*/std::nullopt, GURL("https://example.com/explicit_id"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
 
@@ -225,14 +225,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
       apps_helper::InstallWebApp(GetProfile(0), info);
 
   const std::string expected_app_id = GenerateAppId(
-      /*manifest_id=*/absl::nullopt, GURL("https://example.com/"));
+      /*manifest_id=*/std::nullopt, GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
   GURL url("https://example.com/start");
   const std::string app_id =
-      GenerateAppId(/*manifest_id_path=*/absl::nullopt, url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
 
   InjectWebAppEntityToFakeServer(app_id, GURL());
   ASSERT_TRUE(SetupSync());
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        NoDisplayModeMeansStandalone) {
   GURL url("https://example.com/start");
   const std::string app_id =
-      GenerateAppId(/*manifest_id_path=*/absl::nullopt, url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
 
   InjectWebAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());

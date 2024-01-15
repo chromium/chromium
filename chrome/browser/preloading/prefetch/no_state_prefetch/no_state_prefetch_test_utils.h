@@ -43,7 +43,7 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin,
       FinalStatus expected_final_status,
       bool ignore_final_status);
@@ -242,7 +242,7 @@ class TestNoStatePrefetchContentsFactory
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
+      const std::optional<url::Origin>& initiator_origin,
       Origin origin) override;
 
  private:

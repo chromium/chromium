@@ -96,7 +96,7 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
               [](DeviceConnectionTracker* connection_tracker,
-                 absl::optional<int> button_index) {
+                 std::optional<int> button_index) {
                 // ConnectionTracker guarantees that RemoveProfile() is
                 // called on Profile destruction so it is impossible to interact
                 // with the notification after `connection_tracker` becomes a

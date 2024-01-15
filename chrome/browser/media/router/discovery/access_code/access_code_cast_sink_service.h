@@ -43,7 +43,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   using AddSinkResultCallback = base::OnceCallback<void(
       access_code_cast::mojom::AddSinkResultCode add_sink_result,
-      absl::optional<MediaSink::Id> sink_id)>;
+      std::optional<MediaSink::Id> sink_id)>;
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -186,7 +186,7 @@ class AccessCodeCastSinkService : public KeyedService,
       std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater);
 
   void OnAccessCodeValidated(AddSinkResultCallback add_sink_callback,
-                             absl::optional<DiscoveryDevice> discovery_device,
+                             std::optional<DiscoveryDevice> discovery_device,
                              AddSinkResultCode result_code);
 
   void OnChannelOpenedResult(AddSinkResultCallback add_sink_callback,
@@ -216,7 +216,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // Returns a MediaRoute if the given |sink_id| corresponds to a route
   // currently active in the media router.
-  absl::optional<const MediaRoute> GetActiveRoute(const MediaSink::Id& sink_id);
+  std::optional<const MediaRoute> GetActiveRoute(const MediaSink::Id& sink_id);
 
   // Fetches and validates stored devices from the pref service. No-op if
   // `pref_updater_` hasn't been instantiated.
@@ -258,7 +258,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void DoCalculateDurationTillExpiration(
       const MediaSink::Id& sink_id,
       base::OnceCallback<void(base::TimeDelta)> on_duration_calculated_callback,
-      absl::optional<base::Time> fetched_device_added_time);
+      std::optional<base::Time> fetched_device_added_time);
   void OnExpiration(const MediaSink::Id& sink_id);
 
   // This function first removes itself from all the prefs and then checks to

@@ -15,7 +15,7 @@
 
 class MockStorageAccessAPIService : public StorageAccessAPIService {
  public:
-  MOCK_METHOD(absl::optional<base::TimeDelta>,
+  MOCK_METHOD(std::optional<base::TimeDelta>,
               RenewPermissionGrant,
               (const url::Origin& embedded_origin,
                const url::Origin& top_frame_origin),
@@ -70,7 +70,7 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
                              url::Origin::Create(GURL("https://example.test"))))
       .Times(1)
       .WillOnce(testing::Return(
-          absl::make_optional(base::Hours(kExpectedDeltaHours))));
+          std::make_optional(base::Hours(kExpectedDeltaHours))));
 
   NavigateAndCommit(GURL("https://example.test/"));
 

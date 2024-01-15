@@ -132,7 +132,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
     OptimizationGuideKeyedServiceFactory::GetForProfile(profile)
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/absl::nullopt, model_file_observer);
+            /*model_metadata=*/std::nullopt, model_file_observer);
   }
 
   // Registers |model_file_observer| for model updates from the optimization
@@ -168,7 +168,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   void set_server_model_cache_key(
-      absl::optional<proto::ModelCacheKey> server_model_cache_key) {
+      std::optional<proto::ModelCacheKey> server_model_cache_key) {
     server_model_cache_key_ = server_model_cache_key;
   }
 
@@ -240,7 +240,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
   // Server returned ModelCacheKey in the GetModels response.
-  absl::optional<proto::ModelCacheKey> server_model_cache_key_;
+  std::optional<proto::ModelCacheKey> server_model_cache_key_;
 };
 
 class PredictionModelStoreBrowserTest

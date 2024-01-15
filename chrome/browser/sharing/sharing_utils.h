@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_UTILS_H_
 #define CHROME_BROWSER_SHARING_SHARING_UTILS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace chrome_browser_sharing {
 class FCMChannelConfiguration;
@@ -31,7 +31,7 @@ bool IsSyncEnabledForSharing(syncer::SyncService* sync_service);
 bool IsSyncDisabledForSharing(syncer::SyncService* sync_service);
 
 // Returns the FCMChannelConfiguration of device with specified |device_info|.
-absl::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
+std::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
     const syncer::DeviceInfo& device_info);
 
 // Returns the SharingDevicePlatform of device with specified |device_info|.

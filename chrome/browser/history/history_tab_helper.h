@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -13,7 +15,6 @@
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history {
 struct HistoryAddPageArgs;
@@ -113,7 +114,7 @@ class HistoryTabHelper
     int nav_entry_id;
     GURL url;
   };
-  absl::optional<NavigationState> cached_navigation_state_;
+  std::optional<NavigationState> cached_navigation_state_;
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligible_tab_for_testing_ = false;

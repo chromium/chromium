@@ -233,5 +233,5 @@ TEST_F(DevToolsSettingsTest, GetPreference) {
       "true");
   EXPECT_EQ(settings.Get("setting_unsynced")->GetString(), "unsynced value");
   EXPECT_EQ(settings.Get("setting_synced")->GetString(), "synced value");
-  EXPECT_EQ(settings.Get("nonexistent"), absl::nullopt);
+  EXPECT_EQ(settings.Get("nonexistent"), std::nullopt);
 }

@@ -196,18 +196,18 @@ void MaybeStoreLastUsedPairing(
 
 // Retrieves the last used pairing public key from the user's profile, if
 // available.
-absl::optional<std::vector<uint8_t>> RetrieveLastUsedPairing(
+std::optional<std::vector<uint8_t>> RetrieveLastUsedPairing(
     content::RenderFrameHost* rfh) {
   if (!rfh) {
     // The RFH might be null in unit tests, or it might not be alive anymore.
-    return absl::nullopt;
+    return std::nullopt;
   }
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   std::string maybe_last_used_pairing = profile->GetPrefs()->GetString(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey);
-  absl::optional<std::vector<uint8_t>> last_used_pairing;
+  std::optional<std::vector<uint8_t>> last_used_pairing;
   if (maybe_last_used_pairing.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::Base64Decode(maybe_last_used_pairing);
 }
@@ -231,7 +231,7 @@ const gfx::VectorIcon& GetCredentialIcon(device::AuthenticatorType type) {
 
 std::u16string GetMechanismDescription(
     device::AuthenticatorType type,
-    const absl::optional<std::u16string>& priority_phone_name) {
+    const std::optional<std::u16string>& priority_phone_name) {
   if (type == device::AuthenticatorType::kPhone) {
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       *priority_phone_name);
@@ -286,15 +286,15 @@ int SourcePriority(device::AuthenticatorType source) {
 }
 
 // Returns the ID of a string and authenticator transport to label a button that
-// triggers the Windows native WebAuthn API, or absl::nullopt if the button
+// triggers the Windows native WebAuthn API, or std::nullopt if the button
 // should not be shown. The transport represents the option Windows will prefer
 // when tapping the button and is used to pick an icon and position on the list.
-absl::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
+std::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
     const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
         transport_availability,
     bool specific_phones_listed) {
   if (!transport_availability.has_win_native_api_authenticator) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool win_handles_internal;
   bool win_handles_hybrid;
@@ -345,7 +345,7 @@ absl::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
     return std::make_pair(IDS_WEBAUTHN_TRANSPORT_EXTERNAL_SECURITY_KEY,
                           AuthenticatorTransport::kUsbHumanInterfaceDevice);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns whether the given authenticator type is implemented within Chrome
@@ -960,7 +960,7 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
       after_off_the_record_interstitial_ =
           base::BindOnce(&AuthenticatorRequestDialogModel::
                              HideDialogAndDispatchToPlatformAuthenticator,
-                         weak_factory_.GetWeakPtr(), absl::nullopt);
+                         weak_factory_.GetWeakPtr(), std::nullopt);
       SetCurrentStep(Step::kOffTheRecordInterstitial);
       return;
     }
@@ -1347,10 +1347,10 @@ void AuthenticatorRequestDialogModel::ContactPhoneForTesting(
   ContactPhone(name);
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 AuthenticatorRequestDialogModel::GetPriorityPhoneName() const {
   if (!priority_phone_index_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::UTF8ToUTF16(paired_phones_[*priority_phone_index_]->name);
 }
@@ -1400,8 +1400,8 @@ void AuthenticatorRequestDialogModel::FinishCollectToken() {
 
 void AuthenticatorRequestDialogModel::StartInlineBioEnrollment(
     base::OnceClosure next_callback) {
-  max_bio_samples_ = absl::nullopt;
-  bio_samples_remaining_ = absl::nullopt;
+  max_bio_samples_ = std::nullopt;
+  bio_samples_remaining_ = std::nullopt;
   bio_enrollment_callback_ = std::move(next_callback);
   SetCurrentStep(Step::kInlineBioEnrollment);
 }
@@ -1437,11 +1437,11 @@ content::RenderFrameHost* AuthenticatorRequestDialogModel::GetRenderFrameHost()
 }
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
-    absl::optional<bool> extension_is_v2,
+    std::optional<bool> extension_is_v2,
     std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
     base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
         contact_phone_callback,
-    const absl::optional<std::string>& cable_qr_string) {
+    const std::optional<std::string>& cable_qr_string) {
   DCHECK(paired_phones.empty() || contact_phone_callback);
 
   if (extension_is_v2.has_value()) {
@@ -1510,7 +1510,7 @@ void AuthenticatorRequestDialogModel::RecordMacOsStartedHistogram() {
     return;
   }
 
-  absl::optional<MacOsHistogramValues> v;
+  std::optional<MacOsHistogramValues> v;
   if (transport_availability_.request_type ==
           device::FidoRequestType::kMakeCredential &&
       transport_availability_.make_credential_attachment.has_value() &&
@@ -1563,7 +1563,7 @@ void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
     return;
   }
 
-  absl::optional<MacOsHistogramValues> v;
+  std::optional<MacOsHistogramValues> v;
 
   if (transport_availability_.request_type ==
       device::FidoRequestType::kMakeCredential) {
@@ -1798,9 +1798,9 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   auto* web_contents = GetWebContents();
   if (web_contents && render_frame_host) {
     std::vector<password_manager::PasskeyCredential> credentials;
-    absl::optional<size_t> priority_phone_index =
+    std::optional<size_t> priority_phone_index =
         GetIndexOfMostRecentlyUsedPhoneFromSync();
-    absl::optional<std::u16string> priority_phone_name;
+    std::optional<std::u16string> priority_phone_name;
     if (priority_phone_index) {
       priority_phone_name =
           base::UTF8ToUTF16(paired_phones_[*priority_phone_index]->name);
@@ -1894,11 +1894,11 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
   DCHECK(found_name);
 }
 
-absl::optional<size_t>
+std::optional<size_t>
 AuthenticatorRequestDialogModel::GetIndexOfMostRecentlyUsedPhoneFromSync()
     const {
   // Try finding the most recently used phone from sync.
-  absl::optional<std::vector<uint8_t>> last_used_pairing =
+  std::optional<std::vector<uint8_t>> last_used_pairing =
       RetrieveLastUsedPairing(content::RenderFrameHost::FromID(frame_host_id_));
   if (last_used_pairing) {
     for (size_t i = 0; i < paired_phones_.size(); ++i) {
@@ -1911,7 +1911,7 @@ AuthenticatorRequestDialogModel::GetIndexOfMostRecentlyUsedPhoneFromSync()
   }
   // Could not find a most recently used phone. Instead, return the phone that
   // last published to sync.
-  absl::optional<int> ret;
+  std::optional<int> ret;
   for (size_t i = 0; i < paired_phones_.size(); ++i) {
     if (paired_phones_[i]->from_sync_deviceinfo) {
       if (!ret || paired_phones_[*ret]->last_updated <
@@ -1961,7 +1961,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       is_get_assertion &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI);
   priority_phone_index_ = GetIndexOfMostRecentlyUsedPhoneFromSync();
-  absl::optional<std::u16string> priority_phone_name = GetPriorityPhoneName();
+  std::optional<std::u16string> priority_phone_name = GetPriorityPhoneName();
   bool list_phone_passkeys =
       is_new_get_assertion_ui && priority_phone_index_ &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
@@ -2080,7 +2080,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
             base::Unretained(this)));
   }
 
-  absl::optional<std::pair<int, AuthenticatorTransport>> windows_button_label;
+  std::optional<std::pair<int, AuthenticatorTransport>> windows_button_label;
   if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
     windows_button_label = GetWindowsAPIButtonLabel(transport_availability_,
                                                     specific_phones_listed);
@@ -2202,7 +2202,7 @@ void AuthenticatorRequestDialogModel::AddWindowsButton(
                           base::Unretained(this)));
 }
 
-absl::optional<size_t>
+std::optional<size_t>
 AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
       transport_availability_.request_type ==
@@ -2214,7 +2214,7 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
 
     if (transport_availability_.has_empty_allow_list) {
       // The index and info of the credential that the UI should default to.
-      absl::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
+      std::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
           best_cred;
       bool multiple_distinct_creds = false;
 
@@ -2260,13 +2260,13 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     }
 
     // For all other cases, go to the multi source passkey picker.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (mechanisms_.size() == 1) {
     return 0;
   } else if (mechanisms_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool windows_handles_hybrid = WebAuthnApiSupportsHybrid();
@@ -2397,7 +2397,7 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AuthenticatorRequestDialogModel::OnPasskeysChanged(
@@ -2421,7 +2421,7 @@ void AuthenticatorRequestDialogModel::OnPasskeyModelShuttingDown() {
 
 void AuthenticatorRequestDialogModel::
     HideDialogAndDispatchToPlatformAuthenticator(
-        absl::optional<device::AuthenticatorType> type) {
+        std::optional<device::AuthenticatorType> type) {
   HideDialog();
 
   // Prefer to use the enclave authenticator over a platform authenticator

@@ -261,7 +261,7 @@ void PrefetchManager::PrefetchUrl(
           request, profile_, std::move(wc_getter),
           /*navigation_ui_data=*/nullptr,
           content::RenderFrameHost::kNoFrameTreeNodeId,
-          /*navigation_id=*/absl::nullopt);
+          /*navigation_id=*/std::nullopt);
 
   auto client = std::make_unique<network::EmptyURLLoaderClient>();
 
@@ -280,7 +280,7 @@ void PrefetchManager::PrefetchUrl(
           content::GlobalRequestID::MakeBrowserInitiated().request_id, options,
           &request, client.get(), kPrefetchTrafficAnnotation,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          /*cors_exempt_header_list=*/absl::nullopt);
+          /*cors_exempt_header_list=*/std::nullopt);
 
   delegate_->PrefetchInitiated(info.url, job->url);
 

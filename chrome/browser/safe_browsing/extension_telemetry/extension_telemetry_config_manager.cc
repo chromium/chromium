@@ -105,17 +105,17 @@ bool ExtensionTelemetryConfigManager::IsSignalEnabled(
 }
 
 uint32_t ExtensionTelemetryConfigManager::GetWritesPerInterval() const {
-  absl::optional<int> param = configuration_.FindInt(kWritesPerInterval);
+  std::optional<int> param = configuration_.FindInt(kWritesPerInterval);
   return static_cast<uint32_t>(param.value_or(kDefaultWritesPerInterval));
 }
 
 uint32_t ExtensionTelemetryConfigManager::GetConfigVersion() const {
-  absl::optional<int> param = configuration_.FindInt(kConfigurationVersion);
+  std::optional<int> param = configuration_.FindInt(kConfigurationVersion);
   return static_cast<uint32_t>(param.value_or(kDefaultConfigVersion));
 }
 
 uint32_t ExtensionTelemetryConfigManager::GetReportingInterval() const {
-  absl::optional<int> param = configuration_.FindInt(kReportingInterval);
+  std::optional<int> param = configuration_.FindInt(kReportingInterval);
   return static_cast<uint32_t>(param.value_or(kDefaultReportingInterval));
 }
 

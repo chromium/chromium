@@ -7,6 +7,7 @@
 #include <windows.storage.h>
 #include <wrl/event.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/webshare/win/fake_uri_runtime_class_factory.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ABI::Windows::ApplicationModel::DataTransfer::DataRequestedEventArgs;
 using ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager;
@@ -101,7 +101,7 @@ class FakeDataTransferManagerTest : public ::testing::Test {
         Microsoft::WRL::Make<FakeDataTransferManager>();
   }
 
-  absl::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
+  std::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   ComPtr<FakeDataTransferManager> fake_data_transfer_manager_;
 };
 

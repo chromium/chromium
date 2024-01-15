@@ -133,7 +133,7 @@ base::Value::Dict GetContext(Profile* profile) {
   context.SetByDottedPath("profile.profilePath",
                           profile->GetPath().AsUTF8Unsafe());
 
-  absl::optional<std::string> client_id = GetUserClientId(profile);
+  std::optional<std::string> client_id = GetUserClientId(profile);
   if (client_id)
     context.SetByDottedPath("profile.clientId", *client_id);
 
@@ -143,7 +143,7 @@ base::Value::Dict GetContext(Profile* profile) {
     context.SetByDottedPath("device.dmToken", device_dm_token);
 #endif
 
-  absl::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
   if (user_dm_token)
     context.SetByDottedPath("profile.dmToken", *user_dm_token);
 
@@ -172,7 +172,7 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
   metadata.mutable_profile()->set_profile_path(
       profile->GetPath().AsUTF8Unsafe());
 
-  absl::optional<std::string> client_id = GetUserClientId(profile);
+  std::optional<std::string> client_id = GetUserClientId(profile);
   if (client_id)
     metadata.mutable_profile()->set_client_id(*client_id);
 
@@ -182,7 +182,7 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
     metadata.mutable_device()->set_dm_token(device_dm_token);
 #endif
 
-  absl::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
   if (user_dm_token)
     metadata.mutable_profile()->set_dm_token(*user_dm_token);
 
@@ -195,28 +195,28 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
 // * user corresponding to a |profile| is managed.
 // Otherwise returns empty string. More about DMToken:
 // go/dmserver-domain-model#dmtoken.
-absl::optional<std::string> GetUserDmToken(Profile* profile) {
+std::optional<std::string> GetUserDmToken(Profile* profile) {
   if (!profile)
-    return absl::nullopt;
+    return std::nullopt;
 
   const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
   if (!policy_data || !policy_data->has_request_token())
-    return absl::nullopt;
+    return std::nullopt;
   return policy_data->request_token();
 }
 
-absl::optional<std::string> GetUserClientId(Profile* profile) {
+std::optional<std::string> GetUserClientId(Profile* profile) {
   if (!profile)
-    return absl::nullopt;
+    return std::nullopt;
 
   const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
   if (!policy_data || !policy_data->has_device_id())
-    return absl::nullopt;
+    return std::nullopt;
   return policy_data->device_id();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<std::string> GetMGSUserClientId() {
+std::optional<std::string> GetMGSUserClientId() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   const user_manager::UserManager* user_manager =
@@ -226,7 +226,7 @@ absl::optional<std::string> GetMGSUserClientId() {
 
   // The policy service is null if the device is managed by Active Directory.
   if (!policy_service) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const policy::DeviceLocalAccountPolicyBroker* policy_broker =
@@ -244,7 +244,7 @@ absl::optional<std::string> GetMGSUserClientId() {
   if (policy_data && policy_data->has_device_id()) {
     return policy_data->device_id();
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 #endif

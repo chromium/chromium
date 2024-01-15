@@ -44,7 +44,7 @@ DailyNavigationCounter::DailyNavigationCounter(
       // Old bucket.
       continue;
     }
-    absl::optional<int> count = dict->FindInt(key);
+    std::optional<int> count = dict->FindInt(key);
     if (!count.has_value()) {
       continue;
     }

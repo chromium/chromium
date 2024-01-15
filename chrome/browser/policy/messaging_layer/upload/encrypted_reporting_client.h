@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_ENCRYPTED_REPORTING_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -17,7 +18,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 class CloudPolicyClient;
@@ -56,7 +56,7 @@ class EncryptedReportingClient {
   // payload of the job).  The `callback` will be called when the upload is
   // completed.
   void UploadReport(base::Value::Dict merging_payload,
-                    absl::optional<base::Value::Dict> context,
+                    std::optional<base::Value::Dict> context,
                     policy::CloudPolicyClient* cloud_policy_client,
                     ResponseCallback callback);
 
@@ -70,7 +70,7 @@ class EncryptedReportingClient {
                                policy::DeviceManagementService::Job* job,
                                policy::DeviceManagementStatus status,
                                int response_code,
-                               absl::optional<base::Value::Dict> response);
+                               std::optional<base::Value::Dict> response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

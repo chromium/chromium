@@ -11,7 +11,7 @@
 
 namespace ash::input_method {
 
-absl::optional<std::string> GetSignedInUserEmailFromProfile(Profile* profile) {
+std::optional<std::string> GetSignedInUserEmailFromProfile(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);
 

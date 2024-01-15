@@ -144,7 +144,7 @@ GameModeController::GameModeEnabler::GameModeEnabler(
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
         GameMode::BOREALIS, kTimeoutSec,
         base::BindOnce(&GameModeEnabler::OnSetGameMode,
-                       /*refresh_of=*/absl::nullopt));
+                       /*refresh_of=*/std::nullopt));
   }
   timer_.Start(FROM_HERE, base::Seconds(kRefreshSec), this,
                &GameModeEnabler::RefreshGameMode);
@@ -175,8 +175,8 @@ void GameModeController::GameModeEnabler::RefreshGameMode() {
 
 // Previous is whether game mode was enabled previous to this call.
 void GameModeController::GameModeEnabler::OnSetGameMode(
-    absl::optional<GameMode> refresh_of,
-    absl::optional<GameMode> previous) {
+    std::optional<GameMode> refresh_of,
+    std::optional<GameMode> previous) {
   if (!previous.has_value()) {
     LOG(ERROR) << "Failed to set Game Mode";
   } else if (GameModeEnabler::should_record_failure && refresh_of.has_value() &&

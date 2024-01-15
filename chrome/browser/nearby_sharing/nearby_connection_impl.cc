@@ -19,7 +19,7 @@ NearbyConnectionImpl::~NearbyConnectionImpl() {
     std::move(disconnect_listener_).Run();
 
   if (read_callback_)
-    std::move(read_callback_).Run(absl::nullopt);
+    std::move(read_callback_).Run(std::nullopt);
 }
 
 void NearbyConnectionImpl::Read(ReadCallback callback) {

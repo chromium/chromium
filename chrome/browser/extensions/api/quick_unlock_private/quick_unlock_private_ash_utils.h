@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_ASH_UTILS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file contains the legacy and new implementations of the
 // quickUnlockPrivate.getAuthToken extension API call. The legacy
@@ -49,8 +49,8 @@ class QuickUnlockPrivateGetAuthTokenHelper {
       const QuickUnlockPrivateGetAuthTokenHelper&) = delete;
 
   using Callback = base::OnceCallback<void(
-      absl::optional<api::quick_unlock_private::TokenInfo> token,
-      absl::optional<ash::AuthenticationError>)>;
+      std::optional<api::quick_unlock_private::TokenInfo> token,
+      std::optional<ash::AuthenticationError>)>;
 
   // `Run` does the following:
   // 1. Switch to the UI thread (all communication with the cryptohome daemon
@@ -70,15 +70,15 @@ class QuickUnlockPrivateGetAuthTokenHelper {
   void OnAuthSessionStarted(Callback,
                             bool user_exists,
                             std::unique_ptr<ash::UserContext>,
-                            absl::optional<ash::AuthenticationError>);
+                            std::optional<ash::AuthenticationError>);
 
   void OnAuthenticated(Callback,
                        std::unique_ptr<ash::UserContext>,
-                       absl::optional<ash::AuthenticationError>);
+                       std::optional<ash::AuthenticationError>);
 
   void OnAuthFactorsConfiguration(Callback,
                                   std::unique_ptr<ash::UserContext>,
-                                  absl::optional<ash::AuthenticationError>);
+                                  std::optional<ash::AuthenticationError>);
 
   raw_ptr<Profile> profile_;
   std::string password_;

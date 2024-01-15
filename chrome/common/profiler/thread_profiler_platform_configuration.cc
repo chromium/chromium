@@ -23,22 +23,22 @@ class DefaultPlatformConfiguration
   explicit DefaultPlatformConfiguration(bool browser_test_mode_enabled);
 
   RelativePopulations GetEnableRates(
-      absl::optional<version_info::Channel> release_channel) const override;
+      std::optional<version_info::Channel> release_channel) const override;
 
   double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
 
-  absl::optional<metrics::CallStackProfileParams::Process>
-  ChooseEnabledProcess() const override;
+  std::optional<metrics::CallStackProfileParams::Process> ChooseEnabledProcess()
+      const override;
 
   bool IsEnabledForThread(
       metrics::CallStackProfileParams::Process process,
       metrics::CallStackProfileParams::Thread thread,
-      absl::optional<version_info::Channel> release_channel) const override;
+      std::optional<version_info::Channel> release_channel) const override;
 
  protected:
   bool IsSupportedForChannel(
-      absl::optional<version_info::Channel> release_channel) const override;
+      std::optional<version_info::Channel> release_channel) const override;
 
   bool browser_test_mode_enabled() const { return browser_test_mode_enabled_; }
 
@@ -52,7 +52,7 @@ DefaultPlatformConfiguration::DefaultPlatformConfiguration(
 
 ThreadProfilerPlatformConfiguration::RelativePopulations
 DefaultPlatformConfiguration::GetEnableRates(
-    absl::optional<version_info::Channel> release_channel) const {
+    std::optional<version_info::Channel> release_channel) const {
   CHECK(IsSupportedForChannel(release_channel));
 
   if (!release_channel) {
@@ -105,22 +105,22 @@ double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
   }
 }
 
-absl::optional<metrics::CallStackProfileParams::Process>
+std::optional<metrics::CallStackProfileParams::Process>
 DefaultPlatformConfiguration::ChooseEnabledProcess() const {
   // Ignore the setting, sampling more than one process.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool DefaultPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread,
-    absl::optional<version_info::Channel> release_channel) const {
+    std::optional<version_info::Channel> release_channel) const {
   // Enable for all supported threads.
   return true;
 }
 
 bool DefaultPlatformConfiguration::IsSupportedForChannel(
-    absl::optional<version_info::Channel> release_channel) const {
+    std::optional<version_info::Channel> release_channel) const {
   // The profiler is always supported for local builds and the CQ.
   if (!release_channel)
     return true;
@@ -151,18 +151,18 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
       base::RepeatingCallback<bool(double)> is_enabled_on_dev_callback);
 
   RelativePopulations GetEnableRates(
-      absl::optional<version_info::Channel> release_channel) const override;
+      std::optional<version_info::Channel> release_channel) const override;
 
   double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
 
-  absl::optional<metrics::CallStackProfileParams::Process>
-  ChooseEnabledProcess() const override;
+  std::optional<metrics::CallStackProfileParams::Process> ChooseEnabledProcess()
+      const override;
 
   bool IsEnabledForThread(
       metrics::CallStackProfileParams::Process process,
       metrics::CallStackProfileParams::Thread thread,
-      absl::optional<version_info::Channel> release_channel) const override;
+      std::optional<version_info::Channel> release_channel) const override;
 
  private:
   // Whether profiling is enabled on a thread type for Android DEV channel.
@@ -198,7 +198,7 @@ AndroidPlatformConfiguration::AndroidPlatformConfiguration(
 
 ThreadProfilerPlatformConfiguration::RelativePopulations
 AndroidPlatformConfiguration::GetEnableRates(
-    absl::optional<version_info::Channel> release_channel) const {
+    std::optional<version_info::Channel> release_channel) const {
   // Always enable profiling in local/CQ builds or browser test mode.
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
     return RelativePopulations{100, 0};
@@ -224,7 +224,7 @@ double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
   return 1.0;
 }
 
-absl::optional<metrics::CallStackProfileParams::Process>
+std::optional<metrics::CallStackProfileParams::Process>
 AndroidPlatformConfiguration::ChooseEnabledProcess() const {
   // Weights are set such that we will receive similar amount of data from
   // each process type. The value is calculated based on Canary/Dev channel
@@ -254,13 +254,13 @@ AndroidPlatformConfiguration::ChooseEnabledProcess() const {
     cumulative_weight += process_enable_weight.weight;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread,
-    absl::optional<version_info::Channel> release_channel) const {
+    std::optional<version_info::Channel> release_channel) const {
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
     return true;
   }
@@ -297,7 +297,7 @@ ThreadProfilerPlatformConfiguration::Create(
 }
 
 bool ThreadProfilerPlatformConfiguration::IsSupported(
-    absl::optional<version_info::Channel> release_channel) const {
+    std::optional<version_info::Channel> release_channel) const {
 // `ThreadProfiler` is currently not supported on ARM64, even if
 // `base::StackSamplingProfiler` may support it.
 //

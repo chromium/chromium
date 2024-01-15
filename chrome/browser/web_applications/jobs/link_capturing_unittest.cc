@@ -57,7 +57,7 @@ TEST_P(LinkCapturingJobTest, SingleAppEnabled) {
   EXPECT_EQ(LinkCapturingEnabledByDefault(),
             provider()->registrar_unsafe().CapturesLinksInScope(app_id));
   EXPECT_EQ(
-      LinkCapturingEnabledByDefault() ? absl::optional(app_id) : absl::nullopt,
+      LinkCapturingEnabledByDefault() ? std::optional(app_id) : std::nullopt,
       provider()->registrar_unsafe().FindAppThatCapturesLinksInScope(
           kTestAppCapturablePage));
 
@@ -97,7 +97,7 @@ TEST_P(LinkCapturingJobTest, SingleAppDisabled) {
   EXPECT_TRUE(provider()->registrar_unsafe().IsLinkCapturableByApp(
       app_id, kTestAppCapturablePage));
   EXPECT_FALSE(provider()->registrar_unsafe().CapturesLinksInScope(app_id));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             provider()->registrar_unsafe().FindAppThatCapturesLinksInScope(
                 kTestAppCapturablePage));
 }

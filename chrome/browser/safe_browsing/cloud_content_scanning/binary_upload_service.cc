@@ -27,11 +27,11 @@ namespace {
 
 constexpr char kCloudBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
 
-absl::optional<GURL> GetUrlOverride() {
+std::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
                                  ->IsCommandLineSwitchSupported()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -44,7 +44,7 @@ absl::optional<GURL> GetUrlOverride() {
       LOG(ERROR) << "--binary-upload-service-url is set to an invalid URL";
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -304,7 +304,7 @@ base::optional_ref<const std::string> BinaryUploadService::Request::password()
   return content_analysis_request_.request_data().has_decryption_key()
              ? base::optional_ref(
                    content_analysis_request_.request_data().decryption_key())
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 enterprise_connectors::ContentAnalysisRequest::Reason

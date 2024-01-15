@@ -135,7 +135,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     base::Value::List& list_of_values = update.Get();
     list_of_values.clear();
     for (auto id : updated_list) {
-      const absl::optional<std::string>& id_string =
+      const std::optional<std::string>& id_string =
           actions::ActionIdMap::ActionIdToString(id);
       // The ActionId should have a string equivalent.
       CHECK(id_string.has_value());

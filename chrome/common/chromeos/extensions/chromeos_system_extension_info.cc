@@ -5,6 +5,7 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -52,19 +52,19 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
        {
            /*manufacturers=*/{"HP", "ASUS"},
            /*pwa_origin=*/"*://googlechromelabs.github.io/*",
-           /*iwa_id=*/absl::nullopt,
+           /*iwa_id=*/std::nullopt,
        }},
       {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
        {
            /*manufacturers=*/{"HP"},
            /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*",
-           /*iwa_id=*/absl::nullopt,
+           /*iwa_id=*/std::nullopt,
        }},
       {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
        {
            /*manufacturers=*/{"ASUS"},
            /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
-           /*iwa_id=*/absl::nullopt,
+           /*iwa_id=*/std::nullopt,
        }},
   };
 
@@ -136,8 +136,8 @@ bool IsChromeOSSystemExtensionDevExtensionEnabled() {
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
     const base::flat_set<std::string>& manufacturers,
-    const absl::optional<std::string>& pwa_origin,
-    const absl::optional<web_package::SignedWebBundleId>& iwa_id)
+    const std::optional<std::string>& pwa_origin,
+    const std::optional<web_package::SignedWebBundleId>& iwa_id)
     : manufacturers(manufacturers), pwa_origin(pwa_origin), iwa_id(iwa_id) {}
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(

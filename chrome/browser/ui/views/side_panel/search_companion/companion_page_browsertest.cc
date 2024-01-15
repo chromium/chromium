@@ -536,18 +536,18 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return eval_js_result.ExtractString();
   }
 
-  absl::optional<std::string> GetLastPageTitleFromPostMessage() {
+  std::optional<std::string> GetLastPageTitleFromPostMessage() {
     content::EvalJsResult eval_js_result = EvalJs("getLastReceivedPageTitle()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return eval_js_result.ExtractString();
   }
 
-  absl::optional<std::string> GetLastInnerHtmlFromPostMessage() {
+  std::optional<std::string> GetLastInnerHtmlFromPostMessage() {
     content::EvalJsResult eval_js_result = EvalJs("getLastReceivedInnerHtml()");
     if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return eval_js_result.ExtractString();
   }

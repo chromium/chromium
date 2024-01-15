@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wallpaper_handlers {
 

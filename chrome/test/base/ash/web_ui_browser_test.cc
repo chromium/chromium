@@ -126,7 +126,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
       message = list[1].GetString();
     }
 
-    TestComplete(test_succeeded ? absl::optional<std::string>() : message);
+    TestComplete(test_succeeded ? std::optional<std::string>() : message);
   }
 
   // content::WebUIMessageHandler:

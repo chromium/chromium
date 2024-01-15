@@ -41,7 +41,7 @@ class DlpAsh : public mojom::Dlp {
       ::mojo::PendingRemote<mojom::StateChangeDelegate> delegate) override;
   void OnScreenShareStopped(const std::string& label,
                             mojom::ScreenShareAreaPtr area) override;
-  void ShowBlockedFiles(absl::optional<uint64_t> task_id,
+  void ShowBlockedFiles(std::optional<uint64_t> task_id,
                         const std::vector<base::FilePath>& blocked_files,
                         mojom::FileAction action) override;
 

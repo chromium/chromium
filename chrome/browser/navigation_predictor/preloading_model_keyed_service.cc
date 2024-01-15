@@ -45,7 +45,7 @@ void PreloadingModelKeyedService::Score(base::CancelableTaskTracker* tracker,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!preloading_model_handler_ ||
       !preloading_model_handler_->ModelAvailable()) {
-    std::move(result_callback).Run(absl::nullopt);
+    std::move(result_callback).Run(std::nullopt);
     return;
   }
 
@@ -76,6 +76,6 @@ void PreloadingModelKeyedService::Score(base::CancelableTaskTracker* tracker,
   preloading_model_handler_->ExecuteModelWithInput(
       tracker, std::move(result_callback), model_input);
 #else
-  std::move(result_callback).Run(absl::nullopt);
+  std::move(result_callback).Run(std::nullopt);
 #endif
 }

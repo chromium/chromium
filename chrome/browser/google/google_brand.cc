@@ -4,6 +4,7 @@
 
 #include "chrome/browser/google/google_brand.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/google/google_brand_chromeos.h"
@@ -38,11 +38,11 @@ bool GetBrand(std::string* brand) {
   // Cache brand code value, since it is queried a lot and registry queries are
   // slow enough to actually affect top-level metrics like
   // Omnibox.CharTypedToRepaintLatency.
-  static const base::NoDestructor<absl::optional<std::string>> brand_code(
-      []() -> absl::optional<std::string> {
+  static const base::NoDestructor<std::optional<std::string>> brand_code(
+      []() -> std::optional<std::string> {
         std::wstring brandw;
         if (!GoogleUpdateSettings::GetBrand(&brandw))
-          return absl::nullopt;
+          return std::nullopt;
         return base::WideToASCII(brandw);
       }());
   if (!brand_code->has_value())

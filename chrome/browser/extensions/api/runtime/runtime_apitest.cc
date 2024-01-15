@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
     ASSERT_EQ("1", json);
 
     ASSERT_TRUE(message_queue.WaitForMessage(&json));
-    absl::optional<base::Value> url =
+    std::optional<base::Value> url =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     ASSERT_TRUE(url->is_string());
     ASSERT_EQ(new_tab_url.spec(), url->GetString());

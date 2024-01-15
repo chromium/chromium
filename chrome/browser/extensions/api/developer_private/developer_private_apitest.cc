@@ -44,7 +44,7 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
       const Extension& extension) {
     auto get_info_function =
         base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             get_info_function.get(),
             content::JsReplace(R"([$1])", extension.id()), profile());

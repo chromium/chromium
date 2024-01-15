@@ -71,7 +71,7 @@ PayloadTracker::PayloadTracker(
 PayloadTracker::~PayloadTracker() = default;
 
 void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update,
-                                    absl::optional<Medium> upgraded_medium) {
+                                    std::optional<Medium> upgraded_medium) {
   auto it = payload_state_.find(update->payload_id);
   if (it == payload_state_.end())
     return;

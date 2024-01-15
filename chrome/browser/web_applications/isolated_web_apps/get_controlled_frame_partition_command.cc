@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -16,11 +17,10 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
-absl::optional<content::StoragePartitionConfig>
+std::optional<content::StoragePartitionConfig>
 GetControlledFramePartitionWithLock(Profile* profile,
                                     const IsolatedWebAppUrlInfo& url_info,
                                     const std::string& partition_name,
@@ -32,7 +32,7 @@ GetControlledFramePartitionWithLock(Profile* profile,
   debug_info.Set("in_memory", in_memory);
 
   if (in_memory) {
-    absl::optional<content::StoragePartitionConfig> config =
+    std::optional<content::StoragePartitionConfig> config =
         lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
             url_info, partition_name);
     return config;

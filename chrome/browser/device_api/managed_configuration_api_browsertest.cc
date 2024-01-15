@@ -4,6 +4,8 @@
 
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/test/gtest_tags.h"
@@ -26,7 +28,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
@@ -91,7 +92,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return http_response;
 }
 
-bool DictValueEquals(absl::optional<base::Value::Dict> value,
+bool DictValueEquals(std::optional<base::Value::Dict> value,
                      const std::map<std::string, std::string>& expected) {
   DCHECK(value);
   std::map<std::string, std::string> actual;
@@ -132,9 +133,9 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
                                    base::Value::List());
   }
 
-  absl::optional<base::Value::Dict> GetValues(
+  std::optional<base::Value::Dict> GetValues(
       const std::vector<std::string>& keys) {
-    base::test::TestFuture<absl::optional<base::Value::Dict>> value_future;
+    base::test::TestFuture<std::optional<base::Value::Dict>> value_future;
     api()->GetOriginPolicyConfiguration(origin_, keys,
                                         value_future.GetCallback());
     return value_future.Take();
@@ -223,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, AppRemovedFromPolicyList) {
 
   ClearConfiguration();
   WaitForUpdate();
-  ASSERT_EQ(GetValues({kKey1, kKey2}), absl::nullopt);
+  ASSERT_EQ(GetValues({kKey1, kKey2}), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, UnknownKeys) {

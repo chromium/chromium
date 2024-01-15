@@ -47,7 +47,7 @@ class AboutThisSiteTabHelper
       const optimization_guide::OptimizationMetadata& metadata);
 
   optimization_guide::OptimizationGuideDecision decision_;
-  absl::optional<page_info::proto::AboutThisSiteMetadata>
+  std::optional<page_info::proto::AboutThisSiteMetadata>
       about_this_site_metadata_;
 
   raw_ptr<optimization_guide::OptimizationGuideDecider>

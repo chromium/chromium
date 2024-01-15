@@ -272,7 +272,7 @@ void OfflineItemModel::OnItemRemoved(const ContentId& id) {
 
 void OfflineItemModel::OnItemUpdated(
     const OfflineItem& item,
-    const absl::optional<UpdateDelta>& update_delta) {
+    const std::optional<UpdateDelta>& update_delta) {
   offline_item_ = std::make_unique<OfflineItem>(item);
   if (delegate_)
     delegate_->OnDownloadUpdated();

@@ -157,8 +157,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   }
   // Take the learned LCPP here so that we can report it after overwriting it
   // with the new data below.
-  absl::optional<predictors::LcppData> lcpp_data_prelearn =
-      predictor ? predictor->GetLcppData(*commit_url_) : absl::nullopt;
+  std::optional<predictors::LcppData> lcpp_data_prelearn =
+      predictor ? predictor->GetLcppData(*commit_url_) : std::nullopt;
 
   // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
   // this. Unflag the feature.
@@ -202,7 +202,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
     const std::string& lcp_element_locator,
-    absl::optional<uint32_t> predicted_lcp_index) {
+    std::optional<uint32_t> predicted_lcp_index) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
@@ -261,13 +261,13 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
     ReportUMAForTimingPredictor(
-        absl::optional<predictors::LcppData> lcpp_data_prelearn) {
+        std::optional<predictors::LcppData> lcpp_data_prelearn) {
   if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_data_prelearn ||
       !IsValidLcppStat(lcpp_data_prelearn->lcpp_stat())) {
     return;
   }
-  absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
-      hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
+  std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
+      ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
           *lcpp_data_prelearn);
   if (!hint || !hint->lcp_element_locators.size()) {
     return;
@@ -281,16 +281,15 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
   // This value existence indicates failure because predicted LCP should be the
   // last.
-  absl::optional<uint32_t> first_valid_index_except_last = absl::nullopt;
+  std::optional<uint32_t> first_valid_index_except_last = std::nullopt;
   for (size_t i = 0; i < predicted_lcp_indexes_.size() - 1; i++) {
-    const absl::optional<uint32_t>& maybe_index = predicted_lcp_indexes_[i];
+    const std::optional<uint32_t>& maybe_index = predicted_lcp_indexes_[i];
     if (maybe_index) {
       first_valid_index_except_last = *maybe_index;
       break;
     }
   }
-  const absl::optional<uint32_t>& last_lcp_index =
-      predicted_lcp_indexes_.back();
+  const std::optional<uint32_t>& last_lcp_index = predicted_lcp_indexes_.back();
 
   internal::LCPPPredictResult result;
   const int max_lcpp_histogram_buckets =

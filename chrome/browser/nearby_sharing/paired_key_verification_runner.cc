@@ -58,7 +58,7 @@ PairedKeyVerificationRunner::PairedKeyVerificationRunner(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& token,
     NearbyConnection* connection,
-    const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate,
+    const std::optional<NearbyShareDecryptedPublicCertificate>& certificate,
     NearbyShareCertificateManager* certificate_manager,
     nearby_share::mojom::Visibility visibility,
     bool restrict_to_contacts,
@@ -104,7 +104,7 @@ void PairedKeyVerificationRunner::Run(
 }
 
 void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
-    absl::optional<sharing::mojom::V1FramePtr> frame) {
+    std::optional<sharing::mojom::V1FramePtr> frame) {
   if (!frame) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to read remote paired key encrpytion";
@@ -153,7 +153,7 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
 
 void PairedKeyVerificationRunner::OnReadPairedKeyResultFrame(
     std::vector<PairedKeyVerificationResult> verification_results,
-    absl::optional<sharing::mojom::V1FramePtr> frame) {
+    std::optional<sharing::mojom::V1FramePtr> frame) {
   if (!frame) {
     CD_LOG(WARNING, Feature::NS)
         << __func__ << ": Failed to read remote paired key result";
@@ -247,7 +247,7 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
 }
 
 void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
-  absl::optional<std::vector<uint8_t>> signature =
+  std::optional<std::vector<uint8_t>> signature =
       certificate_manager_->SignWithPrivateCertificate(
           visibility_, PadPrefix(local_prefix_, raw_token_));
   if (!signature || signature->empty()) {
@@ -282,7 +282,7 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
 PairedKeyVerificationRunner::PairedKeyVerificationResult
 PairedKeyVerificationRunner::VerifyRemotePublicCertificate(
     const sharing::mojom::V1FramePtr& frame) {
-  absl::optional<std::vector<uint8_t>> hash =
+  std::optional<std::vector<uint8_t>> hash =
       certificate_manager_->HashAuthenticationTokenWithPrivateCertificate(
           visibility_, raw_token_);
   if (hash && *hash == frame->get_paired_key_encryption()->secret_id_hash) {

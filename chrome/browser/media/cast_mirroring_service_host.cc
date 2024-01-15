@@ -5,6 +5,7 @@
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -57,7 +58,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -162,13 +162,13 @@ bool IsAccessCodeCastTabSwitchingUIEnabled(
   return media_router::IsAccessCodeCastTabSwitchingUiEnabled(profile);
 }
 
-// Returns the size of the primary display in pixels, or absl::nullopt if it
+// Returns the size of the primary display in pixels, or std::nullopt if it
 // cannot be determined.
-absl::optional<gfx::Size> GetScreenResolution() {
+std::optional<gfx::Size> GetScreenResolution() {
   display::Screen* screen = display::Screen::GetScreen();
   if (!screen) {
     DVLOG(1) << "Cannot get the Screen object.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return screen->GetPrimaryDisplay().GetSizeInPixel();
 }
@@ -237,11 +237,11 @@ void CastMirroringServiceHost::Start(
   ShowCaptureIndicator();
 }
 
-absl::optional<int> CastMirroringServiceHost::GetTabSourceId() const {
+std::optional<int> CastMirroringServiceHost::GetTabSourceId() const {
   if (web_contents()) {
     return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -261,7 +261,7 @@ content::DesktopMediaID CastMirroringServiceHost::BuildMediaIdForWebContents(
 
 // static
 gfx::Size CastMirroringServiceHost::GetCaptureResolutionConstraint() {
-  absl::optional<gfx::Size> screen_resolution = GetScreenResolution();
+  std::optional<gfx::Size> screen_resolution = GetScreenResolution();
   if (screen_resolution) {
     return GetClampedResolution(screen_resolution.value());
   } else {
@@ -464,7 +464,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
              mojo::PendingRemote<AudioInputStream> stream,
              mojo::PendingReceiver<AudioInputStreamClient> client,
              media::mojom::ReadOnlyAudioDataPipePtr data_pipe, bool,
-             const absl::optional<base::UnguessableToken>&) {
+             const std::optional<base::UnguessableToken>&) {
             mojo::Remote<mojom::AudioStreamCreatorClient>(std::move(requestor))
                 ->StreamCreated(std::move(stream), std::move(client),
                                 std::move(data_pipe));

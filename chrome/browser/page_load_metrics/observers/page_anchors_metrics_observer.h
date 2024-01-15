@@ -62,7 +62,7 @@ class PageAnchorsMetricsObserver
 
   bool is_in_prerendered_page_ = false;
 
-  absl::optional<content::GlobalRenderFrameHostId> render_frame_host_id_;
+  std::optional<content::GlobalRenderFrameHostId> render_frame_host_id_;
   ukm::SourceId ukm_source_id_;
 };
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -64,7 +64,7 @@ class TestUninstallAndReplaceJobCommand
   const std::vector<webapps::AppId> from_apps_;
   const webapps::AppId to_app_;
 
-  absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
+  std::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 };
 
 class WebAppUninstallAndReplaceJobTest : public WebAppTest {
@@ -115,7 +115,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   webapps::AppId new_app_id = test::InstallDummyWebApp(
       profile(), "new_app", GURL("https://new.app.com"));
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);
     ASSERT_TRUE(os_state.has_value());
@@ -143,7 +143,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   EXPECT_FALSE(options->add_to_quick_launch_bar);
   if (AreOsIntegrationSubManagersEnabled()) {
-    absl::optional<proto::WebAppOsIntegrationState> os_state =
+    std::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);
     ASSERT_TRUE(os_state.has_value());

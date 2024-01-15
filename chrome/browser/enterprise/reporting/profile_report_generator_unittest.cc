@@ -94,7 +94,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
         kProfile, {}, kProfile16, 0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
-        /*is_supervised_profile=*/false, absl::nullopt,
+        /*is_supervised_profile=*/false, std::nullopt,
         std::move(policy_service_));
   }
 
@@ -153,7 +153,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    absl::optional<base::Value> settings =
+    std::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
     profile()->GetTestingPrefService()->SetManagedPref(

@@ -5,19 +5,18 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_IMPL_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_IMPL_H_
 
-#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
-
 #include <cstddef>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -59,15 +58,15 @@ class BoundSessionRefreshCookieFetcherImpl
   static std::string ParseChallengeHeader(const std::string& header);
 
   void StartRefreshRequest(
-      absl::optional<std::string> sec_session_challenge_response);
+      std::optional<std::string> sec_session_challenge_response);
   void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);
   Result GetResultFromNetErrorAndHttpStatusCode(
       net::Error net_error,
-      absl::optional<int> response_code);
+      std::optional<int> response_code);
   void ReportRefreshResult();
 
-  // Returns `absl::nullopt` if assertion isn't required.
-  absl::optional<std::string> GetChallengeIfBindingKeyAssertionRequired(
+  // Returns `std::nullopt` if assertion isn't required.
+  std::optional<std::string> GetChallengeIfBindingKeyAssertionRequired(
       const scoped_refptr<net::HttpResponseHeaders>& headers) const;
   void HandleBindingKeyAssertionRequired(
       const std::string& challenge_header_value);
@@ -106,7 +105,7 @@ class BoundSessionRefreshCookieFetcherImpl
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
-  absl::optional<base::TimeTicks> cookie_refresh_duration_;
+  std::optional<base::TimeTicks> cookie_refresh_duration_;
   base::WeakPtrFactory<BoundSessionRefreshCookieFetcherImpl> weak_ptr_factory_{
       this};
 };

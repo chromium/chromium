@@ -65,7 +65,7 @@ class PdfNupConverterClient
 
   // Indicates whether to use Skia renderer is enabled by enterprise policy.
   // A nullopt value indicates that such enterprise policy is not set.
-  absl::optional<bool> skia_policy_;
+  std::optional<bool> skia_policy_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

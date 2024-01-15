@@ -77,9 +77,9 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -124,9 +124,9 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_TRUE(result);
             ASSERT_EQ("ABC", result);
             loop.Quit();
@@ -167,9 +167,9 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
@@ -207,9 +207,9 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
   base::OnceClosure cancel_callback = FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> one_time_code,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> one_time_code,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(one_time_code);
             loop.Quit();
           }));
@@ -237,9 +237,9 @@ TEST(SmsRemoteFetcherTest, FeatureDisabled) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
             loop.Quit();
@@ -263,9 +263,9 @@ TEST(SmsRemoteFetcherTest, NoSharingService) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
             loop.Quit();
@@ -307,9 +307,9 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -357,9 +357,9 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
   FetchRemoteSms(
       web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
-          [&loop](absl::optional<std::vector<url::Origin>>,
-                  absl::optional<std::string> result,
-                  absl::optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](std::optional<std::vector<url::Origin>>,
+                  std::optional<std::string> result,
+                  std::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             ASSERT_EQ(failure_type,
                       content::SmsFetchFailureType::kPromptCancelled);

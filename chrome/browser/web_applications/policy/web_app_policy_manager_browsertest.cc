@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
   EXPECT_TRUE(future.Wait());
 
   const webapps::AppId& app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kInstallUrl));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kInstallUrl));
 
   // This test should pass on all platforms, including on a ChromeOS
   // guest session.

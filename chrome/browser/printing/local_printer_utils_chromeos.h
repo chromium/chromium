@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_PRINTING_LOCAL_PRINTER_UTILS_CHROMEOS_H_
 #define CHROME_BROWSER_PRINTING_LOCAL_PRINTER_UTILS_CHROMEOS_H_
 
+#include <optional>
 #include <string>
 
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class CupsPrinterStatus;
@@ -50,7 +50,7 @@ crosapi::mojom::LocalDestinationInfoPtr PrinterToMojom(
 // Printer as well as its semantic capabilities.
 crosapi::mojom::CapabilitiesResponsePtr PrinterWithCapabilitiesToMojom(
     const chromeos::Printer& printer,
-    const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
+    const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
 
 // The mojom PrinterStatus object contains all information in the
 // CupsPrinterStatus object.

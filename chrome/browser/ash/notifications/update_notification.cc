@@ -84,7 +84,7 @@ void UpdateNotification::ShowNotification() {
   controller_->MarkNotificationShown();
 }
 
-void UpdateNotification::OnNotificationClick(absl::optional<int> button_index) {
+void UpdateNotification::OnNotificationClick(std::optional<int> button_index) {
   if (!button_index || !profile_) {
     return;
   }

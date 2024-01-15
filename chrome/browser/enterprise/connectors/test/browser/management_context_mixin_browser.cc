@@ -86,7 +86,7 @@ void ManagementContextMixinBrowser::ManageCloudMachine() {
 }
 
 void ManagementContextMixinBrowser::SetCloudMachinePolicies(
-    base::flat_map<std::string, absl::optional<base::Value>> policy_entries) {
+    base::flat_map<std::string, std::optional<base::Value>> policy_entries) {
   CHECK(management_context_.is_cloud_machine_managed);
   policy::PolicyMap policy_map;
 

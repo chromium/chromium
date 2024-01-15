@@ -287,7 +287,7 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   if (installer) {
     base::RunLoop run_loop;
     installer->AddInstallerCallback(base::BindLambdaForTesting(
-        [&run_loop](const absl::optional<CrxInstallError>& error) {
+        [&run_loop](const std::optional<CrxInstallError>& error) {
           run_loop.Quit();
         }));
     installer->InstallCrxFile(crx_info);

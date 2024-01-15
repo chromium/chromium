@@ -626,7 +626,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
 }
 
 // Tests that we return an error if Optimization Guide is unable to parse the
-// response. In this case the response will be absl::nullopt.
+// response. In this case the response will be std::nullopt.
 TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   ShowDialogAndBindMojo();
   EXPECT_CALL(session(), ExecuteModel(_, _))

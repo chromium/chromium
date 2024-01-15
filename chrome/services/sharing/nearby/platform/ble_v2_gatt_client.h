@@ -25,10 +25,10 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   bool DiscoverServiceAndCharacteristics(
       const Uuid& service_uuid,
       const std::vector<Uuid>& characteristic_uuids) override;
-  absl::optional<api::ble_v2::GattCharacteristic> GetCharacteristic(
+  std::optional<api::ble_v2::GattCharacteristic> GetCharacteristic(
       const Uuid& service_uuid,
       const Uuid& characteristic_uuid) override;
-  absl::optional<std::string> ReadCharacteristic(
+  std::optional<std::string> ReadCharacteristic(
       const api::ble_v2::GattCharacteristic& characteristic) override;
   bool WriteCharacteristic(
       const api::ble_v2::GattCharacteristic& characteristic,

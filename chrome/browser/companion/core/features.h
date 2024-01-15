@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_COMPANION_CORE_FEATURES_H_
 #define CHROME_BROWSER_COMPANION_CORE_FEATURES_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace companion {
 namespace features {
@@ -34,7 +35,7 @@ bool ShouldOverrideCheckingUserPermissionsForCompanion();
 
 // Returns whether the Companion pin state should force overridden, regardless
 // of prefs or labs state.
-absl::optional<bool> ShouldForceOverrideCompanionPinState();
+std::optional<bool> ShouldForceOverrideCompanionPinState();
 
 }  // namespace switches
 }  // namespace companion

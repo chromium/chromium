@@ -39,7 +39,7 @@ HatsServiceAndroid::DelayedSurveyTask::DelayedSurveyTask(
     const SurveyStringData& product_specific_string_data,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    absl::optional<std::string_view> supplied_trigger_id)
+    std::optional<std::string_view> supplied_trigger_id)
     : web_contents_(web_contents),
       hats_service_(hats_service),
       trigger_(trigger),
@@ -148,7 +148,7 @@ void HatsServiceAndroid::LaunchSurveyForWebContents(
     const SurveyStringData& product_specific_string_data,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const absl::optional<std::string_view>& supplied_trigger_id) {
+    const std::optional<std::string_view>& supplied_trigger_id) {
   // By using a delayed survey with a delay of 0, we can centralize the object
   // lifecycle management duties for native clank survey triggers.
   LaunchDelayedSurveyForWebContents(
@@ -176,7 +176,7 @@ bool HatsServiceAndroid::LaunchDelayedSurveyForWebContents(
     NavigationBehaviour navigation_behaviour,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const absl::optional<std::string_view>& supplied_trigger_id) {
+    const std::optional<std::string_view>& supplied_trigger_id) {
   CHECK(web_contents);
   CHECK(navigation_behaviour ==
         NavigationBehaviour::ALLOW_ANY);  // Currently only ALLOW_ANY is

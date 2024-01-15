@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 struct OneGoogleBarData;
@@ -26,7 +27,7 @@ class OneGoogleBarLoader {
     FATAL_ERROR
   };
   using OneGoogleCallback =
-      base::OnceCallback<void(Status, const absl::optional<OneGoogleBarData>&)>;
+      base::OnceCallback<void(Status, const std::optional<OneGoogleBarData>&)>;
 
   virtual ~OneGoogleBarLoader() = default;
 

@@ -135,7 +135,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
-    const absl::optional<std::string>& expected_scan_id) {
+    const std::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
@@ -175,7 +175,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_trigger,
     const ContentAnalysisResponse::Result& expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
-    absl::optional<int64_t> expected_content_size,
+    std::optional<int64_t> expected_content_size,
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
@@ -292,7 +292,7 @@ void EventReportValidator::
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
-        threat_type_ = absl::nullopt;
+        threat_type_ = std::nullopt;
         dlp_verdicts_[expected_filename] = expected_dlp_verdict;
         ValidateReport(&report);
         if (!done_closure_.is_null()) {
@@ -463,10 +463,10 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateFilenameMappedAttributes(event);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTrigger, trigger_);
   // `content_size_` needs a conversion since int64 are strings in base::Value.
-  absl::optional<std::string> size =
+  std::optional<std::string> size =
       content_size_.has_value()
-          ? absl::optional<std::string>(base::NumberToString(*content_size_))
-          : absl::nullopt;
+          ? std::optional<std::string>(base::NumberToString(*content_size_))
+          : std::nullopt;
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyContentSize, size);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyThreatType,
                 threat_type_);
@@ -487,7 +487,7 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
 void EventReportValidator::ValidateFederatedOrigin(
     const base::Value::Dict* value) {
-  absl::optional<bool> is_federated =
+  std::optional<bool> is_federated =
       value->FindBool(SafeBrowsingPrivateEventRouter::kKeyIsFederated);
   const std::string* federated_origin =
       value->FindString(SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin);
@@ -609,7 +609,7 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
                     scan_ids_[filename]);
     } else {
       ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    absl::optional<std::string>());
+                    std::optional<std::string>());
     }
     if (dlp_verdicts_.count(filename)) {
       ValidateDlpVerdict(value, dlp_verdicts_[filename]);
@@ -620,7 +620,7 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<std::string>& expected_value) {
+    const std::optional<std::string>& expected_value) {
   if (expected_value.has_value()) {
     ASSERT_EQ(*value->FindString(field_key), expected_value.value())
         << "Mismatch in field " << field_key
@@ -636,7 +636,7 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<std::u16string>& expected_value) {
+    const std::optional<std::u16string>& expected_value) {
   const std::string* s = value->FindString(field_key);
   if (expected_value.has_value()) {
     const std::u16string actual_string_value = base::UTF8ToUTF16(*s);
@@ -654,7 +654,7 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<int>& expected_value) {
+    const std::optional<int>& expected_value) {
   ASSERT_EQ(value->FindInt(field_key), expected_value)
       << "Mismatch in field " << field_key
       << "\nActual value: " << value->FindInt(field_key).value()
@@ -664,7 +664,7 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
-    const absl::optional<bool>& expected_value) {
+    const std::optional<bool>& expected_value) {
   ASSERT_EQ(value->FindBool(field_key), expected_value)
       << "Mismatch in field " << field_key
       << "\nActual value: " << value->FindBool(field_key).value()

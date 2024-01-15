@@ -14,11 +14,10 @@
 
 namespace policy::files_controller_ash_utils {
 
-void ShowDlpBlockedFiles(
-    Profile* profile,
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
-    std::vector<base::FilePath> blocked_files,
-    dlp::FileAction action) {
+void ShowDlpBlockedFiles(Profile* profile,
+                         std::optional<file_manager::io_task::IOTaskId> task_id,
+                         std::vector<base::FilePath> blocked_files,
+                         dlp::FileAction action) {
   DCHECK(profile);
 
   auto* fpnm =

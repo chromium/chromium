@@ -113,7 +113,7 @@ void OfflinePageURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   NOTREACHED();
 }
 
@@ -283,7 +283,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->content_length = file_size;
 
   client_->OnReceiveResponse(std::move(response_head),
-                             std::move(consumer_handle), absl::nullopt);
+                             std::move(consumer_handle), std::nullopt);
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

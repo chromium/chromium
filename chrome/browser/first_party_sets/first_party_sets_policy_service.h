@@ -138,7 +138,7 @@ class FirstPartySetsPolicyService : public KeyedService {
   //
   // This also logs metrics that track how often this is queried before this
   // instance has received the config yet.
-  absl::optional<net::FirstPartySetEntry> FindEntry(
+  std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site);
 
   // Synchronously iterate over the effective First-Party Sets entries in use by
@@ -191,7 +191,7 @@ class FirstPartySetsPolicyService : public KeyedService {
   // callback. Must not be called before `config_` has been received.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
+      const std::optional<net::SchemefulSite>& top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Clears the content settings associated with `profile` that were
@@ -220,11 +220,11 @@ class FirstPartySetsPolicyService : public KeyedService {
   // The customizations to the browser's list of First-Party Sets to respect
   // the changes specified by this FirstPartySetsOverrides policy for the
   // profile that created this service.
-  absl::optional<net::FirstPartySetsContextConfig> config_
+  std::optional<net::FirstPartySetsContextConfig> config_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The filter used to bypass cache access in the network for this profile.
-  absl::optional<net::FirstPartySetsCacheFilter> cache_filter_
+  std::optional<net::FirstPartySetsCacheFilter> cache_filter_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The queue of callbacks that are waiting for the instance to be initialized.
@@ -233,7 +233,7 @@ class FirstPartySetsPolicyService : public KeyedService {
 
   // Callback used by tests to wait for the ctor's initialization flow to
   // complete.
-  absl::optional<base::OnceClosure> on_first_init_complete_for_testing_;
+  std::optional<base::OnceClosure> on_first_init_complete_for_testing_;
 
   // Keeps track of whether this instance has ever been initialized fully. Must
   // not be reset in `ResetForTesting`.

@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenStorageLacrosBrowserTest, Store) {
       crosapi::mojom::LoginScreenStorageMetadata::New();
   metadata->clear_on_session_exit = true;
 
-  absl::optional<std::string> error_message;
+  std::optional<std::string> error_message;
   crosapi::mojom::LoginScreenStorageAsyncWaiter async_waiter(
       lacros_service->GetRemote<crosapi::mojom::LoginScreenStorage>().get());
   async_waiter.Store({kKey1, kKey2}, std::move(metadata),
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenStorageLacrosBrowserTest, StoreRetrieve) {
       crosapi::mojom::LoginScreenStorageMetadata::New();
   metadata->clear_on_session_exit = true;
 
-  absl::optional<std::string> error_message;
+  std::optional<std::string> error_message;
   crosapi::mojom::LoginScreenStorageAsyncWaiter async_waiter(
       lacros_service->GetRemote<crosapi::mojom::LoginScreenStorage>().get());
   async_waiter.Store({kKey1, kKey2}, std::move(metadata),

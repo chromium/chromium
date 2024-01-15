@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -11,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace input_method {
@@ -57,12 +58,12 @@ chromeos::machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
   }
 }
 
-absl::optional<AssistiveSuggestion> ToAssistiveSuggestion(
+std::optional<AssistiveSuggestion> ToAssistiveSuggestion(
     const TextSuggestionCandidatePtr& candidate,
     const AssistiveSuggestionMode& suggestion_mode) {
   if (!candidate->is_multi_word()) {
     // TODO(crbug/1146266): Handle emoji suggestions
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return AssistiveSuggestion{.mode = suggestion_mode,

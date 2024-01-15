@@ -147,7 +147,7 @@ void DeviceTrustManagementMixin::SetMachineInlinePolicy(
     }
   }
 #else
-  base::flat_map<std::string, absl::optional<base::Value>> policy_values;
+  base::flat_map<std::string, std::optional<base::Value>> policy_values;
   policy_values.insert({policy::key::kBrowserContextAwareAccessSignalsAllowlist,
                         std::move(policy_value)});
   management_context_mixin_->SetCloudMachinePolicies(std::move(policy_values));
@@ -157,7 +157,7 @@ void DeviceTrustManagementMixin::SetMachineInlinePolicy(
 void DeviceTrustManagementMixin::SetUserInlinePolicy(base::Value policy_value) {
   CHECK(device_trust_state_.cloud_user_management_level.is_managed);
 
-  base::flat_map<std::string, absl::optional<base::Value>> policy_values;
+  base::flat_map<std::string, std::optional<base::Value>> policy_values;
   policy_values.insert({policy::key::kUserContextAwareAccessSignalsAllowlist,
                         std::move(policy_value)});
   management_context_mixin_->SetCloudUserPolicies(std::move(policy_values));

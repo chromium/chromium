@@ -84,7 +84,7 @@ void MultitaskMenuNudgeDelegateLacros::SetNudgePreferences(bool tablet_mode,
 void MultitaskMenuNudgeDelegateLacros::OnGetPreference(
     base::OnceCallback<void(PrefPair)> callback,
     crosapi::mojom::PrefPath pref_path,
-    absl::optional<base::Value> value) {
+    std::optional<base::Value> value) {
   // If `value` is empty just pass a default `base::Value`; the other callback
   // (`OnGotAllPreferences()`) function will handle it properly.
   PrefPair pref_pair{pref_path, value ? std::move(*value) : base::Value()};
@@ -98,8 +98,8 @@ void MultitaskMenuNudgeDelegateLacros::OnGotAllPreferences(
 
   // The values in the array could be in any order. Parse them into the
   // `shown_count` and `last_shown_time`.
-  absl::optional<int> shown_count;
-  absl::optional<base::Time> last_shown_time;
+  std::optional<int> shown_count;
+  std::optional<base::Time> last_shown_time;
   for (const auto& pair : pref_values) {
     if (pair.first ==
         crosapi::mojom::PrefPath::kMultitaskMenuNudgeClamshellShownCount) {

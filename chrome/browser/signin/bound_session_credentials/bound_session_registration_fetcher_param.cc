@@ -16,7 +16,7 @@ constexpr char kRegistrationHeaderName[] = "Sec-Session-Google-Registration";
 constexpr char kRegistrationItemKey[] = "registration";
 constexpr char kChallengeItemKey[] = "challenge";
 
-absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
     const std::string algo) {
   if (base::EqualsCaseInsensitiveASCII(algo, "ES256")) {
     return crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
@@ -26,7 +26,7 @@ absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
     return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace
 
@@ -48,17 +48,17 @@ BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
       supported_algos_(std::move(supported_algos)),
       challenge_(std::move(challenge)) {}
 
-absl::optional<BoundSessionRegistrationFetcherParam>
+std::optional<BoundSessionRegistrationFetcherParam>
 BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
     const GURL& request_url,
     const net::HttpResponseHeaders* headers) {
   if (!request_url.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string header_value;
   if (!headers->GetNormalizedHeader(kRegistrationHeaderName, &header_value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL registration_endpoint;
@@ -85,7 +85,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
                                     base::WhitespaceHandling::TRIM_WHITESPACE,
                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
       for (const auto& alg_string : list) {
-        absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> alg =
+        std::optional<crypto::SignatureVerifier::SignatureAlgorithm> alg =
             AlgoFromString(alg_string);
         if (alg.has_value()) {
           supported_algos.push_back(alg.value());
@@ -97,7 +97,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
       // Challenge will be eventually written into a `base::Value`, when
       // generating the registration token, which is restricted to UTF8.
       if (!base::IsStringUTF8AllowingNoncharacters(value)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       challenge = value;
     }
@@ -109,7 +109,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
         std::move(registration_endpoint), std::move(supported_algos),
         std::move(challenge));
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 

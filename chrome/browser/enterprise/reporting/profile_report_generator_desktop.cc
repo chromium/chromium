@@ -71,7 +71,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
     request->set_id(extension_id);
 
     const auto& request_data_dict = request_data.GetDict();
-    absl::optional<base::Time> timestamp = ::base::ValueToTime(
+    std::optional<base::Time> timestamp = ::base::ValueToTime(
         request_data_dict.Find(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
       request->set_request_timestamp(timestamp->InMillisecondsSinceUnixEpoch());

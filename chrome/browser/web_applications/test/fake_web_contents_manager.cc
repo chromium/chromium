@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/url_constants.h"
 
@@ -252,7 +252,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
       CheckInstallabilityCallback callback,
-      absl::optional<webapps::InstallableParams> params) override {
+      std::optional<webapps::InstallableParams> params) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(manager_);
     GURL url = manager_->loaded_urls_[web_contents];
@@ -381,7 +381,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     base::StringPiece16 name) {
   FakePageState& install_page_state = GetOrCreatePageState(install_url);
   install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
-  install_page_state.redirection_url = absl::nullopt;
+  install_page_state.redirection_url = std::nullopt;
 
   install_page_state.title = u"Page title";
 
@@ -397,7 +397,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
       blink::mojom::DisplayMode::kStandalone;
   install_page_state.opt_manifest->short_name = name;
 
-  return GenerateAppId(/*manifest_id_path=*/absl::nullopt, start_url);
+  return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
 }
 
 void FakeWebContentsManager::SetPageState(

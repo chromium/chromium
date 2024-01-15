@@ -36,7 +36,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPermission) {
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("background_scripts.json", &error);
   ASSERT_TRUE(manifest);
 
@@ -61,7 +61,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundServiceWorkerScript) {
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("background_script_sw.json", &error);
   ASSERT_TRUE(manifest);
 
@@ -102,7 +102,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPageWebRequest) {
   ScopedCurrentChannel current_channel(version_info::Channel::DEV);
 
   std::string error;
-  absl::optional<base::Value::Dict> manifest =
+  std::optional<base::Value::Dict> manifest =
       LoadManifest("background_page.json", &error);
   ASSERT_TRUE(manifest);
   manifest->SetByDottedPath("background.persistent", false);

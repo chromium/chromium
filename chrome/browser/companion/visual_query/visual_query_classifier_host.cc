@@ -4,6 +4,8 @@
 
 #include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
@@ -29,13 +30,13 @@ void RecordStatusChange(InitStatus status) {
       "Companion.VisualQuery.ClassificationInitStatus", status);
 }
 
-absl::optional<std::string> Base64EncodeBitmap(const SkBitmap& bitmap) {
+std::optional<std::string> Base64EncodeBitmap(const SkBitmap& bitmap) {
   gfx::BufferWStream stream;
   const bool encoding_succeeded =
       SkJpegEncoder::Encode(&stream, bitmap.pixmap(), {});
 
   if (!encoding_succeeded) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::StringPiece mime_subtype = "jpg";
@@ -200,13 +201,13 @@ void VisualQueryClassifierHost::CancelClassification(const GURL& visible_url) {
   RecordStatusChange(InitStatus::kQueryCancelled);
 }
 
-absl::optional<VisualSuggestionsResults>
+std::optional<VisualSuggestionsResults>
 VisualQueryClassifierHost::GetVisualResult(const GURL& url) {
   // We only send back results if we have received result from the renderer.
   if (!waiting_for_result_ && current_result_ &&
       url.GetContent() == current_result_->first.GetContent()) {
-    return absl::make_optional(current_result_->second);
+    return std::make_optional(current_result_->second);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace companion::visual_query

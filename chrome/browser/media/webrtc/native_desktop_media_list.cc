@@ -4,6 +4,7 @@
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/common/content_features.h"
 #include "media/base/video_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv/scale_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -71,20 +71,20 @@ const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
 
 // Returns a hash of a DesktopFrame content to detect when image for a desktop
 // media source has changed, if the frame is valid, or absl::null_opt if not.
-absl::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
+std::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
   // These checks ensure invalid data isn't passed along, potentially leading to
   // crashes, e.g. when we calculate the hash which assumes a positive height
   // and stride.
   // TODO(crbug.com/1085230): figure out why the height is sometimes negative.
   if (!frame || !frame->data() || frame->stride() < 0 ||
       frame->size().height() < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t data_size;
   if (!base::CheckMul<size_t>(frame->stride(), frame->size().height())
            .AssignIfValid(&data_size)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::FastHash(base::make_span(frame->data(), data_size));
@@ -646,7 +646,7 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
 
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
-  const absl::optional<size_t> frame_hash = GetFrameHash(frame.get());
+  const std::optional<size_t> frame_hash = GetFrameHash(frame.get());
   if (frame_hash) {
     refresh_thumbnails_state_->new_image_hashes[id] = *frame_hash;
 

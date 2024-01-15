@@ -124,11 +124,11 @@ TEST_F(HistoryClustersModuleRankerTest, RecencyOnly) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.1),
+                         visit, /*normalized_url=*/std::nullopt, 0.1),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2 = cluster1;
   cluster2.cluster_id = 2;
@@ -199,11 +199,11 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.0),
+                         visit, /*normalized_url=*/std::nullopt, 0.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2;
   cluster2.cluster_id = 2;
@@ -228,11 +228,11 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
   c2_visit4.content_annotations.has_url_keyed_image = true;
   c2_visit4.visit_row.is_known_to_sync = true;
   cluster2.visits = {history_clusters::testing::CreateClusterVisit(
-                         c2_visit, /*normalized_url=*/absl::nullopt, 0.8),
+                         c2_visit, /*normalized_url=*/std::nullopt, 0.8),
                      history_clusters::testing::CreateClusterVisit(
-                         c2_visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         c2_visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         c2_visit4, /*normalized_url=*/absl::nullopt, 0.6)};
+                         c2_visit4, /*normalized_url=*/std::nullopt, 0.6)};
 
   history::Cluster cluster3 = cluster2;
   cluster3.cluster_id = 3;
@@ -328,11 +328,11 @@ TEST_F(HistoryClustersModuleRankerCartTest,
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.1),
+                         visit, /*normalized_url=*/std::nullopt, 0.1),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2 = cluster1;
   // Make the visit time before the first cluster and the first visit have a
@@ -461,11 +461,11 @@ TEST_F(HistoryClustersModuleRankerWithModelTest,
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.1),
+                         visit, /*normalized_url=*/std::nullopt, 0.1),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2 = cluster1;
   cluster2.cluster_id = 2;
@@ -539,11 +539,11 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   visit4.content_annotations.has_url_keyed_image = true;
   visit4.visit_row.is_known_to_sync = true;
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-                         visit, /*normalized_url=*/absl::nullopt, 0.0),
+                         visit, /*normalized_url=*/std::nullopt, 0.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         visit4, /*normalized_url=*/absl::nullopt, 0.3)};
+                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
   history::Cluster cluster2;
   cluster2.cluster_id = 2;
@@ -569,11 +569,11 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   c2_visit4.content_annotations.has_url_keyed_image = true;
   c2_visit4.visit_row.is_known_to_sync = true;
   cluster2.visits = {history_clusters::testing::CreateClusterVisit(
-                         c2_visit, /*normalized_url=*/absl::nullopt, 0.8),
+                         c2_visit, /*normalized_url=*/std::nullopt, 0.8),
                      history_clusters::testing::CreateClusterVisit(
-                         c2_visit2, /*normalized_url=*/absl::nullopt, 1.0),
+                         c2_visit2, /*normalized_url=*/std::nullopt, 1.0),
                      history_clusters::testing::CreateClusterVisit(
-                         c2_visit4, /*normalized_url=*/absl::nullopt, 0.6)};
+                         c2_visit4, /*normalized_url=*/std::nullopt, 0.6)};
 
   history::Cluster cluster3 = cluster2;
   cluster3.cluster_id = 3;
@@ -655,7 +655,7 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailableScoreThreshold) {
   visit.content_annotations.model_annotations.categories = {
       {"category1", 90}, {"boostedbuthidden", 84}};
   cluster1.visits = {history_clusters::testing::CreateClusterVisit(
-      visit, /*normalized_url=*/absl::nullopt, 0.0)};
+      visit, /*normalized_url=*/std::nullopt, 0.0)};
 
   history::Cluster cluster2 = cluster1;
   cluster2.cluster_id = 2;

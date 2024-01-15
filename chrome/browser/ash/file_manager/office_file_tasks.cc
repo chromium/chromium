@@ -340,7 +340,7 @@ bool GetUserFallbackChoice(
   // If QuickOffice is not installed, don't launch dialog.
   if (!IsQuickOfficeInstalled(profile)) {
     LOG(ERROR) << "Cannot fallback to QuickOffice when it is not installed";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return false;
   }
 

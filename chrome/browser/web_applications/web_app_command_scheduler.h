@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -36,7 +37,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -139,7 +139,7 @@ class WebAppCommandScheduler {
   // Install web apps managed by `ExternallyInstalledAppManager`.
   void InstallExternallyManagedApp(
       const ExternalInstallOptions& external_install_options,
-      absl::optional<webapps::AppId> installed_placeholder_app_id,
+      std::optional<webapps::AppId> installed_placeholder_app_id,
       ExternalAppResolutionCommand::InstalledCallback installed_callback,
       const base::Location& location = FROM_HERE);
 
@@ -190,7 +190,7 @@ class WebAppCommandScheduler {
   virtual void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
-      const absl::optional<base::Version>& expected_version,
+      const std::optional<base::Version>& expected_version,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       InstallIsolatedWebAppCallback callback,
@@ -230,7 +230,7 @@ class WebAppCommandScheduler {
   virtual void CheckIsolatedWebAppBundleInstallability(
       const SignedWebBundleMetadata& bundle_metadata,
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
-                              absl::optional<base::Version>)> callback,
+                              std::optional<base::Version>)> callback,
       const base::Location& call_location = FROM_HERE);
 
   // Computes the browsing data size of all installed Isolated Web Apps.
@@ -244,7 +244,7 @@ class WebAppCommandScheduler {
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name,
       bool in_memory,
-      base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+      base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
           callback,
       const base::Location& location = FROM_HERE);
 
@@ -263,7 +263,7 @@ class WebAppCommandScheduler {
   // TODO(crbug.com/1434692): There could potentially be multiple app matches
   // for `install_source` and `install_url` when `app_id` is not provided,
   // handle this case better than "first matching".
-  virtual void RemoveInstallUrl(absl::optional<webapps::AppId> app_id,
+  virtual void RemoveInstallUrl(std::optional<webapps::AppId> app_id,
                                 WebAppManagement::Type install_source,
                                 const GURL& install_url,
                                 webapps::WebappUninstallSource uninstall_source,
@@ -330,7 +330,7 @@ class WebAppCommandScheduler {
   // Schedules a command that calculates the app and data size of a web app.
   void ComputeAppSize(
       const webapps::AppId& app_id,
-      base::OnceCallback<void(absl::optional<ComputedAppSize>)> callback);
+      base::OnceCallback<void(std::optional<ComputedAppSize>)> callback);
 
   // The command callback type for `ScheduleCallback*`.
   // - `lock`: This provides access to read & write parts of the WebAppProvider
@@ -398,9 +398,9 @@ class WebAppCommandScheduler {
   void LaunchApp(const webapps::AppId& app_id,
                  const base::CommandLine& command_line,
                  const base::FilePath& current_directory,
-                 const absl::optional<GURL>& url_handler_launch_url,
-                 const absl::optional<GURL>& protocol_handler_launch_url,
-                 const absl::optional<GURL>& file_launch_url,
+                 const std::optional<GURL>& url_handler_launch_url,
+                 const std::optional<GURL>& protocol_handler_launch_url,
+                 const std::optional<GURL>& file_launch_url,
                  const std::vector<base::FilePath>& launch_files,
                  LaunchWebAppCallback callback,
                  const base::Location& location = FROM_HERE);
@@ -429,7 +429,7 @@ class WebAppCommandScheduler {
   void SynchronizeOsIntegration(
       const webapps::AppId& app_id,
       base::OnceClosure synchronize_callback,
-      absl::optional<SynchronizeOsOptions> synchronize_options = absl::nullopt,
+      std::optional<SynchronizeOsOptions> synchronize_options = std::nullopt,
       const base::Location& location = FROM_HERE);
 
   // Finds web apps that share the same install URLs (possibly across different

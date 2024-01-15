@@ -16,7 +16,7 @@ std::vector<base::SafeBaseName> GetBaseNamesForIntent(
     const apps::Intent& intent) {
   std::vector<base::SafeBaseName> base_names;
   for (const auto& file : intent.files) {
-    absl::optional<base::SafeBaseName> optional_base_name;
+    std::optional<base::SafeBaseName> optional_base_name;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     optional_base_name = file->file_name;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)

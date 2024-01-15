@@ -4,6 +4,7 @@
 
 #include "chrome/services/media_gallery_util/video_thumbnail_parser.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "media/filters/android/video_frame_extractor.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

@@ -101,8 +101,8 @@ void SupervisedUserExtensionsDelegateImpl::RequestToEnableExtensionOrShowError(
   auto icon_callback = base::BindOnce(
       &SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval,
       base::Unretained(this), std::cref(extension),
-      web_contents ? absl::make_optional(web_contents->GetWeakPtr())
-                   : absl::nullopt);
+      web_contents ? std::make_optional(web_contents->GetWeakPtr())
+                   : std::nullopt);
   icon_loader_ = std::make_unique<ExtensionIconLoader>();
   icon_loader_->Load(extension, context_, std::move(icon_callback));
 }
@@ -166,7 +166,7 @@ void SupervisedUserExtensionsDelegateImpl::
 
 void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
     const Extension& extension,
-    absl::optional<base::WeakPtr<content::WebContents>> contents,
+    std::optional<base::WeakPtr<content::WebContents>> contents,
     const gfx::ImageSkia& icon) {
   // Treat the request as canceled if web contents that the request originated
   // in was destroyed (the web contents was originally passed, but weak ptr is

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CHROME_DESKTOP_REPORT_REQUEST_HELPER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CHROME_DESKTOP_REPORT_REQUEST_HELPER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -32,7 +32,7 @@ void OverrideEndpointVerificationDirForTesting(const base::FilePath& path);
 // Store the |data| associated with the identifier |id|. Calls |callback| on
 // completion with true on success.
 void StoreDeviceData(const std::string& id,
-                     const absl::optional<std::vector<uint8_t>> data,
+                     const std::optional<std::vector<uint8_t>> data,
                      base::OnceCallback<void(bool)> callback);
 
 // Retrieves the data associated with the identifier |id|. Calls |callback| on

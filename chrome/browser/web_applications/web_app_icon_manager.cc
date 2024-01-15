@@ -485,7 +485,7 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
 // the IconSrcAndSize of the largest icon available is returned. An icon
 // prioritises matching purpose before size. The purpose of the returned icon is
 // specified by the decreasing order of preference in |purposes|.
-absl::optional<IconSrcAndSize> FindBestImageResourceMatch(
+std::optional<IconSrcAndSize> FindBestImageResourceMatch(
     const std::vector<IconPurpose>& purposes,
     const std::vector<blink::Manifest::ImageResource>& icons,
     SquareSizePx min_size) {
@@ -525,7 +525,7 @@ absl::optional<IconSrcAndSize> FindBestImageResourceMatch(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 TypedResult<SkBitmap> ReadHomeTabIconBlocking(
@@ -535,7 +535,7 @@ TypedResult<SkBitmap> ReadHomeTabIconBlocking(
     const std::vector<blink::Manifest::ImageResource>& icons,
     const SquareSizePx min_home_tab_icon_size_px) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadHomeTabIconBlocking");
-  absl::optional<IconSrcAndSize> best_icon = FindBestImageResourceMatch(
+  std::optional<IconSrcAndSize> best_icon = FindBestImageResourceMatch(
       {IconPurpose::ANY}, icons, min_home_tab_icon_size_px);
   TypedResult<SkBitmap> result;
 
@@ -1031,14 +1031,14 @@ bool WebAppIconManager::HasIcons(const webapps::AppId& app_id,
                                 icon_sizes);
 }
 
-absl::optional<WebAppIconManager::IconSizeAndPurpose>
+std::optional<WebAppIconManager::IconSizeAndPurpose>
 WebAppIconManager::FindIconMatchBigger(const webapps::AppId& app_id,
                                        const std::vector<IconPurpose>& purposes,
                                        SquareSizePx min_size) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Must iterate through purposes in order given.
   for (IconPurpose purpose : purposes) {
@@ -1050,7 +1050,7 @@ WebAppIconManager::FindIconMatchBigger(const webapps::AppId& app_id,
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool WebAppIconManager::HasSmallestIcon(
@@ -1224,7 +1224,7 @@ void WebAppIconManager::ReadSmallestIcon(
   TRACE_EVENT0("ui", "WebAppIconManager::ReadSmallestIcon");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<IconSizeAndPurpose> best_icon =
+  std::optional<IconSizeAndPurpose> best_icon =
       FindIconMatchBigger(app_id, purposes, min_size_in_px);
   DCHECK(best_icon.has_value());
   IconId icon_id(app_id, best_icon->purpose, best_icon->size_px);
@@ -1247,7 +1247,7 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
   TRACE_EVENT0("ui", "WebAppIconManager::ReadSmallestCompressedIcon");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<IconSizeAndPurpose> best_icon =
+  std::optional<IconSizeAndPurpose> best_icon =
       FindIconMatchBigger(app_id, purposes, min_size_in_px);
   DCHECK(best_icon.has_value());
   IconId icon_id(app_id, best_icon->purpose, best_icon->size_px);
@@ -1303,7 +1303,7 @@ void WebAppIconManager::ReadIconAndResize(const webapps::AppId& app_id,
                                           SquareSizePx desired_icon_size,
                                           ReadIconsCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadIconAndResize");
-  absl::optional<IconSizeAndPurpose> best_icon =
+  std::optional<IconSizeAndPurpose> best_icon =
       FindIconMatchBigger(app_id, {purpose}, desired_icon_size);
   if (!best_icon) {
     best_icon = FindIconMatchSmaller(app_id, {purpose}, desired_icon_size);
@@ -1408,7 +1408,7 @@ base::WeakPtr<WebAppIconManager> WebAppIconManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-absl::optional<WebAppIconManager::IconSizeAndPurpose>
+std::optional<WebAppIconManager::IconSizeAndPurpose>
 WebAppIconManager::FindIconMatchSmaller(
     const webapps::AppId& app_id,
     const std::vector<IconPurpose>& purposes,
@@ -1416,7 +1416,7 @@ WebAppIconManager::FindIconMatchSmaller(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Must check purposes in the order given.
   for (IconPurpose purpose : purposes) {
@@ -1428,7 +1428,7 @@ WebAppIconManager::FindIconMatchSmaller(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WebAppIconManager::ReadFavicon(const webapps::AppId& app_id) {

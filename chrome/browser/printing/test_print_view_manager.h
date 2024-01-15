@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_PRINTING_TEST_PRINT_VIEW_MANAGER_H_
 #define CHROME_BROWSER_PRINTING_TEST_PRINT_VIEW_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -42,7 +43,7 @@ class TestPrintViewManager : public PrintViewManager {
     return snooped_params_;
   }
 
-  const absl::optional<bool>& print_now_result() const {
+  const std::optional<bool>& print_now_result() const {
     return print_now_result_;
   }
 
@@ -70,9 +71,9 @@ class TestPrintViewManager : public PrintViewManager {
                            UpdatePrintSettingsCallback callback) override;
 
   mojom::PrintPagesParamsPtr snooped_params_;
-  absl::optional<bool> print_now_result_;
+  std::optional<bool> print_now_result_;
 #if BUILDFLAG(IS_WIN)
-  absl::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
+  std::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
 #endif
   OnDidCreatePrintJobCallback on_did_create_print_job_;
 };

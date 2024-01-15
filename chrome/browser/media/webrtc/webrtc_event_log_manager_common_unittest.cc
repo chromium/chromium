@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,7 +18,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -164,7 +164,7 @@ TEST_F(GzipLogCompressorTest, MultipleCallsToCompress) {
 TEST_F(GzipLogCompressorTest, UnlimitedBudgetSanity) {
   Init(std::make_unique<PerfectGzipEstimator::Factory>());
 
-  auto compressor = compressor_factory_->Create(absl::optional<size_t>());
+  auto compressor = compressor_factory_->Create(std::optional<size_t>());
   ASSERT_TRUE(compressor);
 
   std::string header;
@@ -306,7 +306,7 @@ class LogFileWriterTest
                 .AddExtension(log_file_writer_factory_->Extension());
   }
 
-  std::unique_ptr<LogFileWriter> CreateWriter(absl::optional<size_t> max_size) {
+  std::unique_ptr<LogFileWriter> CreateWriter(std::optional<size_t> max_size) {
     return log_file_writer_factory_->Create(path_, max_size);
   }
 
@@ -334,7 +334,7 @@ class LogFileWriterTest
   }
 
   base::test::TaskEnvironment task_environment_;
-  absl::optional<WebRtcEventLogCompression> compression_;  // Set in Init().
+  std::optional<WebRtcEventLogCompression> compression_;  // Set in Init().
   base::ScopedTempDir temp_dir_;
   base::FilePath path_;
   std::unique_ptr<LogFileWriter::Factory> log_file_writer_factory_;
@@ -394,7 +394,7 @@ TEST_P(LogFileWriterTest, CallToWriteWithEmptyStringSucceeds) {
 TEST_P(LogFileWriterTest, UnlimitedBudgetSanity) {
   Init(GetParam());
 
-  auto writer = CreateWriter(absl::optional<size_t>());
+  auto writer = CreateWriter(std::optional<size_t>());
   ASSERT_TRUE(writer);
 
   const std::string log = "log";

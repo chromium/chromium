@@ -24,6 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 // TODO(crbug.com/1402146): Allow web apps to depend on app service.
+#include <optional>
+
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -37,7 +39,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -102,12 +103,12 @@ void DeleteExperimentPrefs(PrefService* pref_service) {
 // User group:
 ///////////////////////////////////////////////////////////////////////////////
 
-absl::optional<UserDisplayMode> UserGroupToUserDisplayMode(
+std::optional<UserDisplayMode> UserGroupToUserDisplayMode(
     UserGroup user_group) {
   switch (user_group) {
     case UserGroup::kUnknown:
     case UserGroup::kControl:
-      return absl::nullopt;
+      return std::nullopt;
     case UserGroup::kWindow:
       return UserDisplayMode::kStandalone;
     case UserGroup::kTab:
@@ -154,7 +155,7 @@ void SetUserGroupPref(PrefService* pref_service, UserGroup user_group) {
 // Eligibility:
 ///////////////////////////////////////////////////////////////////////////////
 
-absl::optional<bool> GetEligibilityPref(const PrefService* pref_service) {
+std::optional<bool> GetEligibilityPref(const PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& experiment_prefs =
       pref_service->GetDict(kWebAppPreinstalledAppWindowExperimentPref);

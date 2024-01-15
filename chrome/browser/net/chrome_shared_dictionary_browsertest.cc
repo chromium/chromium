@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/url_constants.h"
@@ -102,11 +102,11 @@ class SharedDictionaryAccessObserver : public content::WebContentsObserver {
   network::mojom::SharedDictionaryAccessDetailsPtr details_;
 };
 
-absl::optional<std::string> GetSecAvailableDictionary(
+std::optional<std::string> GetSecAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
   auto it = headers.find("sec-available-dictionary");
   if (it == headers.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -329,7 +329,7 @@ class ChromeSharedDictionaryBrowserTest
       return response;
     } else if (request.relative_url == "/path/check_header") {
       response->set_content_type("text/plain");
-      absl::optional<std::string> dict_hash =
+      std::optional<std::string> dict_hash =
           GetSecAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
@@ -337,7 +337,7 @@ class ChromeSharedDictionaryBrowserTest
     } else if (request.relative_url == "/path/check_header1.html" ||
                request.relative_url == "/path/check_header2.html") {
       response->set_content_type("text/html");
-      absl::optional<std::string> dict_hash =
+      std::optional<std::string> dict_hash =
           GetSecAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");

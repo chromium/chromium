@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_UTILS_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_UTILS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "components/manta/proto/manta.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 inline constexpr std::string_view kTemplateIdTag =
     "chromeos_wallpaper_template_id";
@@ -23,7 +23,7 @@ bool IsValidOutput(manta::proto::OutputData output,
 // Common helper function between `FetchThumbnails` and `FetchWallpaper`.
 manta::proto::Request CreateMantaRequest(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
-    absl::optional<uint32_t> generation_seed,
+    std::optional<uint32_t> generation_seed,
     int num_output,
     manta::proto::ImageResolution target_resolution);
 

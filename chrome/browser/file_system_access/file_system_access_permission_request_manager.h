@@ -97,7 +97,7 @@ class FileSystemAccessPermissionRequestManager
   // and then the bubble will proceed as desired as soon as it would have been
   // shown.
   void set_auto_response_for_test(
-      absl::optional<permissions::PermissionAction> response) {
+      std::optional<permissions::PermissionAction> response) {
     auto_response_for_test_ = response;
   }
 
@@ -124,7 +124,7 @@ class FileSystemAccessPermissionRequestManager
   // Queued up requests.
   base::circular_deque<std::unique_ptr<Request>> queued_requests_;
 
-  absl::optional<permissions::PermissionAction> auto_response_for_test_;
+  std::optional<permissions::PermissionAction> auto_response_for_test_;
 
   base::WeakPtrFactory<FileSystemAccessPermissionRequestManager> weak_factory_{
       this};

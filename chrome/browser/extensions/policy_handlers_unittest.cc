@@ -170,7 +170,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsURL) {
         (policy == ManagementPolicy::kPolicy3)
             ? base::StringPrintf(kTestManagementPolicy3, url.c_str())
             : base::StringPrintf(kTestManagementPolicy4, url.c_str());
-    absl::optional<base::Value> policy_value =
+    std::optional<base::Value> policy_value =
         base::JSONReader::Read(policy_json, kJsonParseOptions);
     if (!policy_value)
       return false;

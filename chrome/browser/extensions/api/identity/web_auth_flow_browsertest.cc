@@ -79,9 +79,8 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
       Profile* profile = nullptr,
       WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive =
           WebAuthFlow::AbortOnLoad::kYes,
-      absl::optional<base::TimeDelta> timeout_for_non_interactive =
-          absl::nullopt,
-      absl::optional<gfx::Rect> popup_bounds = absl::nullopt) {
+      std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt,
+      std::optional<gfx::Rect> popup_bounds = std::nullopt) {
     if (!profile)
       profile = browser()->profile();
 
@@ -716,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   const gfx::Rect test_bounds(35, 47, 400, 400);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE, nullptr,
-                   WebAuthFlow::AbortOnLoad::kYes, absl::nullopt, test_bounds);
+                   WebAuthFlow::AbortOnLoad::kYes, std::nullopt, test_bounds);
 
   navigation_observer.Wait();
 

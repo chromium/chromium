@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
           printing::PrinterWithCapabilitiesToMojom(
               chromeos::Printer(kId), *ConstructPrinterCapabilities())));
 
-  absl::optional<uint32_t> job_id;
+  std::optional<uint32_t> job_id;
   // Pretends to acknowledge the incoming Lacros print job creation request and
   // responds with PrintJobStatus::kStarted event.
   // The callback is ignored by the implementation -- for this reason the

@@ -33,7 +33,7 @@ void HandleExpandedPaths(
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            absl::optional<content::ClipboardPasteData> clipboard_paste_data;
+            std::optional<content::ClipboardPasteData> clipboard_paste_data;
             auto blocked = fsd->IndexesToBlock(result.paths_results);
             if (blocked.size() != paths.size()) {
               std::vector<base::FilePath> allowed_paths;
@@ -71,7 +71,7 @@ void HandleStringData(
             // `callback`, changing the type from `const Data&` to just `Data`
             // would avoid a copy.
             if (!result.text_results[0] && !result.image_result) {
-              std::move(callback).Run(absl::nullopt);
+              std::move(callback).Run(std::nullopt);
               return;
             }
 
@@ -146,7 +146,7 @@ void OnDlpRulesCheckDone(
     bool allowed) {
   // If DLP rules blocked the action, no further policy checks are required.
   if (!allowed) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

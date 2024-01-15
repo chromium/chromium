@@ -1424,7 +1424,7 @@ const auto& SyncablePreferences() {
 }
 }  // namespace
 
-absl::optional<sync_preferences::SyncablePrefMetadata>
+std::optional<sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
     const std::string& pref_name) const {
   const auto* it = SyncablePreferences().find(pref_name);

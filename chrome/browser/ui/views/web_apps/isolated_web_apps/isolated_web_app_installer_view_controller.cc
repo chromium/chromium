@@ -322,7 +322,7 @@ void IsolatedWebAppInstallerViewController::Close() {
 void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
   if (enabled) {
     model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
-    model_->SetDialog(absl::nullopt);
+    model_->SetDialog(std::nullopt);
     if (!installability_checker_) {
       callback_delayer_ = std::make_unique<CallbackDelayer>(
           kGetMetadataMinimumDelay, kProgressBarPausePercentage,

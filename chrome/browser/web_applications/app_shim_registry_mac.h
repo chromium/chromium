@@ -152,7 +152,7 @@ class AppShimRegistry {
   // Retrieve the existing key used to create HMACs of app's code directory
   // hashes. Returns nullopt if no key was found or the existing key could not
   // be decoded or decrypted.
-  absl::optional<HmacKey> GetExistingCdHashHmacKey();
+  std::optional<HmacKey> GetExistingCdHashHmacKey();
 
   // Helper function used by GetCdHashHmacKey
   // Encode and encrypt the given HMAC key and save it to preferences.

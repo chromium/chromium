@@ -410,7 +410,7 @@ class NetworkingPrivateChromeOSApiTestAsh
         request,
         base::BindOnce(
             [](std::string* out,
-               absl::optional<::user_data_auth::GetSanitizedUsernameReply>
+               std::optional<::user_data_auth::GetSanitizedUsernameReply>
                    result) {
               CHECK(result.has_value());
               *out = result->sanitized_username();

@@ -167,7 +167,7 @@ void ShillDataCollector::CollectDataAndDetectPII(
 }
 
 void ShillDataCollector::OnGetManagerProperties(
-    absl::optional<base::Value::Dict> result) {
+    std::optional<base::Value::Dict> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
     SupportToolError error = {
@@ -216,7 +216,7 @@ void ShillDataCollector::OnGetManagerProperties(
 
 void ShillDataCollector::OnGetDevice(
     const std::string& device_path,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!properties) {
     collector_err_["Device"].emplace_back(device_path);
@@ -255,7 +255,7 @@ void ShillDataCollector::AddDeviceAndRequestIPConfigs(
 void ShillDataCollector::OnGetIPConfig(
     const std::string& device_path,
     const std::string& ip_config_path,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!properties) {
     collector_err_["IPConfig"].emplace_back(
@@ -284,7 +284,7 @@ void ShillDataCollector::AddIPConfig(const std::string& device_path,
 
 void ShillDataCollector::OnGetService(
     const std::string& service_path,
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!properties) {
     collector_err_["Service"].emplace_back(service_path);
@@ -304,7 +304,7 @@ base::Value::Dict ShillDataCollector::ExpandProperties(
   // Converts UIData from a string to a dictionary.
   std::string* ui_data = dict.FindString(shill::kUIDataProperty);
   if (ui_data) {
-    absl::optional<base::Value::Dict> ui_data_dict =
+    std::optional<base::Value::Dict> ui_data_dict =
         chromeos::onc::ReadDictionaryFromJson(*ui_data);
     if (ui_data_dict.has_value()) {
       dict.Set(shill::kUIDataProperty, base::Value(std::move(*ui_data_dict)));
@@ -359,7 +359,7 @@ void ShillDataCollector::OnPIIDetected(PIIMap detected_pii) {
                       collector_errors})};
     std::move(data_collector_done_callback_).Run(/*error=*/error);
   } else {
-    std::move(data_collector_done_callback_).Run(/*error=*/absl::nullopt);
+    std::move(data_collector_done_callback_).Run(/*error=*/std::nullopt);
   }
 }
 
@@ -418,5 +418,5 @@ void ShillDataCollector::OnFilesWritten(
     return;
   }
   shill_log_.clear();
-  std::move(on_exported_callback).Run(/*error=*/absl::nullopt);
+  std::move(on_exported_callback).Run(/*error=*/std::nullopt);
 }

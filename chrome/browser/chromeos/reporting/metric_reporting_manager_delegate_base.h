@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_REPORTING_MANAGER_DELEGATE_BASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +19,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/rate_limiter_slide_window.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting::metrics {
 
@@ -41,7 +41,7 @@ class MetricReportingManagerDelegateBase {
       Destination destination,
       Priority priority,
       std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
-      absl::optional<SourceInfo> source_info = absl::nullopt);
+      std::optional<SourceInfo> source_info = std::nullopt);
 
   // Creates a new `MetricReportQueue` for periodic uploads. The rate is
   // controlled by the specified setting and we fall back to the defaults
@@ -54,7 +54,7 @@ class MetricReportingManagerDelegateBase {
       const std::string& rate_setting_path,
       base::TimeDelta default_rate,
       int rate_unit_to_ms = 1,
-      absl::optional<SourceInfo> source_info = absl::nullopt);
+      std::optional<SourceInfo> source_info = std::nullopt);
 
   // Creates a new collector for periodic metric collection. The rate is
   // controlled by the specified setting and we fall back to the defaults

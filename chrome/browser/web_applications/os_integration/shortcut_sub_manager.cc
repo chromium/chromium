@@ -75,7 +75,7 @@ void ShortcutSubManager::Configure(
 
 void ShortcutSubManager::Execute(
     const webapps::AppId& app_id,
-    const absl::optional<SynchronizeOsOptions>& synchronize_options,
+    const std::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
@@ -245,7 +245,7 @@ void ShortcutSubManager::ForceUnregister(const webapps::AppId& app_id,
 
 void ShortcutSubManager::CreateShortcut(
     const webapps::AppId& app_id,
-    absl::optional<SynchronizeOsOptions> synchronize_options,
+    std::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure on_complete,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   SynchronizeOsOptions options =
@@ -270,11 +270,11 @@ void ShortcutSubManager::CreateShortcut(
 
 void ShortcutSubManager::UpdateShortcut(
     const webapps::AppId& app_id,
-    absl::optional<SynchronizeOsOptions> synchronize_options,
+    std::optional<SynchronizeOsOptions> synchronize_options,
     const std::u16string& old_app_title,
     base::OnceClosure on_complete,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  absl::optional<ShortcutLocations> locations = absl::nullopt;
+  std::optional<ShortcutLocations> locations = std::nullopt;
   if (synchronize_options.has_value()) {
     ShortcutLocations creation_locations;
     creation_locations.on_desktop =

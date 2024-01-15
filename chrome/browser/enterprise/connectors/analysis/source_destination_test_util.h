@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_SOURCE_DESTINATION_TEST_UTIL_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_SOURCE_DESTINATION_TEST_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -35,7 +35,7 @@ class SourceDestinationTestingHelper {
  public:
   struct VolumeInfo {
     file_manager::VolumeType type;
-    absl::optional<guest_os::VmType> vm_type;
+    std::optional<guest_os::VmType> vm_type;
     const char* fs_config_string;
   };
 

@@ -176,7 +176,7 @@ TEST(Session, OnBidiResponseChan) {
   payload.Set("channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
-  absl::optional<base::Value> data_parsed =
+  std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
@@ -194,7 +194,7 @@ TEST(Session, OnBidiResponseNoChan) {
   payload.Set("channel", std::string("/512") + Session::kNoChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
-  absl::optional<base::Value> data_parsed =
+  std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());
@@ -309,7 +309,7 @@ TEST(Session, OnBidiResponseCorrectConnection) {
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
   EXPECT_EQ("", received1);
   EXPECT_EQ("", received3);
-  absl::optional<base::Value> data_parsed =
+  std::optional<base::Value> data_parsed =
       base::JSONReader::Read(received2, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(data_parsed);
   ASSERT_TRUE(data_parsed->is_dict());

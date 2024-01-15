@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_COMMON_TYPES_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_COMMON_TYPES_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -70,8 +69,8 @@ struct AttestationResponse {
 // a device identity attestation request.
 struct DeviceTrustResponse {
   std::string challenge_response{};
-  absl::optional<DeviceTrustError> error = absl::nullopt;
-  absl::optional<DTAttestationResult> attestation_result = absl::nullopt;
+  std::optional<DeviceTrustError> error = std::nullopt;
+  std::optional<DTAttestationResult> attestation_result = std::nullopt;
 };
 
 }  // namespace enterprise_connectors

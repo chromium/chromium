@@ -70,7 +70,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileWarning) {
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 
-  delegate.BypassWarnings(absl::nullopt);
+  delegate.BypassWarnings(std::nullopt);
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 }
@@ -97,7 +97,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDiscardFileBlock) {
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 
-  delegate.BypassWarnings(absl::nullopt);
+  delegate.BypassWarnings(std::nullopt);
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
 }

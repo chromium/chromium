@@ -7,14 +7,15 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <initializer_list>
 #include <iosfwd>
+#include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 

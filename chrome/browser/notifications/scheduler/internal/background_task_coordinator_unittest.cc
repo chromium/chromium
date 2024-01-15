@@ -39,10 +39,10 @@ const std::vector<test::ImpressionTestData> kSingleClientImpressionTestData = {{
     SchedulerClientType::kTest1,
     1 /* current_max_daily_show */,
     {} /* impressions */,
-    absl::nullopt /* suppression_info */,
+    std::nullopt /* suppression_info */,
     0 /* negative_events_count */,
-    absl::nullopt /* negative_event_ts */,
-    absl::nullopt /* last_shown_ts */
+    std::nullopt /* negative_event_ts */,
+    std::nullopt /* last_shown_ts */
 }
 
 };
@@ -51,18 +51,18 @@ const std::vector<test::ImpressionTestData> kClientsImpressionTestData = {
     {SchedulerClientType::kTest1,
      1 /* current_max_daily_show */,
      {} /* impressions */,
-     absl::nullopt /* suppression_info */,
+     std::nullopt /* suppression_info */,
      0 /* negative_events_count */,
-     absl::nullopt /* negative_event_ts */,
-     absl::nullopt /* last_shown_ts */},
+     std::nullopt /* negative_event_ts */,
+     std::nullopt /* last_shown_ts */},
     {
         SchedulerClientType::kTest2,
         2 /* current_max_daily_show */,
         {} /* impressions */,
-        absl::nullopt /* suppression_info */,
+        std::nullopt /* suppression_info */,
         0 /* negative_events_count */,
-        absl::nullopt /* negative_event_ts */,
-        absl::nullopt /* last_shown_ts */,
+        std::nullopt /* negative_event_ts */,
+        std::nullopt /* last_shown_ts */,
 
     }};
 

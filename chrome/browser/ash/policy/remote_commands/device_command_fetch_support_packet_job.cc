@@ -56,7 +56,6 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using enterprise_management::FetchSupportPacketResultCode;
 using enterprise_management::FetchSupportPacketResultNote;
@@ -469,7 +468,7 @@ void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
     // acked. That's why we omit result payload here. FETCH_SUPPORT_PACKET
     // command execution will be counted as finished only when LogUploadEvent is
     // uploaded to Reporting server.
-    std::move(result_callback_).Run(ResultType::kAcked, absl::nullopt);
+    std::move(result_callback_).Run(ResultType::kAcked, std::nullopt);
     return;
   }
 

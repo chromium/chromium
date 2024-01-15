@@ -189,7 +189,7 @@ ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-absl::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
+std::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   auto result = ChromeMainDelegate::PostEarlyInitialization(invoked_in);
   if (absl::get_if<InvokedInBrowserProcess>(&invoked_in)) {

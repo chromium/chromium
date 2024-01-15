@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/download_status_updater.h"
-
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/download/download_status_updater.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -28,7 +28,6 @@
 #include "components/download/public/common/download_item_utils.h"
 #include "content/public/browser/download_item_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -36,7 +35,7 @@ namespace {
 // Helpers ---------------------------------------------------------------------
 
 crosapi::mojom::DownloadStatusUpdater* GetRemote(
-    absl::optional<uint32_t> min_version = absl::nullopt) {
+    std::optional<uint32_t> min_version = std::nullopt) {
   using DownloadStatusUpdater = crosapi::mojom::DownloadStatusUpdater;
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<DownloadStatusUpdater>()) {

@@ -379,7 +379,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
    public:
     virtual ~Observer() = default;
 
-    absl::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
+    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
     transport_availability_info() {
       return transport_availability_info_;
     }
@@ -416,7 +416,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
         override {}
 
    private:
-    absl::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
+    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
         transport_availability_info_;
   };
 
@@ -791,7 +791,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     void set_cable_data(
         device::FidoRequestType request_type,
         std::vector<device::CableDiscoveryData> cable_data,
-        const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
+        const std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key) override {
       parent_->trace() << "SET_CABLE_DATA" << std::endl;
     }

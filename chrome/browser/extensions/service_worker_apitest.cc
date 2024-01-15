@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -89,7 +90,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
@@ -193,19 +193,19 @@ void ServiceWorkerBasedBackgroundTest::SetUpOnMainThread() {
 }
 
 // Returns the only running worker id for |extension_id|.
-// Returns absl::nullopt if there isn't any worker running or more than one
+// Returns std::nullopt if there isn't any worker running or more than one
 // worker is running for |extension_id|.
-absl::optional<WorkerId>
+std::optional<WorkerId>
 ServiceWorkerBasedBackgroundTest::GetUniqueRunningWorkerId(
     const ExtensionId& extension_id) {
   ProcessManager* process_manager = ProcessManager::Get(profile());
   std::vector<WorkerId> all_workers =
       process_manager->GetAllWorkersIdsForTesting();
-  absl::optional<WorkerId> running_worker_id;
+  std::optional<WorkerId> running_worker_id;
   for (const WorkerId& worker_id : all_workers) {
     if (worker_id.extension_id == extension_id) {
       if (running_worker_id) {  // More than one worker present.
-        return absl::nullopt;
+        return std::nullopt;
       }
       running_worker_id = worker_id;
     }
@@ -710,7 +710,7 @@ class ServiceWorkerRegistrationAtStartupTest
 
  private:
   bool extension_activated_ = false;
-  absl::optional<bool> will_register_service_worker_;
+  std::optional<bool> will_register_service_worker_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -750,18 +750,18 @@ class ServiceWorkerStartFailureObserver
     }
   }
 
-  absl::optional<blink::ServiceWorkerStatusCode> status_code() {
+  std::optional<blink::ServiceWorkerStatusCode> status_code() {
     return status_code_;
   }
 
  private:
   // Holds number of pending tasks for worker at the time DidStartWorkerFail is
   // observed.
-  absl::optional<size_t> pending_tasks_count_at_worker_failure_;
+  std::optional<size_t> pending_tasks_count_at_worker_failure_;
 
   ExtensionId extension_id_;
   base::RunLoop run_loop_;
-  absl::optional<blink::ServiceWorkerStatusCode> status_code_;
+  std::optional<blink::ServiceWorkerStatusCode> status_code_;
 };
 
 // Test extension id at
@@ -1866,7 +1866,7 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
   base::RunLoop stopped_run_loop_;
   // Holds version id of an extension worker once OnVersionStartedRunning is
   // observed.
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
   GURL extension_url_;
 };
@@ -2369,8 +2369,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ASSERT_TRUE(extension);
   EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
 
-  absl::optional<WorkerId> worker_id =
-      GetUniqueRunningWorkerId(extension->id());
+  std::optional<WorkerId> worker_id = GetUniqueRunningWorkerId(extension->id());
   ASSERT_TRUE(worker_id);
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
       browser()->profile(), extension->id());
@@ -2389,8 +2388,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ASSERT_TRUE(extension);
   EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
 
-  absl::optional<WorkerId> worker_id =
-      GetUniqueRunningWorkerId(extension->id());
+  std::optional<WorkerId> worker_id = GetUniqueRunningWorkerId(extension->id());
   ASSERT_TRUE(worker_id);
   {
     // Terminate worker's RenderProcessHost.
@@ -2656,7 +2654,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTestWithNotification,
     ASSERT_EQ(1u, notifications.size());
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        absl::nullopt, absl::nullopt);
+        std::nullopt, std::nullopt);
   }
 
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
@@ -2773,7 +2771,7 @@ class ServiceWorkerTestWithEarlyReadyMesssage
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  absl::optional<bool> registration_mismatch_mitigated_;
+  std::optional<bool> registration_mismatch_mitigated_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

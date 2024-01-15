@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_SHARING_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
 #define CHROME_BROWSER_SHARING_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -22,7 +22,7 @@ class ECPrivateKey;
 // NIST P-256 curve and ECSignatureCreator is hardcoded to SHA256.
 //
 // https://tools.ietf.org/html/rfc7519
-absl::optional<std::string> CreateJSONWebToken(
+std::optional<std::string> CreateJSONWebToken(
     const base::Value::Dict& claims,
     crypto::ECPrivateKey* private_key);
 

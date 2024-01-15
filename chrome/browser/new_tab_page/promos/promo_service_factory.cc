@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // static
 PromoService* PromoServiceFactory::GetForProfile(Profile* profile) {

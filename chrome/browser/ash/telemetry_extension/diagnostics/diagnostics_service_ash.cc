@@ -100,7 +100,7 @@ void DiagnosticsServiceAsh::GetRoutineUpdate(
 
 void DiagnosticsServiceAsh::RunAcPowerRoutine(
     crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
-    const absl::optional<std::string>& expected_power_type,
+    const std::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   GetService()->RunAcPowerRoutine(
       converters::diagnostics::Convert(expected_status), expected_power_type,
@@ -383,7 +383,7 @@ void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
 void DiagnosticsServiceAsh::RunMemoryRoutine(
     RunMemoryRoutineCallback callback) {
   GetService()->RunMemoryRoutine(
-      absl::nullopt,
+      std::nullopt,
       base::BindOnce(
           [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback
                  callback,

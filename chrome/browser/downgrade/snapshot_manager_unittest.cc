@@ -390,7 +390,7 @@ TEST_F(SnapshotManagerTest, PurgeInvalidAndOldSnapshotsKeepsMaxValidSnapshots) {
   int max_number_of_snapshots = 3;
   SnapshotManager snapshot_manager(user_data_dir());
   snapshot_manager.PurgeInvalidAndOldSnapshots(max_number_of_snapshots,
-                                               absl::nullopt);
+                                               std::nullopt);
 
   const base::FilePath deletion_directory =
       user_data_dir()
@@ -427,7 +427,7 @@ TEST_F(SnapshotManagerTest, PurgeInvalidAndOldSnapshotsKeepsValidSnapshots) {
   int max_number_of_snapshots = 3;
   SnapshotManager snapshot_manager(user_data_dir());
   snapshot_manager.PurgeInvalidAndOldSnapshots(max_number_of_snapshots,
-                                               absl::nullopt);
+                                               std::nullopt);
 
   for (const auto& path : valid_snapshot_paths)
     EXPECT_TRUE(base::PathExists(path));

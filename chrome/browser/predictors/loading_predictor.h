@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -60,11 +60,11 @@ class LoadingPredictor : public KeyedService,
   // over local predictions to trigger actions, such as prefetch and/or
   // preconnect. Returns true if no more preconnect actions should be taken by
   // the caller.
-  bool PrepareForPageLoad(const GURL& url,
-                          HintOrigin origin,
-                          bool preconnectable = false,
-                          absl::optional<PreconnectPrediction>
-                              preconnect_prediction = absl::nullopt);
+  bool PrepareForPageLoad(
+      const GURL& url,
+      HintOrigin origin,
+      bool preconnectable = false,
+      std::optional<PreconnectPrediction> preconnect_prediction = std::nullopt);
 
   // Indicates that a page load hint is no longer active.
   void CancelPageLoadHint(const GURL& url);

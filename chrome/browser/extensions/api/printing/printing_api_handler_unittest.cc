@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -179,12 +179,12 @@ constexpr char kPdfExample[] =
     "%PDF- This is a string starting with a PDF's magic bytes and long enough "
     "to be seen as a PDF by LooksLikePdf.";
 
-absl::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
+std::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
     const std::string& printer_id,
     const std::string& title,
     const std::string& ticket,
     const std::string& content_type,
-    absl::optional<std::string> document_blob_uuid) {
+    std::optional<std::string> document_blob_uuid) {
   api::printing::SubmitJobRequest request;
   request.job.printer_id = printer_id;
   request.job.title = title;
@@ -202,7 +202,7 @@ absl::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   return api::printing::SubmitJob::Params::Create(args);
 }
 
-absl::optional<printing::PrinterSemanticCapsAndDefaults>
+std::optional<printing::PrinterSemanticCapsAndDefaults>
 ConstructPrinterCapabilities() {
   printing::PrinterSemanticCapsAndDefaults capabilities;
   capabilities.color_model = printing::mojom::ColorModel::kColor;
@@ -231,13 +231,13 @@ std::unique_ptr<content::BlobHandle> CreateMemoryBackedBlob(
 using GetPrintersFuture =
     base::test::TestFuture<std::vector<api::printing::Printer>>;
 using GetPrinterInfoFuture =
-    base::test::TestFuture<absl::optional<base::Value>,
-                           absl::optional<api::printing::PrinterStatus>,
-                           absl::optional<std::string>>;
+    base::test::TestFuture<std::optional<base::Value>,
+                           std::optional<api::printing::PrinterStatus>,
+                           std::optional<std::string>>;
 using SubmitJobFuture =
-    base::test::TestFuture<absl::optional<api::printing::SubmitJobStatus>,
-                           absl::optional<std::string>,
-                           absl::optional<std::string>>;
+    base::test::TestFuture<std::optional<api::printing::SubmitJobStatus>,
+                           std::optional<std::string>,
+                           std::optional<std::string>>;
 
 }  // namespace
 
@@ -477,7 +477,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinters_NoPrinters) {
 // Test that calling GetPrinters() returns the mock printer.
 TEST_F(PrintingAPIHandlerUnittest, GetPrinters_OnePrinter) {
   AddPrinter(crosapi::mojom::LocalDestinationInfo(
-      kId1, kName, kDescription, true, absl::make_optional(kUri)));
+      kId1, kName, kDescription, true, std::make_optional(kUri)));
 
   GetPrintersFuture printers_future;
   printing_api_handler_->GetPrinters(printers_future.GetCallback());
@@ -492,7 +492,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinters_OnePrinter) {
   EXPECT_EQ(kUri, idl_printer.uri);
   EXPECT_EQ(api::printing::PrinterSource::kPolicy, idl_printer.source);
   EXPECT_FALSE(idl_printer.is_default);
-  EXPECT_EQ(absl::nullopt, idl_printer.recently_used_rank);
+  EXPECT_EQ(std::nullopt, idl_printer.recently_used_rank);
 }
 
 // Test that calling GetPrinters() returns printers with correct `is_default`
@@ -502,7 +502,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinters_IsDefault) {
       prefs::kPrintPreviewDefaultDestinationSelectionRules,
       R"({"kind": "local", "idPattern": "id.*"})");
   AddPrinter(crosapi::mojom::LocalDestinationInfo(
-      kId1, kName, kDescription, true, absl::make_optional(kUri)));
+      kId1, kName, kDescription, true, std::make_optional(kUri)));
 
   GetPrintersFuture printers_future;
   printing_api_handler_->GetPrinters(printers_future.GetCallback());
@@ -533,7 +533,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinters_RecentlyUsedRank) {
   })");
   sticky_settings->SaveInPrefs(testing_profile_->GetPrefs());
   AddPrinter(crosapi::mojom::LocalDestinationInfo(
-      kId1, kName, kDescription, true, absl::make_optional(kUri)));
+      kId1, kName, kDescription, true, std::make_optional(kUri)));
 
   GetPrintersFuture printers_future;
   printing_api_handler_->GetPrinters(printers_future.GetCallback());
@@ -643,7 +643,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_UnsupportedContentType) {
 
   auto params =
       ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt, "image/jpeg",
-                               /*document_blob_uuid=*/absl::nullopt);
+                               /*document_blob_uuid=*/std::nullopt);
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
@@ -668,7 +668,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrintTicket) {
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"",
                                          kIncompleteCjt, "application/pdf",
-                                         /*document_blob_uuid=*/absl::nullopt);
+                                         /*document_blob_uuid=*/std::nullopt);
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
@@ -688,7 +688,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrintTicket) {
 TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrinterId) {
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
                                          "application/pdf",
-                                         /*document_blob_uuid=*/absl::nullopt);
+                                         /*document_blob_uuid=*/std::nullopt);
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
@@ -711,7 +711,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_PrinterUnavailable) {
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
                                          "application/pdf",
-                                         /*document_blob_uuid=*/absl::nullopt);
+                                         /*document_blob_uuid=*/std::nullopt);
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
@@ -736,7 +736,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_UnsupportedTicket) {
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
                                          "application/pdf",
-                                         /*document_blob_uuid=*/absl::nullopt);
+                                         /*document_blob_uuid=*/std::nullopt);
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
@@ -809,7 +809,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob) {
 }
 
 TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidId) {
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId, "job_id");
 
   ASSERT_TRUE(error);
@@ -821,7 +821,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidId_OtherExtension) {
   const auto job_id = SubmitJob();
 
   // Try to cancel print job from other extension.
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId2, job_id);
 
   ASSERT_TRUE(error);
@@ -840,7 +840,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidState) {
       crosapi::mojom::PrintJobStatus::kDone);
 
   // Try to cancel already completed print job.
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId, job_id);
 
   ASSERT_TRUE(error);
@@ -855,7 +855,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob) {
       event_router_, api::printing::OnJobStatusChanged::kEventName);
 
   // Cancel started print job.
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId, job_id);
 
   EXPECT_FALSE(error);

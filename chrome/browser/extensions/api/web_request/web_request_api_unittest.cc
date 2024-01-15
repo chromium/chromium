@@ -548,7 +548,7 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnAuthRequiredDelta) {
 
 TEST(ExtensionWebRequestHelpersTest, TestMergeCancelOfResponses) {
   EventResponseDeltas deltas;
-  absl::optional<extensions::ExtensionId> canceled_by_extension;
+  std::optional<extensions::ExtensionId> canceled_by_extension;
 
   // Single event that does not cancel.
   {
@@ -904,7 +904,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   modify_headers_action.request_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
           "key5", api::declarative_net_request::HeaderOperation::kRemove,
-          absl::nullopt)};
+          std::nullopt)};
   info.dnr_actions = std::vector<DNRRequestAction>();
   info.dnr_actions->push_back(std::move(modify_headers_action));
 
@@ -999,7 +999,7 @@ namespace {
 
 struct ExpectedHeader {
   std::string header_name;
-  absl::optional<std::string> expected_value;
+  std::optional<std::string> expected_value;
 };
 
 // Applies the DNR actions in `info` to `base_headers` and compares the results
@@ -1067,7 +1067,7 @@ TEST(ExtensionWebRequestHelpersTest,
       DNRRequestAction::HeaderInfo("connection", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_2"),
       DNRRequestAction::HeaderInfo(
-          "forwarded", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
+          "forwarded", dnr_api::HeaderOperation::kRemove, std::nullopt)};
 
   WebRequestInfoInitParams info_params;
   WebRequestInfo info(std::move(info_params));
@@ -1139,7 +1139,7 @@ TEST(ExtensionWebRequestHelpersTest,
       DNRRequestAction::HeaderInfo("key5", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_3"),
       DNRRequestAction::HeaderInfo("key6", dnr_api::HeaderOperation::kRemove,
-                                   absl::nullopt)};
+                                   std::nullopt)};
 
   WebRequestInfoInitParams info_params;
   WebRequestInfo info(std::move(info_params));
@@ -1193,10 +1193,10 @@ TEST(ExtensionWebRequestHelpersTest,
   action_1.request_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
           "upgrade", api::declarative_net_request::HeaderOperation::kRemove,
-          absl::nullopt),
+          std::nullopt),
       DNRRequestAction::HeaderInfo(
           "key8", api::declarative_net_request::HeaderOperation::kRemove,
-          absl::nullopt)};
+          std::nullopt)};
 
   DNRRequestAction action_2 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
@@ -1222,8 +1222,8 @@ TEST(ExtensionWebRequestHelpersTest,
   std::vector<ExpectedHeader> expected_headers({
       // Once a header is removed by a DNR action, it cannot be changed by
       // subsequent actions.
-      {"upgrade", absl::nullopt},
-      {"key8", absl::nullopt},
+      {"upgrade", std::nullopt},
+      {"key8", std::nullopt},
   });
 
   ExecuteDNRActionsAndCheckHeaders(info, base_headers, expected_headers);
@@ -1676,7 +1676,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   modify_headers_action.response_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
           "key3", api::declarative_net_request::HeaderOperation::kRemove,
-          absl::nullopt)};
+          std::nullopt)};
 
   info.dnr_actions = std::vector<DNRRequestAction>();
   info.dnr_actions->push_back(std::move(modify_headers_action));
@@ -1917,9 +1917,9 @@ TEST(ExtensionWebRequestHelpersTest,
                  "dnr_action_1"),
 
       HeaderInfo("key7", api::declarative_net_request::HeaderOperation::kRemove,
-                 absl::nullopt),
+                 std::nullopt),
       HeaderInfo("key8", api::declarative_net_request::HeaderOperation::kRemove,
-                 absl::nullopt),
+                 std::nullopt),
 
       HeaderInfo("same_ext_key",
                  api::declarative_net_request::HeaderOperation::kSet,
@@ -1941,14 +1941,14 @@ TEST(ExtensionWebRequestHelpersTest,
       HeaderInfo("key2", api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_3"),
       HeaderInfo("key3", api::declarative_net_request::HeaderOperation::kRemove,
-                 absl::nullopt),
+                 std::nullopt),
 
       HeaderInfo("key4", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_3"),
       HeaderInfo("key5", api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_3"),
       HeaderInfo("key6", api::declarative_net_request::HeaderOperation::kRemove,
-                 absl::nullopt),
+                 std::nullopt),
 
       HeaderInfo("key7", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_3"),
@@ -2048,10 +2048,10 @@ TEST(ExtensionWebRequestHelpersTest,
                  "dnr_action_1"),
       HeaderInfo("set-cookie",
                  api::declarative_net_request::HeaderOperation::kRemove,
-                 absl::nullopt),
+                 std::nullopt),
       HeaderInfo("warning",
                  api::declarative_net_request::HeaderOperation::kRemove,
-                 absl::nullopt)};
+                 std::nullopt)};
 
   DNRRequestAction action_2 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);

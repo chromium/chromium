@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64url.h"
@@ -37,7 +38,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 using RefreshTestFuture =
@@ -77,7 +77,7 @@ std::string GetChallengeFromJwt(std::string_view jwt) {
           parts[1], base::Base64UrlDecodePolicy::DISALLOW_PADDING, &payload)) {
     return std::string();
   }
-  absl::optional<base::Value::Dict> payload_dict =
+  std::optional<base::Value::Dict> payload_dict =
       base::JSONReader::ReadDict(payload);
   if (!payload_dict) {
     return std::string();
@@ -160,7 +160,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
     std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details;
     cookie_access_details.emplace_back(network::mojom::CookieAccessDetails::New(
         access_type, kGairaUrl, url::Origin(), net::SiteForCookies(),
-        CreateReportedCookies(cookies_), absl::nullopt, /*count=*/1,
+        CreateReportedCookies(cookies_), std::nullopt, /*count=*/1,
         /*is_ad_tagged=*/false, net::CookieSettingOverrides()));
     fetcher_->OnCookiesAccessed(std::move(cookie_access_details));
   }
@@ -514,7 +514,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
        GetResultFromNetErrorAndHttpStatusCode) {
   // Connection error.
   EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
-                net::ERR_CONNECTION_TIMED_OUT, absl::nullopt),
+                net::ERR_CONNECTION_TIMED_OUT, std::nullopt),
             Result::kConnectionError);
   // net::OK.
   EXPECT_EQ(

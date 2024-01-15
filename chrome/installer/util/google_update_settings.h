@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +19,6 @@
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/metrics/client_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace installer {
 class AdditionalParameters;
@@ -114,7 +114,7 @@ class GoogleUpdateSettings {
   // Returns a hash of the current update cohort ID string to which the
   // browser is assigned, if any. Discards any cohort data past the final ":".
   // If there is no ":", returns nullopt.
-  static absl::optional<uint32_t> GetHashedCohortId();
+  static std::optional<uint32_t> GetHashedCohortId();
 
   // Returns the metrics client info backed up in the registry. nullptr
   // if-and-only-if the client_id couldn't be retrieved (failure to retrieve

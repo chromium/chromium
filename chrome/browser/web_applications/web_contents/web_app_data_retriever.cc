@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -104,7 +104,7 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
-                       weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+                       weak_ptr_factory_.GetWeakPtr(), std::nullopt));
     return;
   }
 
@@ -142,7 +142,7 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
 void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     CheckInstallabilityCallback callback,
-    absl::optional<webapps::InstallableParams> params) {
+    std::optional<webapps::InstallableParams> params) {
   DCHECK(!web_contents->IsBeingDestroyed());
   Observe(web_contents);
 
@@ -320,7 +320,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
 }
 
 void WebAppDataRetriever::CallCallbackOnError(
-    absl::optional<webapps::InstallableStatusCode> error_code) {
+    std::optional<webapps::InstallableStatusCode> error_code) {
   Observe(nullptr);
   DCHECK(ShouldStopRetrieval());
   icon_downloader_.reset();

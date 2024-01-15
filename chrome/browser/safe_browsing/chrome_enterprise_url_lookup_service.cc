@@ -131,7 +131,7 @@ void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
               /* is_sampled_report */ false);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
   DCHECK(connectors_service_);
   return connectors_service_->GetDMTokenForRealTimeUrlCheck();
@@ -195,11 +195,11 @@ bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
   return false;
 }
 
-absl::optional<base::Time> ChromeEnterpriseRealTimeUrlLookupService::
+std::optional<base::Time> ChromeEnterpriseRealTimeUrlLookupService::
     GetMinAllowedTimestampForReferrerChains() const {
   // Enterprise URL lookup is enabled at startup and managed by the admin, so
   // all referrer URLs should be included in the referrer chain.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {

@@ -5,8 +5,10 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -36,7 +38,6 @@
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -292,7 +293,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
   WebAppInstallInfo web_app_info;
 
   blink::mojom::Manifest manifest;
-  manifest.name = absl::nullopt;
+  manifest.name = std::nullopt;
   manifest.short_name = kAppTestShortName;
 
   UpdateWebAppInfoFromManifest(
@@ -417,7 +418,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     EXPECT_TRUE(share_target.params.files.empty());
   }
 
-  manifest.share_target = absl::nullopt;
+  manifest.share_target = std::nullopt;
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_FALSE(web_app_info.share_target.has_value());
 }
@@ -1831,7 +1832,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   web_app_info.dark_mode_background_color = SK_ColorBLACK;
 
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_info.start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, web_app_info.start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
   SetWebAppManifestFields(web_app_info, *web_app);
 
@@ -1847,10 +1848,10 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   EXPECT_TRUE(web_app->dark_mode_background_color().has_value());
   EXPECT_EQ(*web_app->dark_mode_background_color(), SK_ColorBLACK);
 
-  web_app_info.theme_color = absl::nullopt;
-  web_app_info.dark_mode_theme_color = absl::nullopt;
-  web_app_info.background_color = absl::nullopt;
-  web_app_info.dark_mode_background_color = absl::nullopt;
+  web_app_info.theme_color = std::nullopt;
+  web_app_info.dark_mode_theme_color = std::nullopt;
+  web_app_info.background_color = std::nullopt;
+  web_app_info.dark_mode_background_color = std::nullopt;
   SetWebAppManifestFields(web_app_info, *web_app);
   EXPECT_FALSE(web_app->theme_color().has_value());
   EXPECT_FALSE(web_app->dark_mode_theme_color().has_value());
@@ -1865,7 +1866,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
   web_app_info.title = u"App Name";
 
   const webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_info.start_url);
+      GenerateAppId(/*manifest_id=*/std::nullopt, web_app_info.start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
 
   {
@@ -1928,7 +1929,7 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
     EXPECT_TRUE(share_target.params.files.empty());
   }
 
-  web_app_info.share_target = absl::nullopt;
+  web_app_info.share_target = std::nullopt;
   SetWebAppManifestFields(web_app_info, *web_app);
   EXPECT_FALSE(web_app->share_target().has_value());
 }

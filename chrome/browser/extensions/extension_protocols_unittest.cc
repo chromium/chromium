@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/extension_protocols.h"
+
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -34,7 +37,6 @@
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -49,7 +51,6 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 
 using extensions::ExtensionRegistry;
@@ -324,8 +325,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
   std::unique_ptr<content::WebContents> contents_;
   const bool force_incognito_;
 
-  absl::optional<base::test::ScopedPowerMonitorTestSource>
-      power_monitor_source_;
+  std::optional<base::test::ScopedPowerMonitorTestSource> power_monitor_source_;
 };
 
 class ExtensionProtocolsTest : public ExtensionProtocolsTestBase {

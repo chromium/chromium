@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -47,16 +48,15 @@
 #include "components/reporting/util/task_runner_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
 
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
-static absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
+static std::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
     const base::Value::Dict& sequence_information) {
-  const absl::optional<int> int_priority_result =
+  const std::optional<int> int_priority_result =
       sequence_information.FindInt(json_keys::kPriority);
   if (int_priority_result.has_value()) {
     return Priority(int_priority_result.value());
@@ -67,14 +67,14 @@ static absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
   if (!str_priority_result) {
     LOG(ERROR) << "Field priority is missing from SequenceInformation: "
                << sequence_information;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Priority priority;
   if (!Priority_Parse(*str_priority_result, &priority)) {
     LOG(ERROR) << "Unable to parse field priority in SequenceInformation: "
                << sequence_information;
-    return absl::nullopt;
+    return std::nullopt;
   }
   return priority;
 }
@@ -95,7 +95,7 @@ static bool IsMissingGenerationGuid(const std::string* generation_guid) {
 static bool IsMissingSequenceInformation(
     const std::string* sequencing_id,
     const std::string* generation_id,
-    const absl::optional<Priority> priority_result,
+    const std::optional<Priority> priority_result,
     const std::string* generation_guid) {
   return !sequencing_id || !generation_id || generation_id->empty() ||
 #if BUILDFLAG(IS_CHROMEOS)
@@ -407,7 +407,7 @@ class RecordHandlerImpl::ReportUploader
   //   "priority": 3
   //   "generationGuid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
   // }
-  absl::optional<EncryptedRecord> HandleFailedUploadedSequenceInformation(
+  std::optional<EncryptedRecord> HandleFailedUploadedSequenceInformation(
       const base::Value::Dict& sequence_information);
 
   bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -427,7 +427,7 @@ class RecordHandlerImpl::ReportUploader
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set for the highest record being uploaded.
-  absl::optional<SequenceInformation> highest_sequence_information_
+  std::optional<SequenceInformation> highest_sequence_information_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set to |true| if force_confirm flag is present. |false| by default.
@@ -761,13 +761,13 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
       Status(error::INTERNAL, "Unable to upload any records")));
 }
 
-absl::optional<EncryptedRecord>
+std::optional<EncryptedRecord>
 RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
     const base::Value::Dict& sequence_information) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!highest_sequence_information_.has_value()) {
     LOG(ERROR) << "highest_sequence_information_ has no value.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto seq_info_result = SequenceInformationValueToProto(sequence_information);
@@ -776,7 +776,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
                << json_keys::kFirstFailedUploadedRecord << "."
                << json_keys::kFailedUploadedRecord << ":"
                << sequence_information;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SequenceInformation& seq_info = seq_info_result.value();
@@ -792,7 +792,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
       seq_info.sequencing_id() !=
           highest_sequence_information_->sequencing_id() + 1) {
     LOG(ERROR) << "Sequence info fields are incorrect.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Build a gap record and return it.

@@ -111,10 +111,10 @@ BrowserTabsMetadataFetcherImpl::~BrowserTabsMetadataFetcherImpl() = default;
 void BrowserTabsMetadataFetcherImpl::Fetch(
     const sync_sessions::SyncedSession* session,
     base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
-  // A new fetch was made, return a absl::nullopt to the previous |callback_|.
+  // A new fetch was made, return a std::nullopt to the previous |callback_|.
   if (!callback_.is_null()) {
     weak_ptr_factory_.InvalidateWeakPtrs();
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
   }
 
   results_ = GetSortedMetadataWithoutFavicons(session);
@@ -140,10 +140,10 @@ void BrowserTabsMetadataFetcherImpl::FetchForeignSyncedPhoneSessionMetadata(
     const ForeignSyncedSessionAsh& session,
     SyncedSessionClientAsh* synced_session_client_ash,
     base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
-  // A new fetch was made, return a absl::nullopt to the previous |callback_|.
+  // A new fetch was made, return a std::nullopt to the previous |callback_|.
   if (!callback_.is_null()) {
     weak_ptr_factory_.InvalidateWeakPtrs();
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
   }
 
   std::vector<BrowserTabsModel::BrowserTabMetadata> results =

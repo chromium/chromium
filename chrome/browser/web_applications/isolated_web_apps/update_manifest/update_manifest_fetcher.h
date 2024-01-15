@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_MANIFEST_UPDATE_MANIFEST_FETCHER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_MANIFEST_UPDATE_MANIFEST_FETCHER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +16,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -59,8 +60,8 @@ class UpdateManifestFetcher {
 
   void InitializeJsonParser();
 
-  void OnUpdateManifestParsed(absl::optional<base::Value> result,
-                              const absl::optional<std::string>& error);
+  void OnUpdateManifestParsed(std::optional<base::Value> result,
+                              const std::optional<std::string>& error);
 
   GURL url_;
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;

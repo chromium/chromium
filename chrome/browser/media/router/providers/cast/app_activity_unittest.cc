@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::IsJson;
 using base::test::ParseJsonDict;
@@ -112,7 +112,7 @@ TEST_F(AppActivityTest, SendAppMessageToReceiver) {
 TEST_F(AppActivityTest, SendMediaRequestToReceiver) {
   // TODO(crbug.com/954797): Test case where there is no session.
 
-  const absl::optional<int> request_id = 1234;
+  const std::optional<int> request_id = 1234;
 
   EXPECT_CALL(
       message_handler_,
@@ -121,7 +121,7 @@ TEST_F(AppActivityTest, SendMediaRequestToReceiver) {
           IsJson(
               R"({"sessionId": "theSessionId", "type": "theV2MessageType"})"),
           "theClientId", "theTransportId"))
-      .WillOnce(Return(absl::nullopt))
+      .WillOnce(Return(std::nullopt))
       .WillOnce(Return(request_id));
 
   std::unique_ptr<CastInternalMessage> message =
@@ -172,7 +172,7 @@ TEST_F(AppActivityTest, SendSetVolumeRequestToReceiver) {
 }
 
 TEST_F(AppActivityTest, StopSessionOnReceiver) {
-  const absl::optional<std::string> client_id("theClientId");
+  const std::optional<std::string> client_id("theClientId");
   base::MockCallback<cast_channel::ResultCallback> callback;
 
   SetUpSession();
@@ -269,7 +269,7 @@ TEST_F(AppActivityTest, SetOrUpdateSession) {
   AddMockClient("theClientId1");
   AddMockClient("theClientId2");
 
-  ASSERT_EQ(absl::nullopt, activity_->session_id());
+  ASSERT_EQ(std::nullopt, activity_->session_id());
   route().set_description("");
   for (auto* client : MockCastSessionClient::instances()) {
     EXPECT_CALL(*client, SendMessageToClient).Times(0);

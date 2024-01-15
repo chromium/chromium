@@ -47,7 +47,7 @@ enum class SnapshotOperationResult {
 // found at the source and successfully copied. Returns |false| if the item was
 // found at the source but not successfully copied. Returns no value if the file
 // was not at the source.
-absl::optional<bool> CopyItemToSnapshotDirectory(
+std::optional<bool> CopyItemToSnapshotDirectory(
     const base::FilePath& relative_path,
     const base::FilePath& user_data_dir,
     const base::FilePath& snapshot_dir,
@@ -57,7 +57,7 @@ absl::optional<bool> CopyItemToSnapshotDirectory(
 
   // If nothing exists to be moved, do not consider it a success or a failure.
   if (!base::PathExists(source))
-    return absl::nullopt;
+    return std::nullopt;
 
   bool copy_success = is_directory ? base::CopyDirectory(source, destination,
                                                          /*recursive=*/true)
@@ -153,7 +153,7 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
         snapshot_dir, move_target_dir.AppendASCII(version.GetString()));
   }
 
-  auto record_item_failure = [](absl::optional<bool> success,
+  auto record_item_failure = [](std::optional<bool> success,
                                 SnapshotItemId id) {
     if (!success.value_or(true))
       base::UmaHistogramEnumeration("Downgrade.TakeSnapshot.ItemFailure", id);
@@ -271,7 +271,7 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
 
 void SnapshotManager::PurgeInvalidAndOldSnapshots(
     int max_number_of_snapshots,
-    absl::optional<uint32_t> milestone) const {
+    std::optional<uint32_t> milestone) const {
   const auto snapshot_dir = user_data_dir_.Append(kSnapshotsDir);
 
   // Move the invalid snapshots within from Snapshots/NN to Snapshots.DELETE/NN.

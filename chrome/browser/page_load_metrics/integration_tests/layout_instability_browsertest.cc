@@ -13,9 +13,9 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-using absl::optional;
 using base::Bucket;
 using base::Value;
+using std::optional;
 using ShiftFrame = page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -112,7 +112,7 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
     ++i;
 
     if (score) {
-      const absl::optional<double> traced_score = data.FindDouble("score");
+      const std::optional<double> traced_score = data.FindDouble("score");
       final_score += traced_score.has_value() ? traced_score.value() : 0;
       EXPECT_EQ(*score, final_score);
     }

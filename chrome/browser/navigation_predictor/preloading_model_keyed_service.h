@@ -5,19 +5,20 @@
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_KEYED_SERVICE_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_KEYED_SERVICE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OptimizationGuideKeyedService;
 class PreloadingModelHandler;
 
 class PreloadingModelKeyedService : public KeyedService {
  public:
-  using Result = const absl::optional<float>&;
+  using Result = const std::optional<float>&;
   using ResultCallback = base::OnceCallback<void(Result)>;
   struct Inputs {
     Inputs();

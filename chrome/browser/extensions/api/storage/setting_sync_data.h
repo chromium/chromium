@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_EXTENSIONS_API_STORAGE_SETTING_SYNC_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class SyncData;
@@ -26,7 +26,7 @@ class SettingSyncData {
   // Creates from a sync change.
   explicit SettingSyncData(const syncer::SyncChange& sync_change);
 
-  // Creates from sync data. |change_type| will be absl::nullopt.
+  // Creates from sync data. |change_type| will be std::nullopt.
   explicit SettingSyncData(const syncer::SyncData& sync_data);
 
   // Creates explicitly.
@@ -40,10 +40,9 @@ class SettingSyncData {
 
   ~SettingSyncData();
 
-  // May return absl::nullopt if this object represents sync data that isn't
+  // May return std::nullopt if this object represents sync data that isn't
   // associated with a sync operation.
-  const absl::optional<syncer::SyncChange::SyncChangeType>& change_type()
-      const {
+  const std::optional<syncer::SyncChange::SyncChangeType>& change_type() const {
     return change_type_;
   }
   const ExtensionId& extension_id() const { return extension_id_; }
@@ -60,10 +59,10 @@ class SettingSyncData {
   // either an extension or app settings data type.
   void ExtractSyncData(const syncer::SyncData& sync_data);
 
-  absl::optional<syncer::SyncChange::SyncChangeType> change_type_;
+  std::optional<syncer::SyncChange::SyncChangeType> change_type_;
   ExtensionId extension_id_;
   std::string key_;
-  absl::optional<base::Value> value_;
+  std::optional<base::Value> value_;
 };
 
 using SettingSyncDataList = std::vector<std::unique_ptr<SettingSyncData>>;

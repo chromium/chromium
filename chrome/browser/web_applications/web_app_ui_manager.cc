@@ -18,20 +18,20 @@ namespace {
 // when the app identity update confirmation dialog is set to show. The behavior
 // is determined by the IdentityUpdateDialogAction enum in
 // web_app_ui_manager.h.
-absl::optional<AppIdentityUpdate>
-    g_auto_resolve_app_identity_update_dialog_for_testing = absl::nullopt;
+std::optional<AppIdentityUpdate>
+    g_auto_resolve_app_identity_update_dialog_for_testing = std::nullopt;
 
 }  // namespace
 
-base::AutoReset<absl::optional<AppIdentityUpdate>>
+base::AutoReset<std::optional<AppIdentityUpdate>>
 SetIdentityUpdateDialogActionForTesting(  // IN-TEST
-    absl::optional<AppIdentityUpdate> auto_accept_action) {
-  return base::AutoReset<absl::optional<AppIdentityUpdate>>(
+    std::optional<AppIdentityUpdate> auto_accept_action) {
+  return base::AutoReset<std::optional<AppIdentityUpdate>>(
       &g_auto_resolve_app_identity_update_dialog_for_testing,
       auto_accept_action);
 }
 
-absl::optional<AppIdentityUpdate>
+std::optional<AppIdentityUpdate>
 GetIdentityUpdateDialogActionForTesting() {  // IN-TEST
   return g_auto_resolve_app_identity_update_dialog_for_testing;
 }
@@ -41,9 +41,9 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
     const webapps::AppId& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    const absl::optional<GURL>& url_handler_launch_url,
-    const absl::optional<GURL>& protocol_handler_launch_url,
-    const absl::optional<GURL>& file_launch_url,
+    const std::optional<GURL>& url_handler_launch_url,
+    const std::optional<GURL>& protocol_handler_launch_url,
+    const std::optional<GURL>& file_launch_url,
     const std::vector<base::FilePath>& launch_files) {
   // At most one of these parameters should be non-empty.
   DCHECK_LE(url_handler_launch_url.has_value() +

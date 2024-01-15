@@ -125,13 +125,13 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // provided optional is not empty this triggers the JoinSet request.
   void OnMaybeHasTrustTokens(
       OHTTPKeyAndExpiration ohttp_key,
-      absl::optional<KeyAndNonUniqueUserId> maybe_key_and_id);
+      std::optional<KeyAndNonUniqueUserId> maybe_key_and_id);
   // Starts the OHTTP JoinSet request for the join_queue_.front() request.
   void JoinSetSendRequest(OHTTPKeyAndExpiration ohttp_key,
                           KeyAndNonUniqueUserId key_and_id);
   // Handle the response to the JoinSet request and call CompleteJoinSetRequest
   // if successful.
-  void JoinSetOnGotResponse(const absl::optional<std::string>& response,
+  void JoinSetOnGotResponse(const std::optional<std::string>& response,
                             int error_code);
   // Calls DoJoinSetCallback indicating the current request completed
   // successfully. If there are other items in the queue calls
@@ -163,7 +163,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // Called as an asynchronous response to the OHTTP request started by
   // QuerySetsSendRequest. Passes the JSON response received to be decoded and
   // handled in QuerySetsOnParsedResponse.
-  void QuerySetsOnGotResponse(const absl::optional<std::string>& response,
+  void QuerySetsOnGotResponse(const std::optional<std::string>& response,
                               int error_code);
   // Called asynchronously when the QuerySet response from
   // QuerySetsOnGotResponse has been decoded.

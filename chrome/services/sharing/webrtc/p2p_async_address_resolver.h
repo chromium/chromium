@@ -6,6 +6,8 @@
 #define CHROME_SERVICES_SHARING_WEBRTC_P2P_ASYNC_ADDRESS_RESOLVER_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,7 +15,6 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
 #include "services/network/public/mojom/p2p.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {
 
@@ -34,7 +35,7 @@ class P2PAsyncAddressResolver {
 
   // Start address resolve process.
   void Start(const rtc::SocketAddress& addr,
-             absl::optional<int> address_family,
+             std::optional<int> address_family,
              DoneCallback done_callback);
   // Clients must unregister before exiting for cleanup.
   void Cancel();

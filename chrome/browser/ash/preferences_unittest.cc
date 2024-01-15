@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/preferences.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -41,7 +42,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
@@ -108,7 +108,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
       InputMethodDescriptor descriptor(
           id, std::string(), std::string(), std::string(),
           std::vector<std::string>(), false, GURL(), GURL(),
-          /*handwriting_language=*/absl::nullopt);
+          /*handwriting_language=*/std::nullopt);
       input_method_extensions_->push_back(descriptor);
     }
 

@@ -153,7 +153,7 @@ void AshSignalsDecorator::OnNetworkInfoRetrieved(
     case Result::Tag::kErrorMessage:
       break;
     case Result::Tag::kNetworkDetails:
-      absl::optional<std::string> mac_address =
+      std::optional<std::string> mac_address =
           result->get_network_details()->mac_address;
 
       // `get_network_details()->mac_address` returns a std::string. On other

@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_METRICS_POWER_POWER_METRICS_H_
 #define CHROME_BROWSER_METRICS_POWER_POWER_METRICS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/power_monitor/battery_level_provider.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
@@ -43,15 +43,15 @@ enum class BatteryDischargeMode {
 struct BatteryDischarge {
   BatteryDischargeMode mode;
   // Discharge rate in milliwatts.
-  absl::optional<int64_t> rate_milliwatts;
+  std::optional<int64_t> rate_milliwatts;
 #if BUILDFLAG(IS_WIN)
   // Discharge rate in milliwatts, if the client's battery discharge granularity
   // is at most 17 mWh. Calculated using the used capacity instead of the
   // current capacity.
-  absl::optional<int64_t> rate_milliwatts_with_precise_granularity;
+  std::optional<int64_t> rate_milliwatts_with_precise_granularity;
 #endif  // BUILDFLAG(IS_WIN)
   // Discharge rate in hundredth of a percent per minute.
-  absl::optional<int64_t> rate_relative;
+  std::optional<int64_t> rate_relative;
 };
 
 // Returns the discharge rate in milliwatts.
@@ -71,9 +71,9 @@ int64_t CalculateDischargeRateRelative(
 // If the discharge rate isn't valid, the returned rate is nullopt and the
 // reason is indicated per BatteryDischargeMode.
 BatteryDischarge GetBatteryDischargeDuringInterval(
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         previous_battery_state,
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+    const std::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state,
     base::TimeDelta interval_duration);
 

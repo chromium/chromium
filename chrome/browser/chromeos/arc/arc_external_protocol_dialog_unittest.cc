@@ -108,7 +108,7 @@ ArcIntentHelperMojoDelegate::IntentHandlerInfo Create(
     const std::string& activity_name,
     bool is_preferred,
     const GURL& fallback_url) {
-  absl::optional<std::string> url;
+  std::optional<std::string> url;
   if (!fallback_url.is_empty())
     url = fallback_url.spec();
 
@@ -1045,7 +1045,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
 
   bool handled = false;
   RunArcExternalProtocolDialog(
-      GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
+      GURL("tel:12341234"), /*initiating_origin=*/std::nullopt,
       web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
       /*has_user_gesture=*/true, /*is_in_fenced_frame_tree=*/false,
       std::make_unique<FakeArcIntentHelperMojo>(),
@@ -1074,7 +1074,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils,
 
   bool handled = false;
   RunArcExternalProtocolDialog(
-      GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
+      GURL("tel:12341234"), /*initiating_origin=*/std::nullopt,
       web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*has_user_gesture=*/true, /*is_in_fenced_frame_tree=*/true,
       std::make_unique<FakeArcIntentHelperMojo>(),
@@ -1097,14 +1097,14 @@ TEST_F(ArcExternalProtocolDialogTestUtils,
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents())
       ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
 
-  absl::optional<bool> handled;
+  std::optional<bool> handled;
   RunArcExternalProtocolDialog(
-      GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
+      GURL("tel:12341234"), /*initiating_origin=*/std::nullopt,
       web_contents()->GetWeakPtr(), ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*has_user_gesture=*/false, /*is_in_fenced_frame_tree=*/true,
       std::make_unique<FakeArcIntentHelperMojo>(),
       base::BindOnce(
-          [](absl::optional<bool>* handled, bool result) { *handled = result; },
+          [](std::optional<bool>* handled, bool result) { *handled = result; },
           &handled));
   EXPECT_TRUE(handled.has_value());
   EXPECT_FALSE(*handled);

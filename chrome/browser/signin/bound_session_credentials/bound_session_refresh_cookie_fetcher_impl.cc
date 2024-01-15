@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -26,7 +27,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kRotationChallengeHeader[] = "Sec-Session-Google-Challenge";
@@ -74,11 +74,11 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
   callback_ = std::move(callback);
   wait_for_network_callback_helper_->DelayNetworkCall(
       base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
-                     weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
+                     weak_ptr_factory_.GetWeakPtr(), std::nullopt));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
-    absl::optional<std::string> sec_session_challenge_response) {
+    std::optional<std::string> sec_session_challenge_response) {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest",
               perfetto::Flow::FromPointer(this), "has_challenge",
@@ -168,7 +168,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
               "BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete",
               perfetto::Flow::FromPointer(this), "net_error", net_error);
 
-  absl::optional<std::string> challenge_header_value =
+  std::optional<std::string> challenge_header_value =
       GetChallengeIfBindingKeyAssertionRequired(headers);
   if (challenge_header_value) {
     HandleBindingKeyAssertionRequired(*challenge_header_value);
@@ -178,7 +178,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
   cookie_refresh_completed_ = true;
   result_ = GetResultFromNetErrorAndHttpStatusCode(
       net_error,
-      headers ? absl::optional<int>(headers->response_code()) : absl::nullopt);
+      headers ? std::optional<int>(headers->response_code()) : std::nullopt);
 
   if (result_ == Result::kSuccess && !reported_cookies_notified_) {
     // Normally, a cookie update notification should be sent before the request
@@ -201,7 +201,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
 BoundSessionRefreshCookieFetcher::Result
 BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
     net::Error net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   if ((net_error != net::OK &&
        net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) ||
       !response_code) {
@@ -247,12 +247,12 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   std::move(callback_).Run(result_);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 BoundSessionRefreshCookieFetcherImpl::GetChallengeIfBindingKeyAssertionRequired(
     const scoped_refptr<net::HttpResponseHeaders>& headers) const {
   if (!headers || headers->response_code() != net::HTTP_UNAUTHORIZED ||
       !headers->HasHeader(kRotationChallengeHeader)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string challenge;

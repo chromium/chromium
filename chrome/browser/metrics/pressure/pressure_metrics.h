@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_METRICS_PRESSURE_PRESSURE_METRICS_H_
 #define CHROME_BROWSER_METRICS_PRESSURE_PRESSURE_METRICS_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PressureMetrics {
  public:
@@ -22,7 +23,7 @@ class PressureMetrics {
     double full_avg60;
     double full_avg300;
   };
-  absl::optional<Sample> CollectCurrentPressure() const;
+  std::optional<Sample> CollectCurrentPressure() const;
 
   void EmitCounters(const Sample& sample) const;
   void ReportToUMA(const Sample& sample) const;

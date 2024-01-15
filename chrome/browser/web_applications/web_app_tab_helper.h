@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
@@ -14,7 +16,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -41,7 +42,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;
   ~WebAppTabHelper() override;
 
-  void SetAppId(absl::optional<webapps::AppId> app_id);
+  void SetAppId(std::optional<webapps::AppId> app_id);
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
   bool acting_as_app() const { return acting_as_app_; }
@@ -79,8 +80,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // Runs any logic when the associated app is added, changed or removed.
   void OnAssociatedAppChanged(
-      const absl::optional<webapps::AppId>& previous_app_id,
-      const absl::optional<webapps::AppId>& new_app_id);
+      const std::optional<webapps::AppId>& previous_app_id,
+      const std::optional<webapps::AppId>& new_app_id);
 
   // Updates the audio focus group id based on the current web app.
   void UpdateAudioFocusGroupId();
@@ -88,10 +89,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Triggers a reinstall of a placeholder app for |url|.
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 
-  absl::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
+  std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
   // WebApp associated with this tab.
-  absl::optional<webapps::AppId> app_id_;
+  std::optional<webapps::AppId> app_id_;
 
   // True when the associated `WebContents` is acting as an app. Specifically,
   // this should only be true if `app_id_` is non empty, and the WebContents was

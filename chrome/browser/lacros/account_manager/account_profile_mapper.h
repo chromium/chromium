@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ACCOUNT_PROFILE_MAPPER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace account_manager {
@@ -68,7 +68,7 @@ class AccountProfileMapper
   };
 
   using AddAccountCallback =
-      base::OnceCallback<void(const absl::optional<AddAccountResult>&)>;
+      base::OnceCallback<void(const std::optional<AddAccountResult>&)>;
   using ListAccountsCallback =
       base::OnceCallback<void(const std::vector<account_manager::Account>&)>;
   using MapAccountsCallback = base::OnceCallback<void(
@@ -194,7 +194,7 @@ class AccountProfileMapper
   // `AddAccountInternal()`.
   void OnAddAccountCompleted(AddAccountHelper* helper,
                              AddAccountCallback callback,
-                             const absl::optional<AddAccountResult>& result);
+                             const std::optional<AddAccountResult>& result);
 
   // Computes the stale accounts (accounts that are in Lacros but no longer in
   // the system) and removes them from the `ProfileAttributesStorage`. Might

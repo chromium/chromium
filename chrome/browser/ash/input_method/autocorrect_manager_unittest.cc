@@ -3223,7 +3223,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct PkUserPrefCase {
   std::string test_name;
   std::string engine_id;
-  absl::optional<int> autocorrect_level;
+  std::optional<int> autocorrect_level;
   AutocorrectPreference expected_pref;
 };
 
@@ -3245,7 +3245,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"UsEnglishDefault",
          /*engine_id=*/kUsEnglishEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
     }),
     [](const testing::TestParamInfo<PkUserPrefCase> info) {
@@ -3351,7 +3351,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"UsInternationalDefault",
          /*engine_id=*/kUsInternationalEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"SpainSpanishEnabled",
@@ -3364,7 +3364,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"SpainSpanishDefault",
          /*engine_id=*/kSpainSpanishEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"LatinAmericaSpanishEnabled",
@@ -3377,7 +3377,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"LatinAmericaSpanishDefault",
          /*engine_id=*/kLatinAmericaSpanishEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"BrazilPortugeseEnabled",
@@ -3390,7 +3390,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"BrazilPortugeseDefault",
          /*engine_id=*/kBrazilPortugeseEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
 
         {"FranceFrenchEnabled",
@@ -3403,7 +3403,7 @@ INSTANTIATE_TEST_SUITE_P(
          /*expected_pref=*/AutocorrectPreference::kDisabled},
         {"FranceFrenchDefault",
          /*engine_id=*/kFranceFrenchEngineId,
-         /*autocorrect_level=*/absl::nullopt,
+         /*autocorrect_level=*/std::nullopt,
          /*expected_pref=*/AutocorrectPreference::kDefault},
     }),
     [](const testing::TestParamInfo<PkUserPrefCase> info) {
@@ -3453,7 +3453,7 @@ TEST_F(AutocorrectManagerTest,
 struct PkEnabledByDefaultCase {
   std::string test_name;
   std::string engine_id;
-  absl::optional<int> autocorrect_level;
+  std::optional<int> autocorrect_level;
   AutocorrectPreference preference_before;
   AutocorrectPreference preference_after;
 };
@@ -3505,7 +3505,7 @@ INSTANTIATE_TEST_SUITE_P(
         PkEnabledByDefaultCase{
             "EnglishDefaultToEnabledByDefault",
             /*engine_id=*/kUsEnglishEngineId,
-            /*autocorrect_level=*/absl::nullopt,
+            /*autocorrect_level=*/std::nullopt,
             /*preference_before=*/AutocorrectPreference::kDefault,
             /*preference_after=*/AutocorrectPreference::kEnabledByDefault},
         PkEnabledByDefaultCase{
@@ -3530,7 +3530,7 @@ INSTANTIATE_TEST_SUITE_P(
         PkEnabledByDefaultCase{
             "PortugeseDefaultRemainsDefault",
             /*engine_id=*/kBrazilPortugeseEngineId,
-            /*autocorrect_level=*/absl::nullopt,
+            /*autocorrect_level=*/std::nullopt,
             /*preference_before=*/AutocorrectPreference::kDefault,
             /*preference_after=*/AutocorrectPreference::kDefault},
         PkEnabledByDefaultCase{
@@ -3555,7 +3555,7 @@ INSTANTIATE_TEST_SUITE_P(
         PkEnabledByDefaultCase{
             "SpainSpanishDefaultRemainsDefault",
             /*engine_id=*/kSpainSpanishEngineId,
-            /*autocorrect_level=*/absl::nullopt,
+            /*autocorrect_level=*/std::nullopt,
             /*preference_before=*/AutocorrectPreference::kDefault,
             /*preference_after=*/AutocorrectPreference::kDefault},
         PkEnabledByDefaultCase{

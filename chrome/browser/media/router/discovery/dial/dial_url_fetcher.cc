@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -23,7 +25,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The maximum number of retries allowed for GET requests.
 constexpr int kMaxRetries = 2;
@@ -101,23 +102,23 @@ const network::mojom::URLResponseHead* DialURLFetcher::GetResponseHead() const {
 
 void DialURLFetcher::Get(const GURL& url, bool set_origin_header) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Start(url, "GET", absl::nullopt, kMaxRetries, set_origin_header);
+  Start(url, "GET", std::nullopt, kMaxRetries, set_origin_header);
 }
 
 void DialURLFetcher::Delete(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Start(url, "DELETE", absl::nullopt, 0, true);
+  Start(url, "DELETE", std::nullopt, 0, true);
 }
 
 void DialURLFetcher::Post(const GURL& url,
-                          const absl::optional<std::string>& post_data) {
+                          const std::optional<std::string>& post_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Start(url, "POST", post_data, 0, true);
 }
 
 void DialURLFetcher::Start(const GURL& url,
                            const std::string& method,
-                           const absl::optional<std::string>& post_data,
+                           const std::optional<std::string>& post_data,
                            int max_retries,
                            bool set_origin_header) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -176,12 +177,12 @@ void DialURLFetcher::ReportError(const std::string& message) {
   std::move(error_cb_).Run(message, GetHttpResponseCode());
 }
 
-absl::optional<int> DialURLFetcher::GetHttpResponseCode() const {
+std::optional<int> DialURLFetcher::GetHttpResponseCode() const {
   if (GetResponseHead() && GetResponseHead()->headers) {
     int code = GetResponseHead()->headers->response_code();
-    return code == -1 ? absl::nullopt : absl::optional<int>(code);
+    return code == -1 ? std::nullopt : std::optional<int>(code);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DialURLFetcher::ReportRedirectError(

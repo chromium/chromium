@@ -233,13 +233,14 @@
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_REPORTING)
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -342,8 +343,8 @@ class RemoveCookieTester {
   void AddCookie() {
     base::RunLoop run_loop;
     auto cookie = net::CanonicalCookie::Create(
-        cookie_url_, "A=1", base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        cookie_url_, "A=1", base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     cookie_manager_->SetCanonicalCookie(
         *cookie, cookie_url_, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting([&](net::CookieAccessResult result) {
@@ -700,8 +701,8 @@ class RemoveDIPSEventsTester {
   }
 
   void WriteEventTimes(GURL url,
-                       absl::optional<base::Time> storage_time,
-                       absl::optional<base::Time> interaction_time) {
+                       std::optional<base::Time> storage_time,
+                       std::optional<base::Time> interaction_time) {
     if (storage_time.has_value()) {
       storage_->AsyncCall(&DIPSStorage::RecordStorage)
           .WithArgs(url, storage_time.value(), DIPSCookieMode::kBlock3PC);
@@ -713,14 +714,14 @@ class RemoveDIPSEventsTester {
     storage_->FlushPostedTasksForTesting();
   }
 
-  absl::optional<StateValue> ReadStateValue(GURL url) {
-    absl::optional<StateValue> value;
+  std::optional<StateValue> ReadStateValue(GURL url) {
+    std::optional<StateValue> value;
 
     storage_->AsyncCall(&DIPSStorage::Read)
         .WithArgs(url)
         .Then(base::BindLambdaForTesting([&](const DIPSState& state) {
-          value = state.was_loaded() ? absl::make_optional(state.ToStateValue())
-                                     : absl::nullopt;
+          value = state.was_loaded() ? std::make_optional(state.ToStateValue())
+                                     : std::nullopt;
         }));
     storage_->FlushPostedTasksForTesting();
 
@@ -1044,7 +1045,7 @@ class MockReportingService : public net::ReportingService {
 
   void QueueReport(
       const GURL& url,
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
@@ -1623,8 +1624,8 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
  public:
   struct RemovalInfo {
     uint64_t remove_mask;
-    absl::optional<content::StoragePartitionConfig> storage_partition_config =
-        absl::nullopt;
+    std::optional<content::StoragePartitionConfig> storage_partition_config =
+        std::nullopt;
   };
 
   IsolatedWebAppChromeBrowsingDataRemoverDelegateTest() {
@@ -1652,7 +1653,7 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
       const std::string& partition_name) {
     auto* provider = web_app::FakeWebAppProvider::Get(GetProfile());
     CHECK(provider);
-    base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
+    base::test::TestFuture<std::optional<content::StoragePartitionConfig>>
         future;
     provider->scheduler().ScheduleCallbackWithResult(
         "GetControlledFramePartition",
@@ -1661,7 +1662,7 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
                        GetProfile(), iwa_url_info, partition_name,
                        /*in_memory=*/false),
         future.GetCallback(), /*arg_for_shutdown=*/
-        absl::optional<content::StoragePartitionConfig>(absl::nullopt));
+        std::optional<content::StoragePartitionConfig>(std::nullopt));
     return future.Get().value();
   }
 
@@ -3346,13 +3347,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
 
   tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
-                         /*interaction_time=*/absl::nullopt);
-  tester.WriteEventTimes(url2, /*storage_time=*/absl::nullopt,
+                         /*interaction_time=*/std::nullopt);
+  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
                          /*interaction_time=*/two_hours_ago);
 
   {
-    absl::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
 
     ASSERT_TRUE(state_val1.has_value());
     EXPECT_TRUE(state_val1->site_storage_times.has_value());
@@ -3367,8 +3368,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
                                 false);
 
   {
-    absl::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
 
     EXPECT_FALSE(state_val1.has_value());
     ASSERT_TRUE(state_val2.has_value());
@@ -3379,8 +3380,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
                                 false);
 
   {
-    absl::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
 
     EXPECT_FALSE(state_val1.has_value());
     EXPECT_FALSE(state_val2.has_value());
@@ -3395,16 +3396,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
 
   tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
-                         /*interaction_time=*/absl::nullopt);
-  tester.WriteEventTimes(url2, /*storage_time=*/absl::nullopt,
+                         /*interaction_time=*/std::nullopt);
+  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
                          /*interaction_time=*/base::Time::Now());
   tester.WriteEventTimes(url3, /*storage_time=*/base::Time::Now(),
                          /*interaction_time=*/two_hours_ago);
 
   {
-    absl::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-    absl::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     ASSERT_TRUE(state_val1.has_value());
     EXPECT_TRUE(state_val1->site_storage_times.has_value());
@@ -3423,9 +3424,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
 
   // Verify the interaction event for url2 has been removed.
   {
-    absl::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-    absl::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     ASSERT_TRUE(state_val1.has_value());
     EXPECT_TRUE(state_val1->site_storage_times.has_value());
@@ -3444,9 +3445,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
 
   // Verify the storage events for url1 and url3 have been removed.
   {
-    absl::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-    absl::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     EXPECT_FALSE(state_val1.has_value());
 

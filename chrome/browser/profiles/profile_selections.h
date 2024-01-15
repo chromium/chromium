@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_
 
-#include "base/feature_list.h"
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/feature_list.h"
 
 class Profile;
 
@@ -166,9 +166,9 @@ class ProfileSelections {
   // Not assigning values for Guest and System Profiles defaults to
   // `ProfileSelection::kNone`.
   ProfileSelection regular_profile_selection_ = ProfileSelection::kOriginalOnly;
-  absl::optional<ProfileSelection> guest_profile_selection_;
-  absl::optional<ProfileSelection> system_profile_selection_;
-  absl::optional<ProfileSelection> ash_internals_profile_selection_;
+  std::optional<ProfileSelection> guest_profile_selection_;
+  std::optional<ProfileSelection> system_profile_selection_;
+  std::optional<ProfileSelection> ash_internals_profile_selection_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_

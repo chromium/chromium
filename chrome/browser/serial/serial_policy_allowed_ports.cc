@@ -4,6 +4,7 @@
 
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/serial.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -130,11 +130,11 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
         item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
     for (const auto& port_value : *devices_value) {
-      const absl::optional<int> vendor_id_value =
+      const std::optional<int> vendor_id_value =
           port_value.GetDict().FindInt(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 
-      const absl::optional<int> product_id_value =
+      const std::optional<int> product_id_value =
           port_value.GetDict().FindInt(kPrefProductIdKey);
       // "product_id" is optional and the policy matches all devices with the
       // given vendor ID if it is not specified.

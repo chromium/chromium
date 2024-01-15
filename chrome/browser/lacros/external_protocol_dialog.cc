@@ -23,10 +23,10 @@ using content::WebContents;
 namespace {
 
 void OnGetExternalHandler(const GURL& url,
-                          const absl::optional<url::Origin>& initiating_origin,
+                          const std::optional<url::Origin>& initiating_origin,
                           content::WeakDocumentPtr initiator_document,
                           base::WeakPtr<WebContents> web_contents,
-                          const absl::optional<std::string>& name) {
+                          const std::optional<std::string>& name) {
   // If WebContents have been destroyed, do not show any dialog.
   if (!web_contents) {
     return;
@@ -45,7 +45,7 @@ void OnGetExternalHandler(const GURL& url,
 }
 
 void OnArcHandled(const GURL& url,
-                  const absl::optional<url::Origin>& initiating_origin,
+                  const std::optional<url::Origin>& initiating_origin,
                   content::WeakDocumentPtr initiator_document,
                   base::WeakPtr<WebContents> web_contents,
                   bool handled) {
@@ -75,7 +75,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
-    const absl::optional<url::Origin>& initiating_origin,
+    const std::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name) {
   // First, check if ARC version of the dialog is available and run ARC version

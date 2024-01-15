@@ -184,7 +184,7 @@ DIPSService::DIPSService(content::BrowserContext* context)
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
-  absl::optional<base::FilePath> path_to_use;
+  std::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
 
   if (browser_context_->IsOffTheRecord()) {
@@ -478,7 +478,7 @@ void DIPSService::HandleRedirect(
 void DIPSService::OnTimerFired() {
   // Storage init should be finished by now, so no need to delay until then.
   storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
-      .WithArgs(absl::nullopt)
+      .WithArgs(std::nullopt)
       .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
                            weak_factory_.GetWeakPtr(), base::DoNothing()));
 }

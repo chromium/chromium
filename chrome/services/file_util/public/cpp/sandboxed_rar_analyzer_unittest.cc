@@ -54,11 +54,11 @@ class SandboxedRarAnalyzerTest : public testing::Test {
 
   void AnalyzeFile(const base::FilePath& path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
-    AnalyzeFile(path, /*password=*/absl::nullopt, results);
+    AnalyzeFile(path, /*password=*/std::nullopt, results);
   }
 
   void AnalyzeFile(const base::FilePath& path,
-                   absl::optional<const std::string> password,
+                   std::optional<const std::string> password,
                    safe_browsing::ArchiveAnalyzerResults* results) {
     mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
@@ -429,7 +429,7 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeRarFile(_, _, _, _))
       .WillOnce([&](base::File rar_file,
-                    const absl::optional<std::string>& password,
+                    const std::optional<std::string>& password,
                     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
                         temp_file_getter,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeRarFileCallback
@@ -439,9 +439,9 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
         run_loop.Quit();
       });
   std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-      SandboxedRarAnalyzer::CreateAnalyzer(
-          temp_path, /*password=*/absl::nullopt, base::DoNothing(),
-          std::move(remote));
+      SandboxedRarAnalyzer::CreateAnalyzer(temp_path, /*password=*/std::nullopt,
+                                           base::DoNothing(),
+                                           std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }
@@ -501,7 +501,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionNoPassword) {
                               GetFilePath("header_encryption_passwd1234.rar"));
 
   safe_browsing::ArchiveAnalyzerResults results;
-  AnalyzeFile(path, /*password=*/absl::nullopt, &results);
+  AnalyzeFile(path, /*password=*/std::nullopt, &results);
 
   ASSERT_FALSE(results.success);
   EXPECT_FALSE(results.has_executable);

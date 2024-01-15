@@ -78,7 +78,7 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  absl::optional<base::HistogramTester> histogram_tester_;
+  std::optional<base::HistogramTester> histogram_tester_;
   test::PreviewTestHelper helper_;
 };
 

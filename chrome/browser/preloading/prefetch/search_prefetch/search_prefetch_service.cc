@@ -517,11 +517,11 @@ SearchPrefetchService::MaybeCreateResponseReader(
   return iter->second->CreateResponseReader();
 }
 
-absl::optional<SearchPrefetchStatus>
+std::optional<SearchPrefetchStatus>
 SearchPrefetchService::GetSearchPrefetchStatusForTesting(
     const GURL& canonical_search_url) {
   if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return prefetches_[canonical_search_url]->current_status();
 }
@@ -860,7 +860,7 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);
 
-  absl::optional<TemplateURLData> template_url_service_data;
+  std::optional<TemplateURLData> template_url_service_data;
 
   const TemplateURL* template_url =
       template_url_service->GetDefaultSearchProvider();
@@ -987,7 +987,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
       continue;
     }
 
-    absl::optional<base::Time> last_update =
+    std::optional<base::Time> last_update =
         base::ValueToTime(prefetch_url_and_time[1]);
     if (!last_update) {
       continue;

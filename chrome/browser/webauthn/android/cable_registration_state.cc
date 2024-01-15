@@ -107,7 +107,7 @@ void RegistrationState::QueryPlayServices() {
 }
 
 void RegistrationState::OnHavePlayServicesLinkingInformation(
-    absl::optional<std::vector<uint8_t>> cbor) {
+    std::optional<std::vector<uint8_t>> cbor) {
   DCHECK(play_services_query_pending_);
 
   play_services_query_pending_ = false;
@@ -171,7 +171,7 @@ void RegistrationState::MaybeFlushPendingEvent() {
     }
   }
 
-  const absl::optional<std::vector<uint8_t>> serialized(event->Serialize());
+  const std::optional<std::vector<uint8_t>> serialized(event->Serialize());
   if (!serialized) {
     return;
   }

@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_MEDIA_ROUTER_MEDIA_ROUTER_UI_FOR_TEST_BASE_H_
 #define CHROME_TEST_MEDIA_ROUTER_MEDIA_ROUTER_UI_FOR_TEST_BASE_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +16,6 @@
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -94,13 +95,13 @@ class MediaRouterUiForTestBase {
   // for a sink.
   virtual void ObserveDialog(
       WatchType watch_type,
-      absl::optional<std::string> sink_name = absl::nullopt) = 0;
+      std::optional<std::string> sink_name = std::nullopt) = 0;
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<MediaRouterDialogControllerViews> dialog_controller_;
-  absl::optional<std::string> watch_sink_name_;
+  std::optional<std::string> watch_sink_name_;
   WatchType watch_type_ = WatchType::kNone;
-  absl::optional<base::OnceClosure> watch_callback_;
+  std::optional<base::OnceClosure> watch_callback_;
   base::test::ScopedFeatureList feature_list_;
   bool torn_down_ = false;
 

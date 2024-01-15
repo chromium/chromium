@@ -114,14 +114,14 @@ constexpr net::NetworkTrafficAnnotationTag
 class KAnonObliviousHttpClient : public network::mojom::ObliviousHttpClient {
  public:
   using OnCompletedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&, int)>;
+      base::OnceCallback<void(const std::optional<std::string>&, int)>;
 
   explicit KAnonObliviousHttpClient(OnCompletedCallback callback)
       : callback_(std::move(callback)) {}
 
   ~KAnonObliviousHttpClient() override {
     if (!called_) {
-      std::move(callback_).Run(absl::nullopt, net::ERR_FAILED);
+      std::move(callback_).Run(std::nullopt, net::ERR_FAILED);
     }
   }
 
@@ -133,14 +133,14 @@ class KAnonObliviousHttpClient : public network::mojom::ObliviousHttpClient {
     }
     called_ = true;
     if (status->is_net_error()) {
-      std::move(callback_).Run(absl::nullopt, status->get_net_error());
+      std::move(callback_).Run(std::nullopt, status->get_net_error());
     } else if (status->is_outer_response_error_code()) {
-      std::move(callback_).Run(absl::nullopt,
+      std::move(callback_).Run(std::nullopt,
                                net::ERR_HTTP_RESPONSE_CODE_FAILURE);
     } else {
       DCHECK(status->is_inner_response());
       if (status->get_inner_response()->response_code != net::HTTP_OK) {
-        std::move(callback_).Run(absl::nullopt,
+        std::move(callback_).Run(std::nullopt,
                                  net::ERR_HTTP_RESPONSE_CODE_FAILURE);
       } else {
         std::move(callback_).Run(status->get_inner_response()->response_body,
@@ -263,7 +263,7 @@ void KAnonymityServiceClient::JoinSetStartNextQueued() {
 
 void KAnonymityServiceClient::JoinSetCheckOHTTPKey() {
   // We need the OHTTP key to send the OHTTP request.
-  absl::optional<OHTTPKeyAndExpiration> ohttp_key =
+  std::optional<OHTTPKeyAndExpiration> ohttp_key =
       storage_->GetOHTTPKeyFor(join_origin_);
   if (enable_ohttp_requests_ &&
       (!ohttp_key ||
@@ -318,7 +318,7 @@ void KAnonymityServiceClient::JoinSetCheckTrustTokens(
 
 void KAnonymityServiceClient::OnMaybeHasTrustTokens(
     OHTTPKeyAndExpiration ohttp_key,
-    absl::optional<KeyAndNonUniqueUserId> maybe_key_and_id) {
+    std::optional<KeyAndNonUniqueUserId> maybe_key_and_id) {
   if (!maybe_key_and_id) {
     FailJoinSetRequests();
     return;
@@ -395,7 +395,7 @@ void KAnonymityServiceClient::JoinSetSendRequest(
 }
 
 void KAnonymityServiceClient::JoinSetOnGotResponse(
-    const absl::optional<std::string>& response,
+    const std::optional<std::string>& response,
     int error_code) {
   if (error_code != net::OK) {
     // If failure was because we didn't have the trust token (it was used before
@@ -491,7 +491,7 @@ void KAnonymityServiceClient::QuerySetsOnStorageReady(
 }
 
 void KAnonymityServiceClient::QuerySetsCheckOHTTPKey() {
-  absl::optional<OHTTPKeyAndExpiration> ohttp_key =
+  std::optional<OHTTPKeyAndExpiration> ohttp_key =
       storage_->GetOHTTPKeyFor(query_origin_);
   if (!ohttp_key ||
       ohttp_key->expiration <= base::Time::Now() + kRequestMargin) {
@@ -602,7 +602,7 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
 }
 
 void KAnonymityServiceClient::QuerySetsOnGotResponse(
-    const absl::optional<std::string>& response,
+    const std::optional<std::string>& response,
     int error_code) {
   if (error_code != net::OK) {
     RecordQuerySetAction(

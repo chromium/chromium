@@ -271,7 +271,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
       ModelExecutionRemoteResponseType::kSuccessful;
 
   // The last model execution response received.
-  absl::optional<OptimizationGuideModelExecutionResult> model_execution_result_;
+  std::optional<OptimizationGuideModelExecutionResult> model_execution_result_;
 
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

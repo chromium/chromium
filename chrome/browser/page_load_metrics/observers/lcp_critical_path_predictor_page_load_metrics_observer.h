@@ -80,7 +80,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   ~LcpCriticalPathPredictorPageLoadMetricsObserver() override;
 
   void SetLcpElementLocator(const std::string& lcp_element_locator,
-                            absl::optional<uint32_t> predicted_lcp_index);
+                            std::optional<uint32_t> predicted_lcp_index);
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts);
   // Append fetched font URLs to the list to be passed to LCPP.
@@ -109,24 +109,24 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void ReportUMAForTimingPredictor(
-      absl::optional<predictors::LcppData> lcpp_data_prelearn);
+      std::optional<predictors::LcppData> lcpp_data_prelearn);
 
   // True if the page is prerendered.
   bool is_prerender_ = false;
 
   // The URL of the last navigation commit.
-  absl::optional<GURL> commit_url_;
+  std::optional<GURL> commit_url_;
 
   // Flipped to true iff the navigation had associated non-empty LCPP hint data.
   bool is_lcpp_hinted_navigation_ = false;
 
-  absl::optional<predictors::LcppDataInputs> lcpp_data_inputs_;
+  std::optional<predictors::LcppDataInputs> lcpp_data_inputs_;
 
   // Prediction result. This keeps SetLcpElementLocator's second argument.
   // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
   // LCPCriticalPathPredictorNavigationTimeHint.
-  // absl::nullopt value means the LCP didn't hit any of `lcp_element_locators`.
-  std::vector<absl::optional<uint32_t>> predicted_lcp_indexes_;
+  // std::nullopt value means the LCP didn't hit any of `lcp_element_locators`.
+  std::vector<std::optional<uint32_t>> predicted_lcp_indexes_;
 
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};

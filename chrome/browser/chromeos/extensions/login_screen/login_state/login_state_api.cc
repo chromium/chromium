@@ -12,8 +12,9 @@
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include <optional>
+
 #include "chromeos/lacros/lacros_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #else
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -37,12 +38,12 @@ const char kUnsupportedByAsh[] = "Not implemented.";
 // Performs common crosapi validation. These errors are not caused by the
 // extension so they are considered recoverable. Returns an error message on
 // error, or nullopt on success.
-absl::optional<std::string> ValidateCrosapi() {
+std::optional<std::string> ValidateCrosapi() {
   if (!chromeos::LacrosService::Get()
            ->IsAvailable<crosapi::mojom::LoginState>()) {
     return kUnsupportedByAsh;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -90,7 +91,7 @@ ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
 
 ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<std::string> error = ValidateCrosapi();
+  std::optional<std::string> error = ValidateCrosapi();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));
   }

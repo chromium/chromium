@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -38,7 +38,7 @@ void FakeDataRetriever::GetWebAppInstallInfo(
 void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     CheckInstallabilityCallback callback,
-    absl::optional<webapps::InstallableParams> params) {
+    std::optional<webapps::InstallableParams> params) {
   completion_callback_ =
       base::BindOnce(std::move(callback), manifest_.Clone(), manifest_url_,
                      /*valid_manifest_for_web_app=*/true, error_code_);

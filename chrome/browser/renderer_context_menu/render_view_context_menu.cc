@@ -726,13 +726,13 @@ bool DoesFormControlTypeSupportEmoji(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // If the link points to a system web app (in |profile|), return its type.
 // Otherwise nullopt.
-absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
-                                                           const GURL& url) {
-  absl::optional<webapps::AppId> link_app_id =
+std::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
+                                                          const GURL& url) {
+  std::optional<webapps::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url);
 
   if (!link_app_id)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ash::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
@@ -1677,7 +1677,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         ash::SystemWebDialogDelegate::HasInstance(current_url_);
 
     Profile* profile = GetProfile();
-    absl::optional<ash::SystemWebAppType> link_system_app_type =
+    std::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
 
     // true if the link points to a WebUI page, including SWA.
@@ -1903,7 +1903,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!provider)
     return;
 
-  absl::optional<webapps::AppId> link_app_id =
+  std::optional<webapps::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, params_.link_url);
   if (!link_app_id)
     return;
@@ -2605,7 +2605,7 @@ void RenderViewContextMenu::AppendSharingItems() {
 #if !BUILDFLAG(IS_FUCHSIA)
 void RenderViewContextMenu::AppendClickToCallItem() {
   SharingClickToCallEntryPoint entry_point;
-  absl::optional<std::string> phone_number;
+  std::optional<std::string> phone_number;
   std::string selection_text;
   if (ShouldOfferClickToCallForURL(browser_context_, params_.link_url)) {
     entry_point = SharingClickToCallEntryPoint::kRightClickLink;
@@ -3919,7 +3919,7 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(
           Profile::FromBrowserContext(browser_context_), params_.link_url);
   // |app_id| could be nullopt if it has been uninstalled since the user

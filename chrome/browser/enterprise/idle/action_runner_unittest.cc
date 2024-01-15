@@ -328,9 +328,9 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   uint64_t GetLastUsedOriginTypeMaskForTesting() override {
     return origin_type_mask_;
   }
-  absl::optional<content::StoragePartitionConfig>
+  std::optional<content::StoragePartitionConfig>
   GetLastUsedStoragePartitionConfigForTesting() override {
-    return absl::nullopt;
+    return std::nullopt;
   }
   uint64_t GetPendingTaskCountForTesting() override { return 0; }
 

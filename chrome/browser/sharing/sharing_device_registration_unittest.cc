@@ -247,8 +247,8 @@ class SharingDeviceRegistrationTest : public testing::Test {
   SharingDeviceRegistration sharing_device_registration_;
 
   // callback results
-  absl::optional<syncer::DeviceInfo::SharingInfo> local_sharing_info_;
-  absl::optional<SharingSyncPreference::FCMRegistration> fcm_registration_;
+  std::optional<syncer::DeviceInfo::SharingInfo> local_sharing_info_;
+  std::optional<SharingSyncPreference::FCMRegistration> fcm_registration_;
   SharingDeviceRegistrationResult result_;
 };
 

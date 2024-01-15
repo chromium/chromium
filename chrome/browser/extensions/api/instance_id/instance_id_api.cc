@@ -102,7 +102,7 @@ InstanceIDGetTokenFunction::InstanceIDGetTokenFunction() {}
 InstanceIDGetTokenFunction::~InstanceIDGetTokenFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDGetTokenFunction::DoWork() {
-  absl::optional<api::instance_id::GetToken::Params> params =
+  std::optional<api::instance_id::GetToken::Params> params =
       api::instance_id::GetToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -129,7 +129,7 @@ InstanceIDDeleteTokenFunction::InstanceIDDeleteTokenFunction() {}
 InstanceIDDeleteTokenFunction::~InstanceIDDeleteTokenFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDDeleteTokenFunction::DoWork() {
-  absl::optional<api::instance_id::DeleteToken::Params> params =
+  std::optional<api::instance_id::DeleteToken::Params> params =
       api::instance_id::DeleteToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

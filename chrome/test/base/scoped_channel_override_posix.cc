@@ -5,12 +5,12 @@
 #include "chrome/test/base/scoped_channel_override.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/environment.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 
@@ -19,9 +19,9 @@ namespace {
 // Exchanges the value of the environment variable `name` with `new_value`;
 // returning its previous value or null if it was not set. The variable is
 // removed from the environment if `new_value` is null.
-absl::optional<std::string> ExchangeEnvironmentVariable(
+std::optional<std::string> ExchangeEnvironmentVariable(
     base::StringPiece name,
-    absl::optional<std::string> new_value) {
+    std::optional<std::string> new_value) {
   auto environment = base::Environment::Create();
   std::string old_value;
   bool found_old_value = environment->GetVar(name, &old_value);
@@ -29,8 +29,8 @@ absl::optional<std::string> ExchangeEnvironmentVariable(
     environment->SetVar(name, *new_value);
   else
     environment->UnSetVar(name);
-  return found_old_value ? absl::optional<std::string>(std::move(old_value))
-                         : absl::nullopt;
+  return found_old_value ? std::optional<std::string>(std::move(old_value))
+                         : std::nullopt;
 }
 
 constexpr base::StringPiece kChromeVersionExtra = "CHROME_VERSION_EXTRA";

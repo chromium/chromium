@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_COMMON_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_COMMON_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace enterprise_signals {
 

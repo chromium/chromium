@@ -56,13 +56,13 @@ class MockSettingsObserver {
       OnSettingsChangedJSON,
       void(const std::string& extension_id,
            StorageAreaNamespace storage_area,
-           absl::optional<api::storage::AccessLevel> session_access_level,
+           std::optional<api::storage::AccessLevel> session_access_level,
            const std::string& changes_json));
 
   void OnSettingsChanged(
       const std::string& extension_id,
       StorageAreaNamespace storage_area,
-      absl::optional<api::storage::AccessLevel> session_access_level,
+      std::optional<api::storage::AccessLevel> session_access_level,
       base::Value changes) {
     OnSettingsChangedJSON(extension_id, storage_area, session_access_level,
                           ValueToJson(std::move(changes)));
@@ -201,11 +201,11 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     value_store::ValueStoreChangeList changes;
     changes.push_back(
-        value_store::ValueStoreChange("aaa", absl::nullopt, value.Clone()));
+        value_store::ValueStoreChange("aaa", std::nullopt, value.Clone()));
     EXPECT_CALL(observer_,
                 OnSettingsChangedJSON(
                     kTestExtensionId, StorageAreaNamespace::kManaged,
-                    /*session_access_level=*/testing::Eq(absl::nullopt),
+                    /*session_access_level=*/testing::Eq(std::nullopt),
                     ValueStoreChangeToJson(std::move(changes))));
   }
 
@@ -219,11 +219,11 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     value_store::ValueStoreChangeList changes;
     changes.push_back(
-        value_store::ValueStoreChange("bbb", absl::nullopt, value.Clone()));
+        value_store::ValueStoreChange("bbb", std::nullopt, value.Clone()));
     EXPECT_CALL(observer_,
                 OnSettingsChangedJSON(
                     kTestExtensionId, StorageAreaNamespace::kManaged,
-                    /*session_access_level=*/testing::Eq(absl::nullopt),
+                    /*session_access_level=*/testing::Eq(std::nullopt),
                     ValueStoreChangeToJson(std::move(changes))));
   }
 
@@ -241,7 +241,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     EXPECT_CALL(observer_,
                 OnSettingsChangedJSON(
                     kTestExtensionId, StorageAreaNamespace::kManaged,
-                    /*session_access_level=*/testing::Eq(absl::nullopt),
+                    /*session_access_level=*/testing::Eq(std::nullopt),
                     ValueStoreChangeToJson(std::move(changes))));
   }
 
@@ -254,12 +254,12 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     value_store::ValueStoreChangeList changes;
     changes.push_back(
-        value_store::ValueStoreChange("bbb", new_value.Clone(), absl::nullopt));
+        value_store::ValueStoreChange("bbb", new_value.Clone(), std::nullopt));
     EXPECT_CALL(observer_,
                 OnSettingsChangedJSON(
                     kTestExtensionId, StorageAreaNamespace::kManaged,
 
-                    /*session_access_level=*/testing::Eq(absl::nullopt),
+                    /*session_access_level=*/testing::Eq(std::nullopt),
                     ValueStoreChangeToJson(std::move(changes))));
   }
 

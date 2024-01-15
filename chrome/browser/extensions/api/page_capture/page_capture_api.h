@@ -71,7 +71,7 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   // hasn't navigated before the capture completes.
   ExtensionApiFrameIdMap::DocumentId document_id_;
 
-  absl::optional<extensions::api::page_capture::SaveAsMHTML::Params> params_;
+  std::optional<extensions::api::page_capture::SaveAsMHTML::Params> params_;
 
   // The path to the temporary file containing the MHTML data.
   base::FilePath mhtml_path_;

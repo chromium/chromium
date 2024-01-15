@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -56,7 +56,7 @@ class PrivacySandboxSettingsDelegate
   raw_ptr<Profile> profile_;
   // TODO(linnan): Remove this field when
   // `IsCookieDeprecationExperimentEligible()` consults `ExperimentManager`.
-  mutable absl::optional<bool> is_cookie_deprecation_experiment_eligible_;
+  mutable std::optional<bool> is_cookie_deprecation_experiment_eligible_;
 
   // The experiment manager is a singleton and lives forever.
   raw_ptr<tpcd::experiment::ExperimentManager> experiment_manager_;

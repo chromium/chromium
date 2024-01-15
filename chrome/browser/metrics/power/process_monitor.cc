@@ -263,7 +263,7 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
                    first_interval_duration / kLongPowerMetricsIntervalDuration);
 
       // No longer the first interval after this one.
-      process_info->first_sample_time = absl::nullopt;
+      process_info->first_sample_time = std::nullopt;
     }
 
     aggregated_metrics += metrics;

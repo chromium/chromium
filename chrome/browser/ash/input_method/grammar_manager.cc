@@ -211,7 +211,7 @@ bool GrammarManager::HandleSurroundingTextChange(
     return false;
   }
 
-  absl::optional<ui::GrammarFragment> grammar_fragment_opt =
+  std::optional<ui::GrammarFragment> grammar_fragment_opt =
       input_context->GetGrammarFragmentAtCursor();
 
   if (!grammar_fragment_opt)

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/run_loop.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "content/public/browser/context_menu_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class RenderViewContextMenu;
 
@@ -73,7 +73,7 @@ class ContextMenuWaiter {
   std::vector<int> captured_command_ids_;
 
   base::RunLoop run_loop_;
-  const absl::optional<int> maybe_command_to_execute_;
+  const std::optional<int> maybe_command_to_execute_;
   base::OnceClosure before_execute_;
 };
 

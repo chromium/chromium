@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(DlpFilesControllerLacrosBlockUITest,
 
   SetDlpInterfaceVersion(service().Version_);
 
-  absl::optional<uint64_t> task_id = absl::nullopt;
+  std::optional<uint64_t> task_id = std::nullopt;
   base::FilePath path(kFilePath);
 
   EXPECT_CALL(service(),

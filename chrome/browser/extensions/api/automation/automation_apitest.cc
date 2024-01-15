@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       content::TracingController::CreateStringEndpoint(
           stop_tracing_future.GetCallback()));
 
-  absl::optional<base::Value> trace_data =
+  std::optional<base::Value> trace_data =
       base::JSONReader::Read(*stop_tracing_future.Take());
   ASSERT_TRUE(trace_data && trace_data->is_dict());
 
@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
     if (!name)
       continue;
 
-    absl::optional<int> dur = event.GetDict().FindInt("dur");
+    std::optional<int> dur = event.GetDict().FindInt("dur");
     if (!dur)
       continue;
 

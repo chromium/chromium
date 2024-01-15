@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -74,7 +75,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/jobs/link_capturing.h"
@@ -133,7 +133,7 @@ void WebAppCommandScheduler::InstallFromInfo(
       std::make_unique<InstallFromInfoCommand>(
           &profile_.get(), std::move(install_info),
           overwrite_existing_manifest_fields, install_surface,
-          std::move(install_callback), /*install_params=*/absl::nullopt),
+          std::move(install_callback), /*install_params=*/std::nullopt),
       location);
 }
 
@@ -172,7 +172,7 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
 
 void WebAppCommandScheduler::InstallExternallyManagedApp(
     const ExternalInstallOptions& external_install_options,
-    absl::optional<webapps::AppId> installed_placeholder_app_id,
+    std::optional<webapps::AppId> installed_placeholder_app_id,
     ExternalAppResolutionCommand::InstalledCallback installed_callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
@@ -257,7 +257,7 @@ void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
 void WebAppCommandScheduler::InstallIsolatedWebApp(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppLocation& location,
-    const absl::optional<base::Version>& expected_version,
+    const std::optional<base::Version>& expected_version,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     InstallIsolatedWebAppCallback callback,
@@ -326,7 +326,7 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
 void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
     const SignedWebBundleMetadata& bundle_metadata,
     base::OnceCallback<void(IsolatedInstallabilityCheckResult,
-                            absl::optional<base::Version>)> callback,
+                            std::optional<base::Version>)> callback,
     const base::Location& call_location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<CheckIsolatedWebAppBundleInstallabilityCommand>(
@@ -347,7 +347,7 @@ void WebAppCommandScheduler::GetControlledFramePartition(
     const IsolatedWebAppUrlInfo& url_info,
     const std::string& partition_name,
     bool in_memory,
-    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+    base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
         callback,
     const base::Location& location) {
   provider_->scheduler().ScheduleCallbackWithResult(
@@ -355,7 +355,7 @@ void WebAppCommandScheduler::GetControlledFramePartition(
       base::BindOnce(&GetControlledFramePartitionWithLock, &profile_.get(),
                      url_info, partition_name, in_memory),
       std::move(callback), /*arg_for_shutdown=*/
-      absl::optional<content::StoragePartitionConfig>(absl::nullopt), location);
+      std::optional<content::StoragePartitionConfig>(std::nullopt), location);
 }
 
 void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
@@ -374,7 +374,7 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
 }
 
 void WebAppCommandScheduler::RemoveInstallUrl(
-    absl::optional<webapps::AppId> app_id,
+    std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     const GURL& install_url,
     webapps::WebappUninstallSource uninstall_source,
@@ -481,7 +481,7 @@ void WebAppCommandScheduler::SetAppIsDisabled(const webapps::AppId& app_id,
 
 void WebAppCommandScheduler::ComputeAppSize(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(absl::optional<ComputedAppSize>)> callback) {
+    base::OnceCallback<void(std::optional<ComputedAppSize>)> callback) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ComputeAppSizeCommand>(app_id, &profile_.get(),
                                               std::move(callback)));
@@ -491,9 +491,9 @@ void WebAppCommandScheduler::LaunchApp(
     const webapps::AppId& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    const absl::optional<GURL>& url_handler_launch_url,
-    const absl::optional<GURL>& protocol_handler_launch_url,
-    const absl::optional<GURL>& file_launch_url,
+    const std::optional<GURL>& url_handler_launch_url,
+    const std::optional<GURL>& protocol_handler_launch_url,
+    const std::optional<GURL>& file_launch_url,
     const std::vector<base::FilePath>& launch_files,
     LaunchWebAppCallback callback,
     const base::Location& location) {
@@ -513,9 +513,9 @@ void WebAppCommandScheduler::LaunchUrlInApp(const webapps::AppId& app_id,
       WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
           app_id, *base::CommandLine::ForCurrentProcess(),
           /*current_directory=*/base::FilePath(),
-          /*url_handler_launch_url=*/absl::nullopt,
-          /*protocol_handler_launch_url=*/absl::nullopt,
-          /*file_launch_url=*/absl::nullopt, /*launch_files=*/{});
+          /*url_handler_launch_url=*/std::nullopt,
+          /*protocol_handler_launch_url=*/std::nullopt,
+          /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
   params.override_url = url;
 
   LaunchApp(std::move(params),
@@ -542,7 +542,7 @@ void WebAppCommandScheduler::InstallAppLocally(const webapps::AppId& app_id,
 void WebAppCommandScheduler::SynchronizeOsIntegration(
     const webapps::AppId& app_id,
     base::OnceClosure synchronize_callback,
-    absl::optional<SynchronizeOsOptions> synchronize_options,
+    std::optional<SynchronizeOsOptions> synchronize_options,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(

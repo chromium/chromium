@@ -500,11 +500,11 @@ class ParameterizedShowActionDeclarativeContentApiTest
 
   ~ParameterizedShowActionDeclarativeContentApiTest() override {}
 
-  void TestShowAction(absl::optional<ActionInfo::Type> action_type);
+  void TestShowAction(std::optional<ActionInfo::Type> action_type);
 };
 
 void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
-    absl::optional<ActionInfo::Type> action_type) {
+    std::optional<ActionInfo::Type> action_type) {
   static constexpr char kManifestTemplate[] =
       R"({
            "name": "Declarative Content Show Action",
@@ -584,7 +584,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
                        NoActionInManifest) {
-  TestShowAction(absl::nullopt);
+  TestShowAction(std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,

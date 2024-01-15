@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_SUB_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -35,7 +35,7 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                  proto::WebAppOsIntegrationState& desired_state,
                  base::OnceClosure configure_done) override;
   void Execute(const webapps::AppId& app_id,
-               const absl::optional<SynchronizeOsOptions>& synchronize_options,
+               const std::optional<SynchronizeOsOptions>& synchronize_options,
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure callback) override;
@@ -44,11 +44,11 @@ class ShortcutSubManager : public OsIntegrationSubManager {
 
  private:
   void CreateShortcut(const webapps::AppId& app_id,
-                      absl::optional<SynchronizeOsOptions> synchronize_options,
+                      std::optional<SynchronizeOsOptions> synchronize_options,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
   void UpdateShortcut(const webapps::AppId& app_id,
-                      absl::optional<SynchronizeOsOptions> synchronize_options,
+                      std::optional<SynchronizeOsOptions> synchronize_options,
                       const std::u16string& old_app_title,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);

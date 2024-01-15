@@ -218,9 +218,9 @@ void ForwardNotificationOperationOnUiThread(
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
-    const absl::optional<int>& action_index,
-    const absl::optional<bool>& by_user,
-    const absl::optional<std::u16string>& reply,
+    const std::optional<int>& action_index,
+    const std::optional<bool>& by_user,
+    const std::optional<std::u16string>& reply,
     const std::string& profile_id,
     bool is_incognito) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -732,7 +732,7 @@ class NotificationPlatformBridgeLinuxImpl
     // Even-indexed elements in this vector are action IDs passed back to
     // us in OnActionInvoked().  Odd-indexed ones contain the button text.
     std::vector<std::string> actions;
-    absl::optional<std::u16string> inline_reply_placeholder;
+    std::optional<std::u16string> inline_reply_placeholder;
     if (base::Contains(capabilities_, kCapabilityActions)) {
       const bool has_support_for_inline_reply =
           base::Contains(capabilities_, kCapabilityInlineReply);
@@ -961,9 +961,9 @@ class NotificationPlatformBridgeLinuxImpl
       const base::Location& location,
       NotificationData* data,
       NotificationOperation operation,
-      const absl::optional<int>& action_index,
-      const absl::optional<bool>& by_user,
-      const absl::optional<std::u16string>& reply) {
+      const std::optional<int>& action_index,
+      const std::optional<bool>& by_user,
+      const std::optional<std::u16string>& reply) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     content::GetUIThreadTaskRunner({})->PostTask(
         location,
@@ -990,18 +990,18 @@ class NotificationPlatformBridgeLinuxImpl
     if (action == kDefaultButtonId) {
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationOperation::kClick,
-          absl::nullopt /* action_index */, absl::nullopt /* by_user */,
-          absl::nullopt /* reply */);
+          std::nullopt /* action_index */, std::nullopt /* by_user */,
+          std::nullopt /* reply */);
     } else if (action == kSettingsButtonId) {
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationOperation::kSettings,
-          absl::nullopt /* action_index */, absl::nullopt /* by_user */,
-          absl::nullopt /* reply */);
+          std::nullopt /* action_index */, std::nullopt /* by_user */,
+          std::nullopt /* reply */);
     } else if (action == kCloseButtonId) {
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationOperation::kClose,
-          absl::nullopt /* action_index */, true /* by_user */,
-          absl::nullopt /* reply */);
+          std::nullopt /* action_index */, true /* by_user */,
+          std::nullopt /* reply */);
       CloseOnTaskRunner(data->profile_id, data->notification_id);
     } else {
       size_t id;
@@ -1013,7 +1013,7 @@ class NotificationPlatformBridgeLinuxImpl
         return;
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationOperation::kClick, id_zero_based,
-          absl::nullopt /* by_user */, absl::nullopt /* reply */);
+          std::nullopt /* by_user */, std::nullopt /* reply */);
     }
   }
 
@@ -1032,8 +1032,8 @@ class NotificationPlatformBridgeLinuxImpl
       return;
 
     ForwardNotificationOperation(FROM_HERE, data, NotificationOperation::kClick,
-                                 absl::nullopt /* action_index */,
-                                 absl::nullopt /* by_user */,
+                                 std::nullopt /* action_index */,
+                                 std::nullopt /* by_user */,
                                  base::UTF8ToUTF16(reply));
   }
 
@@ -1050,8 +1050,8 @@ class NotificationPlatformBridgeLinuxImpl
 
     // TODO(peter): Can we support |by_user| appropriately here?
     ForwardNotificationOperation(FROM_HERE, data, NotificationOperation::kClose,
-                                 absl::nullopt /* action_index */,
-                                 true /* by_user */, absl::nullopt /* reply */);
+                                 std::nullopt /* action_index */,
+                                 true /* by_user */, std::nullopt /* reply */);
     notifications_.erase(data);
   }
 
@@ -1142,12 +1142,12 @@ class NotificationPlatformBridgeLinuxImpl
 
   // State necessary for OnConnectionInitializationFinished() and
   // SetReadyCallback().
-  absl::optional<bool> connected_;
+  std::optional<bool> connected_;
   std::vector<NotificationBridgeReadyCallback> on_connected_callbacks_;
 
   // Notification servers very rarely have the 'body-images'
   // capability, so try to avoid an image copy if possible.
-  absl::optional<bool> body_images_supported_;
+  std::optional<bool> body_images_supported_;
 
   //////////////////////////////////////////////////////////////////////////////
   // Members used only on the task runner thread.

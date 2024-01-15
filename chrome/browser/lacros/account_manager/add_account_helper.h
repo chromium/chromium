@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ADD_ACCOUNT_HELPER_H_
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ADD_ACCOUNT_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace account_manager {
@@ -94,10 +94,10 @@ class AddAccountHelper {
   const raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   AccountProfileMapper::AddAccountCallback callback_;
 
-  absl::optional<account_manager::Account> account_;
-  // absl::nullopt means that the path hasn't been determined yet.
+  std::optional<account_manager::Account> account_;
+  // std::nullopt means that the path hasn't been determined yet.
   // An empty path means that the account should be unassigned.
-  absl::optional<base::FilePath> profile_path_;
+  std::optional<base::FilePath> profile_path_;
 
   bool is_account_in_cache_ = false;
 

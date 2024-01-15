@@ -110,9 +110,9 @@ void ForwardNotificationOperationOnUiThread(
     const std::string& notification_id,
     const std::string& profile_id,
     bool incognito,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply,
-    const absl::optional<bool>& by_user) {
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply,
+    const std::optional<bool>& by_user) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!g_browser_process)
     return;
@@ -617,7 +617,7 @@ class NotificationPlatformBridgeWinImpl
 
   void GetDisplayed(const std::string& profile_id,
                     bool incognito,
-                    absl::optional<GURL> origin,
+                    std::optional<GURL> origin,
                     GetDisplayedNotificationsCallback callback) const {
     DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
 
@@ -694,7 +694,7 @@ class NotificationPlatformBridgeWinImpl
       if (!displayed_notifications.count(notification.first)) {
         HandleEvent(/*launch_id=*/notification.second,
                     NotificationOperation::kClose,
-                    /*action_index=*/absl::nullopt, /*by_user=*/true);
+                    /*action_index=*/std::nullopt, /*by_user=*/true);
         key_to_remove.push_back(notification.first);
       }
     }
@@ -797,8 +797,8 @@ class NotificationPlatformBridgeWinImpl
 
   void HandleEvent(NotificationLaunchId launch_id,
                    NotificationOperation operation,
-                   const absl::optional<int>& action_index,
-                   const absl::optional<bool>& by_user) {
+                   const std::optional<int>& action_index,
+                   const std::optional<bool>& by_user) {
     if (!launch_id.is_valid()) {
       LogHandleEventStatus(HandleEventStatus::kHandleEventLaunchIdInvalid);
       DLOG(ERROR) << "Failed to decode launch ID for operation "
@@ -812,30 +812,30 @@ class NotificationPlatformBridgeWinImpl
                        launch_id.notification_type(), launch_id.origin_url(),
                        launch_id.notification_id(), launch_id.profile_id(),
                        launch_id.incognito(), action_index,
-                       /*reply=*/absl::nullopt, by_user));
+                       /*reply=*/std::nullopt, by_user));
     LogHandleEventStatus(HandleEventStatus::kSuccess);
   }
 
-  absl::optional<int> ParseActionIndex(
+  std::optional<int> ParseActionIndex(
       winui::Notifications::IToastActivatedEventArgs* args) {
     HSTRING arguments;
     HRESULT hr = args->get_Arguments(&arguments);
     if (FAILED(hr))
-      return absl::nullopt;
+      return std::nullopt;
 
     ScopedHString arguments_scoped(arguments);
     NotificationLaunchId launch_id(arguments_scoped.GetAsUTF8());
     return (launch_id.is_valid() && launch_id.button_index() >= 0)
-               ? absl::optional<int>(launch_id.button_index())
-               : absl::nullopt;
+               ? std::optional<int>(launch_id.button_index())
+               : std::nullopt;
   }
 
   void ForwardHandleEventForTesting(
       NotificationOperation operation,
       winui::Notifications::IToastNotification* notification,
       winui::Notifications::IToastActivatedEventArgs* args,
-      const absl::optional<bool>& by_user) {
-    absl::optional<int> action_index = ParseActionIndex(args);
+      const std::optional<bool>& by_user) {
+    std::optional<int> action_index = ParseActionIndex(args);
     HandleEvent(GetNotificationLaunchId(notification), operation, action_index,
                 by_user);
   }
@@ -1031,7 +1031,7 @@ void NotificationPlatformBridgeWin::GetDisplayed(
       FROM_HERE,
       base::BindOnce(&NotificationPlatformBridgeWinImpl::GetDisplayed, impl_,
                      GetProfileId(profile), profile->IsOffTheRecord(),
-                     /*origin=*/absl::nullopt, std::move(callback)));
+                     /*origin=*/std::nullopt, std::move(callback)));
 }
 
 void NotificationPlatformBridgeWin::GetDisplayedForOrigin(
@@ -1078,7 +1078,7 @@ bool NotificationPlatformBridgeWin::HandleActivation(
     return false;
   }
 
-  absl::optional<std::u16string> reply;
+  std::optional<std::u16string> reply;
   std::wstring inline_reply =
       command_line.GetSwitchValueNative(switches::kNotificationInlineReply);
   if (!inline_reply.empty())
@@ -1092,7 +1092,7 @@ bool NotificationPlatformBridgeWin::HandleActivation(
   else
     operation = NotificationOperation::kClick;
 
-  absl::optional<int> action_index;
+  std::optional<int> action_index;
   if (launch_id.button_index() != -1)
     action_index = launch_id.button_index();
 
@@ -1123,7 +1123,7 @@ void NotificationPlatformBridgeWin::ForwardHandleEventForTesting(
     NotificationOperation operation,
     winui::Notifications::IToastNotification* notification,
     winui::Notifications::IToastActivatedEventArgs* args,
-    const absl::optional<bool>& by_user) {
+    const std::optional<bool>& by_user) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   notification_task_runner_->PostTask(
       FROM_HERE,

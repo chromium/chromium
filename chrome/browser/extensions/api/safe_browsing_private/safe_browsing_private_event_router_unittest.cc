@@ -242,7 +242,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnLoginEvent(
       const GURL& url,
       const std::u16string& login_user_name,
-      absl::optional<url::Origin> federated_origin = absl::nullopt) {
+      std::optional<url::Origin> federated_origin = std::nullopt) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnLoginEvent(url, federated_origin.has_value(),
                        federated_origin.has_value() ? federated_origin.value()

@@ -17,7 +17,7 @@
 
 namespace cups_proxy {
 
-absl::optional<IppResponse> BuildGetDestsResponse(
+std::optional<IppResponse> BuildGetDestsResponse(
     const IppRequest& request,
     const std::vector<chromeos::Printer>& printers) {
   IppResponse ret;
@@ -71,19 +71,19 @@ absl::optional<IppResponse> BuildGetDestsResponse(
       ret.status_line.http_version, ret.status_line.status_code,
       ret.status_line.reason_phrase, ret.headers, ret.ipp.get(), ret.ipp_data);
   if (!response_buffer) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ret.buffer = std::move(*response_buffer);
   return ret;
 }
 
-absl::optional<std::string> GetPrinterId(ipp_t* ipp) {
+std::optional<std::string> GetPrinterId(ipp_t* ipp) {
   // We expect the printer id to be embedded in the printer-uri.
   ipp_attribute_t* printer_uri_attr =
       ippFindAttribute(ipp, "printer-uri", IPP_TAG_URI);
   if (!printer_uri_attr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Only care about the resource, throw everything else away
@@ -104,18 +104,18 @@ absl::optional<std::string> GetPrinterId(ipp_t* ipp) {
   base::StringPiece uuid(resource);
   auto uuid_start = uuid.find_last_of('/');
   if (uuid_start == base::StringPiece::npos || uuid_start + 1 >= uuid.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(uuid.substr(uuid_start + 1));
 }
 
-absl::optional<std::string> ParseEndpointForPrinterId(
+std::optional<std::string> ParseEndpointForPrinterId(
     base::StringPiece endpoint) {
   size_t last_path = endpoint.find_last_of('/');
   if (last_path == base::StringPiece::npos ||
       last_path + 1 >= endpoint.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(endpoint.substr(last_path + 1));

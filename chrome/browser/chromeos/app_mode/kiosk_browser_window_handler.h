@@ -48,7 +48,7 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
  public:
   KioskBrowserWindowHandler(
       Profile* profile,
-      const absl::optional<std::string>& web_app_name,
+      const std::optional<std::string>& web_app_name,
       base::RepeatingCallback<void(bool is_closing)>
           on_browser_window_added_callback,
       base::OnceClosure shutdown_kiosk_browser_session_callback);
@@ -90,7 +90,7 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   // Owned by `ProfileManager`.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   // `web_app_name_` is set only for web kiosk sessions.
-  const absl::optional<std::string> web_app_name_;
+  const std::optional<std::string> web_app_name_;
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;
   base::OnceClosure shutdown_kiosk_browser_session_callback_;

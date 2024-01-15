@@ -195,7 +195,7 @@ class DIPSService : public KeyedService {
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
-  absl::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
+  std::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
 
   std::map<std::string, int> open_sites_;
 

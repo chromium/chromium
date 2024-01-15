@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshfeatureClientTest, GetMediaApps) {
             /*is_capturing_microphone=*/true,
             /*is_capturing_screen=*/false,
             /*title=*/base::UTF8ToUTF16(std::string(kCrostiniVmId)),
-            /*url=*/absl::nullopt,
+            /*url=*/std::nullopt,
             /*app_type=*/crosapi::mojom::VideoConferenceAppType::kCrostiniVm);
 
     EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshfeatureClientTest, GetMediaApps) {
             /*is_capturing_microphone=*/true,
             /*is_capturing_screen=*/false,
             /*title=*/base::UTF8ToUTF16(std::string(kPluginVmId)),
-            /*url=*/absl::nullopt,
+            /*url=*/std::nullopt,
             /*app_type=*/crosapi::mojom::VideoConferenceAppType::kPluginVm);
 
     EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));

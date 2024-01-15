@@ -46,7 +46,7 @@ std::unique_ptr<APIPermission> UnpackPermissionWithArguments(
     base::StringPiece permission_arg,
     const std::string& permission_str,
     std::string* error) {
-  absl::optional<base::Value> permission_json =
+  std::optional<base::Value> permission_json =
       base::JSONReader::Read(permission_arg);
   if (!permission_json) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidParameter, permission_str);

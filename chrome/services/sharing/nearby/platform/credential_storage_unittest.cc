@@ -242,7 +242,7 @@ class FakeNearbyPresenceCredentialStorage
       GetPublicCredentialsCallback callback) override {
     if (!should_public_credentials_successfully_retrieve_) {
       std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kUnknown,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 
@@ -266,7 +266,7 @@ class FakeNearbyPresenceCredentialStorage
   void GetPrivateCredentials(GetPrivateCredentialsCallback callback) override {
     if (!should_private_credentials_successfully_retrieve_) {
       std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kUnknown,
-                              absl::nullopt);
+                              std::nullopt);
       return;
     }
 

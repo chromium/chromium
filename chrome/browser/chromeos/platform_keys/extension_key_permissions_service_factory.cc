@@ -21,7 +21,7 @@ namespace {
 void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
                          content::BrowserContext* context,
                          extensions::ExtensionId extension_id,
-                         absl::optional<base::Value> value) {
+                         std::optional<base::Value> value) {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     std::move(callback).Run(/*extension_key_permissions_service=*/nullptr);

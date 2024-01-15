@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/hid.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -150,11 +150,11 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
         item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
     for (const auto& device_value : *devices_value) {
-      const absl::optional<int> vendor_id_value =
+      const std::optional<int> vendor_id_value =
           device_value.GetDict().FindInt(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 
-      const absl::optional<int> product_id_value =
+      const std::optional<int> product_id_value =
           device_value.GetDict().FindInt(kPrefProductIdKey);
       // "product_id" is optional. If it is not specified, the policy matches
       // any device with the given vendor ID.
@@ -197,11 +197,11 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
         item.GetDict().FindList(kPrefUsagesKey);
     DCHECK(usages_value);
     for (const auto& usage_and_page_value : *usages_value) {
-      const absl::optional<int> usage_page_value =
+      const std::optional<int> usage_page_value =
           usage_and_page_value.GetDict().FindInt(kPrefUsagePageKey);
       DCHECK(usage_page_value);
 
-      const absl::optional<int> usage_value =
+      const std::optional<int> usage_value =
           usage_and_page_value.GetDict().FindInt(kPrefUsageKey);
       // "usage" is optional. If "usage" is not specified, the policy matches
       // any device containing a top-level collection with the given usage page.

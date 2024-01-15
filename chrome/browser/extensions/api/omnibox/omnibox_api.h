@@ -94,7 +94,7 @@ class OmniboxSendSuggestionsFunction : public ExtensionFunction {
   void NotifySuggestionsReady();
 
   // The suggestion parameters passed by the extension API call.
-  absl::optional<api::omnibox::SendSuggestions::Params> params_;
+  std::optional<api::omnibox::SendSuggestions::Params> params_;
 };
 
 class OmniboxAPI : public BrowserContextKeyedAPI,

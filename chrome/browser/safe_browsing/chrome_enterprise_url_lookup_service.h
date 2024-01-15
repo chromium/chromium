@@ -86,9 +86,9 @@ class ChromeEnterpriseRealTimeUrlLookupService
       base::TimeTicks get_token_start_time,
       const std::string& access_token);
 
-  absl::optional<std::string> GetDMTokenString() const override;
+  std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
-  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override;
 
   // Unowned object used for checking profile based settings.

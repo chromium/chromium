@@ -4,6 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/network_traversal_ice_config_fetcher.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
@@ -14,7 +16,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -94,7 +95,7 @@ std::vector<sharing::mojom::IceServerPtr> GetDefaultIceServers() {
 
 std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
   std::vector<sharing::mojom::IceServerPtr> ice_servers;
-  absl::optional<base::Value> response = base::JSONReader::Read(json);
+  std::optional<base::Value> response = base::JSONReader::Read(json);
   if (!response)
     return ice_servers;
 

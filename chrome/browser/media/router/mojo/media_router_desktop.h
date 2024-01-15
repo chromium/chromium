@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace content {
@@ -161,7 +161,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   // `result_code`: The result of the request.
   void OnTerminateRouteResult(const MediaRoute::Id& route_id,
                               mojom::MediaRouteProviderId provider_id,
-                              const absl::optional<std::string>& error_text,
+                              const std::optional<std::string>& error_text,
                               mojom::RouteRequestResultCode result_code);
 
   // Adds `route` to the list of routes. Called in the callback for
@@ -176,9 +176,9 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
                              mojom::MediaRouteProviderId provider_id,
                              MediaRouteResponseCallback callback,
                              bool is_join,
-                             const absl::optional<MediaRoute>& media_route,
+                             const std::optional<MediaRoute>& media_route,
                              mojom::RoutePresentationConnectionPtr connection,
-                             const absl::optional<std::string>& error_text,
+                             const std::optional<std::string>& error_text,
                              mojom::RouteRequestResultCode result_code);
 
   // Callback called by MRP's BindMediaController().
@@ -234,11 +234,11 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
 
   // Methods for obtaining a pointer to the provider associated with the given
   // ID. They return a nullopt when such a provider is not found.
-  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForPresentation(
+  std::optional<mojom::MediaRouteProviderId> GetProviderIdForPresentation(
       const std::string& presentation_id);
-  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForRoute(
+  std::optional<mojom::MediaRouteProviderId> GetProviderIdForRoute(
       const MediaRoute::Id& route_id);
-  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForSink(
+  std::optional<mojom::MediaRouteProviderId> GetProviderIdForSink(
       const MediaSink::Id& sink_id);
 
   // Returns a pointer to the MediaSink whose ID is `sink_id`, or nullptr if not
@@ -395,7 +395,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
     bool HasObserver(MediaRoutesObserver* observer) const;
     bool HasObservers() const;
 
-    const absl::optional<std::vector<MediaRoute>>& cached_route_list() const {
+    const std::optional<std::vector<MediaRoute>>& cached_route_list() const {
       return cached_route_list_;
     }
     const base::flat_map<mojom::MediaRouteProviderId, std::vector<MediaRoute>>&
@@ -405,7 +405,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
 
    private:
     // Cached list of routes for the query.
-    absl::optional<std::vector<MediaRoute>> cached_route_list_;
+    std::optional<std::vector<MediaRoute>> cached_route_list_;
 
     // Per-MRP lists of routes for the query.
     // TODO(crbug.com/1374496): Consider making MRP ID an attribute of

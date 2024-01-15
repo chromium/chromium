@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_CONTENT_EXTRACTION_INNER_TEXT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/content_extraction/inner_text.mojom-forward.h"
 
 namespace content {
@@ -24,7 +24,7 @@ struct InnerTextResult {
 
   // Offset of the supplied node in `inner_text`. Only set if a node-id is
   // supplied to GetInnerText() and a matching node was found.
-  absl::optional<unsigned> node_offset;
+  std::optional<unsigned> node_offset;
 };
 
 using InnerTextCallback =
@@ -51,7 +51,7 @@ using InnerTextCallback =
 // NOTE: This function services the request as soon as called, it does not wait
 // for the page to finish loading.
 void GetInnerText(content::RenderFrameHost& host,
-                  absl::optional<int> node_id,
+                  std::optional<int> node_id,
                   InnerTextCallback callback);
 
 // Exposed for testing.

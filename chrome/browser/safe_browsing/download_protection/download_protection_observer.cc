@@ -136,7 +136,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
         enterprise_connectors::ContentAnalysisResponse(),
-        /*user_justification=*/absl::nullopt);
+        /*user_justification=*/std::nullopt);
   }
 }
 

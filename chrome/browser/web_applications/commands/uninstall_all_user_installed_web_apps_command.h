@@ -22,10 +22,10 @@ namespace web_app {
 // This command acquires the AllAppsLock and uninstalls all user-installed web
 // apps.
 class UninstallAllUserInstalledWebAppsCommand
-    : public WebAppCommand<AllAppsLock, const absl::optional<std::string>&> {
+    : public WebAppCommand<AllAppsLock, const std::optional<std::string>&> {
  public:
-  using Callback = base::OnceCallback<void(
-      const absl::optional<std::string>& error_message)>;
+  using Callback =
+      base::OnceCallback<void(const std::optional<std::string>& error_message)>;
 
   UninstallAllUserInstalledWebAppsCommand(
       webapps::WebappUninstallSource uninstall_source,

@@ -3732,7 +3732,7 @@ AutotestPrivateClearAllowedPrefFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateClearAllowedPrefFunction::Run() {
-  absl::optional<api::autotest_private::ClearAllowedPref::Params> params =
+  std::optional<api::autotest_private::ClearAllowedPref::Params> params =
       api::autotest_private::ClearAllowedPref::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!ClearAllowedPref(Profile::FromBrowserContext(browser_context()),

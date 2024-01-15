@@ -186,16 +186,16 @@ Status ParseMobileEmulation(const base::Value& option,
 
     int height = height_value ? height_value->GetInt() : 0;
 
-    absl::optional<double> maybe_device_scale_factor =
+    std::optional<double> maybe_device_scale_factor =
         metrics->FindDouble("pixelRatio");
     if (metrics->Find("pixelRatio") && !maybe_device_scale_factor.has_value())
       return Status(kInvalidArgument, "'pixelRatio' must be a double");
 
-    absl::optional<bool> touch = metrics->FindBool("touch");
+    std::optional<bool> touch = metrics->FindBool("touch");
     if (metrics->Find("touch") && !touch.has_value())
       return Status(kInvalidArgument, "'touch' must be a boolean");
 
-    absl::optional<bool> mobile = metrics->FindBool("mobile");
+    std::optional<bool> mobile = metrics->FindBool("mobile");
     if (metrics->Find("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
     if (!mobile.has_value()) {
@@ -264,7 +264,7 @@ Status ParseMobileEmulation(const base::Value& option,
                         supported_platforms_str);
     }
 
-    absl::optional<bool> mobile = client_hints_dict.FindBool("mobile");
+    std::optional<bool> mobile = client_hints_dict.FindBool("mobile");
     if (client_hints_dict.Find("mobile") && !mobile.has_value()) {
       return Status(kInvalidArgument, "'clientHints.mobile' must be a boolean");
     }
@@ -425,7 +425,7 @@ Status ParseMobileEmulation(const base::Value& option,
     }
 
     if (client_hints_dict.Find("wow64")) {
-      absl::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
+      std::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
       if (!wow64.has_value()) {
         return Status(kInvalidArgument,
                       "'clientHints.wow64' must be a boolean");

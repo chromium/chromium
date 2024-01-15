@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -46,7 +47,6 @@
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -99,7 +99,7 @@ class MockWallpaperSearchBackgroundManager
                     const SkBitmap&,
                     base::ElapsedTimer timer));
   MOCK_METHOD1(SaveCurrentBackgroundToHistory,
-               absl::optional<base::Token>(const HistoryEntry& history_entry));
+               std::optional<base::Token>(const HistoryEntry& history_entry));
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(

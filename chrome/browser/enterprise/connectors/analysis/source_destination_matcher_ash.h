@@ -139,7 +139,7 @@ class SourceDestinationMatcherAsh {
   static FsType PathToFsType(content::BrowserContext* context,
                              const base::FilePath& path);
 
-  static absl::optional<FsType> StringToFsType(const std::string& s);
+  static std::optional<FsType> StringToFsType(const std::string& s);
   std::set<FsType> ValueListToFsTypes(
       const base::Value::List* source_or_destination_list);
 

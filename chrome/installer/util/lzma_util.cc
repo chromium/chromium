@@ -27,7 +27,7 @@ class SevenZipDelegateImpl : public seven_zip::Delegate {
   SevenZipDelegateImpl(const SevenZipDelegateImpl&) = delete;
   SevenZipDelegateImpl& operator=(const SevenZipDelegateImpl&) = delete;
 
-  absl::optional<DWORD> error_code() const { return error_code_; }
+  std::optional<DWORD> error_code() const { return error_code_; }
   UnPackStatus unpack_error() const { return unpack_error_; }
 
   // seven_zip::Delegate implementation:
@@ -46,9 +46,9 @@ class SevenZipDelegateImpl : public seven_zip::Delegate {
   const raw_ptr<base::FilePath> output_file_;
 
   std::set<base::FilePath> directories_created_;
-  absl::optional<DWORD> error_code_;
+  std::optional<DWORD> error_code_;
   base::File current_file_;
-  absl::optional<base::MemoryMappedFile> mapped_file_;
+  std::optional<base::MemoryMappedFile> mapped_file_;
   UnPackStatus unpack_error_ = UNPACK_NO_ERROR;
 };
 
@@ -269,7 +269,7 @@ UnPackStatus UnPackArchive(const base::FilePath& archive,
   }
 
   if (status != UNPACK_NO_ERROR) {
-    absl::optional<DWORD> error_code = lzma_util.GetErrorCode();
+    std::optional<DWORD> error_code = lzma_util.GetErrorCode();
     if (error_code.value_or(ERROR_SUCCESS) == ERROR_DISK_FULL)
       return UNPACK_DISK_FULL;
     if (error_code.value_or(ERROR_SUCCESS) == ERROR_IO_DEVICE)
@@ -318,5 +318,5 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
 
 void LzmaUtilImpl::CloseArchive() {
   archive_file_.Close();
-  error_code_ = absl::nullopt;
+  error_code_ = std::nullopt;
 }

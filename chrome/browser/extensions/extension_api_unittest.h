@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_API_UNITTEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionFunction;
 
@@ -54,20 +54,20 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
 
   // Return the function result as a base::Value, if successful, or nullopt on
   // failure.
-  absl::optional<base::Value> RunFunctionAndReturnValue(
+  std::optional<base::Value> RunFunctionAndReturnValue(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
   // Return the function result as a base::Value::Dict, if successful, or
   // nullopt on failure. This will EXPECT-fail if the result is not a
   // base::Value::Dict.
-  absl::optional<base::Value::Dict> RunFunctionAndReturnDictionary(
+  std::optional<base::Value::Dict> RunFunctionAndReturnDictionary(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
   // Return the function result as a base::Value::List, if successful, or
   // nullopt on failure. This will EXPECT-fail if the result is not a list.
-  absl::optional<base::Value::List> RunFunctionAndReturnList(
+  std::optional<base::Value::List> RunFunctionAndReturnList(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 

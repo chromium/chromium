@@ -355,8 +355,8 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
   base::FilePath profile_path;
   // Split the variant information from `profile_info`.
   absl::visit(base::Overloaded{
-                  [&suggested_profile_color = suggested_profile_color_](
-                      absl::optional<SkColor> color) {
+                  [&suggested_profile_color =
+                       suggested_profile_color_](std::optional<SkColor> color) {
                     suggested_profile_color = color;
                   },
                   [&profile_path](base::FilePath profile_path_info) {

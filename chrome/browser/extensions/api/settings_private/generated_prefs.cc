@@ -37,11 +37,11 @@ bool GeneratedPrefs::HasPref(const std::string& pref_name) {
   return FindPrefImpl(pref_name) != nullptr;
 }
 
-absl::optional<api::settings_private::PrefObject> GeneratedPrefs::GetPref(
+std::optional<api::settings_private::PrefObject> GeneratedPrefs::GetPref(
     const std::string& pref_name) {
   GeneratedPref* impl = FindPrefImpl(pref_name);
   if (!impl)
-    return absl::nullopt;
+    return std::nullopt;
 
   return impl->GetPrefObject();
 }

@@ -76,7 +76,7 @@ SupervisionMixin::SupervisionMixin(
     : InProcessBrowserTestMixin(&test_mixin_host),
       test_base_(test_base),
       fake_gaia_mixin_(&test_mixin_host),
-      embedded_test_server_setup_mixin_(absl::in_place,
+      embedded_test_server_setup_mixin_(std::in_place,
                                         test_mixin_host,
                                         test_base,
                                         embedded_test_server,

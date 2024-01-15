@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
           /*is_capturing_microphone=*/state1.is_capturing_microphone,
           /*is_capturing_screen=*/false,
           /*title=*/base::UTF8ToUTF16(std::string(kAppName1)),
-          /*url=*/absl::nullopt,
+          /*url=*/std::nullopt,
           /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
 
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
           /*is_capturing_camera=*/true,
           /*is_capturing_microphone=*/false,
           /*is_capturing_screen=*/false,
-          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt,
+          /*title=*/media_app_info[0]->title, /*url=*/std::nullopt,
           /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
   ASSERT_EQ(media_app_info.size(), 1u);
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
           /*is_capturing_camera=*/true,
           /*is_capturing_microphone=*/true,
           /*is_capturing_screen=*/false,
-          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt,
+          /*title=*/media_app_info[0]->title, /*url=*/std::nullopt,
           /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
   ASSERT_EQ(media_app_info.size(), 1u);
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
           /*is_capturing_camera=*/true,
           /*is_capturing_microphone=*/true,
           /*is_capturing_screen=*/false,
-          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt,
+          /*title=*/media_app_info[0]->title, /*url=*/std::nullopt,
           /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp);
   ASSERT_EQ(media_app_info.size(), 1u);
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));

@@ -30,7 +30,7 @@ namespace {
 
 constexpr char kLatencyHistogramVariant[] = "Browser";
 
-absl::optional<std::string> TryGetEnrollmentDomain(
+std::optional<std::string> TryGetEnrollmentDomain(
     policy::CloudPolicyManager* manager) {
   policy::CloudPolicyStore* store = nullptr;
   if (manager && manager->core() && manager->core()->store()) {
@@ -42,7 +42,7 @@ absl::optional<std::string> TryGetEnrollmentDomain(
     return policy->has_managed_by() ? policy->managed_by()
                                     : policy->display_domain();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

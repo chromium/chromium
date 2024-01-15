@@ -86,7 +86,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnSSLCertificateError(
 }
 
 void WilcoDtcSupportdNetworkContextImpl::OnCertificateRequested(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder_remote) {
@@ -96,7 +96,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnCertificateRequested(
 }
 
 void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -106,15 +106,15 @@ void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
         auth_challenge_responder) {
   mojo::Remote<network::mojom::AuthChallengeResponder>
       auth_challenge_responder_remote(std::move(auth_challenge_responder));
-  auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
+  auth_challenge_responder_remote->OnAuthCredentials(std::nullopt);
 }
 
 void WilcoDtcSupportdNetworkContextImpl::
     OnPrivateNetworkAccessPermissionRequired(
         const GURL& url,
         const net::IPAddress& ip_address,
-        const absl::optional<std::string>& private_network_device_id,
-        const absl::optional<std::string>& private_network_device_name,
+        const std::optional<std::string>& private_network_device_id,
+        const std::optional<std::string>& private_network_device_name,
         OnPrivateNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(false);
 }
@@ -123,7 +123,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,
     int32_t load_flags,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   std::move(callback).Run();

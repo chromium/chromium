@@ -247,7 +247,7 @@ class EnterpriseReportingPrivateEnqueueRecordFunction
   ExtensionFunction::ResponseAction Run() override;
 
   bool TryParseParams(
-      absl::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
+      std::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
           params,
       ::reporting::Record& record,
       ::reporting::Priority& priority);

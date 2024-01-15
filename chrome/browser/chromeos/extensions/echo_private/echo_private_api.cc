@@ -84,14 +84,14 @@ EchoPrivateGetRegistrationCodeFunction::
 
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
-  absl::optional<echo_api::GetRegistrationCode::Params> params =
+  std::optional<echo_api::GetRegistrationCode::Params> params =
       echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Possible ECHO code type and corresponding key name in StatisticsProvider.
   const std::string kCouponType = "COUPON_CODE";
   const std::string kGroupType = "GROUP_CODE";
-  absl::optional<crosapi::mojom::RegistrationCodeType> type;
+  std::optional<crosapi::mojom::RegistrationCodeType> type;
   if (params->type == kCouponType) {
     type = crosapi::mojom::RegistrationCodeType::kCoupon;
   } else if (params->type == kGroupType) {
@@ -135,7 +135,7 @@ EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() {}
 EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
-  absl::optional<echo_api::SetOfferInfo::Params> params =
+  std::optional<echo_api::SetOfferInfo::Params> params =
       echo_api::SetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -154,7 +154,7 @@ EchoPrivateGetOfferInfoFunction::EchoPrivateGetOfferInfoFunction() {}
 EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
-  absl::optional<echo_api::GetOfferInfo::Params> params =
+  std::optional<echo_api::GetOfferInfo::Params> params =
       echo_api::GetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -215,7 +215,7 @@ EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() =
     default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
-  absl::optional<echo_api::GetUserConsent::Params> params =
+  std::optional<echo_api::GetUserConsent::Params> params =
       echo_api::GetUserConsent::Params::Create(args());
 
   // Verify that the passed origin URL is valid.

@@ -77,9 +77,9 @@ class RealtimeReportingClient : public KeyedService,
 
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
-  // absl::nullopt represents that reporting should not be done.
+  // std::nullopt represents that reporting should not be done.
   // Declared virtual for tests.
-  absl::optional<ReportingSettings> virtual GetReportingSettings();
+  std::optional<ReportingSettings> virtual GetReportingSettings();
 
   // Returns the Gaia email address of the account signed in to the profile or
   // an empty string if the profile is not signed in (declared virtual for

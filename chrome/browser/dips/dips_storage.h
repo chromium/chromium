@@ -26,14 +26,13 @@ using UrlPredicate = base::RepeatingCallback<bool(const GURL&)>;
 // Manages the storage of DIPSState values.
 class DIPSStorage {
  public:
-  explicit DIPSStorage(const absl::optional<base::FilePath>& path);
+  explicit DIPSStorage(const std::optional<base::FilePath>& path);
   ~DIPSStorage();
 
   DIPSState Read(const GURL& url);
 
-  absl::optional<PopupsStateValue> ReadPopup(
-      const std::string& first_party_site,
-      const std::string& tracking_site);
+  std::optional<PopupsStateValue> ReadPopup(const std::string& first_party_site,
+                                            const std::string& tracking_site);
 
   std::vector<PopupWithTime> ReadRecentPopupsWithInteraction(
       const base::TimeDelta& lookback);
@@ -93,14 +92,14 @@ class DIPSStorage {
   // parameter overrides the use of `features::kDIPSGracePeriod` when
   // evaluating sites to clear.
   std::vector<std::string> GetSitesToClear(
-      absl::optional<base::TimeDelta> grace_period) const;
+      std::optional<base::TimeDelta> grace_period) const;
 
   // Returns true if `url`'s site has had user interaction since `bound`.
   bool DidSiteHaveInteractionSince(const GURL& url, base::Time bound);
 
   // Returns the timestamp of the last user interaction time on `url`, or
-  // absl::nullopt if there has been no user interaction on `url`.
-  absl::optional<base::Time> LastInteractionTime(const GURL& url);
+  // std::nullopt if there has been no user interaction on `url`.
+  std::optional<base::Time> LastInteractionTime(const GURL& url);
 
   // Utility Methods -----------------------------------------------------------
 

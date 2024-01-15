@@ -30,18 +30,18 @@ using extensions::mojom::APIPermissionID;
 namespace extensions {
 namespace {
 
-absl::optional<GURL> CreateManifestURL(const std::string& url) {
-  absl::optional<GURL> manifest_url(absl::in_place, url);
+std::optional<GURL> CreateManifestURL(const std::string& url) {
+  std::optional<GURL> manifest_url(std::in_place, url);
   if (!manifest_url->is_valid() || !manifest_url->SchemeIsHTTPOrHTTPS())
-    return absl::nullopt;
+    return std::nullopt;
   return manifest_url;
 }
 
-absl::optional<GURL> ParseHomepage(const ChromeSettingsOverrides& overrides,
-                                   std::u16string* error) {
+std::optional<GURL> ParseHomepage(const ChromeSettingsOverrides& overrides,
+                                  std::u16string* error) {
   if (!overrides.homepage)
-    return absl::nullopt;
-  absl::optional<GURL> manifest_url = CreateManifestURL(*overrides.homepage);
+    return std::nullopt;
+  std::optional<GURL> manifest_url = CreateManifestURL(*overrides.homepage);
   if (!manifest_url) {
     *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
         manifest_errors::kInvalidHomepageOverrideURL, *overrides.homepage);
@@ -58,7 +58,7 @@ std::vector<GURL> ParseStartupPage(const ChromeSettingsOverrides& overrides,
   for (std::vector<std::string>::const_iterator i =
        overrides.startup_pages->begin(); i != overrides.startup_pages->end();
        ++i) {
-    absl::optional<GURL> manifest_url = CreateManifestURL(*i);
+    std::optional<GURL> manifest_url = CreateManifestURL(*i);
     if (!manifest_url) {
       *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidStartupOverrideURL, *i);
@@ -69,16 +69,16 @@ std::vector<GURL> ParseStartupPage(const ChromeSettingsOverrides& overrides,
   return urls;
 }
 
-absl::optional<ChromeSettingsOverrides::SearchProvider> ParseSearchEngine(
+std::optional<ChromeSettingsOverrides::SearchProvider> ParseSearchEngine(
     ChromeSettingsOverrides* overrides,
     std::u16string* error) {
   if (!overrides->search_provider)
-    return absl::nullopt;
+    return std::nullopt;
   if (!CreateManifestURL(overrides->search_provider->search_url)) {
     *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
         manifest_errors::kInvalidSearchEngineURL,
         overrides->search_provider->search_url);
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (overrides->search_provider->prepopulated_id)
     return std::move(*overrides->search_provider);
@@ -90,25 +90,25 @@ absl::optional<ChromeSettingsOverrides::SearchProvider> ParseSearchEngine(
 
   if (!overrides->search_provider->name) {
     *error = get_missing_key_error("name");
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!overrides->search_provider->keyword) {
     *error = get_missing_key_error("keyword");
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!overrides->search_provider->encoding) {
     *error = get_missing_key_error("encoding");
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!overrides->search_provider->favicon_url) {
     *error = get_missing_key_error("favicon_url");
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!CreateManifestURL(*overrides->search_provider->favicon_url)) {
     *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
         manifest_errors::kInvalidSearchEngineURL,
         *overrides->search_provider->favicon_url);
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(*overrides->search_provider);
 }

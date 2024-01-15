@@ -124,8 +124,8 @@ inline void WaitOnStorage(DIPSService* dips_service) {
 }
 
 // Helper function to query the `url` state from DIPS storage.
-absl::optional<StateValue> GetDIPSState(DIPSService* dips_service,
-                                        const GURL& url);
+std::optional<StateValue> GetDIPSState(DIPSService* dips_service,
+                                       const GURL& url);
 
 inline DIPSService* GetDipsService(content::WebContents* web_contents) {
   return DIPSServiceFactory::GetForBrowserContext(

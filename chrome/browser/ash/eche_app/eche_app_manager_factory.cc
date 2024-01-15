@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -47,7 +48,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/image/image.h"
@@ -80,9 +80,9 @@ void BubbleShown(Profile* profile, AshWebView* view) {
 }
 
 void LaunchWebApp(const std::string& package_name,
-                  const absl::optional<int64_t>& notification_id,
+                  const std::optional<int64_t>& notification_id,
                   const std::u16string& visible_name,
-                  const absl::optional<int64_t>& user_id,
+                  const std::optional<int64_t>& user_id,
                   const gfx::Image& icon,
                   const std::u16string& phone_name,
                   AppsLaunchInfoProvider* apps_launch_info_provider,
@@ -134,7 +134,7 @@ void RelaunchLast(Profile* profile) {
   std::unique_ptr<LaunchedAppInfo> last_launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
   EcheAppManagerFactory::LaunchEcheApp(
-      profile, absl::nullopt, last_launched_app_info->package_name(),
+      profile, std::nullopt, last_launched_app_info->package_name(),
       last_launched_app_info->visible_name(), last_launched_app_info->user_id(),
       last_launched_app_info->icon(), last_launched_app_info->phone_name(),
       last_launched_app_info->apps_launch_info_provider());
@@ -146,7 +146,7 @@ LaunchedAppInfo::~LaunchedAppInfo() = default;
 LaunchedAppInfo::LaunchedAppInfo(
     const std::string& package_name,
     const std::u16string& visible_name,
-    const absl::optional<int64_t>& user_id,
+    const std::optional<int64_t>& user_id,
     const gfx::Image& icon,
     const std::u16string& phone_name,
     AppsLaunchInfoProvider* apps_launch_info_provider) {
@@ -178,8 +178,8 @@ EcheAppManagerFactory* EcheAppManagerFactory::GetInstance() {
 void EcheAppManagerFactory::ShowNotification(
     base::WeakPtr<EcheAppManagerFactory> weak_ptr,
     Profile* profile,
-    const absl::optional<std::u16string>& title,
-    const absl::optional<std::u16string>& message,
+    const std::optional<std::u16string>& title,
+    const std::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
   if (!weak_ptr->notification_controller_) {
     weak_ptr->notification_controller_ =
@@ -219,10 +219,10 @@ void EcheAppManagerFactory::CloseNotification(
 // static
 void EcheAppManagerFactory::LaunchEcheApp(
     Profile* profile,
-    const absl::optional<int64_t>& notification_id,
+    const std::optional<int64_t>& notification_id,
     const std::string& package_name,
     const std::u16string& visible_name,
-    const absl::optional<int64_t>& user_id,
+    const std::optional<int64_t>& user_id,
     const gfx::Image& icon,
     const std::u16string& phone_name,
     AppsLaunchInfoProvider* apps_launch_info_provider) {

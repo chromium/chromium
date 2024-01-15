@@ -194,11 +194,11 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   virtual T ParseResponse(const base::Value::Dict* response) = 0;
 
   // Returns the count of results contained within the specified `result`.
-  virtual absl::optional<size_t> GetResultCount(const T& result) = 0;
+  virtual std::optional<size_t> GetResultCount(const T& result) = 0;
 
   // Contains logic for different HTTP error codes that we receive, as they can
   // carry information on the state of the user's Google Photos library.
-  virtual absl::optional<base::Value> CreateErrorResponse(int error_code);
+  virtual std::optional<base::Value> CreateErrorResponse(int error_code);
 
   // Returns the result of the managed policy
   // WallpaperGooglePhotosIntegrationEnabled, or true if this pref is
@@ -218,7 +218,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
                       std::unique_ptr<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
                        base::TimeTicks start_time,
-                       absl::optional<base::Value> response);
+                       std::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
   const raw_ptr<Profile> profile_;
@@ -253,7 +253,7 @@ class GooglePhotosAlbumsFetcher
   ~GooglePhotosAlbumsFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
 
  protected:
@@ -264,7 +264,7 @@ class GooglePhotosAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 
  private:
@@ -289,7 +289,7 @@ class GooglePhotosSharedAlbumsFetcher
   ~GooglePhotosSharedAlbumsFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
 
  protected:
@@ -300,7 +300,7 @@ class GooglePhotosSharedAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 
  private:
@@ -331,7 +331,7 @@ class GooglePhotosEnabledFetcher
   // GooglePhotosFetcher:
   GooglePhotosEnablementState ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosEnablementState& result) override;
 
  private:
@@ -352,9 +352,9 @@ class GooglePhotosPhotosFetcher
   ~GooglePhotosPhotosFetcher() override;
 
   virtual void AddRequestAndStartIfNecessary(
-      const absl::optional<std::string>& item_id,
-      const absl::optional<std::string>& album_id,
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& item_id,
+      const std::optional<std::string>& album_id,
+      const std::optional<std::string>& resume_token,
       bool shuffle,
       base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback);
 
@@ -364,10 +364,10 @@ class GooglePhotosPhotosFetcher
   explicit GooglePhotosPhotosFetcher(Profile* profile);
 
   // GooglePhotosFetcher:
-  absl::optional<base::Value> CreateErrorResponse(int error_code) override;
+  std::optional<base::Value> CreateErrorResponse(int error_code) override;
   GooglePhotosPhotosCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
-  absl::optional<size_t> GetResultCount(
+  std::optional<size_t> GetResultCount(
       const GooglePhotosPhotosCbkArgs& result) override;
 
  private:

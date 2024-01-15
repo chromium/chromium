@@ -316,7 +316,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
   };
 
   base::Lock check_on_requests_lock_;
-  absl::optional<RequestCheck> check_on_requests_
+  std::optional<RequestCheck> check_on_requests_
       GUARDED_BY(check_on_requests_lock_);
 };
 
@@ -775,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 //
 // These tests assume a default policy of no-referrer-when-downgrade.
 struct ReferrerOverrideParams {
-  absl::optional<base::test::FeatureRef> feature_to_enable;
+  std::optional<base::test::FeatureRef> feature_to_enable;
   network::mojom::ReferrerPolicy baseline_policy;
   network::mojom::ReferrerPolicy expected_policy;
 

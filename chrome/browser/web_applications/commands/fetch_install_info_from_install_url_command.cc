@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -53,7 +53,7 @@ bool FetchInstallInfoFromInstallUrlCommand::
 FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
     webapps::ManifestId manifest_id,
     GURL install_url,
-    absl::optional<webapps::ManifestId> parent_manifest_id,
+    std::optional<webapps::ManifestId> parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback)
     : WebAppCommand<SharedWebContentsLock, std::unique_ptr<WebAppInstallInfo>>(
           "FetchInstallInfoFromInstallUrlCommand",

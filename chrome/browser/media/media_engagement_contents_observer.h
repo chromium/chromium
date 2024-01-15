@@ -129,7 +129,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     // The clock is owned by |service_| which already owns |this|.
     raw_ptr<base::Clock> clock_;
 
-    absl::optional<base::Time> start_time_;
+    std::optional<base::Time> start_time_;
     base::TimeDelta recorded_time_;
   };
 
@@ -144,12 +144,12 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
 
     ~PlayerState();
 
-    absl::optional<bool> muted;
-    absl::optional<bool> playing;           // Currently playing.
-    absl::optional<bool> significant_size;  // The video track has at least
-                                            // a certain frame size.
-    absl::optional<bool> has_audio;         // The media has an audio track.
-    absl::optional<bool> has_video;         // The media has a video track.
+    std::optional<bool> muted;
+    std::optional<bool> playing;           // Currently playing.
+    std::optional<bool> significant_size;  // The video track has at least
+                                           // a certain frame size.
+    std::optional<bool> has_audio;         // The media has an audio track.
+    std::optional<bool> has_video;         // The media has a video track.
 
     bool reached_end_of_stream = false;
     std::unique_ptr<PlaybackTimer> playback_timer;

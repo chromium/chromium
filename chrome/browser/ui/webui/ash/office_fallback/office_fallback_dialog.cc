@@ -95,14 +95,14 @@ bool OfficeFallbackDialog::Show(
   if (SystemWebDialogDelegate::HasInstance(
           GURL(chrome::kChromeUIOfficeFallbackURL))) {
     LOG(WARNING) << "Another fallback dialog is already being shown";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return false;
   }
 
   DCHECK(!file_urls.empty());
   if (file_urls.empty()) {
     LOG(ERROR) << "No file urls";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return false;
   }
 
@@ -117,7 +117,7 @@ bool OfficeFallbackDialog::Show(
   int task_title_id = GetTaskTitleId(action_id);
   if (task_title_id == 0) {
     LOG(WARNING) << "No task_title_id from action_id";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return false;
   }
   const std::u16string task_title = l10n_util::GetStringUTF16(task_title_id);

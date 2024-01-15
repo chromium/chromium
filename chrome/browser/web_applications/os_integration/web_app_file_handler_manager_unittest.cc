@@ -207,12 +207,12 @@ TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
 
   file_handler_manager().InstallFileHandler(
       app_id(), GURL("https://app.site/handle-foo"),
-      {{"application/foo", {".foo"}}}, absl::nullopt,
+      {{"application/foo", {".foo"}}}, std::nullopt,
       /*enable=*/false);
 
   file_handler_manager().InstallFileHandler(
       app_id(), GURL("https://app.site/handle-bar"),
-      {{"application/bar", {".bar"}}}, absl::nullopt,
+      {{"application/bar", {".bar"}}}, std::nullopt,
       /*enable=*/false);
 
   // File handlers are disabled by default.
@@ -266,7 +266,7 @@ TEST_F(WebAppFileHandlerManagerTest, NoHandlersRegistered) {
 TEST_F(WebAppFileHandlerManagerTest, NoLaunchFilesPassed) {
   file_handler_manager().InstallFileHandler(
       app_id(), GURL("https://app.site/handle-foo"),
-      {{"application/foo", {".foo"}}}, absl::nullopt);
+      {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Returns an empty list when no launch files are passed.
   WebAppFileHandlerManager::LaunchInfos launch_infos =
@@ -279,7 +279,7 @@ TEST_F(WebAppFileHandlerManagerTest,
   const GURL url("https://app.site/handle-foo");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), url, {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Matches on single valid extension.
   const base::FilePath path(FILE_PATH_LITERAL("file.foo"));
@@ -293,7 +293,7 @@ TEST_F(WebAppFileHandlerManagerTest, ExtensionCaseInsensitive) {
   const GURL url("https://app.site/handle-foo");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), url, {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Matches on single valid extension.
   const base::FilePath path(FILE_PATH_LITERAL("file.FOO"));
@@ -308,7 +308,7 @@ TEST_F(WebAppFileHandlerManagerTest,
   const GURL url("https://app.site/handle-foo");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), url, {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Returns nullopt on single invalid extension.
   const base::FilePath path(FILE_PATH_LITERAL("file.bar"));
@@ -324,7 +324,7 @@ TEST_F(WebAppFileHandlerManagerTest,
   file_handler_manager().InstallFileHandler(
       app_id(), GURL("https://app.site/handle-foo"),
       {{"application/foo", {".foo"}}, {"application/bar", {".bar"}}},
-      absl::nullopt);
+      std::nullopt);
 
   // Matches on single valid extension for multi-extension handler.
   const base::FilePath path(FILE_PATH_LITERAL("file.foo"));
@@ -340,7 +340,7 @@ TEST_F(WebAppFileHandlerManagerTest, MultipleValidExtensions) {
   file_handler_manager().InstallFileHandler(
       app_id(), GURL("https://app.site/handle-foo"),
       {{"application/foo", {".foo"}}, {"application/bar", {".bar"}}},
-      absl::nullopt);
+      std::nullopt);
 
   // Matches on multiple valid extensions for multi-extension handler.
   const base::FilePath path1(FILE_PATH_LITERAL("file.foo"));
@@ -360,7 +360,7 @@ TEST_F(WebAppFileHandlerManagerTest, PartialExtensionMatch) {
   const GURL url("https://app.site/handle-foo");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), url, {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Works with partial extension match.
   const base::FilePath path1(FILE_PATH_LITERAL("file.foo"));
@@ -380,7 +380,7 @@ TEST_F(WebAppFileHandlerManagerTest, SingleFileWithoutExtension) {
   const GURL url("https://app.site/handle-foo");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), url, {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Returns nullopt where a file has no extension.
   const base::FilePath path(FILE_PATH_LITERAL("file"));
@@ -393,7 +393,7 @@ TEST_F(WebAppFileHandlerManagerTest, FileWithoutExtensionAmongMultipleFiles) {
   const GURL url("https://app.site/handle-foo");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), url, {{"application/foo", {".foo"}}}, std::nullopt);
 
   // Returns nullopt where one file has no extension while others do.
   const base::FilePath path1(FILE_PATH_LITERAL("file"));
@@ -415,9 +415,9 @@ TEST_F(WebAppFileHandlerManagerTest, MultiLaunch) {
   const GURL baz_url("https://app.site/handle-baz");
 
   file_handler_manager().InstallFileHandler(
-      app_id(), foo_url, {{"application/foo", {".foo"}}}, absl::nullopt);
+      app_id(), foo_url, {{"application/foo", {".foo"}}}, std::nullopt);
   file_handler_manager().InstallFileHandler(
-      app_id(), bar_url, {{"application/bar", {".bar"}}}, absl::nullopt);
+      app_id(), bar_url, {{"application/bar", {".bar"}}}, std::nullopt);
   file_handler_manager().InstallFileHandler(
       app_id(), baz_url, {{"application/baz", {".baz"}}},
       apps::FileHandler::LaunchType::kMultipleClients);

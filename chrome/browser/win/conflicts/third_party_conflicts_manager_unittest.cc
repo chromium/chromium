@@ -4,6 +4,7 @@
 
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -21,7 +22,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ThirdPartyConflictsManagerTest : public testing::Test,
                                        public ModuleDatabaseEventSource {
@@ -69,7 +69,7 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
     std::move(quit_closure).Run();
   }
 
-  const absl::optional<ThirdPartyConflictsManager::State>& final_state() {
+  const std::optional<ThirdPartyConflictsManager::State>& final_state() {
     return final_state_;
   }
 
@@ -86,7 +86,7 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  absl::optional<ThirdPartyConflictsManager::State> final_state_;
+  std::optional<ThirdPartyConflictsManager::State> final_state_;
 };
 
 std::pair<ModuleInfoKey, ModuleInfoData> CreateExeModuleInfo() {
@@ -99,7 +99,7 @@ std::pair<ModuleInfoKey, ModuleInfoData> CreateExeModuleInfo() {
       std::forward_as_tuple());
 
   module_info.second.inspection_result =
-      absl::make_optional<ModuleInspectionResult>();
+      std::make_optional<ModuleInspectionResult>();
 
   return module_info;
 }

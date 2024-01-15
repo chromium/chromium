@@ -61,7 +61,7 @@ TEST_F(EnterpriseHardwarePlatformAPITest, GetHardwarePlatformInfoAllowed) {
       prefs::kEnterpriseHardwarePlatformAPIEnabled,
       std::make_unique<base::Value>(true));
 
-  absl::optional<base::Value> result =
+  std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function(), "[]",
                                                        browser_context());
   ASSERT_TRUE(result);

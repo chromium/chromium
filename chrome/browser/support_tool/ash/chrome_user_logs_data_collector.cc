@@ -8,6 +8,7 @@
 #include <array>
 #include <cstddef>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -33,7 +34,6 @@
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -51,11 +51,11 @@ constexpr std::array<const char*, 3> kOtherLogsPaths = {
 // Creates a temporary directory and returns it if there's no error. Gives the
 // ownership of the temporary directory to the caller and caller will be
 // responsible of deleting it.
-absl::optional<base::FilePath> CreateTempDir() {
+std::optional<base::FilePath> CreateTempDir() {
   base::ScopedTempDir temp_dir;
   if (temp_dir.CreateUniqueTempDir())
     return temp_dir.Take();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<base::FilePath> GetUserLogPaths(base::FilePath profile_dir) {
@@ -123,10 +123,10 @@ bool CopyTemporaryLogFileToTarget(base::FilePath log_file,
   return base::Move(log_file, target_path.Append(log_file.BaseName()));
 }
 
-absl::optional<std::string> ReadLogFromFile(base::FilePath log_file) {
+std::optional<std::string> ReadLogFromFile(base::FilePath log_file) {
   std::string log;
   if (!base::ReadFileToString(log_file, &log))
-    return absl::nullopt;
+    return std::nullopt;
   return log;
 }
 
@@ -202,7 +202,7 @@ void ChromeUserLogsDataCollector::CollectDataAndDetectPII(
 }
 
 void ChromeUserLogsDataCollector::OnTempDirCreated(
-    absl::optional<base::FilePath> temp_dir) {
+    std::optional<base::FilePath> temp_dir) {
   if (!temp_dir) {
     SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
                               "Failed to create temporary directory for "
@@ -284,7 +284,7 @@ void ChromeUserLogsDataCollector::OnAllUserLogFilesReadAndDetected() {
   task_runner_for_redaction_tool_.reset();
   redaction_tool_container_.reset();
   if (errors_.empty()) {
-    std::move(on_data_collector_done_callback_).Run(absl::nullopt);
+    std::move(on_data_collector_done_callback_).Run(std::nullopt);
     return;
   }
   SupportToolError error = {
@@ -347,7 +347,7 @@ void ChromeUserLogsDataCollector::OnReadLogFromFile(
     std::set<redaction::PIIType> pii_types_to_keep,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
-    absl::optional<std::string> log_contents) {
+    std::optional<std::string> log_contents) {
   if (!log_contents) {
     errors_.push_back(base::StringPrintf("Couldn't read logs from %s log file",
                                          file_name.c_str()));
@@ -392,7 +392,7 @@ void ChromeUserLogsDataCollector::OnAllLogFilesWritten() {
   // Clean-up the temporary directory when we're done with file operations.
   CleanUp();
   if (errors_.empty()) {
-    std::move(on_data_collector_done_callback_).Run(absl::nullopt);
+    std::move(on_data_collector_done_callback_).Run(std::nullopt);
     return;
   }
   SupportToolError error = {

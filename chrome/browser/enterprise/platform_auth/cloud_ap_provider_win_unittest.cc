@@ -43,7 +43,7 @@ class CloudApProviderWinTest : public ::testing::Test {
  protected:
   ~CloudApProviderWinTest() override {
     // Clear an override of the join type made by any test.
-    CloudApProviderWin::SetSupportLevelForTesting(absl::nullopt);
+    CloudApProviderWin::SetSupportLevelForTesting(std::nullopt);
   }
 
   void SetUp() override {

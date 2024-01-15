@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -40,7 +41,6 @@
 #include "printing/printing_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -403,8 +403,8 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
   TestPrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
-      absl::optional<PrintBackendServiceManager::ClientId> client_id,
-      absl::optional<PrintBackendServiceManager::ContextId> context_id,
+      std::optional<PrintBackendServiceManager::ClientId> client_id,
+      std::optional<PrintBackendServiceManager::ContextId> context_id,
       PrintJob* print_job,
       bool print_from_system_dialog,
       bool simulate_spooling_memory_errors,
@@ -1004,7 +1004,7 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 #endif
 
-  const absl::optional<bool> system_print_registration_succeeded() const {
+  const std::optional<bool> system_print_registration_succeeded() const {
     return system_print_registration_succeeded_;
   }
 
@@ -1051,7 +1051,7 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   int cancel_count() const { return cancel_count_; }
-  absl::optional<mojom::ResultCode> in_process_last_error_result_code() const {
+  std::optional<mojom::ResultCode> in_process_last_error_result_code() const {
     return in_process_last_error_result_code_;
   }
 
@@ -1200,18 +1200,18 @@ class SystemAccessProcessPrintBrowserTestBase
   TestPrintJobWorker::PrintCallbacks test_print_job_worker_callbacks_;
   TestPrintJobWorkerOop::PrintCallbacks test_print_job_worker_oop_callbacks_;
   CreatePrinterQueryCallback test_create_printer_query_callback_;
-  absl::optional<bool> system_print_registration_succeeded_;
+  std::optional<bool> system_print_registration_succeeded_;
   bool did_use_default_settings_ = false;
   bool did_get_settings_with_ui_ = false;
   bool print_backend_service_use_detected_ = false;
   bool simulate_spooling_memory_errors_ = false;
 #if BUILDFLAG(IS_WIN)
-  absl::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
+  std::optional<uint32_t> simulate_pdf_conversion_error_on_page_index_;
 #endif
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-  absl::optional<mojom::ResultCode> in_process_last_error_result_code_;
+  std::optional<mojom::ResultCode> in_process_last_error_result_code_;
   bool reset_errors_after_check_ = true;
   int did_print_document_count_ = 0;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
@@ -1499,7 +1499,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
-  absl::optional<PrintSettings> settings = document_print_settings();
+  std::optional<PrintSettings> settings = document_print_settings();
   ASSERT_TRUE(settings);
   // Collect just the keys to compare the info options vs. advanced settings.
   std::vector<std::string> advanced_setting_keys;
@@ -2560,7 +2560,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
       SetUpAndReturnPrintViewManager(web_contents);
 
   // Pretend that a window has started a system print.
-  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+  std::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
@@ -2606,7 +2606,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // Pretend that another tab has started a system print.
   // TODO(crbug.com/809738)  Improve on this test by using a persistent fake
   // system print dialog.
-  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+  std::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
@@ -2649,7 +2649,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
       SetUpAndReturnPrintViewManager(web_contents);
 
   // Pretend that a window has started a system print.
-  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+  std::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
@@ -2683,7 +2683,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // Pretend that another tab has started a system print.
   // TODO(crbug.com/809738)  Improve on this test by using a persistent fake
   // system print dialog.
-  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+  std::optional<PrintBackendServiceManager::ClientId> client_id =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
   ASSERT_TRUE(client_id.has_value());
 
@@ -2844,7 +2844,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     return observer_.scripted_print_called();
   }
 
-  const absl::optional<bool>& preview_allowed() const {
+  const std::optional<bool>& preview_allowed() const {
     return preview_allowed_;
   }
 
@@ -2940,8 +2940,8 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Indicates whether the preview was allowed after checking against content
-  // analysis and DLP (if on CrOS). This is `absl::nullopt` until then.
-  absl::optional<bool> preview_allowed_;
+  // analysis and DLP (if on CrOS). This is `std::nullopt` until then.
+  std::optional<bool> preview_allowed_;
 
   // Used to validate the corresponding `ContentAnalysisDelegate::Data` passed
   // in various content analysis-related functions.

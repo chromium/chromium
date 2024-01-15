@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,6 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -421,7 +421,7 @@ void IsolatedWebAppInstallCommandHelper::
 
 base::expected<WebAppInstallInfo, std::string>
 IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
-    const absl::optional<base::Version>& expected_version,
+    const std::optional<base::Version>& expected_version,
     const ManifestAndUrl& manifest_and_url) {
   const blink::mojom::Manifest& manifest = *manifest_and_url.manifest;
   const GURL& manifest_url = manifest_and_url.url;

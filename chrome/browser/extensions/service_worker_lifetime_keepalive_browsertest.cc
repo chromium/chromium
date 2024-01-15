@@ -146,7 +146,7 @@ class TestServiceWorkerContextObserver
     if (running_version_id_ == version_id) {
       stopped_run_loop_.Quit();
     }
-    running_version_id_ = absl::nullopt;
+    running_version_id_ = std::nullopt;
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
@@ -156,7 +156,7 @@ class TestServiceWorkerContextObserver
 
   base::RunLoop stopped_run_loop_;
   base::RunLoop started_run_loop_;
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                     .size());
 
   // Create a single keepalive.
-  absl::optional<ServiceWorkerKeepalive> function_keepalive(
+  std::optional<ServiceWorkerKeepalive> function_keepalive(
       ServiceWorkerKeepalive(
           profile(), worker_id,
           content::ServiceWorkerExternalRequestTimeoutType::kDefault,
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
           worker_id, Activity::API_FUNCTION, "alarms.create")));
 
   // Create a second keepalive (an event-related one).
-  absl::optional<ServiceWorkerKeepalive> event_keepalive(ServiceWorkerKeepalive(
+  std::optional<ServiceWorkerKeepalive> event_keepalive(ServiceWorkerKeepalive(
       profile(), worker_id,
       content::ServiceWorkerExternalRequestTimeoutType::kDefault,
       Activity::EVENT, "alarms.onAlarm"));

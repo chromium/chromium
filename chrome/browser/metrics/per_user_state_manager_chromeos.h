@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_PER_USER_STATE_MANAGER_CHROMEOS_H_
 #define CHROME_BROWSER_METRICS_PER_USER_STATE_MANAGER_CHROMEOS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -28,7 +29,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -73,12 +73,12 @@ class PerUserStateManagerChromeOS
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the user_id of the current logged in user. If no user is logged in,
-  // returns absl::nullopt. If a user has logged in and has opted-out, will
-  // return absl::nullopt.
+  // returns std::nullopt. If a user has logged in and has opted-out, will
+  // return std::nullopt.
   //
   // If the user has opted-into metrics collection and is not ephemeral, then
   // this will return the pseudo-anonymous identifier associated with the user.
-  absl::optional<std::string> GetCurrentUserId() const;
+  std::optional<std::string> GetCurrentUserId() const;
 
   // Returns the consent of the current logged in user only if current user's
   // consent should be applied to metrics reporting.
@@ -88,12 +88,12 @@ class PerUserStateManagerChromeOS
   //    1) Regular non-owner users on non-managed devices.
   //    2) Guest users on non-owned devices.
   //
-  // If no user is logged in, returns absl::nullopt. True means that the user
+  // If no user is logged in, returns std::nullopt. True means that the user
   // has opted-into metrics collection during the session and False means that
   // the user has opted-out.
   //
-  // NOTE: If ownership status is not known, this will return absl::nullopt.
-  absl::optional<bool> GetCurrentUserReportingConsentIfApplicable() const;
+  // NOTE: If ownership status is not known, this will return std::nullopt.
+  std::optional<bool> GetCurrentUserReportingConsentIfApplicable() const;
 
   // Sets the metric consent for the current logged in user. If no user is
   // logged in, no-ops.

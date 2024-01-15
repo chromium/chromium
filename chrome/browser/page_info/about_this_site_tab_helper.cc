@@ -4,6 +4,8 @@
 
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_info/page_info_features.h"
@@ -18,7 +20,6 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"

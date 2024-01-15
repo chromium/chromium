@@ -664,7 +664,7 @@ TEST_F(ReportSchedulerTest, OnUpdate) {
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
       base::Version(base::StrCat({"1", version_info::GetVersionNumber()})),
-      absl::nullopt);
+      std::nullopt);
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated, since a periodic report was not
@@ -689,7 +689,7 @@ TEST_F(ReportSchedulerTest, OnUpdateAndPersistentError) {
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
       base::Version(base::StrCat({"1", version_info::GetVersionNumber()})),
-      absl::nullopt);
+      std::nullopt);
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated, since a periodic report was not
@@ -702,7 +702,7 @@ TEST_F(ReportSchedulerTest, OnUpdateAndPersistentError) {
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
       base::Version(base::StrCat({"2", version_info::GetVersionNumber()})),
-      absl::nullopt);
+      std::nullopt);
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 2, 1);
 }
 
@@ -729,7 +729,7 @@ TEST_F(ReportSchedulerTest, DeferredTimer) {
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
       base::Version(base::StrCat({"1", version_info::GetVersionNumber()})),
-      absl::nullopt);
+      std::nullopt);
   task_environment_.RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(generator_);
   ::testing::Mock::VerifyAndClearExpectations(uploader_);

@@ -51,7 +51,7 @@ class FakeCrosNetworkConfig : public ash::network_config::CrosNetworkConfig {
     std::move(callback).Run(guid_, error_message_);
   }
 
-  void SetOutput(const absl::optional<std::string>& network_guid,
+  void SetOutput(const std::optional<std::string>& network_guid,
                  const std::string& error_message) {
     guid_ = network_guid;
     error_message_ = error_message;
@@ -70,7 +70,7 @@ class FakeCrosNetworkConfig : public ash::network_config::CrosNetworkConfig {
   size_t num_configure_network_calls_ = 0;
   chromeos::network_config::mojom::ConfigPropertiesPtr last_properties_;
   bool last_shared_;
-  absl::optional<std::string> guid_ = "not set";
+  std::optional<std::string> guid_ = "not set";
   std::string error_message_ = "not set";
 };
 
@@ -94,7 +94,7 @@ TEST(WifiNetworkConfigurationHandlerTest, Success) {
   handler.ConfigureWifiNetwork(
       attachment,
       base::BindLambdaForTesting(
-          [&run_loop](const absl::optional<std::string>& network_guid,
+          [&run_loop](const std::optional<std::string>& network_guid,
                       const std::string& error_message) {
             EXPECT_EQ(kTestNetworkGuid, network_guid);
             EXPECT_EQ(kTestErrorMessage, error_message);
@@ -123,7 +123,7 @@ TEST(WifiNetworkConfigurationHandlerTest, Failure) {
       /*use_default_devices_and_services=*/true};
   FakeCrosNetworkConfig fake_cros_network_config{&network_state_test_helper};
 
-  fake_cros_network_config.SetOutput(/*network_guid=*/absl::nullopt,
+  fake_cros_network_config.SetOutput(/*network_guid=*/std::nullopt,
                                      kTestErrorMessage);
   ash::network_config::OverrideInProcessInstanceForTesting(
       &fake_cros_network_config);
@@ -136,7 +136,7 @@ TEST(WifiNetworkConfigurationHandlerTest, Failure) {
   handler.ConfigureWifiNetwork(
       attachment,
       base::BindLambdaForTesting(
-          [&run_loop](const absl::optional<std::string>& network_guid,
+          [&run_loop](const std::optional<std::string>& network_guid,
                       const std::string& error_message) {
             EXPECT_FALSE(network_guid);
             EXPECT_EQ(kTestErrorMessage, error_message);

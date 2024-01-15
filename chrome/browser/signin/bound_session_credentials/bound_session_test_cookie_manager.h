@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_TEST_COOKIE_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_TEST_COOKIE_MANAGER_H_
 
-#include "base/containers/flat_map.h"
-#include "services/network/test/test_cookie_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
+#include "base/containers/flat_map.h"
 #include "net/cookies/canonical_cookie.h"
+#include "services/network/test/test_cookie_manager.h"
 
 class BoundSessionTestCookieManager : public network::TestCookieManager {
  public:
@@ -19,7 +19,7 @@ class BoundSessionTestCookieManager : public network::TestCookieManager {
   static net::CanonicalCookie CreateCookie(
       const GURL& url,
       const std::string& cookie_name,
-      absl::optional<base::Time> expiry_date = absl::nullopt);
+      std::optional<base::Time> expiry_date = std::nullopt);
 
   size_t GetNumberOfDeleteCookiesCallbacks();
 
@@ -42,7 +42,7 @@ class BoundSessionTestCookieManager : public network::TestCookieManager {
       GetCookieListCallback callback) override;
   void AddCookieChangeListener(
       const GURL& url,
-      const absl::optional<std::string>& name,
+      const std::optional<std::string>& name,
       mojo::PendingRemote<network::mojom::CookieChangeListener> listener)
       override;
   void DispatchCookieChange(const net::CookieChangeInfo& change) override;

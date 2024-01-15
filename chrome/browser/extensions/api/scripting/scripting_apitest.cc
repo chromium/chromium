@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-#include "chrome/browser/extensions/api/scripting/scripting_api.h"
+#include <optional>
 
 #include "base/test/bind.h"
+#include "build/build_config.h"
+#include "chrome/browser/extensions/api/scripting/scripting_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -30,7 +31,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -98,7 +98,7 @@ class ScriptingAPITest : public ExtensionApiTest {
   // A controllable HTTP response for tests that need fine-grained timing.
   // Must be constructed as part of the test suite because it needs to
   // happen before the embedded test server is initialized.
-  absl::optional<net::test_server::ControllableHttpResponse>
+  std::optional<net::test_server::ControllableHttpResponse>
       controllable_http_response_;
 };
 
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {
     // extension function manually rather than calling it in JS.
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
     std::string args = base::StringPrintf(kArgTemplate, tab_id);
-    absl::optional<base::Value> result =
+    std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             execute_script_function.get(), args, profile());
 

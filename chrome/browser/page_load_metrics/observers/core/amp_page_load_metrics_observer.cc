@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/memory/ptr_util.h"
@@ -23,7 +24,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -488,7 +488,7 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
       }
     }
 
-    absl::optional<base::TimeDelta> largest_content_paint_time;
+    std::optional<base::TimeDelta> largest_content_paint_time;
     uint64_t largest_content_paint_size;
     page_load_metrics::ContentfulPaintTimingInfo::LargestContentTextOrImage
         largest_content_text_or_image;

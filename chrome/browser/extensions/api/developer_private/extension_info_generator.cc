@@ -554,7 +554,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Safety Hub Strings
   if (base::FeatureList::IsEnabled(kCWSInfoService)) {
-    absl::optional<CWSInfoService::CWSInfo> cws_info =
+    std::optional<CWSInfoService::CWSInfo> cws_info =
         cws_info_service_->GetCWSInfo(extension);
     if (cws_info.has_value()) {
       info->safety_check_text =

@@ -41,7 +41,7 @@ using unexportable_keys::UnexportableKeyId;
 using RegistrationError =
     BoundSessionRegistrationFetcherImpl::RegistrationError;
 using RegistrationResultFuture = base::test::TestFuture<
-    absl::optional<bound_session_credentials::BoundSessionParams>>;
+    std::optional<bound_session_credentials::BoundSessionParams>>;
 
 constexpr std::string_view kXssiPrefix = ")]}'";
 constexpr std::string_view kBoundSessionParamsValidJson = R"(
@@ -297,7 +297,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingXSSIPrefix) {
 TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONBoundSessionParams) {
   // Response body contains XSSI prefix but JSON of bound session params
   // missing. Expecting early termination and callback to be called with
-  // absl::nullopt.
+  // std::nullopt.
   SetUpServerResponse(kXssiPrefix);
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
   RegistrationResultFuture future;
@@ -306,7 +306,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, MissingJSONBoundSessionParams) {
   RunBackgroundTasks();
   EXPECT_TRUE(WasRequestSent());
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
 
   ExpectRecordedMetrics(RegistrationError::kParseJsonFailed);
 }
@@ -320,7 +320,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest,
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kRequiredFieldMissing);
 }
 
@@ -333,7 +333,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest,
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kRequiredFieldMissing);
 }
 
@@ -360,7 +360,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest,
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kRequiredCredentialFieldMissing);
 }
 
@@ -372,7 +372,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NonOkHttpResponseCode) {
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kServerError);
 }
 
@@ -384,7 +384,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NetworkError) {
   fetcher->Start(future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kNetworkError);
 }
 
@@ -397,7 +397,7 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoKeyProvider) {
   RunBackgroundTasks();
 
   EXPECT_FALSE(WasRequestSent());
-  EXPECT_EQ(future.Get<>(), absl::nullopt);
+  EXPECT_EQ(future.Get<>(), std::nullopt);
   ExpectRecordedMetrics(RegistrationError::kGenerateRegistrationTokenFailed);
 }
 

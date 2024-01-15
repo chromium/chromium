@@ -39,7 +39,7 @@ base::Value SynchronizeOptionsDebugValue(const SynchronizeOsOptions& options) {
 
 OsIntegrationSynchronizeCommand::OsIntegrationSynchronizeCommand(
     const webapps::AppId& app_id,
-    absl::optional<SynchronizeOsOptions> synchronize_options,
+    std::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure synchronize_callback)
     : WebAppCommand<AppLock>("OsIntegrationSynchronizeCommand",
                              AppLockDescription(app_id),

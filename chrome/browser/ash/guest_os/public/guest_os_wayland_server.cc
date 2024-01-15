@@ -34,7 +34,7 @@ GuestOsWaylandServer::ScopedServer::~ScopedServer() = default;
 void GuestOsWaylandServer::ListenOnSocket(
     const vm_tools::wl::ListenOnSocketRequest& request,
     base::ScopedFD socket_fd,
-    base::OnceCallback<void(absl::optional<std::string>)> response_callback) {
+    base::OnceCallback<void(std::optional<std::string>)> response_callback) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (!profile || ash::ProfileHelper::GetUserIdHashFromProfile(profile) !=
                       request.desc().owner_id()) {
@@ -49,7 +49,7 @@ void GuestOsWaylandServer::ListenOnSocket(
 // static
 void GuestOsWaylandServer::CloseSocket(
     const vm_tools::wl::CloseSocketRequest& request,
-    base::OnceCallback<void(absl::optional<std::string>)> response_callback) {
+    base::OnceCallback<void(std::optional<std::string>)> response_callback) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (!profile || ash::ProfileHelper::GetUserIdHashFromProfile(profile) !=
                       request.desc().owner_id()) {
@@ -132,7 +132,7 @@ void GuestOsWaylandServer::Close(vm_tools::apps::VmType type,
     LOG(WARNING) << "Trying to close non-existent server for " << name
                  << "(type=" << type << ")";
   }
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void GuestOsWaylandServer::OnSecurityDelegateCreated(
@@ -165,7 +165,7 @@ void GuestOsWaylandServer::OnServerCreated(
   servers_[type].insert_or_assign(
       std::move(name),
       std::make_unique<ScopedServer>(std::move(handle), delegate));
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void GuestOsWaylandServer::ConciergeServiceStarted() {

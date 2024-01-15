@@ -98,7 +98,7 @@ SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
   storage_objs_[extension_id] = std::move(syncable_storage);
 
   if (sync_processor_.get()) {
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         raw_syncable_storage->StartSyncing(
             std::move(sync_data), CreateSettingsSyncProcessor(extension_id));
     if (error.has_value())
@@ -150,7 +150,7 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
   return all_sync_data;
 }
 
-absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
+std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
@@ -180,7 +180,7 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     SyncableSettingsStorage* storage = storage_obj.second.get();
 
     auto group = grouped_sync_data.find(extension_id);
-    absl::optional<syncer::ModelError> error;
+    std::optional<syncer::ModelError> error;
     if (group != grouped_sync_data.end()) {
       error = storage->StartSyncing(std::move(group->second),
                                     CreateSettingsSyncProcessor(extension_id));
@@ -201,10 +201,10 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     GetOrCreateStorageWithSyncData(group.first, std::move(group.second));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
+std::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& sync_changes) {
   DCHECK(IsOnBackendSequence());
@@ -227,13 +227,13 @@ absl::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
   for (const auto& group : grouped_sync_data) {
     SyncableSettingsStorage* storage =
         GetOrCreateStorageWithSyncData(group.first, EmptyDict());
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         storage->ProcessSyncChanges(base::WrapUnique(group.second));
     if (error.has_value())
       storage->StopSyncing();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::WeakPtr<syncer::SyncableService> SyncStorageBackend::AsWeakPtr() {

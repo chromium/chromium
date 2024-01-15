@@ -21,7 +21,7 @@ void NearbyShareMetricLogger::OnShareTargetDiscoveryStarted() {
 }
 
 void NearbyShareMetricLogger::OnShareTargetDiscoveryStopped() {
-  discovery_start_time_ = absl::nullopt;
+  discovery_start_time_ = std::nullopt;
 }
 
 void NearbyShareMetricLogger::OnShareTargetAdded(

@@ -81,7 +81,7 @@ void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     const std::u16string& device_identifier,
     content::BluetoothDelegate::PairPromptCallback callback,
     content::BluetoothDelegate::PairingKind pairing_kind,
-    const absl::optional<std::u16string>& pin) {
+    const std::optional<std::u16string>& pin) {
 #if PAIR_BLUETOOTH_ON_DEMAND()
   switch (pairing_kind) {
     case content::BluetoothDelegate::PairingKind::kProvidePin:

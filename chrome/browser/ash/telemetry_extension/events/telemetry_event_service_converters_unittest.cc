@@ -32,7 +32,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertStructPtrTakesNullPtr) {
 TEST(TelemetryEventServiceConvertersTest, OptionalUint32) {
   constexpr double kValue = (1ULL << 31) + 1000;
   EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32::New(kValue)),
             kValue);
 }
@@ -333,10 +333,10 @@ TEST(TelemetryEventServiceConvertersTest, ConvertStylusTouchPointInfoPtr) {
   constexpr int kX = 1;
   constexpr int kY = 2;
   constexpr int kPressure = 3;
-  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::StylusTouchPointInfo::New(
-                kX, kY, nullptr)),
-            crosapi::mojom::TelemetryStylusTouchPointInfo::New(kX, kY,
-                                                               absl::nullopt));
+  EXPECT_EQ(
+      ConvertStructPtr(
+          cros_healthd::mojom::StylusTouchPointInfo::New(kX, kY, nullptr)),
+      crosapi::mojom::TelemetryStylusTouchPointInfo::New(kX, kY, std::nullopt));
 
   EXPECT_EQ(
       ConvertStructPtr(cros_healthd::mojom::StylusTouchPointInfo::New(
@@ -834,8 +834,8 @@ TEST(TelemetryEventServiceConvertersTest, ConvertStylusEventInfoTouchEvent) {
     const auto& touch_event_output = result->get_stylus_touch_event_info();
     EXPECT_FALSE(touch_event_output->touch_point.is_null());
     EXPECT_EQ(touch_event_output->touch_point,
-              crosapi::mojom::TelemetryStylusTouchPointInfo::New(
-                  kX, kY, absl::nullopt));
+              crosapi::mojom::TelemetryStylusTouchPointInfo::New(kX, kY,
+                                                                 std::nullopt));
   }
   {
     auto touch_point = cros_healthd::mojom::StylusTouchPointInfo::New(

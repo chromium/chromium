@@ -40,7 +40,7 @@ void SetSchemeAndProtocol(const std::string& service_type,
 // name on success and an empty string on failure.
 std::string CreateDeviceName(const std::string& name,
                              const std::string& scheme,
-                             const absl::optional<std::string>& rs,
+                             const std::optional<std::string>& rs,
                              const net::IPAddress& ip_address,
                              int port,
                              const std::string& backend_prefix) {
@@ -78,16 +78,16 @@ std::string CreateDeviceName(const std::string& name,
 
 }  // namespace
 
-absl::optional<Scanner> CreateSaneScanner(const std::string& name,
-                                          const std::string& service_type,
-                                          const std::string& manufacturer,
-                                          const std::string& model,
-                                          const std::string& uuid,
-                                          const absl::optional<std::string>& rs,
-                                          const std::vector<std::string>& pdl,
-                                          const net::IPAddress& ip_address,
-                                          int port,
-                                          bool usable) {
+std::optional<Scanner> CreateSaneScanner(const std::string& name,
+                                         const std::string& service_type,
+                                         const std::string& manufacturer,
+                                         const std::string& model,
+                                         const std::string& uuid,
+                                         const std::optional<std::string>& rs,
+                                         const std::vector<std::string>& pdl,
+                                         const net::IPAddress& ip_address,
+                                         int port,
+                                         bool usable) {
   std::string scheme;
   ScanProtocol protocol = ScanProtocol::kUnknown;
   SetSchemeAndProtocol(service_type, scheme, protocol);
@@ -104,7 +104,7 @@ absl::optional<Scanner> CreateSaneScanner(const std::string& name,
         CreateDeviceName(name, scheme, rs, ip_address, port, "airscan:escl");
   }
   if (device_name.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Scanner scanner;

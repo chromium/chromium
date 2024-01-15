@@ -22,7 +22,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void SetScreenAIComponentPath(
     bool set_failed_state_if_not_available,
-    const absl::optional<base::FilePath>& component_path) {
+    const std::optional<base::FilePath>& component_path) {
   auto* install_state = screen_ai::ScreenAIInstallState::GetInstance();
   if (component_path) {
     install_state->SetComponentFolder(*component_path);

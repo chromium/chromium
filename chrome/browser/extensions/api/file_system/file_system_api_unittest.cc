@@ -69,7 +69,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   // AcceptsAllTypes is ignored when no other extensions are available.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), absl::nullopt,
+      &file_type_info, base::FilePath::StringType(), std::nullopt,
       /*acceptsAllTypes=*/false);
   EXPECT_TRUE(file_type_info.include_all_files);
   EXPECT_TRUE(file_type_info.extensions.empty());
@@ -160,7 +160,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
 }
 
 TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionSuggestionTest) {
-  absl::optional<std::string> opt_name;
+  std::optional<std::string> opt_name;
   base::FilePath suggested_name;
   base::FilePath::StringType suggested_extension;
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 #include "base/callback_list.h"
@@ -53,7 +54,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -92,7 +92,7 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
 
     provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            location, /*expected_version=*/absl::nullopt),
+            location, /*expected_version=*/std::nullopt),
         url_info, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr,
         base::BindOnce(&LocalDevModeUpdateDiscoverer::OnUpdatePrepared,
@@ -379,7 +379,7 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
     if (!web_app) {
       continue;
     }
-    const absl::optional<WebApp::IsolationData>& isolation_data =
+    const std::optional<WebApp::IsolationData>& isolation_data =
         web_app->isolation_data();
     if (!isolation_data) {
       continue;
@@ -549,13 +549,13 @@ void IsolatedWebAppUpdateManager::NextUpdateDiscoveryCheck::ScheduleWithJitter(
       FROM_HERE, next_check_->second->callback(), delay);
 }
 
-absl::optional<base::TimeTicks>
+std::optional<base::TimeTicks>
 IsolatedWebAppUpdateManager::NextUpdateDiscoveryCheck::GetScheduledTime()
     const {
   if (next_check_.has_value()) {
     return next_check_->first;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool IsolatedWebAppUpdateManager::NextUpdateDiscoveryCheck::IsScheduled()

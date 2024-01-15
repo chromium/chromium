@@ -40,7 +40,7 @@ ContentAnalysisDownloadsDelegate::~ContentAnalysisDownloadsDelegate() {
 }
 
 void ContentAnalysisDownloadsDelegate::BypassWarnings(
-    absl::optional<std::u16string> user_justification) {
+    std::optional<std::u16string> user_justification) {
   if (download_item_) {
     enterprise_connectors::ScanResult* stored_result =
         static_cast<enterprise_connectors::ScanResult*>(
@@ -73,19 +73,19 @@ void ContentAnalysisDownloadsDelegate::ResetCallbacks() {
   open_file_callback_.Reset();
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
   if (custom_message_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   return l10n_util::GetStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
       custom_message_);
 }
 
-absl::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
+std::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
     const {
   if (custom_learn_more_url_.is_empty())
-    return absl::nullopt;
+    return std::nullopt;
   return custom_learn_more_url_;
 }
 
@@ -99,7 +99,7 @@ std::u16string ContentAnalysisDownloadsDelegate::GetBypassJustificationLabel()
       IDS_DEEP_SCANNING_DIALOG_DOWNLOAD_BYPASS_JUSTIFICATION_LABEL);
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::OverrideCancelButtonText() const {
   return l10n_util::GetStringUTF16(
       IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_DISCARD_FILE_BUTTON);

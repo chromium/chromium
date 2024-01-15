@@ -518,8 +518,8 @@ void QuickStartController::FinishAccountCreation() {
       /*using_saml_api=*/false,
       /*password=*/"",
       /*password_attributes=*/SamlPasswordAttributes(),
-      /*sync_trusted_vault_keys=*/absl::nullopt,
-      /*challenge_response_key=*/absl::nullopt,
+      /*sync_trusted_vault_keys=*/std::nullopt,
+      /*challenge_response_key=*/std::nullopt,
       /*user_context=*/user_context.get());
 
   // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.

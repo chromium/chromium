@@ -28,7 +28,7 @@ struct CustomDialLaunchMessageBody;
 // Represents parameters used to complete a custom DIAL launch sequence.
 struct DialLaunchInfo {
   DialLaunchInfo(const std::string& app_name,
-                 const absl::optional<std::string>& post_data,
+                 const std::optional<std::string>& post_data,
                  const std::string& client_id,
                  const GURL& app_launch_url);
   DialLaunchInfo(const DialLaunchInfo& other);
@@ -38,7 +38,7 @@ struct DialLaunchInfo {
 
   // The data to include with the app launch POST request. Note this may be
   // overridden by the launchParameter in the CUSTOM_DIAL_LAUNCH response.
-  absl::optional<std::string> post_data;
+  std::optional<std::string> post_data;
 
   // Cast SDK client ID.
   std::string client_id;
@@ -151,7 +151,7 @@ class DialActivityManager {
   // to fail, such as |route_id| being invalid or there already being a pending
   // stop request. If so, returns the error message and error code. Returns
   // nullopt and mojom::RouteRequestResultCode::OK otherwise.
-  std::pair<absl::optional<std::string>, mojom::RouteRequestResultCode>
+  std::pair<std::optional<std::string>, mojom::RouteRequestResultCode>
   CanStopApp(const MediaRoute::Id& route_id) const;
 
   // Stops the app that is currently active on |route_id|. Assumes that
@@ -196,12 +196,12 @@ class DialActivityManager {
                        const std::string& response);
   void OnLaunchError(const MediaRoute::Id& route_id,
                      const std::string& message,
-                     absl::optional<int> http_response_code);
+                     std::optional<int> http_response_code);
   void OnStopSuccess(const MediaRoute::Id& route_id,
                      const std::string& response);
   void OnStopError(const MediaRoute::Id& route_id,
                    const std::string& message,
-                   absl::optional<int> http_response_code);
+                   std::optional<int> http_response_code);
 
   void OnInfoFetchedAfterStopError(const MediaRoute::Id& route_id,
                                    const std::string& message,

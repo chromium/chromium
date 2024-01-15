@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,15 +34,14 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 namespace {
 
 using SimpleScanFuture =
-    base::test::TestFuture<absl::optional<api::document_scan::ScanResults>,
-                           absl::optional<std::string>>;
+    base::test::TestFuture<std::optional<api::document_scan::ScanResults>,
+                           std::optional<std::string>>;
 
 using GetScannerListFuture =
     base::test::TestFuture<api::document_scan::GetScannerListResponse>;
@@ -228,7 +228,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_UnsupportedMimeTypesError) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
   GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
-  GetDocumentScan().SetScanResponse(absl::nullopt);
+  GetDocumentScan().SetScanResponse(std::nullopt);
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
   const auto& [scan_results, error] = future.Get();

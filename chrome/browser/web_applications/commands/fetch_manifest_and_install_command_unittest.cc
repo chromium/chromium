@@ -58,7 +58,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
   const webapps::AppId kWebAppId =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+      GenerateAppId(/*manifest_id=*/std::nullopt, kWebAppUrl);
   const GURL kWebAppManifestUrl =
       GURL("https://example.com/path/manifest.json");
 

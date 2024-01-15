@@ -111,7 +111,7 @@ void MetricsReportingObserver::InitSettingsFromAsh() {
 
 void MetricsReportingObserver::OnMetricsReportingChanged(
     bool enabled,
-    const absl::optional<std::string>& client_id) {
+    const std::optional<std::string>& client_id) {
   if (enabled) {
     if (client_id) {
       metrics_service_->SetExternalClientId(client_id.value());

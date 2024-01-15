@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -20,7 +21,6 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -134,12 +134,12 @@ class DownloadUIModel {
 
       // Controls the text color of the button. Only applied for some secondary
       // buttons.
-      absl::optional<ui::ColorId> color;
+      std::optional<ui::ColorId> color;
 
       SubpageButton(DownloadCommands::Command command,
                     std::u16string label,
                     bool is_prominent,
-                    absl::optional<ui::ColorId> color = absl::nullopt);
+                    std::optional<ui::ColorId> color = std::nullopt);
     };
 
     struct QuickAction {
@@ -179,7 +179,7 @@ class DownloadUIModel {
     // Color used for alert text, which may be different from |secondary_color|,
     // used for icons. If this is nullopt, |secondary_color| will be used for
     // text.
-    absl::optional<ui::ColorId> secondary_text_color = absl::nullopt;
+    std::optional<ui::ColorId> secondary_text_color = std::nullopt;
 
     // Override icon
     raw_ptr<const gfx::VectorIcon> icon_model_override = nullptr;
@@ -194,7 +194,7 @@ class DownloadUIModel {
     raw_ptr<const gfx::VectorIcon> warning_secondary_icon = nullptr;
 
     // The command for the primary button
-    absl::optional<DownloadCommands::Command> primary_button_command;
+    std::optional<DownloadCommands::Command> primary_button_command;
 
     // List of quick actions
     std::vector<QuickAction> quick_actions;
@@ -204,7 +204,7 @@ class DownloadUIModel {
 
     // Text with link to go at the bottom of the subpage summary, such as "Learn
     // why Chrome blocks some downloads".
-    absl::optional<LabelWithLink> learn_more_link;
+    std::optional<LabelWithLink> learn_more_link;
 
     // Whether the main button should be enabled. When true, the main button
     // will either:
@@ -231,7 +231,7 @@ class DownloadUIModel {
     BubbleUIInfo& AddSecondarySubpageButton(
         const std::u16string& label,
         DownloadCommands::Command command,
-        absl::optional<ui::ColorId> color = absl::nullopt);
+        std::optional<ui::ColorId> color = std::nullopt);
     BubbleUIInfo& SetProgressBarLooping();
     BubbleUIInfo& AddQuickAction(DownloadCommands::Command command,
                                  const std::u16string& label,
@@ -427,9 +427,9 @@ class DownloadUIModel {
   // If this is an ephemeral warning, returns when the bubble first displayed
   // the warning. If the warning has not yet shown (or this isn't an ephemeral
   // warning), it returns no value. This does not persist across restarts.
-  virtual absl::optional<base::Time> GetEphemeralWarningUiShownTime() const;
+  virtual std::optional<base::Time> GetEphemeralWarningUiShownTime() const;
 
-  virtual void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time);
+  virtual void SetEphemeralWarningUiShownTime(std::optional<base::Time> time);
 
   // Returns |true| if opening in the browser is preferred for this download. If
   // |false|, the download should be opened with the system default application.

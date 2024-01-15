@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -47,7 +48,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -218,7 +218,7 @@ bool DeviceInfoRequiredForUpload() {
 
 void ReportingServerConnector::UploadEncryptedReportInternal(
     base::Value::Dict merging_payload,
-    absl::optional<base::Value::Dict> context,
+    std::optional<base::Value::Dict> context,
     ResponseCallback callback) {
   encrypted_reporting_client_->UploadReport(std::move(merging_payload),
                                             std::move(context), client_,
@@ -265,15 +265,14 @@ void ReportingServerConnector::UploadEncryptedReport(
   }
 
   // Forward the `UploadEncryptedReport` to `encrypted_reporting_client_`.
-  absl::optional<int> request_payload_size;
+  std::optional<int> request_payload_size;
   if (PayloadSizeComputationRateLimiterForUma::Get().ShouldDo()) {
     request_payload_size = GetPayloadSize(merging_payload);
   }
   connector->UploadEncryptedReportInternal(
       std::move(merging_payload), std::move(context),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
-          [](ResponseCallback callback,
-             absl::optional<int> request_payload_size,
+          [](ResponseCallback callback, std::optional<int> request_payload_size,
              base::WeakPtr<PayloadSizePerHourUmaReporter>
                  payload_size_per_hour_uma_reporter,
              StatusOr<base::Value::Dict> result) {

@@ -115,7 +115,7 @@ class ProxyManagerImpl : public ProxyManager {
   base::WeakPtrFactory<ProxyManagerImpl> weak_factory_{this};
 };
 
-absl::optional<std::vector<uint8_t>> RebuildIppRequest(
+std::optional<std::vector<uint8_t>> RebuildIppRequest(
     const std::string& method,
     const std::string& url,
     const std::string& version,
@@ -124,12 +124,12 @@ absl::optional<std::vector<uint8_t>> RebuildIppRequest(
   auto request_line_buffer =
       ipp_converter::BuildRequestLine(method, url, version);
   if (!request_line_buffer.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto headers_buffer = ipp_converter::BuildHeaders(headers);
   if (!headers_buffer.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> ret;
@@ -266,7 +266,7 @@ void ProxyManagerImpl::SpoofGetPrinters() {
       delegate_->GetPrinters(chromeos::PrinterClass::kSaved),
       delegate_->GetPrinters(chromeos::PrinterClass::kEnterprise),
       delegate_->GetRecentlyUsedPrinters());
-  absl::optional<IppResponse> response =
+  std::optional<IppResponse> response =
       BuildGetDestsResponse(in_flight_->request, printers);
   if (!response.has_value()) {
     return Fail("Failed to spoof CUPS-Get-Printers response",
