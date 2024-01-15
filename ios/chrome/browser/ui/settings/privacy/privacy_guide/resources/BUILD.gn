@@ -11,3 +11,11 @@ imageset("welcome_illustration") {
     "welcome_illustration.imageset/welcome_illustration_dark.pdf",
   ]
 }
+
+imageset("url_usage_illustration") {
+  sources = [
+    "url_usage_illustration.imageset/Contents.json",
+    "url_usage_illustration.imageset/url_usage_illustration.pdf",
+    "url_usage_illustration.imageset/url_usage_illustration_dark.pdf",
+  ]
+}

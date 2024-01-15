@@ -17,6 +17,7 @@ enum class PromoStyleImageType {
 };
 
 enum class BannerImageSizeType {
+  kShort,
   kStandard,
   kTall,
   kExtraTall,

@@ -42,6 +42,7 @@ constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
+constexpr CGFloat kShortBannerMultiplier = 0.2;
 constexpr CGFloat kContentWidthMultiplier = 0.8;
 constexpr CGFloat kContentOptimalWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
@@ -892,6 +893,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (CGFloat)bannerMultiplier {
   switch (self.bannerSize) {
+    case BannerImageSizeType::kShort:
+      return kShortBannerMultiplier;
     case BannerImageSizeType::kStandard:
       return kDefaultBannerMultiplier;
     case BannerImageSizeType::kTall:
