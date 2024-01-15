@@ -116,11 +116,6 @@ BASE_FEATURE(kWebAuthnNewPasskeyUI,
              "WebAuthenticationNewPasskeyUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M118. Remove in or after M121.
-BASE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries,
-             "WebAuthenticationRequestUIForComplexDiscoveries",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
 // ChromeOS. Remove in or after M124.
 BASE_FEATURE(kWebAuthnFilterGooglePasskeys,

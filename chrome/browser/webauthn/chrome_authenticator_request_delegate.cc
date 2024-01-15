@@ -727,9 +727,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnRequireUIForComplexDiscoveries) &&
-      disable_ui_) {
+  if (disable_ui_) {
     return;
   }
 

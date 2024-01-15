@@ -94,11 +94,6 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
 
-// Don't configure discoveries like caBLE, iCloud Keychain, and the enclave,
-// if the WebAuthn UI is disabled.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries);
-
 // Filter a priori discovered credentials on google.com to those that have a
 // user id that starts with "GOOGLE_ACCOUNT:".
 COMPONENT_EXPORT(DEVICE_FIDO)
