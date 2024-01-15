@@ -238,3 +238,38 @@ TEST_F(BookmarkSpotlightManagerTest, testUpdateBookmarkItem) {
 
   [manager shutdown];
 }
+
+/// Tests that clearAndReindexModel only clears out items if the bookmark models
+/// are undefined.
+TEST_F(BookmarkSpotlightManagerTest, testIndexAllBookmarksWithNoBookmarkModel) {
+  FakeSpotlightInterface* fakeSpotlightInterface =
+      [[FakeSpotlightInterface alloc] init];
+
+  // Intialize the BookmarksSpotlightManager with a state where bookmarkModels
+  // are undefined.
+  BookmarksSpotlightManager* manager = [[BookmarksSpotlightManager alloc]
+          initWithLargeIconService:large_icon_service_.get()
+      localOrSyncableBookmarkModel:nullptr
+              accountBookmarkModel:nullptr
+                spotlightInterface:fakeSpotlightInterface
+             searchableItemFactory:searchableItemFactory_];
+
+  NSUInteger initialIndexedItemCount =
+      fakeSpotlightInterface.indexSearchableItemsCallsCount;
+
+  [manager clearAndReindexModel];
+
+  // We expect to attempt deleting searchable items.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return fakeSpotlightInterface
+                   .deleteSearchableItemsWithDomainIdentifiersCallsCount == 1u;
+      }));
+
+  // We expect that we will never attempt to index any items since bookmark
+  // model are undefined.
+  EXPECT_EQ(fakeSpotlightInterface.indexSearchableItemsCallsCount,
+            initialIndexedItemCount);
+
+  [manager shutdown];
+}
