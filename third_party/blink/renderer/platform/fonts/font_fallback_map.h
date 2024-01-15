@@ -47,7 +47,7 @@ class PLATFORM_EXPORT FontFallbackMap : public FontCacheClient,
   template <typename Predicate>
   void InvalidateInternal(Predicate predicate);
 
-  Member<FontSelector> font_selector_;
+  const Member<FontSelector> font_selector_;
   HeapHashMap<FontDescription, WeakMember<FontFallbackList>>
       fallback_list_for_description_;
 };

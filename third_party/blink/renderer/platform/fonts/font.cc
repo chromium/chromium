@@ -50,16 +50,13 @@ namespace blink {
 
 namespace {
 
-FontFallbackMap& GetFontFallbackMap(FontSelector* font_selector) {
-  if (font_selector)
-    return font_selector->GetFontFallbackMap();
-  return FontCache::Get().GetFontFallbackMap();
-}
-
 FontFallbackList* GetOrCreateFontFallbackList(
     const FontDescription& font_description,
     FontSelector* font_selector) {
-  return GetFontFallbackMap(font_selector).Get(font_description);
+  FontFallbackMap& fallback_map = font_selector
+                                      ? font_selector->GetFontFallbackMap()
+                                      : FontCache::Get().GetFontFallbackMap();
+  return fallback_map.Get(font_description);
 }
 
 }  // namespace
@@ -76,36 +73,23 @@ Font::Font(const FontDescription& font_description, FontSelector* font_selector)
               : nullptr) {}
 
 FontFallbackList* Font::EnsureFontFallbackList() const {
-  if (!font_fallback_list_ || !font_fallback_list_->HasFontFallbackMap()) {
+  if (!font_fallback_list_ || !font_fallback_list_->IsValid()) {
     font_fallback_list_ =
-        GetOrCreateFontFallbackList(font_description_, nullptr);
-  }
-  if (!font_fallback_list_->IsValid()) {
-    font_fallback_list_ =
-        font_fallback_list_->GetFontFallbackMap().Get(font_description_);
+        GetOrCreateFontFallbackList(font_description_, GetFontSelector());
   }
   return font_fallback_list_.Get();
 }
 
 bool Font::operator==(const Font& other) const {
-  // Two Font objects with the same FontDescription and FontSelector should
-  // always hold reference to the same FontFallbackList object, unless
-  // invalidated.
+  // Font objects with the same FontDescription and FontSelector should always
+  // hold reference to the same FontFallbackList object, unless invalidated.
   if (font_fallback_list_ && font_fallback_list_->IsValid() &&
       other.font_fallback_list_ && other.font_fallback_list_->IsValid()) {
     return font_fallback_list_ == other.font_fallback_list_;
   }
 
-  FontSelector* first =
-      font_fallback_list_ && font_fallback_list_->HasFontFallbackMap()
-          ? font_fallback_list_->GetFontSelector()
-          : nullptr;
-  FontSelector* second = other.font_fallback_list_ &&
-                                 other.font_fallback_list_->HasFontFallbackMap()
-                             ? other.font_fallback_list_->GetFontSelector()
-                             : nullptr;
-
-  return first == second && font_description_ == other.font_description_;
+  return GetFontSelector() == other.GetFontSelector() &&
+         font_description_ == other.font_description_;
 }
 
 namespace {

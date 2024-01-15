@@ -46,7 +46,7 @@ const int kCAllFamiliesScanned = -1;
 class PLATFORM_EXPORT FontFallbackList
     : public GarbageCollected<FontFallbackList> {
  public:
-  explicit FontFallbackList(FontFallbackMap& font_fallback_map);
+  explicit FontFallbackList(FontSelector* font_selector);
 
   FontFallbackList(const FontFallbackList&) = delete;
   FontFallbackList& operator=(const FontFallbackList&) = delete;
@@ -67,12 +67,7 @@ class PLATFORM_EXPORT FontFallbackList
 
   bool ShouldSkipDrawing() const;
 
-  // Returns false only after the WeakMember to FontFallbackMap is turned to
-  // nullptr due to GC.
-  bool HasFontFallbackMap() const { return font_fallback_map_; }
-  FontFallbackMap& GetFontFallbackMap() const { return *font_fallback_map_; }
-
-  FontSelector* GetFontSelector() const;
+  FontSelector* GetFontSelector() const { return font_selector_.Get(); }
   uint16_t Generation() const { return generation_; }
 
   NGShapeCache& GetNGShapeCache(const FontDescription& font_description) {
@@ -88,8 +83,9 @@ class PLATFORM_EXPORT FontFallbackList
       shape_cache_ = FontCache::Get().GetShapeCache(key)->GetWeakPtr();
     }
     DCHECK(shape_cache_);
-    if (GetFontSelector())
-      shape_cache_->ClearIfVersionChanged(GetFontSelector()->Version());
+    if (font_selector_) {
+      shape_cache_->ClearIfVersionChanged(font_selector_->Version());
+    }
     return shape_cache_.get();
   }
 
@@ -134,7 +130,7 @@ class PLATFORM_EXPORT FontFallbackList
 
   Vector<scoped_refptr<FontData>, 1> font_list_;
   const SimpleFontData* cached_primary_simple_font_data_ = nullptr;
-  const WeakMember<FontFallbackMap> font_fallback_map_;
+  const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;
   bool has_loading_fallback_ : 1;

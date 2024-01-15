@@ -21,7 +21,7 @@ FontFallbackList* FontFallbackMap::Get(
       fallback_list_for_description_.insert(font_description, nullptr);
   if (add_result.is_new_entry) {
     add_result.stored_value->value =
-        MakeGarbageCollected<FontFallbackList>(*this);
+        MakeGarbageCollected<FontFallbackList>(font_selector_);
   }
   return add_result.stored_value->value;
 }

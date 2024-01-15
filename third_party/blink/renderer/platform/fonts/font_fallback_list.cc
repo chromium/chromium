@@ -42,8 +42,8 @@
 
 namespace blink {
 
-FontFallbackList::FontFallbackList(FontFallbackMap& font_fallback_map)
-    : font_fallback_map_(font_fallback_map),
+FontFallbackList::FontFallbackList(FontSelector* font_selector)
+    : font_selector_(font_selector),
       generation_(FontCache::Get().Generation()),
       has_loading_fallback_(false),
       has_custom_font_(false),
@@ -57,16 +57,7 @@ FontFallbackList::~FontFallbackList() {
 }
 
 void FontFallbackList::Trace(Visitor* visitor) const {
-  visitor->Trace(font_fallback_map_);
-}
-
-FontSelector* FontFallbackList::GetFontSelector() const {
-  // FontFallbackList objects are managed in FontFallbackMap, and should not be
-  // used after FontFallbackMap is destroyed. FontFallbackList may outlive its
-  // FontFallbackMap if an external reference is held, for example by a Font
-  // object owned by a CanvasRenderContext2DState whose execution context was
-  // destroyed.
-  return font_fallback_map_ ? font_fallback_map_->GetFontSelector() : nullptr;
+  visitor->Trace(font_selector_);
 }
 
 void FontFallbackList::ReleaseFontData() {
@@ -166,7 +157,7 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
 
   for (; curr_family; curr_family = curr_family->Next()) {
     family_index_++;
-    if (!GetFontSelector()) {
+    if (!font_selector_) {
       // Don't query system fonts for empty font family name.
       if (!curr_family->FamilyName().empty()) {
         if (auto result = FontCache::Get().GetFontData(
@@ -178,41 +169,42 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
     }
 
     scoped_refptr<FontData> result =
-        GetFontSelector()->GetFontData(font_description, *curr_family);
+        font_selector_->GetFontData(font_description, *curr_family);
     // Don't query system fonts for empty font family name.
     if (!result && !curr_family->FamilyName().empty()) {
       result = FontCache::Get().GetFontData(font_description,
                                             curr_family->FamilyName());
-      GetFontSelector()->ReportFontLookupByUniqueOrFamilyName(
+      font_selector_->ReportFontLookupByUniqueOrFamilyName(
           curr_family->FamilyName(), font_description,
           DynamicTo<SimpleFontData>(result.get()));
     }
     if (result) {
-      GetFontSelector()->ReportSuccessfulFontFamilyMatch(
+      font_selector_->ReportSuccessfulFontFamilyMatch(
           curr_family->FamilyName());
       return result;
     }
 
-    GetFontSelector()->ReportFailedFontFamilyMatch(curr_family->FamilyName());
+    font_selector_->ReportFailedFontFamilyMatch(curr_family->FamilyName());
   }
   family_index_ = kCAllFamiliesScanned;
 
-  if (GetFontSelector()) {
+  if (font_selector_) {
     // Try the user's preferred standard font.
     FontFamily font_family;
     font_family.SetFamily(font_family_names::kWebkitStandard,
                           FontFamily::Type::kGenericFamily);
     if (scoped_refptr<FontData> data =
-            GetFontSelector()->GetFontData(font_description, font_family))
+            font_selector_->GetFontData(font_description, font_family)) {
       return data;
+    }
   }
 
   // Still no result. Hand back our last resort fallback font.
   auto last_resort =
       FontCache::Get().GetLastResortFallbackFont(font_description);
-  if (GetFontSelector()) {
-    GetFontSelector()->ReportLastResortFallbackFontLookup(font_description,
-                                                          last_resort.get());
+  if (font_selector_) {
+    font_selector_->ReportLastResortFallbackFontLookup(font_description,
+                                                       last_resort.get());
   }
   return last_resort;
 }
