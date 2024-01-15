@@ -4319,7 +4319,7 @@ base::CallbackListSubscription RegisterWebContentsCreationCallback(
   return WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(callback);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void SetCapturedSurfaceControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
         GlobalRenderFrameHostId,
@@ -4346,6 +4346,6 @@ void SetCapturedSurfaceControllerFactoryForTesting(
   MediaStreamManager::GetInstance()
       ->SetCapturedSurfaceControllerFactoryForTesting(wrapped_factory);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace content
