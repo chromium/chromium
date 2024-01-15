@@ -9,6 +9,7 @@ import androidx.annotation.AnyThread;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 
 import java.util.HashMap;
@@ -37,9 +38,9 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
         return new JSONObject(params).toString();
     }
 
-    public AllCachedFieldTrialParameters(String featureName) {
+    public AllCachedFieldTrialParameters(FeatureMap featureMap, String featureName) {
         // As this includes all parameters, the parameterName is empty.
-        super(featureName, /* parameterName= */ "", FieldTrialParameterType.ALL);
+        super(featureMap, featureName, /* parameterName= */ "", FieldTrialParameterType.ALL);
     }
 
     /** Returns a map of field trial parameter to value. */
@@ -78,7 +79,7 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     @Override
     void cacheToDisk() {
         final Map<String, String> params =
-                ChromeFeatureList.getFieldTrialParamsForFeature(getFeatureName());
+                mFeatureMap.getFieldTrialParamsForFeature(getFeatureName());
         CachedFlagsSharedPreferences.getInstance()
                 .writeString(getSharedPreferenceKey(), encodeParams(params));
     }

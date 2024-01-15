@@ -25,7 +25,8 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 /** Utility methods for the Minimized Custom Tab feature. */
 public class MinimizedFeatureUtils {
     public static final IntCachedFieldTrialParameter ICON_VARIANT =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.CCT_MINIMIZED, "icon_variant", 0);
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_MINIMIZED, "icon_variant", 0);
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.

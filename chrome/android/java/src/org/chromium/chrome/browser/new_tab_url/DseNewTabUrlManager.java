@@ -32,13 +32,13 @@ public class DseNewTabUrlManager {
 
     private static final String SWAP_OUT_NTP_PARAM = "swap_out_ntp";
     public static final BooleanCachedFieldTrialParameter SWAP_OUT_NTP =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID, SWAP_OUT_NTP_PARAM, false);
 
     // A parameter of whether to enable the feature for users in EEA countries only.
     private static final String EEA_COUNTRY_ONLY_PARAM = "eea_country_only";
     public static final BooleanCachedFieldTrialParameter EEA_COUNTRY_ONLY =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID,
                     EEA_COUNTRY_ONLY_PARAM,
                     false);

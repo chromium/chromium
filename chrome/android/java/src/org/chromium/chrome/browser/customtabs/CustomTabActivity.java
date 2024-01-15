@@ -66,7 +66,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     /** Contains all the parameters of the EXPERIMENTS_FOR_AGSA feature. */
     public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
-            new AllCachedFieldTrialParameters(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
+            ChromeFeatureList.newAllCachedFieldTrialParameters(
+                    ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
     /** Prevents Tapjacking on T-. See crbug.com/1430867 */
     private static final boolean sPreventTouches =

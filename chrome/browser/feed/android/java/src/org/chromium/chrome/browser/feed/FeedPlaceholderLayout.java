@@ -45,7 +45,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
     public static final String ENABLE_INSTANT_START_ANIMATION_PARAM =
             "enable-animation-on-instant-start";
     public static final BooleanCachedFieldTrialParameter ENABLE_INSTANT_START_ANIMATION =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.FEED_LOADING_PLACEHOLDER,
                     ENABLE_INSTANT_START_ANIMATION_PARAM,
                     false);

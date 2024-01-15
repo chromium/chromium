@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
@@ -19,6 +20,7 @@ import java.util.Set;
  * A field trial parameter in the variations framework that is cached to disk be used before native.
  */
 public abstract class CachedFieldTrialParameter {
+
     /** Data types of field trial parameters. */
     @IntDef({
         FieldTrialParameterType.STRING,
@@ -39,12 +41,18 @@ public abstract class CachedFieldTrialParameter {
     @CheckDiscard("crbug.com/1067145")
     private static Set<CachedFieldTrialParameter> sAllInstances;
 
+    protected final FeatureMap mFeatureMap;
+
     private final String mFeatureName;
     private final String mParameterName;
     private final @FieldTrialParameterType int mType;
 
     CachedFieldTrialParameter(
-            String featureName, String parameterName, @FieldTrialParameterType int type) {
+            FeatureMap featureMap,
+            String featureName,
+            String parameterName,
+            @FieldTrialParameterType int type) {
+        mFeatureMap = featureMap;
         mFeatureName = featureName;
         // parameterName does not apply to ALL (because it includes all parameters).
         assert type != FieldTrialParameterType.ALL || parameterName.isEmpty();

@@ -31,7 +31,7 @@ public class RestoreTabsFeatureHelper {
                     ChromeFeatureMap.getInstance(), ChromeFeatureList.RESTORE_TABS_ON_FRE);
     public static final BooleanCachedFieldTrialParameter
             RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT =
-                    new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.RESTORE_TABS_ON_FRE,
                             "skip_feature_engagement",
                             false);

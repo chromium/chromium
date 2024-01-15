@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureMap;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.List;
@@ -61,18 +62,23 @@ public class CachedFieldTrialParameterUnitTest {
     private static final String STRING2_PARAM_TEST_OVERRIDE = "override2";
     private static final String STRING2_PARAM_BAD = "bad2";
 
+    private static final FeatureMap FEATURE_MAP = BaseFlagTestRule.FEATURE_MAP;
+
     private static final StringCachedFieldTrialParameter STRING_PARAM =
-            new StringCachedFieldTrialParameter(FEATURE_A, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
+            new StringCachedFieldTrialParameter(
+                    FEATURE_MAP, FEATURE_A, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
     private static final BooleanCachedFieldTrialParameter BOOLEAN_PARAM =
             new BooleanCachedFieldTrialParameter(
-                    FEATURE_A, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_DEFAULT);
+                    FEATURE_MAP, FEATURE_A, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_DEFAULT);
     private static final IntCachedFieldTrialParameter INT_PARAM =
-            new IntCachedFieldTrialParameter(FEATURE_A, INT_PARAM_NAME, INT_PARAM_DEFAULT);
+            new IntCachedFieldTrialParameter(
+                    FEATURE_MAP, FEATURE_A, INT_PARAM_NAME, INT_PARAM_DEFAULT);
     private static final DoubleCachedFieldTrialParameter DOUBLE_PARAM =
-            new DoubleCachedFieldTrialParameter(FEATURE_A, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
+            new DoubleCachedFieldTrialParameter(
+                    FEATURE_MAP, FEATURE_A, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
     private static final StringCachedFieldTrialParameter STRING2_PARAM =
             new StringCachedFieldTrialParameter(
-                    FEATURE_A, STRING2_PARAM_NAME, STRING2_PARAM_DEFAULT);
+                    FEATURE_MAP, FEATURE_A, STRING2_PARAM_NAME, STRING2_PARAM_DEFAULT);
 
     private static final String FEATURE_B = "FeatureB";
 
@@ -84,7 +90,7 @@ public class CachedFieldTrialParameterUnitTest {
                     DOUBLE_PARAM_NAME, DOUBLE_PARAM_TEST_OVERRIDE_STRING);
 
     private static final AllCachedFieldTrialParameters ALL_PARAM =
-            new AllCachedFieldTrialParameters(FEATURE_B);
+            new AllCachedFieldTrialParameters(FEATURE_MAP, FEATURE_B);
 
     private static final List<CachedFieldTrialParameter> PARAMS_TO_CACHE =
             List.of(STRING_PARAM, BOOLEAN_PARAM, INT_PARAM, DOUBLE_PARAM, STRING2_PARAM, ALL_PARAM);

@@ -197,7 +197,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * automatically allowed from any first party package name.
      */
     public static final BooleanCachedFieldTrialParameter AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_AUTO_TRANSLATE, "allow_all_first_parties", false);
 
     /**
@@ -206,7 +206,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * consisting of the package name of the Android Google Search App.
      */
     public static final StringCachedFieldTrialParameter AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST =
-            new StringCachedFieldTrialParameter(
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_AUTO_TRANSLATE,
                     "package_names_allowlist",
                     "com.google.android.googlequicksearchbox");
@@ -269,17 +269,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private static final String DENYLIST_ENTRIES_PARAM_NAME = "denylist_entries";
 
     public static final StringCachedFieldTrialParameter THIRD_PARTIES_DEFAULT_POLICY =
-            new StringCachedFieldTrialParameter(
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
                     DEFAULT_POLICY_PARAM_NAME,
                     DEFAULT_POLICY_USE_DENYLIST);
     public static final StringCachedFieldTrialParameter DENYLIST_ENTRIES =
-            new StringCachedFieldTrialParameter(
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
                     DENYLIST_ENTRIES_PARAM_NAME,
                     "");
     public static final StringCachedFieldTrialParameter ALLOWLIST_ENTRIES =
-            new StringCachedFieldTrialParameter(
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
                     ALLOWLIST_ENTRIES_PARAM_NAME,
                     "");

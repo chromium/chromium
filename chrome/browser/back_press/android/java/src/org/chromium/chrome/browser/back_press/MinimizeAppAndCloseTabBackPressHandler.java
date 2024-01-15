@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  */
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
     public static final BooleanCachedFieldTrialParameter SYSTEM_BACK =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", false);
 
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";

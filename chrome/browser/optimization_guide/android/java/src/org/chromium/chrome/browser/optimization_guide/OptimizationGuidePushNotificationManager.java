@@ -70,7 +70,7 @@ public class OptimizationGuidePushNotificationManager {
 
     /** The default cache size in Java for push notification. */
     public static final IntCachedFieldTrialParameter MAX_CACHE_SIZE =
-            new IntCachedFieldTrialParameter(
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);
 
     /**

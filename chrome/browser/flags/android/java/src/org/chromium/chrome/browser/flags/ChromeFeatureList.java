@@ -97,6 +97,35 @@ public abstract class ChromeFeatureList {
         return ChromeFeatureMap.getInstance().getFieldTrialParamsForFeature(featureName);
     }
 
+    public static AllCachedFieldTrialParameters newAllCachedFieldTrialParameters(
+            String featureName) {
+        return new AllCachedFieldTrialParameters(ChromeFeatureMap.getInstance(), featureName);
+    }
+
+    public static BooleanCachedFieldTrialParameter newBooleanCachedFieldTrialParameter(
+            String featureName, String variationName, boolean defaultValue) {
+        return new BooleanCachedFieldTrialParameter(
+                ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
+    }
+
+    public static DoubleCachedFieldTrialParameter newDoubleCachedFieldTrialParameter(
+            String featureName, String variationName, double defaultValue) {
+        return new DoubleCachedFieldTrialParameter(
+                ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
+    }
+
+    public static IntCachedFieldTrialParameter newIntCachedFieldTrialParameter(
+            String featureName, String variationName, int defaultValue) {
+        return new IntCachedFieldTrialParameter(
+                ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
+    }
+
+    public static StringCachedFieldTrialParameter newStringCachedFieldTrialParameter(
+            String featureName, String variationName, String defaultValue) {
+        return new StringCachedFieldTrialParameter(
+                ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
+    }
+
     private static CachedFlag newCachedFlag(String featureName, boolean defaultValue) {
         return new CachedFlag(ChromeFeatureMap.getInstance(), featureName, defaultValue);
     }

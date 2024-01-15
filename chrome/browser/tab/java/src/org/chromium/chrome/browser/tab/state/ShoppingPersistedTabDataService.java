@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ShoppingPersistedTabDataService {
     private static final BooleanCachedFieldTrialParameter
             SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION =
-                    new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.PRICE_CHANGE_MODULE,
                             "skip_shopping_persisted_tab_data_delayed_initialization",
                             true);

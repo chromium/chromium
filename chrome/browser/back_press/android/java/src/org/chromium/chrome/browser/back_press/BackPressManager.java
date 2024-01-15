@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class BackPressManager implements Destroyable {
     public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
-            new BooleanCachedFieldTrialParameter(
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;

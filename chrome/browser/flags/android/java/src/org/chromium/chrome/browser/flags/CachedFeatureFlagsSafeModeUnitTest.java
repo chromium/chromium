@@ -56,15 +56,17 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     private static final String STRING_PARAM_NATIVE_2 = "baz";
 
     private static final BooleanCachedFieldTrialParameter BOOL_PARAM =
-            new BooleanCachedFieldTrialParameter(OK_FEATURE, BOOL_PARAM_NAME, BOOL_PARAM_DEFAULT);
+            new BooleanCachedFieldTrialParameter(
+                    FEATURE_MAP, OK_FEATURE, BOOL_PARAM_NAME, BOOL_PARAM_DEFAULT);
     private static final IntCachedFieldTrialParameter INT_PARAM =
-            new IntCachedFieldTrialParameter(OK_FEATURE, INT_PARAM_NAME, INT_PARAM_DEFAULT);
+            new IntCachedFieldTrialParameter(
+                    FEATURE_MAP, OK_FEATURE, INT_PARAM_NAME, INT_PARAM_DEFAULT);
     private static final DoubleCachedFieldTrialParameter DOUBLE_PARAM =
             new DoubleCachedFieldTrialParameter(
-                    OK_FEATURE, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
+                    FEATURE_MAP, OK_FEATURE, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
     private static final StringCachedFieldTrialParameter STRING_PARAM =
             new StringCachedFieldTrialParameter(
-                    OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
+                    FEATURE_MAP, OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
 
     @Before
     public void setUp() {

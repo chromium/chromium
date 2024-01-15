@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.AnyThread;
 
+import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 
 /** A String-type {@link CachedFieldTrialParameter}. */
@@ -13,8 +14,8 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
     private final String mDefaultValue;
 
     public StringCachedFieldTrialParameter(
-            String featureName, String variationName, String defaultValue) {
-        super(featureName, variationName, FieldTrialParameterType.STRING);
+            FeatureMap featureMap, String featureName, String variationName, String defaultValue) {
+        super(featureMap, featureName, variationName, FieldTrialParameterType.STRING);
         mDefaultValue = defaultValue;
     }
 
@@ -60,7 +61,7 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
     @Override
     void cacheToDisk() {
         String value =
-                ChromeFeatureList.getFieldTrialParamByFeature(getFeatureName(), getParameterName());
+                mFeatureMap.getFieldTrialParamByFeature(getFeatureName(), getParameterName());
         CachedFlagsSharedPreferences.getInstance()
                 .writeString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
     }
