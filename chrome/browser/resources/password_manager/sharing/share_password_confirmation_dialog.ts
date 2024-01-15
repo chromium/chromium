@@ -116,8 +116,10 @@ export class SharePasswordConfirmationDialogElement extends
 
   private stateChange_() {
     // Force the screen reader to focus on the updated dialog header.
-    this.focus();
-    this.blur();
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     this.$.dialog.focus();
   }
 
