@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_STANDALONE_CVC_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_STANDALONE_CVC_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_STANDALONE_CVC_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_STANDALONE_CVC_FIELD_PARSER_H_
 
 #include <memory>
 
@@ -18,17 +18,17 @@ class AutofillField;
 class AutofillScanner;
 
 // A form field that accepts a standalone cvc.
-class StandaloneCvcField : public FormFieldParser {
+class StandaloneCvcFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
-  explicit StandaloneCvcField(const AutofillField* field);
+  explicit StandaloneCvcFieldParser(const AutofillField* field);
 
-  ~StandaloneCvcField() override;
+  ~StandaloneCvcFieldParser() override;
 
-  StandaloneCvcField(const StandaloneCvcField&) = delete;
-  StandaloneCvcField& operator=(const StandaloneCvcField&) = delete;
+  StandaloneCvcFieldParser(const StandaloneCvcFieldParser&) = delete;
+  StandaloneCvcFieldParser& operator=(const StandaloneCvcFieldParser&) = delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -42,4 +42,4 @@ class StandaloneCvcField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_STANDALONE_CVC_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_STANDALONE_CVC_FIELD_PARSER_H_

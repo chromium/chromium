@@ -31,7 +31,7 @@
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/search_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
+#include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -334,8 +334,8 @@ void FormFieldParser::ParseStandaloneCVCFields(
     FieldCandidatesMap& field_candidates) {
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
       RemoveCheckableFields(fields);
-  ParseFormFieldsPass(StandaloneCvcField::Parse, context, processed_fields,
-                      field_candidates);
+  ParseFormFieldsPass(StandaloneCvcFieldParser::Parse, context,
+                      processed_fields, field_candidates);
 }
 
 void FormFieldParser::ParseStandaloneEmailFields(

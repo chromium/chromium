@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
+#include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
@@ -21,7 +21,7 @@ class StandaloneCvcFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return StandaloneCvcField::Parse(context, scanner);
+    return StandaloneCvcFieldParser::Parse(context, scanner);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

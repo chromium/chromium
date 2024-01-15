@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
+#include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -13,7 +13,7 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormFieldParser> StandaloneCvcField::Parse(
+std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   if (!base::FeatureList::IsEnabled(
@@ -40,17 +40,17 @@ std::unique_ptr<FormFieldParser> StandaloneCvcField::Parse(
                               FormControlType::kInputPassword>;
   if (ParseFieldSpecifics(context, scanner, kCardCvcRe, kMatchNumTelAndPwd,
                           cvc_patterns, &field, "kCardCvcRe(standalone)")) {
-    return std::make_unique<StandaloneCvcField>(field);
+    return std::make_unique<StandaloneCvcFieldParser>(field);
   }
 
   return nullptr;
 }
 
-StandaloneCvcField::~StandaloneCvcField() = default;
+StandaloneCvcFieldParser::~StandaloneCvcFieldParser() = default;
 
 // static
-bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
-                                       AutofillScanner* scanner) {
+bool StandaloneCvcFieldParser::MatchGiftCard(ParsingContext& context,
+                                             AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return false;
   }
@@ -72,10 +72,10 @@ bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
   return gift_card_match;
 }
 
-StandaloneCvcField::StandaloneCvcField(const AutofillField* field)
+StandaloneCvcFieldParser::StandaloneCvcFieldParser(const AutofillField* field)
     : field_(field) {}
 
-void StandaloneCvcField::AddClassifications(
+void StandaloneCvcFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
                     kBaseCreditCardParserScore, field_candidates);
