@@ -78,4 +78,8 @@
   <message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
     More
   </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_CHEVRON_A11Y_LABEL" desc="Accessibility action to expand the search engine description.">
+    Search engine details
+  </message>
 </grit-part>

@@ -107,6 +107,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("fakeOmniboxText",
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
+  source->AddLocalizedString("chevronA11yLabel",
+                             IDS_SEARCH_ENGINE_CHOICE_CHEVRON_A11Y_LABEL);
   source->AddLocalizedString("moreButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
   source->AddResourcePath("images/left_illustration.svg",

@@ -85,7 +85,7 @@
     background-color: var(--background-color);
     border-radius: calc(var(--omnibox-height) / 2);
     bottom: var(--search-engine-omnibox-bottom-value);
-    box-shadow: 0px 4px 16px 0px var(--search-engine-omnibox-shadow-color);
+    box-shadow: 0 4px 16px 0 var(--search-engine-omnibox-shadow-color);
     display: flex;
     flex-direction: row;
     gap: 8px;
@@ -253,7 +253,8 @@
 
   cr-expand-button {
     --cr-expand-button-size: 24px;
-    --cr-section-vertical-padding: 0px;
+    --cr-icon-button-margin-start: 0;
+    --cr-section-vertical-padding: 0;
     margin-inline-start: auto;
   }
 
@@ -416,11 +417,11 @@
 <img class="tangible-sync-style-right-banner" alt="">
 <div class="content-container tangible-sync-style">
   <img class="product-logo" src="images/product-logo.svg"
-      alt="$i18n{productLogoAltText}">
+      alt="$i18n{productLogoAltText}" aria-hidden="true">
   <h1 class="title">$i18n{title}</h1>
   <div class="omniboxes">
     <div id="dummyOmnibox">
-      <iron-icon icon="cr:search"></iron-icon>
+      <iron-icon icon="cr:search" aria-hidden="true"></iron-icon>
       <div class="hint-placeholder"></div>
     </div>
     <div id="searchEngineOmnibox">
@@ -437,18 +438,19 @@
     </a>
   </p>
   <cr-radio-group id="choiceList" class="custom-scrollbar"
-      selected="{{selectedChoice_}}" role="list" tabindex="0">
+      selected="{{selectedChoice_}}" role="list">
     <template is="dom-repeat" items="[[choiceList_]]">
-        <cr-radio-button role="listitem" class="label-first"
+        <cr-radio-button aria-label$="[[item.name]]" role="listitem"
+            class="label-first"
             name="[[item.prepopulateId]]">
           <div class="choice">
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
             <div class="choice-text">
               <div class="choice-title">
-                [[item.name]]
+                <span aria-hidden="true">[[item.name]]</span>
                 <cr-expand-button expanded="{{item.showMarketingSnippet}}"
-                    no-hover>
+                    no-hover role="button" aria-label="$i18n{chevronA11yLabel}">
                 </cr-expand-button>
                 <div class="vertical-separator"></div>
               </div>
