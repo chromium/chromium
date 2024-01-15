@@ -745,37 +745,24 @@ def main():
         # TODO(crbug.com/1493085): remove once
         # https://github.com/rust-lang/rust/pull/116672 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '4f1e147849d89f4c2324fd569a48e6be66fae5d8')
-
-        # TODO: Remove once
-        # https://github.com/rust-lang/rust/pull/118410 has been merged.
-        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '81cd7c5b11766ed1e3214a2233371fb6d72ed89c')
-
-        # TODO: Remove once
-        # https://github.com/rust-lang/rust/pull/118610 has been merged.
-        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      'b378059e6b2573c5356423fa31d184a89a3b6029')
-
-        # TODO: Remove once
-        # https://github.com/rust-lang/rust/pull/118818 has been merged.
-        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      'a0c5079889b1f86dd9e246d8863a5c8b44fbdb78')
-
-        # TODO: Remove once
-        # https://github.com/rust-lang/rust/pull/118866 has been merged.
-        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '46a801559127441675f2341bd1d684809a47def1')
-
-        # TODO: Remove once
-        # https://github.com/rust-lang/rust/pull/118941 has been merged.
-        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '0a285e8de7eec36e1de68c83764d23f2522a4274')
+                      '01c30a41a9952b49405a537e1c8bae3f2272ccf4')
 
         # TODO: Remove once
         # https://github.com/rust-lang/rust/pull/119185 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                       '14947b410ad23a09251180af50486e247f70b465')
+
+        # TODO: Remove the following cherry-picks in next rust roll.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '81cd7c5b11766ed1e3214a2233371fb6d72ed89c')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      'b378059e6b2573c5356423fa31d184a89a3b6029')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      'a0c5079889b1f86dd9e246d8863a5c8b44fbdb78')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '46a801559127441675f2341bd1d684809a47def1')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '0a285e8de7eec36e1de68c83764d23f2522a4274')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
@@ -855,13 +842,11 @@ def main():
     if args.build_mac_arm:
         for a in DISTRIBUTION_ARTIFACTS_SKIPPED_CROSS_COMPILE:
             artifacts.remove(a)
-    # TODO(crbug.com/1504532): remove once
-    # https://github.com/rust-lang/rust/blob/master/.gitmodules#L33-L37 has
-    # been updated to include
-    # https://github.com/llvm/llvm-project/commit/7939ce39dac0078fef7183d6198598b99c652c88
+    # TODO(crbug.com/1504532): remove in next rust roll.
     rust_llvm_dir = os.path.join(RUST_SRC_DIR, 'src', 'llvm-project')
-    GitCherryPick(rust_llvm_dir, 'https://github.com/llvm/llvm-project.git',
-                  '7939ce39dac0078fef7183d6198598b99c652c88')
+    GitCherryPick(rust_llvm_dir,
+                  'https://github.com/rust-lang/llvm-project.git',
+                  '823883116fdee662a3e150a88e6aad583036ccd3')
     # Remove .git in llvm so x.py install will not sync it.
     if (os.path.exists(os.path.join(rust_llvm_dir, '.git'))):
         os.remove(os.path.join(rust_llvm_dir, '.git'))
