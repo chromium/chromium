@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "base/synchronization/lock.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
@@ -108,6 +109,14 @@ void WebUIAllowlist::ResetWebUIAllowlistProvider() {
 std::unique_ptr<content_settings::RuleIterator> WebUIAllowlist::GetRuleIterator(
     ContentSettingsType content_type) const {
   return value_map_.GetRuleIterator(content_type);
+}
+
+std::unique_ptr<content_settings::Rule> WebUIAllowlist::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type) const {
+  base::AutoLock lock(value_map_.GetLock());
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 
 void WebUIAllowlist::SetContentSettingsAndNotifyProvider(
