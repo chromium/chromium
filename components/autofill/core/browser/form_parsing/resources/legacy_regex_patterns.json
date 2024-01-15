@@ -2210,15 +2210,6 @@
         "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
       }
     ],
-    "de": [
-      {
-        "positive_pattern": "vollständiger.?name",
-        "positive_score": 0.9,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
-      }
-    ],
     "zh-CN": [
       {
         "positive_pattern": "用户名",
@@ -2242,6 +2233,15 @@
     "en": [
       {
         "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)|receiver",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT"]
+      }
+    ],
+    "de": [
+      {
+        "positive_pattern": "vollständiger.?name",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
