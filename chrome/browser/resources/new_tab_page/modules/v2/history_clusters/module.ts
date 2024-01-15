@@ -177,6 +177,8 @@ export class HistoryClustersModuleElement extends I18nMixin
   }
 
   private onDisableButtonClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.recordDisabled(
+        this.cluster.id);
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {
@@ -191,7 +193,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onDismissButtonClick_() {
     HistoryClustersProxyImpl.getInstance()
         .handler.updateClusterVisitsInteractionState(
-            this.cluster.visits, InteractionState.kHidden);
+            this.cluster.id, this.cluster.visits, InteractionState.kHidden);
     this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
       bubbles: true,
       composed: true,
@@ -201,7 +203,8 @@ export class HistoryClustersModuleElement extends I18nMixin
         restoreCallback: () => {
           HistoryClustersProxyImpl.getInstance()
               .handler.updateClusterVisitsInteractionState(
-                  this.cluster.visits, InteractionState.kDefault);
+                  this.cluster.id, this.cluster.visits,
+                  InteractionState.kDefault);
         },
       },
     }));
@@ -210,7 +213,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onDoneButtonClick_() {
     HistoryClustersProxyImpl.getInstance()
         .handler.updateClusterVisitsInteractionState(
-            this.cluster.visits, InteractionState.kDone);
+            this.cluster.id, this.cluster.visits, InteractionState.kDone);
     this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
       bubbles: true,
       composed: true,
@@ -220,7 +223,8 @@ export class HistoryClustersModuleElement extends I18nMixin
         restoreCallback: () => {
           HistoryClustersProxyImpl.getInstance()
               .handler.updateClusterVisitsInteractionState(
-                  this.cluster.visits, InteractionState.kDefault);
+                  this.cluster.id, this.cluster.visits,
+                  InteractionState.kDefault);
         },
       },
     }));

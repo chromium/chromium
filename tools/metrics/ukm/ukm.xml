@@ -16378,6 +16378,12 @@ be describing additional metrics about the same event.
       Whether the user engaged with the module.
     </summary>
   </metric>
+  <metric name="DidMarkAsDone" enum="Boolean">
+    <summary>
+      Whether the user dismissed with positive intent the cluster shown in this
+      module.
+    </summary>
+  </metric>
   <metric name="LayoutTypeShown" enum="NTPHistoryClustersModuleDisplayLayout">
     <summary>
       The layout type that was shown to the user for this module.

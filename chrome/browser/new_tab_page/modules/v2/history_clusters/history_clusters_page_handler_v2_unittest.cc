@@ -388,6 +388,45 @@ TEST_F(HistoryClustersPageHandlerV2Test, RecordClick) {
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 1);
 }
 
+TEST_F(HistoryClustersPageHandlerV2Test, RecordDisabled) {
+  // Send down some clusters so we have a logger.
+  const int64_t kSampleClusterId = 123;
+  std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
+      {{kSampleClusterId, HistoryClustersModuleRankingSignals()}};
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_clusters, &ranking_signals](
+              const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback) {
+            std::move(callback).Run(sample_clusters, ranking_signals);
+          }));
+  base::MockCallback<HistoryClustersPageHandlerV2::GetClustersCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_));
+  handler().GetClusters(callback.Get());
+
+  // Simulate a disable and layout type.
+  handler().RecordLayoutTypeShown(
+      ntp::history_clusters::mojom::LayoutType::kLayout1, kSampleClusterId);
+  handler().RecordDisabled(kSampleClusterId);
+
+  // Reset handler to make sure UKM is recorded.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ResetHandler();
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kDidDisableModuleName, 1);
+}
+
 TEST_F(HistoryClustersPageHandlerV2Test, RecordLayoutTypeShown) {
   // Send down some clusters so we have a logger.
   int64_t cluster_id = 123;
@@ -430,7 +469,31 @@ TEST_F(HistoryClustersPageHandlerV2Test, RecordLayoutTypeShown) {
       ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 0);
 }
 
-TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
+TEST_F(HistoryClustersPageHandlerV2Test, LoadDiscount) {
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  EXPECT_CALL(mock_shopping_service(),
+              GetDiscountInfoForUrls(testing::_, testing::_))
+      .Times(1);
+  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
+TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      ntp_features::kNtpChromeCartInHistoryClusterModule);
+
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
+  handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
+class HistoryClustersPageHandlerV2InteractionStateTest
+    : public HistoryClustersPageHandlerV2Test,
+      public ::testing::WithParamInterface<
+          history_clusters::mojom::InteractionState> {};
+
+TEST_P(HistoryClustersPageHandlerV2InteractionStateTest,
+       UpdateClusterVisitsInteractionState) {
   base::HistogramTester histogram_tester;
 
   std::vector<history::VisitID> visit_ids;
@@ -457,35 +520,82 @@ TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
     sample_cluster_visits.push_back(std::move(visit_mojom));
   }
 
+  const int64_t kSampleClusterId = 123;
+  const auto interaction_state = GetParam();
   handler().UpdateClusterVisitsInteractionState(
-      std::move(sample_cluster_visits),
-      history_clusters::mojom::InteractionState::kDone);
+      kSampleClusterId, std::move(sample_cluster_visits), interaction_state);
   ASSERT_EQ(static_cast<size_t>(kSampleClusterVisitCount), visit_ids.size());
   for (size_t i = 0; i < visit_ids.size(); i++) {
     ASSERT_EQ(static_cast<history::VisitID>(i), visit_ids[i]);
   }
 
+  int expected_dismiss_reason =
+      interaction_state == history_clusters::mojom::InteractionState::kDone
+          ? /*NTPHistoryClustersDismissReason::kDone*/ 1
+          : /*NTPHistoryClustersDismissReason::kNotInterested*/ 0;
   histogram_tester.ExpectUniqueSample(
-      "NewTabPage.HistoryClusters.DismissReason", 1, 1);
+      "NewTabPage.HistoryClusters.DismissReason", expected_dismiss_reason, 1);
 }
 
-TEST_F(HistoryClustersPageHandlerV2Test, LoadDiscount) {
-  auto cluster_mojom = history_clusters::mojom::Cluster::New();
-  EXPECT_CALL(mock_shopping_service(),
-              GetDiscountInfoForUrls(testing::_, testing::_))
-      .Times(1);
-  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
+TEST_P(HistoryClustersPageHandlerV2InteractionStateTest,
+       UpdateClusterVisitsInteractionStateRecordsSignals) {
+  // Send down some clusters so we have a logger.
+  const int64_t kSampleClusterId = 123;
+  std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
+      {{kSampleClusterId, HistoryClustersModuleRankingSignals()}};
+  EXPECT_CALL(mock_history_clusters_module_service(),
+              GetClusters(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_clusters, &ranking_signals](
+              const history_clusters::QueryClustersFilterParams filter_params,
+              size_t min_required_related_searches,
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback) {
+            std::move(callback).Run(sample_clusters, ranking_signals);
+          }));
+  base::MockCallback<HistoryClustersPageHandlerV2::GetClustersCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_));
+  handler().GetClusters(callback.Get());
+
+  EXPECT_CALL(mock_history_service(), UpdateVisitsInteractionState).Times(1);
+
+  // Simulate a dismiss of a cluster.
+  const auto interaction_state = GetParam();
+  handler().RecordLayoutTypeShown(
+      ntp::history_clusters::mojom::LayoutType::kLayout1, kSampleClusterId);
+  auto visit_mojom = history_clusters::mojom::URLVisit::New();
+  visit_mojom->visit_id = 1;
+  std::vector<history_clusters::mojom::URLVisitPtr> sample_cluster_visits;
+  sample_cluster_visits.push_back(std::move(visit_mojom));
+  handler().UpdateClusterVisitsInteractionState(
+      kSampleClusterId, std::move(sample_cluster_visits), interaction_state);
+
+  // Reset handler to make sure UKM is recorded.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ResetHandler();
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kDidDismissModuleName, 1);
+
+  if (interaction_state == history_clusters::mojom::InteractionState::kDone) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entries[0],
+        ukm::builders::NewTabPage_HistoryClusters::kDidMarkAsDoneName, 1);
+  }
 }
 
-TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      ntp_features::kNtpChromeCartInHistoryClusterModule);
-
-  history_clusters::mojom::ClusterPtr cluster_mojom;
-  EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
-  handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HistoryClustersPageHandlerV2InteractionStateTest,
+    ::testing::Values(history_clusters::mojom::InteractionState::kDone,
+                      history_clusters::mojom::InteractionState::kHidden));
 
 class HistoryClustersPageHandlerV2CartInQuestTest
     : public HistoryClustersPageHandlerV2Test {
