@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_IBAN_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_IBAN_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_IBAN_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_IBAN_FIELD_PARSER_H_
 
 #include <memory>
 
@@ -18,15 +18,15 @@ class AutofillField;
 class AutofillScanner;
 
 // A form field that accepts International Bank Account Number (IBAN).
-class IbanField : public FormFieldParser {
+class IbanFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
-  explicit IbanField(const AutofillField* field);
+  explicit IbanFieldParser(const AutofillField* field);
 
-  IbanField(const IbanField&) = delete;
-  IbanField& operator=(const IbanField&) = delete;
+  IbanFieldParser(const IbanFieldParser&) = delete;
+  IbanFieldParser& operator=(const IbanFieldParser&) = delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -37,4 +37,4 @@ class IbanField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_IBAN_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_IBAN_FIELD_PARSER_H_

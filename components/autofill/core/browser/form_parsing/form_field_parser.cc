@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/email_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/iban_field.h"
+#include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
@@ -317,7 +317,7 @@ void FormFieldParser::ParseSingleFieldForms(
                       field_candidates);
 
   // IBAN pass.
-  ParseFormFieldsPass(IbanField::Parse, context, processed_fields,
+  ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {

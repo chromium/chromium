@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/iban_field.h"
+#include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 
@@ -19,7 +19,7 @@ class IbanFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return IbanField::Parse(context, scanner);
+    return IbanFieldParser::Parse(context, scanner);
   }
 };
 
