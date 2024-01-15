@@ -146,6 +146,8 @@ mojom("mojom_platform") {
     "mediastream/media_devices.mojom",
     "mediastream/media_stream.mojom",
     "mime/mime_registry.mojom",
+    "model_execution/model_manager.mojom",
+    "model_execution/model_session.mojom",
     "navigation/navigation_api_history_entry_arrays.mojom",
     "navigation/navigation_initiator_activation_and_ad_status.mojom",
     "navigation/navigation_policy.mojom",

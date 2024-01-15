@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The status of the ModelStreamingResponder response.
+// TODO(leimy): return more information about the erroneous case.
+enum ModelStreamingResponseStatus {
+  // There response is not fully streamed back yet, and the interface will
+  // remain open.
+  kOngoing,
+  // The ModelStreamingResponder completes and closes.
+  kComplete,
+  // The ModelStreamingResponder closes with some errors.
+  kError,
+};
+
+// The responder provides methods for the session to return the execution
+// response in a streaming manner.
+interface ModelStreamingResponder {
+  // This is called when there is a new chunk of data available for
+  // streaming, or when the response is fully streamed, or when there are
+  // some errors.
+  OnResponse(ModelStreamingResponseStatus status, string? text);
+};
+
+// A session for a model that allows executing an input and streaming the output.
+interface ModelGenericSession {
+  // Executes model on the given input.
+  Execute(string input, pending_remote<ModelStreamingResponder> responder);
+};
