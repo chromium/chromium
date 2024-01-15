@@ -322,16 +322,16 @@ Trigger your event locally, refresh `chrome://ukm`, then double-check that your 
 
 ### Enable Console Debugging Messages
 
-If you're encountering issues concerning UKM user consent, recording entries, or uploading UKM reports, you can enable console debugging logs by passing the command line flag `--vmodule=*components/ukm*=n` where `n` is the logging level number between 1 and 3, with the convention:
+If you're encountering issues concerning UKM user consent, recording events, or uploading UKM reports, you can enable console debugging logs by passing the command line flag `--vmodule=*components/ukm*=n` where `n` is the logging level number between 1 and 3, with the convention:
 
-1: Infrequent actions such as changes to user consent, or actions that typically occur once per reporting cycle, e.g. serialization of locally recorded event data into one report and uploading the report to the UKM server.
-2: Frequent and recurrent actions within each reporting period, such as an event being recorded, or a new browser navigation has occurred.
+1: Infrequent actions such as changes to user consent, or actions that typically occur once per reporting cycle, e.g. serialization of locally recorded event data into one report and uploading the report to the UKM server.\
+2: Frequent and recurrent actions within each reporting period, such as an event being recorded, or a new browser navigation has occurred.\
 3: Very frequent and possibly spammy actions or checks, such as events being dropped due to disabled recording.
 
 Setting a level `n` enables logging messages at all levels <= `n`.
 
-In case of doubt, or if you need a starting point to debug why `chrome://ukm` isn't showing any data in a local build, you can start with
-```
+In case of doubt, or if you need a starting point to debug why `chrome://ukm` isn't showing any data in a local build, you can start with:
+```bash
 ./out/Default/chrome --force-enable-metrics-reporting --metrics-upload-interval=300 --vmodule=*components/ukm*=3
 ```
 
