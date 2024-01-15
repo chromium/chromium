@@ -118,23 +118,6 @@ constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
 using FormAndField = std::pair<FormData, FormFieldData>;
 
-DenseSet<ExtractOption> MaybeExtractDatalist(
-    DenseSet<ExtractOption> extract_options) {
-  if (base::FeatureList::IsEnabled(features::kAutofillExtractAllDatalists)) {
-    extract_options.insert(ExtractOption::kDatalist);
-  }
-  return extract_options;
-}
-
-bool UsesKeyboardAccessoryForSuggestions() {
-#if !BUILDFLAG(IS_ANDROID)
-  return false;  // The keyboard accessory is specific to Android.
-#else
-  return !base::FeatureList::IsEnabled(
-      features::kAutofillLegacyDatalistDropdown);
-#endif
-}
-
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -317,10 +300,12 @@ void AutofillAgent::FocusStateNotifier::NotifyIfChanged(
 
 AutofillAgent::AutofillAgent(
     content::RenderFrame* render_frame,
+    Config config,
     std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
     std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
+      config_(config),
       form_cache_(std::make_unique<FormCache>(render_frame->GetWebFrame())),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)),
@@ -447,7 +432,8 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   // element because that will be done by HandleFocusChangeComplete() which
   // triggers FormControlElementClicked().
   // Refer to http://crbug.com/1105254
-  if ((UsesKeyboardAccessoryForSuggestions() || !focus_requires_scroll_) &&
+  if ((config_.uses_keyboard_accessory_for_suggestions ||
+       !focus_requires_scroll_) &&
       !element.IsNull() &&
       element.GetDocument().GetFrame()->HasTransientUserActivation()) {
     // If the focus change was caused by a user gesture,
@@ -1026,16 +1012,18 @@ void AutofillAgent::ShowSuggestions(
     }
   }
 
-  const bool element_value_valid = [&element, trigger_source] {
+  const bool show_for_empty_value =
+      config_.uses_keyboard_accessory_for_suggestions ||
+      ShouldAutofillOnEmptyValues(trigger_source);
+  const bool element_value_valid = [&element, trigger_source,
+                                    show_for_empty_value] {
     WebString value = element.EditingValue();
     // Don't attempt to autofill with values that are too large.
     if (!ShouldAutofillOnLongValues(trigger_source) &&
         value.length() > kMaxStringLength) {
       return false;
     }
-    // Keyboard Accessory may still be shown when `value` is empty.
-    if (!UsesKeyboardAccessoryForSuggestions() &&
-        !ShouldAutofillOnEmptyValues(trigger_source) && value.IsEmpty()) {
+    if (!show_for_empty_value && value.IsEmpty()) {
       return false;
     }
     return !(RequiresCaretAtEnd(trigger_source) &&
@@ -1138,7 +1126,7 @@ void AutofillAgent::QueryAutofillSuggestions(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kAutofillExtractAllDatalists)) {
+  if (!config_.extract_all_datalists) {
     const WebInputElement input_element = element.DynamicTo<WebInputElement>();
     if (!input_element.IsNull()) {
       // Find the datalist values and send them to the browser process.
@@ -1285,7 +1273,7 @@ void AutofillAgent::HidePopup() {
   is_popup_possibly_visible_ = false;
 
   // The keyboard accessory has a separate, more complex hiding logic.
-  if (UsesKeyboardAccessoryForSuggestions()) {
+  if (config_.uses_keyboard_accessory_for_suggestions) {
     return;
   }
 
@@ -1326,7 +1314,8 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
     SendFocusedInputChangedNotificationToBrowser(focused_element);
   }
 
-  if (!UsesKeyboardAccessoryForSuggestions() && focus_requires_scroll_) {
+  if (!config_.uses_keyboard_accessory_for_suggestions &&
+      focus_requires_scroll_) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
         last_left_mouse_down_or_gesture_tap_in_node_caused_focus_);
@@ -1790,6 +1779,14 @@ void AutofillAgent::UpdateLastInteractedForm(
 
 void AutofillAgent::OnFormNoLongerSubmittable() {
   submitted_forms_.clear();
+}
+
+DenseSet<ExtractOption> AutofillAgent::MaybeExtractDatalist(
+    DenseSet<ExtractOption> extract_options) {
+  if (config_.extract_all_datalists) {
+    extract_options.insert(ExtractOption::kDatalist);
+  }
+  return extract_options;
 }
 
 mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {

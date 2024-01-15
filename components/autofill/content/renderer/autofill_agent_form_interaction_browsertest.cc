@@ -389,8 +389,6 @@ TEST_F(AutofillAgentContentEditableInteractionTest, LeftClick) {
 
 // Tests that unfocusing a contenteditable triggers a call to
 // `AutofillDriver::HidePopup()`.
-// The test is not enabled on Android because the keyboard accessory has
-// different hiding logic for which `HidePopup` is not called.
 TEST_F(AutofillAgentContentEditableInteractionTest,
        LossOfFocusOfContentEditableTriggersHideAutofillPopup) {
   MockFunction<void()> check;

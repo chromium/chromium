@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -84,11 +85,30 @@ class AutofillAgent : public content::RenderFrameObserver,
  public:
   static constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
 
+  using UsesKeyboardAccessoryForSuggestions =
+      base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
+  using ExtractAllDatalists =
+      base::StrongAlias<class ExtractAllDatalistsTag, bool>;
+
+  struct Config {
+    // Is true iff the platform doesn't show any popups but renders the same
+    // information in or near the keyboard instead.
+    UsesKeyboardAccessoryForSuggestions uses_keyboard_accessory_for_suggestions{
+        BUILDFLAG(IS_ANDROID)};
+
+    // Controls whether or not all datalists shall be extracted into
+    // FormFieldData. This feature is enabled when all datalists (instead of
+    // only the focused one) shall be extracted and sent to the Android Autofill
+    // service when the autofill session is created.
+    ExtractAllDatalists extract_all_datalists{false};
+  };
+
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
   // PasswordGenerationAgent and AutofillAssistantAgent may be nullptr. If they
   // are not, then they are also guaranteed to outlive AutofillAgent.
   AutofillAgent(
       content::RenderFrame* render_frame,
+      Config config,
       std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
       std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
       blink::AssociatedInterfaceRegistry* registry);
@@ -371,12 +391,20 @@ class AutofillAgent : public content::RenderFrameObserver,
   // cleared in this method.
   void OnFormNoLongerSubmittable();
 
+  // Amends the given `extract_options` with datalists if required.
+  DenseSet<form_util::ExtractOption> MaybeExtractDatalist(
+      DenseSet<form_util::ExtractOption> extract_options);
+
   // Helpers for SelectOrSelectListFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.
   void BatchSelectOrSelectListOptionChange(
       const blink::WebFormControlElement& element);
   void BatchDataListOptionChange(const blink::WebFormControlElement& element);
+
+  // Stores immutable configuration this agent was created with. It contains
+  // features and settings that are available for the lifetime of this class.
+  const Config config_;
 
   // Return the next web node of `current_node` in the DOM. `next` determines
   // the direction to traverse in.

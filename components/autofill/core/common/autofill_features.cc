@@ -305,26 +305,11 @@ BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
              "AutofillEnableSupportForPhoneNumberTrunkTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether or not all datalist shall be extracted into FormFieldData.
-// This feature is enabled in both WebView and WebLayer where all datalists
-// instead of only the focused one shall be extracted and sent to Android
-// autofill service when the autofill session created.
-BASE_FEATURE(kAutofillExtractAllDatalists,
-             "AutofillExtractAllDatalists",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of
 // forms.
 BASE_FEATURE(kAutofillDetectRemovedFormControls,
              "AutofillDetectRemovedFormControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Indicates whether the platform requires support for the legacy dropdown for
-// datalists. This is enabled on WebView because the keyboard accessory is not
-// available.
-BASE_FEATURE(kAutofillLegacyDatalistDropdown,
-             "AutofillLegacyDatalistDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Replaces cached web elements in AutofillAgent and FormTracker by their
