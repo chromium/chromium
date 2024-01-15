@@ -8761,6 +8761,26 @@
             ]
         }
     ],
+    "HttpDiskCachePrewarming": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240115",
+                    "enable_features": [
+                        "HttpDiskCachePrewarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
