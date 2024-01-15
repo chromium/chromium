@@ -122,11 +122,6 @@ inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 inline constexpr char kStorageGarbageCollect[] =
     "extensions.storage.garbagecollect";
 
-// A preference for an enterprise policy which is a temporary workaround for
-// behaviour changes to <webview>.
-inline constexpr char kChromeAppsWebViewPermissiveBehaviorAllowed[] =
-    "extensions.webview_permissive_behavior";
-
 // Pref for policy to enable/disable loading extension from command line
 inline constexpr char kExtensionInstallTypeBlocklist[] =
     "extensions.extension_install_type_blocklist";

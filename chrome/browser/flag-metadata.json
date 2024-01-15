@@ -3872,11 +3872,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-webview-tag-mparch-behavior",
-    "owners": [ "mcnee@chromium.org", "//components/guest_view/OWNERS" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "enable-welcome-tour",
     "owners": [ "//ash/user_education/OWNERS" ],
     "expiry_milestone": 123

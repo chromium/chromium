@@ -441,11 +441,7 @@ void WebViewGuest::MaybeRecreateGuestContents(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "A <webview> is being attached to a window other than the window of "
         "its opener <webview>. The window reference the opener <webview> "
-        "obtained from window.open will be invalidated. To debug whether this "
-        "is causing breakage, see "
-        "chrome://flags/#enable-webview-tag-mparch-behavior. The "
-        "ChromeAppsWebViewPermissiveBehaviorAllowed enterprise policy may be "
-        "used to temporarily revert this behavior.");
+        "obtained from window.open will be invalidated.");
   }
 
   ClearOwnedGuestContents();

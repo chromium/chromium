@@ -10039,13 +10039,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"enable-webview-tag-mparch-behavior",
-     flag_descriptions::kWebViewTagMPArchBehaviorName,
-     flag_descriptions::kWebViewTagMPArchBehaviorDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(extensions_features::kWebviewTagMPArchBehavior)},
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-        //
 #if BUILDFLAG(IS_ANDROID)
     {"surface-control-magnifier",
      flag_descriptions::kSurfaceControlMagnifierName,

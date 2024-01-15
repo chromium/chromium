@@ -164,6 +164,8 @@ BASE_DECLARE_FEATURE(kUsePerBrowserContextWebRequestEventRouter);
 // view MPArch migration. See
 // https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing
 // for details.
+// TODO(crbug.com/1261928): This has been enabled by default for long enough
+// that we can remove this flag.
 BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1644,15 +1644,6 @@ const char kIPHExtensionsRequestAccessButtonFeatureDescription[] =
     "Enables In-Product-Help that appears when at least one extension is "
     "requesting access to the current page. This feature is gated by "
     "extensions-menu-access-control.";
-const char kWebViewTagMPArchBehaviorName[] =
-    "MPArch behavior change for <webview> tags";
-const char kWebViewTagMPArchBehaviorDescription[] =
-    "Enables a behavior change associated with the migration of "
-    "<webview> tags to MPArch. See https://crbug.com/1261928. Specifically, "
-    "cross-WebContents newwindow event usage invalidates some window.open "
-    "usage within <webview>s. For enterprise, the "
-    "ChromeAppsWebViewPermissiveBehaviorAllowed policy serves as an escape "
-    "hatch during the roll out of this change.";
 
 const char kWebAuthFlowInBrowserTabName[] =
     "Web Authentication Flow in Browser Tab";

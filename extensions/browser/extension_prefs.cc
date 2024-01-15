@@ -2246,8 +2246,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(kExternalUninstalls);
   registry->RegisterListPref(
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls);
-  registry->RegisterBooleanPref(
-      pref_names::kChromeAppsWebViewPermissiveBehaviorAllowed, false);
 
   registry->RegisterListPref(pref_names::kNativeMessagingBlocklist);
   registry->RegisterListPref(pref_names::kNativeMessagingAllowlist);
