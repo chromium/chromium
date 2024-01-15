@@ -1598,13 +1598,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
   // low.
   DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
-  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
-  // users migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
   SyncSettingsAccountState accountState =
-      SyncServiceFactory::GetForBrowserState(_browserState)->HasSyncConsent()
-          ? SyncSettingsAccountState::kSyncing
-          : SyncSettingsAccountState::kSignedIn;
+      [self shouldReplaceSyncSettingsWithAccountSettings]
+          ? SyncSettingsAccountState::kSignedIn
+          : SyncSettingsAccountState::kSyncing;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser

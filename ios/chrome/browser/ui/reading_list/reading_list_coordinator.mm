@@ -579,8 +579,11 @@
   CHECK(!_syncService->GetAccountInfo().IsEmpty())
       << base::SysNSStringToUTF8([self description]);
   SyncSettingsAccountState accountState =
-      _syncService->HasSyncConsent() ? SyncSettingsAccountState::kSyncing
-                                     : SyncSettingsAccountState::kSignedIn;
+      (base::FeatureList::IsEnabled(
+           syncer::kReplaceSyncPromosWithSignInPromos) &&
+       !_syncService->HasSyncConsent())
+          ? SyncSettingsAccountState::kSignedIn
+          : SyncSettingsAccountState::kSyncing;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseViewController:self.tableViewController
                          browser:self.browser

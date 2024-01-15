@@ -444,8 +444,11 @@ enum class PresentedState {
   CHECK(!syncService->GetAccountInfo().IsEmpty())
       << base::SysNSStringToUTF8([self description]);
   SyncSettingsAccountState accountState =
-      syncService->HasSyncConsent() ? SyncSettingsAccountState::kSyncing
-                                    : SyncSettingsAccountState::kSignedIn;
+      (base::FeatureList::IsEnabled(
+           syncer::kReplaceSyncPromosWithSignInPromos) &&
+       !syncService->HasSyncConsent())
+          ? SyncSettingsAccountState::kSignedIn
+          : SyncSettingsAccountState::kSyncing;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
