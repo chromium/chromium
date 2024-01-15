@@ -99,12 +99,14 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {
 
+namespace {
 using ::testing::AllOf;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
+}  // namespace
 
 MATCHER_P(IsInIwaRandomDir, profile_directory, "") {
   *result_listener << "where the profile directory is " << profile_directory;
