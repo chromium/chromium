@@ -219,6 +219,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#inputProcessor.releaseActions(
           this.#parser.parseReleaseActionsParams(command.params)
         );
+      case 'input.setFiles':
+        throw new UnsupportedOperationException(
+          `Command '${command.method}' not yet implemented.`
+        );
       // keep-sorted end
 
       // Network domain

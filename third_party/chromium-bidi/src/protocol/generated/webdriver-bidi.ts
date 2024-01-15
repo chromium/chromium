@@ -1900,7 +1900,10 @@ export namespace Log {
     params: Log.Entry;
   };
 }
-export type InputCommand = Input.PerformActions | Input.ReleaseActions;
+export type InputCommand =
+  | Input.PerformActions
+  | Input.ReleaseActions
+  | Input.SetFiles;
 export namespace Input {
   export type ElementOrigin = {
     type: 'element';
@@ -2092,5 +2095,18 @@ export namespace Input {
 export namespace Input {
   export type ReleaseActionsParameters = {
     context: BrowsingContext.BrowsingContext;
+  };
+}
+export namespace Input {
+  export type SetFiles = {
+    method: 'input.setFiles';
+    params: Input.SetFilesParameters;
+  };
+}
+export namespace Input {
+  export type SetFilesParameters = {
+    context: BrowsingContext.BrowsingContext;
+    element: Script.SharedReference;
+    files: [...string[]];
   };
 }
