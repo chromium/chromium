@@ -830,19 +830,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.InputVolumeStartsAtZeroWin"
-    enum="BooleanVolumeZero" expires_after="2024-02-20">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Indicates if the volume level of the audio session is set to zero when the
-    input audio session starts. Sampled once when the stream starts but only on
-    Windows platforms. See http://crbug.com/1014443. Warning: this histogram was
-    expired from 2022-10-09 to 2022-12-07; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Mac.AggregateDeviceCompositionPropertyIsNull"
     enum="Boolean" expires_after="2024-03-31">
   <owner>agpalak@chromium.org</owner>

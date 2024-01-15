@@ -345,10 +345,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   base::TimeDelta max_timestamp_diff_;
   base::TimeDelta min_timestamp_diff_;
 
-  // Enabled if the volume level of the audio session is set to zero when the
-  // session starts. Utilized in UMA histogram.
-  bool audio_session_starts_at_zero_volume_ = false;
-
   // Set to true if the selected audio device supports raw audio capture.
   // Also added to a UMS histogram.
   bool raw_processing_supported_ = false;
