@@ -160,6 +160,14 @@ bool IsNewTabGridTransitionsEnabled() {
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
 }
 
+BASE_FEATURE(kContextualPanel,
+             "ContextualPanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContextualPanelEnabled() {
+  return base::FeatureList::IsEnabled(kContextualPanel);
+}
+
 BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
              "NonModalDefaultBrowserPromoImpressionLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);

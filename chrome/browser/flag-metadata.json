@@ -1351,6 +1351,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "contextual-panel",
+    "owners": [ "rkgibson@google.com", "gujen@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "contextual-search-debug",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     // This is used to enable debugging of server and backend code.

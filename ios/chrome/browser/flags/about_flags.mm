@@ -1606,6 +1606,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"https-upgrades-ios", flag_descriptions::kHttpsUpgradesName,
      flag_descriptions::kHttpsUpgradesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsUpgrades)},
+    {"contextual-panel", flag_descriptions::kContextualPanelName,
+     flag_descriptions::kContextualPanelDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kContextualPanel)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

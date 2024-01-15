@@ -150,6 +150,11 @@ BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 // Whether the new tab grid tabs transitions should be enabled.
 bool IsNewTabGridTransitionsEnabled();
 
+// Feature to enable the contextual panel.
+BASE_DECLARE_FEATURE(kContextualPanel);
+
+bool IsContextualPanelEnabled();
+
 // Feature flag to control the maximum amount of non-modal DB promo impressions
 // server-side. Enabled by default to always have a default impression limit
 // value.

@@ -205,6 +205,10 @@ const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
+const char kContextualPanelName[] = "Contextual Panel";
+const char kContextualPanelDescription[] =
+    "Enables the contextual panel feature.";
+
 extern const char kPhoneNumberName[] = "Phone number experience enable";
 extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "

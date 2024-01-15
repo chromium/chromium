@@ -177,6 +177,10 @@ extern const char kClearUndecryptablePasswordsOnSyncDescription[];
 extern const char kContentPushNotificationsName[];
 extern const char kContentPushNotificationsDescription[];
 
+// Title and description for the flag to enable the contextual panel.
+extern const char kContextualPanelName[];
+extern const char kContextualPanelDescription[];
+
 // Title and description for the flag to enable experience kit apple calendar
 // events.
 extern const char kAppleCalendarExperienceKitName[];
