@@ -369,6 +369,7 @@ static_library("test_support") {
     "//components/ukm:test_support",
     "//components/user_education/common",
     "//components/user_manager",
+    "//components/web_package",
     "//components/webapps/browser:browser",
     "//components/webapps/common",
     "//ui/webui",
