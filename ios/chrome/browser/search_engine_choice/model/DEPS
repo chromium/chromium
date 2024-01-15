@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/policy/model/browser_state_policy_connector.h",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+]
