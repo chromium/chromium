@@ -2097,7 +2097,6 @@ crbug.com/893480 external/wpt/shadow-dom/focus-navigation/focus-with-negative-in
 # for these tests there is an exception when scrolling: element click intercepted error
 crbug.com/1040611 [ Debug ] external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
 crbug.com/1040611 [ Release ] external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
-crbug.com/1040611 [ Debug Mac13 ] external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Failure Timeout ]
 
 # crbug.com/1298321: "element click intercepted error" when <body style="zoom:2">.
 crbug.com/1298321 fast/forms/calendar-picker/calendar-picker-appearance-zoom200.html [ Failure Pass Timeout ]
@@ -2918,8 +2917,8 @@ crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/opaque-ad-sizes-special-cases.https.html [ Skip Timeout ]
 crbug.com/626703 [ Win11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
-crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
+crbug.com/626703 [ Debug Linux ] external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
+crbug.com/626703 [ Debug Linux ] virtual/threaded/external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-rhythm/block-step-size-establishes-independent-formatting-context-list-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-rhythm/block-step-size-establishes-independent-formatting-context.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-vs-joiners-002.html [ Failure ]
@@ -6781,7 +6780,10 @@ crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shri
 crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 
 # Gardener 2023-12-20
-[ Mac ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
+[ Debug Mac13-arm64 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
+[ Mac11 Release ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
+[ Mac12 Release ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
+[ Mac13 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
 
 # Gardener 2023-12-21
 crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Failure Pass Timeout ]

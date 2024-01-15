@@ -510,7 +510,6 @@ crbug.com/874695 [ Release Win ] fast/css-grid-layout/grid-auto-repeat-huge-grid
 crbug.com/874695 [ Debug ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Linux Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Mac11 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
-crbug.com/874695 [ Mac11-arm64 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Mac12 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Mac12-arm64 Release ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
 crbug.com/874695 [ Release Win ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Slow ]
