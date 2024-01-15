@@ -11,6 +11,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_timeout_policy_utils.h"
 
 class ChromeBrowserState;
 
@@ -62,6 +63,14 @@ class IdleService : public KeyedService {
   void RunActions();
   // Shows the snackbar after actions have completed.
   void OnActionsCompleted();
+  // Returns the time `onIdleTimeoutInForeground` is triggered.
+  // Used to determine the start of the countdown displayed. Usually the
+  // countdown is 30s, but might need to be adjusted if the dialog was already
+  // started on a different scene that was closed.
+  base::Time GetIdleTriggerTime();
+  // Returns the action set at the time of idle timeout detection.
+  // Used for consistency of types across observers.
+  ActionSet GetLastActionSet();
 
   // Called when a timeout confirmation dialog has been dismissed or expired to
   // unset `idle_timeout_notification_pending_` which prevent other observers
@@ -104,6 +113,8 @@ class IdleService : public KeyedService {
   void SetLastActiveTime();
   base::Time GetLastActiveTime();
 
+  base::Time idle_trigger_time_;
+  ActionSet last_action_set_;
   bool idle_timeout_dialog_pending_{false};
   bool idle_timeout_snackbar_pending_{false};
   ChromeBrowserState* browser_state_;

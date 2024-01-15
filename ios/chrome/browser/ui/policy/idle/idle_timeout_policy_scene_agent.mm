@@ -59,11 +59,6 @@
   // IdleTimeoutPolicySceneAgents observe this service.
   raw_ptr<enterprise_idle::IdleService> _idleService;
 
-  // The time `onIdleTimeoutInForeground` is triggered. Used to determine the
-  // start of the countdown displayed. Usually the countdown is 30s, but might
-  // need to be adjusted if the dialog was already started on a different scene.
-  base::Time _idleTriggerTime;
-
   // Flag indicating whether this dialog is allowed to display the snackbar.
   // This is used to show the snackbar on the same scene that shows the timeout
   // confirmation dialog.
@@ -71,9 +66,6 @@
 
   // Coordinator for the idle timeout confirmation dialog.
   IdleTimeoutConfirmationCoordinator* _idleTimeoutConfirmationCoordinator;
-
-  // The actions that will run on idle timeout.
-  enterprise_idle::ActionSet _actions;
 
   // An extended launch screen that shows on start-up or re-foreground. The
   // windows shows on top of the browser to block the user from navigating when
@@ -141,9 +133,6 @@
 #pragma mark - IdleServiceObserving
 
 - (void)onIdleTimeoutInForeground {
-  _idleTriggerTime = base::Time::Now();
-  _actions =
-      enterprise_idle::GetActionSet([self prefService], [self authService]);
   [self maybeShowIdleTimeoutConfirmationDialog];
 }
 
@@ -153,11 +142,6 @@
   // reforeground. The differentiating factor in this case will be which scene
   // enters foreground first.
   _pendingDisplayingSnackbar = YES;
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          _mainBrowser->GetBrowserState());
-  PrefService* prefService = _mainBrowser->GetBrowserState()->GetPrefs();
-  _actions = enterprise_idle::GetActionSet(prefService, authService);
   [self showExtendedLaunchScreenWindow];
 }
 
@@ -245,9 +229,14 @@
     // `transitionedToActivationLevel` to foreground.
     return;
   }
-
+  // It is important to get the last actions from the service because the window
+  // showing the snackbar might have been opened after timeout happened. This
+  // can be the case in the following scenario: Foreground 1 window -> wait till
+  // dialog shows -> open another window -> Now close the window that initially
+  // showed the dialog.
   std::optional<int> messageId =
-      enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(_actions);
+      enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(
+          _idleService->GetLastActionSet());
   CHECK(messageId) << "There is no snackbar message for the set of actions";
   NSString* messageText = l10n_util::GetNSString(*messageId);
   MDCSnackbarMessage* message =
@@ -319,7 +308,8 @@
           initWithBaseViewController:[_sceneUIProvider activeViewController]
                              browser:_mainBrowser];
   _idleTimeoutConfirmationCoordinator.delegate = self;
-  _idleTimeoutConfirmationCoordinator.triggerTime = _idleTriggerTime;
+  _idleTimeoutConfirmationCoordinator.triggerTime =
+      _idleService->GetIdleTriggerTime();
   [_idleTimeoutConfirmationCoordinator start];
 }
 
@@ -353,7 +343,7 @@
 }
 
 - (void)maybeDismissExtendedLaunchScreenWindowIfDisplayed {
-  if (!_actions.close) {
+  if (!_idleService->GetLastActionSet().close) {
     // Dismiss right away if tabs will not be closing, which is often delayed.
     [self dismissExtendedLaunchScreenWindowIfDisplayed];
     return;

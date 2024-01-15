@@ -210,6 +210,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/passwords:eg2_tests",
     "//ios/chrome/browser/ui/passwords/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/permissions:eg2_tests",
+    "//ios/chrome/browser/ui/policy/idle:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:eg2_tests",

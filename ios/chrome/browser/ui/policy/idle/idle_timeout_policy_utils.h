@@ -6,22 +6,10 @@
 #define IOS_CHROME_BROWSER_UI_POLICY_IDLE_IDLE_TIMEOUT_POLICY_UTILS_H_
 
 #import "base/containers/flat_set.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_timeout_policy_utils.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-class PrefService;
-
 namespace enterprise_idle {
-
-struct ActionSet {
-  bool clear;    // True if any of ActionType::kClear* is present.
-  bool close;    // True if ActionType::kCloseTabs is present.
-  bool signout;  // True if any of ActionType::kSignOut is present.
-};
-
-// Returns the action set based on the value of `IdleTimeoutActions`.
-// The action set only contains `signout` if the user is signed in.
-ActionSet GetActionSet(PrefService* prefs, AuthenticationService* auth_service);
 
 // Returns the string id that should be used for the title of the confirmation
 // dialog telling the user what actions are about to be performed.

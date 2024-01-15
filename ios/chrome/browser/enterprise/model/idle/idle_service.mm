@@ -178,8 +178,11 @@ void IdleService::MaybeRunActionsForState(LastState last_state) {
     return;
   }
 
+  last_action_set_ = GetActionSet(
+      browser_state_->GetPrefs(),
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_));
+
   if (last_state == LastState::kIdleOnBackground) {
-    // TODO: check if data will be cleared.
     for (auto& observer : observer_list_) {
       // Show loading UI on re-foreground right away if data will be cleared.
       observer.OnIdleTimeoutOnStartup();
@@ -187,6 +190,7 @@ void IdleService::MaybeRunActionsForState(LastState last_state) {
     RunActions();
   } else {
     idle_timeout_dialog_pending_ = !observer_list_.empty();
+    idle_trigger_time_ = base::Time::Now();
     for (auto& observer : observer_list_) {
       // Confirm that the user is not active by showing dialog before running
       // actions.
@@ -233,6 +237,14 @@ void IdleService::OnActionsCompleted() {
   for (auto& observer : observer_list_) {
     observer.OnIdleTimeoutActionsCompleted();
   }
+}
+
+base::Time IdleService::GetIdleTriggerTime() {
+  return idle_trigger_time_;
+}
+
+ActionSet IdleService::GetLastActionSet() {
+  return last_action_set_;
 }
 
 void IdleService::OnIdleTimeoutDialogPresented() {

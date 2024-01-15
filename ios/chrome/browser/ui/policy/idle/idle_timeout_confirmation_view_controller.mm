@@ -68,6 +68,7 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier = @"idleTimeoutConfirmationDialog";
   self.image = [UIImage imageNamed:@"enterprise_grey_icon_large"];
   self.imageHasFixedSize = YES;
 

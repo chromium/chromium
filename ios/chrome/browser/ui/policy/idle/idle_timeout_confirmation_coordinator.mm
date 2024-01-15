@@ -8,6 +8,8 @@
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -44,8 +46,9 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
   _mediator = [[IdleTimeoutConfirmationMediator alloc]
       initWithPresenter:self
          dialogDuration:[self countDownStart]];
-  enterprise_idle::ActionSet actions =
-      enterprise_idle::GetActionSet([self prefService], [self authService]);
+
+  enterprise_idle::IdleService* idleService = [self idleService];
+  enterprise_idle::ActionSet actions = idleService->GetLastActionSet();
   std::optional<int> titleId =
       enterprise_idle::GetIdleTimeoutActionsTitleId(actions);
   CHECK(titleId)
@@ -117,18 +120,9 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
   return kDialogTimeout - (base::Time::Now() - self.triggerTime);
 }
 
-// Returns the AuthenticationService of the browser.
-- (AuthenticationService*)authService {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  DCHECK(browserState);
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  return authService;
-}
-
-// Returns the PrefService of the browser.
-- (PrefService*)prefService {
-  return self.browser->GetBrowserState()->GetPrefs();
+- (enterprise_idle::IdleService*)idleService {
+  return enterprise_idle::IdleServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 }
 
 @end
