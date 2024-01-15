@@ -858,6 +858,16 @@ class AutofillClient {
       base::OnceClosure no_interactive_authentication_callback =
           base::OnceClosure());
 
+  // Maybe triggers a hats survey that measures the user's perception of
+  // Autofill. When triggering happens, the survey dialog will be displayed with
+  // a 10s delay. Note:  This survey should be triggered after form submissions.
+  // `field_filling_stats_data` contains a key-value string representation of
+  // `autofill_metrics::FormGroupFillingStats`. See
+  // chrome/browser/ui/hats/survey_config.cc for details on what values should
+  // be present.
+  virtual void TriggerUserPerceptionOfAutofillSurvey(
+      const std::map<std::string, std::string>& field_filling_stats_data);
+
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 

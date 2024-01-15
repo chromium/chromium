@@ -297,6 +297,11 @@ void AutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
+    const std::map<std::string, std::string>& field_filling_stats_data) {
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() {
   return nullptr;

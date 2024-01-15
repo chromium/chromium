@@ -52,6 +52,9 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
@@ -1216,6 +1219,27 @@ void ChromeAutofillClient::ShowAutofillProgressDialog(
   DCHECK(autofill_progress_dialog_controller_);
   autofill_progress_dialog_controller_->ShowDialog(
       autofill_progress_dialog_type, std::move(cancel_callback));
+}
+
+void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
+    const std::map<std::string, std::string>& field_filling_stats_data) {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  // Also add information about whether the granular filling feature is
+  // available". The goal is to correlate the user's perception of autofill with
+  // the feature.
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerAutofillAddressUserPerception, web_contents(),
+      /*timeout_ms=*/10000, /*product_specific_bits_data=*/
+      {{"granular filling available",
+        base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable)}},
+      field_filling_stats_data);
+#endif
 }
 
 void ChromeAutofillClient::CloseAutofillProgressDialog(

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
+#include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -267,6 +268,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
+  void TriggerUserPerceptionOfAutofillSurvey(
+      const std::map<std::string, std::string>& field_filling_stats_data)
+      override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
