@@ -135,9 +135,8 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   // necessary to get e.g. any field trial handle and feature overrides from
   // whomever initiated the this fork request.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-  base::CommandLine passed_command_line(base::CommandLine::NO_PROGRAM);
-  passed_command_line.InitFromArgv(args);
-  command_line.AppendArguments(passed_command_line, /*include_program=*/false);
+  command_line.AppendArguments(base::CommandLine::FromArgvWithoutProgram(args),
+                               /*include_program=*/false);
   if (command_line.HasSwitch(switches::kVerboseLoggingInNacl)) {
     base::Environment::Create()->SetVar(
         "NACLVERBOSITY",
