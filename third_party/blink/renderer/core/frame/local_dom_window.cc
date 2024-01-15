@@ -590,9 +590,6 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
         feature, UseCounterImpl::PermissionsPolicyUsageType::kViolation);
   }
 
-  if (!RuntimeEnabledFeatures::PermissionsPolicyReportingEnabled(this)) {
-    return;
-  }
   if (!GetFrame()) {
     return;
   }

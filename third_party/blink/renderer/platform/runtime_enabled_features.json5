@@ -2974,10 +2974,6 @@
       base_feature: "none",
     },
     {
-      name: "PermissionsPolicyReporting",
-      status: "stable",
-    },
-    {
       name: "PermissionsRequestRevoke",
       status: "experimental",
       base_feature: "none",

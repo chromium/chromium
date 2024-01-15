@@ -705,8 +705,6 @@ class IsolatedWebAppPermissionsPolicyBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppUsbBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PermissionsPolicyReporting");
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
