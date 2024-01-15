@@ -121,6 +121,7 @@ export const ErrorCodeSchema = z.lazy(() =>
     'unable to capture screen',
     'unable to close browser',
     'unable to set cookie',
+    'unable to set file input',
     'underspecified storage partition',
     'unknown command',
     'unknown error',

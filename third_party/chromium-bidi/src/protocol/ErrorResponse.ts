@@ -155,6 +155,12 @@ export class UnableToSetCookieException extends Exception {
   }
 }
 
+export class UnableToSetFileInputException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnableToSetFileInput, message, stacktrace);
+  }
+}
+
 export class UnderspecifiedStoragePartitionException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.UnderspecifiedStoragePartition, message, stacktrace);

@@ -94,6 +94,7 @@ export const enum ErrorCode {
   UnableToCaptureScreen = 'unable to capture screen',
   UnableToCloseBrowser = 'unable to close browser',
   UnableToSetCookie = 'unable to set cookie',
+  UnableToSetFileInput = 'unable to set file input',
   UnderspecifiedStoragePartition = 'underspecified storage partition',
   UnknownCommand = 'unknown command',
   UnknownError = 'unknown error',

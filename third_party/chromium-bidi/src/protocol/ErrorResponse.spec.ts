@@ -41,6 +41,7 @@ describe('Exception', () => {
     [ErrorCode.UnableToCaptureScreen]: undefined,
     [ErrorCode.UnableToCloseBrowser]: undefined,
     [ErrorCode.UnableToSetCookie]: undefined,
+    [ErrorCode.UnableToSetFileInput]: undefined,
     [ErrorCode.UnderspecifiedStoragePartition]: undefined,
     [ErrorCode.UnknownCommand]: undefined,
     [ErrorCode.UnknownError]: undefined,
