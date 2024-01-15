@@ -597,6 +597,10 @@ void RenderWidgetHostViewBase::EnableAutoResize(const gfx::Size& min_size,
   host()->SynchronizeVisualProperties();
 }
 
+bool RenderWidgetHostViewBase::IsAutoResizeEnabled() {
+  return host()->auto_resize_enabled();
+}
+
 void RenderWidgetHostViewBase::DisableAutoResize(const gfx::Size& new_size) {
   // Note that for some subclasses, such as RenderWidgetHostViewAura, setting
   // the view size may trigger the synchronization on the visual properties. As

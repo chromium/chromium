@@ -165,6 +165,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
 
+  // Returns the value for whether the auto-resize has been enabled or not.
+  bool IsAutoResizeEnabled();
+
   virtual void UpdateIntrinsicSizingInfo(
       blink::mojom::IntrinsicSizingInfoPtr sizing_info);
 

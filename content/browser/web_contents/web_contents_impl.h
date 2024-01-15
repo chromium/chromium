@@ -1827,6 +1827,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // |current_fullscreen_frame_id_| and notify observers whenever it changes.
   void FullscreenFrameSetUpdated();
 
+  // Adjusts bounds for minimum window size and available screen area
+  // constraints. This compliments similar renderer-side adjustments, using the
+  // resolved display mode for new windows, which renderers may be unable to
+  // determine.
+  int64_t AdjustWindowRect(gfx::Rect* bounds, RenderFrameHostImpl* opener);
+
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
   void OnCaptionStyleUpdated() override;

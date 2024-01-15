@@ -167,6 +167,7 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
@@ -497,7 +498,7 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
 // indicate uninitialized placement information in the renderer. Constraints
 // enforced later should resolve most inaccuracies, but this early enforcement
 // is needed to ensure bounds indicate the appropriate display.
-int64_t AdjustRequestedWindowBounds(gfx::Rect* rect, RenderFrameHost* host) {
+int64_t AdjustWindowRectForDisplay(gfx::Rect* rect, RenderFrameHost* host) {
   auto* screen = display::Screen::GetScreen();
   auto display = screen->GetDisplayMatching(*rect);
 
@@ -511,6 +512,19 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* rect, RenderFrameHost* host) {
   }
   rect->AdjustToFit(display.work_area());
   return display.id();
+}
+
+// Adjusts the bounds to the minimum window size provided. Defaults to
+// `blink::kMinimumWindowSize` but can be overridden, e.g. for borderless apps.
+void AdjustWindowRectForMinimum(gfx::Rect* bounds,
+                                int minimum_size = blink::kMinimumWindowSize) {
+  // Size 0 indicates default size, not minimum.
+  if (bounds->width()) {
+    bounds->set_width(std::max(minimum_size, bounds->width()));
+  }
+  if (bounds->height()) {
+    bounds->set_height(std::max(minimum_size, bounds->height()));
+  }
 }
 
 // A ColorProviderSource used when one has not been explicitly set. This source
@@ -4653,6 +4667,32 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   return widget_host;
 }
 
+int64_t WebContentsImpl::AdjustWindowRect(gfx::Rect* bounds,
+                                          RenderFrameHostImpl* opener) {
+  // Auto-resize can override other mechanisms for enforcing min/max window size
+  // for some modals and popups to fit the size of their contents. Borderless
+  // apps shouldn't have overlap with auto-resize mode windows.
+  if (!(GetRenderWidgetHostView() &&
+        static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())
+            ->IsAutoResizeEnabled())) {
+    // For borderless apps the minimum size is
+    // `blink::kMinimumBorderlessWindowSize` instead of the default
+    // `blink::kMinimumWindowSize`.
+    int minimum_size =
+        GetDisplayMode() == blink::mojom::DisplayMode::kBorderless &&
+                IsWindowManagementGranted(opener)
+            ? blink::kMinimumBorderlessWindowSize
+            : blink::kMinimumWindowSize;
+    AdjustWindowRectForMinimum(bounds, minimum_size);
+  }
+
+  int64_t display_id = display::kInvalidDisplayId;
+  if (*bounds != gfx::Rect()) {
+    display_id = AdjustWindowRectForDisplay(bounds, opener);
+  }
+  return display_id;
+}
+
 void WebContentsImpl::ShowCreatedWindow(
     RenderFrameHostImpl* opener,
     int main_frame_widget_route_id,
@@ -4703,10 +4743,7 @@ void WebContentsImpl::ShowCreatedWindow(
   // Assume that if any single value is non-zero, all values should be used.
   // TODO(crbug.com/897300): Utilize window_features.has_x and others.
   blink::mojom::WindowFeatures adjusted_features = window_features;
-  int64_t display_id = display::kInvalidDisplayId;
-  if (adjusted_features.bounds != gfx::Rect()) {
-    display_id = AdjustRequestedWindowBounds(&adjusted_features.bounds, opener);
-  }
+  int64_t display_id = AdjustWindowRect(&adjusted_features.bounds, opener);
 
   // Drop fullscreen when opening a WebContents to prohibit deceptive behavior.
   // Only drop fullscreen on the specific destination display, if it is known.
@@ -8083,8 +8120,7 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   }
 
   // Only requests from the main frame, not subframes, should reach this code.
-  int64_t display_id =
-      AdjustRequestedWindowBounds(&bounds, GetPrimaryMainFrame());
+  int64_t display_id = AdjustWindowRect(&bounds, GetPrimaryMainFrame());
 
   // Drop fullscreen when placing a WebContents to prohibit deceptive behavior.
   // Only drop fullscreen on the specific destination display, which is known.
