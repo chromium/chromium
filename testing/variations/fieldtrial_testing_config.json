@@ -6894,6 +6894,21 @@
             ]
         }
     ],
+    "ExpandedPrefetchRange": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExpandedPrefetchRange"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExperimentalFeaturesVisibilityDesktop": [
         {
             "platforms": [
