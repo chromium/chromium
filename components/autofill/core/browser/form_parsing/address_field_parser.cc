@@ -910,7 +910,7 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
   // Give the label priority over the name to avoid misclassifications when the
   // name has a misleading value (e.g. in TR the province field is named "city",
   // in MX the input field for "Municipio/Delegación" is sometimes named "city"
-  // even though that should be mapped to a "Cuidad").
+  // even though that should be mapped to a "Ciudad").
   if (context.page_language == LanguageCode("tr") &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
