@@ -219,7 +219,10 @@ void ReportQueueImpl::AddProducedRecord(RecordProducer record_producer,
                      config_->is_event_allowed_cb(), config_->dm_token(),
                      config_->destination(), config_->reserved_space(),
                      config_->source_info(), std::move(record_producer),
-                     std::move(callback)));
+                     // EnqueueCallback must be run on the current thread, we
+                     // need to bind to make sure it's posted to correct thread
+                     // from the ThreadPool.
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
