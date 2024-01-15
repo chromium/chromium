@@ -98,7 +98,9 @@ ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info) {
   DCHECK(profile);
-  if (chromeos::features::IsFileSystemProviderContentCacheEnabled()) {
+  // Cache type is only set when `FileSystemProviderContentCache` feature flag
+  // is enabled and the provider is ODFS.
+  if (file_system_info.cache_type() != CacheType::NONE) {
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<CachedFileSystem>(
             std::make_unique<ProvidedFileSystem>(profile, file_system_info)));
