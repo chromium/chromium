@@ -9,8 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 
-// TODO(b/294040250): Add metrics for ScrollPredictor histogram.
-
 namespace cc {
 class UkmManager;
 
@@ -28,20 +26,46 @@ class CC_EXPORT ScrollJankUkmReporter {
   void IncrementPredictorJankyFrames();
 
   void EmitScrollJankUkm();
+  void EmitPredictorJankUkm();
+  void ResetPredictorMetrics();
 
   void set_max_missed_vsyncs(int max_missed_vsyncs) {
     max_missed_vsyncs_ = max_missed_vsyncs;
   }
 
+  void set_max_delta(int max_delta) { max_delta_ = max_delta; }
+
+  void set_frame_with_missed_vsync(int frame_with_missed_vsync) {
+    frame_with_missed_vsync_ = frame_with_missed_vsync;
+  }
+
+  void set_frame_with_no_missed_vsync(int frame_with_no_missed_vsync) {
+    frame_with_no_missed_vsync_ = frame_with_no_missed_vsync;
+  }
+
   void set_ukm_manager(UkmManager* manager) { ukm_manager_ = manager; }
 
  private:
+  // Scroll metrics
   int num_frames_ = 0;
   int num_vsyncs_ = 0;
   int num_missed_vsyncs_ = 0;
   int max_missed_vsyncs_ = 0;
   int num_delayed_frames_ = 0;
   int predictor_jank_frames_ = 0;
+
+  // Scroll update/predictor metrics
+
+  // The max delta can be used to determine if this is a fast or slow scroll.
+  // If this value is > kScrollDeltaThreshold in PredictorJankTracker, then the
+  // scroll is fast. This value can also let us know the jank threshold
+  // (kSlowJankyThreshold or kFastJankyThreshold in PredictorJankTracker).
+  int max_delta_ = 0;
+
+  // These values represent the PredictorJankTracker janky_value. These values
+  // are only recorded if they are larger than the jank threshold.
+  int frame_with_missed_vsync_ = 0;
+  int frame_with_no_missed_vsync_ = 0;
 
   // This is pointing to the LayerTreeHostImpl::ukm_manager_, which is
   // initialized right after the LayerTreeHostImpl is created. So when this

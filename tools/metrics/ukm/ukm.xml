@@ -9136,6 +9136,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Event.ScrollJank.PredictorJank">
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Recorded for scroll update events only if the conditions for janky predictor
+    metrics are met - if the ratio of displacement between any consecutive
+    frames is above a particular threshold. Threshold depends on scroll speed
+    and screen displacement in pixels.
+  </summary>
+  <metric name="MaxDelta">
+    <summary>
+      The maximum scroll delta at a given update, when compared to its two
+      neighbors. If this value is less than 7 (kScrollDeltaThreshold in
+      PredictorJankTracker), then the scroll is considered slow. Above this
+      threshold, the scroll is considered fast. This also helps to determine
+      what the threshold for jank should be.
+    </summary>
+  </metric>
+  <metric name="ScrollUpdate.MissedVsync.FrameAboveJankyThreshold2">
+    <summary>
+      The total number of times that there was a larger displacement at a given
+      frame relative to its neighboring frames in the sequence, if the previous
+      vsync was missed.
+    </summary>
+  </metric>
+  <metric name="ScrollUpdate.NoMissedVsync.FrameAboveJankyThreshold2">
+    <summary>
+      The total number of times that there was a larger displacement at a given
+      frame relative to its neighboring frames in the sequence, if the previous
+      vsync was not missed.
+    </summary>
+  </metric>
+</event>
+
 <event name="Event.ScrollUpdate.Touch">
   <owner>nzolghadr@chromium.org</owner>
   <summary>

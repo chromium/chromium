@@ -1543,6 +1543,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
                                        last_coalesced_ts, end_timestamp,
                                        args_.interval);
   }
+  if (global_trackers_.scroll_jank_ukm_reporter) {
+    global_trackers_.scroll_jank_ukm_reporter->EmitPredictorJankUkm();
+  }
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
