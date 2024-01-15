@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -397,13 +398,21 @@ void ChromeKeyboardControllerClient::OnKeyboardContentsLoaded() {
 void ChromeKeyboardControllerClient::OnSessionStateChanged() {
   TRACE_EVENT0("login",
                "ChromeKeyboardControllerClient::OnSessionStateChanged");
-  if (!session_manager::SessionManager::Get()->IsSessionStarted()) {
-    // Reset the registrar so that prefs are re-registered after a crash.
+  if (base::FeatureList::IsEnabled(
+          ash::features::kTouchVirtualKeyboardPolicyListenPrefsAtLogin)) {
+    // We need to listen for pref changes even in login screen to control the
+    // virtual keyboard behavior on the login screen.
     pref_change_registrar_.RemoveAll();
-    return;
+  } else {
+    if (!session_manager::SessionManager::Get()->IsSessionStarted()) {
+      // Reset the registrar so that prefs are re-registered after a crash.
+      pref_change_registrar_.RemoveAll();
+      return;
+    }
+    if (!pref_change_registrar_.IsEmpty()) {
+      return;
+    }
   }
-  if (!pref_change_registrar_.IsEmpty())
-    return;
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   pref_change_registrar_.Init(profile->GetPrefs());
