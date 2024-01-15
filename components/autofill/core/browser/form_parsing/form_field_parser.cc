@@ -32,7 +32,7 @@
 #include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/search_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/travel_field.h"
+#include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -144,7 +144,7 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   // Travel pass.
-  ParseFormFieldsPass(TravelField::Parse, context, processed_fields,
+  ParseFormFieldsPass(TravelFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   // Address pass.

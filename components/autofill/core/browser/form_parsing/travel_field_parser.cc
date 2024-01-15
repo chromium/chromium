@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/travel_field.h"
+#include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
 
 #include <memory>
 #include <utility>
@@ -19,11 +19,12 @@ base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
 }
 }  // namespace
 
-TravelField::~TravelField() = default;
+TravelFieldParser::~TravelFieldParser() = default;
 
 // static
-std::unique_ptr<FormFieldParser> TravelField::Parse(ParsingContext& context,
-                                                    AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> TravelFieldParser::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   if (!scanner || scanner->IsEnd()) {
     return nullptr;
   }
@@ -37,7 +38,7 @@ std::unique_ptr<FormFieldParser> TravelField::Parse(ParsingContext& context,
   base::span<const MatchPatternRef> flight_patterns =
       GetMatchPatterns("FLIGHT", context);
 
-  auto travel_field = std::make_unique<TravelField>();
+  auto travel_field = std::make_unique<TravelFieldParser>();
   if (ParseField(context, scanner, kPassportRe, passport_patterns,
                  &travel_field->passport_, "kPassportRe") ||
       ParseField(context, scanner, kTravelOriginRe, travel_origin_patterns,
@@ -54,7 +55,7 @@ std::unique_ptr<FormFieldParser> TravelField::Parse(ParsingContext& context,
   return nullptr;
 }
 
-void TravelField::AddClassifications(
+void TravelFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   // Simply tag all the fields as unknown types. Travel is currently used as
   // filter.
