@@ -295,6 +295,18 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 <translation id="1223789468190631420">Inschakelstatus van Safe Browsing voor vertrouwde bronnen</translation>
 <translation id="123018742985150697">Vereisen dat de lokale gebruiker en de eigenaar van de host voor externe toegang overeenkomen</translation>
 <translation id="123081309365616809">Casten van content naar apparaat aanzetten</translation>
+<translation id="1233343906578850273">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aanstaat en je daarna <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> instelt, wordt de URL aangegeven van de zoekmachine die wordt gebruikt voor afbeeldingszoekopdrachten. (Als <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> is ingesteld, wordt in plaats daarvan de POST-methode gebruikt voor afbeeldingszoekopdrachten.)
+
+      Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> niet instelt, worden er geen afbeeldingszoekopdrachten gebruikt.
+
+      Als afbeeldingszoekopdrachten de GET-methode gebruiken, moet de URL afbeeldingsparameters aangeven met een geldige combinatie van de volgende tijdelijke aanduidingen:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="1238868319430505522">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Hiermee bepaal je of websites op een onbeveiligde manier verzoeken mogen sturen naar netwerkeindpunten die meer privé zijn.
 
@@ -5122,6 +5134,18 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5366977351895725771">Als dit is ingesteld op False, kunnen geen gebruikers met beperkte rechten worden gemaakt door deze gebruiker. Bestaande gebruikers met beperkte rechten blijven beschikbaar.
 
           Als dit is ingesteld op True of niet is ingesteld, kunnen gebruikers met beperkte rechten worden gemaakt en beheerd door deze gebruiker.</translation>
+<translation id="5367255280764736002">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aanstaat en je daarna <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> instelt, worden de parameters aangegeven tijdens afbeeldingszoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter (zoals {imageThumbnail}) is, wordt de waarde vervangen door echte thumbnailgegevens.
+
+      Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> niet instelt, worden afbeeldingszoekopdrachten gestuurd met de GET-methode.
+
+      De URL moet de afbeeldingsparameter aangeven met een geldige combinatie van de volgende tijdelijke aanduidingen, afhankelijk van wat de zoekprovider ondersteunt:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="5369937289900051171">Alleen afdrukken in kleur</translation>
 <translation id="5370279767682621504">Ondersteuning voor HTTP/0.9 op niet-standaardpoorten aanzetten</translation>
 <translation id="5370765433640162225">Als je dit beleid instelt op True, wordt de automatische opruiming uitgevoerd tijdens het inloggen om te zorgen dat er voldoende vrije schijfruimte beschikbaar is.
@@ -9037,6 +9061,13 @@ Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingesch
       Als het beleid is ingesteld op 'True', kunnen tabbladen die minimaal vijf minuten op de achtergrond actief zijn worden vastgezet. Het vastzetten van tabbladen verlaagt het CPU-, batterij- en geheugengebruik. <ph name="PRODUCT_NAME" /> gebruikt bepaalde methoden om te voorkomen dat tabbladen worden vastgezet die nuttig werk op de achtergrond leveren (zoals meldingen tonen, geluid afspelen en video streamen). Webontwikkelaars kunnen daarnaast hun toestemming intrekken voor het vastzetten van hun site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
+<translation id="8610216287193516769">Verwijderd in M122: Dit is een beleid dat alleen aan de serverzijde bestaat en dat de ChromeOS-beleidsinfrastructuur nooit heeft gebruikt voor de uitvoering.
+Als je dit beleid instelt op <ph name="POLICY_VALUE_ALL" /> of niet instelt, zijn alle typen gebruik van beheerde accounts toegestaan. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het account alleen beleidsregels krijgt als het is ingelogd als primair account in een browserprofiel.
+      Beleidsregels die zijn ingesteld voor het account, worden in de volgende scenario's niet afgedwongen:
+- Het account is een secundair account op OS-niveau (accountinstellingen)
+- Het account is een secundair account in een browserprofiel
+
+Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> voor een account, mag dit account alleen inloggen als primair account. Het mag niet inloggen als secundair account.</translation>
 <translation id="8612188068319977428">Hiermee bepaal je met welke frequentie Chrome-statusrapporten worden geüpload.
 
 Hieronder vallen rapporten die zijn aangezet door <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
