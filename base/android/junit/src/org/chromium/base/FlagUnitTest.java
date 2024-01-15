@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
+package org.chromium.base;
 
-import static org.chromium.chrome.browser.flags.BaseFlagTestRule.FEATURE_A;
+import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
 
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.PostNativeFlag;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureMap;
-import org.chromium.base.Flag;
-import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.BaseFlagTestRule;
 
 /** Unit Tests for {@link Flag}. */
 @RunWith(BaseRobolectricTestRunner.class)

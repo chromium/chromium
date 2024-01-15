@@ -4488,11 +4488,26 @@ if (is_android) {
     deps = [
       ":base_java",
       ":base_shared_preferences_java",
+      "//base/version_info/android:version_constants_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
-    sources = [ "android/java/src/org/chromium/base/cached_flags/CachedFlagsSharedPreferences.java" ]
+    sources = [
+      "android/java/src/org/chromium/base/cached_flags/AllCachedFieldTrialParameters.java",
+      "android/java/src/org/chromium/base/cached_flags/BooleanCachedFieldTrialParameter.java",
+      "android/java/src/org/chromium/base/cached_flags/CachedFieldTrialParameter.java",
+      "android/java/src/org/chromium/base/cached_flags/CachedFlag.java",
+      "android/java/src/org/chromium/base/cached_flags/CachedFlagUtils.java",
+      "android/java/src/org/chromium/base/cached_flags/CachedFlagsSafeMode.java",
+      "android/java/src/org/chromium/base/cached_flags/CachedFlagsSharedPreferences.java",
+      "android/java/src/org/chromium/base/cached_flags/DoubleCachedFieldTrialParameter.java",
+      "android/java/src/org/chromium/base/cached_flags/IntCachedFieldTrialParameter.java",
+      "android/java/src/org/chromium/base/cached_flags/PostNativeFlag.java",
+      "android/java/src/org/chromium/base/cached_flags/StringCachedFieldTrialParameter.java",
+      "android/java/src/org/chromium/base/cached_flags/ValuesOverridden.java",
+      "android/java/src/org/chromium/base/cached_flags/ValuesReturned.java",
+    ]
   }
 
   android_aidl("process_launcher_aidl") {
@@ -4739,6 +4754,7 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRule.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRunner.java",
       "test/android/junit/src/org/chromium/base/test/ShadowBuildInfo.java",
+      "test/android/junit/src/org/chromium/base/test/util/BaseFlagTestRule.java",
       "test/android/junit/src/org/chromium/base/test/util/TestRunnerTestRule.java",
     ]
 
@@ -4751,6 +4767,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":base_java_test_support",
+      "//base:base_cached_flags_java",
       "//testing/android/junit:junit_test_support",
       "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
       "//third_party/androidx:androidx_test_core_java",
@@ -4770,12 +4787,14 @@ if (is_android) {
       "android/junit/src/org/chromium/base/DiscardableReferencePoolTest.java",
       "android/junit/src/org/chromium/base/FeatureListUnitTest.java",
       "android/junit/src/org/chromium/base/FileUtilsTest.java",
+      "android/junit/src/org/chromium/base/FlagUnitTest.java",
       "android/junit/src/org/chromium/base/LifetimeAssertTest.java",
       "android/junit/src/org/chromium/base/LogTest.java",
       "android/junit/src/org/chromium/base/MathUtilsTest.java",
       "android/junit/src/org/chromium/base/MutableFlagWithSafeDefaultUnitTest.java",
       "android/junit/src/org/chromium/base/PathUtilsTest.java",
       "android/junit/src/org/chromium/base/PiiEliderTest.java",
+      "android/junit/src/org/chromium/base/PostNativeFlagUnitTest.java",
       "android/junit/src/org/chromium/base/PromiseTest.java",
       "android/junit/src/org/chromium/base/ResettersForTestingTest.java",
       "android/junit/src/org/chromium/base/TimeUtilsTest.java",
@@ -4783,6 +4802,9 @@ if (is_android) {
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
       "android/junit/src/org/chromium/base/ValueChangedCallbackTest.java",
+      "android/junit/src/org/chromium/base/cached_flags/CachedFeatureFlagsSafeModeUnitTest.java",
+      "android/junit/src/org/chromium/base/cached_flags/CachedFieldTrialParameterUnitTest.java",
+      "android/junit/src/org/chromium/base/cached_flags/CachedFlagUnitTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsListenerTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsStoreTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/JankActivityTrackerTest.java",
@@ -4829,6 +4851,7 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/test/util/SkipCheckTest.java",
     ]
     deps = [
+      ":base_cached_flags_java",
       ":base_java",
       ":base_java_process_launcher_test_support",
       ":base_java_test_support",

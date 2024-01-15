@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
+package org.chromium.base.cached_flags;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;

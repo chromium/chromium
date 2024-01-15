@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.BaseFlagTestRule;
+import org.chromium.base.test.util.BaseFlagTestRule;
 
 /** Unit Tests for {@link ChromeCachedFlags}. */
 @RunWith(BaseRobolectricTestRunner.class)

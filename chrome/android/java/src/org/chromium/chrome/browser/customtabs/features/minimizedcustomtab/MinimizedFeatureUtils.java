@@ -17,10 +17,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 
 /** Utility methods for the Minimized Custom Tab feature. */
 public class MinimizedFeatureUtils {

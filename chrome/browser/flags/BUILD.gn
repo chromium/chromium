@@ -7,24 +7,12 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/flags/AllCachedFieldTrialParameters.java",
-    "android/java/src/org/chromium/chrome/browser/flags/BooleanCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFlag.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFlagUtils.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
-    "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/chrome/browser/flags/PostNativeFlag.java",
-    "android/java/src/org/chromium/chrome/browser/flags/StringCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/chrome/browser/flags/ValuesOverridden.java",
-    "android/java/src/org/chromium/chrome/browser/flags/ValuesReturned.java",
   ]
+  public_deps = [ "//base:base_cached_flags_java" ]
   deps = [
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build:chromeos_buildflags",
@@ -74,15 +62,9 @@ java_cpp_enum("chrome_browser_flags_enums_srcjar") {
 
 robolectric_library("flags_junit_tests") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/flags/BaseFlagTestRule.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsSafeModeUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameterUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/CachedFlagUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithoutProcessorUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/FlagUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/PostNativeFlagUnitTest.java",
   ]
   deps = [
     ":java",

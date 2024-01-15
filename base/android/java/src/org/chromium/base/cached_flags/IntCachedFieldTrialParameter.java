@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
+package org.chromium.base.cached_flags;
 
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 
-/** A boolean-type {@link CachedFieldTrialParameter}. */
-public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private boolean mDefaultValue;
+/** An int-type {@link CachedFieldTrialParameter}. */
+public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
+    private int mDefaultValue;
 
-    public BooleanCachedFieldTrialParameter(
-            FeatureMap featureMap, String featureName, String variationName, boolean defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.BOOLEAN);
+    public IntCachedFieldTrialParameter(
+            FeatureMap featureMap, String featureName, String variationName, int defaultValue) {
+        super(featureMap, featureName, variationName, FieldTrialParameterType.INT);
         mDefaultValue = defaultValue;
     }
 
@@ -23,47 +22,47 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
      * @return the value of the field trial parameter that should be used in this run.
      */
     @AnyThread
-    public boolean getValue() {
+    public int getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String preferenceName = getSharedPreferenceKey();
-        boolean defaultValue = getDefaultValue();
+        int defaultValue = getDefaultValue();
 
-        Boolean value = ValuesOverridden.getBool(preferenceName);
+        Integer value = ValuesOverridden.getInt(preferenceName);
         if (value != null) {
             return value;
         }
 
-        synchronized (ValuesReturned.sBoolValues) {
-            value = ValuesReturned.sBoolValues.get(preferenceName);
+        synchronized (ValuesReturned.sIntValues) {
+            value = ValuesReturned.sIntValues.get(preferenceName);
             if (value != null) {
                 return value;
             }
 
             value =
                     CachedFlagsSafeMode.getInstance()
-                            .getBooleanFieldTrialParam(preferenceName, defaultValue);
+                            .getIntFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
                 value =
                         CachedFlagsSharedPreferences.getInstance()
-                                .readBoolean(preferenceName, defaultValue);
+                                .readInt(preferenceName, defaultValue);
             }
 
-            ValuesReturned.sBoolValues.put(preferenceName, value);
+            ValuesReturned.sIntValues.put(preferenceName, value);
         }
         return value;
     }
 
-    public boolean getDefaultValue() {
+    public int getDefaultValue() {
         return mDefaultValue;
     }
 
     @Override
     void cacheToDisk() {
-        boolean value =
-                mFeatureMap.getFieldTrialParamByFeatureAsBoolean(
+        int value =
+                mFeatureMap.getFieldTrialParamByFeatureAsInt(
                         getFeatureName(), getParameterName(), getDefaultValue());
-        CachedFlagsSharedPreferences.getInstance().writeBoolean(getSharedPreferenceKey(), value);
+        CachedFlagsSharedPreferences.getInstance().writeInt(getSharedPreferenceKey(), value);
     }
 
     /**
@@ -74,7 +73,7 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
      *
      * @param overrideValue the value to be returned
      */
-    public void setForTesting(boolean overrideValue) {
+    public void setForTesting(int overrideValue) {
         ValuesOverridden.setOverrideForTesting(
                 getSharedPreferenceKey(), String.valueOf(overrideValue));
     }

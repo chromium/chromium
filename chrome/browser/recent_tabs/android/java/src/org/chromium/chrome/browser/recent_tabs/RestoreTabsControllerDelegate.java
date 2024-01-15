@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 
 import java.util.List;

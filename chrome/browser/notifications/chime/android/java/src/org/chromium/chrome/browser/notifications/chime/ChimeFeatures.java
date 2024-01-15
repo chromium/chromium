@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.notifications.chime;
 
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Chime related features and Finch parameters. */

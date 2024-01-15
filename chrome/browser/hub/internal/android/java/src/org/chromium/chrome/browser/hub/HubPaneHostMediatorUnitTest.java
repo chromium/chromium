@@ -28,9 +28,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFlagUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link HubPaneHostMediator}. */

@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 
 /**
  * Common tab UI feature utils for public use.

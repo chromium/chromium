@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
+package org.chromium.base;
 
-import static org.chromium.chrome.browser.flags.BaseFlagTestRule.A_OFF_B_ON;
-import static org.chromium.chrome.browser.flags.BaseFlagTestRule.FEATURE_A;
-import static org.chromium.chrome.browser.flags.BaseFlagTestRule.FEATURE_B;
-import static org.chromium.chrome.browser.flags.BaseFlagTestRule.assertIsEnabledMatches;
+import static org.chromium.base.test.util.BaseFlagTestRule.A_OFF_B_ON;
+import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
+import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_B;
+import static org.chromium.base.test.util.BaseFlagTestRule.assertIsEnabledMatches;
 
+import org.chromium.base.cached_flags.PostNativeFlag;
+import org.chromium.base.test.util.BaseFlagTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit Tests for {@link PostNativeFlag}. */

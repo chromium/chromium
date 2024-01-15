@@ -6,9 +6,9 @@ package org.chromium.chrome.test.util.browser;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
-import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
-import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFlag;
+import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
+import org.chromium.base.cached_flags.CachedFieldTrialParameter;
+import org.chromium.base.cached_flags.CachedFlag;
 
 import java.util.Collections;
 import java.util.HashMap;

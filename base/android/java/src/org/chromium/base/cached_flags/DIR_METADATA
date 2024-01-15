@@ -1,0 +1,6 @@
+monorail: {
+  component: "Internals>Flags"
+}
+team_email: "clank-build-core@chromium.org"
+os: ANDROID
+

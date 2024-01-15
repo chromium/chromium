@@ -6,6 +6,12 @@ package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableFlagWithSafeDefault;
+import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.DoubleCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 
 import java.util.List;
 import java.util.Map;

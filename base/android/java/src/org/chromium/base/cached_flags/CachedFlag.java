@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
+package org.chromium.base.cached_flags;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 
 import java.util.HashMap;

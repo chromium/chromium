@@ -5,9 +5,9 @@
 package org.chromium.chrome.test.util.browser;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.test.util.FeaturesBase;
-import org.chromium.chrome.browser.flags.CachedFlag;
-import org.chromium.chrome.browser.flags.CachedFlagUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;

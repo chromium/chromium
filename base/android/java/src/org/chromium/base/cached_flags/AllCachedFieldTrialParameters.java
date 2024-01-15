@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
+package org.chromium.base.cached_flags;
 
 import androidx.annotation.AnyThread;
 
@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -14,6 +14,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.DoubleCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
