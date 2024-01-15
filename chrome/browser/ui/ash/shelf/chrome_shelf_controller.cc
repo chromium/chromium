@@ -1525,12 +1525,15 @@ void ChromeShelfController::UpdatePinnedByPolicyForItemAtIndex(
 void ChromeShelfController::UpdateForcedPinStateForItemAtIndex(
     int model_index) {
   ash::ShelfItem item = model_->items()[model_index];
-  auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile())
-                      ->AppRegistryCache()
-                      .GetAppType(item.id.app_id);
+  bool pin_state_forced_by_type = true;
 
-  const bool pin_state_forced_by_type =
-      !IsAppPinEditable(app_type, item.id.app_id, profile());
+  if (item.type == ash::TYPE_PINNED_APP || item.type == ash::TYPE_APP) {
+    auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile())
+                        ->AppRegistryCache()
+                        .GetAppType(item.id.app_id);
+    pin_state_forced_by_type =
+        !IsAppPinEditable(app_type, item.id.app_id, profile());
+  }
   if (item.pin_state_forced_by_type != pin_state_forced_by_type) {
     item.pin_state_forced_by_type = pin_state_forced_by_type;
     model_->Set(model_index, item);

@@ -590,7 +590,7 @@ var defaultTests = [
       chrome.test.assertEq('Running', item.status);
       chrome.test.assertTrue(item.showsTooltip);
       chrome.test.assertFalse(item.pinnedByPolicy);
-      chrome.test.assertFalse(item.pinStateForcedByType);
+      chrome.test.assertTrue(item.pinStateForcedByType);
       chrome.test.assertFalse(item.hasNotification);
     }));
   },
