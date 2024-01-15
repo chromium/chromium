@@ -178,8 +178,8 @@ class GLES2ExternalFrameBufferTest
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageFactory> backing_factory_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
+  std::unique_ptr<SharedImageFactory> backing_factory_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
