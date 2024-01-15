@@ -1195,6 +1195,14 @@
       base_feature: "none",
     },
     {
+      // Container query selectors containing uknown or unsupported queries
+      // never selects a container with this feature enabled.
+      // For instance, "@container (width > 0px) or (foo: bar)" will never
+      // select or match any containers.
+      name: "CSSUnknownContainerQueriesNoSelection",
+      status: "experimental",
+    },
+    {
       name: "CSSUpdateMediaFeature",
       status: "stable",
     },
