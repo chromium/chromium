@@ -93,13 +93,13 @@ class FormFieldTestBase {
   void TestClassificationExpectations();
 
   // Apply the parsing with a specific parser.
-  virtual std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                           AutofillScanner* scanner) = 0;
+  virtual std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                 AutofillScanner* scanner) = 0;
 
   FieldRendererId MakeFieldRendererId();
 
   std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<FormField> field_;
+  std::unique_ptr<FormFieldParser> field_;
   FieldCandidatesMap field_candidates_map_;
   std::map<FieldGlobalId, FieldType> expected_classifications_;
 

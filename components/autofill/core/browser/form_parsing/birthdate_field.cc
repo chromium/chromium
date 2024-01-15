@@ -35,14 +35,15 @@ BirthdateField::BirthdateField(const AutofillField* day,
     : day_(day), month_(month), year_(year) {}
 
 // static
-std::unique_ptr<FormField> BirthdateField::Parse(ParsingContext& context,
-                                                 AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> BirthdateField::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   // Currently only <select> elements are considered.
   raw_ptr<AutofillField> day = nullptr;
   raw_ptr<AutofillField> month = nullptr;
   raw_ptr<AutofillField> year = nullptr;
   // Expect at most 31 days/12 months plus one placeholder.
-  if (FormField::ParseInAnyOrder(
+  if (FormFieldParser::ParseInAnyOrder(
           scanner,
           {{&day, base::BindRepeating(&IsSelectWithIncreasingValues, scanner,
                                       28, 32)},

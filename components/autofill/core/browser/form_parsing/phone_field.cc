@@ -234,8 +234,8 @@ bool PhoneField::ParseGrammar(ParsingContext& context,
 }
 
 // static
-std::unique_ptr<FormField> PhoneField::Parse(ParsingContext& context,
-                                             AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> PhoneField::Parse(ParsingContext& context,
+                                                   AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return nullptr;
 

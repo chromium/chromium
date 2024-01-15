@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -23,7 +23,7 @@
 #include "components/autofill/core/browser/form_parsing/birthdate_field.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/iban_field.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
@@ -103,10 +103,11 @@ ParsingContext::ParsingContext(GeoIpCountryCode client_country,
 ParsingContext::~ParsingContext() = default;
 
 // static
-bool FormField::MatchesRegexWithCache(ParsingContext& context,
-                                      base::StringPiece16 input,
-                                      base::StringPiece16 pattern,
-                                      std::vector<std::u16string>* groups) {
+bool FormFieldParser::MatchesRegexWithCache(
+    ParsingContext& context,
+    base::StringPiece16 input,
+    base::StringPiece16 pattern,
+    std::vector<std::u16string>* groups) {
   RegexMatchesCache::Key key;
   if (!groups && context.matches_cache) {
     key = RegexMatchesCache::BuildKey(input, pattern);
@@ -125,7 +126,7 @@ bool FormField::MatchesRegexWithCache(ParsingContext& context,
 }
 
 // static
-void FormField::ParseFormFields(
+void FormFieldParser::ParseFormFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     bool is_form_tag,
@@ -201,7 +202,7 @@ void FormField::ParseFormFields(
 }
 
 // static
-void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
+void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates,
@@ -304,7 +305,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   }
 }
 
-void FormField::ParseSingleFieldForms(
+void FormFieldParser::ParseSingleFieldForms(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     bool is_form_tag,
@@ -327,7 +328,7 @@ void FormField::ParseSingleFieldForms(
   }
 }
 
-void FormField::ParseStandaloneCVCFields(
+void FormFieldParser::ParseStandaloneCVCFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
@@ -337,7 +338,7 @@ void FormField::ParseStandaloneCVCFields(
                       field_candidates);
 }
 
-void FormField::ParseStandaloneEmailFields(
+void FormFieldParser::ParseStandaloneEmailFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
@@ -348,7 +349,7 @@ void FormField::ParseStandaloneEmailFields(
 }
 
 // static
-bool FormField::FieldMatchesMatchPatternRef(
+bool FormFieldParser::FieldMatchesMatchPatternRef(
     ParsingContext& context,
     base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
@@ -369,9 +370,9 @@ bool FormField::FieldMatchesMatchPatternRef(
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
-        if (FormField::Match(context, &field, pattern.negative_pattern,
-                             MatchParams({attribute}, match_type.field_types),
-                             regex_name)) {
+        if (FormFieldParser::Match(
+                context, &field, pattern.negative_pattern,
+                MatchParams({attribute}, match_type.field_types), regex_name)) {
           match_type.attributes.erase(attribute);
         }
       }
@@ -382,8 +383,8 @@ bool FormField::FieldMatchesMatchPatternRef(
     }
 
     if (!IsEmpty(pattern.positive_pattern) &&
-        FormField::Match(context, &field, pattern.positive_pattern, match_type,
-                         regex_name)) {
+        FormFieldParser::Match(context, &field, pattern.positive_pattern,
+                               match_type, regex_name)) {
       return true;
     }
   }
@@ -391,26 +392,27 @@ bool FormField::FieldMatchesMatchPatternRef(
 }
 
 // static
-bool FormField::ParseField(ParsingContext& context,
-                           AutofillScanner* scanner,
-                           base::StringPiece16 pattern,
-                           base::span<const MatchPatternRef> patterns,
-                           raw_ptr<AutofillField>* match,
-                           const char* regex_name) {
+bool FormFieldParser::ParseField(ParsingContext& context,
+                                 AutofillScanner* scanner,
+                                 base::StringPiece16 pattern,
+                                 base::span<const MatchPatternRef> patterns,
+                                 raw_ptr<AutofillField>* match,
+                                 const char* regex_name) {
   return ParseFieldSpecifics(context, scanner, pattern, kDefaultMatchParams,
                              patterns, match, regex_name);
 }
 
 // static
-bool FormField::ParseFieldSpecificsWithLegacyPattern(
+bool FormFieldParser::ParseFieldSpecificsWithLegacyPattern(
     ParsingContext& context,
     AutofillScanner* scanner,
     base::StringPiece16 pattern,
     MatchParams match_type,
     raw_ptr<AutofillField>* match,
     const char* regex_name) {
-  if (scanner->IsEnd())
+  if (scanner->IsEnd()) {
     return false;
+  }
 
   const AutofillField* field = scanner->Cursor();
 
@@ -424,15 +426,16 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 }
 
 // static
-bool FormField::ParseFieldSpecificsWithNewPatterns(
+bool FormFieldParser::ParseFieldSpecificsWithNewPatterns(
     ParsingContext& context,
     AutofillScanner* scanner,
     base::span<const MatchPatternRef> patterns,
     raw_ptr<AutofillField>* match,
     const char* regex_name,
     MatchingPattern (*projection)(const MatchingPattern&)) {
-  if (scanner->IsEnd())
+  if (scanner->IsEnd()) {
     return false;
+  }
 
   const AutofillField* field = scanner->Cursor();
 
@@ -453,16 +456,17 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
-        if (FormField::Match(context, field, pattern.negative_pattern,
-                             MatchParams({attribute}, match_type.field_types),
-                             regex_name)) {
+        if (FormFieldParser::Match(
+                context, field, pattern.negative_pattern,
+                MatchParams({attribute}, match_type.field_types), regex_name)) {
           match_type.attributes.erase(attribute);
         }
       }
     }
 
-    if (match_type.attributes.empty())
+    if (match_type.attributes.empty()) {
       continue;
+    }
 
     // Apply the positive matching against all remaining match field attributes.
     if (!IsEmpty(pattern.positive_pattern) &&
@@ -475,7 +479,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
 }
 
 // static
-bool FormField::ParseFieldSpecifics(
+bool FormFieldParser::ParseFieldSpecifics(
     ParsingContext& context,
     AutofillScanner* scanner,
     base::StringPiece16 pattern,
@@ -496,13 +500,14 @@ bool FormField::ParseFieldSpecifics(
 }
 
 // static
-bool FormField::ParseInAnyOrder(
+bool FormFieldParser::ParseInAnyOrder(
     AutofillScanner* scanner,
     std::vector<
         std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
         fields_and_parsers) {
-  if (scanner->IsEnd())
+  if (scanner->IsEnd()) {
     return fields_and_parsers.empty();
+  }
   auto original_pos = scanner->SaveCursor();
   // The implementation tries matching every permutation `p` of parsers with the
   // scanners fields. While this has a terrible runtime for general n, the only
@@ -528,15 +533,16 @@ bool FormField::ParseInAnyOrder(
     }
     scanner->RewindTo(original_pos);
   } while (std::next_permutation(p.begin(), p.end()));
-  for (const auto& [field, _] : fields_and_parsers)
+  for (const auto& [field, _] : fields_and_parsers) {
     *field = nullptr;
+  }
   return false;
 }
 
 // static
-bool FormField::ParseEmptyLabel(ParsingContext& context,
-                                AutofillScanner* scanner,
-                                raw_ptr<AutofillField>* match) {
+bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
+                                      AutofillScanner* scanner,
+                                      raw_ptr<AutofillField>* match) {
   // Temporarily disable logging of matches for empty labels. They don't contain
   // a lot of insights but occur somewhat often.
   base::AutoReset disable_logging(&context.log_manager, nullptr);
@@ -553,13 +559,14 @@ bool FormField::ParseEmptyLabel(ParsingContext& context,
 }
 
 // static
-void FormField::AddClassification(const AutofillField* field,
-                                  FieldType type,
-                                  float score,
-                                  FieldCandidatesMap& field_candidates) {
+void FormFieldParser::AddClassification(const AutofillField* field,
+                                        FieldType type,
+                                        float score,
+                                        FieldCandidatesMap& field_candidates) {
   // Several fields are optional.
-  if (field == nullptr)
+  if (field == nullptr) {
     return;
+  }
 
   FieldCandidates& candidates = field_candidates[field->global_id()];
   candidates.AddFieldCandidate(type, score);
@@ -567,7 +574,7 @@ void FormField::AddClassification(const AutofillField* field,
 
 // static
 std::vector<raw_ptr<AutofillField, VectorExperimental>>
-FormField::RemoveCheckableFields(
+FormFieldParser::RemoveCheckableFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
   // Set up a working copy of the fields to be processed.
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields;
@@ -588,16 +595,17 @@ FormField::RemoveCheckableFields(
 }
 
 // static
-bool FormField::MatchAndAdvance(ParsingContext& context,
-                                AutofillScanner* scanner,
-                                base::StringPiece16 pattern,
-                                MatchParams match_type,
-                                raw_ptr<AutofillField>* match,
-                                const char* regex_name) {
+bool FormFieldParser::MatchAndAdvance(ParsingContext& context,
+                                      AutofillScanner* scanner,
+                                      base::StringPiece16 pattern,
+                                      MatchParams match_type,
+                                      raw_ptr<AutofillField>* match,
+                                      const char* regex_name) {
   AutofillField* field = scanner->Cursor();
-  if (FormField::Match(context, field, pattern, match_type, regex_name)) {
-    if (match)
+  if (FormFieldParser::Match(context, field, pattern, match_type, regex_name)) {
+    if (match) {
       *match = field;
+    }
     scanner->Advance();
     return true;
   }
@@ -605,11 +613,11 @@ bool FormField::MatchAndAdvance(ParsingContext& context,
   return false;
 }
 
-bool FormField::Match(ParsingContext& context,
-                      const AutofillField* field,
-                      base::StringPiece16 pattern,
-                      MatchParams match_type,
-                      const char* regex_name) {
+bool FormFieldParser::Match(ParsingContext& context,
+                            const AutofillField* field,
+                            base::StringPiece16 pattern,
+                            MatchParams match_type,
+                            const char* regex_name) {
   bool found_match = false;
   std::string_view match_type_string;
   base::StringPiece16 value;
@@ -673,14 +681,14 @@ bool FormField::Match(ParsingContext& context,
 }
 
 // static
-void FormField::ParseFormFieldsPass(
+void FormFieldParser::ParseFormFieldsPass(
     ParseFunction parse,
     ParsingContext& context,
     const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
     FieldCandidatesMap& field_candidates) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
-    std::unique_ptr<FormField> form_field = parse(context, &scanner);
+    std::unique_ptr<FormFieldParser> form_field = parse(context, &scanner);
     if (form_field == nullptr) {
       scanner.Advance();
     } else {
@@ -692,19 +700,20 @@ void FormField::ParseFormFieldsPass(
 }
 
 // static
-bool FormField::MatchesFormControlType(FormControlType type,
-                                       DenseSet<FormControlType> match_type) {
+bool FormFieldParser::MatchesFormControlType(
+    FormControlType type,
+    DenseSet<FormControlType> match_type) {
   return match_type.contains(type);
 }
 
 // static
-bool FormField::IsSingleFieldParseableType(FieldType field_type) {
+bool FormFieldParser::IsSingleFieldParseableType(FieldType field_type) {
   return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE ||
          field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
 
 // static
-void FormField::ParseUsingAutocompleteAttributes(
+void FormFieldParser::ParseUsingAutocompleteAttributes(
     const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
     FieldCandidatesMap& field_candidates) {
   for (const AutofillField* field : fields) {

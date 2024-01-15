@@ -19,8 +19,8 @@ class PriceFieldTest
   PriceFieldTest& operator=(const PriceFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return PriceField::Parse(context, scanner);
   }
 };

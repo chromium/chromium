@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -23,10 +23,10 @@ namespace autofill {
 class AutofillField;
 class AutofillScanner;
 
-class AddressField : public FormField {
+class AddressField : public FormFieldParser {
  public:
-  static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner);
+  static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                AutofillScanner* scanner);
 
   // Returns whether a stand-alone zip field is supported for `client_country`.
   // In some countries that's a prevalent UI (the user is first asked to enter
@@ -35,7 +35,7 @@ class AddressField : public FormField {
   // classifications. We may reevaluate that decision in the future.
   static bool IsStandaloneZipSupported(const GeoIpCountryCode& client_country);
 
-  static std::unique_ptr<FormField> ParseStandaloneZip(
+  static std::unique_ptr<FormFieldParser> ParseStandaloneZip(
       ParsingContext& context,
       AutofillScanner* scanner);
 

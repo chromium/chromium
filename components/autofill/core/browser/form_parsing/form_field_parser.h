@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_H_
 
 #include <memory>
 #include <string>
@@ -125,12 +125,12 @@ struct ParsingContext {
 // Represents a logical form field in a web form. Classes that implement this
 // interface can identify themselves as a particular type of form field, e.g.
 // name, phone number, or address field.
-class FormField {
+class FormFieldParser {
  public:
-  FormField(const FormField&) = delete;
-  FormField& operator=(const FormField&) = delete;
+  FormFieldParser(const FormFieldParser&) = delete;
+  FormFieldParser& operator=(const FormFieldParser&) = delete;
 
-  virtual ~FormField() = default;
+  virtual ~FormFieldParser() = default;
 
   // Classifies each field in |fields| with its heuristically detected type.
   // Each field has a derived unique name that is used as the key into
@@ -183,7 +183,8 @@ class FormField {
                               base::StringPiece16 pattern,
                               MatchParams match_type,
                               const char* regex_name = "") {
-    return FormField::Match(context, field, pattern, match_type, regex_name);
+    return FormFieldParser::Match(context, field, pattern, match_type,
+                                  regex_name);
   }
 
   static bool ParseInAnyOrderForTesting(
@@ -191,7 +192,7 @@ class FormField {
       std::vector<
           std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
           fields_and_parsers) {
-    return FormField::ParseInAnyOrder(scanner, fields_and_parsers);
+    return FormFieldParser::ParseInAnyOrder(scanner, fields_and_parsers);
   }
 
   // Assign types to the fields for the testing purposes.
@@ -221,7 +222,7 @@ class FormField {
   static constexpr float kBaseAutocompleteParserScore = 0.05f;
 
   // Only derived classes may instantiate.
-  FormField() = default;
+  FormFieldParser() = default;
 
   // Calls MatchesRegex() with a thread-safe cache.
   // Should not be called from the UI thread as it may be blocked on a worker
@@ -303,8 +304,9 @@ class FormField {
  private:
   // Function pointer type for the parsing function that should be passed to the
   // ParseFormFieldsPass() helper function.
-  typedef std::unique_ptr<FormField> ParseFunction(ParsingContext& context,
-                                                   AutofillScanner* scanner);
+  typedef std::unique_ptr<FormFieldParser> ParseFunction(
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   // Removes entries from `field_candidates` in case
   // - not enough fields were classified by local heuristics.
@@ -384,4 +386,4 @@ class FormField {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_H_

@@ -9,17 +9,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
 // Birthdate fields are currently not filled, but identifying them will help to
 // reduce the number of false positive credit card expiration dates.
-class BirthdateField : public FormField {
+class BirthdateField : public FormFieldParser {
  public:
-  static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner);
+  static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                AutofillScanner* scanner);
 
   BirthdateField(const BirthdateField&) = delete;
   BirthdateField& operator=(const BirthdateField&) = delete;

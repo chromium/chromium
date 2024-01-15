@@ -12,7 +12,7 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> NumericQuantityField::Parse(
+std::unique_ptr<FormFieldParser> NumericQuantityField::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;

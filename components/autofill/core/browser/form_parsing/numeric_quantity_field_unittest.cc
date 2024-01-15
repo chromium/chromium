@@ -17,8 +17,8 @@ class NumericQuantityFieldTest
   NumericQuantityFieldTest& operator=(const NumericQuantityFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return NumericQuantityField::Parse(context, scanner);
   }
 };

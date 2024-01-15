@@ -10,17 +10,17 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
-class TravelField : public FormField {
+class TravelField : public FormFieldParser {
  public:
   ~TravelField() override;
 
-  static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner);
+  static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                AutofillScanner* scanner);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;

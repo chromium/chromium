@@ -20,8 +20,8 @@ class SearchFieldTest
   SearchFieldTest& operator=(const SearchFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return SearchField::Parse(context, scanner);
   }
 };

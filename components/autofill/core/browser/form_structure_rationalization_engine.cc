@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -155,7 +155,8 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
     base::span<const MatchPatternRef> patterns =
         GetMatchPatterns(condition.regex_reference_match.value(),
                          context.page_language, context.pattern_source);
-    if (!FormField::FieldMatchesMatchPatternRef(context, patterns, field)) {
+    if (!FormFieldParser::FieldMatchesMatchPatternRef(context, patterns,
+                                                      field)) {
       return false;
     }
   }

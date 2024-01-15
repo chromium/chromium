@@ -43,7 +43,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
@@ -643,19 +643,21 @@ void FormStructure::ParseFieldTypesWithPatterns(ParsingContext& context) {
   FieldCandidatesMap field_type_map;
 
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(context, fields_, is_form_tag_, field_type_map);
-  } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormField::ParseSingleFieldForms(context, fields_, is_form_tag_,
+    FormFieldParser::ParseFormFields(context, fields_, is_form_tag_,
                                      field_type_map);
-    FormField::ParseStandaloneCVCFields(context, fields_, field_type_map);
+  } else if (ShouldRunHeuristicsForSingleFieldForms()) {
+    FormFieldParser::ParseSingleFieldForms(context, fields_, is_form_tag_,
+                                           field_type_map);
+    FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
     // For standalone email fields inside a form tag, allow heuristics even
     // when the minimum number of fields is not met. See similar comments
-    // in `FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
+    // in `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
     if (is_form_tag_ &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-      FormField::ParseStandaloneEmailFields(context, fields_, field_type_map);
+      FormFieldParser::ParseStandaloneEmailFields(context, fields_,
+                                                  field_type_map);
     }
   }
   if (field_type_map.empty()) {

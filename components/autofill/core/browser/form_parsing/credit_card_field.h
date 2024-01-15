@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -21,7 +21,7 @@ namespace autofill {
 class AutofillField;
 class AutofillScanner;
 
-class CreditCardField : public FormField {
+class CreditCardField : public FormFieldParser {
  public:
   explicit CreditCardField();
 
@@ -29,8 +29,8 @@ class CreditCardField : public FormField {
   CreditCardField& operator=(const CreditCardField&) = delete;
 
   ~CreditCardField() override;
-  static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner);
+  static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                AutofillScanner* scanner);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {

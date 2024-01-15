@@ -22,8 +22,8 @@ base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
 TravelField::~TravelField() = default;
 
 // static
-std::unique_ptr<FormField> TravelField::Parse(ParsingContext& context,
-                                              AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> TravelField::Parse(ParsingContext& context,
+                                                    AutofillScanner* scanner) {
   if (!scanner || scanner->IsEnd()) {
     return nullptr;
   }

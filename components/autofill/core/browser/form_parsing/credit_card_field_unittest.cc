@@ -88,8 +88,8 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
   CreditCardFieldTestBase& operator=(const CreditCardFieldTestBase&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return CreditCardField::Parse(context, scanner);
   }
 

@@ -11,8 +11,8 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> EmailField::Parse(ParsingContext& context,
-                                             AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> EmailField::Parse(ParsingContext& context,
+                                                   AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> email_patterns = GetMatchPatterns(
       "EMAIL_ADDRESS", context.page_language, context.pattern_source);

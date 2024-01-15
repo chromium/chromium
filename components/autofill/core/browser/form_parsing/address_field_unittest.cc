@@ -24,8 +24,8 @@ class AddressFieldTest
   AddressFieldTest& operator=(const AddressFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return AddressField::Parse(context, scanner);
   }
 };

@@ -117,15 +117,15 @@ class FirstLastNameField : public NameField {
 }  // namespace
 
 // static
-std::unique_ptr<FormField> NameField::Parse(ParsingContext& context,
-                                            AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> NameField::Parse(ParsingContext& context,
+                                                  AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return nullptr;
   }
 
   // Try |FirstLastNameField| and |FirstTwoLastNamesField| first since they are
   // more specific.
-  std::unique_ptr<FormField> field;
+  std::unique_ptr<FormFieldParser> field;
   if (!field) {
     field = FirstTwoLastNamesField::Parse(context, scanner);
   }

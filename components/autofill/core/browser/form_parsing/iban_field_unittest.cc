@@ -17,8 +17,8 @@ class IbanFieldTest
   IbanFieldTest& operator=(const IbanFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return IbanField::Parse(context, scanner);
   }
 };

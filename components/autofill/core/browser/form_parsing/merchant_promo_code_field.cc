@@ -12,7 +12,7 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
+std::unique_ptr<FormFieldParser> MerchantPromoCodeField::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;

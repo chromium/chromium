@@ -19,8 +19,8 @@ class StandaloneCvcFieldTest
   StandaloneCvcFieldTest& operator=(const StandaloneCvcFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return StandaloneCvcField::Parse(context, scanner);
   }
 

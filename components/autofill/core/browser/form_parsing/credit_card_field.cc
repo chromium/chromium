@@ -19,7 +19,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -69,8 +69,9 @@ bool FieldCanFitDataForFieldType(uint64_t max_length, FieldType type) {
 }  // namespace
 
 // static
-std::unique_ptr<FormField> CreditCardField::Parse(ParsingContext& context,
-                                                  AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> CreditCardField::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return nullptr;
   }
@@ -333,7 +334,7 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
   // Another way to eliminate days - filter out 'day' fields.
   base::span<const MatchPatternRef> day_patterns =
       GetMatchPatterns("DAY", *context);
-  if (FormField::ParseFieldSpecifics(
+  if (FormFieldParser::ParseFieldSpecifics(
           *context, scanner, kDayRe,
           kDefaultMatchParamsWith<FormControlType::kSelectOne,
                                   FormControlType::kSelectList>,

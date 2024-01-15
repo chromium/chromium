@@ -13,8 +13,9 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> StandaloneCvcField::Parse(ParsingContext& context,
-                                                     AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> StandaloneCvcField::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
     return nullptr;

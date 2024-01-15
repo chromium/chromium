@@ -48,8 +48,8 @@ class BirthdateFieldTest
   BirthdateFieldTest& operator=(const BirthdateFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                   AutofillScanner* scanner) override {
+  std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                         AutofillScanner* scanner) override {
     return BirthdateField::Parse(context, scanner);
   }
 };

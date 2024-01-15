@@ -10,15 +10,15 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
-class EmailField : public FormField {
+class EmailField : public FormFieldParser {
  public:
-  static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner);
+  static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                AutofillScanner* scanner);
   explicit EmailField(const AutofillField* field);
 
   EmailField(const EmailField&) = delete;

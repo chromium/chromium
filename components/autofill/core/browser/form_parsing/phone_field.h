@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
-#include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -27,14 +27,14 @@ class AutofillScanner;
 // - area code, prefix, suffix
 // - area code, number
 // - number
-class PhoneField : public FormField {
+class PhoneField : public FormFieldParser {
  public:
   ~PhoneField() override;
   PhoneField(const PhoneField&) = delete;
   PhoneField& operator=(const PhoneField&) = delete;
 
-  static std::unique_ptr<FormField> Parse(ParsingContext& context,
-                                          AutofillScanner* scanner);
+  static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
+                                                AutofillScanner* scanner);
 
 #if defined(UNIT_TEST)
   // Assign types to the fields for the testing purposes.

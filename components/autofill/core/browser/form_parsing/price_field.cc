@@ -12,8 +12,8 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> PriceField::Parse(ParsingContext& context,
-                                             AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> PriceField::Parse(ParsingContext& context,
+                                                   AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> price_patterns =
       GetMatchPatterns("PRICE", context.page_language, context.pattern_source);

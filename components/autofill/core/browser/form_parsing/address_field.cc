@@ -132,8 +132,8 @@ constexpr MatchParams kOverflowAndLandmarkMatchType =
 }  // namespace
 
 // static
-std::unique_ptr<FormField> AddressField::Parse(ParsingContext& context,
-                                               AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> AddressField::Parse(ParsingContext& context,
+                                                     AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return nullptr;
   }
@@ -248,7 +248,7 @@ bool AddressField::IsStandaloneZipSupported(
 }
 
 // static
-std::unique_ptr<FormField> AddressField::ParseStandaloneZip(
+std::unique_ptr<FormFieldParser> AddressField::ParseStandaloneZip(
     ParsingContext& context,
     AutofillScanner* scanner) {
   if (!base::FeatureList::IsEnabled(
