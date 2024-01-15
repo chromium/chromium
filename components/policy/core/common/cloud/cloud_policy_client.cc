@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/signing_service.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -479,6 +480,11 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   params.profile_id = profile_id_;
   params.callback = base::BindOnce(&CloudPolicyClient::OnPolicyFetchCompleted,
                                    weak_ptr_factory_.GetWeakPtr());
+  // Marking a small number of fetch reasons critical helps on DMServer, see for
+  // instance https://crbug.com/660009.
+  if (reason == PolicyFetchReason::kDeviceEnrollment) {
+    params.critical = true;
+  }
 
   auto config = std::make_unique<DMServerJobConfiguration>(std::move(params));
 

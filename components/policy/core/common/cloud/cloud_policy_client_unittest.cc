@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -22,10 +23,12 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -33,6 +36,7 @@
 #include "components/policy/core/common/cloud/mock_signing_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -50,6 +54,7 @@ using testing::Contains;
 using testing::DoAll;
 using testing::ElementsAre;
 using testing::Invoke;
+using testing::Key;
 using testing::Mock;
 using testing::Not;
 using testing::Pair;
@@ -667,6 +672,78 @@ INSTANTIATE_TEST_SUITE_P(
                    enterprise_management::DevicePolicyRequest::TEST),
         std::tuple(PolicyFetchReason::kUserRequest,
                    enterprise_management::DevicePolicyRequest::USER_REQUEST)));
+
+class CloudPolicyClientFetchPolicyCriticalTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<std::tuple<PolicyFetchReason, bool>> {
+ public:
+  PolicyFetchReason GetReason() const { return get<0>(GetParam()); }
+  bool IsCriticalParamExpected() const { return get<1>(GetParam()); }
+
+  base::expected<bool, std::string> HasCriticalQueryParam() const {
+    const auto* critical_param =
+        base::FindOrNull(query_params_, dm_protocol::kParamCritical);
+    if (!critical_param) {
+      return false;
+    }
+    if (*critical_param != "true") {
+      return base::unexpected("invalid critical parameter: " + *critical_param);
+    }
+    return true;
+  }
+};
+
+TEST_P(CloudPolicyClientFetchPolicyCriticalTest, FetchReasonIsCritical) {
+  RegisterClient();
+  ExpectAndCaptureJob(GetPolicyResponse());
+
+  EXPECT_CALL(observer_, OnPolicyFetched);
+  client_->FetchPolicy(GetReason());
+  base::RunLoop().RunUntilIdle();
+
+  const auto has_critical_param = HasCriticalQueryParam();
+  ASSERT_TRUE(has_critical_param.has_value()) << has_critical_param.error();
+  EXPECT_EQ(has_critical_param, IsCriticalParamExpected());
+}
+
+// As of today, only policy fetches during device enrollment are considered
+// critical (that was the initial purpose of the parameter). We might consider
+// more fetch reasons critical in the future, but it would be odd to make all
+// policy fetches critical.
+INSTANTIATE_TEST_SUITE_P(
+    CloudPolicyClientCriticalityParams,
+    CloudPolicyClientFetchPolicyCriticalTest,
+    ::testing::Values(
+        std::tuple(PolicyFetchReason::kUnspecified, false),
+        std::tuple(PolicyFetchReason::kBrowserStart, false),
+        std::tuple(PolicyFetchReason::kCrdHostPolicyWatcher, false),
+        std::tuple(PolicyFetchReason::kDeviceEnrollment, true),
+        std::tuple(PolicyFetchReason::kInvalidation, false),
+        std::tuple(PolicyFetchReason::kLacros, false),
+        std::tuple(PolicyFetchReason::kRegistrationChanged, false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusServiceActivationPending,
+                   false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusServicePolicyNotFound,
+                   false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusServiceTooManyRequests,
+                   false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusRequestFailed, false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusTemporaryUnavailable,
+                   false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusCannotSignRequest,
+                   false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusRequestInvalid, false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusHttpStatusError, false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusResponseDecodingError,
+                   false),
+        std::tuple(
+            PolicyFetchReason::kRetryAfterStatusServiceManagementNotSupported,
+            false),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusRequestTooLarge, false),
+        std::tuple(PolicyFetchReason::kScheduled, false),
+        std::tuple(PolicyFetchReason::kSignin, false),
+        std::tuple(PolicyFetchReason::kTest, false),
+        std::tuple(PolicyFetchReason::kUserRequest, false)));
 
 TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
