@@ -491,6 +491,10 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(
       drawing_buffer_->client());
   auto* sii = drawing_buffer_->ContextProvider()->SharedImageInterface();
+
+  // These shared images will be imported into textures on the GL context. We
+  // take a read/write access scope whenever the color buffer is used as the
+  // back buffer.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
@@ -505,9 +509,6 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-  // The shared image is imported into a texture on the GL context. We take a
-  // read/write access scope whenever the color buffer is used as the back
-  // buffer.
   GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       client_shared_image->mailbox().name);
 
