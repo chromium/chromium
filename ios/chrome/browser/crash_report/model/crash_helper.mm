@@ -165,8 +165,11 @@ void Start() {
   key.Set("yes");
 #endif
 
-  // Don't start MTFD when prewarmed, the check thread will just get confused.
-  if (!base::ios::IsApplicationPreWarmed()) {
+  if (base::ios::IsApplicationPreWarmed()) {
+    static crash_reporter::CrashKeyString<4> prewarmed_key("is_prewarmed");
+    prewarmed_key.Set("yes");
+  } else {
+    // Don't start MTFD when prewarmed, the check thread will just get confused.
     [[MainThreadFreezeDetector sharedInstance] start];
   }
 }
