@@ -802,6 +802,11 @@ const char kPromosManagerUsesFETDescription[] =
     "Migrates the Promos Manager to use the Feature Engagement Tracker as its "
     "impression tracking system";
 
+const char kIdleTimeoutPoliciesName[] =
+    "IdleTimeout and IdleTimeoutActions Policies";
+const char kIdleTimeoutPoliciesDescription[] =
+    "Enable IdleTimeout and IdleTimeoutActions enterprise policies.";
+
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =
