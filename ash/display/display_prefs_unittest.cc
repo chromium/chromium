@@ -148,17 +148,6 @@ class DisplayPrefsTest : public AshTestBase {
 
   void LoadDisplayPreferences() { display_prefs()->LoadDisplayPreferences(); }
 
-  display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
-                                                const gfx::Rect& bounds) {
-    display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
-    // Each display should have at least one native mode.
-    display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
-                                     /*is_interlaced=*/true,
-                                     /*native=*/true);
-    info.SetManagedDisplayModes({mode});
-    return info;
-  }
-
   // Do not use the implementation of display_prefs.cc directly to avoid
   // notifying the update to the system.
   void StoreDisplayLayoutPrefForList(
@@ -1231,9 +1220,9 @@ TEST_F(DisplayPrefsTest, RestoreUnifiedMode) {
   const int64_t first_display_id = 210000001;
   const int64_t second_display_id = 220000002;
   display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 600, 500));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 600, 500));
   display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 600, 500));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 600, 500));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.emplace_back(first_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -1428,14 +1417,14 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   const int64_t second_display_masked_id =
       display::GetDisplayIdWithoutOutputIndex(second_display_id);
   display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 600, 500));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 600, 500));
   display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 600, 500));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 600, 500));
   std::vector<display::ManagedDisplayInfo> display_info_list;
 
   // There's no external display now.
-  display_info_list.push_back(
-      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
+  display_info_list.push_back(display::CreateDisplayInfo(
+      internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   // Add first display id to the external display mirror info.
@@ -1521,12 +1510,13 @@ TEST_F(DisplayPrefsTest, ExternalDisplayConnectedBeforeLoadingPrefs) {
           .SetFirstDisplayAsInternalDisplay();
   constexpr int64_t external_display_id = 210000001;
   display::ManagedDisplayInfo external_display_info =
-      CreateDisplayInfo(external_display_id, gfx::Rect(1, 1, 600, 500));
+      display::CreateDisplayInfo(external_display_id,
+                                 gfx::Rect(1, 1, 600, 500));
 
   // Both internal and external displays connect before the prefs are loaded.
   std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(
-      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
+  display_info_list.push_back(display::CreateDisplayInfo(
+      internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(external_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
@@ -1563,12 +1553,12 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   constexpr int64_t first_display_id = 210000001;
   constexpr int64_t second_display_id = 220000002;
   std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(display::CreateDisplayInfo(
+      internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(
-      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 600, 500)));
   display_info_list.push_back(
-      CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 600, 500)));
-  display_info_list.push_back(
-      CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 600, 500)));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 600, 500)));
 
   // Store mixed mirror mode parameters which specify mirroring from the
   // internal display to the first external display.

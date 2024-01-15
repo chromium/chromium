@@ -86,17 +86,6 @@ class Resetter {
   T value_;
 };
 
-display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
-                                              const gfx::Rect& bounds) {
-  display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
-  // Each display should have at least one native mode.
-  display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
-                                   /*is_interlaced=*/true,
-                                   /*native=*/true);
-  info.SetManagedDisplayModes({mode});
-  return info;
-}
-
 class TestObserver : public WindowTreeHostManager::Observer,
                      public display::DisplayObserver,
                      public aura::client::FocusChangeObserver,
@@ -487,9 +476,9 @@ TEST_F(WindowTreeHostManagerHistogramTest,
   base::HistogramTester tester;
 
   display::ManagedDisplayInfo internal_display_info =
-      CreateDisplayInfo(123, gfx::Rect(0, 0, 800, 600));
+      display::CreateDisplayInfo(123, gfx::Rect(0, 0, 800, 600));
   display::ManagedDisplayInfo external_display_info =
-      CreateDisplayInfo(456, gfx::Rect(100, 200, 1024, 768));
+      display::CreateDisplayInfo(456, gfx::Rect(100, 200, 1024, 768));
   internal_display_info.set_device_dpi(kDefaultDeviceDPI);
   external_display_info.set_device_dpi(kDefaultDeviceDPI);
 
@@ -687,12 +676,10 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
 
 namespace {
 
-display::ManagedDisplayInfo CreateDisplayInfoWithRotation(
-    int64_t id,
-    int y,
-    display::Display::Rotation rotation) {
+display::ManagedDisplayInfo
+CreateDisplayInfo(int64_t id, int y, display::Display::Rotation rotation) {
   display::ManagedDisplayInfo info =
-      CreateDisplayInfo(id, gfx::Rect(0, y, 600, 500));
+      display::CreateDisplayInfo(id, gfx::Rect(0, y, 600, 500));
   info.SetRotation(rotation, display::Display::RotationSource::ACTIVE);
   return info;
 }
@@ -701,7 +688,7 @@ display::ManagedDisplayInfo CreateMirroredDisplayInfo(
     int64_t id,
     float device_scale_factor) {
   display::ManagedDisplayInfo info =
-      CreateDisplayInfoWithRotation(id, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(id, 0, display::Display::ROTATE_0);
   info.set_device_scale_factor(device_scale_factor);
   return info;
 }
@@ -1261,8 +1248,8 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   // Deleting 2nd display and adding 2nd display with a different ID.  The 2nd
   // display shouldn't become primary.
   UpdateDisplay("300x200");
-  display::ManagedDisplayInfo third_display_info =
-      CreateDisplayInfo(secondary_display.id() + 1, secondary_display.bounds());
+  display::ManagedDisplayInfo third_display_info = display::CreateDisplayInfo(
+      secondary_display.id() + 1, secondary_display.bounds());
   ASSERT_NE(primary_display.id(), third_display_info.id());
 
   const display::ManagedDisplayInfo& primary_display_info =
@@ -1766,9 +1753,9 @@ TEST_F(WindowTreeHostManagerTest, DockToSingle) {
   const int64_t internal_id = 1;
 
   const display::ManagedDisplayInfo internal_display_info =
-      CreateDisplayInfoWithRotation(internal_id, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(internal_id, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo external_display_info =
-      CreateDisplayInfoWithRotation(2, 1, display::Display::ROTATE_90);
+      CreateDisplayInfo(2, 1, display::Display::ROTATE_90);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1806,9 +1793,9 @@ TEST_F(WindowTreeHostManagerTest, DockToSingle) {
 // is swapped should not cause a crash. (crbug.com/426292)
 TEST_F(WindowTreeHostManagerTest, ReplaceSwappedPrimary) {
   const display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfoWithRotation(111, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(111, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfoWithRotation(222, 1, display::Display::ROTATE_0);
+      CreateDisplayInfo(222, 1, display::Display::ROTATE_0);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1822,9 +1809,9 @@ TEST_F(WindowTreeHostManagerTest, ReplaceSwappedPrimary) {
 
   display_info_list.clear();
   const display::ManagedDisplayInfo new_first_display_info =
-      CreateDisplayInfoWithRotation(333, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(333, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo new_second_display_info =
-      CreateDisplayInfoWithRotation(444, 1, display::Display::ROTATE_0);
+      CreateDisplayInfo(444, 1, display::Display::ROTATE_0);
   display_info_list.push_back(new_first_display_info);
   display_info_list.push_back(new_second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -1869,10 +1856,10 @@ class RootWindowTestObserver : public aura::WindowObserver {
 // See crbug.com/547280.
 TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
   display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfoWithRotation(10, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(10, 0, display::Display::ROTATE_0);
   first_display_info.SetBounds(gfx::Rect(0, 0, 400, 300));
   const display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfoWithRotation(11, 500, display::Display::ROTATE_0);
+      CreateDisplayInfo(11, 500, display::Display::ROTATE_0);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1887,8 +1874,7 @@ TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
 
   display_info_list.clear();
   const display::ManagedDisplayInfo new_first_display_info =
-      CreateDisplayInfoWithRotation(new_display_id, 0,
-                                    display::Display::ROTATE_0);
+      CreateDisplayInfo(new_display_id, 0, display::Display::ROTATE_0);
 
   display_info_list.push_back(new_first_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -2202,7 +2188,7 @@ TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
   // Replace the primary display with a newer display with a different device
   // scale factor compared to original display.
   display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfoWithRotation(100, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(100, 0, display::Display::ROTATE_0);
   first_display_info.SetBounds(gfx::Rect(0, 0, 700, 500));
   first_display_info.set_device_scale_factor(2.0);
 

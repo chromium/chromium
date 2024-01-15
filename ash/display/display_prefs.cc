@@ -772,7 +772,6 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
   base::Value::List cached_list =
       pref_service->GetList(prefs::kDisplayPopularityUserReportedDisplays)
           .Clone();
-  // TODO(b/307299688): Add version number
 
   for (int64_t id : GetDisplayManager()->GetConnectedDisplayIdList()) {
     const display::ManagedDisplayInfo& display =
@@ -789,30 +788,9 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
       continue;
     }
 
-    const display::ManagedDisplayInfo::ManagedDisplayModeList& modes =
-        display.display_modes();
-    CHECK(modes.size());
-    auto it = std::find_if(
-        modes.begin(), modes.end(),
-        [](const display::ManagedDisplayMode& mode) { return mode.native(); });
-    const display::ManagedDisplayMode* native_mode =
-        it == modes.end() ? nullptr : &(*it);
-    CHECK(it != modes.end());
-
-    int product_id;
-    base::StringToInt(display.product_id(), &product_id);
-
     metrics::structured::events::v2::popular_displays::MonitorInfo()
         .SetDisplayName(display.name())
-        .SetManufacturerId(display.manufacturer_id())
-        .SetProductId(product_id)
-        .SetNativeModeSize(native_mode->size().ToString())
-        .SetNativeModeRefreshRate(native_mode->refresh_rate())
-        .SetPhysicalSize(display.physical_size().ToString())
-        .SetConnectionType(
-            display::DisplayConnectionTypeString(display.connection_type()))
-        .SetIsVrrCapable(display.variable_refresh_rate_state() <
-                         display::VariableRefreshRateState::kVrrNotCapable)
+        .SetProductCode(display.product_id())
         .Record();
 
     cached_list.Append(display_id);
