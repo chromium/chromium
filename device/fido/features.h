@@ -99,10 +99,6 @@ BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
 
-// Send the PIN protocol, if v2, in hmac-secret extensions.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPINProtocolInHMACSecret);
-
 // Show an incognito confirmation sheet on Android when creating a credential.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidIncognitoConfirmation);
