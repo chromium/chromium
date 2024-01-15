@@ -1860,6 +1860,12 @@ copy("cronet_package_copy_test_support_apks") {
   deps = [ "//net/android:net_test_support_apk" ]
 }
 
+copy("cronet_package_copy_test_resources") {
+  testonly = true
+  sources = [ "//components/cronet/android/test/res" ]
+  outputs = [ "$_test_package_dir/res" ]
+}
+
 copy("cronet_package_copy_test_files") {
   testonly = true
   sources = [
@@ -2009,6 +2015,7 @@ group("cronet_test_package") {
       ":cronet_package_copy_native_test_lib_unstripped",
       ":cronet_package_copy_test_assets",
       ":cronet_package_copy_test_files",
+      ":cronet_package_copy_test_resources",
       ":cronet_package_copy_test_support_apks",
       ":cronet_sizes",
       ":repackage_test_jars",
