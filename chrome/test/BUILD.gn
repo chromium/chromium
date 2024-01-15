@@ -4868,6 +4868,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/webui/ash/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/ash/login/testapi/oobe_test_api_browsertest.cc",
         "../browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog_browsertest.cc",
+        "../browser/ui/webui/ash/office_fallback/office_fallback_dialog_browsertest.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h",
         "../browser/ui/webui/ash/parent_access/parent_access_dialog_browsertest.cc",
