@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/birthdate_field.h"
+#include "components/autofill/core/browser/form_parsing/birthdate_field_parser.h"
 
 #include <vector>
 
@@ -50,7 +50,7 @@ class BirthdateFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return BirthdateField::Parse(context, scanner);
+    return BirthdateFieldParser::Parse(context, scanner);
   }
 };
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/birthdate_field.h"
+#include "components/autofill/core/browser/form_parsing/birthdate_field_parser.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -29,13 +29,13 @@ bool IsSelectValueBetween(const SelectOption& option, int a, int b) {
 
 }  // namespace
 
-BirthdateField::BirthdateField(const AutofillField* day,
-                               const AutofillField* month,
-                               const AutofillField* year)
+BirthdateFieldParser::BirthdateFieldParser(const AutofillField* day,
+                                           const AutofillField* month,
+                                           const AutofillField* year)
     : day_(day), month_(month), year_(year) {}
 
 // static
-std::unique_ptr<FormFieldParser> BirthdateField::Parse(
+std::unique_ptr<FormFieldParser> BirthdateFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   // Currently only <select> elements are considered.
@@ -51,15 +51,16 @@ std::unique_ptr<FormFieldParser> BirthdateField::Parse(
                                         12, 13)},
            {&year, base::BindRepeating(&IsLikelyBirthdateYearSelectField,
                                        scanner)}})) {
-    return base::WrapUnique(new BirthdateField(day, month, year));
+    return base::WrapUnique(new BirthdateFieldParser(day, month, year));
   }
   return nullptr;
 }
 
 // static
-bool BirthdateField::IsSelectWithIncreasingValues(AutofillScanner* scanner,
-                                                  int max_value,
-                                                  size_t max_options) {
+bool BirthdateFieldParser::IsSelectWithIncreasingValues(
+    AutofillScanner* scanner,
+    int max_value,
+    size_t max_options) {
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type,
@@ -85,7 +86,7 @@ bool BirthdateField::IsSelectWithIncreasingValues(AutofillScanner* scanner,
 }
 
 // static
-bool BirthdateField::IsLikelyBirthdateYearSelectField(
+bool BirthdateFieldParser::IsLikelyBirthdateYearSelectField(
     AutofillScanner* scanner) {
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
@@ -105,7 +106,7 @@ bool BirthdateField::IsLikelyBirthdateYearSelectField(
                               });
 }
 
-void BirthdateField::AddClassifications(
+void BirthdateFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(day_, BIRTHDATE_DAY, kBaseBirthdateParserScore,
                     field_candidates);

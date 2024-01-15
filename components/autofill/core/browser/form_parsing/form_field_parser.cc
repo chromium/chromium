@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/browser/form_parsing/birthdate_field.h"
+#include "components/autofill/core/browser/form_parsing/birthdate_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -153,7 +153,7 @@ void FormFieldParser::ParseFormFields(
 
   // Birthdate pass.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableBirthdateParsing)) {
-    ParseFormFieldsPass(BirthdateField::Parse, context, processed_fields,
+    ParseFormFieldsPass(BirthdateFieldParser::Parse, context, processed_fields,
                         field_candidates);
   }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_BIRTHDATE_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_BIRTHDATE_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_BIRTHDATE_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_BIRTHDATE_FIELD_PARSER_H_
 
 #include <vector>
 
@@ -16,21 +16,21 @@ namespace autofill {
 
 // Birthdate fields are currently not filled, but identifying them will help to
 // reduce the number of false positive credit card expiration dates.
-class BirthdateField : public FormFieldParser {
+class BirthdateFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
-  BirthdateField(const BirthdateField&) = delete;
-  BirthdateField& operator=(const BirthdateField&) = delete;
+  BirthdateFieldParser(const BirthdateFieldParser&) = delete;
+  BirthdateFieldParser& operator=(const BirthdateFieldParser&) = delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  BirthdateField(const AutofillField* day,
-                 const AutofillField* month,
-                 const AutofillField* year);
+  BirthdateFieldParser(const AutofillField* day,
+                       const AutofillField* month,
+                       const AutofillField* year);
 
   // Checks if the scanner's current field is a <select> and if its options
   // contains the values [1, `max_value`] in increasing order, possibly after a
@@ -52,4 +52,4 @@ class BirthdateField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_BIRTHDATE_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_BIRTHDATE_FIELD_PARSER_H_
