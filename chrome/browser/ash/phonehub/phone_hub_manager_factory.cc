@@ -111,7 +111,8 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
 
 PhoneHubManagerFactory::~PhoneHubManagerFactory() = default;
 
-KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!features::IsPhoneHubEnabled()) {
     return nullptr;
@@ -149,7 +150,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
     }
   }
 
-  PhoneHubManagerImpl* phone_hub_manager = new PhoneHubManagerImpl(
+  auto phone_hub_manager = std::make_unique<PhoneHubManagerImpl>(
       profile->GetPrefs(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile),
@@ -176,7 +177,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
 
   // Provide |phone_hub_manager| to the system tray so that it can be used by
   // the UI.
-  SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
+  SystemTray::Get()->SetPhoneHubManager(phone_hub_manager.get());
 
   DCHECK(!g_context_for_service);
   g_context_for_service = context;
