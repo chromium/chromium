@@ -2059,4 +2059,6 @@ message ChromeDeviceSettingsProto {
   // * Field names should be the policy name (no underscores).
   // * Field ID should be the policy ID.
   optional BooleanPolicyProto DeviceHardwareVideoDecodingEnabled = 1185;
+  optional BooleanPolicyProto DeviceLoginScreenTouchVirtualKeyboardEnabled =
+      1194;
 }

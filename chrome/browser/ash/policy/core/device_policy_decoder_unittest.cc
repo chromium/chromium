@@ -723,4 +723,17 @@ TEST_F(DevicePolicyDecoderTest, DeviceFkeysPolicy) {
                                std::move(device_extended_fkeys_modifier));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kTouchVirtualKeyboardEnabled);
+
+  device_policy.mutable_deviceloginscreentouchvirtualkeyboardenabled()
+      ->set_value(true);
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kTouchVirtualKeyboardEnabled,
+                               base::Value(true));
+}
+
 }  // namespace policy
