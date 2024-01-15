@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -1299,6 +1300,41 @@ TEST_F(PrerenderHostRegistryTest,
 }
 
 // End replication state matching tests ------------
+
+TEST_F(PrerenderHostRegistryTest, OneTaskToDeleteAllHosts) {
+  std::vector<int> frame_tree_node_ids;
+  std::vector<std::unique_ptr<test::PrerenderHostObserver>>
+      prerender_host_observers;
+
+  for (int i = 0; i < 2; i++) {
+    const GURL prerendering_url("https://example.com/next" +
+                                base::NumberToString(i));
+    int frame_tree_node_id =
+        registry().CreateAndStartHost(GeneratePrerenderAttributes(
+            prerendering_url, PreloadingTriggerType::kSpeculationRule, "",
+            blink::mojom::SpeculationEagerness::kEager,
+            contents()->GetPrimaryMainFrame()));
+
+    prerender_host_observers.emplace_back(
+        std::make_unique<test::PrerenderHostObserver>(*contents(),
+                                                      frame_tree_node_id));
+    frame_tree_node_ids.push_back(frame_tree_node_id);
+  }
+  int pending_task_before_posting_abandon_task =
+      task_environment()->GetPendingMainThreadTaskCount();
+  registry().CancelHosts(
+      frame_tree_node_ids,
+      PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));
+  int pending_task_after_posting_abandon_task =
+      task_environment()->GetPendingMainThreadTaskCount();
+  // Only one task was posted.
+  EXPECT_EQ(pending_task_before_posting_abandon_task + 1,
+            pending_task_after_posting_abandon_task);
+  for (auto& observer : prerender_host_observers) {
+    // All PrerenderHosts were deleted, so it should not timeout.
+    observer->WaitForDestroyed();
+  }
+}
 
 TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl_TriggerUrl) {
   const GURL original_url = contents()->GetLastCommittedURL();
