@@ -587,6 +587,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
   [self handleRefreshContextBar];
   [self.editingFolderCell stopEdit];
+  [self.tableView.contextMenuInteraction dismissMenu];
   [self.tableView reloadData];
   if (self.mediator.currentlyInEditMode &&
       !self.mediator.selectedNodesForEditMode.empty()) {

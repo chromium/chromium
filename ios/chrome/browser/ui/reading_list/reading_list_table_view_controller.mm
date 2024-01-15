@@ -192,6 +192,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 #pragma mark - Public
 
 - (void)reloadData {
+  [self.tableView.contextMenuInteraction dismissMenu];
   [self loadModel];
   if (self.viewLoaded)
     [self.tableView reloadData];
