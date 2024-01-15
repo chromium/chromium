@@ -181,6 +181,10 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     // cause errors in rendering.
     gfx::Size buffer_size =
         gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
+
+    // The SharedImages created here will eventually be transferred to other
+    // processes to have their contents written by WebGL and read via GL by
+    // OpenXR.
     const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                         gpu::SHARED_IMAGE_USAGE_GLES2_READ |
