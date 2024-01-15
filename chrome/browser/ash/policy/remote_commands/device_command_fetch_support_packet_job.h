@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -121,6 +122,7 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
 
   void OnEventEnqueued(reporting::Status status);
 
+  SEQUENCE_CHECKER(sequence_checker_);
   // The filepath of the exported support packet. It will be a file within
   // GetTargetDir().
   base::FilePath exported_path_;
