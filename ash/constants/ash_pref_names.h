@@ -761,8 +761,6 @@ inline constexpr char kAllowMGSToStoreDisplayProperties[] =
 // A list of all displays used by the user and reported to popularity metrics.
 const char kDisplayPopularityUserReportedDisplays[] =
     "display_popularity.user_reported_displays";
-// A list of all displays used by the user and reported to popularity metrics.
-const char kDisplayPopularityRevNumber[] = "display_popularity.revision_number";
 
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
