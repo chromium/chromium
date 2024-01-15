@@ -135,6 +135,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         },
       },
 
+      shouldShowPromoCard_: {
+        type: Boolean,
+        computed: 'computeShouldShowPromoCard_(' +
+            'promoCard_, isAccountStoreUser, passwordsOnDevice_)',
+      },
+
       /**
        * The element to return focus to, when moving from details page to
        * passwords page.
@@ -405,6 +411,22 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       }
       return doesNameMatchA ? -1 : 1;
     };
+  }
+
+  private computeShouldShowPromoCard_(): boolean {
+    if (!this.promoCard_) {
+      return false;
+    }
+    if (this.promoCard_.id !== PromoCardId.MOVE_PASSWORDS) {
+      return true;
+    }
+
+    // Check if there are local passwords and they can be moved to account.
+    if (this.computePasswordsOnDevice_().length === 0 ||
+        !this.isAccountStoreUser) {
+      return false;
+    }
+    return true;
   }
 }
 
