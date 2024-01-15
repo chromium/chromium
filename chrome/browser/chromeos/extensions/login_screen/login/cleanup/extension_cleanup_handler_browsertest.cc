@@ -199,8 +199,14 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };
 
+// TODO(crbug.com/1518529): Disable flaky test.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CleanupWithExemptExtensions DISABLED_CleanupWithExemptExtensions
+#else
+#define MAYBE_CleanupWithExemptExtensions CleanupWithExemptExtensions
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionCleanupHandlerTest,
-                       CleanupWithExemptExtensions) {
+                       MAYBE_CleanupWithExemptExtensions) {
   SetUpDeviceLocalAccountPolicy();
   WaitForSessionStart();
   WaitForComponentExtensionsInstall();
