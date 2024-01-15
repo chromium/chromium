@@ -74,8 +74,7 @@ NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
     case WhatsNewPrimaryAction::kLens:
-      // TODO(crbug.com/1502927): Use the Lens action title when it
-      // is available.
+      return l10n_util::GetNSString(IDS_IOS_GO_TO_LENS);
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
       return nil;
