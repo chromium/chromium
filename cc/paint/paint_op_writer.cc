@@ -520,14 +520,9 @@ void PaintOpWriter::Write(const sk_sp<sktext::gpu::Slug>& slug) {
       if (!img) {
         return nullptr;
       }
-      // TODO(crbug.com/1484682)
-      // We are pretty sure Slugs never use GPU-backed images because
-      // OOP-R does not use GrDirectContext.
-      DUMP_WILL_BE_CHECK(!img->isTextureBacked());
-      if (img->isTextureBacked()) {
-        GrDirectContext* ctx = SkImages::GetContext(img);
-        return SkPngEncoder::Encode(ctx, img, SkPngEncoder::Options{});
-      }
+      // Slugs never use GPU-backed images because OOP-R does not use
+      // GrDirectContext.
+      CHECK(!img->isTextureBacked());
       return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
     };
     bytes_written = slug->serialize(
