@@ -23,6 +23,7 @@
     "use_partition_alloc": false,
     "use_platform_icu_alternatives": true,
     "use_remoteexec": true,
+    "use_siso": true,
     "use_thin_lto": false
   }
 }

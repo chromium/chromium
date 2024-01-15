@@ -26,6 +26,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -98,7 +99,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -111,7 +111,6 @@ try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -193,7 +192,6 @@ try_.orchestrator_builder(
         "chromium.compilator_can_outlive_parent": 100,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -205,7 +203,6 @@ try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 # TODO(crbug.com/1367523): Reenable this builder once the reboot issue is resolved.
@@ -277,7 +274,6 @@ try_.builder(
             ],
         },
     },
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -886,7 +882,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -901,7 +896,6 @@ try_.compilator_builder(
     cores = 64 if settings.is_main else 32,
     contact_team_email = "clank-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -989,7 +983,6 @@ try_.builder(
     ),
     builderless = not settings.is_main,
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -1017,7 +1010,6 @@ try_.builder(
     ssd = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -1130,7 +1122,6 @@ try_.builder(
     builderless = not settings.is_main,
     contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
