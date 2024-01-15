@@ -105,6 +105,7 @@ AutofillSuggestionTriggerSource TriggerSourceOnTextareaFocus() {
 class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
  public:
   void SetUp() override {
+    // TODO(crbug.com/63573): parameterize tests over AutofillAgent::Config.
     test::AutofillRendererTest::SetUp();
     web_view_->SetDefaultPageScaleLimits(1, 4);
 
