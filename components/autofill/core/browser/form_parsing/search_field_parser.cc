@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/search_field.h"
+#include "components/autofill/core/browser/form_parsing/search_field_parser.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -12,8 +12,9 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormFieldParser> SearchField::Parse(ParsingContext& context,
-                                                    AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> SearchFieldParser::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
       SEARCH_TERM, context.page_language, context.pattern_source);
@@ -22,15 +23,16 @@ std::unique_ptr<FormFieldParser> SearchField::Parse(ParsingContext& context,
                           kDefaultMatchParamsWith<FormControlType::kInputSearch,
                                                   FormControlType::kTextArea>,
                           patterns, &field, "kSearchTermRe")) {
-    return std::make_unique<SearchField>(field);
+    return std::make_unique<SearchFieldParser>(field);
   }
 
   return nullptr;
 }
 
-SearchField::SearchField(const AutofillField* field) : field_(field) {}
+SearchFieldParser::SearchFieldParser(const AutofillField* field)
+    : field_(field) {}
 
-void SearchField::AddClassifications(
+void SearchFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, SEARCH_TERM, kBaseSearchParserScore,
                     field_candidates);

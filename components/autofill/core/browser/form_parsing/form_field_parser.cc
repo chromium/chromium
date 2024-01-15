@@ -30,7 +30,7 @@
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/price_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/search_field.h"
+#include "components/autofill/core/browser/form_parsing/search_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -184,7 +184,7 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   // Search pass.
-  ParseFormFieldsPass(SearchField::Parse, context, processed_fields,
+  ParseFormFieldsPass(SearchFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   // Deduce `field_candidates` for the `processed_fields` by parsing their
