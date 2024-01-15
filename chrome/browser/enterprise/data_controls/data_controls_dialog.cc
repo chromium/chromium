@@ -19,33 +19,9 @@
 namespace data_controls {
 
 namespace {
-
 constexpr int kSpacingBetweenIconAndMessage = 16;
 constexpr int kBusinessIconSize = 24;
-
-DataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
-
 }  // namespace
-
-DataControlsDialog::TestObserver::TestObserver() {
-  DataControlsDialog::SetObserverForTesting(this);
-}
-
-DataControlsDialog::TestObserver::~TestObserver() {
-  DataControlsDialog::SetObserverForTesting(nullptr);
-}
-
-// static
-void DataControlsDialog::SetObserverForTesting(TestObserver* observer) {
-  // These checks add safety that tests are only setting one observer at a time.
-  if (observer_for_testing_) {
-    DCHECK_EQ(observer, nullptr);
-  } else {
-    DCHECK_NE(observer, nullptr);
-  }
-
-  observer_for_testing_ = observer;
-}
 
 // static
 void DataControlsDialog::Show(
@@ -57,11 +33,7 @@ void DataControlsDialog::Show(
       new DataControlsDialog(type, std::move(callback)), web_contents);
 }
 
-DataControlsDialog::~DataControlsDialog() {
-  if (observer_for_testing_) {
-    observer_for_testing_->OnDestructed(this);
-  }
-}
+DataControlsDialog::~DataControlsDialog() = default;
 
 std::u16string DataControlsDialog::GetWindowTitle() const {
   int id;
@@ -111,12 +83,6 @@ bool DataControlsDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-void DataControlsDialog::OnWidgetInitialized() {
-  if (observer_for_testing_) {
-    observer_for_testing_->OnWidgetInitialized(this);
-  }
-}
-
 DataControlsDialog::DataControlsDialog(
     Type type,
     base::OnceCallback<void(bool bypassed)> callback)
@@ -133,10 +99,6 @@ DataControlsDialog::DataControlsDialog(
       // TODO(domfc): Add text for other values.
       // case Type::kClipboardPasteWarn:
       // case Type::kClipboardCopyWarn:
-  }
-
-  if (observer_for_testing_) {
-    observer_for_testing_->OnConstructed(this);
   }
 }
 
