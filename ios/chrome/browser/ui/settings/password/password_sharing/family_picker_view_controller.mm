@@ -133,6 +133,10 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
     infoButton.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonID,
                                    _recipients[indexPath.row].email];
+    infoButton.accessibilityLabel = [NSString
+        stringWithFormat:@"%@, %@", _recipients[indexPath.row].fullName,
+                         l10n_util::GetNSString(
+                             IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT)];
     cell.accessoryView = infoButton;
 
     // Make the cell a non-accessible element to make the info button accessible
