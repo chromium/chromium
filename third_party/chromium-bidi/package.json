@@ -3,7 +3,7 @@
   "version": "0.5.3",
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
-    "bidi-types": "wireit",
+    "bidi-types": "node tools/generate-bidi-types.mjs",
     "build": "wireit",
     "clean": "rimraf lib .eslintcache .wireit",
     "e2e-headful": "wireit",
@@ -32,14 +32,6 @@
     ]
   },
   "wireit": {
-    "bidi-types": {
-      "clean": "if-file-deleted",
-      "command": "tools/generate-bidi-types.mjs",
-      "output": [
-        "src/protocol/generated/webdriver-bidi.ts",
-        "src/protocol-parser/generated/webdriver-bidi.ts"
-      ]
-    },
     "build": {
       "dependencies": [
         "rollup",
