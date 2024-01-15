@@ -36,6 +36,7 @@ Network.responseReceived{
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : 334

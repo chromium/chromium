@@ -1027,12 +1027,18 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
       break;
   }
 
-  // Use mime type from cached resource in case the one in response is empty
-  // or the response is a 304 Not Modified.
+  // Use mime type and charset from cached resource in case the one in response
+  // is empty or the response is a 304 Not Modified.
   String mime_type = response.MimeType();
-  if (cached_resource &&
-      (mime_type.empty() || response.HttpStatusCode() == 304))
-    mime_type = cached_resource->GetResponse().MimeType();
+  String charset = response.TextEncodingName();
+  if (cached_resource) {
+    if (mime_type.empty() || response.HttpStatusCode() == 304) {
+      mime_type = cached_resource->GetResponse().MimeType();
+    }
+    if (charset.empty() || response.HttpStatusCode() == 304) {
+      charset = cached_resource->GetResponse().TextEncodingName();
+    }
+  }
 
   if (is_empty)
     *is_empty = !status && mime_type.empty() && !headers_map.size();
@@ -1044,6 +1050,7 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
           .setStatusText(status_text)
           .setHeaders(BuildObjectForHeaders(headers_map))
           .setMimeType(mime_type)
+          .setCharset(charset)
           .setConnectionReused(response.ConnectionReused())
           .setConnectionId(response.ConnectionID())
           .setEncodedDataLength(encoded_data_length)
