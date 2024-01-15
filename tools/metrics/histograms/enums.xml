@@ -20135,6 +20135,7 @@ from previous Chrome versions.
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
+  <int value="-1860959988" label="Picker:disabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
   <int value="-1860477300" label="DefaultStyleSheetsEarlyInit:disabled"/>
   <int value="-1860459751" label="CastEnableStreamingWithHiDPI:disabled"/>
@@ -21224,6 +21225,7 @@ from previous Chrome versions.
   <int value="-1351968795" label="SingleProcessMash:enabled"/>
   <int value="-1351328710"
       label="OmniboxUIExperimentJogTextfieldOnPopup:disabled"/>
+  <int value="-1351107814" label="Picker:enabled"/>
   <int value="-1349896789" label="DelayNavigation:enabled"/>
   <int value="-1349872906"
       label="disallow-autofill-sync-credential-for-reauth"/>

@@ -11027,6 +11027,14 @@ const FeatureEntry kFeatureEntries[] = {
     {kAssistantIphInternalName, flag_descriptions::kAssistantIphName,
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
+
+    {"ash-picker", flag_descriptions::kAshPickerName,
+     flag_descriptions::kAshPickerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPicker)},
+
+    {"ash-picker-feature-key", flag_descriptions::kAshPickerFeatureKeyName,
+     flag_descriptions::kAshPickerFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kPickerFeatureKey, "")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"pwm-shadow-dom-support",

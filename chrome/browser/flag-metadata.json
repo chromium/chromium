@@ -445,6 +445,16 @@
     "expiry_milestone": 110
   },
   {
+    "name": "ash-picker",
+    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
+    "name": "ash-picker-feature-key",
+    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "ash-snap-groups",
     "owners": [ "michelefan@chromium.org", "sophiewen@chromium.org", "xdai@chromium.org" ],
     "expiry_milestone": 129

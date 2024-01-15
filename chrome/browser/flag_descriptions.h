@@ -3231,6 +3231,12 @@ extern const char kArcExternalStorageAccessDescription[];
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
+extern const char kAshPickerName[];
+extern const char kAshPickerDescription[];
+
+extern const char kAshPickerFeatureKeyName[];
+extern const char kAshPickerFeatureKeyDescription[];
+
 extern const char kAsynchronousScannerDiscoveryName[];
 extern const char kAsynchronousScannerDiscoveryDescription[];
 
