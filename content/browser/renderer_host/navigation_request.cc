@@ -248,6 +248,8 @@ const char kIsolatedAppCSP[] =
 const char kSecSharedStorageWritableRequestHeaderKey[] =
     "Sec-Shared-Storage-Writable";
 
+constexpr char kNavigationRequestScope[] = "NavigationRequestScope";
+
 // Denotes the type of user agent string value sent in the User-Agent request
 // header.
 //
@@ -1606,6 +1608,10 @@ NavigationRequest::NavigationRequest(
               : std::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context),
       has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::NavigationRequest",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_OUT);
   CHECK(!common_params_->initiator_base_url ||
         !common_params_->initiator_base_url->is_empty());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
@@ -2029,6 +2035,10 @@ NavigationRequest::NavigationRequest(
 }
 
 NavigationRequest::~NavigationRequest() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::~NavigationRequest",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN);
 #if DCHECK_IS_ON()
   // If |is_safe_to_delete_| is false, it means |this| is being deleted at an
   // unexpected time, more specifically a time that is likely to lead to
@@ -2184,6 +2194,10 @@ NavigationRequest::GetCommitDeferringConditionForTesting() {
 }
 
 void NavigationRequest::BeginNavigation() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::BeginNavigation",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("BeginNavigation", this);
   DCHECK(!loader_);
   DCHECK(!HasRenderFrameHost());
@@ -2323,6 +2337,11 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
 void NavigationRequest::OnPrerenderingActivationChecksComplete(
     CommitDeferringCondition::NavigationType navigation_type,
     std::optional<int> candidate_prerender_frame_tree_node_id) {
+  TRACE_EVENT_WITH_FLOW0(
+      "navigation", "NavigationRequest::OnPrerenderingActivationChecksComplete",
+      TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                          TRACE_ID_LOCAL(navigation_id_)),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // Prerendered page activation must run CommitDeferringConditions before
   // StartRequest().
   DCHECK_LT(state_, WILL_START_NAVIGATION);
@@ -2401,6 +2420,11 @@ bool NavigationRequest::NeedFencedFrameURLMapping() {
 
 void NavigationRequest::OnFencedFrameURLMappingComplete(
     const std::optional<FencedFrameProperties>& properties) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::OnFencedFrameURLMappingComplete",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
   // The URL mapping might have failed (e.g. because the urn is invalid):
@@ -2468,6 +2492,10 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
 }
 
 void NavigationRequest::BeginNavigationImpl() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::BeginNavigationImpl",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   base::ElapsedTimer timer;
   SetState(WILL_START_NAVIGATION);
 #if BUILDFLAG(IS_ANDROID)
@@ -2748,6 +2776,10 @@ bool NavigationRequest::ShouldAddCookieChangeListener() {
 }
 
 void NavigationRequest::StartNavigation() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::StartNavigation",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(frame_tree_node_->navigation_request() == this ||
          is_synchronous_renderer_commit_);
   FrameTreeNode* frame_tree_node = frame_tree_node_;
@@ -3110,6 +3142,10 @@ void NavigationRequest::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::URLResponseHeadPtr response_head) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnRequestRedirected",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   ScopedCrashKeys crash_keys(*this);
 
   // Sanity check - this can only be set at commit time.
@@ -4031,6 +4067,10 @@ void NavigationRequest::OnResponseStarted(
     net::NetworkAnonymizationKey network_anonymization_key,
     std::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnResponseStarted",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   ScopedCrashKeys crash_keys(*this);
 
   // The |loader_|'s job is finished. It must not call the NavigationRequest
@@ -4290,6 +4330,11 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     bool is_download,
     std::optional<SubresourceLoaderParams> subresource_loader_params) {
+  TRACE_EVENT_WITH_FLOW0(
+      "navigation", "NavigationRequest::SelectFrameHostForOnResponseStarted",
+      TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                          TRACE_ID_LOCAL(navigation_id_)),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   CHECK(!HasRenderFrameHost())
       << "`render_frame_host_` should not be set before the "
          "`NavigationRequest` starts to select the RFH.";
@@ -4587,6 +4632,12 @@ void NavigationRequest::OnRequestFailed(
 std::optional<NavigationEarlyHintsManagerParams>
 NavigationRequest::CreateNavigationEarlyHintsManagerParams(
     const network::mojom::EarlyHints& early_hints) {
+  TRACE_EVENT_WITH_FLOW0(
+      "navigation",
+      "NavigationRequest::CreateNavigationEarlyHintsManagerParams",
+      TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                          TRACE_ID_LOCAL(navigation_id_)),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // Early Hints preloads should happen only before the final response is
   // received, and limited only in the main frame for now.
   CHECK(!HasRenderFrameHost());
@@ -4668,6 +4719,11 @@ void NavigationRequest::OnRequestFailedInternal(
     bool skip_throttles,
     const std::optional<std::string>& error_page_content,
     bool collapse_frame) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::OnRequestFailedInternal",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   CheckStateTransition(WILL_FAIL_REQUEST);
   DCHECK(!(status.error_code == net::ERR_ABORTED &&
            error_page_content.has_value()));
@@ -4879,6 +4935,11 @@ NavigationRequest::ComputeErrorPageProcess() {
 
 void NavigationRequest::OnStartChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::OnStartChecksComplete",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(result.action() != NavigationThrottle::DEFER);
   DCHECK(result.action() != NavigationThrottle::BLOCK_RESPONSE);
 
@@ -5151,6 +5212,11 @@ void NavigationRequest::AddResourceTimingEntryForFailedSubframeNavigation(
 
 void NavigationRequest::OnRedirectChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::OnRedirectChecksComplete",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   DCHECK(result.action() != NavigationThrottle::DEFER);
   DCHECK(result.action() != NavigationThrottle::BLOCK_RESPONSE);
   DCHECK(!IsPageActivation());
@@ -5340,6 +5406,11 @@ void NavigationRequest::OnRedirectChecksComplete(
 
 void NavigationRequest::OnFailureChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::OnFailureChecksComplete",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // This method is called as a result of getting to the end of
   // OnRequestFailedInternal(), which calls WillFailRequest(), which
   // runs the throttles, which eventually call back to this method.
@@ -5658,6 +5729,10 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
 }
 
 void NavigationRequest::CommitNavigation() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::CommitNavigation",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // A navigation request should only commit once the response has been
   // processed.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
@@ -5909,6 +5984,11 @@ void NavigationRequest::CommitNavigation() {
 }
 
 void NavigationRequest::CommitPageActivation() {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::CommitPageActivation",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // An activation is either for the back-forward cache or prerendering. They
   // are mutually exclusive.
   DCHECK_NE(IsServedFromBackForwardCache(), IsPrerenderedPageActivation());
@@ -6947,6 +7027,10 @@ void NavigationRequest::CancelDeferredNavigationInternal(
 }
 
 void NavigationRequest::WillStartRequest() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::WillStartRequest",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("WillStartRequest", this);
   DCHECK_EQ(state_, WILL_START_REQUEST);
   will_start_request_time_ = base::TimeTicks::Now();
@@ -6989,6 +7073,10 @@ void NavigationRequest::WillStartRequest() {
 void NavigationRequest::WillRedirectRequest(
     const GURL& new_referrer_url,
     RenderProcessHost* post_redirect_process) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::WillRedirectRequest",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("WillRedirectRequest", this, "url",
                        common_params_->url.possibly_invalid_spec());
   UpdateStateFollowingRedirect(new_referrer_url);
@@ -7029,6 +7117,10 @@ void NavigationRequest::WillFailRequest() {
 }
 
 void NavigationRequest::WillProcessResponse() {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::WillProcessResponse",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("WillProcessResponse", this);
   DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
 
@@ -7050,6 +7142,11 @@ void NavigationRequest::WillProcessResponse() {
 }
 
 void NavigationRequest::WillCommitWithoutUrlLoader() {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::WillCommitWithoutUrlLoader",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("WillCommitWithoutUrlLoader", this);
 
   throttle_runner_->RegisterNavigationThrottlesForCommitWithoutUrlLoader();
@@ -7101,6 +7198,10 @@ void NavigationRequest::DidCommitNavigation(
     bool navigation_entry_committed,
     bool did_replace_entry,
     const GURL& previous_main_frame_url) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::DidCommitNavigation",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   common_params_->url = params.url;
   did_replace_entry_ = did_replace_entry;
   should_update_history_ = params.should_update_history;
@@ -7377,6 +7478,11 @@ NavigationRequest::TakeWebFeaturesToLog() {
 }
 
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
+  TRACE_EVENT_WITH_FLOW0("navigation",
+                         "NavigationRequest::ReadyToCommitNavigation",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("ReadyToCommitNavigation", this);
 
   // We may come back to here asynchronously, and the renderer may be destroyed
@@ -8952,6 +9058,10 @@ NavigationRequest::CreateSharedDictionaryAccessObserver() {
 
 void NavigationRequest::OnCookiesAccessed(
     std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnCookiesAccessed",
+                         TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
+                                             TRACE_ID_LOCAL(navigation_id_)),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   for (auto& details : details_vector) {
     // TODO(721329): We should not send information to the current frame about
     // (potentially unrelated) ongoing navigation, but at the moment we don't
