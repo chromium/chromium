@@ -61,4 +61,29 @@ void WaitForLastFramePresentation(SurfaceTreeHost* surface_tree_host) {
   runloop.Run();
 }
 
+base::RepeatingClosure CreateReleaseBufferClosure(
+    int* release_buffer_call_count,
+    base::RepeatingClosure closure) {
+  return base::BindLambdaForTesting(
+      [release_buffer_call_count, closure = std::move(closure)]() {
+        if (release_buffer_call_count) {
+          (*release_buffer_call_count)++;
+        }
+        closure.Run();
+      });
+}
+
+base::OnceCallback<void(gfx::GpuFenceHandle)> CreateExplicitReleaseCallback(
+    int* release_call_count,
+    base::RepeatingClosure closure) {
+  return base::BindLambdaForTesting(
+      [release_call_count,
+       closure = std::move(closure)](gfx::GpuFenceHandle release_fence) {
+        if (release_call_count) {
+          (*release_call_count)++;
+        }
+        closure.Run();
+      });
+}
+
 }  // namespace exo::test
