@@ -16,9 +16,6 @@ size_t g_dictionary_size_limit = kDictionarySizeLimit;
 
 }  // namespace
 
-const char kSbrContentEncodingName[] = "sbr";
-const char kZstdDContentEncodingName[] = "zstd-d";
-
 const char kSecAvailableDictionaryHeaderName[] = "sec-available-dictionary";
 
 const char kUseAsDictionaryHeaderName[] = "use-as-dictionary";

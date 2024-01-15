@@ -31,6 +31,7 @@
 #include "net/http/http_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
@@ -137,11 +138,10 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
   if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
     return SharedDictionaryEncodingType::kNotUsed;
   }
-  if (content_encoding == network::shared_dictionary::kSbrContentEncodingName) {
+  if (content_encoding == GetSharedBrotliContentEncodingName()) {
     return SharedDictionaryEncodingType::kSharedBrotli;
   } else if (base::FeatureList::IsEnabled(network::features::kSharedZstd) &&
-             content_encoding ==
-                 network::shared_dictionary::kZstdDContentEncodingName) {
+             content_encoding == GetSharedZstdContentEncodingName()) {
     return SharedDictionaryEncodingType::kSharedZstd;
   }
   return SharedDictionaryEncodingType::kNotUsed;
@@ -220,9 +220,11 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
                           sizeof(shared_dictionary_->hash().data))));
 
   if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
-    AddAcceptEncoding(request_headers, "sbr, zstd-d");
+    AddAcceptEncoding(request_headers,
+                      base::StrCat({GetSharedBrotliContentEncodingName(), ", ",
+                                    GetSharedZstdContentEncodingName()}));
   } else {
-    AddAcceptEncoding(request_headers, "sbr");
+    AddAcceptEncoding(request_headers, GetSharedBrotliContentEncodingName());
   }
 
   if (dictionary_status_ == DictionaryStatus::kNoDictionary) {

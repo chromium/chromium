@@ -199,7 +199,7 @@ Currently there are two backend implementations, V1 and V2. V2 is under active
 construction to catch up the following spec changes:
 
 - Change Content-Encoding name "br-d" "zstd-d"
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5185977.
 - Changed match to use URLPattern
   - Stauts: Not yet implemented.
 - Added support for a server-provided dictionary id

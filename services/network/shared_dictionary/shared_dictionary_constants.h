@@ -34,14 +34,6 @@ COMPONENT_EXPORT(NETWORK_SERVICE)
 base::ScopedClosureRunner SetDictionarySizeLimitForTesting(
     size_t dictionary_size_limit);
 
-// The content encoding name of "sbr".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kSbrContentEncodingName[];
-
-// The content encoding name of "zstd-d".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kZstdDContentEncodingName[];
-
 // The header name of "sec-available-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kSecAvailableDictionaryHeaderName[];
