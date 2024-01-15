@@ -674,7 +674,7 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("completeAuthentication",
               &GaiaScreenHandler::HandleCompleteAuthenticationEvent);
   AddCallback("usingSAMLAPI", &GaiaScreenHandler::HandleUsingSAMLAPI);
-  AddCallback("recordSAMLProvider",
+  AddCallback("recordSamlProvider",
               &GaiaScreenHandler::HandleRecordSAMLProvider);
   AddCallback("samlChallengeMachineKey",
               &GaiaScreenHandler::HandleSamlChallengeMachineKey);
@@ -1710,7 +1710,7 @@ void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
 }
 
 void GaiaScreenHandler::ToggleLoadingUI(bool is_shown) {
-  CallExternalAPI("toggleLoadingUI", is_shown);
+  CallExternalAPI("toggleLoadingUi", is_shown);
 }
 
 void GaiaScreenHandler::SetQuickStartEnabled() {

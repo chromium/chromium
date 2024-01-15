@@ -124,7 +124,7 @@ common_screens_js_files = [
   "screens/common/error_message.js",
   "screens/common/family_link_notice.ts",
   "screens/common/gaia_info.ts",
-  "screens/common/gaia_signin.js",
+  "screens/common/gaia_signin.ts",
   "screens/common/gesture_navigation.ts",
   "screens/common/guest_tos.js",
   "screens/common/hw_data_collection.ts",

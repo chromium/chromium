@@ -35,7 +35,7 @@ const SecurityTokenPinBase =
 /**
  * @polymer
  */
-class SecurityTokenPin extends SecurityTokenPinBase {
+export class SecurityTokenPin extends SecurityTokenPinBase {
   static get is() {
     return 'security-token-pin';
   }

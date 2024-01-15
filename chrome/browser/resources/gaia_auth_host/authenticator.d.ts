@@ -80,9 +80,21 @@ export enum AuthFlow {
   SAML = 0,
 }
 
+export const SUPPORTED_PARAMS: string[];
+
 export class Authenticator extends EventTarget {
   constructor(webview: HTMLElement|string);
   getAccountsResponse(accounts: string[]): void;
   getDeviceIdResponse(deviceId: string): void;
   load(authMode: AuthMode, data: AuthParams): void;
+  sendMessageToWebview(messageType: string, messageData?: string|Object): void;
+  setWebviewPartition(newWebviewPartitionName: string): void;
+  resetWebview(): void;
+  resetStates(): void;
+  reload(): void;
+
+  insecureContentBlockedCallback: ((url: string) => void)|null;
+  missingGaiaInfoCallback: (() => void)|null;
+  samlApiUsedCallback: ((isThirdPartyIdP: boolean) => void)|null;
+  recordSamlProviderCallback: ((x509Certificate: string) => void)|null;
 }

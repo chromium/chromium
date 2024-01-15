@@ -49,7 +49,7 @@ const CHROMEOS_GAIA_PASSWORD_METRIC = 'ChromeOS.Gaia.PasswordFlow';
 /**
  * @polymer
  */
-class GaiaDialog extends GaiaDialogBase {
+export class GaiaDialog extends GaiaDialogBase {
   static get is() {
     return 'gaia-dialog';
   }

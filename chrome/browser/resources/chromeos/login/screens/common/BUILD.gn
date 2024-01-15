@@ -30,7 +30,6 @@ js_type_check("closure_compile_local") {
     ":consolidated_consent",
     ":device_disabled",
     ":error_message",
-    ":gaia_signin",
     ":guest_tos",
     ":offline_ad_login",
     ":os_install",
@@ -94,25 +93,6 @@ js_library("device_disabled") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("gaia_signin") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.js" ]
-  deps = [
-    "../..:display_manager",
-    "../../../../gaia_auth_host:authenticator",
-    "../../components:gaia_dialog",
-    "../../components:notification_card",
-    "../../components:oobe_types",
-    "../../components:security_token_pin",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":web_components" ]
 }
