@@ -683,11 +683,14 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
     credentials_to_move.push_back(*entry);
   }
 
-  // Desktop settings only offer bulk move, not invidual moves.
   saved_passwords_presenter_.MoveCredentialsToAccount(
       credentials_to_move,
-      password_manager::metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredForMultiplePasswordsInSettings);
+      base::FeatureList::IsEnabled(
+          password_manager::features::kButterOnDesktopFollowup)
+          ? password_manager::metrics_util::MoveToAccountStoreTrigger::
+                kExplicitlyTriggeredInSettings
+          : password_manager::metrics_util::MoveToAccountStoreTrigger::
+                kExplicitlyTriggeredForMultiplePasswordsInSettings);
 }
 
 void PasswordsPrivateDelegateImpl::FetchFamilyMembers(

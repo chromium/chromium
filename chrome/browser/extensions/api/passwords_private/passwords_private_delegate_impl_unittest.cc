@@ -1267,6 +1267,36 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
       1);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest,
+       TestMovePasswordsToAccountStoreWithButterFollowupEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kButterOnDesktopFollowup);
+
+
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+
+  auto delegate = CreateDelegate();
+  PasswordForm form1 = CreateSampleForm(PasswordForm::Store::kProfileStore);
+
+  SetUpPasswordStores({form1});
+
+  int first_id =
+      delegate->GetIdForCredential(password_manager::CredentialUIEntry(form1));
+
+  delegate->MovePasswordsToAccount({first_id}, web_contents.get());
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredInSettings,
+      1);
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
   static_assert(
       base::to_underlying(api::passwords_private::ImportEntryStatus::kNone) ==
