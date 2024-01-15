@@ -104,8 +104,7 @@ class FormCache {
   friend class FormCacheTestApi;
 
   // Saves initial state of checkbox and select elements.
-  void SaveInitialValues(
-      const std::vector<blink::WebFormControlElement>& control_elements);
+  void SaveInitialValues(base::span<const FormFieldData> fields);
 
   // Clears the value of the |control_element|.
   // |trigger_element| is the element on which the user triggered a request

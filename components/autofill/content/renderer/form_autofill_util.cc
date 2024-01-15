@@ -1775,6 +1775,29 @@ FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
   }
 }
 
+bool IsCheckable(FormControlType form_control_type) {
+  switch (form_control_type) {
+    case FormControlType::kInputCheckbox:
+    case FormControlType::kInputRadio:
+      return true;
+    case FormControlType::kContentEditable:
+    case FormControlType::kInputEmail:
+    case FormControlType::kInputMonth:
+    case FormControlType::kInputNumber:
+    case FormControlType::kInputPassword:
+    case FormControlType::kInputSearch:
+    case FormControlType::kInputTelephone:
+    case FormControlType::kInputText:
+    case FormControlType::kInputUrl:
+    case FormControlType::kSelectOne:
+    case FormControlType::kSelectMultiple:
+    case FormControlType::kSelectList:
+    case FormControlType::kTextArea:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
   const std::optional<AutocompleteParsingResult> parsing_result =
       ParseAutocompleteAttribute(GetAutocompleteAttribute(element));
