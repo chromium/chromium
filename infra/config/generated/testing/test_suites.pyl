@@ -2327,25 +2327,6 @@
       'content_unittests': {},
     },
 
-    'goma_mac_gtests': {
-      'base_unittests': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Mac-13',
-          },
-        },
-      },
-      'content_unittests': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Mac-13',
-          },
-        },
-      },
-    },
-
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
       'angle_unittests': {
         'mixins': [

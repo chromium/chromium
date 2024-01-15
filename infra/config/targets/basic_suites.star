@@ -2106,28 +2106,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "goma_mac_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                dimensions = {
-                    "cpu": "x86-64",
-                    "os": "Mac-13",
-                },
-            ),
-        ),
-        "content_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                dimensions = {
-                    "cpu": "x86-64",
-                    "os": "Mac-13",
-                },
-            ),
-        ),
-    },
-)
-
 # BEGIN tests which run on the GPU bots
 
 targets.legacy_basic_suite(

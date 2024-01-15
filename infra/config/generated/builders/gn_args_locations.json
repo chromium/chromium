@@ -335,22 +335,16 @@
   "chromium.goma": {
     "Chromium Linux Goma RBE Staging": "goma/Chromium Linux Goma RBE Staging/gn-args.json",
     "Chromium Linux Goma RBE Staging (dbg)": "goma/Chromium Linux Goma RBE Staging (dbg)/gn-args.json",
-    "Chromium Mac Goma RBE Staging": "goma/Chromium Mac Goma RBE Staging/gn-args.json",
-    "Chromium Mac Goma RBE Staging (dbg)": "goma/Chromium Mac Goma RBE Staging (dbg)/gn-args.json",
     "Chromium Win Goma RBE Staging": "goma/Chromium Win Goma RBE Staging/gn-args.json",
     "chromeos-amd64-generic-rel-goma-rbe-staging": "goma/chromeos-amd64-generic-rel-goma-rbe-staging/gn-args.json"
   },
   "chromium.goma.fyi": {
     "Linux Builder Goma RBE Canary": "goma/Linux Builder Goma RBE Canary/gn-args.json",
-    "Mac Builder (dbg) Goma RBE Canary (clobber)": "goma/Mac Builder (dbg) Goma RBE Canary (clobber)/gn-args.json",
-    "Mac M1 Builder (dbg) Goma RBE Canary (clobber)": "goma/Mac M1 Builder (dbg) Goma RBE Canary (clobber)/gn-args.json",
     "Win Builder (dbg) Goma RBE Canary": "goma/Win Builder (dbg) Goma RBE Canary/gn-args.json",
     "Win Builder Goma RBE Canary": "goma/Win Builder Goma RBE Canary/gn-args.json",
     "chromeos-amd64-generic-rel-goma-rbe-canary": "goma/chromeos-amd64-generic-rel-goma-rbe-canary/gn-args.json",
-    "ios-device-goma-rbe-canary-clobber": "goma/ios-device-goma-rbe-canary-clobber/gn-args.json",
     "linux-archive-rel-goma-rbe-ats-canary": "goma/linux-archive-rel-goma-rbe-ats-canary/gn-args.json",
-    "linux-archive-rel-goma-rbe-canary": "goma/linux-archive-rel-goma-rbe-canary/gn-args.json",
-    "mac-archive-rel-goma-rbe-canary": "goma/mac-archive-rel-goma-rbe-canary/gn-args.json"
+    "linux-archive-rel-goma-rbe-canary": "goma/linux-archive-rel-goma-rbe-canary/gn-args.json"
   },
   "chromium.gpu": {
     "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
