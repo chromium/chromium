@@ -19,9 +19,13 @@
 
 namespace {
 
-// Width/height of the Fallback dialog as found with the inspector tool.
-const int kWidth = 496;
-const int kHeight = 198;
+// Width of the Fallback dialog as found with the inspector tool.
+const int kWidth = 512;
+
+// Height of the Fallback dialogs for different text lengths as found with the
+// inspector tool.
+const int kOfflineHeight = 264;
+const int kDriveUnavailableHeight = 244;
 
 // Return the task title id for the task represented by the `action_id`.
 int GetTaskTitleId(const std::string& action_id) {
@@ -42,21 +46,25 @@ int GetTaskTitleId(const std::string& action_id) {
   return 0;
 }
 
-// TODO(cassycc): replace with UX chosen text.
 // Get the text ids for the `fallback_reason` specific translated strings that
 // will be displayed in dialog. Store them in the out parameters `title_id`,
-// `reason_message_id` and `instructions_message_id`.
-void GetDialogTextIds(
+// `reason_message_id` and `instructions_message_id`. Get the corresponding
+// width and height needed to display these strings in the dialog. Store them in
+// the out parameters `width` and `height`.
+void GetDialogTextIdsAndSize(
     const ash::office_fallback::FallbackReason fallback_reason,
     int& title_id,
     int& reason_message_id,
-    int& instructions_message_id) {
-  instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS;
+    int& instructions_message_id,
+    int& width,
+    int& height) {
+  width = kWidth;
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
       title_id = IDS_OFFICE_FALLBACK_TITLE_OFFLINE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_OFFLINE;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE;
+      height = kOfflineHeight;
       break;
     case ash::office_fallback::FallbackReason::kDriveDisabled:
     case ash::office_fallback::FallbackReason::kNoDriveService:
@@ -67,6 +75,7 @@ void GetDialogTextIds(
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
       instructions_message_id =
           IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE;
+      height = kDriveUnavailableHeight;
       break;
   }
 }
@@ -117,8 +126,10 @@ bool OfficeFallbackDialog::Show(
   int title_id;
   int reason_message_id;
   int instructions_message_id;
-  GetDialogTextIds(fallback_reason, title_id, reason_message_id,
-                   instructions_message_id);
+  int width;
+  int height;
+  GetDialogTextIdsAndSize(fallback_reason, title_id, reason_message_id,
+                          instructions_message_id, width, height);
   // TODO(cassycc): Figure out how to add the web_drive to the placeholder in
   // IDS_OFFICE_FALLBACK_TITLE_WEB_DRIVE_UNAVAILABLE.
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
@@ -129,9 +140,9 @@ bool OfficeFallbackDialog::Show(
 
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
-  OfficeFallbackDialog* dialog =
-      new OfficeFallbackDialog(file_urls, title_text, reason_message,
-                               instructions_message, std::move(callback));
+  OfficeFallbackDialog* dialog = new OfficeFallbackDialog(
+      file_urls, title_text, reason_message, instructions_message, width,
+      height, std::move(callback));
 
   dialog->ShowSystemDialog();
   return true;
@@ -153,6 +164,8 @@ OfficeFallbackDialog::OfficeFallbackDialog(
     const std::string& title_text,
     const std::string& reason_message,
     const std::string& instructions_message,
+    const int& width,
+    const int& height,
     DialogChoiceCallback callback)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIOfficeFallbackURL),
                               std::u16string() /* title */),
@@ -160,6 +173,8 @@ OfficeFallbackDialog::OfficeFallbackDialog(
       title_text_(title_text),
       reason_message_(reason_message),
       instructions_message_(instructions_message),
+      width_(width),
+      height_(height),
       callback_(std::move(callback)) {}
 
 OfficeFallbackDialog::~OfficeFallbackDialog() = default;
@@ -175,7 +190,7 @@ std::string OfficeFallbackDialog::GetDialogArgs() const {
 }
 
 void OfficeFallbackDialog::GetDialogSize(gfx::Size* size) const {
-  size->SetSize(kWidth, kHeight);
+  size->SetSize(width_, height_);
 }
 
 bool OfficeFallbackDialog::ShouldCloseDialogOnEscape() const {
