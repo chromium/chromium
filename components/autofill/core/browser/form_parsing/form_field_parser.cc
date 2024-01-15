@@ -26,7 +26,7 @@
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/name_field.h"
+#include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
@@ -180,7 +180,7 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   // Name pass.
-  ParseFormFieldsPass(NameField::Parse, context, processed_fields,
+  ParseFormFieldsPass(NameFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   // Search pass.

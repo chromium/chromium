@@ -120,8 +120,8 @@ class CreditCardFieldParser : public FormFieldParser {
   // Occasionally pages have separate fields for the cardholder's first and
   // last names; for such pages |cardholder_| holds the first name field and
   // we store the last name field here.
-  // (We could store an embedded |NameField| object here, but we don't do so
-  // because the text patterns for matching a cardholder name are different
+  // (We could store an embedded |NameFieldParser| object here, but we don't do
+  // so because the text patterns for matching a cardholder name are different
   // than for ordinary names, and because cardholder names never have titles,
   // middle names or suffixes.)
   raw_ptr<AutofillField> cardholder_last_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/name_field.h"
+#include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 
 #include <memory>
 
@@ -26,7 +26,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
 }
 
 // A form field that can parse a full name field.
-class FullNameField : public NameField {
+class FullNameField : public NameFieldParser {
  public:
   static std::unique_ptr<FullNameField> Parse(ParsingContext& context,
                                               AutofillScanner* scanner);
@@ -44,7 +44,7 @@ class FullNameField : public NameField {
 
 // A form field that parses a first name field and two last name fields as they
 // are used in Hispanic/Latinx names.
-class FirstTwoLastNamesField : public NameField {
+class FirstTwoLastNamesField : public NameFieldParser {
  public:
   static std::unique_ptr<FirstTwoLastNamesField> ParseComponentNames(
       ParsingContext& context,
@@ -71,7 +71,7 @@ class FirstTwoLastNamesField : public NameField {
 };
 
 // A form field that can parse a first and last name field.
-class FirstLastNameField : public NameField {
+class FirstLastNameField : public NameFieldParser {
  public:
   // Tries to match a series of name fields that follows the pattern "Name,
   // Surname".
@@ -117,8 +117,9 @@ class FirstLastNameField : public NameField {
 }  // namespace
 
 // static
-std::unique_ptr<FormFieldParser> NameField::Parse(ParsingContext& context,
-                                                  AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> NameFieldParser::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return nullptr;
   }
@@ -139,8 +140,8 @@ std::unique_ptr<FormFieldParser> NameField::Parse(ParsingContext& context,
 }
 
 // This is overridden in concrete subclasses.
-void NameField::AddClassifications(FieldCandidatesMap& field_candidates) const {
-}
+void NameFieldParser::AddClassifications(
+    FieldCandidatesMap& field_candidates) const {}
 
 // static
 std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,

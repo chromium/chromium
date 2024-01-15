@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_PARSER_H_
 
 #include <memory>
 
@@ -19,20 +19,20 @@ namespace autofill {
 class AutofillScanner;
 
 // A form field that can parse either a FullNameField or a FirstLastNameField.
-class NameField : public FormFieldParser {
+class NameFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
-  NameField(const NameField&) = delete;
-  NameField& operator=(const NameField&) = delete;
+  NameFieldParser(const NameFieldParser&) = delete;
+  NameFieldParser& operator=(const NameFieldParser&) = delete;
 
  protected:
-  NameField() = default;
+  NameFieldParser() = default;
 
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_PARSER_H_

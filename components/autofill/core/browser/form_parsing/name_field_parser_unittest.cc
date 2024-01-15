@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/name_field.h"
+#include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 
 #include <memory>
 #include <vector>
@@ -27,7 +27,7 @@ class NameFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return NameField::Parse(context, scanner);
+    return NameFieldParser::Parse(context, scanner);
   }
 };
 
