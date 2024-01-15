@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -1728,6 +1729,23 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
   return t_urls;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SearchProviderOverrideStatus {
+  // No preferences are available for `prefs::kSearchProviderOverrides`.
+  kNoPref = 0,
+
+  // The preferences for `prefs::kSearchProviderOverrides` do not contain valid
+  // template URLs.
+  kEmptyPref = 1,
+
+  // The preferences for `prefs::kSearchProviderOverrides` contain valid
+  // template URL(s).
+  kPrefHasValidUrls = 2,
+
+  kMaxValue = kPrefHasValidUrls
+};
+
 std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
     PrefService* prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
@@ -1745,6 +1763,14 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
       }
     }
   }
+
+  base::UmaHistogramEnumeration(
+      "Search.SearchProviderOverrideStatus",
+      !t_urls.empty() ? SearchProviderOverrideStatus::kPrefHasValidUrls
+                      : (prefs->HasPrefPath(prefs::kSearchProviderOverrides)
+                             ? SearchProviderOverrideStatus::kEmptyPref
+                             : SearchProviderOverrideStatus::kNoPref));
+
   return t_urls;
 }
 

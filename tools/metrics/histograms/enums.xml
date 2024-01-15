@@ -37287,6 +37287,12 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="From omnibox"/>
 </enum>
 
+<enum name="SearchProviderOverrideStatus">
+  <int value="0" label="kNoPref"/>
+  <int value="1" label="kEmptyPref"/>
+  <int value="2" label="kPrefHasValidUrls"/>
+</enum>
+
 <enum name="SearchWidgetUseInfo">
   <int value="0" label="defunct Present in partnership device"/>
   <int value="1" label="defunct Not present in partnership device"/>
