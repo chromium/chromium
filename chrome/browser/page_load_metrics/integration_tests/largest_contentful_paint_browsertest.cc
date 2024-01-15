@@ -23,6 +23,7 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -420,8 +421,14 @@ class MAYBE_MouseoverLCPTest : public MetricIntegrationTest,
                       int x2,
                       int y2,
                       bool expected) {
-    // Install a ScopedRunLoopTimeout override to distinguish the timeout from
-    // MouseoverLCPTest vs browser_test_base.
+    // Turn off BFCache to see if it helps with BFCache bot flakes. See
+    // https://crbug.com/1288027
+    content::DisableBackForwardCacheForTesting(
+        web_contents(), content::BackForwardCache::DisableForTestingReason::
+                            TEST_REQUIRES_NO_CACHING);
+
+    // Install a ScopedRunLoopTimeout override to distinguish the timeout
+    // from MouseoverLCPTest vs browser_test_base.
     base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, absl::nullopt,
                                                       base::NullCallback());
     auto waiter =
