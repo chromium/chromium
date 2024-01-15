@@ -29,7 +29,7 @@
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/price_field.h"
+#include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/search_field.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
@@ -176,7 +176,7 @@ void FormFieldParser::ParseFormFields(
   }
 
   // Price pass.
-  ParseFormFieldsPass(PriceField::Parse, context, processed_fields,
+  ParseFormFieldsPass(PriceFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   // Name pass.

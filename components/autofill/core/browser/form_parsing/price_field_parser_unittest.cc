@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/price_field.h"
+#include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 
@@ -21,7 +21,7 @@ class PriceFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return PriceField::Parse(context, scanner);
+    return PriceFieldParser::Parse(context, scanner);
   }
 };
 

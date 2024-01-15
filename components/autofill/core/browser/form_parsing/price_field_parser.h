@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PRICE_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PRICE_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PRICE_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PRICE_FIELD_PARSER_H_
 
 #include <memory>
 
@@ -21,14 +21,14 @@ class AutofillScanner;
 
 // Price fields are not filled by autofill, but identifying them will help to
 // reduce the number of false positives.
-class PriceField : public FormFieldParser {
+class PriceFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
-  explicit PriceField(const AutofillField* field);
+  explicit PriceFieldParser(const AutofillField* field);
 
-  PriceField(const PriceField&) = delete;
-  PriceField& operator=(const PriceField&) = delete;
+  PriceFieldParser(const PriceFieldParser&) = delete;
+  PriceFieldParser& operator=(const PriceFieldParser&) = delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -42,4 +42,4 @@ class PriceField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PRICE_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PRICE_FIELD_PARSER_H_

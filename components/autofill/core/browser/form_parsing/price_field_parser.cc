@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/price_field.h"
+#include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -12,8 +12,9 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormFieldParser> PriceField::Parse(ParsingContext& context,
-                                                   AutofillScanner* scanner) {
+std::unique_ptr<FormFieldParser> PriceFieldParser::Parse(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> price_patterns =
       GetMatchPatterns("PRICE", context.page_language, context.pattern_source);
@@ -25,15 +26,16 @@ std::unique_ptr<FormFieldParser> PriceField::Parse(ParsingContext& context,
               FormControlType::kSelectList, FormControlType::kTextArea,
               FormControlType::kInputSearch>,
           price_patterns, &field, "kPriceRe")) {
-    return std::make_unique<PriceField>(field);
+    return std::make_unique<PriceFieldParser>(field);
   }
 
   return nullptr;
 }
 
-PriceField::PriceField(const AutofillField* field) : field_(field) {}
+PriceFieldParser::PriceFieldParser(const AutofillField* field)
+    : field_(field) {}
 
-void PriceField::AddClassifications(
+void PriceFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, PRICE, kBasePriceParserScore, field_candidates);
 }
