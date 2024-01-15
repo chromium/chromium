@@ -165,16 +165,11 @@ void AwContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
   associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
       base::BindRepeating(
-          [](content::RenderFrameHost* render_frame_host,
-             mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-                 receiver) {
-            autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-                std::move(receiver), render_frame_host);
-          },
+          &autofill::ContentAutofillDriverFactory::BindAutofillDriver,
           &render_frame_host));
+  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
   associated_registry.AddInterface<
       content_capture::mojom::ContentCaptureReceiver>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,

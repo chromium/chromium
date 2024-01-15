@@ -77,8 +77,8 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       content::WebContents* contents);
 
   static void BindAutofillDriver(
-      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
-      content::RenderFrameHost* render_frame_host);
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver);
 
   ContentAutofillDriverFactory(content::WebContents* web_contents,
                                AutofillClient* client,

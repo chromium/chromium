@@ -412,12 +412,7 @@ void ChromeContentBrowserClient::
 
   associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
       base::BindRepeating(
-          [](content::RenderFrameHost* render_frame_host,
-             mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
-                 receiver) {
-            autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-                std::move(receiver), render_frame_host);
-          },
+          &autofill::ContentAutofillDriverFactory::BindAutofillDriver,
           &render_frame_host));
   associated_registry.AddInterface<autofill::mojom::PasswordGenerationDriver>(
       base::BindRepeating(

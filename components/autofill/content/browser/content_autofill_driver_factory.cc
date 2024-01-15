@@ -65,8 +65,8 @@ ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
 
 // static
 void ContentAutofillDriverFactory::BindAutofillDriver(
-    mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver) {
   DCHECK(render_frame_host);
 
   content::WebContents* web_contents =
