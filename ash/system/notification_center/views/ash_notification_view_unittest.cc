@@ -1125,7 +1125,16 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
       "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
+// TODO(crbug.com/1518434): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InlineSettingsAnimationsRecordSmoothness \
+  DISABLED_InlineSettingsAnimationsRecordSmoothness
+#else
+#define MAYBE_InlineSettingsAnimationsRecordSmoothness \
+  InlineSettingsAnimationsRecordSmoothness
+#endif
+TEST_F(AshNotificationViewTest,
+       MAYBE_InlineSettingsAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
