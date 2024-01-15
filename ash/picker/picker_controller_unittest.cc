@@ -4,11 +4,16 @@
 
 #include "ash/picker/picker_controller.h"
 
+#include "ash/picker/model/picker_search_results.h"
 #include "ash/public/cpp/picker/picker_client.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/ime/fake_text_input_client.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -101,6 +106,42 @@ TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {
   widget_visible_waiter.Wait();
 
   histogram.ExpectTotalCount("Ash.Picker.Session.InputReadyLatency", 1);
+}
+
+TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  controller.InsertResultOnNextFocus(PickerSearchResult(u"abc"));
+  ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method->SetFocusedTextInputClient(&input_field);
+  absl::Cleanup focused_input_field_reset = [input_method] {
+    // Reset the input field since it will be destroyed before `input_method`.
+    input_method->SetFocusedTextInputClient(nullptr);
+  };
+
+  EXPECT_EQ(input_field.text(), u"");
+}
+
+TEST_F(PickerControllerTest, InsertResultInsertsIntoInputFieldAfterFocus) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  controller.ToggleWidget();
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  controller.InsertResultOnNextFocus(PickerSearchResult(u"abc"));
+  controller.widget_for_testing()->CloseNow();
+  ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method->SetFocusedTextInputClient(&input_field);
+  absl::Cleanup focused_input_field_reset = [input_method] {
+    // Reset the input field since it will be destroyed before `input_method`.
+    input_method->SetFocusedTextInputClient(nullptr);
+  };
+
+  EXPECT_EQ(input_field.text(), u"abc");
 }
 
 }  // namespace

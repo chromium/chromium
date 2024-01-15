@@ -143,9 +143,8 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // This cancels the previous request if there was one.
-  // TODO: b/316936944 - Actually insert a real result.
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-      input_method, u"test", kInsertMediaTimeout);
+      input_method, result.text(), kInsertMediaTimeout);
 }
 
 bool PickerController::ShouldPaint() {
