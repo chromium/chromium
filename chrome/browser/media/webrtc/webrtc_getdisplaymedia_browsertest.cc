@@ -42,6 +42,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_captured_surface_controller.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -60,7 +61,20 @@
 
 namespace {
 
-using base::test::FeatureRef;
+using ::base::test::FeatureRef;
+using ::content::BrowserThread;
+using ::content::CapturedSurfaceController;
+using ::content::GlobalRenderFrameHostId;
+using ::content::MockCapturedSurfaceController;
+using ::content::WebContents;
+using ::content::WebContentsMediaCaptureId;
+using ::testing::_;
+using ::testing::Mock;
+
+using CapturedSurfaceControllerFactoryCallback =
+    ::base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
+        GlobalRenderFrameHostId,
+        WebContentsMediaCaptureId)>;
 
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
@@ -194,9 +208,10 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
-ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents) {
+ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
+                                    size_t infobar_index = 0) {
   return static_cast<ConfirmInfoBarDelegate*>(
-      GetInfoBarManager(web_contents)->infobars()[0]->delegate());
+      GetInfoBarManager(web_contents)->infobars()[infobar_index]->delegate());
 }
 
 bool HasSecondaryButton(content::WebContents* web_contents) {
@@ -1212,6 +1227,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
+
 // TODO(1428806) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSourceThenStopTracksRemovesIndicators) {
@@ -1609,3 +1625,315 @@ INSTANTIATE_TEST_SUITE_P(
         /*policy_allowlist_value=*/
         testing::Values(std::nullopt, kEmbeddedTestServerOrigin, kOtherOrigin)),
     &GetDisplayMediaTransientActivationRequiredTest::GetDescription);
+
+// Encapsulates information about a capture-session in which one tab starts
+// out capturing a specific other tab, and later possibly moves to capturing
+// another tab. The encapsulation of this state allows for more succinct tests,
+// especially when testing multiple concurrent capture-sessions.
+class CaptureSessionDetails {
+ public:
+  enum class CapturedTab {
+    kInitiallyCapturedTab,
+    kOtherTab,
+    kCapturingTab,  // Share-this-tab-instead can cause self-capture.
+  };
+
+  CaptureSessionDetails(std::string session_name,
+                        WebContents* initially_captured_tab,
+                        WebContents* other_tab,
+                        WebContents* capturing_tab)
+      : session_name_(std::move(session_name)),
+        initially_captured_tab_(initially_captured_tab),
+        other_tab_(other_tab),
+        capturing_tab_(capturing_tab) {}
+
+  std::unique_ptr<MockCapturedSurfaceController>
+  MakeMockCapturedSurfaceController(GlobalRenderFrameHostId gdm_rfhid,
+                                    WebContentsMediaCaptureId captured_wc_id) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    EXPECT_FALSE(mock_captured_surface_controller_)
+        << "Instantiated more CapturedSurfaceController than expected.";
+
+    mock_captured_surface_controller_ =
+        new MockCapturedSurfaceController(gdm_rfhid, captured_wc_id);
+    mock_captured_surface_controller_->SetSendWheelResponse(
+        blink::mojom::CapturedSurfaceControlResult::kSuccess);
+
+    return base::WrapUnique(mock_captured_surface_controller_.get());
+  }
+
+  void RunGetDisplayMedia() {
+    ::RunGetDisplayMedia(capturing_tab_,
+                         "{video: true, surfaceSwitching: \"include\"}",
+                         /*is_fake_ui=*/false,
+                         /*expect_success=*/true,
+                         /*is_tab_capture=*/true);
+  }
+
+  // Sets a factory that produces mock controllers for Captured Surface Control
+  // and attaches them to `this` CaptureSessionDetails object.
+  //
+  // The factory is global. Tests that instantiate multiple capture sessions
+  // should make sure to call this again from the new CaptureSessionDetails
+  // object at the appropriate time, thereby replacing the factory after it's
+  // used.
+  //
+  // This method is called on the UI thread. Hops to the IO thread and sets the
+  // CSC-factory, then unblocks execution on the UI thread.
+  void SetCapturedSurfaceControllerFactory() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    base::RunLoop run_loop;
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CaptureSessionDetails::SetCapturedSurfaceControllerFactoryOnIO,
+            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  void SetExpectUpdateCaptureTarget() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    base::RunLoop run_loop;
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CaptureSessionDetails::ExpectUpdateCaptureTargetOnIO,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  void VerifyAndClearExpectations() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    SCOPED_TRACE(session_name_);
+
+    base::RunLoop run_loop;
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CaptureSessionDetails::VerifyAndClearExpectationsOnIO,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  WebContents* GetTab(CapturedTab captured_tab) {
+    switch (captured_tab) {
+      case CapturedTab::kInitiallyCapturedTab:
+        return initially_captured_tab_;
+      case CapturedTab::kOtherTab:
+        return other_tab_;
+      case CapturedTab::kCapturingTab:
+        return capturing_tab_;
+    }
+    NOTREACHED_NORETURN();
+  }
+
+  // Get the tab that's neither capturing nor being captured.
+  WebContents* GetNonCapturedTab() {
+    CHECK(!capturing_tab_->IsBeingCaptured());
+    CHECK_EQ(static_cast<int>(initially_captured_tab_->IsBeingCaptured()) +
+                 static_cast<int>(other_tab_->IsBeingCaptured()),
+             1);
+
+    return initially_captured_tab_->IsBeingCaptured() ? other_tab_
+                                                      : initially_captured_tab_;
+  }
+
+  void WaitForCaptureOf(CapturedTab expected_tab) {
+    while (!GetTab(expected_tab)->IsBeingCaptured()) {
+      base::RunLoop().RunUntilIdle();
+    }
+    ExpectCapturedTab(expected_tab);
+  }
+
+  void ExpectCapturedTab(CapturedTab captured) {
+    EXPECT_EQ(initially_captured_tab_->IsBeingCaptured(),
+              captured == CapturedTab::kInitiallyCapturedTab);
+    EXPECT_EQ(other_tab_->IsBeingCaptured(),
+              captured == CapturedTab::kOtherTab);
+    EXPECT_EQ(capturing_tab_->IsBeingCaptured(),
+              captured == CapturedTab::kCapturingTab);
+
+    EXPECT_EQ(GetSecondaryButtonLabel(GetNonCapturedTab()),
+              kShareThisTabInsteadMessage);
+  }
+
+  void SendWheel(std::string action = "{}") {
+    EXPECT_EQ(
+        content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
+                        base::StringPrintf("sendWheel(%s);", action.c_str())),
+        "send-wheel-resolved");
+  }
+
+  WebContents* initially_captured_tab() const {
+    return initially_captured_tab_;
+  }
+  WebContents* other_tab() const { return other_tab_; }
+  WebContents* capturing_tab() const { return capturing_tab_; }
+
+ private:
+  void SetCapturedSurfaceControllerFactoryOnIO(
+      base::RepeatingClosure done_closure) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    CapturedSurfaceControllerFactoryCallback factory = base::BindRepeating(
+        &CaptureSessionDetails::MakeMockCapturedSurfaceController,
+        base::Unretained(this));
+
+    content::SetCapturedSurfaceControllerFactoryForTesting(factory);
+
+    done_closure.Run();
+  }
+
+  void ExpectUpdateCaptureTargetOnIO(base::RepeatingClosure done_closure) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    CHECK(mock_captured_surface_controller_);
+    EXPECT_CALL(*mock_captured_surface_controller_, UpdateCaptureTarget(_))
+        .Times(1);
+
+    done_closure.Run();
+  }
+
+  void VerifyAndClearExpectationsOnIO(base::RepeatingClosure done_closure) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    CHECK(mock_captured_surface_controller_);
+    Mock::VerifyAndClearExpectations(mock_captured_surface_controller_);
+    mock_captured_surface_controller_ = nullptr;
+
+    done_closure.Run();
+  }
+
+  const std::string session_name_;
+
+  // Handled on UI thread.
+  const raw_ptr<WebContents> initially_captured_tab_;
+  const raw_ptr<WebContents> other_tab_;
+  const raw_ptr<WebContents> capturing_tab_;
+
+  // Handled on the IO thread.
+  raw_ptr<MockCapturedSurfaceController> mock_captured_surface_controller_;
+};
+
+class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
+ public:
+  GetDisplayMediaCapturedSurfaceControlTest() = default;
+  ~GetDisplayMediaCapturedSurfaceControlTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{media::kShareThisTabInsteadButtonGetDisplayMedia,
+                              blink::features::kCapturedSurfaceControl},
+        /*disabled_features=*/{});
+
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    DetectErrorsInJavaScript();
+
+    base::FilePath test_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitchASCII(
+        switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
+  }
+
+  // Runs the `ChangeSourceWorksOnCorrectCaptureSession` test.
+  // This is defined as a method in order to test both the first/second
+  // capture experiencing the share-this-tab-instead click, without having
+  // to parameterize the entire test suite.
+  void RunChangeSourceWorksOnCorrectCaptureSession(
+      size_t session_experiencing_change);
+
+ protected:
+  using CapturedTab = ::CaptureSessionDetails::CapturedTab;
+
+  CaptureSessionDetails MakeCaptureSessionDetails(std::string session_name) {
+    return CaptureSessionDetails(
+        std::move(session_name),
+        /*initially_captured_tab=*/OpenTestPageInNewTab(kCapturedPageMain),
+        /*other_tab=*/(OpenTestPageInNewTab(kMainHtmlPage)),
+        /*capturing_tab=*/(OpenTestPageInNewTab(kMainHtmlPage)));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ChangeSourceTriggersUpdateCaptureTarget) {
+  SCOPED_TRACE("ChangeSourceTriggersUpdateCaptureTarget");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  capture_session.SetCapturedSurfaceControllerFactory();
+  capture_session.SendWheel();
+
+  // Expect that clicking "share this tab instead" will pipe a notification of
+  // the change to the captured surface controller.
+  capture_session.SetExpectUpdateCaptureTarget();
+  GetDelegate(capture_session.other_tab())->Cancel();
+  capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
+
+  capture_session.VerifyAndClearExpectations();
+}
+
+void GetDisplayMediaCapturedSurfaceControlTest::
+    RunChangeSourceWorksOnCorrectCaptureSession(
+        size_t session_experiencing_change) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session_0 =
+      MakeCaptureSessionDetails("capture_session_0");
+  capture_session_0.RunGetDisplayMedia();
+  capture_session_0.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+  capture_session_0.SetCapturedSurfaceControllerFactory();
+  capture_session_0.SendWheel();
+
+  CaptureSessionDetails capture_session_1 =
+      MakeCaptureSessionDetails("capture_session_1");
+  capture_session_1.RunGetDisplayMedia();
+  capture_session_1.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+  capture_session_1.SetCapturedSurfaceControllerFactory();
+  capture_session_1.SendWheel();
+
+  // Expect that clicking "share this tab instead" will pipe a notification of
+  // the change to the correct CapturedSurfaceController.
+  CHECK(session_experiencing_change == 0 || session_experiencing_change == 1);
+  CaptureSessionDetails& capture_session_experiencing_change =
+      (session_experiencing_change == 0) ? capture_session_0
+                                         : capture_session_1;
+  capture_session_experiencing_change.SetExpectUpdateCaptureTarget();
+  GetDelegate(capture_session_experiencing_change.other_tab(),
+              /*infobar_index=*/session_experiencing_change)
+      ->Cancel();
+  capture_session_experiencing_change.WaitForCaptureOf(CapturedTab::kOtherTab);
+
+  capture_session_0.VerifyAndClearExpectations();
+  capture_session_1.VerifyAndClearExpectations();
+}
+
+// Test when the first of two capture sessions experiences the source-change.
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ChangeSourceWorksOnCorrectCaptureSession0) {
+  SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession0");
+  RunChangeSourceWorksOnCorrectCaptureSession(0);
+}
+
+// Test when the second of two capture sessions experiences the source-change.
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+                       ChangeSourceWorksOnCorrectCaptureSession1) {
+  SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession1");
+  RunChangeSourceWorksOnCorrectCaptureSession(1);
+}

@@ -6,6 +6,7 @@
   <script type="text/javascript" src="video_detector.js"></script>
   <script>
   'use strict';
+  let controller;
   let settings;
   let video_track;
   let audio_track;
@@ -46,7 +47,8 @@
       }).then((event) => event.data);
     }
 
-    return navigator.mediaDevices.getDisplayMedia(constraints).
+    controller = new CaptureController;
+    return navigator.mediaDevices.getDisplayMedia({...constraints, controller}).
       then(handleSuccess).catch(expectedError ? compareErrors(expectedError)
                                               : handleError);
   }
@@ -155,6 +157,11 @@
       video_track.stop();
     }
     return logAndReturn("stopped");
+  }
+
+  async function sendWheel(action) {
+    await controller.sendWheel(action);
+    return logAndReturn("send-wheel-resolved");
   }
   </script>
 </head>

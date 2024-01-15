@@ -31,11 +31,13 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
@@ -74,6 +76,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/public/test/mock_captured_surface_controller.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace gfx {
 class Point;
@@ -2395,6 +2401,14 @@ RegisterWebContentsCreationCallback(
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
 #endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Set the global factory for CapturedSurfaceController objects.
+void SetCapturedSurfaceControllerFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
+        GlobalRenderFrameHostId,
+        WebContentsMediaCaptureId)> factory);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
 

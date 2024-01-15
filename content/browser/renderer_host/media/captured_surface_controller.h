@@ -39,7 +39,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
 
   // Set the captured WebContents this controller is associated with.
   // This may be called with a null `WebContentsMediaCaptureId`.
-  void UpdateCaptureTarget(WebContentsMediaCaptureId captured_wc_id);
+  virtual void UpdateCaptureTarget(WebContentsMediaCaptureId captured_wc_id);
 
   // Produce a wheel event on the captured surface.
   virtual void SendWheel(
