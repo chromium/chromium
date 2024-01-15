@@ -252,8 +252,7 @@ class AbstractProtoFetcher {
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view payload,
-      const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args = {});
+      const FetcherConfig& fetcher_config);
 
   // Not copyable.
   AbstractProtoFetcher(const AbstractProtoFetcher&) = delete;
@@ -287,7 +286,6 @@ class AbstractProtoFetcher {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   const std::string payload_;
   const FetcherConfig config_;
-  const FetcherConfig::PathArgs args_;
   absl::optional<Metrics> metrics_;
 
   // Entrypoint of the fetch process, which starts with ApiAccessToken access
@@ -312,13 +310,11 @@ class TypedProtoFetcher : public AbstractProtoFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view payload,
       const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args,
       Callback callback)
       : AbstractProtoFetcher(identity_manager,
                              url_loader_factory,
                              payload,
-                             fetcher_config,
-                             args),
+                             fetcher_config),
         callback_(std::move(callback)) {}
 
   virtual ~TypedProtoFetcher() = default;
@@ -363,18 +359,16 @@ class ProtoFetcher {
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const google::protobuf::MessageLite& request,
-      const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args = {})
+      const FetcherConfig& fetcher_config)
       : identity_manager_(identity_manager),
         url_loader_factory_(url_loader_factory),
         payload_(request.SerializeAsString()),
-        config_(fetcher_config),
-        args_(args) {}
+        config_(fetcher_config) {}
   virtual ~ProtoFetcher() = default;
 
   virtual void Start(Callback callback) {
     fetcher_ = std::make_unique<TypedProtoFetcher<Response>>(
-        identity_manager_.get(), url_loader_factory_, payload_, config_, args_,
+        identity_manager_.get(), url_loader_factory_, payload_, config_,
         std::move(callback));
   }
   virtual void Stop() {
@@ -392,7 +386,6 @@ class ProtoFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::string payload_;
   const FetcherConfig config_;
-  const FetcherConfig::PathArgs args_;
   std::unique_ptr<TypedProtoFetcher<Response>> fetcher_;
 };
 
@@ -410,13 +403,11 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const google::protobuf::MessageLite& request,
       const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args,
       const net::BackoffEntry::Policy& backoff_policy)
       : ProtoFetcher<Response>(identity_manager,
                                url_loader_factory,
                                request,
-                               fetcher_config,
-                               args),
+                               fetcher_config),
         backoff_entry_(&backoff_policy),
         metrics_(OverallMetrics::FromConfig(fetcher_config)) {}
 
@@ -580,23 +571,19 @@ std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
 // Constructs a fetcher that needs to be launched with ::Start(). The fetcher
 // will be either one shot or retryable, depending on the
 // FetcherConfig::backoff_policy setting.
-//
-// `args` are only relevant if `fetcher_config` uses template path (see
-// supervised_user::FetcherConfig::service_path).
 template <typename Response>
 std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const google::protobuf::MessageLite& request,
-    const FetcherConfig& fetcher_config,
-    const FetcherConfig::PathArgs& args = {}) {
+    const FetcherConfig& fetcher_config) {
   if (fetcher_config.backoff_policy.has_value()) {
     return std::make_unique<RetryingFetcherImpl<Response>>(
-        identity_manager, url_loader_factory, request, fetcher_config, args,
+        identity_manager, url_loader_factory, request, fetcher_config,
         *fetcher_config.backoff_policy);
   } else {
     return std::make_unique<ProtoFetcher<Response>>(
-        identity_manager, url_loader_factory, request, fetcher_config, args);
+        identity_manager, url_loader_factory, request, fetcher_config);
   }
 }
 
