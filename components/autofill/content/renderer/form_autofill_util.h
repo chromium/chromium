@@ -129,11 +129,15 @@ bool IsDOMPredecessor(const blink::WebNode& x,
 void GetDataListSuggestions(const blink::WebInputElement& element,
                             std::vector<SelectOption>* options);
 
-// Extract FormData from the form element and return it or std::nullopt
-// depending on whether the operation was successful.
+// Extract FormData from `form_element` or the unowned form if
+// `form_element.IsNull()`.
 std::optional<FormData> ExtractFormData(
+    const blink::WebDocument& document,
     const blink::WebFormElement& form_element,
-    const FieldDataManager& field_data_manager);
+    const FieldDataManager& field_data_manager,
+    DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
+                                               ExtractOption::kOptionText,
+                                               ExtractOption::kOptions});
 
 // Helper functions to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will

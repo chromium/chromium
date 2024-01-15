@@ -1644,15 +1644,20 @@ void GetDataListSuggestions(const WebInputElement& element,
 }
 
 std::optional<FormData> ExtractFormData(
+    const WebDocument& document,
     const WebFormElement& form_element,
-    const FieldDataManager& field_data_manager) {
-  return form_element.IsNull()
-             ? std::nullopt
-             : WebFormElementToFormData(
-                   form_element, WebFormControlElement(), field_data_manager,
-                   {ExtractOption::kValue, ExtractOption::kOptionText,
-                    ExtractOption::kOptions},
-                   /*field=*/nullptr);
+    const FieldDataManager& field_data_manager,
+    DenseSet<ExtractOption> extract_options) {
+  if (!form_element.IsNull()) {
+    return WebFormElementToFormData(form_element, WebFormControlElement(),
+                                    field_data_manager, extract_options,
+                                    /*field=*/nullptr);
+  }
+  return UnownedFormElementsToFormData(
+      GetUnownedAutofillableFormFieldElements(document),
+      GetUnownedIframeElements(document), nullptr, field_data_manager,
+      extract_options,
+      /*field=*/nullptr);
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {

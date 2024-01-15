@@ -54,7 +54,9 @@ using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pointwise;
 using ::testing::Values;
 
@@ -2120,6 +2122,53 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableFailures) {
   ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce2")));
   ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce3")));
   ASSERT_FALSE(FindFormForContentEditable(doc.GetElementById("ce4")));
+}
+
+TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
+  LoadHTML(R"(
+      <html><title>Checkout</title></head>
+      <form id=form_of_interest>
+      <input type=text name=text_input>
+      <input type=checkbox name=check_input>
+      <input type=number name=number_input>
+      <select name=select_input>
+        <option value=option_1></option>
+        <option value=option_2></option>
+      </select>
+      </form>
+      <form><input type=text name=excluded/></form>
+      </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  EXPECT_THAT(ExtractFormData(doc, GetFormElementById(doc, "form_of_interest"),
+                              field_data_manager()),
+              Optional(Field(
+                  &FormData::fields,
+                  ElementsAre(Field(&FormFieldData::name, u"text_input"),
+                              Field(&FormFieldData::name, u"check_input"),
+                              Field(&FormFieldData::name, u"number_input"),
+                              Field(&FormFieldData::name, u"select_input")))));
+}
+
+TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
+  LoadHTML(R"(
+      <html><title>Checkout</title></head>
+      <input type=text name=text_input>
+      <input type=checkbox name=check_input>
+      <input type=number name=number_input>
+      <select name=select_input>
+        <option value=option_1></option>
+        <option value=option_2></option>
+      </select>
+      <form><input type=text name=excluded/></form>
+      </html>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  EXPECT_THAT(ExtractFormData(doc, WebFormElement(), field_data_manager()),
+              Optional(Field(
+                  &FormData::fields,
+                  ElementsAre(Field(&FormFieldData::name, u"text_input"),
+                              Field(&FormFieldData::name, u"check_input"),
+                              Field(&FormFieldData::name, u"number_input"),
+                              Field(&FormFieldData::name, u"select_input")))));
 }
 
 }  // namespace

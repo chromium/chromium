@@ -486,16 +486,6 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
   is_screen_reader_enabled_ = mode.has_mode(ui::AXMode::kScreenReader);
 }
 
-void AutofillAgent::FireHostSubmitEvents(const WebFormElement& form,
-                                         bool known_success,
-                                         SubmissionSource source) {
-  DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
-  if (std::optional<FormData> form_data =
-          form_util::ExtractFormData(form, field_data_manager())) {
-    FireHostSubmitEvents(*form_data, known_success, source);
-  }
-}
-
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          bool known_success,
                                          SubmissionSource source) {
@@ -725,21 +715,20 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
       formless_elements_were_autofilled_ |= filled_some_fields;
     }
 
-    WebFormElement updated_form_element = form_util::FindFormByRendererId(
-        unsafe_render_frame()->GetWebFrame()->GetDocument(), form_renderer_id);
-    std::optional<FormData> updated_form_data =
-        updated_form_element.IsNull()
-            ? CollectFormlessElements()
-            : form_util::ExtractFormData(updated_form_element,
-                                         field_data_manager());
-
-    if (auto* autofill_driver = unsafe_autofill_driver();
-        autofill_driver && updated_form_data) {
-      CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-      autofill_driver->DidFillAutofillFormData(*updated_form_data,
-                                               base::TimeTicks::Now());
-      autofill_driver->FormsSeen({std::move(*updated_form_data)},
-                                 /*removed_forms=*/{});
+    if (auto* render_frame = unsafe_render_frame()) {
+      WebDocument document = render_frame->GetWebFrame()->GetDocument();
+      WebFormElement updated_form_element =
+          form_util::FindFormByRendererId(document, form_renderer_id);
+      std::optional<FormData> updated_form_data = form_util::ExtractFormData(
+          document, updated_form_element, field_data_manager());
+      if (auto* autofill_driver = unsafe_autofill_driver();
+          autofill_driver && updated_form_data) {
+        CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+        autofill_driver->DidFillAutofillFormData(*updated_form_data,
+                                                 base::TimeTicks::Now());
+        autofill_driver->FormsSeen({std::move(*updated_form_data)},
+                                   /*removed_forms=*/{});
+      }
     }
     SendPotentiallySubmittedFormToBrowser();
   }
@@ -958,30 +947,6 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
   password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 
-std::optional<FormData> AutofillAgent::CollectFormlessElements(
-    DenseSet<ExtractOption> extract_options) const {
-  if (!unsafe_render_frame()) {
-    return std::nullopt;
-  }
-  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
-
-  // Build up the FormData from the unowned elements. This logic mostly
-  // mirrors the construction of the synthetic form in form_cache.cc, but
-  // happens at submit-time so we can capture the modifications the user
-  // has made, and doesn't depend on form_cache's internal state.
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document);
-
-  std::vector<WebElement> iframe_elements =
-      form_util::GetUnownedIframeElements(document);
-
-  FormData formless_elements_form;
-  return form_util::UnownedFormElementsToFormData(
-      control_elements, iframe_elements, /*element=*/nullptr,
-      field_data_manager(), extract_options,
-      /*field=*/nullptr);
-}
-
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source) {
@@ -1177,14 +1142,15 @@ void AutofillAgent::ExtractForm(
   DenseSet<ExtractOption> extract_options =
       MaybeExtractDatalist({ExtractOption::kBounds, ExtractOption::kOptions,
                             ExtractOption::kOptionText, ExtractOption::kValue});
+  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
   if (!form_id) {
     if (std::optional<FormData> form =
-            CollectFormlessElements(extract_options)) {
+            form_util::ExtractFormData(document, WebFormElement(),
+                                       field_data_manager(), extract_options)) {
       std::move(callback).Run(std::move(form));
       return;
     }
   }
-  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
   if (WebFormElement form_element = FindFormByRendererId(document, form_id);
       !form_element.IsNull()) {
     if (std::optional<FormData> form = WebFormElementToFormData(
@@ -1535,6 +1501,13 @@ void AutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
     SaveFormReason source) {
+  DCHECK(MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
+  WebDocument document =
+      unsafe_render_frame()
+          ? unsafe_render_frame()->GetWebFrame()->GetDocument()
+          : WebDocument();
+
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&]() {
@@ -1544,28 +1517,24 @@ void AutofillAgent::OnProvisionallySaveForm(
       UpdateLastInteractedForm(form_element);
       return;
     }
-    if (!unsafe_render_frame()) {
-      return;
-    }
-    // Remove visible elements.
-    // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
-    // document the reason, if not, remove.
-    WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
-    if (!doc.IsNull()) {
+    if (!document.IsNull()) {
+      // Remove visible elements.
+      // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
+      // document the reason, if not, remove.
       std::erase_if(formless_elements_user_edited_,
-                    [&doc](const FieldRendererId field_id) {
+                    [&document](const FieldRendererId field_id) {
                       WebFormControlElement field =
                           form_util::FindFormControlByRendererId(
-                              doc, field_id,
+                              document, field_id,
                               /*form_to_be_searched =*/FormRendererId());
                       return !field.IsNull() &&
                              form_util::IsWebElementFocusableForAutofill(field);
                     });
     }
-    // Update provisionally_saved_form_.
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    provisionally_saved_form_ = CollectFormlessElements();
+    provisionally_saved_form_ = form_util::ExtractFormData(
+        document, WebFormElement(), field_data_manager());
     last_interacted_form_ = {};
   };
 
@@ -1576,8 +1545,11 @@ void AutofillAgent::OnProvisionallySaveForm(
       // Javascript's submit event handler could change it. We don't clear
       // submitted_forms_ because OnFormSubmitted will normally be invoked
       // afterwards and we don't want to fire the same event twice.
-      FireHostSubmitEvents(form_element, /*known_success=*/false,
-                           SubmissionSource::FORM_SUBMISSION);
+      if (std::optional<FormData> form_data = form_util::ExtractFormData(
+              document, form_element, field_data_manager())) {
+        FireHostSubmitEvents(*form_data, /*known_success=*/false,
+                             SubmissionSource::FORM_SUBMISSION);
+      }
       ResetLastInteractedElements();
       break;
     case FormTracker::Observer::SaveFormReason::kTextFieldChanged:
@@ -1617,8 +1589,11 @@ void AutofillAgent::OnFormSubmitted(const WebFormElement& form) {
   DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
   // Fire the submission event here because WILL_SEND_SUBMIT_EVENT is skipped
   // if javascript calls submit() directly.
-  FireHostSubmitEvents(form, /*known_success=*/false,
-                       SubmissionSource::FORM_SUBMISSION);
+  if (std::optional<FormData> form_data = form_util::ExtractFormData(
+          form.GetDocument(), form, field_data_manager())) {
+    FireHostSubmitEvents(*form_data, /*known_success=*/false,
+                         SubmissionSource::FORM_SUBMISSION);
+  }
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
   SendPotentiallySubmittedFormToBrowser();
@@ -1695,18 +1670,18 @@ void AutofillAgent::UpdateStateForTextChange(
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
+  content::RenderFrame* render_frame = unsafe_render_frame();
+  if (!render_frame) {
+    return std::nullopt;
+  }
+  WebDocument document = render_frame->GetWebFrame()->GetDocument();
+
   // Checks whether all elements represented by `element_ids` in `document` have
   // disappeared (removed/hidden).
   // TODO(crbug.com/1427131): Remove `render_frame` parameter after launching
   // AutofillUseDomNodeIdForRendererId.
   auto all_control_elements_disappeared =
-      [](content::RenderFrame* render_frame,
-         const std::set<FieldRendererId>& element_ids) {
-        if (!render_frame) {
-          return false;
-        }
-        const blink::WebDocument& document =
-            render_frame->GetWebFrame()->GetDocument();
+      [&](const std::set<FieldRendererId>& element_ids) {
         std::vector<FieldRendererId> elements(element_ids.begin(),
                                               element_ids.end());
         return base::ranges::none_of(
@@ -1723,7 +1698,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   // won't.
   if (last_interacted_form_.GetId()) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
-            last_interacted_form_.GetForm(), field_data_manager())) {
+            document, last_interacted_form_.GetForm(), field_data_manager())) {
       return form;
     }
     return provisionally_saved_form_;
@@ -1736,17 +1711,16 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   // - The user has edited formless elements and the
   //   kAutofillDontCheckForDisappearingFormlessElementsForSubmission feature is
   //   enabled.
-  if (auto* render_frame = unsafe_render_frame();
-      formless_elements_were_autofilled_ ||
+  if (formless_elements_were_autofilled_ ||
       (!formless_elements_user_edited_.empty() &&
-       (all_control_elements_disappeared(render_frame,
-                                         formless_elements_user_edited_) ||
+       (all_control_elements_disappeared(formless_elements_user_edited_) ||
         base::FeatureList::IsEnabled(
             features::
                 kAutofillDontCheckForDisappearingFormlessElementsForSubmission)))) {
     // Return the extracted form or `provisionally_saved_form_` as a fallback if
     // extraction fails.
-    if (std::optional<FormData> form = CollectFormlessElements()) {
+    if (std::optional<FormData> form = form_util::ExtractFormData(
+            document, WebFormElement(), field_data_manager())) {
       return form;
     }
     return provisionally_saved_form_;
@@ -1772,8 +1746,12 @@ void AutofillAgent::UpdateLastInteractedForm(
   DCHECK(MaybeWasOwnedByFrame(form, unsafe_render_frame()));
 
   last_interacted_form_ = FormRef(form);
-  provisionally_saved_form_ = form_util::ExtractFormData(
-      last_interacted_form_.GetForm(), field_data_manager());
+  provisionally_saved_form_ =
+      unsafe_render_frame()
+          ? form_util::ExtractFormData(
+                unsafe_render_frame()->GetWebFrame()->GetDocument(),
+                last_interacted_form_.GetForm(), field_data_manager())
+          : std::nullopt;
 }
 
 void AutofillAgent::OnFormNoLongerSubmittable() {

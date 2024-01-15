@@ -282,9 +282,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   }
 
   // Fires Mojo messages for a given form submission.
-  void FireHostSubmitEvents(const blink::WebFormElement& form,
-                            bool known_success,
-                            mojom::SubmissionSource source);
   void FireHostSubmitEvents(const FormData& form_data,
                             bool known_success,
                             mojom::SubmissionSource source);
@@ -320,14 +317,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
   void SendFocusedInputChangedNotificationToBrowser(
       const blink::WebElement& node);
-
-  // Helper method which collects unowned elements (i.e., those not inside a
-  // form tag) and writes them into the returned form. Returns std::nullopt if
-  // the process is unsuccessful.
-  std::optional<FormData> CollectFormlessElements(
-      DenseSet<form_util::ExtractOption> extract_options = {
-          form_util::ExtractOption::kValue,
-          form_util::ExtractOption::kOptions}) const;
 
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);

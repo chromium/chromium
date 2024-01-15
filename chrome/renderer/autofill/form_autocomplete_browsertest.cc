@@ -806,33 +806,6 @@ TEST_F(FormAutocompleteTest, AjaxSucceeded_FormlessElements) {
                                  SubmissionSource::XHR_SUCCEEDED);
 }
 
-// Unit test for CollectFormlessElements.
-TEST_F(FormAutocompleteTest, CollectFormlessElements) {
-  LoadHTML(
-      "<html><title>Checkout</title></head>"
-      "<input type='text' name='text_input'/>"
-      "<input type='checkbox' name='check_input'/>"
-      "<input type='number' name='number_input'/>"
-      "<select name='select_input'/>"
-      "  <option value='option_1'></option>"
-      "  <option value='option_2'></option>"
-      "</select>"
-      "<form><input type='text' name='excluded'/></form>"
-      "</html>");
-
-  std::optional<FormData> result =
-      test_api(*autofill_agent_).CollectFormlessElements();
-  ASSERT_TRUE(result);
-
-  // Asserting size 4 also ensures that 'excluded' field inside <form> is not
-  // collected.
-  ASSERT_EQ(4U, result->fields.size());
-  EXPECT_EQ(u"text_input", result->fields[0].name);
-  EXPECT_EQ(u"check_input", result->fields[1].name);
-  EXPECT_EQ(u"number_input", result->fields[2].name);
-  EXPECT_EQ(u"select_input", result->fields[3].name);
-}
-
 // Unit test for AutofillAgent::AcceptDataListSuggestion.
 TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
   LoadHTML(
