@@ -49,12 +49,12 @@ group("deps") {
   if (fail_on_san_warnings) {
     data += [ "//tools/memory/sanitizer/escalate_sanitizer_warnings.py" ]
   }
-  if (is_asan) {
+  if (is_asan || is_ubsan) {
     if (is_win || is_apple) {
-      data_deps = [ ":copy_asan_runtime" ]
+      data_deps = [ ":copy_sanitizer_runtime" ]
     }
     if (is_apple) {
-      public_deps = [ ":asan_runtime_bundle_data" ]
+      public_deps = [ ":sanitizer_runtime_bundle_data" ]
     }
   }
   if (use_centipede || enable_fuzztest_fuzz) {
@@ -68,27 +68,42 @@ group("deps") {
 assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
-if ((is_apple || is_win) && is_asan) {
+if ((is_apple || is_win) && (is_asan || is_ubsan)) {
   if (is_mac || (is_ios && target_environment == "catalyst")) {
-    _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
+    if (is_asan) {
+      _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
+    } else {
+      assert(is_ubsan)
+      _clang_rt_dso_path = "darwin/libclang_rt.ubsan_osx_dynamic.dylib"
+    }
   } else if (is_ios) {
-    _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+    if (is_asan) {
+      _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+    } else {
+      assert(is_ubsan)
+      _clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
+    }
   } else if (is_win && current_cpu == "x64") {
-    _clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
+    if (is_asan) {
+      _clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
+    } else {
+      assert(is_ubsan)
+      _clang_rt_dso_path = "windows/clang_rt.ubsan_dynamic-x86_64.dll"
+    }
   }
 
   _clang_rt_dso_full_path =
       "$clang_base_path/lib/clang/$clang_version/lib/$_clang_rt_dso_path"
 
   if (!is_ios) {
-    copy("copy_asan_runtime") {
+    copy("copy_sanitizer_runtime") {
       sources = [ _clang_rt_dso_full_path ]
       outputs = [ "$root_out_dir/{{source_file_part}}" ]
     }
   } else {
     # On iOS, the runtime library need to be code signed (adhoc signature)
     # starting with Xcode 8, so use an action instead of a copy on iOS.
-    action("copy_asan_runtime") {
+    action("copy_sanitizer_runtime") {
       script = "//build/config/ios/codesign.py"
       sources = [ _clang_rt_dso_full_path ]
       outputs = [ "$root_out_dir/" + get_path_info(sources[0], "file") ]
@@ -102,10 +117,10 @@ if ((is_apple || is_win) && is_asan) {
   }
 
   if (is_apple) {
-    bundle_data("asan_runtime_bundle_data") {
-      sources = get_target_outputs(":copy_asan_runtime")
+    bundle_data("sanitizer_runtime_bundle_data") {
+      sources = get_target_outputs(":copy_sanitizer_runtime")
       outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
-      public_deps = [ ":copy_asan_runtime" ]
+      public_deps = [ ":copy_sanitizer_runtime" ]
     }
   }
 }
@@ -476,6 +491,7 @@ config("ubsan_flags") {
       ubsan_ignorelist_path =
           rebase_path("//tools/ubsan/ignorelist.txt", root_build_dir)
     }
+
     # TODO(crbug.com/1502579): Enable all of -fsanitize=undefined. Note that
     # both this list and Clang's defaults omit -fsanitize=float-divide-by-zero.
     # C and C++ leave it undefined to accommodate non-IEEE floating point, but
