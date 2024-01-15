@@ -33,6 +33,7 @@
   },
   "wireit": {
     "bidi-types": {
+      "clean": "if-file-deleted",
       "command": "tools/generate-bidi-types.mjs",
       "output": [
         "src/protocol/generated/webdriver-bidi.ts",
@@ -188,6 +189,7 @@
     "@types/sinon": "17.0.2",
     "@types/websocket": "1.0.10",
     "@types/ws": "8.5.10",
+    "@types/yargs": "17.0.32",
     "@typescript-eslint/eslint-plugin": "6.17.0",
     "@typescript-eslint/parser": "6.17.0",
     "argparse": "2.0.1",

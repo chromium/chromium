@@ -23,19 +23,36 @@ import {join} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
 import * as prettier from 'prettier';
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
 
-if (!process.argv.slice(2)[0]) {
-  // eslint-disable-next-line no-console
-  console.error(`Please provide a cddl file as an argument.`);
-  process.exit(1);
-}
+const argv = yargs(hideBin(process.argv))
+  .option('ts-file', {
+    describe: 'A .ts file to write generated types to',
+    type: 'string',
+    default: 'src/protocol/generated/webdriver-bidi.ts',
+    demandOption: true,
+  })
+  .option('zod-file', {
+    describe: 'A .ts file to write generated Zod types to',
+    type: 'string',
+    default: 'src/protocol-parser/generated/webdriver-bidi.ts',
+    demandOption: true,
+  })
+  .option('cddl-file', {
+    describe: 'A .cddl file containing the type description',
+    type: 'string',
+    demandOption: true,
+  })
+  .exitProcess(true)
+  .parse();
 
 // Changing the current work directory to the package directory.
 const ROOT_DIR = packageDirectorySync();
 process.chdir(ROOT_DIR);
 
-const TYPES_FILE = 'src/protocol/generated/webdriver-bidi.ts';
-const ZOD_FILE = 'src/protocol-parser/generated/webdriver-bidi.ts';
+const TYPES_FILE = argv.tsFile;
+const ZOD_FILE = argv.zodFile;
 const FILE_HEADER = `
 /**
  * Copyright 2024 Google LLC.
@@ -109,13 +126,11 @@ async function runCddlConv(file, options) {
 }
 
 async function generateTypes() {
-  const cddl = process.argv.slice(2)[0];
-  await runCddlConv(TYPES_FILE, [cddl]);
+  await runCddlConv(TYPES_FILE, [argv.cddlFile]);
 }
 
 async function generateZod() {
-  const cddl = process.argv.slice(2)[0];
-  await runCddlConv(ZOD_FILE, ['--format', 'zod', cddl]);
+  await runCddlConv(ZOD_FILE, ['--format', 'zod', argv.cddlFile]);
 }
 
 await Promise.all([generateTypes(), generateZod()]);

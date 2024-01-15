@@ -66,7 +66,7 @@ jobs:
         with:
           name: all-cddl
       - name: Generate TypeScript types
-        run: npm run bidi-types -- all.cddl
+        run: npm run bidi-types -- --cddl-file all.cddl
       # Needed for `npm run format`.
       - name: Install pre-commit
         uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 #v3.0.0
