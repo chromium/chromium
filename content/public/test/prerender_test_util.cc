@@ -554,15 +554,9 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
   // Ignore the result of ExecJs().
   //
-  // Depending on timing, activation could destroy the current WebContents
-  // before ExecJs() gets a result from the frame that executed scripts. This
-  // results in execution failure even when the execution succeeded. See
-  // https://crbug.com/1156141 for details.
-  //
-  // This part will drastically be modified by the MPArch, so we take the
-  // approach just to ignore it instead of fixing the timing issue. When
-  // ExecJs() actually fails, the remaining test steps should fail, so it
-  // should be safe to ignore it.
+  // Depending on timing, activation could destroy a navigating frame before
+  // ExecJs() gets a result from the frame. This results in execution failure
+  // even when the navigation succeeded.
   std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
                        JsReplace("location = $1", gurl));
   observer.Wait();

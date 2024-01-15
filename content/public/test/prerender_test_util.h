@@ -181,13 +181,9 @@ class PrerenderTestHelper {
   // Navigates the primary page to the URL and waits until the completion of
   // the navigation.
   //
-  // Navigations that could activate a prerendered page on the multiple
-  // WebContents architecture (not multiple-pages architecture known as
-  // MPArch) should use this function instead of the NavigateToURL() test
-  // helper. This is because the test helper accesses the predecessor
-  // WebContents to be destroyed during activation and results in crashes.
-  // See https://crbug.com/1154501 for the MPArch migration.
-  // TODO(crbug.com/1198960): remove this once the migration is complete.
+  // Navigations that could activate a prerendered page should use this function
+  // instead of the NavigateToURL() test helper. This is because the test helper
+  // could access a navigating frame being destroyed during activation and fail.
   static void NavigatePrimaryPage(WebContents& web_contents, const GURL& gurl);
   void NavigatePrimaryPage(const GURL& gurl);
 
