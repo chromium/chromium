@@ -271,6 +271,9 @@ SupervisedUserURLFilter::GetManagedSiteListConflictTypeHistogramNameForTest() {
 // static
 supervised_user::FilteringBehavior SupervisedUserURLFilter::BehaviorFromInt(
     int behavior_value) {
+  // `behavior_value` is external input (from the server) - do not turn
+  // DCHECK into CHECK as it might lead to real crashes if the server ever
+  // supplies an unsupported value.
   DCHECK(behavior_value == static_cast<int>(FilteringBehavior::kAllow) ||
          behavior_value == static_cast<int>(FilteringBehavior::kBlock))
       << "SupervisedUserURLFilter value not supported: " << behavior_value;
