@@ -4684,6 +4684,58 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
   }
 }
 
+class ServiceWorkerWarmUpBrowserOnStoppedTest
+    : public ServiceWorkerWarmUpBrowserTestBase {
+ public:
+  ServiceWorkerWarmUpBrowserOnStoppedTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kSpeculativeServiceWorkerWarmUp,
+          {{blink::features::kSpeculativeServiceWorkerWarmUpOnStopped.name,
+            "true"}}}},
+        {features::kSpeculativeServiceWorkerStartup});
+  }
+  ~ServiceWorkerWarmUpBrowserOnStoppedTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpBrowserOnStoppedTest,
+                       WarmUpOnStopped) {
+  base::HistogramTester histogram_tester;
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop the current running service worker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+  // Automatically warm-up service worker.
+  base::RunLoop run_loop;
+  while (!version->IsWarmedUp()) {
+    run_loop.RunUntilIdle();
+  }
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
+  EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
+            version->embedded_worker()->starting_phase());
+  EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
+}
+
 // Pointer triggered ServiceWorkerWarmUp is not currently available on Android.
 #if !BUILDFLAG(IS_ANDROID)
 
