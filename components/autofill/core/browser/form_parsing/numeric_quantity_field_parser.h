@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NUMERIC_QUANTITY_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NUMERIC_QUANTITY_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NUMERIC_QUANTITY_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NUMERIC_QUANTITY_FIELD_PARSER_H_
 
 #include <memory>
 
@@ -18,23 +18,24 @@ class AutofillField;
 class AutofillScanner;
 
 // Numeric quantities that are not eligible to be filled by Autofill.
-class NumericQuantityField : public FormFieldParser {
+class NumericQuantityFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
-  NumericQuantityField(const NumericQuantityField&) = delete;
-  NumericQuantityField& operator=(const NumericQuantityField&) = delete;
+  NumericQuantityFieldParser(const NumericQuantityFieldParser&) = delete;
+  NumericQuantityFieldParser& operator=(const NumericQuantityFieldParser&) =
+      delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  explicit NumericQuantityField(const AutofillField* field);
+  explicit NumericQuantityFieldParser(const AutofillField* field);
 
   raw_ptr<const AutofillField> field_;
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NUMERIC_QUANTITY_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NUMERIC_QUANTITY_FIELD_PARSER_H_

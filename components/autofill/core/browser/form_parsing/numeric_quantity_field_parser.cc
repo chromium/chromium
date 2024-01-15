@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
+#include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -12,7 +12,7 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormFieldParser> NumericQuantityField::Parse(
+std::unique_ptr<FormFieldParser> NumericQuantityFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
@@ -26,16 +26,17 @@ std::unique_ptr<FormFieldParser> NumericQuantityField::Parse(
               FormControlType::kSelectList, FormControlType::kTextArea,
               FormControlType::kInputSearch>,
           quantity_patterns, &field, "kNumericQuantityRe")) {
-    return base::WrapUnique(new NumericQuantityField(field));
+    return base::WrapUnique(new NumericQuantityFieldParser(field));
   }
 
   return nullptr;
 }
 
-NumericQuantityField::NumericQuantityField(const AutofillField* field)
+NumericQuantityFieldParser::NumericQuantityFieldParser(
+    const AutofillField* field)
     : field_(field) {}
 
-void NumericQuantityField::AddClassifications(
+void NumericQuantityFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(field_, NUMERIC_QUANTITY, kBaseNumericQuantityParserScore,
                     field_candidates);

@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
+#include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
 #include "components/autofill/core/browser/form_parsing/search_field.h"
@@ -158,8 +158,8 @@ void FormFieldParser::ParseFormFields(
   }
 
   // Numeric quantity pass.
-  ParseFormFieldsPass(NumericQuantityField::Parse, context, processed_fields,
-                      field_candidates);
+  ParseFormFieldsPass(NumericQuantityFieldParser::Parse, context,
+                      processed_fields, field_candidates);
 
   const size_t candidates_size = field_candidates.size();
   // Credit card pass.

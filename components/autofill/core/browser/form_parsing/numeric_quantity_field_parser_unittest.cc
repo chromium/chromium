@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
+#include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 
@@ -19,7 +19,7 @@ class NumericQuantityFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return NumericQuantityField::Parse(context, scanner);
+    return NumericQuantityFieldParser::Parse(context, scanner);
   }
 };
 
