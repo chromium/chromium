@@ -10,6 +10,30 @@
 
 namespace autofill {
 
+std::string FillingProductToString(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kNone:
+      return "None";
+    case FillingProduct::kAddress:
+      return "Address";
+    case FillingProduct::kCreditCard:
+      return "CreditCard";
+    case FillingProduct::kMerchantPromoCode:
+      return "MerchantPromoCode";
+    case FillingProduct::kIban:
+      return "Iban";
+    case FillingProduct::kAutocomplete:
+      return "Autocomplete";
+    case FillingProduct::kPassword:
+      return "Password";
+    case FillingProduct::kCompose:
+      return "Compose";
+    case FillingProduct::kPlusAddresses:
+      return "PlusAddresses";
+  };
+  NOTREACHED_NORETURN();
+}
+
 FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kAddressEntry:

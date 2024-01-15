@@ -577,7 +577,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullAddress:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress);
+          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress,
+          FillingProduct::kAddress,
+          /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -587,7 +589,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullName:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingName);
+          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingName,
+          FillingProduct::kAddress,
+          /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -598,7 +602,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kFillFullPhoneNumber:
       autofill_metrics::LogFillingMethodUsed(
           autofill_metrics::AutofillFillingMethodMetric::
-              kGroupFillingPhoneNumber);
+              kGroupFillingPhoneNumber,
+          FillingProduct::kAddress,
+          /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -609,7 +615,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullEmail:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail);
+          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail,
+          FillingProduct::kAddress,
+          /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -728,7 +736,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           GetFillingProductFromPopupItemId(PopupItemId::kAddressEntry),
           manager_->client().IsOffTheRecord());
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kFullForm);
+          autofill_metrics::AutofillFillingMethodMetric::kFullForm,
+          FillingProduct::kAddress,
+          /*triggering_field_type_matches_filling_product=*/true);
       autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion(
           suggestion.hidden_prior_to_address_rewriter_usage);
       FillAutofillFormData(
@@ -739,7 +749,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillEverythingFromAddressProfile:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kFullForm);
+          autofill_metrics::AutofillFillingMethodMetric::kFullForm,
+          FillingProduct::kAddress,
+          /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -1032,7 +1044,8 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (const AutofillField* autofill_trigger_field = GetQueriedAutofillField()) {
+  const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+  if (autofill_trigger_field) {
     // We target only the triggering field type in the field-by-field filling
     // case.
     // Note that, we only use
@@ -1042,19 +1055,16 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
                                                            ->section] = {
         *suggestion.field_by_field_filling_type_used};
-    // Record the metric ONLY if field-by-field filling is triggered by the
-    // granular filling feature (on a field classified as address).
-    // The only other scenario when field-by-field filling can be triggered here
-    // is when the user triggers autofill from the context menu for a field
-    // which is unclassified or which is classified as a field that does not
-    // match the user intent (for example, the user triggers address manual
-    // fallback on a credit card field). So the metric needs to be recorded only
-    // if the field is classified as an address.
-    if (IsAddressType(autofill_trigger_field->Type().GetStorableType())) {
-      autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
-    }
   }
+  const bool is_triggering_field_address =
+      autofill_trigger_field &&
+      IsAddressType(autofill_trigger_field->Type().GetStorableType());
+
+  autofill_metrics::LogFillingMethodUsed(
+      autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling,
+      FillingProduct::kAddress,
+      /*triggering_field_type_matches_filling_product=*/
+      is_triggering_field_address);
 
   // Only log the field-by-field filling type used if it was accepted from
   // a suggestion in a subpopup. The root popup can have field-by-field
@@ -1071,7 +1081,9 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   // and potentially remove/add new ones.
   if (position.sub_popup_level > 0) {
     autofill_metrics::LogFieldByFieldFillingFieldUsed(
-        *suggestion.field_by_field_filling_type_used);
+        *suggestion.field_by_field_filling_type_used, FillingProduct::kAddress,
+        /*triggering_field_type_matches_filling_product=*/
+        is_triggering_field_address);
   }
 
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(

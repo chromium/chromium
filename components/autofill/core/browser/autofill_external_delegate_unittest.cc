@@ -1350,27 +1350,31 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
   base::HistogramTester histogram_tester;
-  // When the user chooses to fill a specific field, we only log this metric for
-  // fields that were classified as address. This is because otherwise the user
-  // had not choice but to select field-by-field filling.
+
+  // Field-by-field filling is the only filling method that can fill
+  // unclassified fields.
   if (params.target_metric ==
       autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling) {
     get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
     external_delegate().DidAcceptSuggestion(suggestion,
                                             SuggestionPosition{.row = 0});
-    // An unclassified field should not produce this metric.
-    histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
-                                        params.target_metric, 0);
+
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.FillingMethodUsed.Address."
+        "TriggeringFieldDoesNotMatchFillingProduct",
+        params.target_metric, 1);
 
     get_triggering_autofill_field()->SetTypeTo(AutofillType(NAME_FIRST));
-    // Now the field is classified as an address field and should produce the
+    // Now the field is classified as an address field, assert the expected
     // metric.
   }
-
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-  histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed",
-                                      params.target_metric, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FillingMethodUsed.Address."
+      "TriggeringFieldMatchesFillingProduct",
+      params.target_metric, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1573,7 +1577,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
       suggestion, SuggestionPosition{.row = 0, .sub_popup_level = 1});
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.FieldByFieldFilling.FieldTypeUsed",
+      "Autofill.FieldByFieldFilling.FieldTypeUsed.Address."
+      "TriggeringFieldMatchesFillingProduct",
       autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 1);
 }
 
@@ -1590,7 +1595,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                           SuggestionPosition{.row = 0});
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.FieldByFieldFilling.FieldTypeUsed",
+      "Autofill.FieldByFieldFilling.FieldTypeUsed.Address."
+      "TriggeringFieldMatchesFillingProduct",
       autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 0);
 }
 
