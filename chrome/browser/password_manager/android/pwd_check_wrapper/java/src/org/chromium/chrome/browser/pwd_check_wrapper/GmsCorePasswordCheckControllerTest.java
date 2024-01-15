@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
-import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStoreType;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStorageType;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -120,7 +120,7 @@ public class GmsCorePasswordCheckControllerTest {
         mController.onSavedPasswordsChanged(10);
 
         PasswordCheckResult passwordCheckResult =
-                mController.checkPasswords(PasswordStoreType.PROFILE_STORE).get();
+                mController.checkPasswords(PasswordStorageType.LOCAL_STORAGE).get();
 
         Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getBreachedCount());
         Assert.assertEquals(OptionalInt.of(10), passwordCheckResult.getTotalPasswordsCount());
@@ -139,7 +139,7 @@ public class GmsCorePasswordCheckControllerTest {
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(0);
 
         PasswordCheckResult passwordCheckResult =
-                mController.checkPasswords(PasswordStoreType.ACCOUNT_STORE).get();
+                mController.checkPasswords(PasswordStorageType.ACCOUNT_STORAGE).get();
 
         Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getBreachedCount());
         Assert.assertEquals(OptionalInt.of(0), passwordCheckResult.getTotalPasswordsCount());
@@ -155,7 +155,7 @@ public class GmsCorePasswordCheckControllerTest {
         mPasswordCheckupClientHelper.setError(error);
 
         PasswordCheckResult passwordCheckResult =
-                mController.checkPasswords(PasswordStoreType.PROFILE_STORE).get();
+                mController.checkPasswords(PasswordStorageType.LOCAL_STORAGE).get();
 
         Assert.assertEquals(OptionalInt.empty(), passwordCheckResult.getBreachedCount());
         Assert.assertEquals(OptionalInt.empty(), passwordCheckResult.getTotalPasswordsCount());
@@ -164,7 +164,7 @@ public class GmsCorePasswordCheckControllerTest {
 
     @Test
     public void passwordCheckControllerIsDestroyedProperly() {
-        mController.checkPasswords(PasswordStoreType.PROFILE_STORE);
+        mController.checkPasswords(PasswordStorageType.LOCAL_STORAGE);
 
         mController.destroy();
         verify(mPasswordStoreBridge).removeObserver(mController);

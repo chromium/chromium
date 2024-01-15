@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
-import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStoreType;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStorageType;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckControllerFactory;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -585,7 +585,7 @@ class SafetyCheckMediator {
     private void fetchPasswordsAndBreachedCredentials() {
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         mPasswordCheckController
-                .getBreachedCredentialsCount(PasswordStoreType.ACCOUNT_STORE)
+                .getBreachedCredentialsCount(PasswordStorageType.ACCOUNT_STORAGE)
                 .whenComplete(
                         (result, error) -> {
                             SafetyCheckMediator mediator = weakRef.get();
@@ -602,7 +602,7 @@ class SafetyCheckMediator {
     private void checkPasswords() {
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         mPasswordCheckController
-                .checkPasswords(PasswordStoreType.ACCOUNT_STORE)
+                .checkPasswords(PasswordStorageType.ACCOUNT_STORAGE)
                 .whenComplete(
                         (result, error) -> {
                             SafetyCheckMediator mediator = weakRef.get();

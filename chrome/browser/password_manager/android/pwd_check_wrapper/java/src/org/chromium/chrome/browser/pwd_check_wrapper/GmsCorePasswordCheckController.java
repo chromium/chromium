@@ -38,17 +38,17 @@ class GmsCorePasswordCheckController
 
     @Override
     public CompletableFuture<PasswordCheckResult> checkPasswords(
-            @PasswordStoreType int passwordStoreType) {
+            @PasswordStorageType int passwordStorageType) {
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
         mPasswordCheckResult = new CompletableFuture<>();
         PasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                getAccountNameForStorageType(passwordStoreType),
+                getAccountNameForStorageType(passwordStorageType),
                 unused -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
 
-                    controller.getBreachedCredentialsCount(passwordStoreType);
+                    controller.getBreachedCredentialsCount(passwordStorageType);
                 },
                 error -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
@@ -61,7 +61,7 @@ class GmsCorePasswordCheckController
 
     @Override
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
-            @PasswordStoreType int passwordStoreType) {
+            @PasswordStorageType int passwordStorageType) {
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
         if (mPasswordCheckResult == null || mPasswordCheckResult.isDone()) {
             mPasswordCheckResult = new CompletableFuture<>();
@@ -69,7 +69,7 @@ class GmsCorePasswordCheckController
 
         PasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                getAccountNameForStorageType(passwordStoreType),
+                getAccountNameForStorageType(passwordStorageType),
                 count -> {
                     GmsCorePasswordCheckController controller = weakRef.get();
                     if (controller == null) return;
@@ -108,11 +108,11 @@ class GmsCorePasswordCheckController
     }
 
     private Optional<String> getAccountNameForStorageType(
-            @PasswordStoreType int passwordStoreType) {
+            @PasswordStorageType int passwordStoreType) {
         switch (passwordStoreType) {
-            case PasswordStoreType.PROFILE_STORE:
+            case PasswordStorageType.LOCAL_STORAGE:
                 return Optional.empty();
-            case PasswordStoreType.ACCOUNT_STORE:
+            case PasswordStorageType.ACCOUNT_STORAGE:
                 return Optional.of(CoreAccountInfo.getEmailFrom(mSyncService.getAccountInfo()));
         }
         assert false : "Unknown PasswordStorageType: " + passwordStoreType;

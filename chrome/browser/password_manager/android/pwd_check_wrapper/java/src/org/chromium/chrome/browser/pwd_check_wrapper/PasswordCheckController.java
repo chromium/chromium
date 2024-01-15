@@ -21,11 +21,11 @@ public interface PasswordCheckController {
      * PROFILE_STORE is the store associated with local non-syncing passwords in GMS core.
      * ACCOUNT_STORE is the store associated with the user's account set up on the phone.
      */
-    @IntDef({PasswordStoreType.PROFILE_STORE, PasswordStoreType.ACCOUNT_STORE})
+    @IntDef({PasswordStorageType.LOCAL_STORAGE, PasswordStorageType.ACCOUNT_STORAGE})
     @Retention(RetentionPolicy.SOURCE)
-    @interface PasswordStoreType {
-        int PROFILE_STORE = 1;
-        int ACCOUNT_STORE = 2;
+    @interface PasswordStorageType {
+        int LOCAL_STORAGE = 1;
+        int ACCOUNT_STORAGE = 2;
     }
 
     public static class PasswordCheckResult {
@@ -56,14 +56,15 @@ public interface PasswordCheckController {
     }
 
     /** Triggers the password check. */
-    CompletableFuture<PasswordCheckResult> checkPasswords(@PasswordStoreType int passwordStoreType);
+    CompletableFuture<PasswordCheckResult> checkPasswords(
+            @PasswordStorageType int passwordStorageType);
 
     /**
      * Requests the breached credentials count. It doesn't do the actual password check, only
      * returns the cached value of the previous check.
      */
     CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
-            @PasswordStoreType int passwordStoreType);
+            @PasswordStorageType int passwordStorageType);
 
     /** Cancels pending password check and removes any registered observers. */
     void destroy();
