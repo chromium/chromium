@@ -848,6 +848,9 @@ extern const char kRetailCouponsDescription[];
 extern const char kDropInputEventsBeforeFirstPaintName[];
 extern const char kDropInputEventsBeforeFirstPaintDescription[];
 
+extern const char kBoundaryEventDispatchTracksNodeRemovalName[];
+extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
+
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 

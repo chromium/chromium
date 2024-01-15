@@ -203,6 +203,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableAutoplayIgnoresWebAudio,
            raw_ref(media::kAutoplayIgnoreWebAudio)},
           {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
+          {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
+           raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},
           {wf::EnableBrowserVerifiedUserActivationKeyboard,
            raw_ref(features::kBrowserVerifiedUserActivationKeyboard)},
           {wf::EnableBrowserVerifiedUserActivationMouse,

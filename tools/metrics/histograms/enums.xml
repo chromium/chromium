@@ -23102,6 +23102,8 @@ from previous Chrome versions.
   <int value="-474322576" label="disable-quick-unlock-pin"/>
   <int value="-473087416" label="DragTabsInTabletMode:enabled"/>
   <int value="-473052940" label="ContextualSearchLegacyHttpPolicy:enabled"/>
+  <int value="-472783446"
+      label="BoundaryEventDispatchTracksNodeRemoval:disabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
   <int value="-472014137" label="HomepageTile:disabled"/>
   <int value="-472013317" label="WebRTC-H264WithOpenH264FFmpeg:disabled"/>
@@ -25675,6 +25677,8 @@ from previous Chrome versions.
   <int value="727270087" label="PromosOnLocalNtp:enabled"/>
   <int value="727571565" label="PasswordForceSaving"/>
   <int value="728064595" label="RevampedContextMenu:disabled"/>
+  <int value="728550541"
+      label="BoundaryEventDispatchTracksNodeRemoval:enabled"/>
   <int value="728656094" label="PasswordForceSaving:disabled"/>
   <int value="728937354" label="ShutdownSupportForKeepalive:disabled"/>
   <int value="729082677" label="ShimlessRMAComplianceCheck:disabled"/>
