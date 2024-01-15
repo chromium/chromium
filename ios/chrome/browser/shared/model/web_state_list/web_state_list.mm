@@ -655,6 +655,12 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
         active_index_, RemovingIndexes(std::move(removing_indexes)));
   }
 
+  // Detach all web states in a first pass, before destroying them at once
+  // later. This avoids odd side effects as a result of WebStateImpl's
+  // destructor notifying observers, including slowness during shutdown due to
+  // quadratic behavior if observers iterate the WebStateList.
+  std::vector<std::unique_ptr<web::WebState>> detached_web_states;
+
   const bool is_user_action = IsClosingFlagSet(close_flags, CLOSE_USER_ACTION);
   if (new_active_index != active_index_) {
     web::WebState* old_active_web_state = GetActiveWebState();
@@ -662,17 +668,17 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
 
     // Notify the event to the observers that a WebState is detached and an
     // active WebState is updated as well.
-    std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
+    detached_web_states.push_back(DetachWebStateAtImpl(
         count() - 1, DetachParams::ClosingWithUpdateActiveWebState(
-                         is_user_action, old_active_web_state));
-    // Dropping detached_web_state will destroy it.
+                         is_user_action, old_active_web_state)));
   }
 
   while (count() > start_index) {
-    std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
-        count() - 1, DetachParams::Closing(is_user_action));
-    // Dropping detached_web_state will destroy it.
+    detached_web_states.push_back(DetachWebStateAtImpl(
+        count() - 1, DetachParams::Closing(is_user_action)));
   }
+
+  // Dropping detached_web_states destroys all instances.
 }
 
 void WebStateList::ActivateWebStateAtImpl(int index) {
