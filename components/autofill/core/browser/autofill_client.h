@@ -219,8 +219,8 @@ class AutofillClient {
     // The user declined the save/update/migration flow from the edit dialog.
     kEditDeclined,
     // The user selected to never migrate a `kLocalOrSyncable` profile to the
-    // account storage.
-    // Currently unused for new profile and update prompts.
+    // account storage. Currently unused for new profile and update prompts, but
+    // is triggered by explicitly declining a migration prompt.
     kNever,
     // The user ignored the prompt.
     kIgnored,
