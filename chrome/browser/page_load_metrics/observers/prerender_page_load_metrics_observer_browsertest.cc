@@ -79,9 +79,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
     histogram_tester().ExpectBucketCount(
         internal::kPageLoadPrerenderObserverEvent,
         internal::PageLoadPrerenderObserverEvent::kOnFirstPaintInPage, 1);
-    histogram_tester().ExpectBucketCount(
-        "PageLoad.Internal.Prerender2.ForegroundCheckResult.FirstPaint",
-        internal::PageLoadPrerenderForegroundCheckResult::kPassed, 1);
 
     // FirstPaint should be recorded in the prerender PageLoad, not in the
     // regular PageLoad.
@@ -101,10 +98,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
         internal::kPageLoadPrerenderObserverEvent,
         internal::PageLoadPrerenderObserverEvent::kOnFirstContentfulPaintInPage,
         1);
-    histogram_tester().ExpectBucketCount(
-        "PageLoad.Internal.Prerender2.ForegroundCheckResult."
-        "FirstContentfulPaint",
-        internal::PageLoadPrerenderForegroundCheckResult::kPassed, 1);
 
     // FirstContentfulPaint should be recorded in the prerender PageLoad, not in
     // the regular PageLoad.
@@ -124,9 +117,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
     histogram_tester().ExpectBucketCount(
         internal::kPageLoadPrerenderObserverEvent,
         internal::PageLoadPrerenderObserverEvent::kOnFirstInputInPage, 1);
-    histogram_tester().ExpectBucketCount(
-        "PageLoad.Internal.Prerender2.ForegroundCheckResult.FirstInputDelay",
-        internal::PageLoadPrerenderForegroundCheckResult::kPassed, 1);
 
     // FirstInputDelay should be recorded in the prerender PageLoad, not in the
     // regular PageLoad.
@@ -149,10 +139,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
         internal::kPageLoadPrerenderObserverEvent,
         internal::PageLoadPrerenderObserverEvent::kRecordSessionEndHistograms,
         1);
-    histogram_tester().ExpectBucketCount(
-        "PageLoad.Internal.Prerender2.ForegroundCheckResult."
-        "LargestContentfulPaint",
-        internal::PageLoadPrerenderForegroundCheckResult::kPassed, 1);
 
     // LargestContentfulPaint should be recorded in the prerender PageLoad, not
     // in the regular PageLoad.
@@ -901,10 +887,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectBucketCount(
       internal::kPageLoadPrerenderObserverEvent,
       internal::PageLoadPrerenderObserverEvent::kRecordSessionEndHistograms, 2);
-  histogram_tester().ExpectBucketCount(
-      "PageLoad.Internal.Prerender2.ForegroundCheckResult."
-      "LargestContentfulPaint",
-      internal::PageLoadPrerenderForegroundCheckResult::kPassed, 1);
 
   // LargestContentfulPaint should be recorded in the prerender PageLoad, not
   // in the regular PageLoad.

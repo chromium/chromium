@@ -64,56 +64,6 @@ const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
 const char kPageLoadPrerenderObserverEvent[] =
     "PageLoad.Internal.Prerender2.ObserverEvent";
 
-// This metric is used for debugging https://crbug.com/1379491.
-const char kPageLoadPrerenderForegroundCheckResult[] =
-    "PageLoad.Internal.Prerender2.ForegroundCheckResult";
-
-namespace {
-
-// This is a copy of WasActivatedInForegroundOptionalEventInForeground() in
-// page_load_metrics_util.h but with recording diagnose metrics for
-// https://crbug.com/1379491. Please keep this consistent with the function.
-bool WasActivatedInForegroundOptionalEventInForeground(
-    const absl::optional<base::TimeDelta>& event,
-    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate,
-    PageLoadPrerenderForegroundCheckEvent event_type) {
-  auto result = PageLoadPrerenderForegroundCheckResult::kPassed;
-  if (!delegate.WasPrerenderedThenActivatedInForeground()) {
-    result = PageLoadPrerenderForegroundCheckResult::kActivatedInBackground;
-  } else if (!event) {
-    result = PageLoadPrerenderForegroundCheckResult::kNoEventTime;
-  } else if (delegate.GetTimeToFirstBackground() &&
-             delegate.GetTimeToFirstBackground().value() < event.value()) {
-    result = PageLoadPrerenderForegroundCheckResult::kBackgroundedBeforeEvent;
-  }
-
-  // Make sure that this function is consistent with the original function.
-  CHECK_EQ(result == PageLoadPrerenderForegroundCheckResult::kPassed,
-           page_load_metrics::WasActivatedInForegroundOptionalEventInForeground(
-               event, delegate));
-
-  std::string histogram_name = kPageLoadPrerenderForegroundCheckResult;
-  switch (event_type) {
-    case PageLoadPrerenderForegroundCheckEvent::kFirstPaint:
-      histogram_name += ".FirstPaint";
-      break;
-    case PageLoadPrerenderForegroundCheckEvent::kFirstContentfulPaint:
-      histogram_name += ".FirstContentfulPaint";
-      break;
-    case PageLoadPrerenderForegroundCheckEvent::kFirstInputDelay:
-      histogram_name += ".FirstInputDelay";
-      break;
-    case PageLoadPrerenderForegroundCheckEvent::kLargestContentfulPaint:
-      histogram_name += ".LargestContentfulPaint";
-      break;
-  }
-  base::UmaHistogramEnumeration(histogram_name, result);
-
-  return result == PageLoadPrerenderForegroundCheckResult::kPassed;
-}
-
-}  // namespace
-
 }  // namespace internal
 
 PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
@@ -200,9 +150,8 @@ void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
       internal::kPageLoadPrerenderObserverEvent,
       internal::PageLoadPrerenderObserverEvent::kOnFirstPaintInPage);
 
-  if (!internal::WasActivatedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_paint, GetDelegate(),
-          internal::PageLoadPrerenderForegroundCheckEvent::kFirstPaint)) {
+  if (!WasActivatedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_paint, GetDelegate())) {
     return;
   }
   base::TimeDelta activation_to_fp =
@@ -219,10 +168,8 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       internal::kPageLoadPrerenderObserverEvent,
       internal::PageLoadPrerenderObserverEvent::kOnFirstContentfulPaintInPage);
 
-  if (!internal::WasActivatedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, GetDelegate(),
-          internal::PageLoadPrerenderForegroundCheckEvent::
-              kFirstContentfulPaint)) {
+  if (!WasActivatedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
     return;
   }
   base::TimeDelta activation_to_fcp =
@@ -244,9 +191,8 @@ void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
       internal::kPageLoadPrerenderObserverEvent,
       internal::PageLoadPrerenderObserverEvent::kOnFirstInputInPage);
 
-  if (!internal::WasActivatedInForegroundOptionalEventInForeground(
-          timing.interactive_timing->first_input_timestamp, GetDelegate(),
-          internal::PageLoadPrerenderForegroundCheckEvent::kFirstInputDelay)) {
+  if (!WasActivatedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     return;
   }
 
@@ -326,10 +272,8 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
           .GetLargestContentfulPaintHandler()
           .MergeMainFrameAndSubframes();
   if (largest_contentful_paint.ContainsValidTime() &&
-      internal::WasActivatedInForegroundOptionalEventInForeground(
-          largest_contentful_paint.Time(), GetDelegate(),
-          internal::PageLoadPrerenderForegroundCheckEvent::
-              kLargestContentfulPaint)) {
+      WasActivatedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
     base::TimeDelta activation_to_lcp =
         largest_contentful_paint.Time().value() -
         main_frame_timing.activation_start.value();

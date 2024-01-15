@@ -2586,23 +2586,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PageLoad.Internal.Prerender2.ForegroundCheckResult.{PageLoadPrerenderForegroundCheckEvent}"
-    enum="PageLoadPrerenderForegroundCheckResult" expires_after="2024-05-12">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
-  <summary>
-    Records results of the foreground check per event type in
-    PrerenderPageLoadMetricsObserver.
-  </summary>
-  <token key="PageLoadPrerenderForegroundCheckEvent">
-    <variant name="FirstContentfulPaint"/>
-    <variant name="FirstInputDelay"/>
-    <variant name="FirstPaint"/>
-    <variant name="LargestContentfulPaint"/>
-  </token>
-</histogram>
-
 <histogram name="PageLoad.Internal.Prerender2.ObserverEvent"
     enum="PageLoadPrerenderObserverEvent" expires_after="2024-05-12">
   <owner>nhiroki@chromium.org</owner>
