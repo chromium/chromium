@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">Установити</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803696231112616155">Пропонувати переклад для цього сайту</translation>
+<translation id="3808311849069021992">Показати відомості про пошукову систему</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="3818045793209708987">Відстеження цього відправлення припинено</translation>
 <translation id="3818293389945649617">Знайти наступне</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5235389474593199952">Сховати опцію "Історія"</translation>
 <translation id="5238301240406177137">Зберегти в обліковому записі</translation>
+<translation id="5238596603078743134">Тепер <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> зможе використовувати ваші ім’я користувача й пароль, коли входитиме на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> за допомогою Google Менеджера паролів.</translation>
 <translation id="5245322853195994030">Скасувати синхронізацію</translation>
 <translation id="5248640482715684545">Цей сайт намагається відкрити інший додаток.</translation>
 <translation id="5256661381001734217">Цей сайт намагається відкрити додаток.  Ви вийдете з анонімного режиму.</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Тут показуватимуться сайти, на які ви підписалися</translation>
 <translation id="5388358297987318779">Відкрити зображення</translation>
+<translation id="5395707839134961196">Сховати відомості про пошукову систему</translation>
 <translation id="5396950905475481456">Запросіть учасників у сімейну групу</translation>
 <translation id="5407969256130905701">Відхилити зміни</translation>
 <translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
@@ -1034,6 +1037,7 @@
 <translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6453018583485750254">Паролі ніколи не перевірялися.</translation>
 <translation id="6459307836338400162">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Деталі приховано</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Відкрити в анонімній вкладці</translation>
 <translation id="6464397691496239022">Сайти можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок.
@@ -1286,6 +1290,7 @@
 <translation id="7812377703891978671">Щоб відкрити всю історію веб-перегляду, натисніть кнопку "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Завантаження</translation>
 <translation id="7839985698273989086">Офлайн-сторінка</translation>
+<translation id="7839994177130598711">Тепер учасники сімейної групи зможуть використовувати ваші ім’я користувача й пароль, коли входитимуть на сайті <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> за допомогою Google Менеджера паролів.</translation>
 <translation id="7840771868269352570">Вибраний елемент буде видалено.</translation>
 <translation id="7845466610722898">Показати список читання</translation>
 <translation id="784551991304901159">Щоб побачити контент, у меню виберіть "Увімкнути"</translation>

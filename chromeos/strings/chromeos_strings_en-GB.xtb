@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157660087437850958">emoji picker</translation>
 <translation id="2157959690810728433">QUEUED</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Your administrator has set <ph name="APP_NAME_1" /> to start automatically every time you log in.}=2{Your administrator has set <ph name="APP_NAME_1" /> and <ph name="APP_NAME_2" /> to start automatically every time you log in.}=3{Your administrator has set <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> to start automatically every time you log in.}other{Your administrator has set <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> and # other apps to start automatically every time you log in.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="215916044711630446">Add APN button is now disabled</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4130035430755296270">Keep hovering for more layout options</translation>
 <translation id="4131410914670010031">Black and white</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> was started automatically}other{# apps were started automatically}}</translation>
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Display</translation>

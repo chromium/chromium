@@ -530,6 +530,7 @@
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="380329542618494757">ชื่อ</translation>
 <translation id="3803696231112616155">เสนอให้แปลเว็บไซต์นี้</translation>
+<translation id="3808311849069021992">แสดงรายละเอียดเครื่องมือค้นหา</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="3818045793209708987">หยุดติดตามพัสดุนี้แล้ว</translation>
 <translation id="3818293389945649617">ค้นหาถัดไป</translation>
@@ -803,6 +804,7 @@
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5235389474593199952">ซ่อนประวัติการเข้าชม</translation>
 <translation id="5238301240406177137">บันทึกในบัญชี</translation>
+<translation id="5238596603078743134">ตอนนี้ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ได้</translation>
 <translation id="5245322853195994030">ยกเลิกการซิงค์</translation>
 <translation id="5248640482715684545">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่น</translation>
 <translation id="5256661381001734217">เว็บไซต์นี้พยายามเปิดแอปพลิเคชัน  การดำเนินการนี้จะนำคุณออกจากโหมดไม่ระบุตัวตน</translation>
@@ -822,6 +824,7 @@
 <translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="5386314158584363703">คุณจะเห็นเว็บไซต์ที่ติดตามที่นี่</translation>
 <translation id="5388358297987318779">เปิดภาพ</translation>
+<translation id="5395707839134961196">ซ่อนรายละเอียดเครื่องมือค้นหา</translation>
 <translation id="5396950905475481456">เชิญสมาชิกในครอบครัว</translation>
 <translation id="5407969256130905701">ยกเลิกการเปลี่ยนแปลง</translation>
 <translation id="5414763847370083940">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
@@ -1035,6 +1038,7 @@
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6453018583485750254">ไม่เคยตรวจสอบ</translation>
 <translation id="6459307836338400162">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ทั้งที่<ph name="BEGIN_LINK" />การซิงค์<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
+<translation id="6459411599807878608">ซ่อนรายละเอียดแล้ว</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">เปิดในแท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="6464397691496239022">เว็บไซต์จะใช้คุกกี้เพื่อปรับปรุงประสบการณ์การท่องเว็บ เช่น ให้คุณลงชื่อเข้าใช้ต่อไปเรื่อยๆ หรือจดจำรายการในรถเข็นช็อปปิ้ง
@@ -1287,6 +1291,7 @@
 <translation id="7812377703891978671">คุณเข้าถึงประวัติการท่องเว็บทั้งหมดได้โดยเลือก "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="78146569776629510">ดาวน์โหลด</translation>
 <translation id="7839985698273989086">หน้าแบบออฟไลน์</translation>
+<translation id="7839994177130598711">ตอนนี้สมาชิกในครอบครัวใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ได้</translation>
 <translation id="7840771868269352570">ระบบจะนำรายการที่คุณเลือกออก</translation>
 <translation id="7845466610722898">แสดงเรื่องรออ่าน</translation>
 <translation id="784551991304901159">หากต้องการดูเนื้อหา ให้เลือก "เปิด" จากเมนู</translation>

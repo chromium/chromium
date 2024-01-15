@@ -304,6 +304,19 @@ Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được
 <translation id="1223789468190631420">Trạng thái bật tính năng Duyệt web an toàn cho các nguồn đáng tin cậy</translation>
 <translation id="123018742985150697">Yêu cầu so khớp người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa</translation>
 <translation id="123081309365616809">Bật tính năng truyền nội dung đến thiết bị</translation>
+<translation id="1233343906578850273">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> sẽ chỉ định URL của công cụ tìm kiếm dùng để tìm kiếm hình ảnh. (Nếu bạn đặt <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, thì yêu cầu tìm kiếm hình ảnh sẽ sử dụng phương thức POST.)
+
+      Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" />, thì sẽ không có công cụ tìm kiếm hình ảnh nào được sử dụng.
+
+      Nếu tính năng tìm kiếm hình ảnh sử dụng phương thức GET, thì URL phải chỉ định thông số
+      hình ảnh bằng tổ hợp hợp lệ gồm các phần giữ chỗ sau đây:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="1238868319430505522">Định cấu hình quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="GOOGLE_DRIVE_NAME" /> và <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Kiểm soát việc có cho phép các trang web gửi yêu cầu theo cách không an toàn đến các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.
 
@@ -5250,6 +5263,19 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
 <translation id="5366977351895725771">Nếu đặt thành sai, tác vụ tạo tài khoản người dùng bị giám sát của người dùng này sẽ bị tắt. Mọi tài khoản người dùng bị giám sát hiện có sẽ vẫn khả dụng.
 
           Nếu đặt thành đúng hoặc không định cấu hình, người dùng này có thể tạo và quản lý tài khoản người dùng bị giám sát.</translation>
+<translation id="5367255280764736002">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> sẽ chỉ định thông số khi thực hiện tìm kiếm hình ảnh bằng yêu cầu POST. Thông số này bao gồm các cặp tên/giá trị phân tách bằng dấu phẩy. Nếu một giá trị là thông số mẫu, chẳng hạn như {imageThumbnail}, thì dữ liệu hình thu nhỏ của ảnh thực sẽ thay thế thông số này.
+
+      Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, thì yêu cầu tìm kiếm hình ảnh sẽ được gửi bằng phương thức GET.
+
+      URL phải chỉ định thông số hình ảnh bằng tổ hợp hợp lệ gồm
+      những phần giữ chỗ sau đây, phụ thuộc vào khả năng hỗ trợ của nhà cung cấp dịch vụ tìm kiếm:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="5369937289900051171">Chỉ in màu</translation>
 <translation id="5370279767682621504">Bật hỗ trợ HTTP/0.9 trên các cổng không phải là cổng mặc định</translation>
 <translation id="5370765433640162225">Nếu bạn đặt chính sách này thành đúng, thì chế độ tự động dọn dẹp sẽ được thực thi trong quá trình đăng nhập để đảm bảo có đủ dung lượng ổ đĩa trống.
@@ -9252,6 +9278,13 @@ Nếu bạn không đặt chính sách này, thì người dùng không thể ch
       Nếu bạn đặt chính sách này thành true, thì các thẻ chạy trong nền trong tối thiểu 5 phút có thể bị đóng băng. Việc đóng băng thẻ sẽ giúp giảm mức sử dụng CPU, pin và bộ nhớ. <ph name="PRODUCT_NAME" /> sử dụng kỹ thuật "tự nghiệm học" để tránh đóng băng các thẻ hữu ích chạy trong nền (ví dụ: hiển thị thông báo, phát âm thanh, phát video trực tuyến). Các nhà phát triển web cũng có thể chọn không đóng băng trang web của mình (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Nếu bạn đặt chính sách thành false thì sẽ không có thẻ nào bị đóng băng.</translation>
+<translation id="8610216287193516769">Đã xoá trong M122 – đây là chính sách chỉ dành cho phía máy chủ và không bao giờ sử dụng cơ sở hạ tầng chính sách ChromeOS để truyền.
+Nếu bạn đặt chính sách này thành <ph name="POLICY_VALUE_ALL" /> hoặc không đặt, mọi cách sử dụng tài khoản được quản lý đều được cho phép. Việc này có thể khiến một tài khoản được quản lý trở thành một tài khoản phụ, tức là sẽ chỉ nhận được chính sách khi tài khoản đó được đăng nhập làm tài khoản chính trong một hồ sơ trình duyệt.
+      Chính sách đặt cho tài khoản này sẽ không được thực thi trong những trường hợp sau:
+        – Là một tài khoản phụ ở cấp hệ điều hành (Cài đặt tài khoản)
+        – Là một tài khoản phụ trong một hồ sơ trình duyệt
+
+       Nếu bạn đặt chính sách này thành <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> cho một tài khoản, thì tài khoản này sẽ chỉ được phép đăng nhập làm tài khoản chính. Tài khoản này sẽ không được phép đăng nhập làm tài khoản phụ.</translation>
 <translation id="8612188068319977428">Kiểm soát tần suất tải báo cáo trạng thái của Chrome lên.
 
 Số liệu này bao gồm cả các báo cáo mà <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> kích hoạt.

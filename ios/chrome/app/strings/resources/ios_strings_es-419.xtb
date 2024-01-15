@@ -529,6 +529,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
+<translation id="3808311849069021992">Mostrar detalles del motor de búsqueda</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3818045793209708987">Se detuvo el seguimiento de este paquete</translation>
 <translation id="3818293389945649617">Buscar siguiente</translation>
@@ -802,6 +803,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5235389474593199952">Ocultar Historial</translation>
 <translation id="5238301240406177137">Guardar en la cuenta</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ahora puede usar tu nombre de usuario y contraseña cuando use el Administrador de contraseñas de Google para acceder a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Cancelar sincronización</translation>
 <translation id="5248640482715684545">Este sitio está intentando abrir otra aplicación.</translation>
 <translation id="5256661381001734217">Este sitio está intentando abrir una aplicación.  Saldrás del modo Incógnito.</translation>
@@ -821,6 +823,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Puedes encontrar los sitios que sigues aquí</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
+<translation id="5395707839134961196">Ocultar detalles del motor de búsqueda</translation>
 <translation id="5396950905475481456">Invita a miembros de la familia</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio disminuye en algún sitio.</translation>
@@ -1034,6 +1037,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6453018583485750254">No se ejecutó nunca la verificación.</translation>
 <translation id="6459307836338400162">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Se ocultaron los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
 <translation id="6464071786529933911">Abrir en una pestaña de incógnito nueva</translation>
 <translation id="6464397691496239022">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos en el carrito de compras.
@@ -1286,6 +1290,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7812377703891978671">Puedes acceder a todo tu historial de navegación seleccionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Descargas</translation>
 <translation id="7839985698273989086">Página sin conexión</translation>
+<translation id="7839994177130598711">Los miembros de tu familia ahora pueden usar tu nombre de usuario y contraseña cuando usen el Administrador de contraseñas de Google para acceder a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Se quitarán los elementos seleccionados.</translation>
 <translation id="7845466610722898">Mostrar la Lista de lectura</translation>
 <translation id="784551991304901159">Para ver contenido, selecciona Activar en el menú</translation>

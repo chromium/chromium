@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 枚の写真</translation>
 <translation id="2157660087437850958">絵文字選択ツール</translation>
 <translation id="2157959690810728433">待機中</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ログインするたびに <ph name="APP_NAME_1" /> を自動的に開始するよう管理者が設定しています。}=2{ログインするたびに <ph name="APP_NAME_1" /> と <ph name="APP_NAME_2" /> を自動的に開始するよう管理者が設定しています。}=3{ログインするたびに <ph name="APP_NAME_1" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> を自動的に開始するよう管理者が設定しています。}other{ログインするたびに <ph name="APP_NAME_1" />、<ph name="APP_NAME_2" />、その他 # 個のアプリを自動的に開始するよう管理者が設定しています。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 再試行</translation>
 <translation id="215916044711630446">[APN を追加] ボタンが無効になりました</translation>
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">ダークモード</translation>
 <translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
 <translation id="4131410914670010031">白黒</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> が自動的に開始されました}other{# 個のアプリが自動的に開始されました}}</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>

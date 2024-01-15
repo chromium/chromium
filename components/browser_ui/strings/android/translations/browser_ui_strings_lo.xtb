@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">ເວັບໄຊສາມາດສະແດງຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆໄດ້.</translation>
 <translation id="2790501146643349491">ເມື່ອເປີດ, ເວັບໄຊທີ່ປິດຫຼ້າສຸດສາມາດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນໄດ້. ເມື່ອປິດ, ເວັບໄຊທີ່ປິດຫຼ້າສຸດບໍ່ສາມາດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນໄດ້.</translation>
 <translation id="2822354292072154809">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຣີເຊັດການອະນຸຍາດເວັບໄຊທັງໝົດສຳລັບ <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ຮ້ອງຂໍມຸມມອງມືຖື</translation>
 <translation id="2870560284913253234">ເວັບ​ໄຊທ໌</translation>
 <translation id="2874939134665556319">ເພງກ່ອນນີ້</translation>
@@ -347,10 +348,12 @@
 <translation id="6746124502594467657">ຍ້າຍ​ລົງ</translation>
 <translation id="6749077623962119521">ຣີເຊັດການອະນຸຍາດບໍ?</translation>
 <translation id="6766622839693428701">ປັດລົງເພື່ອປິດ.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> ຈາກ <ph name="FROM_DEVICE" /></translation>
 <translation id="6787751205395685251">ເລືອກຕົວເລືອກສຳລັບ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6818926723028410516">ເລືອກລາຍການ</translation>
 <translation id="6864395892908308021">ອຸປະກອນນີ້ບໍ່ສາມາດອ່ານ NFC ໄດ້</translation>
+<translation id="6867014948848323204">ຈາກ <ph name="FROM_DEVICE" /></translation>
 <translation id="6912998170423641340">ບລັອກບໍ່ໃຫ້ເວັບໄຊອ່ານຂໍ້ຄວາມ ແລະ ຮູບພາບຈາກຄລິບບອດ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6950072572526089586">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດບັນທຶກຂໍ້ມູນກ່ຽວກັບສິ່ງທີ່ທ່ານເຮັດຢູ່ເພື່ອໃຫ້ມັນເຮັດວຽກໄດ້ຕາມທີ່ຕ້ອງການ — ຕົວຢ່າງ: ເພື່ອໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເວັບໄຊຄ້າງໄວ້ ຫຼື ບັນທຶກສິນຄ້າໄວ້ໃນກະຕ່າຊື້ເຄື່ອງຂອງທ່ານ. ເວັບໄຊຕ່າງໆມັກຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ຊົ່ວຄາວຢູ່ໃນອຸປະກອນຂອງທ່ານ.</translation>
@@ -399,6 +402,7 @@
 <translation id="7667547420449112975">ພໍ່ມົດອັດສະຈັນແຫ່ງອອດຊ໌</translation>
 <translation id="7684642910516280563">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="7719367874908701697">ຊູມໜ້າ</translation>
+<translation id="7770832849480336015">ເຊື່ອງ "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1178581264944972037">Jeda</translation>
+<translation id="1246424317317450637">Tebal</translation>
 <translation id="1921351128855867012">Maju cepat <ph name="NUMBER_OF_SECONDS" /> detik</translation>
 <translation id="1984328900355667246">Pemutaran tidak tersedia</translation>
 <translation id="3023502830214299618">Sayangnya, pemutaran tidak tersedia untuk halaman ini saat ini. Coba lagi nanti.</translation>
@@ -17,6 +18,7 @@
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6846298663435243399">Memuat...</translation>
+<translation id="7282547042039404307">Halus</translation>
 <translation id="7587250070160020374">Chrome sedang memutar audio</translation>
 <translation id="8136852699834914183">Pemutaran tidak tersedia untuk halaman ini.</translation>
 <translation id="8264989794233974275">Tingkatkan/kurangi kecepatan <ph name="PLAYBACK_SPEED" />x lipat.</translation>

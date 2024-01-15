@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ຮູບ</translation>
 <translation id="2157660087437850958">ຕົວເລືອກອີໂມຈິ</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}=2{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" /> ແລະ <ph name="APP_NAME_2" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}=3{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ແລະ <ph name="APP_NAME_3" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}other{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕັ້ງຄ່າໃຫ້ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ແລະ ອີກ # ແອັບເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="215916044711630446">ປິດການນຳໃຊ້ປຸ່ມເພີ່ມ APN ແລ້ວ</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">ແກ້ໄຂລາຍລະອຽດ APN</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
+<translation id="2215920961700443347">ບໍ່ມີອິນເຕີເນັດ. ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່.</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="222447520299472966">ຈຳເປັນຕ້ອງເລືອກອະລະບໍ້າຄັງຮູບສິນລະປະຢ່າງໜ້ອຍໜຶ່ງອະລະບໍ້າ</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">ຮູບທີ <ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
+<translation id="2465272316171730950">ລະບົບບໍ່ຫວ່າງດຳເນີນການ. ກະລຸນາກັບມາໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="248546197012830854">ອຸປະກອນອອບລາຍຢູ່. ເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍ Wi-Fi ເພື່ອເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອ.</translation>
 <translation id="2491955442992294626">ປຸ່ມຕ່າງໆຈະບໍ່ໄດ້ຮັບການທົດສອບເມື່ອໃຊ້ໜ້າຈໍອື່ນ</translation>
 <translation id="2493126929778606526">ຮູບພາບທີ່ດີສຸດຂອງທ່ານ, ເລືອກໂດຍອັດຕະໂນມັດ</translation>
@@ -415,7 +416,6 @@
 <translation id="4117637339509843559">ໂໝດມືດ</translation>
 <translation id="4130035430755296270">ສືບຕໍ່ເລື່ອນເມົ້າສຳລັບຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດແລ້ວ}other{# ແອັບເລີ່ມເຮັດວຽກໂດຍອັດຕະໂນມັດແລ້ວ}}</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
 <translation id="4150201353443180367">ການສະແດງຜົນ</translation>

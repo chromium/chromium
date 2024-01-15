@@ -218,7 +218,6 @@
 <translation id="223356358902285214">वेब तथा एपसम्बन्धी गतिविधि</translation>
 <translation id="2234827758954819389">गोपनीयतासम्बन्धी मार्गदर्शन</translation>
 <translation id="2239812875700136898">Discover का विकल्पहरू नामक बटन प्रयोग गरी आफ्नो समाचार फिडमा देखिने सामग्री नियन्त्रण गर्नुहोस्</translation>
-<translation id="2241634353105152135">एकपटक मात्र</translation>
 <translation id="2247789808226901522">कार्डको म्याद सकियो</translation>
 <translation id="2248941474044011069">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ</translation>
 <translation id="2249635629516220541">साइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने जानकारी कस्टमाइज गर्नुहोस्</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="2321086116217818302">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
-<translation id="2327226657832576859">PDF हरू स्वतः खोल्ने हो?</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
@@ -638,7 +636,6 @@
 <translation id="4523326818319942067">पछिल्लो घण्टा</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4532845899244822526">फोल्डर छान्नुहोस्</translation>
-<translation id="4541505619120536051">सधैँ खोल्नुहोस्</translation>
 <translation id="4543131175509360848">कुनै पनि पासकी सिट खोलिएको छैन</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="4554077758708533499">USB केबल प्रयोग गरी कनेक्ट गरिएको छ</translation>
@@ -830,7 +827,6 @@
 <translation id="5486841595534124508">रिडिरेक्ट गरी मेरो गतिविधि पेजमा लैजाने पेजको विश्लेषणात्मक जानकारी भएको हबमा देखाइने गोपनीयतासम्बन्धी सूचनाको लोगो।</translation>
 <translation id="5487521232677179737">डेटा मेटाउनुहोस्</translation>
 <translation id="5492637351392383067">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
-<translation id="5509866835115085009">तपाईंले PDF डाउनलोड गर्नुभयो भने Chrome ले त्यसलाई स्वतः खोल्न सक्छ।</translation>
 <translation id="5514904542973294328">यो डिभाइसका प्रशासकले असक्षम पार्नुभएको</translation>
 <translation id="5515439363601853141">आफ्नो पासवर्ड हेर्न अनलक गर्नुहोस्</translation>
 <translation id="5517095782334947753">तपाईंसँग <ph name="FROM_ACCOUNT" /> का पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू छन्।</translation>

@@ -1,22 +1,28 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1173075331199604451">Menu de voz</translation>
 <translation id="1178581264944972037">Pausa</translation>
+<translation id="1246424317317450637">Negrito</translation>
 <translation id="1921351128855867012">Avançar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="1984328900355667246">Reprodução indisponível</translation>
 <translation id="3023502830214299618">Infelizmente, a reprodução não está disponível para esta página neste momento. Tente novamente mais tarde.</translation>
 <translation id="3807208219231826020">Esfregar durante a reprodução</translation>
 <translation id="385051799172605136">Anterior</translation>
+<translation id="3936324432406465283">Velocidade de reprodução</translation>
 <translation id="4020327272915390518">Menu de opções</translation>
 <translation id="4431240646217225907">Realçar texto e deslocar páginas automaticamente</translation>
 <translation id="4872475766448853257">Recuar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="5234971936051226002">Leitor "Ouvir esta página" minimizado.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
+<translation id="5694491020339060116">Menu de velocidade de reprodução</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6846298663435243399">A carregar...</translation>
+<translation id="6889157801232138307">Leitor "Ouvir esta página"</translation>
+<translation id="7282547042039404307">Suave</translation>
 <translation id="7587250070160020374">O Chrome está a tocar</translation>
 <translation id="8136852699834914183">A reprodução não está disponível para esta página.</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x velocidade de aumento/diminuição.</translation>

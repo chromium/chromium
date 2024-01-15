@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 张照片</translation>
 <translation id="2157660087437850958">表情符号选择器</translation>
 <translation id="2157959690810728433">已加入队列</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{您的管理员已将“<ph name="APP_NAME_1" />”设为在您每次登录时都自动启动。}=2{您的管理员已将“<ph name="APP_NAME_1" />”和“<ph name="APP_NAME_2" />”设为在您每次登录时都自动启动。}=3{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和“<ph name="APP_NAME_3" />”设为在您每次登录时都自动启动。}other{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和另外 # 个应用设为在您每次登录时都自动启动。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="215916044711630446">APN“添加”按钮现已停用</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">修改 APN 详细信息</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
+<translation id="2215920961700443347">未连接到互联网。请连接到互联网，然后重试。</translation>
 <translation id="2217935453350629363">当前速度</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
+<translation id="2465272316171730950">我们已达到容量上限。请稍后再回来查看。</translation>
 <translation id="248546197012830854">设备处于离线状态。您需要连接到 Wi-Fi 网络才能查看相关的帮助内容。</translation>
 <translation id="2491955442992294626">不再测试按键，因为您正在使用另一个窗口</translation>
 <translation id="2493126929778606526">您的最佳照片，由系统自动挑选</translation>
@@ -415,7 +416,6 @@
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4131410914670010031">黑白色</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />”已自动启动}other{# 个应用已自动启动}}</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4150201353443180367">显示</translation>

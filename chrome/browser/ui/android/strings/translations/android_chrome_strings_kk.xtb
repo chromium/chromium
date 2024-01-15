@@ -218,7 +218,6 @@
 <translation id="223356358902285214">Интернет пен қолданбаларды пайдалану тарихы</translation>
 <translation id="2234827758954819389">Құпиялық нұсқаулығы</translation>
 <translation id="2239812875700136898">Жаңалықтарды "Discover опциялары" түймесі арқылы басқарыңыз</translation>
-<translation id="2241634353105152135">Бір-ақ рет</translation>
 <translation id="2247789808226901522">Картаның мерзімі аяқталды</translation>
 <translation id="2248941474044011069">Құрылғыдағы құпия сөздер Google Құпия сөз менеджеріне сақталмас бұрын шифрланады.</translation>
 <translation id="2249635629516220541">Жарнамаларыңызды көрсету үшін сайттар пайдаланатын ақпаратты бейімдеу</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">Қоңырау шалу үшін түртіңіз.</translation>
 <translation id="2321086116217818302">Құпия сөздер дайындалуда…</translation>
 <translation id="2323763861024343754">Сайт деректері</translation>
-<translation id="2327226657832576859">PDF файлдарын автоматты түрде ашу керек пе?</translation>
 <translation id="2328985652426384049">Кіру мүмкін емес</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнатылмады.</translation>
 <translation id="2349710944427398404">Chrome пайдаланатын жалпы деректер, соның ішінде аккаунттар, бетбелгілер және сақталған параметрлер</translation>
@@ -639,7 +637,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4523326818319942067">соңғы сағатта</translation>
 <translation id="452750746583162491">Синхрондалған деректерді қарау</translation>
 <translation id="4532845899244822526">Қалтаны таңдау</translation>
-<translation id="4541505619120536051">Әрдайым ашу</translation>
 <translation id="4543131175509360848">Кіру кілттерінің ешқандай парағы жоқ.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойынды}other{<ph name="TAB_COUNT_MANY" /> қойынды, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито қойындысы}}</translation>
 <translation id="4554077758708533499">USB кабелімен жалғанды</translation>
@@ -831,7 +828,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5486841595534124508">"Әрекеттерім" бетіне бағыттайтын беттің статистика хабына арналған құпиялық мәлімдемесінің логотипі.</translation>
 <translation id="5487521232677179737">Деректерді жою</translation>
 <translation id="5492637351392383067">Құрылғыда шифрлау</translation>
-<translation id="5509866835115085009">PDF файлын жүктеп алған кезде, Chrome оны автоматты түрде аша алады.</translation>
 <translation id="5514904542973294328">Құрылғының әкімшісі ажыратқан</translation>
 <translation id="5515439363601853141">Құпия сөзді көру үшін құлыпты ашыңыз</translation>
 <translation id="5517095782334947753">Сізде <ph name="FROM_ACCOUNT" /> аккаунтының бетбелгілері, тарихы, құпия сөздері және басқа да параметрлері бар.</translation>
@@ -1128,6 +1124,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="694267552845942083">Қазір синхрондау параметрлерін реттеп жатырсыз. Синхрондау функциясын қосу үшін экранның төменгі жағындағы "Растау" түймесін түртіңіз. Жоғары қарай өту</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6955535239952325894">Бұл параметр басқарылатын браузерлерде өшірілген.</translation>
+<translation id="6958103823951858863">PDF файлын жүктеп алғаннан кейін автоматты түрде ашу</translation>
 <translation id="6963766334940102469">Бетбелгілерді жою</translation>
 <translation id="696447261358045621">Инкогнито режимінен шығу</translation>
 <translation id="6965382102122355670">Жарайды</translation>

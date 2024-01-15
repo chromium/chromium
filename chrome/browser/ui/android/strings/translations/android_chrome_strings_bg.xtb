@@ -218,7 +218,6 @@
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
 <translation id="2234827758954819389">Ръководство за поверителност</translation>
 <translation id="2239812875700136898">Контролирайте материалите от бутона „Опции за Discover“</translation>
-<translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2247789808226901522">Картата е изтекла</translation>
 <translation id="2248941474044011069">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google</translation>
 <translation id="2249635629516220541">Персонализиране на информацията, използвана от сайтовете с цел показване на реклами</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
 <translation id="2323763861024343754">Данни от сайтове</translation>
-<translation id="2327226657832576859">Да се отварят ли автоматично PDF файловете?</translation>
 <translation id="2328985652426384049">Влизането в профила не е възможно</translation>
 <translation id="2341410551640223969">Инсталирането на <ph name="WEBAPK_NAME" /> не бе успешно.</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
@@ -639,7 +637,6 @@
 <translation id="4523326818319942067">последния час</translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4532845899244822526">Избиране на папка</translation>
-<translation id="4541505619120536051">Да, винаги</translation>
 <translation id="4543131175509360848">Долен лист без налични ключове за достъп</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
@@ -831,7 +828,6 @@
 <translation id="5486841595534124508">Лого на съобщението за поверителност за Центъра за статистика за страницата, което пренасочва към страницата „Моята активност“.</translation>
 <translation id="5487521232677179737">Изчиств. на данните</translation>
 <translation id="5492637351392383067">Шифроване на устройството</translation>
-<translation id="5509866835115085009">Chrome може автоматично да отвори даден PDF файл, когато го изтеглите.</translation>
 <translation id="5514904542973294328">Деактивирано от администратора на това устройство</translation>
 <translation id="5515439363601853141">Отключете, за да видите паролата си</translation>
 <translation id="5517095782334947753">Имате отметки, история, пароли и други настройки от <ph name="FROM_ACCOUNT" /></translation>

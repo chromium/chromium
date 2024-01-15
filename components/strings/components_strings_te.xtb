@@ -262,12 +262,15 @@
 <translation id="1468653229182955856"><ph name="EMBEDDED_ORIGIN" /> ను <ph name="TOP_ORIGIN" />కు కొనసాగేలా చేయడానికి మీకు కావాల్సిన కోడ్ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">మరిన్ని చూపించు</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">3 లేదా అంత కంటే ఎక్కువ పదాలను ఎంటర్ చేసి, రాయడంలో సహాయం పొందండి</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">క్లీనింగ్ సర్వీస్‌లు</translation>
 <translation id="1475299637784133125">బ్రౌజర్ వెర్షన్ కోసం వెతుకుతున్నారా? సందర్శించండి</translation>
 <translation id="1476595624592550506">మీ పాస్‌వర్డ్‌ను మార్చండి</translation>
 <translation id="1482879811280872320">సైక్లింగ్</translation>
 <translation id="1483493594462132177">పంపు</translation>
+<translation id="1484449009683144042">రాయడంలో సహాయపడే ప్రయోగాత్మక AI ఫీచర్ ఇది, నూటికి నూరు శాతం సరైనదని చెప్పలేము.
+    <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">విధానాలను పుష్ చేయి:</translation>
 <translation id="14938948731065592">కంప్యూటర్ విడిభాగాలు</translation>
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
@@ -413,6 +416,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />మేము ఈ డేటాను ఎలా ఉపయోగిస్తాము:<ph name="END_BOLD" /> మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీకు ఆసక్తి ఉన్న టాపిక్‌లను Chrome నోట్ చేస్తుంది. టాపిక్ లేబుల్స్ ముందే నిర్వచించబడి ఉంటాయి, ఉదాహరణకు కళలు &amp; వినోదం, షాపింగ్, స్పోర్ట్స్ మొదలైనవి. ఆ తర్వాత, మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడానికి, మీరు తెరిచిన ఏదైనా సైట్ మీ టాపిక్‌లలో కొన్నింటిని (మీ బ్రౌజింగ్ హిస్టరీ కాదు) అందించాల్సిందిగా Chromeను అడగవచ్చు.</translation>
 <translation id="1746113442205726301">చిత్రాన్ని Y అక్షంలో జరపు</translation>
 <translation id="1746531169546376413">0 డిగ్రీలు</translation>
+<translation id="1748225549612934682">మీ టెక్స్ట్‌ను తక్కువ పదాలతో రాసి, రాయడంలో సహాయం పొందండి</translation>
 <translation id="1751544761369730824"><ph name="SITE_NAME" /> సైట్‌ను తొలగించండి</translation>
 <translation id="1752021286346845558">మెయిల్‌బాక్స్ 8</translation>
 <translation id="1753068535428855445">డేటింగ్ &amp; వ్యక్తిగత యాడ్‌లు</translation>
@@ -858,6 +862,7 @@
 <translation id="2677696497921480781">పుట్టినరోజులు &amp; నామకరణం చేసిన రోజులు</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
 <translation id="2678468611080193228">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే తక్కువ రక్షణ ఉంటుంది కానీ సైట్ ఫీచర్‌లు పని చేసే అవకాశం ఎక్కువగా ఉంటుంది</translation>
+<translation id="2686919536310834199">ఫీడ్‌బ్యాక్‌ను పంపండి, రాయడంలో అది నాకు సహాయపడగలదు.</translation>
 <translation id="2687555958734450033">సరిపోయేలా అమర్చు</translation>
 <translation id="2688186765492306706">500 x 760 మి.మీ.</translation>
 <translation id="2688969097326701645">అవును, కొనసాగించండి</translation>
@@ -2034,6 +2039,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> మీ కెమెరాను మరియు మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="5035135400558156732">తోటపని</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">మళ్లీ సైన్ ఇన్ చేసి, తర్వాత తిరిగి ఈ ట్యాబ్‌కు వచ్చి రాయడంలో సహాయం పొందండి</translation>
 <translation id="5039762155821394373">ఫాంట్ సైజ్</translation>
 <translation id="5039804452771397117">అనుమతించండి</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
@@ -2445,6 +2451,8 @@
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5903264686717710770">శీర్షిక:</translation>
 <translation id="5904360430676679685">కుటుంబం &amp; సంబంధాలు</translation>
+<translation id="5907669856855422186">మీ టెక్స్ట్, పేజీ కంటెంట్ Googleకు పంపబడ్డాయి, ఈ ఫీచర్‌ను మెరుగుపరచడంలో ఉపయోగించబడవచ్చు.
+  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (సింక్ చేయబడింది)</translation>
 <translation id="5910140988253729859">ఆటోఫిల్‌ను చర్య రద్దు చేయండి</translation>
 <translation id="5911020115933784199">ఈవెంట్‌లు &amp; లిస్టింగ్‌లు</translation>
@@ -2494,7 +2502,6 @@
 <translation id="5997247540087773573">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, దానిని ఇప్పుడే మార్చి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని Google Password Manager సిఫార్సు చేస్తోంది.</translation>
 <translation id="5999271311987646952">మీరు బ్రౌజ్ చేస్తున్నప్పుడు మిమ్మల్ని రక్షించడానికి Chromeలో బిల్ట్-ఇన్ సేఫ్టీ ఫీచర్‌లు ఉంటాయి — ఉదాహరణకు, Google సురక్షిత బ్రౌజింగ్ ఫీచర్, ఇది ఇటీవల మీరు బ్రౌజ్ చేయడానికి ట్రై చేస్తున్న వెబ్‌సైట్‌లో <ph name="BEGIN_LINK" />మాల్‌వేర్‌ను కనుగొంది<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' అనే దానికి <ph name="RESULT_COUNT" /> ఫలితాలు లభించాయి</translation>
-<translation id="6001839398155993679">ప్రారంభిద్దాం</translation>
 <translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6005659677094197001">కంటిన్యువస్</translation>
 <translation id="6005765687956866568">ఫారమ్ నుండి ఆటోఫిల్ చేసిన సమాచారం క్లియర్ చేయబడింది</translation>

@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
 <translation id="2157660087437850958">emojivelger</translation>
 <translation id="2157959690810728433">I KØ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratoren din har angitt at <ph name="APP_NAME_1" /> skal startes automatisk hver gang du logger på.}=2{Administratoren din har angitt at <ph name="APP_NAME_1" /> og <ph name="APP_NAME_2" /> skal startes automatisk hver gang du logger på.}=3{Administratoren din har angitt at <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> skal startes automatisk hver gang du logger på.}other{Administratoren din har angitt at <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> og # apper til skal startes automatisk hver gang du logger på.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="215916044711630446">Legg til APN-knappen er nå deaktivert</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">Mørk modus</translation>
 <translation id="4130035430755296270">Hold markøren i ro for å se flere oppsettsalternativer</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ble startet automatisk}other{# apper ble startet automatisk}}</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Skjerm</translation>

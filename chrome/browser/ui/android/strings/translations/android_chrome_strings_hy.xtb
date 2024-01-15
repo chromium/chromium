@@ -218,7 +218,6 @@
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
 <translation id="2234827758954819389">Տվյալների պաշտպանության ուղեցույց</translation>
 <translation id="2239812875700136898">Կառավարեք ձեր պատմությունները «Discover-ի ընտրանքներ» կոճակի օգնությամբ</translation>
-<translation id="2241634353105152135">Միայն այս անգամ</translation>
 <translation id="2247789808226901522">Քարտը ժամկետանց է</translation>
 <translation id="2248941474044011069">Գաղտնաբառերը գաղտնագրվում են ձեր սարքում, այնուհետև պահվում Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="2249635629516220541">Կառավարեք տվյալները, որոնք օգտագործում են կայքերը՝ ձեզ գովազդ ցուցադրելու համար</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">Հպեք՝ զանգելու համար</translation>
 <translation id="2321086116217818302">Արտահանման նախապատրաստում…</translation>
 <translation id="2323763861024343754">Կայքի օգտագործած տարածքը</translation>
-<translation id="2327226657832576859">Ավտոմատ բացե՞լ PDF ֆայլերը</translation>
 <translation id="2328985652426384049">Չհաջողվեց մուտք գործել</translation>
 <translation id="2341410551640223969">Չհաջողվեց տեղադրել <ph name="WEBAPK_NAME" /> հավելվածը։</translation>
 <translation id="2349710944427398404">Chrome-ի օգտագործած ընդհանուր տարածքը, ներառյալ` հաշիվները, էջանիշները և պահված կարգավորումները</translation>
@@ -639,7 +637,6 @@
 <translation id="4523326818319942067">վերջին 1 ժամը</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
-<translation id="4541505619120536051">Միշտ բացել</translation>
 <translation id="4543131175509360848">Հասանելի անցաբառեր չկան</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
 <translation id="4554077758708533499">Միացված է USB մալուխով</translation>
@@ -831,7 +828,6 @@
 <translation id="5486841595534124508">Վիճակագրության էջի գաղտնիության ծանուցագրի լոգոն, որը վերաուղղորդում է «Իմ գործողությունները» էջ։</translation>
 <translation id="5487521232677179737">Ջնջել տվյալները</translation>
 <translation id="5492637351392383067">Գաղտնագրում սարքում</translation>
-<translation id="5509866835115085009">Chrome-ը կարող է ավտոմատ բացել PDF ֆայլը, երբ ներբեռնեք այն։</translation>
 <translation id="5514904542973294328">Անջատվել է այս սարքի ադմինիստրատորի կողմից</translation>
 <translation id="5515439363601853141">Գաղտնաբառը տեսնելու համար ապակողպեք էկրանը</translation>
 <translation id="5517095782334947753">Դուք էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ ունեք <ph name="FROM_ACCOUNT" /> հաշվից:</translation>

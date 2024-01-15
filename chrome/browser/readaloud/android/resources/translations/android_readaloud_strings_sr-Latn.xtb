@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1178581264944972037">Pauziraj</translation>
+<translation id="1246424317317450637">Podebljano</translation>
 <translation id="1921351128855867012">Premotajte <ph name="NUMBER_OF_SECONDS" /> sek unapred</translation>
 <translation id="1984328900355667246">Reprodukcija nije dostupna</translation>
 <translation id="3023502830214299618">Nažalost, reprodukcija trenutno nije dostupna za ovu stranicu. Probajte ponovo kasnije.</translation>
@@ -17,6 +18,7 @@
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6846298663435243399">Učitava se...</translation>
+<translation id="7282547042039404307">Bez prekida</translation>
 <translation id="7587250070160020374">Chrome trenutno pušta</translation>
 <translation id="8136852699834914183">Reprodukcija nije dostupna za ovu stranicu.</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> puta povećajte ili smanjite brzinu.</translation>

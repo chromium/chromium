@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
 <translation id="2157660087437850958">zgjedhësi për emoji</translation>
 <translation id="2157959690810728433">NË RADHË</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratori yt ka caktuar që <ph name="APP_NAME_1" /> të niset automatikisht sa herë që ti identifikohesh.}=2{Administratori yt ka caktuar që <ph name="APP_NAME_1" /> dhe <ph name="APP_NAME_2" /> të nisen automatikisht sa herë që ti identifikohesh.}=3{Administratori yt ka caktuar që <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> dhe <ph name="APP_NAME_3" /> të niset automatikisht sa herë që ti identifikohesh.}other{Administratori yt ka caktuar që <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> dhe # aplikacione të tjera të nisen automatikisht sa herë që ti identifikohesh.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="215916044711630446">Butoni "Shto APN-në" është çaktivizuar tani</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">Modaliteti i errët</translation>
 <translation id="4130035430755296270">Vazhdo të mbash kursorin mbi të për opsione të tjera të strukturës</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> u nis automatikisht}other{# aplikacione u nisën automatikisht}}</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4150201353443180367">Ekrani</translation>

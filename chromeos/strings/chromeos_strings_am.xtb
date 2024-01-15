@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ፎቶዎች</translation>
 <translation id="2157660087437850958">ስሜት ገላጭ ምስል መራጭ</translation>
 <translation id="2157959690810728433">ተሰልፏል</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" /> በራስ-ሠር እንዲጀምር አስተዳዳሪዎ አቀናብረዋል።}=2{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" /> እና <ph name="APP_NAME_2" /> በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}=3{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" />፣ <ph name="APP_NAME_2" /> እና <ph name="APP_NAME_3" /> በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}one{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" />፣ <ph name="APP_NAME_2" /> እና # ሌላ መተግበሪያ በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}other{እርስዎ በመለያዎ በሚገቡበት በማንኛውም ጊዜ <ph name="APP_NAME_1" />፣ <ph name="APP_NAME_2" /> እና # ሌላ መተግበሪያ በራስ-ሠር እንዲጀምሩ አስተዳዳሪዎ አቀናብረዋል።}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />፦ እንደገና ይሞክሩ</translation>
 <translation id="215916044711630446">ኤፒኤን አክል አዝራር አሁን ተሰናክሏል</translation>
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">የጨለማ ሁነታ</translation>
 <translation id="4130035430755296270">ለተጨማሪ የአቀማመጥ አማራጮች ማንዣበብዎን ይቀጥሉ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> በራስ-ሠር ተጀምሯል}one{# መተግበሪያ በራስ-ሠር ተጀምሯል}other{# መተግበሪያዎች በራስ-ሠር ተጀምረዋል}}</translation>
 <translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
 <translation id="4150201353443180367">ማሳያ</translation>

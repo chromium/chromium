@@ -218,7 +218,6 @@
 <translation id="223356358902285214">वेब और ऐप्लिकेशन गतिविधि</translation>
 <translation id="2234827758954819389">निजता गाइड</translation>
 <translation id="2239812875700136898">डिस्कवर बटन के विकल्पों से सामग्री को नियंत्रित करें</translation>
-<translation id="2241634353105152135">बस एक बार</translation>
 <translation id="2247789808226901522">कार्ड की समयसीमा खत्म हो चुकी है</translation>
 <translation id="2248941474044011069">Google पासवर्ड मैनेजर में सेव होने से पहले, आपके डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) किए जाते हैं</translation>
 <translation id="2249635629516220541">विज्ञापन दिखाने के लिए साइटें जिस जानकारी का इस्तेमाल करती हैं उसमें अपनी ज़रूरत के हिसाब से बदलाव करें</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">कॉल करने के लिए टैप करें</translation>
 <translation id="2321086116217818302">पासवर्ड तैयार हो रहे हैं…</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
-<translation id="2327226657832576859">क्या PDF फ़ाइलें अपने-आप खोलने की सुविधा चालू करनी है?</translation>
 <translation id="2328985652426384049">साइन इन नहीं कर सकते</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> को इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
@@ -639,7 +637,6 @@
 <translation id="4523326818319942067">पिछले घंटे का</translation>
 <translation id="452750746583162491">सिंक किए गए डेटा की समीक्षा करें</translation>
 <translation id="4532845899244822526">फ़ोल्डर चुनें</translation>
-<translation id="4541505619120536051">हमेशा खोलें</translation>
 <translation id="4543131175509360848">कोई पासकी शीट नहीं है</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}other{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}}</translation>
 <translation id="4554077758708533499">यूएसबी केबल की मदद से कनेक्ट किया गया</translation>
@@ -831,7 +828,6 @@
 <translation id="5486841595534124508">पेज इनसाइट हब के लिए निजता नोटिस का लोगो, जो 'मेरी गतिविधि' वाले पेज पर रीडायरेक्ट करता है.</translation>
 <translation id="5487521232677179737">डेटा मिटाएं</translation>
 <translation id="5492637351392383067">डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) करना</translation>
-<translation id="5509866835115085009">PDF फ़ाइल डाउनलोड करने पर, Chrome उसे अपने-आप खोल सकता है.</translation>
 <translation id="5514904542973294328">इस डिवाइस के व्यवस्थापक ने अक्षम किया है</translation>
 <translation id="5515439363601853141">अपना पासवर्ड देखने के लिए अनलॉक करें</translation>
 <translation id="5517095782334947753">आपके पास <ph name="FROM_ACCOUNT" /> के बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग हैं.</translation>

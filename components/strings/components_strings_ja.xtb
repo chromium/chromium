@@ -267,12 +267,15 @@
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> は、<ph name="EMBEDDED_ORIGIN" /> が <ph name="TOP_ORIGIN" /> で動作するのに必要なコードです</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">文章作成サポートを使用するには、3 つ以上の単語を入力してください</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">清掃サービス</translation>
 <translation id="1475299637784133125">ブラウザのバージョン情報をお探しですか？次にアクセスしてください</translation>
 <translation id="1476595624592550506">パスワードを変更してください</translation>
 <translation id="1482879811280872320">自転車</translation>
 <translation id="1483493594462132177">送信</translation>
+<translation id="1484449009683144042">これは試験運用版の AI による文章作成サポートで、常に正しいとは限りません。
+    <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">ポリシーのプッシュ:</translation>
 <translation id="14938948731065592">コンピュータ関連</translation>
 <translation id="1495677929897281669">タブに戻る</translation>
@@ -418,6 +421,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Google によるこのデータの使用:<ph name="END_BOLD" /> Chrome では、ユーザーによるウェブサイト閲覧時にそのユーザーの興味 / 関心のあるトピックが記録されます。トピックのラベルは、「アートやエンターテインメント」、「ショッピング」、「スポーツ」など事前に定義されています。その後、ユーザーが訪れるウェブサイトは、表示する広告をパーソナライズするため、Chrome に（閲覧履歴ではなく）いくつかのトピックを提示するよう要求できます。</translation>
 <translation id="1746113442205726301">画像の Y 軸移動</translation>
 <translation id="1746531169546376413">0°</translation>
+<translation id="1748225549612934682">文章作成サポートを使用するには、テキストを短くしてください</translation>
 <translation id="1751544761369730824">サイト <ph name="SITE_NAME" /> を削除</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
 <translation id="1753068535428855445">出会い</translation>
@@ -863,6 +867,7 @@
 <translation id="2677696497921480781">誕生日</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2678468611080193228">サードパーティ Cookie を一時的に許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
+<translation id="2686919536310834199">文書作成サポートのフィードバックを送信します。</translation>
 <translation id="2687555958734450033">最適サイズ</translation>
 <translation id="2688186765492306706">500x760 mm</translation>
 <translation id="2688969097326701645">はい、続行します</translation>
@@ -2039,6 +2044,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> から、カメラとマイクの使用許可を求められています</translation>
 <translation id="5035135400558156732">ガーデニング</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">もう一度ログインしてこのタブに戻ると、文章作成サポートを使用できます</translation>
 <translation id="5039762155821394373">フォントサイズ</translation>
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5040262127954254034">プライバシー</translation>
@@ -2450,6 +2456,8 @@
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903264686717710770">タイトル:</translation>
 <translation id="5904360430676679685">家族、人間関係</translation>
+<translation id="5907669856855422186">テキストとページのコンテンツが Google に送信され、この機能の改善に使用されることがあります。
+  <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（同期済み）</translation>
 <translation id="5910140988253729859">自動入力を取り消す</translation>
 <translation id="5911020115933784199">イベント情報</translation>
@@ -2499,7 +2507,6 @@
 <translation id="5997247540087773573">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5999271311987646952">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしているサイトで<ph name="BEGIN_LINK" />最近マルウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
-<translation id="6001839398155993679">開始する</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6005659677094197001">連続</translation>
 <translation id="6005765687956866568">自動入力された情報をフォームから削除しました</translation>

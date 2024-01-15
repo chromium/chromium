@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Слика: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">бирач емоџија</translation>
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Администратор је подесио да се апликација <ph name="APP_NAME_1" /> аутоматски покреће сваки пут када се пријавите.}=2{Администратор је подесио да се апликације <ph name="APP_NAME_1" /> и <ph name="APP_NAME_2" /> аутоматски покрећу сваки пут када се пријавите.}=3{Администратор је подесио да се апликације <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> аутоматски покрећу сваки пут када се пријавите.}one{Администратор је подесио да се апликације <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и још # аутоматски покрећу сваки пут када се пријавите.}few{Администратор је подесио да се апликације <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и још # аутоматски покрећу сваки пут када се пријавите.}other{Администратор је подесио да се апликације <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> и још # аутоматски покрећу сваки пут када се пријавите.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Пробај поново</translation>
 <translation id="215916044711630446">Дугме Додај назив приступне тачке је сада онемогућено</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">Тамни режим</translation>
 <translation id="4130035430755296270">Наставите да прелазите курсором за још опција изгледа</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Апликација <ph name="APP_NAME_1" /> је аутоматски покренута}one{# апликација је аутоматски покренута}few{# апликације су аутоматски покренуте}other{# апликација је аутоматски покренуто}}</translation>
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4147897805161313378">Google слике</translation>
 <translation id="4150201353443180367">Екран</translation>

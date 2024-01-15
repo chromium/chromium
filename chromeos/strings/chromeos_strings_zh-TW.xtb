@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
 <translation id="2157660087437850958">表情符號挑選器</translation>
 <translation id="2157959690810728433">已排入佇列</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」。}=2{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」和「<ph name="APP_NAME_2" />」。}=3{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」、「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」。}other{管理員已設定在你每次登入時自動啟動「<ph name="APP_NAME_1" />」、「<ph name="APP_NAME_2" />」和另外 # 個應用程式。}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="215916044711630446">現已停用「新增 APN」按鈕</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -186,6 +185,7 @@
 <translation id="2189104374785738357">編輯 APN 詳細資料</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
+<translation id="2215920961700443347">沒有網際網路連線。請連線到網際網路，然後再試一次。</translation>
 <translation id="2217935453350629363">目前速度</translation>
 <translation id="2224337661447660594">沒有網際網路連線</translation>
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
@@ -219,6 +219,7 @@
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 張圖片 (共 <ph name="TOTAL_PAGES" /> 張)</translation>
 <translation id="2446553403094072641">浮點精確度</translation>
 <translation id="2448312741937722512">類型</translation>
+<translation id="2465272316171730950">資源已用盡，請稍後再回來查看。</translation>
 <translation id="248546197012830854">裝置處於離線狀態。連線至 Wi-Fi 網路即可查看說明內容。</translation>
 <translation id="2491955442992294626">使用其他視窗時，系統不會測試按鍵</translation>
 <translation id="2493126929778606526">自動精選最佳相片</translation>
@@ -415,7 +416,6 @@
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4131410914670010031">黑白</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{已自動啟動「<ph name="APP_NAME_1" />」}other{已自動啟動 # 個應用程式}}</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相簿</translation>
 <translation id="4150201353443180367">顯示設定</translation>

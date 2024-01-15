@@ -218,7 +218,6 @@
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
 <translation id="2234827758954819389">Руководство по конфиденциальности</translation>
 <translation id="2239812875700136898">Управляйте контентом с помощью кнопки "Параметры рекомендаций".</translation>
-<translation id="2241634353105152135">Однократно</translation>
 <translation id="2247789808226901522">Срок действия карты истек</translation>
 <translation id="2248941474044011069">Ваши пароли шифруются на устройстве и только потом сохраняются в Google Менеджере паролей.</translation>
 <translation id="2249635629516220541">Управление данными, которые используют сайты для показа рекламы</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
 <translation id="2321086116217818302">Подготовка паролей…</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
-<translation id="2327226657832576859">Открывать PDF автоматически?</translation>
 <translation id="2328985652426384049">Не удается войти</translation>
 <translation id="2341410551640223969">Не удалось установить приложение "<ph name="WEBAPK_NAME" />"</translation>
 <translation id="2349710944427398404">Общее количество данных Chrome, включая аккаунты, закладки и сохраненные настройки</translation>
@@ -639,7 +637,6 @@
 <translation id="4523326818319942067">за последний час</translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4532845899244822526">Выбор папки</translation>
-<translation id="4541505619120536051">Открывать всегда</translation>
 <translation id="4543131175509360848">Пустой список ключей доступа</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4554077758708533499">Подключено с помощью USB-кабеля</translation>
@@ -831,7 +828,6 @@
 <translation id="5486841595534124508">Значок Примечания о конфиденциальности для раздела со статистикой страницы. Перенаправляет пользователя на страницу "Мои действия".</translation>
 <translation id="5487521232677179737">Удалить данные</translation>
 <translation id="5492637351392383067">Шифрование на устройстве</translation>
-<translation id="5509866835115085009">Файлы PDF могут открываться в Chrome автоматически после скачивания.</translation>
 <translation id="5514904542973294328">Отключено администратором устройства</translation>
 <translation id="5515439363601853141">Чтобы увидеть пароль, разблокируйте экран</translation>
 <translation id="5517095782334947753">Вам доступны закладки, история, пароли и другие настройки из аккаунта <ph name="FROM_ACCOUNT" />.</translation>

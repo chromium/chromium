@@ -251,6 +251,7 @@
 <translation id="1434317006812369578">Chrome axtarış zamanı sizi qoruyan Google güvənli baxış kimi daxili güvənlik funksiyalarına malikdir. Bu yaxınlarda Güvənli baxış daxil olduğunuz <ph name="BEGIN_LINK" /><ph name="SITE" /> saytında zərərli proqram tapıb<ph name="END_LINK" />.</translation>
 <translation id="1435940442311036198">Fərqli cihazda şifrə istifadə edin</translation>
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
+<translation id="1441816242347931036">Açaraq davam edin</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
 <translation id="1442987760062738829">Deşik açın</translation>
 <translation id="1446396933673057385">Dəqiqliyin yoxlanması</translation>
@@ -700,6 +701,7 @@
 <translation id="2328651992442742497">İcazə verilib (defolt)</translation>
 <translation id="2328955282645810595">İnşaat və elektrik alətləri</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
+<translation id="2337044517221264923">Yazmağı bərpa edin</translation>
 <translation id="2337852623177822836">Ayara administrator tərəfindən nəzarət edilir</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ütləndirmək istəyir</translation>
 <translation id="2340549657492527534">Reptillər və amfibiyalar</translation>
@@ -1176,6 +1178,7 @@
 <translation id="334438173029876234">Skeytbordinq avadanlıqları</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Proksi ayarlarını dəyişin...</translation>
+<translation id="335809815767823">Eksport edildi</translation>
 <translation id="3359565626472459400">Nigah</translation>
 <translation id="3360103848165129075">Ödəniş səhifəsi</translation>
 <translation id="3360313521703038580">Ekologiya və ətraf mühit</translation>
@@ -1328,6 +1331,7 @@
 <translation id="3632892046558972264">Ekran paylaşımı durdurulub</translation>
 <translation id="3634530185120165534">Qab 5</translation>
 <translation id="3634567936866541746">İndicə parolunuzu aldadıcı sayt içində yazdınız. Hesablarınızı qorumaq üçün Chrome yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
+<translation id="3638102297696182302">"Yazmağa kömək et" əmrini bərpa edin. Açmaq üçün tab və "enter" üzərinə basın</translation>
 <translation id="3642196846309122856">Faylları yenidən endirin</translation>
 <translation id="3642638418806704195">Tətbiq:</translation>
 <translation id="3646643500201740985">Bir reklamın nə qədər yaxşı performans göstərdiyini ölçmək</translation>
@@ -1512,6 +1516,7 @@
 <translation id="4014895360827978999">Ticarət xidməti və ödəniş sistemləri</translation>
 <translation id="4018819349042761761">İctimai açar</translation>
 <translation id="4023431997072828269">Bu forma təhlükəsiz olmayan bağlantıdan istifadə etməklə təqdim edildiyinə görə məlumatlarınız digərləri tərəfindən görüləcək.</translation>
+<translation id="4025325634010721551">Siyasətlər yenidən yükləndi</translation>
 <translation id="4030383055268325496">Əlavəni geri qaytarın</translation>
 <translation id="4030545038933060179">Aktiv olduqda, mövzuların siyahısı son baxış tarixçənizə əsasən burada görünür</translation>
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
@@ -1819,6 +1824,7 @@
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Keşbek əlaqələndirilib</translation>
 <translation id="4631881646528206880">Virtual kart qeydiyyatı</translation>
+<translation id="4635278307999235413">Data admin konsoluna göndərilir</translation>
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4638670630777875591">Chromium'da Anonim Rejim</translation>
 <translation id="464342062220857295">Axtarış funksiyaları</translation>
@@ -2489,7 +2495,6 @@
 <translation id="5997247540087773573">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri onu indi dəyişməyi və sonra yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="5999271311987646952">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olduğunuz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
-<translation id="6001839398155993679">Başlayaq</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6005659677094197001">Davamlı</translation>
 <translation id="6005765687956866568">Avtomatik doldurulmuş məlumat formadan silinib</translation>
@@ -3732,6 +3737,7 @@
 <translation id="8381674639488873545">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Eyni zamanda görünməyə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Tipik qiymət: <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> mənbəyindən <ph name="VM_NAME" /> məkanına paylaşım etmək administrator siyasətinə əsasən bloklanıb</translation>
+<translation id="8392783408127179588">Siyasətlər yenidən yüklənir</translation>
 <translation id="8396522675989118466">Bu, <ph name="SIDE_OF_CARD" /> hissəsindəki <ph name="NUMBER_OF_DIGITS" /> rəqəmli koddur</translation>
 <translation id="8398335999901363925">Toxunaraq doldurulacaq ödəniş metodlarının siyahısı tam hündürlükdə açılıb.</translation>
 <translation id="8398446215576328011">Tətbiq olunmuş qaydaları geri dəyişin</translation>
@@ -4151,6 +4157,7 @@
 <translation id="936602727769022409">Google Hesabına girişi itirə bilərsiniz. Chromium parolu dəyişməyi məsləhət görür. Daxil olmağınız tələb olunacaq.</translation>
 <translation id="937457230470581909">Zooparklar, akvariumlar və qoruqlar</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Hansı data istifadə olunur:<ph name="END_BOLD" /> Reklam mövzularınız son baxış tarixçənizə, bu cihazda Chrome istifadə edərək ziyarət etdiyiniz saytların siyahısına əsaslanır.</translation>
+<translation id="937885410143139026">Data admin konsoluna göndərildi</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="940053046584497293">Səyahət və nəqliyyat</translation>
 <translation id="944540589955480312">Google Hesabında yadda saxlanan parol və giriş açarlarından istifadə edin</translation>

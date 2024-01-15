@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">사진 <ph name="NUMBER" />장</translation>
 <translation id="2157660087437850958">그림 이모티콘 선택 도구입니다</translation>
 <translation id="2157959690810728433">대기 중</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{관리자가 로그인할 때마다 <ph name="APP_NAME_1" /> 앱이 자동으로 시작되도록 설정했습니다.}=2{관리자가 로그인할 때마다 <ph name="APP_NAME_1" /> 및 <ph name="APP_NAME_2" /> 앱이 자동으로 시작되도록 설정했습니다.}=3{관리자가 로그인할 때마다 <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱이 자동으로 시작되도록 설정했습니다.}other{관리자가 로그인할 때마다 <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> 외 #개 앱이 자동으로 시작되도록 설정했습니다.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="215916044711630446">APN 추가 버튼이 사용 중지되었습니다</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
 <translation id="4131410914670010031">흑백</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> 앱이 자동으로 시작되었습니다}other{#개 앱이 자동으로 시작되었습니다}}</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
 <translation id="4150201353443180367">디스플레이</translation>

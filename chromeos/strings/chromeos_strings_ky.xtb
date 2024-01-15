@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> сүрөт</translation>
 <translation id="2157660087437850958">быйтыкча тандагыч</translation>
 <translation id="2157959690810728433">КЕЗЕККЕ КОЮЛДУ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Администраторуңуз <ph name="APP_NAME_1" /> колдонмосун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}=2{Администраторуңуз <ph name="APP_NAME_1" /> жана <ph name="APP_NAME_2" /> колдонмолорун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}=3{Администраторуңуз <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> жана <ph name="APP_NAME_3" /> колдонмолорун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}other{Администраторуңуз <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> жана дагы # колдонмону сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Кайталоо</translation>
 <translation id="215916044711630446">APN кошуу баскычы өчүрүлдү</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">Караңгы режим</translation>
 <translation id="4130035430755296270">Дагы башка калыптарды көрүү үчүн үстүнө алып келиңиз</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> автоматтык түрдө ачылды}other{# колдонмо автоматтык түрдө ачылды}}</translation>
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Көрсөтүү</translation>

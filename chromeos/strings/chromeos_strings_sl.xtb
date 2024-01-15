@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Št. fotografij: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">izbirnik emodžijev</translation>
 <translation id="2157959690810728433">NA ČAKANJU</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Skrbnik je nastavil, da se aplikacija <ph name="APP_NAME_1" /> zažene samodejno ob vsaki prijavi.}=2{Skrbnik je nastavil, da se aplikaciji <ph name="APP_NAME_1" /> in <ph name="APP_NAME_2" /> zaženeta samodejno ob vsaki prijavi.}=3{Skrbnik je nastavil, da se aplikacije <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in <ph name="APP_NAME_3" /> zaženejo samodejno ob vsaki prijavi.}one{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # druga aplikacija zaženejo samodejno ob vsaki prijavi.}two{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # drugi aplikaciji zaženejo samodejno ob vsaki prijavi.}few{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # druge aplikacije zaženejo samodejno ob vsaki prijavi.}other{Skrbnik je nastavil, da se <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> in še # drugih aplikacij zažene samodejno ob vsaki prijavi.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Poskusi znova</translation>
 <translation id="215916044711630446">Gumb za dodajanje APN-ja je zdaj onemogočen</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">Temni način</translation>
 <translation id="4130035430755296270">Premikajte miškin kazalec, če želite več možnosti postavitve.</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> se je zagnala samodejno}one{# aplikacija se je zagnala samodejno}two{# aplikaciji sta se zagnali samodejno}few{# aplikacije so se zagnale samodejno}other{# aplikacij se je zagnalo samodejno}}</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Prikaz</translation>

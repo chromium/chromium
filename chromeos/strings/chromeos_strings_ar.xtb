@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> صورة</translation>
 <translation id="2157660087437850958">أداة اختيار الرموز التعبيرية</translation>
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{لقد ضبط مشرفك تطبيق "<ph name="APP_NAME_1" />" للبدء تلقائيًا مع كل تسجيل دخول.}=2{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" للبدء تلقائيًا مع كل تسجيل دخول.}=3{لقد ضبط مشرفك التطبيقات "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و"<ph name="APP_NAME_3" />" للبدء تلقائيًا مع كل تسجيل دخول.}zero{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}few{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقات أخرى للبدء تلقائيًا مع كل تسجيل دخول.}many{لقد ضبط مشرفك التطبيقَين "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقًا آخر للبدء تلقائيًا مع كل تسجيل دخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: إعادة المحاولة</translation>
 <translation id="215916044711630446">‏زر "إضافة اسم نقطة الوصول" (APN) غير مفعَّل الآن</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">الوضع الداكن</translation>
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="4145784616224233563">‏جدار الحماية لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4150201353443180367">عرض</translation>

@@ -251,6 +251,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1434317006812369578">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró software malicioso en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.</translation>
 <translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
+<translation id="1441816242347931036">Abrir el elemento para continuar</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
 <translation id="1446396933673057385">Verificación de exactitud</translation>
@@ -700,6 +701,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2328651992442742497">Se permite (predeterminado).</translation>
 <translation id="2328955282645810595">Herramientas eléctricas y de construcción</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2337044517221264923">Reanudar escritura</translation>
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> desea sincronizarse</translation>
 <translation id="2340549657492527534">Reptiles y anfibios</translation>
@@ -1179,6 +1181,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="334438173029876234">Equipo para skateboarding</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
+<translation id="335809815767823">Se exportó correctamente</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
 <translation id="3360313521703038580">Ecología y medioambiente</translation>
@@ -1333,6 +1336,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3632892046558972264">Se pausó compartir pantalla</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Ingresaste tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chrome te recomienda revisar las contraseñas que tengas guardadas.</translation>
+<translation id="3638102297696182302">Reanudar Ayúdame a escribir. Presionar Tab y presionar Intro para abrir</translation>
 <translation id="3642196846309122856">Intenta volver a descargar tus archivos</translation>
 <translation id="3642638418806704195">Aplicación:</translation>
 <translation id="3646643500201740985">Medición del rendimiento de un anuncio</translation>
@@ -1517,6 +1521,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4014895360827978999">Servicios comerciales y sistemas de pagos</translation>
 <translation id="4018819349042761761">Clave pública</translation>
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
+<translation id="4025325634010721551">Se volvieron a cargar las políticas</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4030545038933060179">Cuando esta configuración está activada, aparecerá una lista de temas según tu historial de navegación reciente.</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
@@ -1824,6 +1829,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Devolución de dinero vinculada</translation>
 <translation id="4631881646528206880">Inscripción de tarjeta virtual</translation>
+<translation id="4635278307999235413">Enviando datos a la Consola del administrador</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4638670630777875591">Modo Incógnito en Chromium</translation>
 <translation id="464342062220857295">Buscar funciones</translation>
@@ -2494,7 +2500,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
 <translation id="5999271311987646952">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró software malicioso<ph name="END_LINK" /> en el sitio que intentas visitar.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6001839398155993679">Comenzar</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005659677094197001">Continuo</translation>
 <translation id="6005765687956866568">Se borró la información autocompletada del formulario</translation>
@@ -3737,6 +3742,7 @@ Detalles adicionales:
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Precio habitual: <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698">Una política del administrador no permite compartir contenido de <ph name="ORIGIN_NAME" /> con <ph name="VM_NAME" /></translation>
+<translation id="8392783408127179588">Volviendo a cargar políticas</translation>
 <translation id="8396522675989118466">Este es el código de <ph name="NUMBER_OF_DIGITS" /> dígitos que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">La lista de formas de pago disponibles que se debe tocar para completar está totalmente abierta.</translation>
 <translation id="8398446215576328011">Revertir las políticas aplicadas</translation>
@@ -4157,6 +4163,7 @@ Detalles adicionales:
 <translation id="936602727769022409">Podrías perder el acceso a tu Cuenta de Google. Chromium te recomienda cambiar la contraseña ahora. Deberás acceder a la cuenta.</translation>
 <translation id="937457230470581909">Zoológicos, acuarios y reservas</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> Tus temas de anuncios se basan en tu historial de navegación reciente, una lista de los sitios que visitaste con Chrome en este dispositivo.</translation>
+<translation id="937885410143139026">Se enviaron datos a la Consola del administrador</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940053046584497293">Viajes y transporte</translation>
 <translation id="944540589955480312">Usar contraseñas y llaves de acceso guardadas en tu Cuenta de Google</translation>

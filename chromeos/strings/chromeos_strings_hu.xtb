@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotó</translation>
 <translation id="2157660087437850958">emojiválasztó</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" /> alkalmazást, hogy automatikusan elinduljon minden alkalommal, amikor Ön bejelentkezik.}=2{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" /> és a(z) <ph name="APP_NAME_2" /> alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}=3{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" />, a(z) <ph name="APP_NAME_2" /> és a(z) <ph name="APP_NAME_3" /> alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}other{A rendszergazda úgy állította be a(z) <ph name="APP_NAME_1" />, a(z) <ph name="APP_NAME_2" /> és további # alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
 <translation id="215916044711630446">Az APN hozzáadása gomb mostantól le van tiltva</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">Sötét mód</translation>
 <translation id="4130035430755296270">További elrendezési lehetőségekért mozgassa tovább az egérmutatót</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{A(z) <ph name="APP_NAME_1" /> automatikusan elindult}other{# alkalmazás automatikusan elindult}}</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4147897805161313378">Google Fotók</translation>
 <translation id="4150201353443180367">Megjelenítés</translation>

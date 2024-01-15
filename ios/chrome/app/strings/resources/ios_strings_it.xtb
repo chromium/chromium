@@ -529,6 +529,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3789841737615482174">Installa</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Proponi di tradurre questo sito</translation>
+<translation id="3808311849069021992">Mostra dettagli del motore di ricerca</translation>
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="3818045793209708987">Monitoraggio del pacchetto interrotto</translation>
 <translation id="3818293389945649617">Trova successivo</translation>
@@ -802,6 +803,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5235389474593199952">Nascondi Cronologia</translation>
 <translation id="5238301240406177137">Salva nell'account</translation>
+<translation id="5238596603078743134">Ora <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> può utilizzare il tuo nome utente e la tua password quando usa Gestore delle password di Google per accedere a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Annulla sincronizzazione</translation>
 <translation id="5248640482715684545">Questo sito sta tentando di aprire un'altra applicazione.</translation>
 <translation id="5256661381001734217">Questo sito sta tentando di aprire un'applicazione.  Uscirai dalla modalità di navigazione in incognito.</translation>
@@ -821,6 +823,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5360976571138293719">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Qui troverai i siti che segui</translation>
 <translation id="5388358297987318779">Apri immagine</translation>
+<translation id="5395707839134961196">Nascondi dettagli motore di ricerca</translation>
 <translation id="5396950905475481456">Invita membri del gruppo Famiglia</translation>
 <translation id="5407969256130905701">Annulla modifiche</translation>
 <translation id="5414763847370083940">Riceverai un avviso se il prezzo calerà su qualsiasi sito.</translation>
@@ -1034,6 +1037,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">Controllo mai eseguito.</translation>
 <translation id="6459307836338400162">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, apri le sezioni <ph name="BEGIN_LINK" />Sincronizzazione<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Dettagli nascosti</translation>
 <translation id="646394917185284261">File</translation>
 <translation id="6464071786529933911">Apri in nuova scheda in incognito</translation>
 <translation id="6464397691496239022">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
@@ -1286,6 +1290,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7812377703891978671">Puoi accedere a tutta la cronologia di navigazione selezionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Download</translation>
 <translation id="7839985698273989086">Pagina offline</translation>
+<translation id="7839994177130598711">I membri del tuo gruppo Famiglia ora possono utilizzare il tuo nome utente e la tua password quando usano Gestore delle password di Google per accedere a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Gli elementi selezionati verranno rimossi.</translation>
 <translation id="7845466610722898">Mostra Elenco di lettura</translation>
 <translation id="784551991304901159">Per visualizzare i contenuti, seleziona Attiva dal menu</translation>

@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157660087437850958">selecionador de emojis</translation>
 <translation id="2157959690810728433">EM LISTA DE ESPERA</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{O seu administrador definiu a app <ph name="APP_NAME_1" /> para iniciar automaticamente sempre que iniciar sessão.}=2{O seu administrador definiu a app <ph name="APP_NAME_1" /> e <ph name="APP_NAME_2" /> para iniciarem automaticamente sempre que iniciar sessão.}=3{O seu administrador definiu a app <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> para iniciarem automaticamente sempre que iniciar sessão.}other{O seu administrador definiu a app <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e mais # apps para iniciarem automaticamente sempre que iniciar sessão.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tente novamente</translation>
 <translation id="215916044711630446">O botão Adicionar APN está agora desativado</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Mantenha o cursor do rato sobre o conteúdo para obter mais opções de esquema</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{A app <ph name="APP_NAME_1" /> foi iniciada automaticamente}other{# apps foram iniciadas automaticamente}}</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Visualização</translation>

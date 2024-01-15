@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
 <translation id="2157660087437850958">ផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
 <translation id="2157959690810728433">បានដាក់ជាជួរ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់ <ph name="APP_NAME_1" /> ឱ្យចាប់ផ្ដើមដោយស្វ័យប្រវត្តិរាល់ពេលអ្នកចូលគណនី។}=2{អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់ <ph name="APP_NAME_1" /> និង <ph name="APP_NAME_2" /> ឱ្យចាប់ផ្ដើមដោយស្វ័យប្រវត្តិរាល់ពេលអ្នកចូលគណនី។}=3{អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> និង <ph name="APP_NAME_3" /> ឱ្យចាប់ផ្ដើមដោយស្វ័យប្រវត្តិរាល់ពេលអ្នកចូលគណនី។}other{អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> និងកម្មវិធីចំនួន # ផ្សេងទៀតឱ្យចាប់ផ្ដើមដោយស្វ័យប្រវត្តិរាល់ពេលអ្នកចូលគណនី។}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />៖ ព្យាយាម​ម្ដងទៀត</translation>
 <translation id="215916044711630446">ឥឡូវនេះ ប៊ូតុង​បញ្ចូល APN ត្រូវបានបិទ</translation>
 <translation id="2161394479394250669">បោះបង់​ការងារ​បោះពុម្ព</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">មុខងារ​ងងឹត</translation>
 <translation id="4130035430755296270">បន្តដាក់ព្រួញលើ​សម្រាប់​ជម្រើស​ប្លង់​ច្រើនទៀត</translation>
 <translation id="4131410914670010031">ពណ៌ខ្មៅ និងស</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ត្រូវបានចាប់ផ្ដើមដោយស្វ័យប្រវត្តិ}other{កម្មវិធីចំនួន # ត្រូវបានចាប់ផ្ដើមដោយស្វ័យប្រវត្តិ}}</translation>
 <translation id="4145784616224233563">ជញ្ជាំងភ្លើង HTTP</translation>
 <translation id="4147897805161313378">Google រូបថត</translation>
 <translation id="4150201353443180367">ការបង្ហាញ</translation>

@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> تصاویر</translation>
 <translation id="2157660087437850958">ایموجی منتخب کنندہ</translation>
 <translation id="2157959690810728433">قطار بند</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{آپ کے منتظم نے <ph name="APP_NAME_1" /> کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}=2{آپ کے منتظم نے <ph name="APP_NAME_1" /> اور <ph name="APP_NAME_2" /> کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}=3{آپ کے منتظم نے <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" /> اور <ph name="APP_NAME_3" /> کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}other{آپ کے منتظم نے <ph name="APP_NAME_1" />، <ph name="APP_NAME_2" /> اور # دیگر ایپس کو اس طور پر سیٹ کیا ہے کہ آپ جب بھی لاگ ان کریں یہ خودکار طور پر شروع ہو جائے۔}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
 <translation id="215916044711630446">‏APN شامل کریں بٹن اب غیر فعال ہے</translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">تاریک وضع</translation>
 <translation id="4130035430755296270">لے آؤٹ کے مزید اختیارات کیلئے اسکرول کرتے رہیں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> خودکار طور پر شروع ہو گیا}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
 <translation id="4147897805161313378">‏Google تصاویر</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>

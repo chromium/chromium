@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1178581264944972037">Duraklat</translation>
+<translation id="1246424317317450637">Kalın</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> saniye ileri sar</translation>
 <translation id="1984328900355667246">Oynatılamıyor</translation>
 <translation id="3023502830214299618">Oynatma özelliği maalesef şu anda bu sayfada kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
@@ -17,6 +18,7 @@
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6846298663435243399">Yükleniyor...</translation>
+<translation id="7282547042039404307">Sorunsuz</translation>
 <translation id="7587250070160020374">Chrome şu anda oynatıyor</translation>
 <translation id="8136852699834914183">Oynatma işlemi bu sayfada kullanılamıyor.</translation>
 <translation id="8264989794233974275">Hızı <ph name="PLAYBACK_SPEED" /> kat artırın/azaltın.</translation>

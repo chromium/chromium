@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="2157660087437850958">ইম’জি বাছনি কৰোঁতা</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}=2{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" /> আৰু <ph name="APP_NAME_2" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}=3{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু <ph name="APP_NAME_3" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}one{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু # টা অন্য এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}other{আপোনাৰ প্ৰশাসকে প্ৰতিবাৰ আপুনি লগইন কৰাৰ সময়ত <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> আৰু # টা অন্য এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰিবলৈ ছেট কৰিছে।}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: পুনৰ চেষ্টা কৰক</translation>
 <translation id="215916044711630446">এতিয়া APN যোগ কৰাৰ বুটামটো এতিয়া অক্ষম কৰা হৈছে</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">গাঢ় ম’ড</translation>
 <translation id="4130035430755296270">লে’আউটৰ অধিক বিকল্পৰ বাবে মাউছৰ কাৰ্ছৰডাল ঘূৰাই থাকক</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}one{# টা এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}other{# টা এপ্ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}}</translation>
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ডিছপ্লে’</translation>

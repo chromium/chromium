@@ -176,7 +176,6 @@
 <translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">jaustukų rinkiklis</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratorius nustatė automatiškai paleisti programą „<ph name="APP_NAME_1" />“ kaskart, kai prisijungiate.}=2{Administratorius nustatė automatiškai paleisti programas „<ph name="APP_NAME_1" />“ ir „<ph name="APP_NAME_2" />“ kaskart, kai prisijungiate.}=3{Administratorius nustatė automatiškai paleisti programas „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir „<ph name="APP_NAME_3" />“ kaskart, kai prisijungiate.}one{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programą kaskart, kai prisijungiate.}few{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programas kaskart, kai prisijungiate.}many{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programos kaskart, kai prisijungiate.}other{Administratorius nustatė automatiškai paleisti „<ph name="APP_NAME_1" />“, „<ph name="APP_NAME_2" />“ ir dar # programų kaskart, kai prisijungiate.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="215916044711630446">APN pridėjimo mygtukas dabar išjungtas</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
@@ -417,7 +416,6 @@
 <translation id="4117637339509843559">Tamsus režimas</translation>
 <translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ buvo paleista automatiškai}one{# programa buvo paleista automatiškai}few{# programos buvo paleistos automatiškai}many{# programos buvo paleista automatiškai}other{# programų buvo paleista automatiškai}}</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4150201353443180367">Pateiktis</translation>

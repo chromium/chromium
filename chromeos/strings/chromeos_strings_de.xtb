@@ -176,7 +176,6 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
 <translation id="2157660087437850958">Emoji-Auswahl</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
-<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Dein Administrator hat festgelegt, dass <ph name="APP_NAME_1" /> bei jeder Anmeldung automatisch gestartet wird.}=2{Dein Administrator hat festgelegt, dass <ph name="APP_NAME_1" /> und <ph name="APP_NAME_2" /> bei jeder Anmeldung automatisch gestartet werden.}=3{Dein Administrator hat festgelegt, dass <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> und <ph name="APP_NAME_3" /> bei jeder Anmeldung automatisch gestartet werden.}other{Dein Administrator hat festgelegt, dass <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> und # weitere Apps bei jeder Anmeldung automatisch gestartet werden.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="215916044711630446">Schaltfläche „APN hinzufügen“ ist jetzt deaktiviert</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
@@ -415,7 +414,6 @@
 <translation id="4117637339509843559">Dunkler Modus</translation>
 <translation id="4130035430755296270">Für weitere Layoutoptionen Mauszeiger weiter darauf halten</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
-<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> wurde automatisch gestartet}other{# Apps wurden automatisch gestartet}}</translation>
 <translation id="4145784616224233563">HTTP-Firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Display</translation>

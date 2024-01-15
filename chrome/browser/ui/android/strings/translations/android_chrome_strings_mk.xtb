@@ -218,7 +218,6 @@
 <translation id="223356358902285214">Активност на веб и апликации</translation>
 <translation id="2234827758954819389">Водич за приватност</translation>
 <translation id="2239812875700136898">Контролирајте ги сториите од копчето „Опции за Discover“</translation>
-<translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2247789808226901522">Картичката е истечена</translation>
 <translation id="2248941474044011069">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
 <translation id="2249635629516220541">Приспособете ги податоците што ги користат сајтовите за да ви прикажуваат реклами</translation>
@@ -233,7 +232,6 @@
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
 <translation id="2321086116217818302">Се подготвуваат лозинките…</translation>
 <translation id="2323763861024343754">Достапен простор на сајтот</translation>
-<translation id="2327226657832576859">Да се отвораат PDF-датотеките автоматски?</translation>
 <translation id="2328985652426384049">Не може да се најавите</translation>
 <translation id="2341410551640223969">Не можеше да се инсталира <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
@@ -639,7 +637,6 @@
 <translation id="4523326818319942067">минатиот час</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4532845899244822526">Избери папка</translation>
-<translation id="4541505619120536051">Секогаш отворај</translation>
 <translation id="4543131175509360848">Нема лист со криптографски клучеви</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4554077758708533499">Поврзано со USB-кабел</translation>
@@ -831,7 +828,6 @@
 <translation id="5486841595534124508">Лого на „Известувањето за приватност“ за „Центар за увиди во страница“ што пренасочува на страницата со „Моја активност“.</translation>
 <translation id="5487521232677179737">Избриши податоци</translation>
 <translation id="5492637351392383067">Шифрирање на уредот</translation>
-<translation id="5509866835115085009">Chrome може да ги отвора PDF-датотеките автоматски кога ќе ги преземете.</translation>
 <translation id="5514904542973294328">Оневозможено од администраторот на уредов</translation>
 <translation id="5515439363601853141">Отклучете за да ја прикажете лозинката</translation>
 <translation id="5517095782334947753">Имате обележувачи, историја, лозинки и други поставки од <ph name="FROM_ACCOUNT" />.</translation>

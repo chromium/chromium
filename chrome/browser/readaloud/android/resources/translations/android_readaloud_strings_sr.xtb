@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1178581264944972037">Паузирај</translation>
+<translation id="1246424317317450637">Подебљано</translation>
 <translation id="1921351128855867012">Премотајте <ph name="NUMBER_OF_SECONDS" /> сек унапред</translation>
 <translation id="1984328900355667246">Репродукција није доступна</translation>
 <translation id="3023502830214299618">Нажалост, репродукција тренутно није доступна за ову страницу. Пробајте поново касније.</translation>
@@ -17,6 +18,7 @@
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6846298663435243399">Учитава се...</translation>
+<translation id="7282547042039404307">Без прекида</translation>
 <translation id="7587250070160020374">Chrome тренутно пушта</translation>
 <translation id="8136852699834914183">Репродукција није доступна за ову страницу.</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> пута повећајте или смањите брзину.</translation>

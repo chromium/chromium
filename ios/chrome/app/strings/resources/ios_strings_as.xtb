@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই ছাইটটো অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
+<translation id="3808311849069021992">সন্ধান ইঞ্জিনৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="3818045793209708987">এই পেকেজটো ট্ৰেক কৰাটো বন্ধ কৰা হৈছে</translation>
 <translation id="3818293389945649617">পৰৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5235389474593199952">ইতিহাস লুকুৱাওক</translation>
 <translation id="5238301240406177137">একাউণ্টত ছেভ কৰক</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />এ এতিয়া <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="5245322853195994030">ছিংক বাতিল কৰক</translation>
 <translation id="5248640482715684545">এই ছাইটটোৱে বাৰে বাৰে অন্য এটা এপ্লিকেশ্বন খুলিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="5256661381001734217">এই ছাইটটোৱে এটা এপ্লিকেশ্বন খুলিবলৈ চেষ্টা কৰি আছে।  আমি আপোনাক ইনক’গনিট’ৰ পৰা বাহিৰলৈ নিম।</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />Google সেৱা<ph name="END_LINK" /> চাওক।</translation>
 <translation id="5386314158584363703">আপুনি ইয়াত আপুনি ফ'ল' কৰা ছাইটসমূহ বিচাৰি পাব</translation>
 <translation id="5388358297987318779">প্ৰতিচ্ছবি খোলক</translation>
+<translation id="5395707839134961196">সন্ধান ইঞ্জিনৰ সবিশেষ লুকুৱাওক</translation>
 <translation id="5396950905475481456">পৰিয়ালৰ সদস্যসকলক আমন্ত্ৰণ জনাওক</translation>
 <translation id="5407969256130905701">সালসলনিবোৰ অগ্ৰাহ্য কৰক</translation>
 <translation id="5414763847370083940">কোনো ছাইটত মূল্য কমিলে আপুনি এটা সতৰ্কবাৰ্তা পাব।</translation>
@@ -1034,6 +1037,7 @@
 <translation id="6447842834002726250">কুকীসমূহ</translation>
 <translation id="6453018583485750254">কেতিয়াও পৰীক্ষা কৰা নাই।</translation>
 <translation id="6459307836338400162">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />ছিংক<ph name="END_LINK" /> আৰু <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" /> দুয়োটা চাওক।</translation>
+<translation id="6459411599807878608">সবিশেষ লুকুওৱা হৈছে</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">নতুন ইনক’গনিট’ টেবত খোলক</translation>
 <translation id="6464397691496239022">ছাইটসমূহে আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে, উদাহৰণস্বৰূপে, আপোনাক ছাইন ইন কৰি ৰাখিবলৈ অথবা আপোনাৰ শ্বপিং কার্টত থকা বস্তুবোৰ মনত ৰাখিবলৈ।
@@ -1286,6 +1290,7 @@
 <translation id="7812377703891978671">আপুনি <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> বাছনি কৰি আপোনাৰ আটাইবোৰ ব্ৰাউজিঙৰ ইতিহাস এক্সেছ কৰিব পাৰে।</translation>
 <translation id="78146569776629510">ডাউনল’ডসমূহ</translation>
 <translation id="7839985698273989086">অফলাইন পৃষ্ঠা</translation>
+<translation id="7839994177130598711">আপোনাৰ পৰিয়ালৰ সদস্যসকলে এতিয়া <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="7840771868269352570">আপুনি বাছনি কৰা বস্তুটো আঁতৰোৱা হ’ব।</translation>
 <translation id="7845466610722898">পঢ়াৰ সূচী দেখুৱাওক</translation>
 <translation id="784551991304901159">সমল চাবলৈ মেনুখনৰ পৰা অন কৰক বাছনি কৰক</translation>
