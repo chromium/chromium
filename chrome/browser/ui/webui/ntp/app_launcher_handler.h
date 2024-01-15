@@ -140,8 +140,7 @@ class AppLauncherHandler
   void LaunchApp(std::string extension_id,
                  extension_misc::AppLaunchBucket launch_bucket,
                  const std::string& source_value,
-                 WindowOpenDisposition disposition,
-                 bool force_launch_deprecated_apps);
+                 WindowOpenDisposition disposition);
 
   // Handles the "setLaunchType" message with args containing [extension_id,
   // launch_type].

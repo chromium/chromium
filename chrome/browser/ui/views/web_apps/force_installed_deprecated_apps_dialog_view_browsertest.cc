@@ -49,21 +49,10 @@ class TestAppLauncherHandler : public AppLauncherHandler {
 };
 
 class ForceInstalledDeprecatedAppsDialogViewBrowserTest
-    : public extensions::ExtensionBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public extensions::ExtensionBrowserTest {
  protected:
   ForceInstalledDeprecatedAppsDialogViewBrowserTest() {
-    bool disable_preinstalled_apps = GetParam();
-    if (disable_preinstalled_apps) {
-      feature_list_.InitWithFeatures(
-          {features::kChromeAppsDeprecation},
-          {features::kKeepForceInstalledPreinstalledApps});
-    } else {
-      feature_list_.InitWithFeatures(
-          {features::kKeepForceInstalledPreinstalledApps,
-           features::kChromeAppsDeprecation},
-          {});
-    }
+    feature_list_.InitAndEnableFeature(features::kChromeAppsDeprecation);
   }
 
   void SetUpOnMainThread() override {
@@ -106,7 +95,7 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
   content::TestWebUI test_web_ui_{};
 };
 
-IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                        DialogLaunchedForForceInstalledApp) {
   auto handler = CreateLauncherHandler();
 
@@ -122,7 +111,7 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                        DialogLaunchedForForceInstalledPreinstalledApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Set app as a preinstalled app.
@@ -137,9 +126,6 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
   base::Value::List input;
   input.Append(app_id_);
   input.Append(extension_misc::AppLaunchBucket::APP_LAUNCH_NTP_APPS_MENU);
-  bool disable_preinstalled_apps = GetParam();
-
-  if (disable_preinstalled_apps) {
     auto waiter = views::NamedWidgetShownWaiter(
         views::test::AnyWidgetTestPasskey{},
         "ForceInstalledPreinstalledDeprecatedAppDialogView");
@@ -152,18 +138,6 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
         content::NotificationService::AllSources());
     views::test::AcceptDialog(view);
     url_observer.Wait();
-
-  } else {
-    ui_test_utils::UrlLoadObserver url_observer(
-        GURL(kAppUrl), content::NotificationService::AllSources());
-    handler.HandleLaunchApp(input);
-    // Preinstalled chrome app is launched.
-    url_observer.Wait();
-  }
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ForceInstalledDeprecatedAppsDialogViewBrowserTest,
-                         testing::Bool());
 
 }  // namespace

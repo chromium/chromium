@@ -138,8 +138,7 @@ class AppHomePageHandler
   void InstallOsHooks(const webapps::AppId& app_id, web_app::AppLock* lock);
   void LaunchAppInternal(const std::string& app_id,
                          extension_misc::AppLaunchBucket bucket,
-                         app_home::mojom::ClickEventPtr click_event,
-                         bool force_launch_deprecated_apps);
+                         app_home::mojom::ClickEventPtr click_event);
   void ShowWebAppSettings(const std::string& app_id);
   void ShowExtensionAppSettings(const extensions::Extension* extension);
   void CreateWebAppShortcut(const std::string& app_id, base::OnceClosure done);

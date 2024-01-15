@@ -742,13 +742,8 @@ void AppLauncherHandler::HandleGetApps(const base::Value::List& args) {
       if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, app_id) &&
           !deprecated_app_ids_.empty()) {
         TabDialogs::FromWebContents(web_contents)
-            ->ShowDeprecatedAppsDialog(
-                app_id, deprecated_app_ids_, web_contents,
-                base::BindOnce(
-                    &AppLauncherHandler::LaunchApp,
-                    weak_ptr_factory_.GetWeakPtr(), app_id,
-                    extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
-                    "", WindowOpenDisposition::CURRENT_TAB, true));
+            ->ShowDeprecatedAppsDialog(app_id, deprecated_app_ids_,
+                                       web_contents);
       }
     }
     if (net::GetValueForKeyInQuery(web_contents->GetLastCommittedURL(),
@@ -761,13 +756,7 @@ void AppLauncherHandler::HandleGetApps(const base::Value::List& args) {
                                                                   web_contents);
         } else {
           TabDialogs::FromWebContents(web_contents)
-              ->ShowForceInstalledDeprecatedAppsDialog(
-                  app_id, web_contents,
-                  base::BindOnce(
-                      &AppLauncherHandler::LaunchApp,
-                      weak_ptr_factory_.GetWeakPtr(), app_id,
-                      extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
-                      "", WindowOpenDisposition::CURRENT_TAB, true));
+              ->ShowForceInstalledDeprecatedAppsDialog(app_id, web_contents);
         }
       }
     }
@@ -791,28 +780,23 @@ void AppLauncherHandler::HandleLaunchApp(const base::Value::List& args) {
   if (args.size() > 2) {
     source_value = args[2].GetString();
   }
-  LaunchApp(extension_id, launch_bucket, source_value, disposition, false);
+  LaunchApp(extension_id, launch_bucket, source_value, disposition);
 }
 
 void AppLauncherHandler::LaunchApp(
     std::string extension_id,
     extension_misc::AppLaunchBucket launch_bucket,
     const std::string& source_value,
-    WindowOpenDisposition disposition,
-    bool force_launch_deprecated_apps) {
+    WindowOpenDisposition disposition) {
   Profile* profile = extension_service_->profile();
 
-  if (!force_launch_deprecated_apps &&
-      extensions::IsExtensionUnsupportedDeprecatedApp(profile, extension_id) &&
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, extension_id) &&
       base::FeatureList::IsEnabled(features::kChromeAppsDeprecation)) {
     if (!extensions::IsExtensionForceInstalled(profile, extension_id,
                                                nullptr)) {
       TabDialogs::FromWebContents(web_ui()->GetWebContents())
-          ->ShowDeprecatedAppsDialog(
-              extension_id, deprecated_app_ids_, web_ui()->GetWebContents(),
-              base::BindOnce(&AppLauncherHandler::LaunchApp,
-                             weak_ptr_factory_.GetWeakPtr(), extension_id,
-                             launch_bucket, source_value, disposition, true));
+          ->ShowDeprecatedAppsDialog(extension_id, deprecated_app_ids_,
+                                     web_ui()->GetWebContents());
       return;
     } else if (extensions::IsPreinstalledAppId(extension_id)) {
       TabDialogs::FromWebContents(web_ui()->GetWebContents())
@@ -821,11 +805,8 @@ void AppLauncherHandler::LaunchApp(
       return;
     } else {
       TabDialogs::FromWebContents(web_ui()->GetWebContents())
-          ->ShowForceInstalledDeprecatedAppsDialog(
-              extension_id, web_ui()->GetWebContents(),
-              base::BindOnce(&AppLauncherHandler::LaunchApp,
-                             weak_ptr_factory_.GetWeakPtr(), extension_id,
-                             launch_bucket, source_value, disposition, true));
+          ->ShowForceInstalledDeprecatedAppsDialog(extension_id,
+                                                   web_ui()->GetWebContents());
       return;
     }
   }
@@ -1249,7 +1230,7 @@ void AppLauncherHandler::HandleLaunchDeprecatedAppDialog(
     const base::Value::List& args) {
   TabDialogs::FromWebContents(web_ui()->GetWebContents())
       ->ShowDeprecatedAppsDialog(extensions::ExtensionId(), deprecated_app_ids_,
-                                 web_ui()->GetWebContents(), base::DoNothing());
+                                 web_ui()->GetWebContents());
 }
 
 void AppLauncherHandler::OnFaviconForAppInstallFromLink(

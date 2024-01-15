@@ -138,15 +138,6 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
 
   bool force_installed =
       IsExtensionForceInstalled(context, extension_id, nullptr);
-  bool preinstalled = IsPreinstalledAppId(extension_id);
-
-  // This feature allows us to keep chrome apps that are force installed AND
-  // preinstalled.
-  if (base::FeatureList::IsEnabled(
-          features::kKeepForceInstalledPreinstalledApps) &&
-      force_installed && preinstalled) {
-    return false;
-  }
 
   if (base::FeatureList::IsEnabled(
           kChromeAppsDeprecationExcludeForceInstalls) &&

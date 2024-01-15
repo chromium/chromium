@@ -367,14 +367,6 @@ BASE_FEATURE(kDesktopPWAsWebBundles,
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Controls whether force installed and preinstalled apps should be exempt from
-// deprecation.
-BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
-             "KeepForceInstalledPreinstalledApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Controls if the 'launch anyways' button is shown.
-const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
-    &kChromeAppsDeprecation, "HideLaunchAnyways", true};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA)
 
