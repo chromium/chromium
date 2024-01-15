@@ -186,6 +186,11 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
     return false;
   }
 
+  // SwiftShader does not support copying directly to NV12.
+  if (gpu_data_manager->GetGPUInfo().UsesSwiftShader()) {
+    return false;
+  }
+
   // We only support NV12 if GL_EXT_texture_rg extension is available. GPU
   // capabilities need to be present in order to determine that.
   if (!gpu_capabilities_) {
