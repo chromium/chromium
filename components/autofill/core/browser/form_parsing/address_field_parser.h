@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_PARSER_H_
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@ namespace autofill {
 class AutofillField;
 class AutofillScanner;
 
-class AddressField : public FormFieldParser {
+class AddressFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
@@ -39,8 +39,8 @@ class AddressField : public FormFieldParser {
       ParsingContext& context,
       AutofillScanner* scanner);
 
-  AddressField(const AddressField&) = delete;
-  AddressField& operator=(const AddressField&) = delete;
+  AddressFieldParser(const AddressFieldParser&) = delete;
+  AddressFieldParser& operator=(const AddressFieldParser&) = delete;
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -54,7 +54,7 @@ class AddressField : public FormFieldParser {
     RESULT_MATCH_NAME_LABEL  // Name and label both match the pattern.
   };
 
-  AddressField();
+  AddressFieldParser();
 
   bool ParseCompany(ParsingContext& context, AutofillScanner* scanner);
 
@@ -171,4 +171,4 @@ class AddressField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_ADDRESS_FIELD_PARSER_H_

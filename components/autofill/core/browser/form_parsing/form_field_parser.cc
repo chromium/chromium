@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/address_field.h"
+#include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/birthdate_field.h"
@@ -148,7 +148,7 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   // Address pass.
-  ParseFormFieldsPass(AddressField::Parse, context, processed_fields,
+  ParseFormFieldsPass(AddressFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
   // Birthdate pass.
@@ -238,7 +238,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableZipOnlyAddressForms) &&
-      AddressField::IsStandaloneZipSupported(context.client_country)) {
+      AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
   }
 
@@ -320,10 +320,10 @@ void FormFieldParser::ParseSingleFieldForms(
   ParseFormFieldsPass(IbanField::Parse, context, processed_fields,
                       field_candidates);
 
-  if (AddressField::IsStandaloneZipSupported(context.client_country)) {
+  if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     // In some countries we observe address forms that are particularly small
     // (e.g. only a zip code.)
-    ParseFormFieldsPass(AddressField::ParseStandaloneZip, context,
+    ParseFormFieldsPass(AddressFieldParser::ParseStandaloneZip, context,
                         processed_fields, field_candidates);
   }
 }

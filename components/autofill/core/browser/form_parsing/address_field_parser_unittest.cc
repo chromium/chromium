@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/address_field.h"
+#include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/field_types.h"
 
 #include <memory>
@@ -26,7 +26,7 @@ class AddressFieldTest
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return AddressField::Parse(context, scanner);
+    return AddressFieldParser::Parse(context, scanner);
   }
 };
 
