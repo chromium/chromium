@@ -179,7 +179,9 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
   item.detailText = recipient.email;
   item.image = CircularImageFromImage(recipient.profileImage,
                                       kAccountProfilePhotoDimension);
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   if (!recipient.isEligible) {
+    item.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
     item.textColor = [UIColor colorNamed:kTextTertiaryColor];
     item.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
     item.imageViewAlpha = 0.4f;
