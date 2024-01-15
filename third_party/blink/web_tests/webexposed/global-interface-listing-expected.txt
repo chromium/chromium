@@ -6267,6 +6267,16 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
+interface ModelGenericSession
+    attribute @@toStringTag
+    method constructor
+    method execute
+    method executeStreaming
+interface ModelManager
+    attribute @@toStringTag
+    method canCreateGenericSession
+    method constructor
+    method createGenericSession
 interface Mojo
     static method bindInterface
     static method createDataPipe
@@ -12569,6 +12579,7 @@ namespace console
     getter location
     getter locationbar
     getter menubar
+    getter model
     getter name
     getter navigation
     getter navigator
