@@ -2121,7 +2121,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
     }
     case CSSMathOperator::kProgress: {
       CHECK_EQ(operands.size(), 3u);
-      return operands[0] / (operands[2] - operands[1]);
+      return (operands[0] - operands[1]) / (operands[2] - operands[1]);
     }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2499,8 +2499,8 @@ class CSSMathExpressionNodeParser {
           double_values.push_back(operand->DoubleValue());
         }
       }
-      double progress_value =
-          double_values[0] / (double_values[2] - double_values[1]);
+      double progress_value = (double_values[0] - double_values[1]) /
+                              (double_values[2] - double_values[1]);
       return CSSMathExpressionNumericLiteral::Create(
           progress_value, CSSPrimitiveValue::UnitType::kNumber);
     }

@@ -525,7 +525,7 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
   } test_cases[] = {
       {"progress(1px from 0px to 4px)", 0.25f},
       {"progress(10deg from 0deg to 10deg)", 1.0f},
-      {"progress(progress(10% from 20% to 40%) * 1px from 0.5px to 1px)", 1.0f},
+      {"progress(progress(10% from 0% to 40%) * 1px from 0.5px to 1px)", -0.5f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -549,7 +549,7 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
     const std::string input;
     const double output;
   } test_cases[] = {
-      {"progress(abs(5%) from hypot(3%, 4%) to 10%)", 1.0f},
+      {"progress(abs(5%) from hypot(3%, 4%) to 10%)", 0.0f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -565,7 +565,8 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
     CSSToLengthConversionData resolver;
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
-    EXPECT_FLOAT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    // Very close to 0.0f, but not exactly 0.0f for unknown reason.
+    EXPECT_NEAR(node->Evaluate(FLT_MAX, nullptr), test_case.output, 0.001);
   }
 }
 

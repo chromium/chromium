@@ -276,7 +276,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         float progress_px = operand_pixels[0];
         float from_px = operand_pixels[1];
         float to_px = operand_pixels[2];
-        float progress = progress_px / (to_px - from_px);
+        float progress = (progress_px - from_px) / (to_px - from_px);
         return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
             PixelsAndPercent(progress));
       }
@@ -406,7 +406,7 @@ float CalculationExpressionOperationNode::Evaluate(
       float progress = children_[0]->Evaluate(max_value, anchor_evaluator);
       float from = children_[1]->Evaluate(max_value, anchor_evaluator);
       float to = children_[2]->Evaluate(max_value, anchor_evaluator);
-      return progress / (to - from);
+      return (progress - from) / (to - from);
     }
     case CalculationOperator::kInvalid:
       break;
