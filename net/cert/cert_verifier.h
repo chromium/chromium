@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -120,10 +120,10 @@ class NET_EXPORT CertVerifier {
    public:
     RequestParams();
     RequestParams(scoped_refptr<X509Certificate> certificate,
-                  base::StringPiece hostname,
+                  std::string_view hostname,
                   int flags,
-                  base::StringPiece ocsp_response,
-                  base::StringPiece sct_list);
+                  std::string_view ocsp_response,
+                  std::string_view sct_list);
     RequestParams(const RequestParams& other);
     ~RequestParams();
 

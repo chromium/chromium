@@ -4,12 +4,12 @@
 
 #include "net/cert/ev_root_ca_metadata.h"
 
-#include "build/build_config.h"
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "third_party/boringssl/src/pki/input.h"
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -33,7 +33,7 @@ struct EVMetadata {
   SHA256HashValue fingerprint;
 
   // The EV policy OIDs of the root CA.
-  const base::StringPiece policy_oids[kMaxOIDsPerCA];
+  const std::string_view policy_oids[kMaxOIDsPerCA];
 };
 
 #include "net/data/ssl/chrome_root_store/chrome-ev-roots-inc.cc"
@@ -53,7 +53,7 @@ EVRootCAMetadata* EVRootCAMetadata::GetInstance() {
 
 namespace {
 
-std::string OIDStringToDER(base::StringPiece policy) {
+std::string OIDStringToDER(std::string_view policy) {
   uint8_t* der;
   size_t len;
   bssl::ScopedCBB cbb;

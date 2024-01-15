@@ -4,6 +4,8 @@
 
 #include "net/cert/internal/trust_store_win.h"
 
+#include <string_view>
+
 #include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -72,7 +74,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
     }
   }
   for (DWORD i = 0; i < usage->cUsageIdentifier; i++) {
-    base::StringPiece eku = base::StringPiece(usage->rgpszUsageIdentifier[i]);
+    std::string_view eku = std::string_view(usage->rgpszUsageIdentifier[i]);
     if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
         (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {
       return true;

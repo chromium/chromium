@@ -4,6 +4,7 @@
 
 #include "net/cert/multi_log_ct_verifier.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
@@ -70,8 +71,8 @@ MultiLogCTVerifier::~MultiLogCTVerifier() = default;
 
 void MultiLogCTVerifier::Verify(
     X509Certificate* cert,
-    base::StringPiece stapled_ocsp_response,
-    base::StringPiece sct_list_from_tls_extension,
+    std::string_view stapled_ocsp_response,
+    std::string_view sct_list_from_tls_extension,
     SignedCertificateTimestampAndStatusList* output_scts,
     const NetLogWithSource& net_log) const {
   DCHECK(cert);
@@ -125,7 +126,7 @@ void MultiLogCTVerifier::Verify(
 }
 
 void MultiLogCTVerifier::VerifySCTs(
-    base::StringPiece encoded_sct_list,
+    std::string_view encoded_sct_list,
     const ct::SignedEntryData& expected_entry,
     ct::SignedCertificateTimestamp::Origin origin,
     X509Certificate* cert,
@@ -133,14 +134,14 @@ void MultiLogCTVerifier::VerifySCTs(
   if (logs_.empty())
     return;
 
-  std::vector<base::StringPiece> sct_list;
+  std::vector<std::string_view> sct_list;
 
   if (!ct::DecodeSCTList(encoded_sct_list, &sct_list))
     return;
 
-  for (std::vector<base::StringPiece>::const_iterator it = sct_list.begin();
+  for (std::vector<std::string_view>::const_iterator it = sct_list.begin();
        it != sct_list.end(); ++it) {
-    base::StringPiece encoded_sct(*it);
+    std::string_view encoded_sct(*it);
     LogSCTOriginToUMA(origin);
 
     scoped_refptr<ct::SignedCertificateTimestamp> decoded_sct;

@@ -4,6 +4,8 @@
 
 #include "net/cert/internal/revocation_checker.h"
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "net/cert/mock_cert_net_fetcher.h"
 #include "net/test/cert_builder.h"
@@ -59,7 +61,7 @@ TEST(RevocationChecker, NoRevocationMechanism) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -77,7 +79,7 @@ TEST(RevocationChecker, NoRevocationMechanism) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_FALSE(errors.ContainsHighSeverityErrors());
@@ -96,7 +98,7 @@ TEST(RevocationChecker, NoRevocationMechanism) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_FALSE(errors.ContainsHighSeverityErrors());
@@ -134,7 +136,7 @@ TEST(RevocationChecker, ValidCRL) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_FALSE(errors.ContainsHighSeverityErrors());
@@ -150,7 +152,7 @@ TEST(RevocationChecker, ValidCRL) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -168,7 +170,7 @@ TEST(RevocationChecker, ValidCRL) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -211,7 +213,7 @@ TEST(RevocationChecker, RevokedCRL) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -230,7 +232,7 @@ TEST(RevocationChecker, RevokedCRL) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -264,7 +266,7 @@ TEST(RevocationChecker, CRLRequestFails) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -284,7 +286,7 @@ TEST(RevocationChecker, CRLRequestFails) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -304,7 +306,7 @@ TEST(RevocationChecker, CRLRequestFails) {
     bssl::CertPathErrors errors;
     CheckValidatedChainRevocation(
         chain, policy, /*deadline=*/base::TimeTicks(),
-        /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+        /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
         &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
     EXPECT_FALSE(errors.ContainsHighSeverityErrors());
@@ -333,7 +335,7 @@ TEST(RevocationChecker, CRLNonHttpUrl) {
   bssl::CertPathErrors errors;
   CheckValidatedChainRevocation(
       chain, policy, /*deadline=*/base::TimeTicks(),
-      /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+      /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
       &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
   EXPECT_TRUE(errors.ContainsHighSeverityErrors());
@@ -399,7 +401,7 @@ TEST(RevocationChecker, SkipEntireInvalidCRLDistributionPoints) {
   bssl::CertPathErrors errors;
   CheckValidatedChainRevocation(
       chain, policy, /*deadline=*/base::TimeTicks(),
-      /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+      /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
       &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
   // Should fail since the entire cRLDistributionPoints extension was skipped
@@ -486,7 +488,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithNonUriFullname) {
   bssl::CertPathErrors errors;
   CheckValidatedChainRevocation(
       chain, policy, /*deadline=*/base::TimeTicks(),
-      /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+      /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
       &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
   EXPECT_FALSE(errors.ContainsHighSeverityErrors());
@@ -555,7 +557,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithReasons) {
   bssl::CertPathErrors errors;
   CheckValidatedChainRevocation(
       chain, policy, /*deadline=*/base::TimeTicks(),
-      /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+      /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
       &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
   EXPECT_FALSE(errors.ContainsHighSeverityErrors());
@@ -656,7 +658,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithCrlIssuer) {
   bssl::CertPathErrors errors;
   CheckValidatedChainRevocation(
       chain, policy, /*deadline=*/base::TimeTicks(),
-      /*stapled_leaf_ocsp_response=*/base::StringPiece(), mock_fetcher.get(),
+      /*stapled_leaf_ocsp_response=*/std::string_view(), mock_fetcher.get(),
       &errors, /*stapled_ocsp_verify_result=*/nullptr);
 
   EXPECT_FALSE(errors.ContainsHighSeverityErrors());

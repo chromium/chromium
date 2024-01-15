@@ -4,7 +4,6 @@
 
 #include "net/cert/time_conversions.h"
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/parse_values.h"

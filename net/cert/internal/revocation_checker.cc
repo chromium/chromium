@@ -5,9 +5,9 @@
 #include "net/cert/internal/revocation_checker.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "crypto/sha2.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,7 +38,7 @@ bool CheckCertRevocation(const bssl::ParsedCertificateList& certs,
                          size_t target_cert_index,
                          const RevocationPolicy& policy,
                          base::TimeTicks deadline,
-                         base::StringPiece stapled_ocsp_response,
+                         std::string_view stapled_ocsp_response,
                          absl::optional<int64_t> max_age_seconds,
                          CertNetFetcher* net_fetcher,
                          bssl::CertErrors* cert_errors,
@@ -284,7 +284,7 @@ void CheckValidatedChainRevocation(
     const bssl::ParsedCertificateList& certs,
     const RevocationPolicy& policy,
     base::TimeTicks deadline,
-    base::StringPiece stapled_leaf_ocsp_response,
+    std::string_view stapled_leaf_ocsp_response,
     CertNetFetcher* net_fetcher,
     bssl::CertPathErrors* errors,
     bssl::OCSPVerifyResult* stapled_ocsp_verify_result) {
@@ -305,8 +305,8 @@ void CheckValidatedChainRevocation(
       continue;
 
     // TODO(eroman): Plumb stapled OCSP for non-leaf certificates from TLS?
-    base::StringPiece stapled_ocsp =
-        (i == 0) ? stapled_leaf_ocsp_response : base::StringPiece();
+    std::string_view stapled_ocsp =
+        (i == 0) ? stapled_leaf_ocsp_response : std::string_view();
 
     absl::optional<int64_t> max_age_seconds;
     if (policy.enforce_baseline_requirements) {

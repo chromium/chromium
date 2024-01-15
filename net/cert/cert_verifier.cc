@@ -5,6 +5,7 @@
 #include "net/cert/cert_verifier.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -74,10 +75,10 @@ CertVerifier::RequestParams::RequestParams() = default;
 
 CertVerifier::RequestParams::RequestParams(
     scoped_refptr<X509Certificate> certificate,
-    base::StringPiece hostname,
+    std::string_view hostname,
     int flags,
-    base::StringPiece ocsp_response,
-    base::StringPiece sct_list)
+    std::string_view ocsp_response,
+    std::string_view sct_list)
     : certificate_(std::move(certificate)),
       hostname_(hostname),
       flags_(flags),

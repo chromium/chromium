@@ -4,6 +4,8 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -97,7 +99,7 @@ std::string MakeRandomHexString(size_t num_bytes) {
   return base::HexEncode(rand_bytes.data(), rand_bytes.size());
 }
 
-static std::string MakeRandomPath(base::StringPiece suffix) {
+static std::string MakeRandomPath(std::string_view suffix) {
   return "/" + MakeRandomHexString(12) + std::string(suffix);
 }
 
@@ -167,8 +169,8 @@ class MockCTVerifier : public CTVerifier {
  public:
   MOCK_CONST_METHOD5(Verify,
                      void(X509Certificate*,
-                          base::StringPiece,
-                          base::StringPiece,
+                          std::string_view,
+                          std::string_view,
                           SignedCertificateTimestampAndStatusList*,
                           const NetLogWithSource&));
 };

@@ -5,6 +5,7 @@
 #include "net/cert/internal/trust_store_win.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -34,7 +35,7 @@ namespace net {
 namespace {
 
 ::testing::AssertionResult ParseCertFromFile(
-    base::StringPiece file_name,
+    std::string_view file_name,
     std::shared_ptr<const bssl::ParsedCertificate>* out_cert) {
   const scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(net::GetTestCertsDirectory(), file_name);

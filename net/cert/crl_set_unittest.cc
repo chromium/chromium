@@ -4,6 +4,8 @@
 
 #include "net/cert/crl_set.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -78,8 +80,8 @@ static const uint8_t kGIASPKISHA256[32] = {
 };
 
 TEST(CRLSetTest, Parse) {
-  base::StringPiece s(reinterpret_cast<const char*>(kGIACRLSet),
-                      sizeof(kGIACRLSet));
+  std::string_view s(reinterpret_cast<const char*>(kGIACRLSet),
+                     sizeof(kGIACRLSet));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(s, &set));
   ASSERT_TRUE(set.get() != nullptr);
@@ -109,8 +111,8 @@ TEST(CRLSetTest, Parse) {
 }
 
 TEST(CRLSetTest, BlockedSPKIs) {
-  base::StringPiece s(reinterpret_cast<const char*>(kBlockedSPKICRLSet),
-                      sizeof(kBlockedSPKICRLSet));
+  std::string_view s(reinterpret_cast<const char*>(kBlockedSPKICRLSet),
+                     sizeof(kBlockedSPKICRLSet));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(s, &set));
   ASSERT_TRUE(set.get() != nullptr);
@@ -131,8 +133,8 @@ TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlocklist) {
   // include the block list.
   scoped_refptr<CRLSet> set1 = CRLSet::BuiltinCRLSet();
   ASSERT_TRUE(set1);
-  base::StringPiece s(reinterpret_cast<const char*>(kGIACRLSet),
-                      sizeof(kGIACRLSet));
+  std::string_view s(reinterpret_cast<const char*>(kGIACRLSet),
+                     sizeof(kGIACRLSet));
   scoped_refptr<CRLSet> set2;
   EXPECT_TRUE(CRLSet::Parse(s, &set2));
   ASSERT_TRUE(set2);
@@ -149,7 +151,7 @@ TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlocklist) {
     scoped_refptr<X509Certificate> diginotar_cert =
         ImportCertFromFile(certs_dir, kDigiNotarFilenames[i]);
     ASSERT_TRUE(diginotar_cert);
-    base::StringPiece spki;
+    std::string_view spki;
     ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
         x509_util::CryptoBufferAsStringPiece(diginotar_cert->cert_buffer()),
         &spki));
@@ -175,15 +177,15 @@ TEST(CRLSetTest, BlockedSubjects) {
   scoped_refptr<X509Certificate> root = CreateCertificateChainFromFile(
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
-  base::StringPiece root_der =
+  std::string_view root_der =
       net::x509_util::CryptoBufferAsStringPiece(root->cert_buffer());
 
-  base::StringPiece spki;
+  std::string_view spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(root_der, &spki));
   SHA256HashValue spki_sha256;
   crypto::SHA256HashString(spki, spki_sha256.data, sizeof(spki_sha256.data));
 
-  base::StringPiece subject;
+  std::string_view subject;
   ASSERT_TRUE(asn1::ExtractSubjectFromDERCert(root_der, &subject));
 
   // Unrelated subjects are unaffected.
@@ -194,13 +196,13 @@ TEST(CRLSetTest, BlockedSubjects) {
   EXPECT_EQ(CRLSet::REVOKED,
             set->CheckSubject(
                 subject,
-                base::StringPiece(reinterpret_cast<const char*>(kGIASPKISHA256),
-                                  sizeof(kGIASPKISHA256))));
+                std::string_view(reinterpret_cast<const char*>(kGIASPKISHA256),
+                                 sizeof(kGIASPKISHA256))));
 
   // When used with the correct hash, that subject should be accepted.
   EXPECT_EQ(CRLSet::GOOD,
             set->CheckSubject(
-                subject, base::StringPiece(
+                subject, std::string_view(
                              reinterpret_cast<const char*>(spki_sha256.data),
                              sizeof(spki_sha256.data))));
 }
@@ -208,8 +210,8 @@ TEST(CRLSetTest, BlockedSubjects) {
 TEST(CRLSetTest, Expired) {
   // This CRLSet has an expiry value set to one second past midnight, 1st Jan,
   // 1970.
-  base::StringPiece s(reinterpret_cast<const char*>(kExpiredCRLSet),
-                      sizeof(kExpiredCRLSet));
+  std::string_view s(reinterpret_cast<const char*>(kExpiredCRLSet),
+                     sizeof(kExpiredCRLSet));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(s, &set));
   ASSERT_TRUE(set.get() != nullptr);
