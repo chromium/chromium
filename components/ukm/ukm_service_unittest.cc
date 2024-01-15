@@ -1837,213 +1837,94 @@ TEST_F(UkmServiceTest, FilterRejectsEvent) {
       proto_report.aggregates(0).metrics(0).has_dropped_due_to_filter());
 }
 
-TEST_F(UkmServiceTest, PruneUnseenFirst) {
-  // We will be testing with the prune unseen feature both off and on.
-  for (bool prune_unseen_sources_first : {true, false}) {
-    const GURL kURL("https://google.com/foobar");
+TEST_F(UkmServiceTest, PruneOldSources) {
+  const GURL kURL("https://google.com/foobar");
 
-    // Set the 'MaxKeptSources' value to 3 so it is easier to test.
-    ScopedUkmFeatureParams params(
-        {{"MaxKeptSources", "3"},
-         {"PruneUnseenSourcesFirst",
-          prune_unseen_sources_first ? "true" : "false"}});
+  // Set the 'MaxKeptSources' value to 3 so it is easier to test.
+  ScopedUkmFeatureParams params({{"MaxKeptSources", "3"}});
 
-    ClearPrefs();
-    UkmService service(&prefs_, &client_,
-                       std::make_unique<MockDemographicMetricsProvider>());
-    TestRecordingHelper recorder(&service);
-    EXPECT_EQ(0, GetPersistedLogCount());
-    service.Initialize();
-    task_runner_->RunUntilIdle();
-    service.UpdateRecording({UkmConsentType::MSBB});
-    service.EnableReporting();
+  ClearPrefs();
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  TestRecordingHelper recorder(&service);
+  EXPECT_EQ(0, GetPersistedLogCount());
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording({UkmConsentType::MSBB});
+  service.EnableReporting();
 
-    // Create 5 allowlisted ids. Allowlisted ids (like APP_ID) will not be
-    // automatically removed when they emit events. They're only removed via the
-    // pruning mechanism. Note that the are added in order, so 4 is the
-    // youngest/newest.
-    std::vector<SourceId> ids;
-    base::TimeTicks last_time = base::TimeTicks::Now();
-    for (int i = 0; i < 5; ++i) {
-      // Wait until base::TimeTicks::Now() no longer equals |last_time|. This
-      // ensures each source has a unique timestamp to avoid flakes. Should take
-      // between 1-15ms per documented resolution of base::TimeTicks.
-      while (base::TimeTicks::Now() == last_time) {
-        base::PlatformThread::Sleep(base::Milliseconds(1));
-      }
-      ids.push_back(GetAllowlistedSourceId(i));
-      recorder.UpdateSourceURL(ids.back(), kURL);
-      last_time = base::TimeTicks::Now();
+  // Create 5 allowlisted ids. Allowlisted ids (like APP_ID) will not be
+  // automatically removed when they emit events. They're only removed via the
+  // pruning mechanism. Note that the are added in order, so 4 is the
+  // youngest/newest.
+  std::vector<SourceId> ids;
+  base::TimeTicks last_time = base::TimeTicks::Now();
+  for (int i = 0; i < 5; ++i) {
+    // Wait until base::TimeTicks::Now() no longer equals |last_time|. This
+    // ensures each source has a unique timestamp to avoid flakes. Should take
+    // between 1-15ms per documented resolution of base::TimeTicks.
+    while (base::TimeTicks::Now() == last_time) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
-
-    // Events on 0 and 4. This will be important to this test, as we are testing
-    // how pruning will vary based on this. So keep this in mind.
-    TestEvent1(ids[0]).Record(&service);
-    TestEvent1(ids[4]).Record(&service);
-
-    service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-    EXPECT_EQ(1, GetPersistedLogCount());
-    auto proto_report = GetPersistedReport();
-
-    EXPECT_EQ(5, proto_report.source_counts().observed());
-    // All are navigation sources.
-    EXPECT_EQ(5, proto_report.source_counts().navigation_sources());
-    EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
-
-    // In all cases, 3 will be deferred since that is our max allowed.
-    EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
-    // This is from last time, so none there.
-    EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
-
-    // All 5 sources will be included in this first report.
-    ASSERT_EQ(5, proto_report.sources_size());
-    EXPECT_EQ(ids[0], proto_report.sources(0).id());
-    EXPECT_EQ(ids[1], proto_report.sources(1).id());
-    EXPECT_EQ(ids[2], proto_report.sources(2).id());
-    EXPECT_EQ(ids[3], proto_report.sources(3).id());
-    EXPECT_EQ(ids[4], proto_report.sources(4).id());
-
-    // Depending on the PruneUnseenSourcesFirst setting, different ones will be
-    // removed.
-    // We have MaxKeptSources=3.
-    // If PruneUnseenSourcesFirst was set, then the ones kept should be the two
-    // that were used, which are 0 and 4. The one remaining one will be picked
-    // via age which will be 3, so 0, 3, 4 are kept.
-    // Otherwise, it will be entirely based on age, which is 2,3,4.
-
-    // New events on 0,2,4. This actually doesn't matter with respect to what
-    // sources are emitted here, as some sources are already pruned.
-    TestEvent1(ids[0]).Record(&service);
-    TestEvent1(ids[2]).Record(&service);
-    TestEvent1(ids[4]).Record(&service);
-
-    service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-    EXPECT_EQ(2, GetPersistedLogCount());
-    proto_report = GetPersistedReport();
-
-    // No new sources observed.
-    EXPECT_EQ(0, proto_report.source_counts().observed());
-    // 0 again, as this is for newly observed ones.
-    EXPECT_EQ(0, proto_report.source_counts().navigation_sources());
-    EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
-
-    // Since no new sources added, we still are keeping the same 3. So all 3 are
-    // kept and retained, in both cases.
-    EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
-    EXPECT_EQ(3, proto_report.source_counts().carryover_sources());
-    ASSERT_EQ(3, proto_report.sources_size());
-
-    if (prune_unseen_sources_first) {
-      // 0, 3, 4 as 0 and 4 were used last time, and 3 is the newest of the
-      // remaining.
-      EXPECT_EQ(ids[0], proto_report.sources(0).id());
-      EXPECT_EQ(ids[3], proto_report.sources(1).id());
-      EXPECT_EQ(ids[4], proto_report.sources(2).id());
-    } else {
-      // 2, 3, 4 as these are the 3 newest, which is the only criteria we are
-      // using for this test.
-      EXPECT_EQ(ids[2], proto_report.sources(0).id());
-      EXPECT_EQ(ids[3], proto_report.sources(1).id());
-      EXPECT_EQ(ids[4], proto_report.sources(2).id());
-    }
+    ids.push_back(GetAllowlistedSourceId(i));
+    recorder.UpdateSourceURL(ids.back(), kURL);
+    last_time = base::TimeTicks::Now();
   }
-}
 
-TEST_F(UkmServiceTest, PruneAppIDLast) {
-  // We will be testing with the PruneAppIdLast feature both off and on.
-  for (bool prune_app_id_last : {true, false}) {
-    const GURL kURL("https://google.com/foobar");
+  // Events on 0 and 4. This doesn't affect the pruning.
+  TestEvent1(ids[0]).Record(&service);
+  TestEvent1(ids[4]).Record(&service);
 
-    // Set the 'MaxKeptSources' value to 3 so it is easier to test.
-    ScopedUkmFeatureParams params(
-        {{"MaxKeptSources", "3"},
-         {"PruneAppIdLast", prune_app_id_last ? "true" : "false"}});
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(1, GetPersistedLogCount());
+  auto proto_report = GetPersistedReport();
 
-    ClearPrefs();
-    UkmService service(&prefs_, &client_,
-                       std::make_unique<MockDemographicMetricsProvider>());
-    TestRecordingHelper recorder(&service);
-    EXPECT_EQ(0, GetPersistedLogCount());
-    service.Initialize();
-    task_runner_->RunUntilIdle();
-    service.UpdateRecording({UkmConsentType::MSBB, UkmConsentType::APPS});
-    service.EnableReporting();
+  EXPECT_EQ(5, proto_report.source_counts().observed());
+  // All are navigation sources.
+  EXPECT_EQ(5, proto_report.source_counts().navigation_sources());
+  EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
 
-    // Create 5 sources. We set source 0 and 4 to be APP_ID Sources, where
-    // 1,2,3 are allowlisted/navigation sources.
-    std::vector<SourceId> ids;
-    base::TimeTicks last_time = base::TimeTicks::Now();
-    for (int i = 0; i < 5; ++i) {
-      // Wait until base::TimeTicks::Now() no longer equals |last_time|. This
-      // ensures each source has a unique timestamp to avoid flakes. Should take
-      // between 1-15ms per documented resolution of base::TimeTicks.
-      while (base::TimeTicks::Now() == last_time) {
-        base::PlatformThread::Sleep(base::Milliseconds(1));
-      }
-      // Note, this is where we are setting the source types. Important for the
-      // testing.
-      if (i == 0 || i == 4) {
-        ids.push_back(GetAppIDSourceId(i));
-      } else {
-        ids.push_back(GetAllowlistedSourceId(i));
-      }
-      recorder.UpdateSourceURL(ids.back(), kURL);
-      last_time = base::TimeTicks::Now();
-    }
+  // In all cases, 3 will be deferred since that is our max allowed.
+  EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
+  // This is from last time, so none there.
+  EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
 
-    service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-    EXPECT_EQ(1, GetPersistedLogCount());
-    auto proto_report = GetPersistedReport();
+  // All 5 sources will be included in this first report.
+  ASSERT_EQ(5, proto_report.sources_size());
+  EXPECT_EQ(ids[0], proto_report.sources(0).id());
+  EXPECT_EQ(ids[1], proto_report.sources(1).id());
+  EXPECT_EQ(ids[2], proto_report.sources(2).id());
+  EXPECT_EQ(ids[3], proto_report.sources(3).id());
+  EXPECT_EQ(ids[4], proto_report.sources(4).id());
 
-    EXPECT_EQ(5, proto_report.source_counts().observed());
+  // We have MaxKeptSources=3, and we keep by age, so we should keep 2,3,4.
 
-    // In all cases, 3 will be deferred since that is our max allowed.
-    EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
-    // This is from last time, so none there.
-    EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
+  // New events on 0,2,4. This actually doesn't matter with respect to what
+  // sources are emitted here, as some sources are already pruned.
+  TestEvent1(ids[0]).Record(&service);
+  TestEvent1(ids[2]).Record(&service);
+  TestEvent1(ids[4]).Record(&service);
 
-    // All 5 sources will be included in this first report.
-    ASSERT_EQ(5, proto_report.sources_size());
-    EXPECT_EQ(ids[0], proto_report.sources(0).id());
-    EXPECT_EQ(ids[1], proto_report.sources(1).id());
-    EXPECT_EQ(ids[2], proto_report.sources(2).id());
-    EXPECT_EQ(ids[3], proto_report.sources(3).id());
-    EXPECT_EQ(ids[4], proto_report.sources(4).id());
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(2, GetPersistedLogCount());
+  proto_report = GetPersistedReport();
 
-    // We have MaxKeptSources=3.
-    // If PruneAppIdLast was set, then the ones kept should be the two that were
-    // set as APP_ID, which are 0 and 4. The one remaining one will be picked
-    // via age which will be 3, so 0, 3, 4 are kept.
-    // Otherwise, it will be entirely based on age, which is 2,3,4.
+  // No new sources observed.
+  EXPECT_EQ(0, proto_report.source_counts().observed());
+  // 0 again, as this is for newly observed ones.
+  EXPECT_EQ(0, proto_report.source_counts().navigation_sources());
+  EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
 
-    service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-    EXPECT_EQ(2, GetPersistedLogCount());
-    proto_report = GetPersistedReport();
+  // Since no new sources added, we still are keeping the same 3. So all 3 are
+  // kept and retained, in both cases.
+  EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
+  EXPECT_EQ(3, proto_report.source_counts().carryover_sources());
+  ASSERT_EQ(3, proto_report.sources_size());
 
-    // No new sources observed.
-    EXPECT_EQ(0, proto_report.source_counts().observed());
-    // 0 again, as this is for newly observed ones.
-    EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
-
-    // Since no new sources added, we still are keeping the same 3. So all 3 are
-    // kept and retained, in both cases.
-    EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
-    EXPECT_EQ(3, proto_report.source_counts().carryover_sources());
-    ASSERT_EQ(3, proto_report.sources_size());
-
-    if (prune_app_id_last) {
-      // 0, 3, 4 as 0 and 4 are APP_ID, and 3 is the newest of the remaining.
-      EXPECT_EQ(ids[0], proto_report.sources(0).id());
-      EXPECT_EQ(ids[3], proto_report.sources(1).id());
-      EXPECT_EQ(ids[4], proto_report.sources(2).id());
-    } else {
-      // 2, 3, 4 as these are the 3 newest, which is the only criteria we are
-      // using for this test.
-      EXPECT_EQ(ids[2], proto_report.sources(0).id());
-      EXPECT_EQ(ids[3], proto_report.sources(1).id());
-      EXPECT_EQ(ids[4], proto_report.sources(2).id());
-    }
-  }
+  // 2, 3, 4 as these are the 3 newest.
+  EXPECT_EQ(ids[2], proto_report.sources(0).id());
+  EXPECT_EQ(ids[3], proto_report.sources(1).id());
+  EXPECT_EQ(ids[4], proto_report.sources(2).id());
 }
 
 TEST_F(UkmServiceTest, UseExternalClientID) {

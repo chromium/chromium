@@ -72,11 +72,6 @@ bool IsAllowlistedSourceId(SourceId source_id) {
   }
 }
 
-bool IsAppIdType(SourceId source_id) {
-  SourceIdType type = GetSourceIdType(source_id);
-  return type == SourceIdType::APP_ID;
-}
-
 // Returns whether |url| has one of the schemes supported for logging to UKM.
 // URLs with other schemes will not be logged.
 bool HasSupportedScheme(const GURL& url) {
@@ -545,130 +540,13 @@ int UkmRecorderImpl::PruneData(std::set<SourceId>& source_ids_seen) {
     }
   }
 
-  // Build the set of sources that exist in recordings_.sources that were not
-  // seen in this report.
-  std::set<SourceId> source_ids_unseen;
+  std::set<SourceId> all_sources;
   for (const auto& kv : recordings_.sources) {
-    if (!base::Contains(source_ids_seen, kv.first)) {
-      source_ids_unseen.insert(kv.first);
-    }
+    all_sources.insert(kv.first);
   }
 
-  // Special case APP_IDs. Ideally this is not going to exist for too long, as
-  // it would be preferable to have a more general purpose solution.
-  std::set<SourceId> source_ids_app_id;
+  int pruned_sources_age_sec = PruneOldSources(max_kept_sources_, all_sources);
 
-  // Only done if we are in the experiment that will leave APP_ID metrics for
-  // last when pruning. This block extracts out all source_ids from the
-  // seen/unseen lists and stores them in |source_ids_app_id|.
-  if (base::GetFieldTrialParamByFeatureAsBool(kUkmFeature, "PruneAppIdLast",
-                                              false)) {
-    it = source_ids_seen.begin();
-    while (it != source_ids_seen.end()) {
-      if (IsAppIdType(*it)) {
-        source_ids_app_id.insert(*it);
-        it = source_ids_seen.erase(it);
-      } else {
-        it++;
-      }
-    }
-
-    it = source_ids_unseen.begin();
-    while (it != source_ids_unseen.end()) {
-      if (IsAppIdType(*it)) {
-        source_ids_app_id.insert(*it);
-        it = source_ids_unseen.erase(it);
-      } else {
-        it++;
-      }
-    }
-  }
-
-  int pruned_sources_age_sec = 0;
-  int num_sources = recordings_.sources.size();
-  // Setup an experiment to test what will occur if we prune unseen sources
-  // first.
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          kUkmFeature, "PruneUnseenSourcesFirst", false)) {
-    int pruned_sources_age_from_unseen_sec =
-        PruneOldSources(max_kept_sources_, source_ids_unseen);
-
-    UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NumUnseen",
-                               num_sources - recordings_.sources.size());
-    num_sources = recordings_.sources.size();
-
-    // Prune again from seen sources. Note that if we've already pruned enough
-    // from the unseen sources, this will be a noop.
-    int pruned_sources_age_from_seen_sec =
-        PruneOldSources(max_kept_sources_, source_ids_seen);
-
-    UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NumSeen",
-                               num_sources - recordings_.sources.size());
-    num_sources = recordings_.sources.size();
-
-    int pruned_sources_age_from_app_id_sec = 0;
-
-    // Technically this should be fine without the feature, since the group
-    // will be empty, but might as well add the feature check.
-    // Still prune the APP_ID entries. We don't want it to be unbounded, but
-    // providing a higher default here in case.
-    if (base::GetFieldTrialParamByFeatureAsBool(kUkmFeature, "PruneAppIdLast",
-                                                false)) {
-      pruned_sources_age_from_app_id_sec =
-          PruneOldSources(500, source_ids_app_id);
-
-      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NumAppId",
-                                 num_sources - recordings_.sources.size());
-    }
-
-    // We're looking for the newest age, which will be the largest between the
-    // two sets we pruned from.
-    pruned_sources_age_sec = std::max({pruned_sources_age_from_unseen_sec,
-                                       pruned_sources_age_from_seen_sec,
-                                       pruned_sources_age_from_app_id_sec});
-
-  } else {
-    // In this case, we prune all sources without caring if they were seen or
-    // not. Make a set of all existing sources so we can use the same
-    // PruneOldSources method.
-    std::set<SourceId> all_sources;
-    for (const auto& kv : recordings_.sources) {
-      all_sources.insert(kv.first);
-    }
-    if (base::GetFieldTrialParamByFeatureAsBool(kUkmFeature, "PruneAppIdLast",
-                                                false)) {
-      std::set<SourceId> all_sources_without_app_id;
-
-      // This will put into |all_sources_without_app_id| the set of
-      // |all_sources| - |source_ids_app_id|.
-      std::set_difference(all_sources.begin(), all_sources.end(),
-                          source_ids_app_id.begin(), source_ids_app_id.end(),
-                          std::inserter(all_sources_without_app_id,
-                                        all_sources_without_app_id.end()));
-
-      // Now, prune the non-APP_ID, then the APP_ID.
-      int pruned_sources_age_sec_non_app_id =
-          PruneOldSources(max_kept_sources_, all_sources_without_app_id);
-
-      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.AppExpNumNonAppId",
-                                 num_sources - recordings_.sources.size());
-      num_sources = recordings_.sources.size();
-
-      int pruned_sources_age_sec_app_id =
-          PruneOldSources(500, source_ids_app_id);
-
-      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.AppExpNumAppId",
-                                 num_sources - recordings_.sources.size());
-
-      pruned_sources_age_sec = std::max(pruned_sources_age_sec_non_app_id,
-                                        pruned_sources_age_sec_app_id);
-
-    } else {
-      pruned_sources_age_sec = PruneOldSources(max_kept_sources_, all_sources);
-      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NoExp",
-                                 num_sources - recordings_.sources.size());
-    }
-  }
   return pruned_sources_age_sec;
 }
 
