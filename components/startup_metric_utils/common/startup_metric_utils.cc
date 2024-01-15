@@ -32,7 +32,11 @@ CommonStartupMetricRecorder& GetCommon() {
 
 void CommonStartupMetricRecorder::RecordStartupProcessCreationTime(
     base::Time time) {
-  RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+  // In certain cases, getting the process creation can fail, and no metrics
+  // should be emitted in that case.
+  if (time != base::Time()) {
+    RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+  }
 }
 
 void CommonStartupMetricRecorder::RecordStartupProcessCreationTime(
