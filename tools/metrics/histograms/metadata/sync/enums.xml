@@ -460,6 +460,26 @@ chromium-metrics-reviews@google.com.
   <int value="100248" label="ListenToThisPageEnabled"/>
   <int value="100249" label="IpProtectionEnabled"/>
   <int value="100250" label="AccessibilityReadAnythingLinksEnabled"/>
+  <int value="100251"
+      label="kProfileContentSettingsPartitionedExceptionsAntiAbuse"/>
+  <int value="100252"
+      label="kProfileContentSettingsPartitionedExceptionsAutomaticDownloads"/>
+  <int value="100253"
+      label="kProfileContentSettingsPartitionedExceptionsCookies"/>
+  <int value="100254"
+      label="kProfileContentSettingsPartitionedExceptionsGetDisplayMediaSetSelectAllScreens"/>
+  <int value="100255"
+      label="kProfileContentSettingsPartitionedExceptionsImages"/>
+  <int value="100256"
+      label="kProfileContentSettingsPartitionedExceptionsJavascript"/>
+  <int value="100257"
+      label="kProfileContentSettingsPartitionedExceptionsLocalFonts"/>
+  <int value="100258"
+      label="kProfileContentSettingsPartitionedExceptionsMouselock"/>
+  <int value="100259"
+      label="kProfileContentSettingsPartitionedExceptionsPopups"/>
+  <int value="100260"
+      label="kProfileContentSettingsPartitionedExceptionsWindowPlacement"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
