@@ -4806,12 +4806,6 @@
   <message name="IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE" desc="Message of the print job notification for a single page.">
     1 page to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>
   </message>
-  <message name="IDS_PRINT_JOB_NOTIFICATION_CANCEL_BUTTON" desc="Text on the button for the user to cancel the current print job.">
-    Cancel printing
-  </message>
-  <message name="IDS_PRINT_JOB_NOTIFICATION_GET_HELP_BUTTON" desc="Text on the button for the user to get help about the current print job.">
-    Get help
-  </message>
 
   <!-- USB Printer Installation Notification -->
   <message name="IDS_USB_PRINTER_NOTIFICATION_CONNECTED_TITLE" desc="Title of the USB printer connected successfully notification.">
