@@ -118,13 +118,6 @@ InlineItem::InlineItem(const InlineItem& other,
 
 InlineItem::~InlineItem() = default;
 
-const ShapeResult* InlineItem::TextShapeResultNotSharedSlow() {
-  DCHECK(shape_result_);
-  DCHECK(!shape_result_->HasOneRef());
-  shape_result_ = ShapeResult::Create(*shape_result_);
-  return shape_result_.get();
-}
-
 void InlineItem::ComputeBoxProperties() {
   DCHECK(!is_empty_item_);
 

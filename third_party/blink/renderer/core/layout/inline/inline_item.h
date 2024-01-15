@@ -90,10 +90,10 @@ class CORE_EXPORT InlineItem {
   }
 
   const ShapeResult* TextShapeResult() const { return shape_result_.get(); }
-  const ShapeResult* TextShapeResultNotShared() {
-    return !shape_result_ || shape_result_->HasOneRef()
-               ? shape_result_.get()
-               : TextShapeResultNotSharedSlow();
+  ShapeResult* CloneTextShapeResult() {
+    scoped_refptr<ShapeResult> clone = ShapeResult::Create(*shape_result_);
+    shape_result_ = clone;
+    return clone.get();
   }
   bool IsUnsafeToReuseShapeResult() const {
     return is_unsafe_to_reuse_shape_result_;
@@ -265,7 +265,6 @@ class CORE_EXPORT InlineItem {
   void Trace(Visitor* visitor) const;
 
  private:
-  const ShapeResult* TextShapeResultNotSharedSlow();
   void ComputeBoxProperties();
 
   unsigned start_offset_;
