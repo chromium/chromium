@@ -159,7 +159,8 @@ void ClearRelevantData() {
              [self isRunningTest:@selector
                    (testMigrateSyncToSignin_CustomPassphraseMissing)] ||
              [self isRunningTest:@selector
-                   (testMigrateSyncToSignin_ManagedAccount)]) {
+                   (testMigrateSyncToSignin_ManagedAccount)] ||
+             [self isRunningTest:@selector(testMigrateSyncToSignin_Undo)]) {
     // The testMigrateSyncToSignin* tests start with SyncToSignin disabled, but
     // later turn on the appropriate flags and restart Chrome.
     config.features_disabled.push_back(
@@ -1147,6 +1148,86 @@ void ClearRelevantData() {
   [BookmarkEarlGrey
       verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
                            inStorage:bookmarks::StorageType::kAccount];
+}
+
+- (void)testMigrateSyncToSignin_Undo {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Create some data and wait for it to arrive on the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The bookmark should still exist, but now be in the account store.
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                  name:kBookmarkTitle
+                             inStorage:bookmarks::StorageType::kAccount];
+  // Similarly the password.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should NOT be in the profile store");
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should be in the account store");
+
+  // Restart Chrome with the reverse migration (undo) enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kUndoMigrationOfSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should be enabled again.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The bookmark should be back in the local store.
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                                name:kBookmarkTitle
+                                           inStorage:bookmarks::StorageType::
+                                                         kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kAccount];
+  // Similarly the password.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should be back in the profile store");
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should NOT be in the account store anymore");
+
+  // Verify that the local-or-syncable store is the one being synced again: Add
+  // another bookmark (to the local store) and ensure it arrives on the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"Other title"
+                       URL:@"https://other.url.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
 }
 
 @end
