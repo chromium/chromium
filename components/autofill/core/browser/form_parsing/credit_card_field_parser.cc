@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 
 #include <stddef.h>
 
@@ -69,14 +69,14 @@ bool FieldCanFitDataForFieldType(uint64_t max_length, FieldType type) {
 }  // namespace
 
 // static
-std::unique_ptr<FormFieldParser> CreditCardField::Parse(
+std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   if (scanner->IsEnd()) {
     return nullptr;
   }
 
-  auto credit_card_field = std::make_unique<CreditCardField>();
+  auto credit_card_field = std::make_unique<CreditCardFieldParser>();
   size_t saved_cursor = scanner->SaveCursor();
   int nb_unknown_fields = 0;
   bool cardholder_name_match_has_low_confidence = false;
@@ -250,7 +250,7 @@ std::unique_ptr<FormFieldParser> CreditCardField::Parse(
   bool has_expiration = credit_card_field->HasExpiration();
   // Some pages have a billing address field after the cardholder name field.
   // For that case, allow only just the cardholder name field.  The remaining
-  // CC fields will be picked up in a following CreditCardField.
+  // CC fields will be picked up in a following CreditCardFieldParser.
   if (credit_card_field->cardholder_) {
     // If we got the cardholder name with a dangerous check, require at least a
     // card number and one of expiration or verification fields.
@@ -277,7 +277,8 @@ std::unique_ptr<FormFieldParser> CreditCardField::Parse(
 }
 
 // static
-bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
+bool CreditCardFieldParser::LikelyCardMonthSelectField(
+    AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return false;
 
@@ -309,8 +310,9 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
 }
 
 // static
-bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
-                                                AutofillScanner* scanner) {
+bool CreditCardFieldParser::LikelyCardYearSelectField(
+    ParsingContext* context,
+    AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return false;
 
@@ -389,7 +391,8 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
 }
 
 // static
-bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
+bool CreditCardFieldParser::LikelyCardTypeSelectField(
+    AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return false;
 
@@ -414,8 +417,8 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 }
 
 // static
-bool CreditCardField::IsGiftCardField(ParsingContext& context,
-                                      AutofillScanner* scanner) {
+bool CreditCardFieldParser::IsGiftCardField(ParsingContext& context,
+                                            AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return false;
 
@@ -452,7 +455,7 @@ bool CreditCardField::IsGiftCardField(ParsingContext& context,
                              gift_card_patterns, nullptr, "kGiftCardRe");
 }
 
-CreditCardField::CreditCardField()
+CreditCardFieldParser::CreditCardFieldParser()
     : cardholder_(nullptr),
       cardholder_last_(nullptr),
       type_(nullptr),
@@ -462,9 +465,9 @@ CreditCardField::CreditCardField()
       expiration_date_(nullptr),
       exp_year_type_(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {}
 
-CreditCardField::~CreditCardField() = default;
+CreditCardFieldParser::~CreditCardFieldParser() = default;
 
-void CreditCardField::AddClassifications(
+void CreditCardFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   for (autofill::AutofillField* number : numbers_) {
     AddClassification(number, CREDIT_CARD_NUMBER,
@@ -503,7 +506,7 @@ void CreditCardField::AddClassifications(
               ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
               : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
       ExpirationDateFormat format =
-          CreditCardField::DetermineExpirationDateFormat(
+          CreditCardFieldParser::DetermineExpirationDateFormat(
               *expiration_date_, /*fallback_type=*/fallback_type,
               /*server_hint=*/NO_SERVER_DATA,
               /*forced_field_type=*/NO_SERVER_DATA);
@@ -524,8 +527,8 @@ void CreditCardField::AddClassifications(
   }
 }
 
-bool CreditCardField::ParseExpirationDate(ParsingContext& context,
-                                          AutofillScanner* scanner) {
+bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
+                                                AutofillScanner* scanner) {
   if (!expiration_date_ &&
       scanner->Cursor()->form_control_type == FormControlType::kInputMonth) {
     expiration_date_ = scanner->Cursor();
@@ -649,7 +652,7 @@ bool CreditCardField::ParseExpirationDate(ParsingContext& context,
 }
 
 // static
-FieldType CreditCardField::DetermineExpirationYearType(
+FieldType CreditCardFieldParser::DetermineExpirationYearType(
     const AutofillField& field,
     FieldType fallback_type,
     FieldType server_hint,
@@ -733,7 +736,7 @@ FieldType CreditCardField::DetermineExpirationYearType(
   return fallback_type;
 }
 
-FieldType CreditCardField::GetExpirationYearType() const {
+FieldType CreditCardFieldParser::GetExpirationYearType() const {
   if (expiration_date_) {
     return exp_year_type_;
   }
@@ -758,16 +761,17 @@ FieldType CreditCardField::GetExpirationYearType() const {
                                            : CREDIT_CARD_EXP_4_DIGIT_YEAR;
 }
 
-bool CreditCardField::HasExpiration() const {
+bool CreditCardFieldParser::HasExpiration() const {
   return expiration_date_ || (expiration_month_ && expiration_year_);
 }
 
 // static
-CreditCardField::ExpirationDateFormat
-CreditCardField::DetermineExpirationDateFormat(const AutofillField& field,
-                                               FieldType fallback_type,
-                                               FieldType server_hint,
-                                               FieldType forced_field_type) {
+CreditCardFieldParser::ExpirationDateFormat
+CreditCardFieldParser::DetermineExpirationDateFormat(
+    const AutofillField& field,
+    FieldType fallback_type,
+    FieldType server_hint,
+    FieldType forced_field_type) {
   CHECK(fallback_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         fallback_type == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
   static constexpr size_t kMonthLength = 2;  // 2 characters for a MM format.

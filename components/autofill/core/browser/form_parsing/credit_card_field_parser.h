@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_
 
 #include <memory>
 #include <vector>
@@ -21,14 +21,14 @@ namespace autofill {
 class AutofillField;
 class AutofillScanner;
 
-class CreditCardField : public FormFieldParser {
+class CreditCardFieldParser : public FormFieldParser {
  public:
-  explicit CreditCardField();
+  explicit CreditCardFieldParser();
 
-  CreditCardField(const CreditCardField&) = delete;
-  CreditCardField& operator=(const CreditCardField&) = delete;
+  CreditCardFieldParser(const CreditCardFieldParser&) = delete;
+  CreditCardFieldParser& operator=(const CreditCardFieldParser&) = delete;
 
-  ~CreditCardField() override;
+  ~CreditCardFieldParser() override;
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
@@ -147,4 +147,4 @@ class CreditCardField : public FormFieldParser {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_

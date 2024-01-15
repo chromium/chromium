@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 
 #include <algorithm>
 #include <memory>
@@ -90,7 +90,7 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return CreditCardField::Parse(context, scanner);
+    return CreditCardFieldParser::Parse(context, scanner);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.
@@ -753,8 +753,8 @@ TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
 
   FieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 
-  CreditCardField::ExpirationDateFormat result =
-      CreditCardField::DetermineExpirationDateFormat(
+  CreditCardFieldParser::ExpirationDateFormat result =
+      CreditCardFieldParser::DetermineExpirationDateFormat(
           field, fallback_type, test_case().server_type_hint,
           test_case().is_server_override ? test_case().server_type_hint
                                          : NO_SERVER_DATA);

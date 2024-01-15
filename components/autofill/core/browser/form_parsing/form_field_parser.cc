@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/birthdate_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/iban_field.h"
@@ -163,7 +163,7 @@ void FormFieldParser::ParseFormFields(
 
   const size_t candidates_size = field_candidates.size();
   // Credit card pass.
-  ParseFormFieldsPass(CreditCardField::Parse, context, processed_fields,
+  ParseFormFieldsPass(CreditCardFieldParser::Parse, context, processed_fields,
                       field_candidates);
   bool found_cc_fields = candidates_size != field_candidates.size();
   if (base::FeatureList::IsEnabled(

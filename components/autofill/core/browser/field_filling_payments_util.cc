@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -330,10 +330,10 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
   FieldType field_type = field.Type().GetStorableType();
   // At this point the field type is determined, so we pass it even as
   // `forced_field_type`.
-  CreditCardField::ExpirationDateFormat format;
+  CreditCardFieldParser::ExpirationDateFormat format;
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)) {
-    format = CreditCardField::DetermineExpirationDateFormat(
+    format = CreditCardFieldParser::DetermineExpirationDateFormat(
         field, /*fallback_type=*/field_type,
         /*server_hint=*/field_type, /*forced_field_type=*/field_type);
   } else {
@@ -344,7 +344,7 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
                                       ? server_hint
                                       : NO_SERVER_DATA;
     FieldType fallback_type = field.Type().GetStorableType();
-    format = CreditCardField::DetermineExpirationDateFormat(
+    format = CreditCardFieldParser::DetermineExpirationDateFormat(
         field, fallback_type, server_hint, forced_field_type);
   }
 
