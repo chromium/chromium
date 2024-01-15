@@ -126,8 +126,13 @@ TEST_F(NativeCursorManagerAshTest, RotationWithPanelOrientation) {
                                                          display_id);
 
   // The panel is portrait but its orientation is landscape.
+  const gfx::Rect bounds = gfx::Rect(0, 0, 1920, 1080);
   display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1920, 1080));
+      display::CreateDisplayInfo(display_id, bounds);
+  // Each display should have at least one native mode.
+  display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
+                                   /*is_interlaced=*/true,
+                                   /*native=*/true);
   native_display_info.set_panel_orientation(
       display::PanelOrientation::kRightUp);
   std::vector<display::ManagedDisplayInfo> display_info_list{

@@ -218,6 +218,17 @@ class DisplayManagerTest : public AshTestBase,
 
   bool root_window_destroyed() const { return root_window_destroyed_; }
 
+  display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
+                                                const gfx::Rect& bounds) {
+    display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
+    // Each display should have at least one native mode.
+    display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
+                                     /*is_interlaced=*/true,
+                                     /*native=*/true);
+    info.SetManagedDisplayModes({mode});
+    return info;
+  }
+
   const display::ManagedDisplayInfo& GetDisplayInfo(
       const display::Display& display) {
     return display_manager()->GetDisplayInfo(display.id());
@@ -1751,12 +1762,11 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChanged) {
   const int mirror_id = 11;
   const int64_t invalid_id = display::kInvalidDisplayId;
   const display::ManagedDisplayInfo internal_display_info =
-      display::CreateDisplayInfo(internal_display_id,
-                                 gfx::Rect(0, 0, 500, 400));
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 500, 400));
   const display::ManagedDisplayInfo external_display_info =
-      display::CreateDisplayInfo(external_id, gfx::Rect(1, 1, 200, 100));
+      CreateDisplayInfo(external_id, gfx::Rect(1, 1, 200, 100));
   const display::ManagedDisplayInfo mirroring_display_info =
-      display::CreateDisplayInfo(mirror_id, gfx::Rect(0, 0, 500, 400));
+      CreateDisplayInfo(mirror_id, gfx::Rect(0, 0, 500, 400));
 
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
   EXPECT_EQ(1U, display_manager()->num_connected_displays());
@@ -1842,8 +1852,7 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChanged) {
 
   // and resume with different external display.
   display_info_list.push_back(internal_display_info);
-  display_info_list.push_back(
-      display::CreateDisplayInfo(12, gfx::Rect(1, 1, 200, 100)));
+  display_info_list.push_back(CreateDisplayInfo(12, gfx::Rect(1, 1, 200, 100)));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
   EXPECT_EQ(2U, display_manager()->num_connected_displays());
@@ -1925,7 +1934,7 @@ TEST_F(DisplayManagerTest, DisplayAddRemoveAtTheSameTime) {
   const int64_t third_id = display::SynthesizeDisplayIdFromSeed(secondary_id);
 
   display::ManagedDisplayInfo third_info =
-      display::CreateDisplayInfo(third_id, gfx::Rect(0, 0, 600, 500));
+      CreateDisplayInfo(third_id, gfx::Rect(0, 0, 600, 500));
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(third_info);
@@ -1948,7 +1957,7 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChangedNoInternal) {
 
   // Connect another display which will become primary.
   const display::ManagedDisplayInfo external_display_info =
-      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 200, 100));
+      CreateDisplayInfo(10, gfx::Rect(1, 1, 200, 100));
   display_info_list.push_back(external_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
@@ -1972,10 +1981,9 @@ TEST_F(DisplayManagerTest, MAYBE_NativeDisplaysChangedAfterPrimaryChange) {
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
   const display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(internal_display_id,
-                                 gfx::Rect(0, 0, 500, 400));
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 500, 400));
   const display::ManagedDisplayInfo secondary_display_info =
-      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 200, 100));
+      CreateDisplayInfo(10, gfx::Rect(1, 1, 200, 100));
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(native_display_info);
@@ -2003,7 +2011,7 @@ TEST_F(DisplayManagerTest, MAYBE_NativeDisplaysChangedAfterPrimaryChange) {
 TEST_F(DisplayManagerTest, ActiveModeWhenNativeResolutionNotSupported) {
   int display_id = 1000;
   display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 800, 300));
+      CreateDisplayInfo(display_id, gfx::Rect(0, 0, 800, 300));
   native_display_info.set_is_interlaced(false);
   native_display_info.set_native(false);
   native_display_info.set_refresh_rate(59.0f);
@@ -2041,7 +2049,7 @@ TEST_F(DisplayManagerTest, ActiveModeWhenNativeResolutionNotSupported) {
 TEST_F(DisplayManagerTest, DontRememberBestResolution) {
   int display_id = 1000;
   display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
+      CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
   display_modes.emplace_back(gfx::Size(1000, 500), 58.0f,
                              /*is_interlaced=*/false, /*native=*/true);
@@ -2113,7 +2121,7 @@ TEST_F(DisplayManagerTest, DontRememberBestResolution) {
 TEST_F(DisplayManagerTest, ResolutionFallback) {
   int display_id = 1000;
   display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
+      CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
   display_modes.emplace_back(gfx::Size(1000, 500), 60.0f,
                              /*is_interlaced=*/false, /*native=*/true);
@@ -2131,7 +2139,7 @@ TEST_F(DisplayManagerTest, ResolutionFallback) {
     display::test::SetDisplayResolution(display_manager(), display_id,
                                         gfx::Size(800, 300));
     display::ManagedDisplayInfo new_native_display_info =
-        display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 400, 500));
+        CreateDisplayInfo(display_id, gfx::Rect(0, 0, 400, 500));
     new_native_display_info.SetManagedDisplayModes(display_modes);
     std::vector<display::ManagedDisplayInfo> new_display_info_list;
     new_display_info_list.push_back(new_native_display_info);
@@ -2149,7 +2157,7 @@ TEST_F(DisplayManagerTest, ResolutionFallback) {
     display::test::SetDisplayResolution(display_manager(), display_id,
                                         gfx::Size(800, 300));
     display::ManagedDisplayInfo new_native_display_info =
-        display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
+        CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
     new_native_display_info.set_native(true);
     new_native_display_info.SetManagedDisplayModes(display_modes);
     std::vector<display::ManagedDisplayInfo> new_display_info_list;
@@ -2719,7 +2727,7 @@ TEST_F(DisplayManagerTest, NotifyPrimaryChangeUndock) {
   // Assume the default display is an external display, and
   // emulates undocking by switching to another display.
   display::ManagedDisplayInfo another_display_info =
-      display::CreateDisplayInfo(1, gfx::Rect(0, 0, 1280, 800));
+      CreateDisplayInfo(1, gfx::Rect(0, 0, 1280, 800));
   std::vector<display::ManagedDisplayInfo> info_list;
   info_list.push_back(another_display_info);
   reset();
@@ -2800,10 +2808,9 @@ TEST_F(DisplayManagerTest, UnifiedDesktopBasic) {
 
   // The default should fit to the internal display.
   std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(CreateDisplayInfo(10, gfx::Rect(0, 0, 500, 300)));
   display_info_list.push_back(
-      display::CreateDisplayInfo(10, gfx::Rect(0, 0, 500, 300)));
-  display_info_list.push_back(
-      display::CreateDisplayInfo(11, gfx::Rect(500, 0, 400, 500)));
+      CreateDisplayInfo(11, gfx::Rect(500, 0, 400, 500)));
   {
     display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                            11);
@@ -2835,9 +2842,9 @@ TEST_F(DisplayManagerTest, UnifiedDesktopWithHardwareMirroring) {
 
   // Enter to hardware mirroring.
   display::ManagedDisplayInfo d1 =
-      display::CreateDisplayInfo(1, gfx::Rect(0, 0, 500, 400));
+      CreateDisplayInfo(1, gfx::Rect(0, 0, 500, 400));
   display::ManagedDisplayInfo d2 =
-      display::CreateDisplayInfo(2, gfx::Rect(0, 0, 500, 400));
+      CreateDisplayInfo(2, gfx::Rect(0, 0, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(d1);
   display_info_list.push_back(d2);
@@ -3184,9 +3191,9 @@ TEST_F(DisplayManagerTest, UnifiedDesktopVerticalLayout2x1) {
     display_manager()->SetUnifiedDesktopMatrix(matrix);
     std::vector<display::ManagedDisplayInfo> display_info_list;
     display_info_list.emplace_back(
-        display::CreateDisplayInfo(list[0], gfx::Rect(0, 0, 400, 500)));
+        CreateDisplayInfo(list[0], gfx::Rect(0, 0, 400, 500)));
     display_info_list.emplace_back(
-        display::CreateDisplayInfo(list[1], gfx::Rect(400, 0, 300, 200)));
+        CreateDisplayInfo(list[1], gfx::Rect(400, 0, 300, 200)));
     display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                            list[1]);
     display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -3649,9 +3656,9 @@ TEST_F(DisplayManagerTest, DockMode) {
   const int64_t external_id = 2;
 
   const display::ManagedDisplayInfo internal_display_info =
-      display::CreateDisplayInfo(internal_id, gfx::Rect(0, 0, 500, 400));
+      CreateDisplayInfo(internal_id, gfx::Rect(0, 0, 500, 400));
   const display::ManagedDisplayInfo external_display_info =
-      display::CreateDisplayInfo(external_id, gfx::Rect(1, 1, 200, 100));
+      CreateDisplayInfo(external_id, gfx::Rect(1, 1, 200, 100));
   std::vector<display::ManagedDisplayInfo> display_info_list;
 
   // software mirroring.
@@ -3911,16 +3918,16 @@ TEST_F(DisplayManagerTest, AccelerometerSupport) {
 
   // Secondary is now primary and should not have accelerometer support.
   std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(display::CreateDisplayInfo(
-      display_manager_test.GetSecondaryDisplay().id(),
-      gfx::Rect(1, 1, 200, 100)));
+  display_info_list.push_back(
+      CreateDisplayInfo(display_manager_test.GetSecondaryDisplay().id(),
+                        gfx::Rect(1, 1, 200, 100)));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(display::Display::AccelerometerSupport::UNAVAILABLE,
             screen->GetPrimaryDisplay().accelerometer_support());
 
   // Re-enable internal display.
   display_info_list.clear();
-  display_info_list.push_back(display::CreateDisplayInfo(
+  display_info_list.push_back(CreateDisplayInfo(
       display::Display::InternalDisplayId(), gfx::Rect(1, 1, 200, 100)));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(display::Display::AccelerometerSupport::AVAILABLE,
@@ -4029,7 +4036,7 @@ TEST_F(DisplayManagerTest, UpdateInternalDisplayNativeBounds) {
 TEST_F(DisplayManagerTest, InternalDisplayWithMultipleModesAndOneNative) {
   int display_id = 1000;
   display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 800, 300));
+      CreateDisplayInfo(display_id, gfx::Rect(0, 0, 800, 300));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
   display_modes.emplace_back(gfx::Size(1000, 500), 58.0f, false, false);
   display_modes.emplace_back(gfx::Size(800, 300), 59.0f, false, true);
@@ -4423,12 +4430,12 @@ TEST_F(DisplayManagerTest, HardwareMirrorMode) {
   constexpr int64_t first_mirror_id = 11;
   constexpr int64_t second_mirror_id = 12;
   std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 500, 400)));
   display_info_list.push_back(
-      display::CreateDisplayInfo(first_mirror_id, gfx::Rect(0, 0, 500, 400)));
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 500, 400)));
   display_info_list.push_back(
-      display::CreateDisplayInfo(second_mirror_id, gfx::Rect(0, 0, 500, 400)));
+      CreateDisplayInfo(first_mirror_id, gfx::Rect(0, 0, 500, 400)));
+  display_info_list.push_back(
+      CreateDisplayInfo(second_mirror_id, gfx::Rect(0, 0, 500, 400)));
 
   // mirrored across 3 displays...
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -4567,11 +4574,11 @@ TEST_F(DisplayManagerTest, SourceAndDestinationInSoftwareMirrorMode) {
   constexpr int64_t third_display_id = 12;
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.emplace_back(
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(0, 0, 200, 100)));
+      CreateDisplayInfo(first_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.emplace_back(
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(1, 1, 500, 400)));
+      CreateDisplayInfo(second_display_id, gfx::Rect(1, 1, 500, 400)));
   display_info_list.emplace_back(
-      display::CreateDisplayInfo(third_display_id, gfx::Rect(2, 2, 500, 400)));
+      CreateDisplayInfo(third_display_id, gfx::Rect(2, 2, 500, 400)));
 
   // Connect all displays.
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -4612,12 +4619,12 @@ TEST_F(DisplayManagerTest, CompositingCursorInMultiSoftwareMirroring) {
   constexpr int64_t first_mirror_id = 11;
   constexpr int64_t second_mirror_id = 12;
   std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(
-      display::CreateDisplayInfo(first_mirror_id, gfx::Rect(1, 1, 500, 400)));
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(
-      display::CreateDisplayInfo(second_mirror_id, gfx::Rect(2, 2, 500, 400)));
+      CreateDisplayInfo(first_mirror_id, gfx::Rect(1, 1, 500, 400)));
+  display_info_list.push_back(
+      CreateDisplayInfo(second_mirror_id, gfx::Rect(2, 2, 500, 400)));
 
   // Connect all displays, cursor compositing is disabled by default.
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -4653,14 +4660,14 @@ TEST_F(DisplayManagerTest, MirrorModeRestore) {
   const int64_t second_display_masked_id =
       display::GetDisplayIdWithoutOutputIndex(second_display_id);
   display::ManagedDisplayInfo first_mirror_info =
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
+      CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
   display::ManagedDisplayInfo second_mirror_info =
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
+      CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
 
   // There's no external display now.
-  display_info_list.push_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 200, 100)));
+  display_info_list.push_back(
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
@@ -4870,14 +4877,14 @@ TEST_F(DisplayManagerTest, MixedMirrorModeRestore) {
   constexpr int64_t first_display_id = 210000001;
   constexpr int64_t second_display_id = 220000002;
   display::ManagedDisplayInfo first_mirror_info =
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
+      CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
   display::ManagedDisplayInfo second_mirror_info =
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
+      CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
 
   // Connect the first and second displays.
-  display_info_list.push_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 200, 100)));
+  display_info_list.push_back(
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(first_mirror_info);
   display_info_list.push_back(second_mirror_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -4935,10 +4942,10 @@ TEST_F(DisplayManagerTest, MirrorModeRestoreAfterResume) {
           .SetFirstDisplayAsInternalDisplay();
   constexpr int64_t external_display_id = 210000001;
   std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.emplace_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 200, 100)));
-  display_info_list.emplace_back(display::CreateDisplayInfo(
-      external_display_id, gfx::Rect(1, 1, 500, 400)));
+  display_info_list.emplace_back(
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 200, 100)));
+  display_info_list.emplace_back(
+      CreateDisplayInfo(external_display_id, gfx::Rect(1, 1, 500, 400)));
 
   // Turn on mirror mode.
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -5163,7 +5170,7 @@ TEST_F(DisplayManagerTest, PanelOrientation) {
 
   // The panel is portrait but its orientation is landscape.
   display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1920, 1080));
+      CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1920, 1080));
   native_display_info.set_panel_orientation(
       display::PanelOrientation::kRightUp);
   const display::ManagedDisplayMode base_mode(gfx::Size(1920, 1080), 60.0f,

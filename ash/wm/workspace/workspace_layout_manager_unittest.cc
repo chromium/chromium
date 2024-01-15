@@ -151,6 +151,11 @@ display::ManagedDisplayInfo CreateDisplayInfo(int64_t id, gfx::Rect bounds) {
   display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
   info.SetRotation(display::Display::ROTATE_0,
                    display::Display::RotationSource::ACTIVE);
+  // Each display should have at least one native mode.
+  display::ManagedDisplayMode mode(bounds.size(), /*refresh_rate=*/60.f,
+                                   /*is_interlaced=*/true,
+                                   /*native=*/true);
+  info.SetManagedDisplayModes({mode});
   return info;
 }
 
