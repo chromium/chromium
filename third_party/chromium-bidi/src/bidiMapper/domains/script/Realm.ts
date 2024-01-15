@@ -408,10 +408,10 @@ export class Realm {
         keyArg = {value: key};
       } else {
         // Key is a serialized value.
-        keyArg = await this.#deserializeToCdpArg(key);
+        keyArg = await this.deserializeToCdpArg(key);
       }
 
-      const valueArg = await this.#deserializeToCdpArg(value);
+      const valueArg = await this.deserializeToCdpArg(value);
 
       keyValueArray.push(keyArg);
       keyValueArray.push(valueArg);
@@ -424,7 +424,7 @@ export class Realm {
     listLocalValue: Script.ListLocalValue
   ): Promise<Protocol.Runtime.CallArgument[]> {
     return await Promise.all(
-      listLocalValue.map((localValue) => this.#deserializeToCdpArg(localValue))
+      listLocalValue.map((localValue) => this.deserializeToCdpArg(localValue))
     );
   }
 
@@ -480,11 +480,11 @@ export class Realm {
     }`;
 
     const thisAndArgumentsList = [
-      await this.#deserializeToCdpArg(thisLocalValue),
+      await this.deserializeToCdpArg(thisLocalValue),
       ...(await Promise.all(
         argumentsLocalValues.map(
           async (argumentLocalValue: Script.LocalValue) =>
-            await this.#deserializeToCdpArg(argumentLocalValue)
+            await this.deserializeToCdpArg(argumentLocalValue)
         )
       )),
     ];
@@ -536,7 +536,7 @@ export class Realm {
     };
   }
 
-  async #deserializeToCdpArg(
+  async deserializeToCdpArg(
     localValue: Script.LocalValue
   ): Promise<Protocol.Runtime.CallArgument> {
     if ('sharedId' in localValue && localValue.sharedId) {

@@ -110,7 +110,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       cdpConnection,
       browserCdpClient
     );
-    this.#inputProcessor = new InputProcessor(browsingContextStorage);
+    this.#inputProcessor = new InputProcessor(
+      browsingContextStorage,
+      realmStorage
+    );
     this.#networkProcessor = new NetworkProcessor(
       browsingContextStorage,
       networkStorage
@@ -220,8 +223,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseReleaseActionsParams(command.params)
         );
       case 'input.setFiles':
-        throw new UnsupportedOperationException(
-          `Command '${command.method}' not yet implemented.`
+        return await this.#inputProcessor.setFiles(
+          this.#parser.parseSetFilesParams(command.params)
         );
       // keep-sorted end
 

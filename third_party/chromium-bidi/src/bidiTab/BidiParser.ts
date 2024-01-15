@@ -90,6 +90,9 @@ export class BidiParser implements BidiCommandParameterParser {
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
   }
+  parseSetFilesParams(params: unknown): Input.SetFilesParameters {
+    return Parser.Input.parseSetFilesParams(params);
+  }
   // keep-sorted end
 
   // Network domain

@@ -59,6 +59,7 @@ export interface BidiCommandParameterParser {
   // keep-sorted start block=yes
   parsePerformActionsParams(params: unknown): Input.PerformActionsParameters;
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters;
+  parseSetFilesParams(params: unknown): Input.SetFilesParameters;
   // keep-sorted end
 
   // Network domain

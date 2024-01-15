@@ -117,6 +117,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return params as Input.ReleaseActionsParameters;
   }
+  parseSetFilesParams(params: unknown): Input.SetFilesParameters {
+    return params as Input.SetFilesParameters;
+  }
   // keep-sorted end
 
   // Network domain

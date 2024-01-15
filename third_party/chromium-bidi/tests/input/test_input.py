@@ -17,6 +17,26 @@ import pytest
 from syrupy.filters import props
 from test_helpers import execute_command, goto_url
 
+SET_FILES_HTML = """
+<input id=input type=file>
+<script>
+    var allEvents = [];
+    const input = document.getElementById('input');
+    input.addEventListener('change', (event) => {
+        allEvents.push({
+            type: event.type,
+            files: [...event.target.files].map((file) => file.name)
+        })
+    });
+    input.addEventListener('cancel', (event) => {
+        allEvents.push({
+            type: event.type,
+            files: [...event.target.files].map((file) => file.name)
+        })
+    });
+</script>
+"""
+
 SCRIPT = """
 <div style="height: 2000px; width: 10px"></div>
 <script>
@@ -547,3 +567,146 @@ async def test_input_performActionsEmitsClickCountsByButton(
     result = await get_events(websocket, context_id)
 
     assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_input_setFiles(websocket, context_id, html, snapshot,
+                              query_selector):
+    await goto_url(websocket, context_id, html(SET_FILES_HTML))
+
+    input = await query_selector('#input')
+
+    await execute_command(
+        websocket, {
+            "method": "input.setFiles",
+            "params": {
+                "context": context_id,
+                "element": input,
+                "files": ["path/to/noop.txt"],
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_input_setFiles_twice(websocket, context_id, html, snapshot,
+                                    query_selector):
+    await goto_url(websocket, context_id, html(SET_FILES_HTML))
+
+    input = await query_selector('#input')
+
+    await execute_command(
+        websocket, {
+            "method": "input.setFiles",
+            "params": {
+                "context": context_id,
+                "element": input,
+                "files": ["path/to/noop.txt"],
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+    await execute_command(
+        websocket, {
+            "method": "input.setFiles",
+            "params": {
+                "context": context_id,
+                "element": input,
+                "files": ["path/to/noop-2.txt"],
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_input_setFiles_twice_same(websocket, context_id, html, snapshot,
+                                         query_selector):
+    await goto_url(websocket, context_id, html(SET_FILES_HTML))
+
+    input = await query_selector('#input')
+
+    await execute_command(
+        websocket, {
+            "method": "input.setFiles",
+            "params": {
+                "context": context_id,
+                "element": input,
+                "files": ["path/to/noop.txt"],
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+    await execute_command(
+        websocket, {
+            "method": "input.setFiles",
+            "params": {
+                "context": context_id,
+                "element": input,
+                "files": ["path/to/noop.txt"],
+            }
+        })
+
+    result = await get_events(websocket, context_id)
+
+    assert result == snapshot(exclude=props("realm"))
+
+
+@pytest.mark.asyncio
+async def test_input_setFiles_noSuchElement(websocket, context_id, html,
+                                            snapshot):
+    await goto_url(websocket, context_id, html(SET_FILES_HTML))
+
+    message = None
+    try:
+        await execute_command(
+            websocket, {
+                "method": "input.setFiles",
+                "params": {
+                    "context": context_id,
+                    "element": {
+                        "sharedId": "invalid"
+                    },
+                    "files": ["path/to/noop.txt"],
+                }
+            })
+    except Exception as exception:
+        message = exception.args[0]['error']
+
+    assert message == snapshot
+
+
+@pytest.mark.asyncio
+async def test_input_setFiles_unableToSetFileInput(websocket, context_id, html,
+                                                   snapshot, query_selector):
+    await goto_url(websocket, context_id,
+                   html(SET_FILES_HTML.replace('<input', '<input disabled')))
+
+    input = await query_selector('#input')
+
+    message = None
+    try:
+        await execute_command(
+            websocket, {
+                "method": "input.setFiles",
+                "params": {
+                    "context": context_id,
+                    "element": input,
+                    "files": ["path/to/noop.txt"],
+                }
+            })
+    except Exception as exception:
+        message = exception.args[0]['error']
+
+    assert message == snapshot

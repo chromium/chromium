@@ -1739,3 +1739,227 @@
     'type': 'success',
   })
 # ---
+# name: test_input_setFiles[websocket0]
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'change',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
+# name: test_input_setFiles_noSuchElement[websocket0]
+  'no such element'
+# ---
+# name: test_input_setFiles_twice[websocket0]
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'change',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
+# name: test_input_setFiles_twice[websocket0].1
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'change',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'change',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop-2.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
+# name: test_input_setFiles_twice_same[websocket0]
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'change',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
+# name: test_input_setFiles_twice_same[websocket0].1
+  dict({
+    'result': dict({
+      'type': 'array',
+      'value': list([
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'change',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+        dict({
+          'type': 'object',
+          'value': list([
+            list([
+              'type',
+              dict({
+                'type': 'string',
+                'value': 'cancel',
+              }),
+            ]),
+            list([
+              'files',
+              dict({
+                'type': 'array',
+                'value': list([
+                  dict({
+                    'type': 'string',
+                    'value': 'noop.txt',
+                  }),
+                ]),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+    }),
+    'type': 'success',
+  })
+# ---
+# name: test_input_setFiles_unableToSetFileInput[websocket0]
+  'unable to set file input'
+# ---

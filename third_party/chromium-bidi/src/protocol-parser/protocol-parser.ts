@@ -269,6 +269,12 @@ export namespace Input {
       WebDriverBidi.Input.ReleaseActionsParametersSchema
     );
   }
+
+  export function parseSetFilesParams(
+    params: unknown
+  ): Protocol.Input.SetFilesParameters {
+    return parseObject(params, WebDriverBidi.Input.SetFilesParametersSchema);
+  }
 }
 
 export namespace Storage {
