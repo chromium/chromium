@@ -323,6 +323,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self broadcastIncognitoContentVisibility];
 }
 
+#pragma mark - Accessibility
+
+- (BOOL)accessibilityPerformEscape {
+  [self doneButtonTapped:self];
+  return YES;
+}
+
 #pragma mark - UIScrollViewAccessibilityDelegate
 
 - (NSString*)accessibilityScrollStatusForScrollView:(UIScrollView*)scrollView {

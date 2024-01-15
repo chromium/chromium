@@ -38,7 +38,7 @@
 // selection mode. It will be used to update the buttons to use the correct
 // title (singular or plural).
 @property(nonatomic, assign) int selectedTabsCount;
-// Delegate to call when a button is pushed.
+// Delegate to call when a button is tapped.
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
 
 // Sets the delegate for the searchbar.
