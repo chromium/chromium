@@ -22,7 +22,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/birthdate_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/email_field.h"
+#include "components/autofill/core/browser/form_parsing/email_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/iban_field.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
@@ -135,7 +135,7 @@ void FormFieldParser::ParseFormFields(
       RemoveCheckableFields(fields);
 
   // Email pass.
-  ParseFormFieldsPass(EmailField::Parse, context, processed_fields,
+  ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,
                       field_candidates);
   bool found_email_field = !field_candidates.empty();
 
@@ -344,7 +344,7 @@ void FormFieldParser::ParseStandaloneEmailFields(
     FieldCandidatesMap& field_candidates) {
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
       RemoveCheckableFields(fields);
-  ParseFormFieldsPass(EmailField::Parse, context, processed_fields,
+  ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,
                       field_candidates);
 }
 
