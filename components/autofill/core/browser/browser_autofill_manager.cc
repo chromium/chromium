@@ -685,7 +685,15 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
 
 bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     const FormData& form,
-    const FormFieldData& field) {
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source) const {
+  // If `trigger_source` is equal to `kShowCardsFromAccount`, that means that
+  // the user accepted "Show cards from account" suggestiona and it should not
+  // be shown again.
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kShowCardsFromAccount) {
+    return false;
+  }
   // Check whether we are dealing with a credit card field.
   AutofillField* autofill_field = GetAutofillField(form, field);
   if (!autofill_field ||
@@ -722,8 +730,10 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
 
   bool should_display_gpay_logo = false;
-  auto cards = GetCreditCardSuggestions(form, field_data, field_type,
-                                        should_display_gpay_logo);
+  auto cards = GetCreditCardSuggestions(
+      form, field_data, field_type,
+      AutofillSuggestionTriggerSource::kShowCardsFromAccount,
+      should_display_gpay_logo);
   DCHECK(!cards.empty());
   external_delegate_->OnSuggestionsReturned(
       field_data.global_id(), cards,
@@ -2787,6 +2797,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
+    AutofillSuggestionTriggerSource trigger_source,
     bool& should_display_gpay_logo) const {
   credit_card_form_event_logger_->OnDidPollSuggestions(
       trigger_field, signin_state_for_metrics_);
@@ -2813,6 +2824,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
           trigger_field, trigger_field_type,
           ShouldShowScanCreditCard(form, trigger_field),
+          ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
           should_display_gpay_logo, with_offer, context);
     }
   }
@@ -3511,6 +3523,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
             ? context->focused_field->Type().GetStorableType()
             : UNKNOWN_TYPE;
     *suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
+                                            trigger_source,
                                             context->should_display_gpay_logo);
   } else if (context->filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered

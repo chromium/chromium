@@ -249,8 +249,10 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const AutofillTriggerDetails& trigger_details),
               (override));
 
-  bool ShouldShowCardsFromAccountOption(const FormData& form,
-                                        const FormFieldData& field) override {
+  bool ShouldShowCardsFromAccountOption(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source) const override {
     return should_show_cards_from_account_option_;
   }
 
@@ -2449,78 +2451,13 @@ TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   EXPECT_EQ(result, suggestion.popup_item_id != PopupItemId::kPasswordEntry);
 }
 
-// Tests that the prompt to show account cards shows up when the corresponding
-// bit is set, including any suggestions that are passed along and the "Manage"
-// row in the footer.
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       ShouldShowCardsFromAccountOptionWithCards) {
-  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
-                                                     /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, form.fields[0], gfx::RectF(),
-                              kDefaultTriggerSource);
-
-  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-          Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
-          Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kCreditCardEntry);
-  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
-                                            autofill_item);
-}
-
-// Tests that the prompt to show account cards shows up when the corresponding
-// bit is set, even if no suggestions are passed along. The "Manage" row should
-// *not* show up in this case.
-TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       ShouldShowCardsFromAccountOptionWithoutCards) {
-  IssueOnQuery();
-
-  const auto kExpectedSuggestions =
-      SuggestionVectorMainTextsAre(Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-          Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
-                                            std::vector<Suggestion>());
-}
-
-TEST_F(AutofillExternalDelegateCardsFromAccountTest,
-       LogShowCardsFromGoogleAccountButtonMetrics) {
-  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
-                                                     /*use_month_type=*/false);
-  manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, form.fields[0], gfx::RectF(),
-                              kDefaultTriggerSource);
+       ShowCardsFromAccountMetrics) {
   base::HistogramTester histogram_tester;
-  const auto kExpectedSuggestions = SuggestionVectorMainTextsAre(
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-          Suggestion::Text::IsPrimary(true)),
-      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
-      Suggestion::Text(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
-          Suggestion::Text::IsPrimary(true)));
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back(/*main_text=*/u"", PopupItemId::kCreditCardEntry);
-  autofill_item[0].main_text.is_primary = Suggestion::Text::IsPrimary(true);
-
-  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
-                                            autofill_item);
-
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kShowAccountCards)});
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),
@@ -2532,16 +2469,9 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
                            kButtonAppearedOnce,
                        1)));
 
-  // Simulate suggestions returned again.
-  EXPECT_CALL(client(),
-              ShowAutofillPopup(PopupOpenArgsAre(SuggestionVectorIdsAre(
-                                    PopupItemId::kShowAccountCards)),
-                                _));
-  autofill_item.clear();
-
-  external_delegate().OnSuggestionsReturned(form.fields[0].global_id(),
-                                            autofill_item);
-
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {Suggestion(PopupItemId::kShowAccountCards)});
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"),

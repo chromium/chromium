@@ -1462,6 +1462,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
     bool& should_display_gpay_logo,
     bool& with_offer,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
@@ -1525,8 +1526,8 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     return suggestions;
   }
 
-  for (const Suggestion& suggestion :
-       GetCreditCardFooterSuggestions(should_show_scan_credit_card)) {
+  for (const Suggestion& suggestion : GetCreditCardFooterSuggestions(
+           should_show_scan_credit_card, should_show_cards_from_account)) {
     suggestions.push_back(suggestion);
   }
 
@@ -2090,7 +2091,8 @@ void AutofillSuggestionGenerator::SetCardArtURL(
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
-    bool should_show_scan_credit_card) const {
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account) const {
   std::vector<Suggestion> footer_suggestions;
   if (should_show_scan_credit_card) {
     Suggestion scan_credit_card(
@@ -2099,6 +2101,15 @@ AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
     scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
     footer_suggestions.push_back(scan_credit_card);
   }
+
+  if (should_show_cards_from_account) {
+    Suggestion show_card_from_account(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
+        PopupItemId::kShowAccountCards);
+    show_card_from_account.icon = Suggestion::Icon::kGoogle;
+    footer_suggestions.push_back(show_card_from_account);
+  }
+
   return footer_suggestions;
 }
 

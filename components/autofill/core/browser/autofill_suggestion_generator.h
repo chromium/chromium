@@ -107,6 +107,7 @@ class AutofillSuggestionGenerator {
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
       bool should_show_scan_credit_card,
+      bool should_show_cards_from_account,
       bool& should_display_gpay_logo,
       bool& with_offer,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
@@ -245,7 +246,8 @@ class AutofillSuggestionGenerator {
   // Returns non credit card suggestions which are displayed below credit card
   // suggestions in the Autofill popup.
   std::vector<Suggestion> GetCreditCardFooterSuggestions(
-      bool should_show_scan_credit_card) const;
+      bool should_show_scan_credit_card,
+      bool should_show_cards_from_account) const;
 
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.

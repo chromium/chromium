@@ -230,8 +230,6 @@ void AutofillExternalDelegate::OnQuery(
   trigger_source_ = trigger_source;
   popup_type_ = GetPopupTypeForQuery(*manager_, query_form_, query_field_,
                                      trigger_source);
-  should_show_cards_from_account_option_ =
-      manager_->ShouldShowCardsFromAccountOption(query_form_, query_field_);
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
@@ -269,20 +267,19 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // Hide warnings as appropriate.
   PossiblyRemoveAutofillWarnings(&suggestions);
 
-  if (should_show_cards_from_account_option_) {
-    suggestions.emplace_back(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS));
+  // TODO(b/320126773): consider moving these metrics to a better place.
+  if (base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return suggestion.popup_item_id == PopupItemId::kShowAccountCards;
+      })) {
     autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
         autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
             kButtonAppeared);
-    if (!show_cards_from_account_suggestion_added_) {
-      show_cards_from_account_suggestion_added_ = true;
+    if (!show_cards_from_account_suggestion_was_shown_) {
+      show_cards_from_account_suggestion_was_shown_ = true;
       autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
           autofill_metrics::ShowCardsFromGoogleAccountButtonEvent::
               kButtonAppearedOnce);
     }
-    suggestions.back().popup_item_id = PopupItemId::kShowAccountCards;
-    suggestions.back().icon = Suggestion::Icon::kGoogle;
   }
 
   if (has_autofill_suggestions) {
@@ -790,7 +787,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
   }
 
   if (suggestion.popup_item_id == PopupItemId::kShowAccountCards) {
-    should_show_cards_from_account_option_ = false;
     manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_,
                                          element_bounds_);
   } else {

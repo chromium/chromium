@@ -128,8 +128,10 @@ class BrowserAutofillManager : public AutofillManager {
   // users who have cards in their account and can use Sync Transport. Clicking
   // the row records the user's consent to see these cards on this device, and
   // refreshes the popup.
-  virtual bool ShouldShowCardsFromAccountOption(const FormData& form,
-                                                const FormFieldData& field);
+  virtual bool ShouldShowCardsFromAccountOption(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source) const;
   virtual void OnUserAcceptedCardsFromAccountOption();
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
                                           const FormFieldData& field_data,
@@ -527,6 +529,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
+      AutofillSuggestionTriggerSource trigger_source,
       bool& should_display_gpay_logo) const;
 
   // Returns a mapping of credit card guid values to virtual card last fours for
