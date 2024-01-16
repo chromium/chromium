@@ -76,6 +76,7 @@
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromLinkUserGesture
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromUserGesture
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowRenavigationServerRedirect
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowServerRedirect
 
 # crbug.com/1432046
@@ -85,6 +86,7 @@
 -org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewTest.testDismissesSwipingEducationBubbleOnTap
 
 # crbug.com/1432049
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testRenderDialog_5Tabs_InitialScroll__NightModeDisabled
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testTabGroupNaming_afterMergeWithSelectionEditor
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testTabGroupNaming_KeyboardVisibility
@@ -99,10 +101,12 @@
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyBookmarkFolder
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyReadingListFolder
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveDownMenuItem
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveUpMenuItem
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testPartnerFolderDraggability
 
 # crbug.com/1511804
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_BookmarkActionSingleTab
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsOnly
@@ -132,6 +136,7 @@
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_CCT
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_TAB
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_TAB_INCOGNITO_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_TAB_REGULAR_CCT
 
 # crbug.com/1512916
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testCloseChromeAtHistoryStackHead
@@ -170,6 +175,7 @@
 -org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationPlumbingAllowedDialog
 -org.chromium.chrome.browser.permissions.MediaTest.testCombinedPermissionsPlumbingDialog
 -org.chromium.chrome.browser.permissions.MediaTest.testMicrophoneMediaPermissionsPlumbingDialog
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testAllowRuntimeMicrophoneOneTime
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskCamera
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskMicrophone
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeCamera
@@ -190,6 +196,8 @@
 
 # crbug.com/1513571
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareApk
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareDex
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareLongText
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareMany
 -org.chromium.chrome.browser.webshare.WebShareTest.testWebShareSeparator
 
@@ -220,6 +228,7 @@
 -org.chromium.chrome.browser.ntp.NewTabPageNavigationTest.testNavigateToTabSwitcherFromNtp
 
 # crbug.com/1517111
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testCameraNotBlocked
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testMicNotBlocked
 
 # crbug.com/1517438
