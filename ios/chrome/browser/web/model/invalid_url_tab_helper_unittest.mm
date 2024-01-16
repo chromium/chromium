@@ -30,7 +30,7 @@ class InvalidUrlTabHelperTest : public PlatformTest {
         transition,
         /*target_frame_is_main=*/true,
         /*target_frame_is_cross_origin=*/false,
-        /*has_user_gesture=*/false);
+        /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
