@@ -6,8 +6,6 @@
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
-
-
 .section	__DATA,__const
 .p2align	6
 L$zero:
@@ -39,19 +37,13 @@ L$sixteen:
 .long	16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16
 .byte	67,104,97,67,104,97,50,48,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .text	
-.globl	_ChaCha20_ctr32
-.private_extern _ChaCha20_ctr32
+.globl	_ChaCha20_ctr32_nohw
+.private_extern _ChaCha20_ctr32_nohw
 
 .p2align	6
-_ChaCha20_ctr32:
+_ChaCha20_ctr32_nohw:
 
 _CET_ENDBR
-	cmpq	$0,%rdx
-	je	L$no_data
-	movq	_OPENSSL_ia32cap_P+4(%rip),%r10
-	testl	$512,%r10d
-	jnz	L$ChaCha20_ssse3
-
 	pushq	%rbx
 
 	pushq	%rbp
@@ -323,17 +315,15 @@ L$no_data:
 	ret
 
 
+.globl	_ChaCha20_ctr32_ssse3
+.private_extern _ChaCha20_ctr32_ssse3
 
 .p2align	5
-ChaCha20_ssse3:
-L$ChaCha20_ssse3:
+_ChaCha20_ctr32_ssse3:
 
+_CET_ENDBR
 	movq	%rsp,%r9
 
-	cmpq	$128,%rdx
-	ja	L$ChaCha20_4x
-
-L$do_sse3_after_all:
 	subq	$64+8,%rsp
 	movdqa	L$sigma(%rip),%xmm0
 	movdqu	(%rcx),%xmm1
@@ -460,25 +450,16 @@ L$ssse3_epilogue:
 	ret
 
 
+.globl	_ChaCha20_ctr32_ssse3_4x
+.private_extern _ChaCha20_ctr32_ssse3_4x
 
 .p2align	5
-ChaCha20_4x:
-L$ChaCha20_4x:
+_ChaCha20_ctr32_ssse3_4x:
 
+_CET_ENDBR
 	movq	%rsp,%r9
 
 	movq	%r10,%r11
-	shrq	$32,%r10
-	testq	$32,%r10
-	jnz	L$ChaCha20_8x
-	cmpq	$192,%rdx
-	ja	L$proceed4x
-
-	andq	$71303168,%r11
-	cmpq	$4194304,%r11
-	je	L$do_sse3_after_all
-
-L$proceed4x:
 	subq	$0x140+8,%rsp
 	movdqa	L$sigma(%rip),%xmm11
 	movdqu	(%rcx),%xmm15
@@ -1012,11 +993,13 @@ L$4x_epilogue:
 	ret
 
 
+.globl	_ChaCha20_ctr32_avx2
+.private_extern _ChaCha20_ctr32_avx2
 
 .p2align	5
-ChaCha20_8x:
-L$ChaCha20_8x:
+_ChaCha20_ctr32_avx2:
 
+_CET_ENDBR
 	movq	%rsp,%r9
 
 	subq	$0x280+8,%rsp
