@@ -95,6 +95,10 @@
         {
           "builder": "chromeos-amd64-generic-rel-gtest-and-tast",
           "group": "tryserver.chromium.chromiumos"
+        },
+        {
+          "builder": "chromeos-amd64-generic-siso-rel",
+          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }

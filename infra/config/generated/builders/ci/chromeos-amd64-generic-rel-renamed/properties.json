@@ -54,10 +54,6 @@
         {
           "builder": "chromeos-amd64-generic-rel-renamed",
           "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "chromeos-amd64-generic-siso-rel",
-          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }
