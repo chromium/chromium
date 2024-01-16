@@ -1414,4 +1414,7 @@ void ArcNetHostImpl::NotifySocketConnectionEvent(
   }
   ash::PatchPanelClient::Get()->NotifySocketConnectionEvent(*notification);
 }
+
+void ArcNetHostImpl::NotifyVPNSocketConnectionEvent(
+    mojom::SocketConnectionEventPtr msg) {}
 }  // namespace arc

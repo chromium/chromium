@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 35
+// Next MinVersion: 36
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -769,7 +769,7 @@ struct PasspointApprovalResponse {
   bool allowed;
 };
 
-// Next Method ID: 24
+// Next Method ID: 25
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
@@ -875,6 +875,9 @@ interface NetHost {
 
   // Sends a notification to Chrome about a socket connection event in ARC.
   [MinVersion=34] NotifySocketConnectionEvent@23(SocketConnectionEvent msg);
+
+  // Sends a notification to Chrome about a socket connection event of ARC VPN.
+  [MinVersion=35] NotifyVPNSocketConnectionEvent@24(SocketConnectionEvent msg);
 };
 
 // Next Method ID: 12
