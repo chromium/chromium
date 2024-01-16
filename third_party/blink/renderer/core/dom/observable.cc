@@ -5,11 +5,15 @@
 #include "third_party/blink/renderer/core/dom/observable.h"
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,6 +24,35 @@
 namespace blink {
 
 namespace {
+
+class RejectPromiseAbortAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  RejectPromiseAbortAlgorithm(ScriptPromiseResolver* resolver,
+                              AbortSignal* signal)
+      : resolver_(resolver), signal_(signal) {
+    CHECK(resolver);
+    CHECK(signal);
+  }
+
+  void Run() override {
+    resolver_->Reject(signal_->reason(resolver_->GetScriptState()));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(resolver_);
+    visitor->Trace(signal_);
+
+    Algorithm::Trace(visitor);
+  }
+
+ private:
+  // The `ScriptPromiseResolver` that `this` must reject when `signal_` is
+  // aborted (as notified by `Run()` above).
+  Member<ScriptPromiseResolver> resolver_;
+  // Never null. We have to store the `signal_` that `this` is associated with
+  // in order to get the abort reason.
+  Member<AbortSignal> signal_;
+};
 
 class ScriptCallbackInternalObserver final : public ObservableInternalObserver {
  public:
@@ -66,6 +99,43 @@ class ScriptCallbackInternalObserver final : public ObservableInternalObserver {
   Member<V8ObserverCompleteCallback> complete_callback_;
 };
 
+class ToArrayInternalObserver final : public ObservableInternalObserver {
+ public:
+  ToArrayInternalObserver(ScriptPromiseResolver* resolver,
+                          AbortSignal::AlgorithmHandle* handle)
+      : resolver_(resolver), abort_algorithm_handle_(handle) {}
+
+  void Next(ScriptValue value) override {
+    // "Append the passed in value to values."
+    values_.push_back(value);
+  }
+  void Error(ScriptState* script_state, ScriptValue error_value) override {
+    abort_algorithm_handle_.Clear();
+
+    // "Reject p with the passed in error."
+    resolver_->Reject(error_value);
+  }
+  void Complete() override {
+    abort_algorithm_handle_.Clear();
+
+    // "Resolve p with values."
+    resolver_->Resolve(values_);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ObservableInternalObserver::Trace(visitor);
+
+    visitor->Trace(resolver_);
+    visitor->Trace(values_);
+    visitor->Trace(abort_algorithm_handle_);
+  }
+
+ private:
+  Member<ScriptPromiseResolver> resolver_;
+  HeapVector<ScriptValue> values_;
+  Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
 }  // namespace
 
 using PassKey = base::PassKey<Observable>;
@@ -106,31 +176,60 @@ void Observable::subscribe(ScriptState* script_state,
     return;
   }
 
+  SubscribeInternal(script_state, observer_union, /*internal_observer=*/nullptr,
+                    options);
+}
+
+void Observable::SubscribeInternal(
+    ScriptState* script_state,
+    V8UnionObserverOrObserverCallback* observer_union,
+    ObservableInternalObserver* internal_observer,
+    SubscribeOptions* options) {
+  // Exactly one of `observer_union` or `internal_observer` must be non-null.
+  // This is important because this method is called in one of two paths:
+  //   1. The the "usual" path of `Observable#subscribe()` with
+  //      developer-supplied callbacks (aka `observer_union` is non-null). In
+  //      this case, no `internal_observer` is passed in, and we instead
+  //      construct a new `ScriptCallbackInternalObserver` out of
+  //      `observer_union`, to give to a brand new `Subscriber` for this
+  //      specific subscription.
+  //   2. The "internal subscription" path, where a custom `internal_observer`
+  //      is already built, passed in, and fed to the brand new `Subscriber` for
+  //      this specific subscription. No `observer_union` is passed in.
+  CHECK_NE(!!observer_union, !!internal_observer);
+
   // Build and initialize a `Subscriber` with a dictionary of `Observer`
   // callbacks.
   Subscriber* subscriber = nullptr;
-  switch (observer_union->GetContentType()) {
-    case V8UnionObserverOrObserverCallback::ContentType::kObserver: {
-      Observer* observer = observer_union->GetAsObserver();
-      ScriptCallbackInternalObserver* internal_observer =
-          MakeGarbageCollected<ScriptCallbackInternalObserver>(
-              observer->hasNext() ? observer->next() : nullptr,
-              observer->hasError() ? observer->error() : nullptr,
-              observer->hasComplete() ? observer->complete() : nullptr);
+  if (observer_union) {
+    // Case (1) above.
+    switch (observer_union->GetContentType()) {
+      case V8UnionObserverOrObserverCallback::ContentType::kObserver: {
+        Observer* observer = observer_union->GetAsObserver();
+        ScriptCallbackInternalObserver* constructed_internal_observer =
+            MakeGarbageCollected<ScriptCallbackInternalObserver>(
+                observer->hasNext() ? observer->next() : nullptr,
+                observer->hasError() ? observer->error() : nullptr,
+                observer->hasComplete() ? observer->complete() : nullptr);
 
-      subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
-                                                    internal_observer, options);
-      break;
+        subscriber = MakeGarbageCollected<Subscriber>(
+            PassKey(), script_state, constructed_internal_observer, options);
+        break;
+      }
+      case V8UnionObserverOrObserverCallback::ContentType::kObserverCallback:
+        ScriptCallbackInternalObserver* constructed_internal_observer =
+            MakeGarbageCollected<ScriptCallbackInternalObserver>(
+                /*next=*/observer_union->GetAsObserverCallback(),
+                /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
+
+        subscriber = MakeGarbageCollected<Subscriber>(
+            PassKey(), script_state, constructed_internal_observer, options);
+        break;
     }
-    case V8UnionObserverOrObserverCallback::ContentType::kObserverCallback:
-      ScriptCallbackInternalObserver* internal_observer =
-          MakeGarbageCollected<ScriptCallbackInternalObserver>(
-              /*next=*/observer_union->GetAsObserverCallback(),
-              /*error_callback=*/nullptr, /*complete_callback=*/nullptr);
-
-      subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
-                                                    internal_observer, options);
-      break;
+  } else {
+    // Case (2) above.
+    subscriber = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
+                                                  internal_observer, options);
   }
 
   // Exactly one of `subscribe_callback_` or `subscribe_delegate_` is non-null.
@@ -166,6 +265,44 @@ void Observable::subscribe(ScriptState* script_state,
     subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
                                                 try_catch.Exception()));
   }
+}
+
+ScriptPromise Observable::toArray(ScriptState* script_state,
+                                  SubscribeOptions* options) {
+  if (!script_state->ContextIsValid()) {
+    CHECK(!GetExecutionContext());
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "toArray() cannot be used unless document is fully active."));
+  }
+
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  AbortSignal::AlgorithmHandle* algorithm_handle = nullptr;
+
+  if (options->hasSignal()) {
+    if (options->signal()->aborted()) {
+      resolver->Reject(options->signal()->reason(script_state));
+
+      return promise;
+    }
+
+    algorithm_handle = options->signal()->AddAlgorithm(
+        MakeGarbageCollected<RejectPromiseAbortAlgorithm>(resolver,
+                                                          options->signal()));
+  }
+
+  ToArrayInternalObserver* internal_observer =
+      MakeGarbageCollected<ToArrayInternalObserver>(resolver, algorithm_handle);
+
+  SubscribeInternal(script_state, /*observer_union=*/nullptr, internal_observer,
+                    options);
+
+  return promise;
 }
 
 void Observable::Trace(Visitor* visitor) const {
