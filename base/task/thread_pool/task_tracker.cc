@@ -122,7 +122,12 @@ auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
-ABSL_CONST_INIT thread_local bool fizzle_block_shutdown_tasks = false;
+// If this is greater than 0 on a given thread, it will ignore the DCHECK which
+// prevents posting BLOCK_SHUTDOWN tasks after shutdown. There are cases where
+// posting back to a BLOCK_SHUTDOWN sequence is a coincidence rather than part
+// of a shutdown blocking series of tasks, this prevents racy DCHECKs in those
+// cases.
+ABSL_CONST_INIT thread_local int fizzle_block_shutdown_tasks_ref = 0;
 
 }  // namespace
 
@@ -320,13 +325,17 @@ bool TaskTracker::WillPostTask(Task* task,
     // A non BLOCK_SHUTDOWN task is allowed to be posted iff shutdown hasn't
     // started and the task is not delayed.
     if (shutdown_behavior != TaskShutdownBehavior::BLOCK_SHUTDOWN ||
-        !task->delayed_run_time.is_null() || fizzle_block_shutdown_tasks) {
+        !task->delayed_run_time.is_null() ||
+        fizzle_block_shutdown_tasks_ref > 0) {
       return false;
     }
 
-    // A BLOCK_SHUTDOWN task posted after shutdown has completed without setting
-    // `fizzle_block_shutdown_tasks` is an ordering bug. This aims to catch
-    // those early.
+    // A BLOCK_SHUTDOWN task posted after shutdown has completed is an ordering
+    // bug. This aims to catch those early. In some cases it's a racy
+    // coincidence (i.e. posting back to a BLOCK_SHUTDOWN sequence from a task
+    // that wasn't itself guaranteed to finish before shutdown), in those cases
+    // a ScopedFizzleBlockShutdownTasks can bump
+    // `fizzle_block_shutdown_tasks_ref` to bypass this DCHECK.
     CheckedAutoLock auto_lock(shutdown_lock_);
     DCHECK(shutdown_event_);
     DCHECK(!shutdown_event_->IsSignaled())
@@ -426,11 +435,11 @@ bool TaskTracker::IsShutdownComplete() const {
 }
 
 void TaskTracker::BeginFizzlingBlockShutdownTasks() {
-  fizzle_block_shutdown_tasks = true;
+  ++fizzle_block_shutdown_tasks_ref;
 }
 
 void TaskTracker::EndFizzlingBlockShutdownTasks() {
-  fizzle_block_shutdown_tasks = false;
+  CHECK_GE(--fizzle_block_shutdown_tasks_ref, 0);
 }
 
 void TaskTracker::RunTask(Task task,
@@ -440,11 +449,28 @@ void TaskTracker::RunTask(Task task,
 
   const auto environment = task_source->GetExecutionEnvironment();
 
+  struct BlockShutdownTaskFizzler {
+    BlockShutdownTaskFizzler() {
+      // Nothing outside RunTask should be bumping
+      // `fizzle_block_shutdown_tasks_ref`.
+      DCHECK_EQ(fizzle_block_shutdown_tasks_ref, 0);
+      ++fizzle_block_shutdown_tasks_ref;
+    }
+    ~BlockShutdownTaskFizzler() {
+      --fizzle_block_shutdown_tasks_ref;
+      // The refs should be balanced after running the task.
+      DCHECK_EQ(fizzle_block_shutdown_tasks_ref, 0);
+    }
+  };
   absl::optional<ScopedDisallowSingleton> disallow_singleton;
   absl::optional<ScopedDisallowBlocking> disallow_blocking;
   absl::optional<ScopedDisallowBaseSyncPrimitives> disallow_sync_primitives;
-  if (traits.shutdown_behavior() == TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN)
+  absl::optional<BlockShutdownTaskFizzler> fizzle_block_shutdown_tasks;
+  if (traits.shutdown_behavior() ==
+      TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN) {
     disallow_singleton.emplace();
+    fizzle_block_shutdown_tasks.emplace();
+  }
   if (!traits.may_block())
     disallow_blocking.emplace();
   if (!traits.with_base_sync_primitives())
