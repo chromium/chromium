@@ -390,9 +390,9 @@ class FakeModelHandler : public HistoryClustersModuleRankingModelHandler {
     std::vector<float> outputs;
     outputs.reserve(inputs->size());
     for (const auto& input : *inputs) {
-      float score = input.belongs_to_boosted_category ? -1 : 0;
+      float score = input.belongs_to_boosted_category ? 1 : 0;
       outputs.push_back(
-          score - static_cast<float>(
+          score + static_cast<float>(
                       input.duration_since_most_recent_visit.InMinutes()));
       ;
     }
@@ -610,23 +610,23 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   // Ordered as [3, 2, 1].
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
-      ElementsAre(
-          ElementsAre(
-              history_clusters::testing::VisitResult(2, 1.0, {}, u"search"),
-              history_clusters::testing::VisitResult(4, 0.3),
-              history_clusters::testing::VisitResult(1, 0.0)),
-          ElementsAre(
-              history_clusters::testing::VisitResult(222, 1.0, {}, u"search"),
-              history_clusters::testing::VisitResult(111, 0.8),
-              history_clusters::testing::VisitResult(444, 0.6)),
-          ElementsAre(
-              history_clusters::testing::VisitResult(223, 1.0, {}, u"search"),
-              history_clusters::testing::VisitResult(112, 0.8),
-              history_clusters::testing::VisitResult(445, 0.6))));
+      ElementsAre(ElementsAre(history_clusters::testing::VisitResult(
+                                  223, 1.0, {}, u"search"),
+                              history_clusters::testing::VisitResult(112, 0.8),
+                              history_clusters::testing::VisitResult(445, 0.6)),
+                  ElementsAre(history_clusters::testing::VisitResult(
+                                  222, 1.0, {}, u"search"),
+                              history_clusters::testing::VisitResult(111, 0.8),
+                              history_clusters::testing::VisitResult(444, 0.6)),
+                  ElementsAre(history_clusters::testing::VisitResult(2, 1.0, {},
+                                                                     u"search"),
+                              history_clusters::testing::VisitResult(4, 0.3),
+                              history_clusters::testing::VisitResult(1, 0.0))));
 
   histogram_tester_.ExpectBucketCount(
       "NewTabPage.HistoryClusters.CartAssociationStatus",
-      commerce::CartHistoryClusterAssociationStatus::kAssociatedWithTopCluster,
+      commerce::CartHistoryClusterAssociationStatus::
+          kAssociatedWithNonTopCluster,
       1);
 
   ASSERT_EQ(ranking_signals.size(), 3u);
@@ -683,7 +683,7 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailableScoreThreshold) {
       RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
 
   ASSERT_EQ(clusters.size(), 1u);
-  ASSERT_EQ(clusters[0].cluster_id, 1);
+  ASSERT_EQ(clusters[0].cluster_id, 2);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
