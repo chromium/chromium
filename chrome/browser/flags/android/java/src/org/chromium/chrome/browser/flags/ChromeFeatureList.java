@@ -426,6 +426,7 @@ public abstract class ChromeFeatureList {
     public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
     public static final String SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID =
             "ShowScrollableMVTOnNtpPhoneAndroid";
+    public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
@@ -587,6 +588,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShowNtpAtStartupAndroid =
             newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
+    public static final CachedFlag sSmallerTabStripTitleLimit =
+            newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, false);
     public static final CachedFlag sStartSurfaceAndroid =
             newCachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceOnTablet =
@@ -680,6 +683,7 @@ public abstract class ChromeFeatureList {
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSearchEngineChoice,
                     sShowNtpAtStartupAndroid,
+                    sSmallerTabStripTitleLimit,
                     sStartSurfaceAndroid,
                     sStartSurfaceOnTablet,
                     sStartSurfaceRefactor,

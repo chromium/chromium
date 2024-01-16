@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Typeface;
+import android.os.SystemClock;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -19,7 +20,9 @@ import android.view.InflateException;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** A factory that creates text and favicon bitmaps. */
 public class TitleBitmapFactory {
@@ -29,6 +32,10 @@ public class TitleBitmapFactory {
     // Canvas#drawText() seems to fail when trying to draw 4100 or more characters.
     // See https://crbug.com/524390/ for more details.
     private static final int MAX_NUM_TITLE_CHAR = 1000;
+
+    // We were drawing up to 1000 characters, but only displaying ~30 in the tab strip. Experiment
+    // with a smaller limit.
+    private static final int SMALLER_MAX_NUM_TITLE_CHAR = 100;
 
     private final int mMaxWidth;
 
@@ -120,6 +127,7 @@ public class TitleBitmapFactory {
      */
     public Bitmap getTitleBitmap(Context context, String title) {
         try {
+            final long startTime = SystemClock.elapsedRealtime();
             boolean drawText = !TextUtils.isEmpty(title);
             int textWidth =
                     drawText ? (int) Math.ceil(Layout.getDesiredWidth(title, mTextPaint)) : 0;
@@ -133,10 +141,14 @@ public class TitleBitmapFactory {
                             Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b);
             if (drawText) {
+                final int maxCharsToDraw =
+                        ChromeFeatureList.sSmallerTabStripTitleLimit.isEnabled()
+                                ? SMALLER_MAX_NUM_TITLE_CHAR
+                                : MAX_NUM_TITLE_CHAR;
                 c.drawText(
                         title,
                         0,
-                        Math.min(MAX_NUM_TITLE_CHAR, title.length()),
+                        Math.min(maxCharsToDraw, title.length()),
                         0,
                         Math.round((mViewHeight - mTextHeight) / 2.0f + mTextYOffset),
                         mTextPaint);
@@ -144,6 +156,10 @@ public class TitleBitmapFactory {
 
             // Set bolded tab title text back to normal.
             mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+
+            RecordHistogram.recordTimesHistogram(
+                    "Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Duration",
+                    SystemClock.elapsedRealtime() - startTime);
 
             return b;
         } catch (OutOfMemoryError ex) {

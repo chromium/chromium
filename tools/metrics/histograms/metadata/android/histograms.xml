@@ -4163,6 +4163,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Duration"
+    units="ms" expires_after="2024-04-01">
+  <owner>peilinwang@google.com</owner>
+  <summary>
+    The duration of TitleBitmapFactory.getTitleBitmap, recorded once per call.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabSwitcher.CreationTime" units="ms"
     expires_after="2024-06-30">
   <owner>skavuluru@chromium.org</owner>
