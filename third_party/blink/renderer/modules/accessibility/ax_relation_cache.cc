@@ -311,6 +311,10 @@ void AXRelationCache::UpdateReverseOwnsRelations(Element& relation_source) {
 // root, it discovers that any other two objects are repeated in the ancestor
 // chain, this is unexpected, and results in the CHECK(false) condition.
 static bool ContainsCycle(AXObject* owner, AXObject* child) {
+  if (FlatTreeTraversal::IsDescendantOf(*owner->GetNode(), *child->GetNode())) {
+    // A DOM descendant cannot own its ancestor.
+    return true;
+  }
   HashSet<AXID> visited;
   // Walk up the parents of the owner object, make sure that this child
   // doesn't appear there, as that would create a cycle.
