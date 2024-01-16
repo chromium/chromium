@@ -3,6 +3,10 @@
     fill: var(--cros-sys-primary);
     margin-inline-end: 16px;
   }
+
+  #textContainer {
+    padding-inline-end: var(--cr-section-padding);
+  }
 </style>
 
 <settings-card header-text="$i18n{onStartupSettingsCardTitle}">
@@ -11,7 +15,7 @@
       <iron-icon id="restoreIcon" icon="os-settings:restore-revamp">
       </iron-icon>
     </template>
-    <div class="start settings-box-text" aria-hidden="true">
+    <div id="textContainer" class="start settings-box-text" aria-hidden="true">
       $i18n{onStartupTitle}
       <div class="secondary">$i18n{onStartupDescription}</div>
     </div>
