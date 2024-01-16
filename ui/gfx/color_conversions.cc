@@ -392,6 +392,14 @@ std::tuple<float, float, float> XYZD65ToD50(float x, float y, float z) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> SRGBToSRGBLegacy(float r, float g, float b) {
+  return std::make_tuple(r * 255.0, g * 255.0, b * 255.0);
+}
+
+std::tuple<float, float, float> SRGBLegacyToSRGB(float r, float g, float b) {
+  return std::make_tuple(r / 255.0, g / 255.0, b / 255.0);
+}
+
 std::tuple<float, float, float> XYZD50TosRGB(float x, float y, float z) {
   skcms_Vector3 xyz_input{{x, y, z}};
   skcms_Vector3 rgb_result =
