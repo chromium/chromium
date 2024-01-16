@@ -790,7 +790,8 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
           image_dict.FindString("background_image");
       const std::string* thumbnail_image =
           image_dict.FindString("thumbnail_image");
-      if (!background_image || !thumbnail_image) {
+      const std::string* description = image_dict.FindString("description");
+      if (!background_image || !thumbnail_image || !description) {
         continue;
       }
       auto mojo_inspiration =
@@ -800,6 +801,7 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
           GURL(base::StrCat({kGstaticBaseURL, *background_image}));
       mojo_inspiration->thumbnail_url =
           GURL(base::StrCat({kGstaticBaseURL, *thumbnail_image}));
+      mojo_inspiration->description = *description;
       mojo_inspiration_list.push_back(std::move(mojo_inspiration));
     }
     mojo_inspiration_group->inspirations = std::move(mojo_inspiration_list);

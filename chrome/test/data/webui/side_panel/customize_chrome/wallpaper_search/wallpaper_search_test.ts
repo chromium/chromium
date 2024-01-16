@@ -1488,6 +1488,7 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
@@ -1544,11 +1545,13 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description foo',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
                 {
                   id: {high: BigInt(8), low: BigInt(2)},
+                  description: 'Description bar',
                   backgroundUrl: {url: 'https://example.com/bar_1.png'},
                   thumbnailUrl: {url: 'https://example.com/bar_2.png'},
                 },
@@ -1564,6 +1567,7 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(7), low: BigInt(2)},
+                  description: 'Description baz',
                   backgroundUrl: {url: 'https://example.com/baz_1.png'},
                   thumbnailUrl: {url: 'https://example.com/baz_2.png'},
                 },
@@ -1599,16 +1603,19 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           'https://example.com/foo_2.png',
           (inspirations[0]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+      assertEquals('Description foo', inspirations[0]!.ariaLabel);
       assertEquals(inspirations[1], inspirationGridResults1[1]);
       assertEquals(
           'https://example.com/bar_2.png',
           (inspirations[1]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+      assertEquals('Description bar', inspirations[1]!.ariaLabel);
       const inspirationGridResults2 =
           inspirationsGroups[1]!.querySelectorAll('.tile.result');
       assertEquals(inspirations[2], inspirationGridResults2[0]);
       assertEquals(
           'https://example.com/baz_2.png',
           (inspirations[2]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+      assertEquals('Description baz', inspirations[2]!.ariaLabel);
     });
 
     test('descriptor titles format properly', async () => {
@@ -1624,6 +1631,7 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
@@ -1639,6 +1647,7 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
@@ -1672,6 +1681,7 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
@@ -1775,6 +1785,7 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
@@ -1801,11 +1812,13 @@ suite('WallpaperSearchTest', () => {
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description foo',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
                 },
                 {
                   id: {high: BigInt(8), low: BigInt(2)},
+                  description: 'Description bar',
                   backgroundUrl: {url: 'https://example.com/bar_1.png'},
                   thumbnailUrl: {url: 'https://example.com/bar_2.png'},
                 },

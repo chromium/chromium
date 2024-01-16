@@ -1487,10 +1487,12 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             "descriptor_a": "foobar",
             "images": [
                 {
+                    "description": "Description foo",
                     "background_image": "foo_1.png",
                     "thumbnail_image": "foo_2.png"
                 },
                 {
+                    "description": "Description bar",
                     "background_image": "bar_1.png",
                     "thumbnail_image": "bar_2.png"
                 }
@@ -1500,6 +1502,7 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             "descriptor_a": "baz",
             "images": [
                 {
+                    "description": "Description baz",
                     "background_image": "baz_1.png",
                     "thumbnail_image": "baz_2.png"
                 }
@@ -1521,11 +1524,13 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             base::StrCat({kGstaticBaseURL, "foo_1.png"}));
   EXPECT_EQ(foo_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "foo_2.png"}));
+  EXPECT_EQ(foo_inspiration->description, "Description foo");
   const auto& bar_inspiration = inspiration_a[1];
   EXPECT_EQ(bar_inspiration->background_url,
             base::StrCat({kGstaticBaseURL, "bar_1.png"}));
   EXPECT_EQ(bar_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "bar_2.png"}));
+  EXPECT_EQ(bar_inspiration->description, "Description bar");
   const auto& inspiration_group_b = inspiration_groups[1];
   EXPECT_EQ("baz", inspiration_group_b->descriptors->subject);
   const auto& inspiration_b = inspiration_group_b->inspirations;
@@ -1535,6 +1540,7 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             base::StrCat({kGstaticBaseURL, "baz_1.png"}));
   EXPECT_EQ(baz_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "baz_2.png"}));
+  EXPECT_EQ(baz_inspiration->description, "Description baz");
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {

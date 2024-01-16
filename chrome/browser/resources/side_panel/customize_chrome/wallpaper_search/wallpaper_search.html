@@ -454,7 +454,8 @@
             <template is="dom-repeat" items="[[item.inspirations]]">
               <div class="tile result" on-click="onInspirationImageClick_"
                   tabindex="0" role="button"
-                  aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]">
+                  aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]"
+                  aria-label="[[item.description]]">
                 <customize-chrome-check-mark-wrapper class="image-check-mark"
                   checked="[[isBackgroundSelected_(item.id, theme_)]]">
                   <div class="image-container">

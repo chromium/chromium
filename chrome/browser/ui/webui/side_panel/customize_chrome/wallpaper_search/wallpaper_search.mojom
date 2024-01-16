@@ -44,6 +44,7 @@ struct Descriptors {
 
 struct Inspiration {
   mojo_base.mojom.Token id;
+  string description;
   url.mojom.Url background_url;
   url.mojom.Url thumbnail_url;
 };
