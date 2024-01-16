@@ -1739,5 +1739,63 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!inspirationCard);
       assertFalse((inspirationCard as HTMLElement).hidden);
     });
+
+    test('current inspiration theme is checked', async () => {
+      createWallpaperSearchElement(
+          /*descriptors=*/ null, /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+                {
+                  id: {high: BigInt(8), low: BigInt(2)},
+                  backgroundUrl: {url: 'https://example.com/bar_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/bar_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+
+      // Set a default theme.
+      let theme = createTheme();
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(wallpaperSearchElement);
+      // There should be no checked tiles.
+      assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
+
+      // Set theme to the inspiration.
+      theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('');
+      theme.backgroundImage.localBackgroundId = {
+        high: BigInt(10),
+        low: BigInt(1),
+      };
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // The first inspiration should be the only tile checked.
+      const firstResult = $$(
+          wallpaperSearchElement, '#inspirationCard .tile .image-check-mark');
+      const checkedResults =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '.tile [checked]');
+      assertEquals(1, checkedResults.length);
+      assertEquals(firstResult, checkedResults[0]);
+      assertEquals(
+          'true',
+          checkedResults[0]!.parentElement!.getAttribute('aria-current'));
+    });
   });
 });

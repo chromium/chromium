@@ -451,11 +451,15 @@
           <cr-grid columns="3" disable-arrow-navigation>
             <template is="dom-repeat" items="[[item.inspirations]]">
               <div class="tile result" on-click="onInspirationImageClick_"
-                  tabindex="0" role="button">
-                <div class="image-container">
-                  <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]">
-                  </img>
-                </div>
+                  tabindex="0" role="button"
+                  aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]">
+                <customize-chrome-check-mark-wrapper class="image-check-mark"
+                  checked="[[isBackgroundSelected_(item.id, theme_)]]">
+                  <div class="image-container">
+                    <img is="cr-auto-img"
+                        auto-src="[[item.thumbnailUrl.url]]"></img>
+                  </div>
+                </customize-chrome-check-mark-wrapper>
               </div>
             </template>
           </cr-grid>
