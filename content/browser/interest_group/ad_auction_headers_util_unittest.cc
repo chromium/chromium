@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base64url.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -427,7 +428,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
   EXPECT_TRUE(headers->HasHeader(kAdAuctionResultResponseHeaderKey));
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   EXPECT_TRUE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
@@ -454,7 +455,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
   EXPECT_TRUE(headers->HasHeader(kAdAuctionResultResponseHeaderKey));
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       url::Origin::Create(GURL("https://foo1.com")),
@@ -470,7 +471,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest, AdAuctionSignalsResponseHeader) {
   scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   // The `Ad-Auction-Signals` header was removed from the headers and
   // stored in the browser.
@@ -496,7 +497,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
   scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   // The `Ad-Auction-Signals` header was removed from the headers, even though
   // it wasn't stored in the browser.
@@ -515,7 +516,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest, AdditionalBid) {
   scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   // The `Ad-Auction-Additional-Bid` header was removed from the headers and
   // stored in the browser.
@@ -545,7 +546,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
   scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   // The `Ad-Auction-Additional-Bid` header was removed from the headers and
   // stored in the browser.
@@ -584,7 +585,7 @@ TEST_F(ProcessAdAuctionResponseHeadersTest,
   scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
 
   ProcessAdAuctionResponseHeaders(url::Origin::Create(GURL("https://foo1.com")),
-                                  web_contents()->GetPrimaryPage(), *headers);
+                                  web_contents()->GetPrimaryPage(), headers);
 
   // The `Ad-Auction-Additional-Bid` header was removed from the headers and
   // stored in the browser.
@@ -613,7 +614,7 @@ TEST(RemoveAdAuctionResponseHeadersTest,
                             "00000000-0000-0000-0000-000000000000:e30=");
   scoped_refptr<net::HttpResponseHeaders> headers = headers_builder.Build();
 
-  RemoveAdAuctionResponseHeaders(*headers);
+  RemoveAdAuctionResponseHeaders(headers);
 
   // Only the signals and additional bid headers are removed.
   EXPECT_TRUE(headers->HasHeader(kAdAuctionResultResponseHeaderKey));

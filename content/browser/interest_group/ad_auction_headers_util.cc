@@ -12,6 +12,7 @@
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -217,17 +218,21 @@ void ParseAdAuctionAdditionalBidResponseHeader(
 // an unsandboxed process. As such, minimize the amount of parsing done in this
 // function, and instead separate it into distinct functions that are covered
 // by fuzz tests.
-void ProcessAdAuctionResponseHeaders(const url::Origin& request_origin,
-                                     Page& page,
-                                     net::HttpResponseHeaders& headers) {
+void ProcessAdAuctionResponseHeaders(
+    const url::Origin& request_origin,
+    Page& page,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  if (!headers) {
+    return;
+  }
   AdAuctionPageData* ad_auction_page_data =
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
     std::string ad_auction_results;
-    if (headers.GetNormalizedHeader(kAdAuctionResultResponseHeaderKey,
-                                    &ad_auction_results)) {
+    if (headers->GetNormalizedHeader(kAdAuctionResultResponseHeaderKey,
+                                     &ad_auction_results)) {
       for (const std::string& parsed_result :
            ParseAdAuctionResultResponseHeader(ad_auction_results)) {
         ad_auction_page_data->AddAuctionResultWitnessForOrigin(request_origin,
@@ -239,8 +244,8 @@ void ProcessAdAuctionResponseHeaders(const url::Origin& request_origin,
 
   if (base::FeatureList::IsEnabled(blink::features::kAdAuctionSignals)) {
     std::string ad_auction_signals;
-    if (headers.GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey,
-                                    &ad_auction_signals)) {
+    if (headers->GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey,
+                                     &ad_auction_signals)) {
       if (ad_auction_signals.size() <=
           static_cast<size_t>(
               blink::features::kAdAuctionSignalsMaxSizeBytes.Get())) {
@@ -249,13 +254,13 @@ void ProcessAdAuctionResponseHeaders(const url::Origin& request_origin,
       }
     }
   }
-  headers.RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
+  headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
 
   if (base::FeatureList::IsEnabled(blink::features::kFledgeNegativeTargeting)) {
     std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
     size_t iter = 0;
     std::string header_line;
-    while (headers.EnumerateHeader(
+    while (headers->EnumerateHeader(
         &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
       ParseAdAuctionAdditionalBidResponseHeader(header_line,
                                                 nonce_additional_bids_map);
@@ -265,13 +270,17 @@ void ProcessAdAuctionResponseHeaders(const url::Origin& request_origin,
           request_origin, nonce_additional_bids_map);
     }
   }
-  headers.RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
+  headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }
 
-void RemoveAdAuctionResponseHeaders(net::HttpResponseHeaders& headers) {
+void RemoveAdAuctionResponseHeaders(
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  if (!headers) {
+    return;
+  }
   // We intentionally leave the `Ad-Auction-Result` response header in place.
-  headers.RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
-  headers.RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
+  headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
+  headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }
 
 }  // namespace content

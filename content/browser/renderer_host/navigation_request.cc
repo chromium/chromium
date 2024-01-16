@@ -5718,11 +5718,12 @@ void NavigationRequest::CommitNavigation() {
     }
   }
 
-  if (ad_auction_headers_eligible_ && response_head_->headers) {
-    ProcessAdAuctionResponseHeaders(origin, GetRenderFrameHost()->GetPage(),
-                                    *response_head_->headers);
-  } else if (has_ad_auction_headers_attribute_ && response_head_->headers) {
-    RemoveAdAuctionResponseHeaders(*response_head_->headers);
+  if (ad_auction_headers_eligible_) {
+    ProcessAdAuctionResponseHeaders(origin,
+                                    GetRenderFrameHost()->GetPage(),
+                                    response() ? response()->headers : nullptr);
+  } else if (has_ad_auction_headers_attribute_) {
+    RemoveAdAuctionResponseHeaders(response() ? response()->headers : nullptr);
   }
 
   if (!NavigationTypeUtils::IsSameDocument(common_params_->navigation_type)) {
