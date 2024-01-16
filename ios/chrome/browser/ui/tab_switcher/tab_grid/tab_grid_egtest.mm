@@ -449,9 +449,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that tapping Close All close also inactive tabs. Ensure it is correctly
-// recovered when pressing undo and there is no selection mode when there are
-// inactive tabs but no regular tabs.
+// Tests that tapping Close All also closes inactive tabs. Ensures it is
+// correctly recovered when pressing undo and there is no selection mode when
+// there are inactive tabs but no regular tabs.
 - (void)testCloseAllAndUndoCloseAllWithInactiveTabs {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
@@ -466,6 +466,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                   @"been in inactive tab grid.");
   GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
+
+  // Verify that the Inactive Tabs button is showing.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_notNil()];
 
   // Ensure the edit button is visible.
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
@@ -487,6 +491,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
                   @"Expected all inactive tab to be closed.");
 
+  // Verify that the Inactive Tabs button is not showing.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_nil()];
+
   // Tap Undo button.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
@@ -498,6 +506,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                   @"Expected 4 inactive tabs.");
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the Inactive Tabs button is showing again.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_notNil()];
 
   // Closing the only tab in the regular tab grid and verify there is an empty
   // grid.

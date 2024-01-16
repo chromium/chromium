@@ -1239,6 +1239,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didCloseAll {
   self.isClosingAllOrUndoRunning = NO;
+  [self updateTabsSectionHeaderType];
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
@@ -1248,6 +1249,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didUndoCloseAll {
   self.isClosingAllOrUndoRunning = NO;
+  [self updateTabsSectionHeaderType];
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
