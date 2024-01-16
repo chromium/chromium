@@ -72,7 +72,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 addPermanentFolder(
                         BookmarkType.NORMAL,
                         /* parent= */ null,
-                        /* title= */ null,
+                        /* title= */ "",
                         /* isAccountBookmark= */ false);
         mOtherFolderId =
                 addPermanentFolder(
@@ -121,7 +121,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 parent,
                 title,
                 url,
-                /* isFolder= */ true,
+                /* isFolder= */ false,
                 /* isEditable= */ true,
                 /* isManaged= */ false,
                 /* read= */ false,
@@ -253,7 +253,9 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public void getTopLevelFolderIds(
-                long nativeBookmarkBridge, List<BookmarkId> bookmarksList) {
+                long nativeBookmarkBridge,
+                boolean ignoreVisibility,
+                List<BookmarkId> bookmarksList) {
             bookmarksList.addAll(FakeBookmarkModel.this.getChildIds(mRootFolderId));
 
             // Remove all account folders if the feature flag is disabled.

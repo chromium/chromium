@@ -60,6 +60,14 @@ public class BookmarkUtilsTest {
     }
 
     @Test
+    public void testCanAddFolderToParent_accountFolders() {
+        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        assertFalse(
+                BookmarkUtils.canAddFolderToParent(
+                        fakeBookmarkModel, fakeBookmarkModel.getAccountReadingListFolder()));
+    }
+
+    @Test
     public void testCanAddFolderToParent() {
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
         assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));

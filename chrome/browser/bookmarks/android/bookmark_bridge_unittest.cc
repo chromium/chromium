@@ -200,18 +200,32 @@ TEST_F(BookmarkBridgeTest, TestGetMostRecentlyAddedUserBookmarkIdForUrl) {
 
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
   std::vector<const BookmarkNode*> folders =
-      bookmark_bridge()->GetTopLevelFolderIdsImpl();
+      bookmark_bridge()->GetTopLevelFolderIdsImpl(
+          /*ignore_visibility=*/false);
 
   // The 2 folders should be: mobile bookmarks, reading list.
   EXPECT_EQ(2u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
 
+  // When ignoring visibility, all top-level folders should be visible.
+  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
+      /*ignore_visibility=*/true);
+
+  // The 2 folders should be: mobile bookmarks, reading list.
+  EXPECT_EQ(5u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
+  EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
+  EXPECT_EQ(u"Managed bookmarks", folders[3]->GetTitle());
+  EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
+
   // Adding a bookmark to the bookmark bar will include it in the top level
   // folders that are returned.
   AddURL(bookmark_model()->bookmark_bar_node(), 0, u"first",
          GURL("http://foo.com"));
-  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl();
+  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
+      /*ignore_visibility=*/false);
   EXPECT_EQ(3u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
@@ -222,7 +236,8 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*account_reading_list_enabled=*/true);
   std::vector<const BookmarkNode*> folders =
-      bookmark_bridge()->GetTopLevelFolderIdsImpl();
+      bookmark_bridge()->GetTopLevelFolderIdsImpl(
+          /*ignore_visibility=*/false);
 
   // The 2 folders should be: mobile bookmarks, reading list.
   EXPECT_EQ(3u, folders.size());
@@ -237,7 +252,8 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   // folders that are returned.
   AddURL(bookmark_model()->bookmark_bar_node(), 0, u"first",
          GURL("http://foo.com"));
-  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl();
+  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
+      /*ignore_visibility=*/false);
   EXPECT_EQ(4u, folders.size());
   EXPECT_EQ(u"Reading list", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));

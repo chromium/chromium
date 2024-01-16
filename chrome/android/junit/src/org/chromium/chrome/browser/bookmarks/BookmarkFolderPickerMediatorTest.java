@@ -426,14 +426,6 @@ public class BookmarkFolderPickerMediatorTest {
     }
 
     @Test
-    public void testRootFolder() {
-        mMediator.populateFoldersForParentId(mRootFolderId);
-        assertEquals(4, mModelList.size());
-        assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
-    }
-
-    @Test
     public void testOptionsItemSelected_BackPressed() {
         mMediator.optionsItemSelected(android.R.id.home);
         assertEquals(
@@ -488,6 +480,27 @@ public class BookmarkFolderPickerMediatorTest {
     }
 
     @Test
+    public void testRootFolders() {
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkId id =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        0,
+                        "title",
+                        new GURL("https://google.com"));
+        remakeMediator(bookmarkModel, id);
+
+        mMediator.populateFoldersForParentId(bookmarkModel.getRootFolderId());
+        assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+        BookmarkModelListTestUtil.verifyModelListHaViewTypes(
+                mModelList,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testRootFolders_withAccount() {
         BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
@@ -506,6 +519,7 @@ public class BookmarkFolderPickerMediatorTest {
                 ViewType.SECTION_HEADER,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.SECTION_HEADER,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);

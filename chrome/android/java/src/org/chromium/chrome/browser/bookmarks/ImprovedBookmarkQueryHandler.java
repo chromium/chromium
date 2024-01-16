@@ -72,6 +72,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
             applyPowerFilters(bookmarkListEntries, powerFilter);
             sortByStoredPref(bookmarkListEntries);
             if (parentId.equals(mBookmarkModel.getRootFolderId())) {
+                sortByAccountStatus(bookmarkListEntries);
                 maybeInsertLocalSectionHeader(bookmarkListEntries);
             }
         }
@@ -87,6 +88,20 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                 mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query, powerFilter);
         applyPowerFilters(bookmarkListEntries, powerFilter);
         sortByStoredPref(bookmarkListEntries);
+        sortByAccountStatus(bookmarkListEntries);
+        return bookmarkListEntries;
+    }
+
+    @Override
+    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(
+            BookmarkId parentId, boolean movingFolder) {
+        List<BookmarkListEntry> bookmarkListEntries =
+                mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId, movingFolder);
+        sortByStoredPref(bookmarkListEntries);
+        if (parentId.equals(mBookmarkModel.getRootFolderId())) {
+            sortByAccountStatus(bookmarkListEntries);
+            maybeInsertLocalSectionHeader(bookmarkListEntries);
+        }
         return bookmarkListEntries;
     }
 
@@ -99,13 +114,6 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                 (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
                     BookmarkItem item1 = entry1.getBookmarkItem();
                     BookmarkItem item2 = entry2.getBookmarkItem();
-
-                    // Sort account-bound bookmarks before anything else.
-                    int accountComparison =
-                            Boolean.compare(item2.isAccountBookmark(), item1.isAccountBookmark());
-                    if (accountComparison != 0) {
-                        return accountComparison;
-                    }
 
                     // Sort folders before urls.
                     int folderComparison = Boolean.compare(item2.isFolder(), item1.isFolder());
@@ -121,6 +129,18 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                     // Fall back to id in case other fields tie. Order will be arbitrary but
                     // consistent.
                     return Long.compare(item1.getId().getId(), item2.getId().getId());
+                });
+    }
+
+    private void sortByAccountStatus(List<BookmarkListEntry> bookmarkListEntries) {
+        Collections.sort(
+                bookmarkListEntries,
+                (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
+                    BookmarkItem item1 = entry1.getBookmarkItem();
+                    BookmarkItem item2 = entry2.getBookmarkItem();
+
+                    // Sort account-bound bookmarks before anything else.
+                    return Boolean.compare(item2.isAccountBookmark(), item1.isAccountBookmark());
                 });
     }
 

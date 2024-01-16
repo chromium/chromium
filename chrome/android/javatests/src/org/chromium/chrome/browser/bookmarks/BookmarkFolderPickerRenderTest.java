@@ -264,6 +264,7 @@ public class BookmarkFolderPickerRenderTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mCoordinator.openFolderForTesting(mBookmarkModel.getRootFolderId()));
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
         mRenderTestRule.render(mContentView, "move_bookmark_from_root");
     }
 

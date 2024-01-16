@@ -390,14 +390,16 @@ void BookmarkBridge::GetAllFoldersWithDepths(
 
 void BookmarkBridge::GetTopLevelFolderIds(
     JNIEnv* env,
+    jboolean j_ignore_visibility,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
-  AddBookmarkNodesToBookmarkIdList(env, j_result_obj,
-                                   GetTopLevelFolderIdsImpl());
+  AddBookmarkNodesToBookmarkIdList(
+      env, j_result_obj, GetTopLevelFolderIdsImpl(j_ignore_visibility));
 }
-std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl() {
+std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
+    bool ignore_visibility) {
   std::vector<const BookmarkNode*> top_level_folders;
   // Query for the top-level folders:
   // bookmarks bar, mobile node, other node, and managed node (if it exists).
@@ -412,7 +414,7 @@ std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl() {
   }
 
   for (const auto& root_child : bookmark_model_->root_node()->children()) {
-    if (!root_child->IsVisible()) {
+    if (!ignore_visibility && !root_child->IsVisible()) {
       continue;
     }
 

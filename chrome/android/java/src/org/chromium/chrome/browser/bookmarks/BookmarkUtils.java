@@ -812,7 +812,8 @@ public class BookmarkUtils {
     public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
         if (!canAddBookmarkToParent(bookmarkModel, parentId)) return false;
         // TODO(crbug.com/1501998): Add account reading list folder support here.
-        if (Objects.equals(parentId, bookmarkModel.getLocalOrSyncableReadingListFolder())) {
+        if (Objects.equals(parentId, bookmarkModel.getLocalOrSyncableReadingListFolder())
+                || Objects.equals(parentId, bookmarkModel.getAccountReadingListFolder())) {
             return false;
         }
 

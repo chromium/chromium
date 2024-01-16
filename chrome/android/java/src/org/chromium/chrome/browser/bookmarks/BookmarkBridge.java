@@ -216,14 +216,27 @@ class BookmarkBridge {
 
     /**
      * @return The top level folders, including special folders (managed bookmarks, reading list,
-     *     partner bookmarks).
+     *     partner bookmarks). Will show empty folder according to the logic in BookmarkClient.
      */
     public List<BookmarkId> getTopLevelFolderIds() {
+        return getTopLevelFolderIds(/* ignoreVisibility= */ false);
+    }
+
+    /**
+     * @param ignoreVisibility Whether the visible while empty logic, found in BookmarkClient, is
+     *     used when gathering nodes. When true, all folders are shown regardless of client defined
+     *     visibility. When false, the client defined visibility rules are used. See
+     *     components/bookmarks/browser/bookmark_client.h for more information.
+     * @return The top level folders, including special folders (managed bookmarks, reading list,
+     *     partner bookmarks).
+     */
+    public List<BookmarkId> getTopLevelFolderIds(boolean ignoreVisibility) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getTopLevelFolderIds(mNativeBookmarkBridge, result);
+        BookmarkBridgeJni.get()
+                .getTopLevelFolderIds(mNativeBookmarkBridge, ignoreVisibility, result);
         return result;
     }
 
@@ -1020,7 +1033,10 @@ class BookmarkBridge {
 
         BookmarkItem getBookmarkById(long nativeBookmarkBridge, long id, int type);
 
-        void getTopLevelFolderIds(long nativeBookmarkBridge, List<BookmarkId> bookmarksList);
+        void getTopLevelFolderIds(
+                long nativeBookmarkBridge,
+                boolean ignoreVisibility,
+                List<BookmarkId> bookmarksList);
 
         BookmarkId getLocalOrSyncableReadingListFolder(long nativeBookmarkBridge);
 

@@ -373,6 +373,109 @@ public class ImprovedBookmarkQueryHandlerTest {
         assertEquals(0, result.size());
     }
 
+    @Test
+    public void testBuildBookmarkListForFolderSelect_rootFolder() {
+        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        mHandler =
+                new ImprovedBookmarkQueryHandler(
+                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+
+        doReturn(BookmarkRowSortOrder.ALPHABETICAL)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
+        List<BookmarkId> expected =
+                Arrays.asList(
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getMobileFolderId(),
+                        fakeBookmarkModel.getOtherFolderId(),
+                        fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
+        verifyBookmarkIds(expected, result);
+
+        result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
+        expected =
+                Arrays.asList(
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getMobileFolderId(),
+                        fakeBookmarkModel.getOtherFolderId());
+        verifyBookmarkIds(expected, result);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void
+            testBuildBookmarkListForFolderSelect_rootFolder_alphabetical_WithAccountBookmarks() {
+        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        mHandler =
+                new ImprovedBookmarkQueryHandler(
+                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+
+        doReturn(BookmarkRowSortOrder.ALPHABETICAL)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
+        List<BookmarkId> expected =
+                Arrays.asList(
+                        null, // account header
+                        fakeBookmarkModel.getAccountReadingListFolder(),
+                        null, // local header
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getMobileFolderId(),
+                        fakeBookmarkModel.getOtherFolderId(),
+                        fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
+        verifyBookmarkIds(expected, result);
+
+        result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
+        expected =
+                Arrays.asList(
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getMobileFolderId(),
+                        fakeBookmarkModel.getOtherFolderId());
+        verifyBookmarkIds(expected, result);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testBuildBookmarkListForFolderSelect_rootFolder_manual_WithAccountBookmarks() {
+        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        mHandler =
+                new ImprovedBookmarkQueryHandler(
+                        fakeBookmarkModel, mBookmarkUiPrefs, mShoppingService);
+
+        doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
+        List<BookmarkId> expected =
+                Arrays.asList(
+                        null, // account header
+                        fakeBookmarkModel.getAccountReadingListFolder(),
+                        null, // local header
+                        fakeBookmarkModel.getOtherFolderId(),
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getMobileFolderId(),
+                        fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
+        verifyBookmarkIds(expected, result);
+
+        result =
+                mHandler.buildBookmarkListForFolderSelect(
+                        mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
+        expected =
+                Arrays.asList(
+                        fakeBookmarkModel.getOtherFolderId(),
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getMobileFolderId());
+        verifyBookmarkIds(expected, result);
+    }
+
     private void verifyBookmarkIds(
             List<BookmarkId> expectedList, List<BookmarkListEntry> actualList) {
         assertEquals("Lists differ in size", expectedList.size(), actualList.size());

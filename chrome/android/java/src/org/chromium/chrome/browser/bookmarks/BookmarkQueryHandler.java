@@ -48,4 +48,15 @@ public interface BookmarkQueryHandler {
      */
     List<BookmarkListEntry> buildBookmarkListForSearch(
             @NonNull String query, @Nullable Set<PowerBookmarkType> powerFilter);
+
+    /**
+     * Builds entries for folder selection.
+     *
+     * @param parentId The id of the parent.
+     * @param movingFolder True if a folder is being moved.
+     * @return The list of bookmarks to shown, includes all root folder even if they're empty.
+     *     Result is a list of valid folders locations.
+     */
+    List<BookmarkListEntry> buildBookmarkListForFolderSelect(
+            @NonNull BookmarkId parentId, boolean movingFolder);
 }
