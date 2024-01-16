@@ -32,8 +32,6 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-constexpr char16_t kContainerTitle[] = u"Editor Menu Textfield";
-
 constexpr gfx::Size kArrowButtonSize(20, 20);
 constexpr gfx::Insets kArrowButtonInsets(4);
 constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
@@ -88,11 +86,6 @@ void EditorMenuTextfieldView::Layout() {
   // Update the placeholder text based on the widget width.
   textfield_->SetPlaceholderText(
       GetPlaceholderText(editor_menu_mode_, width()));
-}
-
-void EditorMenuTextfieldView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(kContainerTitle);
 }
 
 void EditorMenuTextfieldView::ContentsChanged(
