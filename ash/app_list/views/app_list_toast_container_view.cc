@@ -92,6 +92,7 @@ AppListToastContainerView::AppListToastContainerView(
 }
 
 AppListToastContainerView::~AppListToastContainerView() {
+  set_context_menu_controller(nullptr);
   toast_view_ = nullptr;
 }
 

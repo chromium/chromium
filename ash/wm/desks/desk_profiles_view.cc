@@ -258,6 +258,7 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
 }
 
 DeskProfilesButton::~DeskProfilesButton() {
+  set_context_menu_controller(nullptr);
   if (desk_) {
     desk_->RemoveObserver(this);
   }

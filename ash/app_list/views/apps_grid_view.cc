@@ -386,6 +386,8 @@ AppsGridView::~AppsGridView() {
     item_list_->RemoveObserver(this);
   }
 
+  set_context_menu_controller(nullptr);
+
   // Abort reorder animation before `view_model_` is cleared.
   MaybeAbortWholeGridAnimation();
 

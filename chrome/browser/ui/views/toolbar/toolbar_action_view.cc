@@ -80,6 +80,7 @@ ToolbarActionView::ToolbarActionView(
 }
 
 ToolbarActionView::~ToolbarActionView() {
+  set_context_menu_controller(nullptr);
   view_controller_->SetDelegate(nullptr);
 }
 

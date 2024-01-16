@@ -178,7 +178,9 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
       frame_context_menu_controller_.get());
 }
 
-NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
+NonClientFrameViewAsh::~NonClientFrameViewAsh() {
+  header_view_->set_context_menu_controller(nullptr);
+}
 
 // static
 NonClientFrameViewAsh* NonClientFrameViewAsh::Get(aura::Window* window) {

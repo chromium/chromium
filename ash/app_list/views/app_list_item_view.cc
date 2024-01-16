@@ -685,6 +685,7 @@ void AppListItemView::InitializeIconLoader() {
 }
 
 AppListItemView::~AppListItemView() {
+  set_context_menu_controller(nullptr);
   if (item_weak_) {
     item_weak_->RemoveObserver(this);
   }

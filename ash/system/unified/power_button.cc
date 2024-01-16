@@ -414,7 +414,9 @@ PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
                                    /*highlight_on_focus=*/false);
 }
 
-PowerButton::~PowerButton() = default;
+PowerButton::~PowerButton() {
+  set_context_menu_controller(nullptr);
+}
 
 bool PowerButton::IsMenuShowing() {
   auto* menu_runner = context_menu_->menu_runner_.get();
