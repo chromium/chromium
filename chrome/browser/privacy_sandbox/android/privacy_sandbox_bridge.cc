@@ -73,6 +73,12 @@ JNI_PrivacySandboxBridge_GetBlockedTopics(JNIEnv* env) {
   return ToJavaTopicsArray(env, GetPrivacySandboxService()->GetBlockedTopics());
 }
 
+static ScopedJavaLocalRef<jobjectArray>
+JNI_PrivacySandboxBridge_GetFirstLevelTopics(JNIEnv* env) {
+  return ToJavaTopicsArray(env,
+                           GetPrivacySandboxService()->GetFirstLevelTopics());
+}
+
 static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
                                                      jint topic_id,
                                                      jint taxonomy_version,

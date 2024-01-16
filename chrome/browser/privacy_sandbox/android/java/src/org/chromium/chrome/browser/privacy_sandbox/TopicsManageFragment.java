@@ -10,9 +10,12 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+
+import java.util.List;
 
 /** Fragment for managing all the topics. */
 public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
@@ -36,6 +39,18 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                                 "</link>",
                                 new NoUnderlineClickableSpan(
                                         getContext(), this::onLearnMoreClicked))));
+
+        populateTopics();
+    }
+
+    private void populateTopics() {
+        mTopicsCategory.removeAll();
+        List<Topic> topics = PrivacySandboxBridge.getFirstLevelTopics();
+        for (Topic topic : topics) {
+            ChromeSwitchPreference preference = new ChromeSwitchPreference(getContext());
+            preference.setTitle(topic.getName());
+            mTopicsCategory.addPreference(preference);
+        }
     }
 
     private void onLearnMoreClicked(View view) {
