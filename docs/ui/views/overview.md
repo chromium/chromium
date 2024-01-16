@@ -98,6 +98,10 @@ overriding `::OnPaintBackground` or `::OnPaintBorder`. Doing this helps preserve
 the separation of Views into the three parts described above and makes painting
 code easier to understand.
 
+### Debugging
+
+See [page](../ui_devtools/index.md) for details.
+
 ## Widgets
 
 Views need an underlying canvas to paint onto. This has to be supplied by the
