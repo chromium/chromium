@@ -523,6 +523,13 @@ class NET_EXPORT HostResolver {
   static bool AllProtocolEndpointsHaveEch(
       base::span<const HostResolverEndpointResult> endpoints);
 
+  // Returns the hostname part of `host`.
+  //
+  // TODO(crbug.com/1264933): Delete once `HostPortPair` usage is fully replaced
+  // in `HostResolver` and results.
+  static base::StringPiece GetHostname(
+      const absl::variant<url::SchemeHostPort, std::string>& host);
+
  protected:
   HostResolver();
 

@@ -25,21 +25,6 @@ namespace net {
 
 namespace {
 
-// TODO(bashi): Avoid duplication.
-base::StringPiece GetHostname(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
-    if (hostname.size() >= 2 && hostname.front() == '[' &&
-        hostname.back() == ']') {
-      hostname = hostname.substr(1, hostname.size() - 2);
-    }
-    return hostname;
-  }
-
-  return absl::get<std::string>(host);
-}
-
 DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
                                     DnsQueryType query_type) {
   std::optional<std::vector<uint8_t>> qname =
@@ -305,7 +290,7 @@ void HostResolverDnsTask::CreateAndStartTransaction(
   DCHECK(!transaction_info.transaction);
   DCHECK_NE(DnsQueryType::UNSPECIFIED, transaction_info.type);
 
-  std::string transaction_hostname(GetHostname(host_));
+  std::string transaction_hostname(HostResolver::GetHostname(host_));
 
   // For HTTPS, prepend "_<port>._https." for any non-default port.
   uint16_t request_port = 0;
@@ -425,8 +410,8 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
              transaction_info.error_behavior ==
                  TransactionErrorBehavior::kSynthesizeEmpty);
       // For non-fatal failures, synthesize an empty response.
-      fake_response =
-          CreateFakeEmptyResponse(GetHostname(host_), transaction_info.type);
+      fake_response = CreateFakeEmptyResponse(HostResolver::GetHostname(host_),
+                                              transaction_info.type);
       response = &fake_response.value();
     }
   }
@@ -435,9 +420,10 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
 
   DnsResponseResultExtractor extractor(*response);
   DnsResponseResultExtractor::ResultsOrError results =
-      extractor.ExtractDnsResults(transaction_info.type,
-                                  /*original_domain_name=*/GetHostname(host_),
-                                  request_port);
+      extractor.ExtractDnsResults(
+          transaction_info.type,
+          /*original_domain_name=*/HostResolver::GetHostname(host_),
+          request_port);
   DCHECK_NE(results.error_or(DnsResponseResultExtractor::ExtractionError::kOk),
             DnsResponseResultExtractor::ExtractionError::kUnexpected);
 

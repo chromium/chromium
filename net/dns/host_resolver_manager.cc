@@ -364,20 +364,6 @@ base::StringPiece GetScheme(
   return base::StringPiece();
 }
 
-base::StringPiece GetHostname(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
-    if (hostname.size() >= 2 && hostname.front() == '[' &&
-        hostname.back() == ']') {
-      hostname = hostname.substr(1, hostname.size() - 2);
-    }
-    return hostname;
-  }
-
-  return absl::get<std::string>(host);
-}
-
 // Only use scheme/port in JobKey if `https_svcb_options_enabled` is true
 // (or the query is explicitly for HTTPS). Otherwise DNS will not give different
 // results for the same hostname.
@@ -628,7 +614,8 @@ class HostResolverManager::RequestImpl
     job_key_.network_anonymization_key = network_anonymization_key_;
     job_key_.source = parameters_.source;
 
-    bool is_ip = ip_address_.AssignFromIPLiteral(GetHostname(job_key_.host));
+    bool is_ip = ip_address_.AssignFromIPLiteral(
+        HostResolver::GetHostname(job_key_.host));
 
     resolver_->GetEffectiveParametersForRequest(
         job_key_.host, parameters_.dns_query_type, host_resolver_flags_,
@@ -1107,7 +1094,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK_EQ(host_cache_, request->host_cache());
     // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
     // separated by scheme/port.
-    DCHECK_EQ(GetHostname(key_.host),
+    DCHECK_EQ(HostResolver::GetHostname(key_.host),
               request->request_host().GetHostnameWithoutBrackets());
 
     request->AssignJob(weak_ptr_factory_.GetSafeRef());
@@ -1134,7 +1121,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void ChangeRequestPriority(RequestImpl* req, RequestPriority priority) {
     // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
     // separated by scheme/port.
-    DCHECK_EQ(GetHostname(key_.host),
+    DCHECK_EQ(HostResolver::GetHostname(key_.host),
               req->request_host().GetHostnameWithoutBrackets());
 
     priority_tracker_.Remove(req->priority());
@@ -1148,7 +1135,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void CancelRequest(RequestImpl* request) {
     // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
     // separated by scheme/port.
-    DCHECK_EQ(GetHostname(key_.host),
+    DCHECK_EQ(HostResolver::GetHostname(key_.host),
               request->request_host().GetHostnameWithoutBrackets());
     DCHECK(!requests_.empty());
 
@@ -1242,7 +1229,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   bool ServeFromHosts() {
     DCHECK_GT(num_active_requests(), 0u);
     std::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
-        GetHostname(key_.host), key_.query_types,
+        HostResolver::GetHostname(key_.host), key_.query_types,
         key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
     if (results) {
       // This will destroy the Job.
@@ -1474,7 +1461,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK(HasAddressType(key_.query_types));
 
     system_task_ = HostResolverSystemTask::Create(
-        std::string(GetHostname(key_.host)),
+        std::string(HostResolver::GetHostname(key_.host)),
         HostResolver::DnsQueryTypeSetToAddressFamily(key_.query_types),
         key_.flags, resolver_->host_resolver_system_params_, net_log_,
         key_.GetTargetNetwork());
@@ -1705,7 +1692,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     MDnsClient* client = nullptr;
     int rv = resolver_->GetOrCreateMdnsClient(&client);
     mdns_task_ = std::make_unique<HostResolverMdnsTask>(
-        client, std::string{GetHostname(key_.host)}, key_.query_types);
+        client, std::string{HostResolver::GetHostname(key_.host)},
+        key_.query_types);
 
     if (rv == OK) {
       mdns_task_->Start(
@@ -1746,8 +1734,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK(!nat64_task_);
     RequestImpl* req = requests_.head()->value();
     nat64_task_ = std::make_unique<HostResolverNat64Task>(
-        std::string{GetHostname(key_.host)}, req->network_anonymization_key(),
-        req->source_net_log(), req->resolve_context(), resolver_);
+        std::string{HostResolver::GetHostname(key_.host)},
+        req->network_anonymization_key(), req->source_net_log(),
+        req->resolve_context(), resolver_);
     nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                       weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1817,7 +1806,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
           // metrics.
           (GetScheme(key_.host) == url::kHttpsScheme ||
            GetScheme(key_.host) == url::kWssScheme) &&
-          IsGoogleHostWithAlpnH3(GetHostname(key_.host))) {
+          IsGoogleHostWithAlpnH3(HostResolver::GetHostname(key_.host))) {
         bool has_metadata = !results.GetMetadatas().empty();
         base::UmaHistogramExactLinear(
             "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",
@@ -2340,8 +2329,10 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     // than implicitly based on |source|.
     const bool is_valid_hostname =
         job_key.source == HostResolverSource::MULTICAST_DNS
-            ? dns_names_util::IsValidDnsName(GetHostname(job_key.host))
-            : IsCanonicalizedHostCompliant(GetHostname(job_key.host));
+            ? dns_names_util::IsValidDnsName(
+                  HostResolver::GetHostname(job_key.host))
+            : IsCanonicalizedHostCompliant(
+                  HostResolver::GetHostname(job_key.host));
     if (!is_valid_hostname) {
       return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                               HostCache::Entry::SOURCE_UNKNOWN);
@@ -2355,8 +2346,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   // The result of |getaddrinfo| for empty hosts is inconsistent across systems.
   // On Windows it gives the default interface's address, whereas on Linux it
   // gives an error. We will make it fail on all platforms for consistency.
-  if (GetHostname(job_key.host).empty() ||
-      GetHostname(job_key.host).size() > kMaxHostLength) {
+  if (HostResolver::GetHostname(job_key.host).empty() ||
+      HostResolver::GetHostname(job_key.host).size() > kMaxHostLength) {
     return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
@@ -2376,8 +2367,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   // Special-case localhost names, as per the recommendations in
   // https://tools.ietf.org/html/draft-west-let-localhost-be-localhost.
   std::optional<HostCache::Entry> resolved =
-      ServeLocalhost(GetHostname(job_key.host), job_key.query_types,
-                     default_family_due_to_no_ipv6);
+      ServeLocalhost(HostResolver::GetHostname(job_key.host),
+                     job_key.query_types, default_family_due_to_no_ipv6);
   if (resolved)
     return resolved.value();
 
@@ -2418,7 +2409,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
         return resolved.value();
       }
     } else if (task == TaskType::HOSTS) {
-      resolved = ServeFromHosts(GetHostname(job_key.host), job_key.query_types,
+      resolved = ServeFromHosts(HostResolver::GetHostname(job_key.host),
+                                job_key.query_types,
                                 default_family_due_to_no_ipv6, *out_tasks);
       if (resolved) {
         source_net_log.AddEvent(
@@ -2835,7 +2827,8 @@ void HostResolverManager::CreateTaskSequence(
       // address queries and MdnsTask for non- address queries.
       if ((job_key.flags & HOST_RESOLVER_CANONNAME) && has_address_type) {
         out_tasks->push_back(TaskType::SYSTEM);
-      } else if (!ResemblesMulticastDNSName(GetHostname(job_key.host))) {
+      } else if (!ResemblesMulticastDNSName(
+                     HostResolver::GetHostname(job_key.host))) {
         bool system_task_allowed =
             has_address_type &&
             job_key.secure_dns_mode != SecureDnsMode::kSecure;
