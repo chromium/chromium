@@ -345,7 +345,7 @@ int PnaclTranslationCache::Init(net::CacheType cache_type,
       cache_dir, cache_size, disk_cache::ResetHandling::kResetOnError,
       nullptr, /* dummy net log */
       base::BindOnce(&PnaclTranslationCache::OnCreateBackendComplete,
-                     AsWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
   if (result.net_error == net::OK) {
     disk_cache_ = std::move(result.backend);
   } else if (result.net_error == net::ERR_IO_PENDING) {
@@ -375,7 +375,7 @@ void PnaclTranslationCache::StoreNexe(const std::string& key,
                                       net::DrainableIOBuffer* nexe_data,
                                       CompletionOnceCallback callback) {
   PnaclTranslationCacheEntry* entry = PnaclTranslationCacheEntry::GetWriteEntry(
-      AsWeakPtr(), key, nexe_data, std::move(callback));
+      weak_ptr_factory_.GetWeakPtr(), key, nexe_data, std::move(callback));
   open_entries_[entry] = entry;
   entry->Start();
 }
@@ -383,7 +383,7 @@ void PnaclTranslationCache::StoreNexe(const std::string& key,
 void PnaclTranslationCache::GetNexe(const std::string& key,
                                     GetNexeCallback callback) {
   PnaclTranslationCacheEntry* entry = PnaclTranslationCacheEntry::GetReadEntry(
-      AsWeakPtr(), key, std::move(callback));
+      weak_ptr_factory_.GetWeakPtr(), key, std::move(callback));
   open_entries_[entry] = entry;
   entry->Start();
 }
