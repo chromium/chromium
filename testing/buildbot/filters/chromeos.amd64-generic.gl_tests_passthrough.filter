@@ -24,5 +24,8 @@
 -ExternalVkImageBackingFactoryTest.SkiaVulkanWrite_DawnRead
 -ExternalVkImageBackingFactoryTest.DawnWrite_SkiaVulkanRead
 
-# crbug.com/1314468
--GpuMemoryBufferTestEGL.GLCreateImageCHROMIUMFromNativePixmap
+# crbug.com/1472516
+-Service/EGLImageBackingFactoryThreadSafeTest.*
+
+# crbug.com/1518651
+-GLReadbackTest.ReadPixelsFloat

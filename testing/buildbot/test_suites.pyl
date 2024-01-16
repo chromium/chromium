@@ -2443,6 +2443,7 @@
         ],
         'chromeos_args': [
           '--stop-ui',
+          '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile',
         ],
         'desktop_args': [
           '--use-gpu-in-tests',
@@ -6373,7 +6374,7 @@
     ],
 
     'gpu_fyi_chromeos_release_gtests': [
-      'gpu_common_gtests_validating',
+      'gpu_common_gtests_passthrough',
     ],
 
     'gpu_fyi_chromeos_release_telemetry_tests': [

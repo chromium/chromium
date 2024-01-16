@@ -4401,16 +4401,17 @@
     "gtest_tests": [
       {
         "args": [
-          "--use-cmd-decoder=validating",
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
           "--use-gpu-in-tests",
           "--stop-ui",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.amd64-generic.gl_tests_validating.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.amd64-generic.gl_tests_passthrough.filter",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gl_tests_validating",
+        "name": "gl_tests_passthrough",
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
@@ -4432,7 +4433,8 @@
               "caches": "cros_vm"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "gl_tests",
         "test_id_prefix": "ninja://gpu:gl_tests/"

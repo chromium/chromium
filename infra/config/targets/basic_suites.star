@@ -2231,6 +2231,7 @@ targets.legacy_basic_suite(
             ],
             chromeos_args = [
                 "--stop-ui",
+                "$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile",
             ],
             desktop_args = [
                 "--use-gpu-in-tests",
