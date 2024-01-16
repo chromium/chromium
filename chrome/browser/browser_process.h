@@ -141,7 +141,7 @@ class BrowserProcess {
   virtual embedder_support::OriginTrialsSettingsStorage*
   GetOriginTrialsSettingsStorage() = 0;
 
-  // Services: any of these getters may return NULL
+  // Services: any of these getters may return null.
   virtual metrics::MetricsService* metrics_service() = 0;
   virtual ProfileManager* profile_manager() = 0;
   virtual PrefService* local_state() = 0;

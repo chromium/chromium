@@ -719,7 +719,9 @@ void BrowserProcessImpl::EndSession() {
 metrics_services_manager::MetricsServicesManager*
 BrowserProcessImpl::GetMetricsServicesManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!metrics_services_manager_) {
+  // Only create the objects if teardown hasn't started yet, as otherwise these
+  // may have already been destroyed.
+  if (!metrics_services_manager_ && !tearing_down_) {
     auto client =
         std::make_unique<ChromeMetricsServicesManagerClient>(local_state());
     metrics_services_manager_client_ = client.get();
@@ -732,7 +734,11 @@ BrowserProcessImpl::GetMetricsServicesManager() {
 
 metrics::MetricsService* BrowserProcessImpl::metrics_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetMetricsServicesManager()->GetMetricsService();
+  auto* metrics_services_manager = GetMetricsServicesManager();
+  if (metrics_services_manager_) {
+    return metrics_services_manager->GetMetricsService();
+  }
+  return nullptr;
 }
 
 embedder_support::OriginTrialsSettingsStorage*
@@ -780,7 +786,11 @@ PrefService* BrowserProcessImpl::local_state() {
 
 variations::VariationsService* BrowserProcessImpl::variations_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetMetricsServicesManager()->GetVariationsService();
+  auto* metrics_services_manager = GetMetricsServicesManager();
+  if (metrics_services_manager_) {
+    return metrics_services_manager->GetVariationsService();
+  }
+  return nullptr;
 }
 
 BrowserProcessPlatformPart* BrowserProcessImpl::platform_part() {
