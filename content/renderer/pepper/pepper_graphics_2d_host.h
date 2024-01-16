@@ -32,6 +32,10 @@ namespace gfx {
 class Rect;
 }
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace viz {
 class RasterContextProvider;
 struct TransferableResource;
@@ -189,7 +193,7 @@ class CONTENT_EXPORT PepperGraphics2DHost
       base::WeakPtr<PepperGraphics2DHost> host,
       scoped_refptr<viz::RasterContextProvider> context,
       const gfx::Size& size,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       bool lost);
 
@@ -239,11 +243,12 @@ class CONTENT_EXPORT PepperGraphics2DHost
   scoped_refptr<viz::RasterContextProvider> main_thread_context_;
   struct SharedImageInfo {
     SharedImageInfo(gpu::SyncToken sync_token,
-                    gpu::Mailbox mailbox,
-                    gfx::Size size)
-        : sync_token(sync_token), mailbox(mailbox), size(size) {}
+                    scoped_refptr<gpu::ClientSharedImage> shared_image,
+                    gfx::Size size);
+    SharedImageInfo(const SharedImageInfo& shared_image_info);
+    ~SharedImageInfo();
     gpu::SyncToken sync_token;
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gfx::Size size;
   };
   // Shared images that are available for recycling.
