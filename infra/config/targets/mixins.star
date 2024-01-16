@@ -1631,7 +1631,7 @@ targets.mixin(
         dimensions = {
             "cpu": "arm64",
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64",
+            "pool": "chrome.tests",
             # Qualcomm Adreno 690.
             "gpu": "qcom:043a",
             # Currently used to limit testing to the homogenous fleet. Can be

@@ -1285,7 +1285,7 @@
       'dimensions': {
         'cpu': 'arm64',
         'os': 'Windows-11',
-        'pool': 'chrome.tests.arm64',
+        'pool': 'chrome.tests',
         'gpu': 'qcom:043a',
         'zone': 'us-sfo',
       },
