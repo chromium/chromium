@@ -5489,8 +5489,9 @@ TEST_F(FederatedAuthRequestImplTest, MismatchDialogShownMetric) {
   EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogHasBeenShown",
-                                       0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.MismatchDialogType",
+      FedCmMetrics::MismatchDialogType::kFirstWithoutHints, 1);
   ExpectUKMPresence("MismatchDialogShown");
   ExpectNoUKMPresence("AccountsDialogShown");
   CheckAllFedCmSessionIDs();
@@ -5513,15 +5514,19 @@ TEST_F(FederatedAuthRequestImplTest, DoubleMismatchDialog) {
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       ParseStatus::kHttpNotFoundError;
 
-  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].login_hint = "hint";
+
+  RunAuthDontWaitForCallback(parameters, configuration);
 
   ukm_loop.Run();
 
   EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogHasBeenShown",
-                                       0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.MismatchDialogType",
+      FedCmMetrics::MismatchDialogType::kFirstWithHints, 1);
   CheckAllFedCmSessionIDs();
 
   test_permission_delegate_
@@ -5532,10 +5537,10 @@ TEST_F(FederatedAuthRequestImplTest, DoubleMismatchDialog) {
 
   // The additional mismatch should be recorded in the metrics.
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 2);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.MismatchDialogHasBeenShown",
-                                     2);
-  histogram_tester_.ExpectBucketCount("Blink.FedCm.MismatchDialogHasBeenShown",
-                                      1, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.MismatchDialogType", 2);
+  histogram_tester_.ExpectBucketCount(
+      "Blink.FedCm.MismatchDialogType",
+      FedCmMetrics::MismatchDialogType::kRepeatedWithHints, 1);
 }
 
 // Tests that when an accounts request is sent, the appropriate metrics are

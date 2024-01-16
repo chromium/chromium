@@ -14075,6 +14075,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Dialog unhandled by user"/>
 </enum>
 
+<enum name="FedCmMismatchDialogType">
+  <int value="0" label="First mismatch of the request, without hints"/>
+  <int value="1" label="First mismatch of the request, with hints"/>
+  <int value="2" label="Repeated mismatch in a request, without hints"/>
+  <int value="3" label="Repeated mismatch in a request, with hints"/>
+</enum>
+
 <enum name="FedCmNumAccounts">
   <int value="0" label="Zero accounts"/>
   <int value="1" label="One account"/>

@@ -366,12 +366,22 @@ void FedCmMetrics::RecordAccountsDialogShown() {
   base::UmaHistogramBoolean("Blink.FedCm.AccountsDialogShown", true);
 }
 
-void FedCmMetrics::RecordMismatchDialogShown(bool has_shown_mismatch) {
+void FedCmMetrics::RecordMismatchDialogShown(bool has_shown_mismatch,
+                                             bool has_hints) {
   if (is_disabled_) {
     return;
   }
-  base::UmaHistogramBoolean("Blink.FedCm.MismatchDialogHasBeenShown",
-                            has_shown_mismatch);
+
+  MismatchDialogType type;
+  if (!has_shown_mismatch) {
+    type = has_hints ? MismatchDialogType::kFirstWithHints
+                     : MismatchDialogType::kFirstWithoutHints;
+  } else {
+    type = has_hints ? MismatchDialogType::kRepeatedWithHints
+                     : MismatchDialogType::kRepeatedWithoutHints;
+  }
+  base::UmaHistogramEnumeration("Blink.FedCm.MismatchDialogType", type);
+
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetMismatchDialogShown(true);
     ukm_builder.SetFedCmSessionID(session_id_);

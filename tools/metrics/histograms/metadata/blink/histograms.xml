@@ -1498,22 +1498,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.MismatchDialogHasBeenShown" enum="Boolean"
-    expires_after="2024-07-15">
-  <owner>npm@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records whether the mismatch dialog shown corresponds to the first one from
-    a FedCM request, or if a mismatch dialog was already previously shown for
-    this request. Records every time a mismatch dialog is shown.
-  </summary>
-</histogram>
-
 <histogram name="Blink.FedCm.MismatchDialogShown" enum="BooleanHit"
     expires_after="2024-06-16">
   <owner>tanzachary@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>Records a 1 each time a mismatch dialog is shown.</summary>
+</histogram>
+
+<histogram name="Blink.FedCm.MismatchDialogType" enum="FedCmMismatchDialogType"
+    expires_after="2024-07-15">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of mismatch dialog shown: whether it is the first mismatch
+    shown for the current FedCM request or not, and whether there were hints
+    requested in the current FedCM request or not. Records every time a mismatch
+    dialog is shown.
+  </summary>
 </histogram>
 
 <histogram name="Blink.FedCm.NumRequestsPerDocument" units="count"

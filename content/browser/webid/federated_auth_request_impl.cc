@@ -1778,7 +1778,9 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*can_append_hints=*/true));
-  fedcm_metrics_->RecordMismatchDialogShown(has_shown_mismatch_);
+  fedcm_metrics_->RecordMismatchDialogShown(
+      has_shown_mismatch_, !idp_info->provider->login_hint.empty() ||
+                               !idp_info->provider->domain_hint.empty());
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
