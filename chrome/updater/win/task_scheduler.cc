@@ -123,7 +123,7 @@ void PinModule(const wchar_t* module_name) {
 [[nodiscard]] std::wstring GetTaskXml(ITaskDefinition* task) {
   base::win::ScopedBstr task_xml;
   task->get_XmlText(task_xml.Receive());
-  return std::wstring(task_xml.Get());
+  return task_xml.Get() ? std::wstring(task_xml.Get()) : std::wstring();
 }
 
 // A task scheduler class uses the V2 API of the task scheduler.
@@ -701,9 +701,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
           is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
           base::win::ScopedVariant::kEmptyVariant, &registered_task);
       if (FAILED(hr)) {
-        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr
-                   << ": " << logging::SystemErrorCodeToString(hr)
-                   << ": Task XML: " << GetTaskXml(task.Get());
+        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr;
+        LOG(ERROR) << "Task XML: " << GetTaskXml(task.Get());
         return false;
       }
     }
