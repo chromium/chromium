@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_util.h"
@@ -378,10 +379,13 @@ TEST_F(ZAuraSurfaceTest, OcclusionIncludesOffScreenArea) {
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
   // This is scaled by 1.5 - set the bounds to (-60, 75, 120, 150) in screen
-  // coordinates so 75% of it is outside of the 100x100 screen.
+  // coordinates so 75% of it is outside of the screen.
   surface().window()->SetBounds(gfx::Rect(-40, 50, 80, 100));
   surface().Attach(buffer.get());
   surface().Commit();
+
+  ash::Shelf::ForWindow(surface().window())
+      ->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlwaysHidden);
 
   surface().OnWindowOcclusionChanged(aura::Window::OcclusionState::UNKNOWN,
                                      aura::Window::OcclusionState::VISIBLE);
