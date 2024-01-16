@@ -156,6 +156,9 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         &mock_translate_language_provider_, GetProfile(),
         identity_test_env_.identity_manager(), &opt_guide());
 
+    // Ensure enabled for testing is off.
+    ComposeEnabling::SetEnabledForTesting(false);
+
     // Override un-mockable per-user checks.
     ComposeEnabling::SkipUserEnabledCheckForTesting(true);
   }
