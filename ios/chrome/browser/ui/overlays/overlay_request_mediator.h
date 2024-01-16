@@ -20,18 +20,22 @@ class OverlayRequestSupport;
 @property(class, nonatomic, readonly)
     const OverlayRequestSupport* requestSupport;
 
-// Initializer for a mediator that sets ups its consumer with `request`'s
-// config.
-- (instancetype)initWithRequest:(OverlayRequest*)request
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
 // The request passed on initialization.  Reset to nullptr if the request is
 // cancelled while its overlay UI is still visible.
 @property(nonatomic, readonly) OverlayRequest* request;
 
 // The delegate.
 @property(nonatomic, weak) id<OverlayRequestMediatorDelegate> delegate;
+
+// Returns an OverlayRequestSupport that only supports requests created with
+// ConfigType.
++ (const OverlayRequestSupport*)requestSupport;
+
+// Initializer for a mediator that sets ups its consumer with `request`'s
+// config.
+- (instancetype)initWithRequest:(OverlayRequest*)request
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

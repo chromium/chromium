@@ -37,7 +37,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
   MOCK_METHOD0(Accept, bool());
   MOCK_METHOD0(Cancel, bool());
   MOCK_METHOD1(InfobarPresenting, void(bool automatic));
-  MOCK_METHOD0(InfobarDismissed, void());
+  MOCK_METHOD0(InfobarGone, void());
 
  private:
   MockIOSChromeSavePasswordInfoBarDelegate(
