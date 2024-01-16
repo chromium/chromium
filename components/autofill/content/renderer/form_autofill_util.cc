@@ -1398,6 +1398,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
       DCHECK(form.unique_renderer_id.is_null());
       DCHECK(form.main_frame_origin.opaque());
       form.is_form_tag = false;
+      form.is_action_empty = true;
       return form;
     }
     form.name = GetFormIdentifier(form_element);
@@ -1405,14 +1406,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     form.name_attribute = GetAttribute<kName>(form_element).Utf16();
     form.unique_renderer_id = GetFormRendererId(form_element);
     form.action = GetCanonicalActionForForm(form_element);
-    form.is_action_empty =
-        form_element.Action().IsNull() || form_element.Action().IsEmpty();
-    form.main_frame_origin = url::Origin();
-    // If the completed URL is not valid, just use the action we get from
-    // WebKit.
     if (!form.action.is_valid()) {
       form.action = blink::WebStringToGURL(form_element.Action());
     }
+    form.is_action_empty =
+        form_element.Action().IsNull() || form_element.Action().IsEmpty();
     return form;
   }();
 
