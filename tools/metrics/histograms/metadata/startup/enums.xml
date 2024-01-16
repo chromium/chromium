@@ -1,0 +1,125 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanBringToForegroundReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Notification click (within last 5 seconds)"/>
+</enum>
+
+<enum name="IncognitoForcedStart">
+  <int value="0" label="No Incognito switch and not forced"/>
+  <int value="1" label="Incognito switch but not forced"/>
+  <int value="2" label="No Incognito switch but forced"/>
+  <int value="3" label="Incognito switch and forced"/>
+</enum>
+
+<enum name="IOSColdStartType">
+  <int value="0" label="Cold start"/>
+  <int value="1" label="Cold start with FRE"/>
+  <int value="2" label="Cold start after device restore"/>
+  <int value="3" label="Cold start after Chrome upgrade"/>
+  <int value="4" label="Cold start after device restore and Chrome upgrade"/>
+  <int value="5" label="Cold start with unknown device restore"/>
+  <int value="6"
+      label="Cold start with unknown device restore and Chrome upgrade"/>
+</enum>
+
+<enum name="MobileSessionCallerApp">
+  <int value="0" label="Google Search"/>
+  <int value="1" label="Gmail"/>
+  <int value="2" label="Google+"/>
+  <int value="3" label="Google Drive"/>
+  <int value="4" label="Google Earth"/>
+  <int value="5" label="Other Google Apps"/>
+  <int value="6" label="Other"/>
+  <int value="7" label="Mobile Safari"/>
+  <int value="8" label="Other Apple Apps"/>
+  <int value="9" label="YouTube"/>
+  <int value="10" label="Google Maps"/>
+  <int value="11" label="Information not available"/>
+  <int value="12" label="Chrome Today Extension"/>
+  <int value="13" label="Chrome Search Extension"/>
+  <int value="14" label="Chrome Content Extension"/>
+  <int value="15" label="Chrome Share Extension"/>
+  <int value="16" label="Chrome"/>
+  <int value="17" label="Third Party">
+    A non-Google application (more precisely an app that doesn't share an app
+    group with Chrome) launched Chrome with an http or https URL. This can
+    happen on iOS 14+ when Chrome is set as the default browser and a system app
+    (f.e. Messages) or an app from a 3rd party developer opens a URL.
+  </int>
+  <int value="18" label="Chrome Open In Extension"/>
+</enum>
+
+<enum name="MobileSessionStartAction">
+  <int value="0" label="Open http">
+    Logged when an application passes an http URL to Chrome using the custom
+    registered scheme (f.e. googlechrome).
+  </int>
+  <int value="1" label="Open https">
+    Logged when an application passes an https URL to Chrome using the custom
+    registered scheme (f.e. googlechromes).
+  </int>
+  <int value="2" label="Open file"/>
+  <int value="3" label="x-callback-url open"/>
+  <int value="4" label="x-callback-url other"/>
+  <int value="5" label="Other"/>
+  <int value="6" label="x-callback-url app-group-command"/>
+  <int value="7" label="OS opened http">
+    Logged when any application passes an http URL to Chrome using the standard
+    &quot;http&quot; scheme. This can happen when Chrome is set as the default
+    browser on iOS 14+ as http openURL calls will be directed to Chrome by the
+    system from all other apps.
+  </int>
+  <int value="8" label="OS opened https">
+    Logged when any application passes an https URL to Chrome using the standard
+    &quot;https&quot; scheme. This can happen when Chrome is set as the default
+    browser on iOS 14+ as http openURL calls will be directed to Chrome by the
+    system from all other apps.
+  </int>
+  <int value="9" label="Open widget kit command"/>
+  <int value="10" label="Open external action URL"/>
+</enum>
+
+<enum name="ProcessCreationReason">
+  <int value="0" label="Activity"/>
+  <int value="1" label="Service"/>
+  <int value="2" label="Content Provider"/>
+  <int value="3" label="Broadcast Receiver"/>
+</enum>
+
+<enum name="StartupTemperature">
+  <int value="0" label="Cold startup (mostly hard faults)"/>
+  <int value="1" label="Warm startup (nearly no hard faults)"/>
+  <int value="2" label="Lukewarm startup (in between cold and warm)"/>
+  <int value="3" label="Unable to determine the startup temperature"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
