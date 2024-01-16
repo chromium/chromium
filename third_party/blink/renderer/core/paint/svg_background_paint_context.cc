@@ -19,7 +19,7 @@ gfx::RectF SVGBackgroundPaintContext::ReferenceBox(
     GeometryBox geometry_box) const {
   const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
       object_, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
-  return gfx::ScaleRect(reference_box, EffectiveZoom());
+  return gfx::ScaleRect(reference_box, Style().EffectiveZoom());
 }
 
 gfx::RectF SVGBackgroundPaintContext::VisualOverflowRect() const {
@@ -31,19 +31,11 @@ gfx::RectF SVGBackgroundPaintContext::VisualOverflowRect() const {
         svg_fo->Layer()->LocalBoundingBoxIncludingSelfPaintingDescendants();
     return gfx::UnionRects(visual_rect, gfx::RectF(visual_overflow));
   }
-  return gfx::ScaleRect(visual_rect, EffectiveZoom());
+  return gfx::ScaleRect(visual_rect, Style().EffectiveZoom());
 }
 
 const ComputedStyle& SVGBackgroundPaintContext::Style() const {
   return object_.StyleRef();
-}
-
-bool SVGBackgroundPaintContext::UsesZoomedCoordinates() const {
-  return IsA<LayoutSVGForeignObject>(object_);
-}
-
-float SVGBackgroundPaintContext::EffectiveZoom() const {
-  return Style().EffectiveZoom();
 }
 
 }  // namespace blink

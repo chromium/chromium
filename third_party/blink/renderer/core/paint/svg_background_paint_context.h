@@ -26,8 +26,6 @@ class SVGBackgroundPaintContext {
 
   gfx::RectF VisualOverflowRect() const;
   gfx::RectF ReferenceBox(GeometryBox) const;
-  bool UsesZoomedCoordinates() const;
-  float EffectiveZoom() const;
   const ComputedStyle& Style() const;
 
  private:
