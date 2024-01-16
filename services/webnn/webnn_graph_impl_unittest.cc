@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -105,41 +106,25 @@ bool ValidateInputsForComputing(
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
   WebNNContextProviderImpl::Create(
       provider_remote.BindNewPipeAndPassReceiver());
-  base::RunLoop run_loop_create_context;
-  bool is_callback_called = false;
+
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
+  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
+                                      create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
   mojo::Remote<mojom::WebNNContext> webnn_context;
-  auto options = mojom::CreateContextOptions::New();
-  provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting([&](mojom::CreateContextResultPtr result) {
-        ASSERT_TRUE(result->is_context_remote());
-        webnn_context.Bind(std::move(result->get_context_remote()));
-        is_callback_called = true;
-        run_loop_create_context.Quit();
-      }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(is_callback_called);
+  webnn_context.Bind(std::move(create_context_result->get_context_remote()));
 
   // Creates WebNN Graph mojo interface with the graph information which is
   // validated before compiling.
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  webnn_context->CreateGraph(std::move(graph_info),
+                             create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
   mojo::Remote<mojom::WebNNGraph> webnn_graph;
-  base::RunLoop run_loop_create_graph;
-  is_callback_called = false;
-  webnn_context->CreateGraph(
-      std::move(graph_info),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateGraphResultPtr create_graph_result) {
-            webnn_graph.Bind(
-                std::move(create_graph_result->get_graph_remote()));
-            is_callback_called = true;
-            run_loop_create_graph.Quit();
-          }));
-  run_loop_create_graph.Run();
-  EXPECT_TRUE(is_callback_called);
+  webnn_graph.Bind(std::move(create_graph_result->get_graph_remote()));
 
   // Validate the inputs in the `Compute` function.
-  base::RunLoop run_loop_compute;
-  is_callback_called = false;
   bool valid = true;
   // Set up the error handler for bad mojo messages.
   mojo::SetDefaultProcessErrorHandler(
@@ -150,14 +135,9 @@ bool ValidateInputsForComputing(
         valid = false;
       }));
 
-  webnn_graph->Compute(
-      std::move(inputs),
-      base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-        is_callback_called = true;
-        run_loop_compute.Quit();
-      }));
-  run_loop_compute.Run();
-  EXPECT_TRUE(is_callback_called);
+  base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+  webnn_graph->Compute(std::move(inputs), compute_future.GetCallback());
+  EXPECT_TRUE(compute_future.Wait());
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   return valid;
@@ -305,7 +285,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
           "input", {2, 3, 4, 5}, mojom::Operand::DataType::kInt64);
       builder.BuildArgMinMax(kind, input_operand_id, input_operand_id, {0},
                              true, false);
-      EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
+      EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
     }
   }
 }
@@ -4819,7 +4799,7 @@ TEST_F(WebNNGraphImplTest, SoftplusTest) {
 
     builder.BuildSoftplus(input_operand_id, input_operand_id,
                           /*steepness*/ 1.0);
-    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
 
@@ -4884,7 +4864,7 @@ TEST_F(WebNNGraphImplTest, SoftsignTest) {
     uint64_t input_operand_id =
         builder.BuildInput("input", {4, 6}, mojom::Operand::DataType::kFloat32);
     builder.BuildSoftsign(input_operand_id, input_operand_id);
-    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
 
@@ -4997,7 +4977,7 @@ TEST_F(WebNNGraphImplTest, ValidateSplitTest) {
     builder.BuildSplit(input_operand_id, {input_operand_id}, 0);
     builder.BuildSplit(input_operand_id,
                        {builder.BuildOutput("output", {4, 6}, kFloat32)}, 0);
-    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
 
@@ -5306,7 +5286,7 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
                                  lhs_operand_id, rhs_operand_id,
                                  output_operand_id);
-  EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
+  EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
 
   auto byte_length =
       ValidateAndCalculateByteLength(sizeof(uint8_t), dimensions).value();
@@ -5315,44 +5295,39 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
     inputs["lhs"] = std::vector<uint8_t>(byte_length);
     inputs["rhs"] = std::vector<uint8_t>(byte_length);
-    EXPECT_EQ(
-        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
-        true);
+    EXPECT_TRUE(ValidateInputsForComputing(builder.CloneGraphInfo(),
+                                           std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid input size.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
     inputs["lhs"] = std::vector<uint8_t>(byte_length);
-    EXPECT_EQ(
-        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
-        false);
+    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
+                                            std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid input name.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
     inputs["a_different_input_name"] = std::vector<uint8_t>(byte_length);
     inputs["rhs"] = std::vector<uint8_t>(byte_length);
-    EXPECT_EQ(
-        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
-        false);
+    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
+                                            std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid first input byte length.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
     inputs["lhs"] = std::vector<uint8_t>(20);
     inputs["rhs"] = std::vector<uint8_t>(byte_length);
-    EXPECT_EQ(
-        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
-        false);
+    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
+                                            std::move(inputs)));
   }
   {
     // Test the invalid inputs for invalid second input byte length.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;
     inputs["lhs"] = std::vector<uint8_t>(byte_length);
     inputs["rhs"] = std::vector<uint8_t>(20);
-    EXPECT_EQ(
-        ValidateInputsForComputing(builder.CloneGraphInfo(), std::move(inputs)),
-        false);
+    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
+                                            std::move(inputs)));
   }
 }
 
@@ -5428,7 +5403,7 @@ TEST_F(WebNNGraphImplTest, BuildMultipleInputsAppendingConstants) {
                     intermediate_2_operand_id, GemmTester::GemmAttributes());
   builder.BuildGemm(intermediate_1_operand_id, intermediate_2_operand_id,
                     output_operand_id, GemmTester::GemmAttributes());
-  EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
+  EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
 }
 
 // Test building a graph with two inputs and two constant in the following
@@ -5469,7 +5444,7 @@ TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
 
   builder.BuildGemm(intermediate_1_operand_id, intermediate_2_operand_id,
                     output_operand_id, GemmTester::GemmAttributes());
-  EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
+  EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
 }
 
 }  // namespace webnn

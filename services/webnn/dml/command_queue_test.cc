@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/test_base.h"
@@ -79,15 +80,9 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {
   ASSERT_EQ(command_list->Close(), S_OK);
   EXPECT_EQ(command_queue->ExecuteCommandList(command_list.Get()), S_OK);
 
-  bool is_signaled = false;
-  base::RunLoop run_loop;
-  command_queue->WaitAsync(base::BindLambdaForTesting([&](HRESULT hr) {
-    EXPECT_EQ(hr, S_OK);
-    is_signaled = true;
-    run_loop.Quit();
-  }));
-  run_loop.Run();
-  EXPECT_TRUE(is_signaled);
+  base::test::TestFuture<HRESULT> future;
+  command_queue->WaitAsync(future.GetCallback());
+  EXPECT_EQ(future.Take(), S_OK);
 
   EXPECT_EQ(command_allocator->Reset(), S_OK);
   EXPECT_EQ(command_list->Reset(command_allocator.Get(), nullptr), S_OK);

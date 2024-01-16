@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/adapter.h"
@@ -53,48 +54,28 @@ void BuildAndCompute(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the dml::ContextImpl through context provider.
-  bool was_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResultPtr create_context_result) {
-            if (create_context_result->is_context_remote()) {
-              webnn_context_remote.Bind(
-                  std::move(create_context_result->get_context_remote()));
-            }
-            was_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(was_callback_called);
+      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  if (create_context_result->is_context_remote()) {
+    webnn_context_remote.Bind(
+        std::move(create_context_result->get_context_remote()));
+  }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
   // The dml::GraphImpl should be built successfully.
-  base::RunLoop run_loop_create_graph;
-  was_callback_called = false;
-  bool was_create_graph_error = true;
-  webnn_context_remote.set_disconnect_handler(
-      base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
-                     &run_loop_create_graph));
-  webnn_context_remote->CreateGraph(
-      std::move(graph_info),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateGraphResultPtr create_graph_result) {
-            if (!create_graph_result->is_error()) {
-              webnn_graph_remote.Bind(
-                  std::move(create_graph_result->get_graph_remote()));
-              was_create_graph_error = false;
-            }
-            was_callback_called = true;
-            run_loop_create_graph.Quit();
-          }));
-  run_loop_create_graph.Run();
-  EXPECT_TRUE(was_callback_called);
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  webnn_context_remote->CreateGraph(std::move(graph_info),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  if (!create_graph_result->is_error()) {
+    webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
+  }
 
   if (expectation == BuildAndComputeExpectation::kCreateGraphFailure) {
-    EXPECT_TRUE(was_create_graph_error);
+    EXPECT_TRUE(create_graph_result->is_error());
     EXPECT_FALSE(webnn_graph_remote.is_bound());
     EXPECT_TRUE(webnn_context_remote.is_bound());
     webnn_graph_remote.reset();
@@ -103,23 +84,16 @@ void BuildAndCompute(
     base::RunLoop().RunUntilIdle();
     return;
   }
-  EXPECT_FALSE(was_create_graph_error);
   EXPECT_TRUE(webnn_graph_remote.is_bound());
 
   // The dml::GraphImpl should compute successfully.
-  base::RunLoop run_loop_graph_compute;
-  was_callback_called = false;
-  webnn_graph_remote->Compute(
-      std::move(named_inputs),
-      base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-        EXPECT_TRUE(result->is_named_outputs());
-        EXPECT_FALSE(result->get_named_outputs().empty());
-        was_callback_called = true;
-        named_outputs = std::move(result->get_named_outputs());
-        run_loop_graph_compute.Quit();
-      }));
-  run_loop_graph_compute.Run();
-  EXPECT_TRUE(was_callback_called);
+  base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+  webnn_graph_remote->Compute(std::move(named_inputs),
+                              compute_future.GetCallback());
+  mojom::ComputeResultPtr compute_result = compute_future.Take();
+  ASSERT_TRUE(compute_result->is_named_outputs());
+  EXPECT_FALSE(compute_result->get_named_outputs().empty());
+  named_outputs = std::move(compute_result->get_named_outputs());
 
   webnn_graph_remote.reset();
   webnn_context_remote.reset();
@@ -182,18 +156,20 @@ std::vector<float> Float16ToFloat32(const std::vector<float16>& fp16_data) {
 // number.
 std::vector<float> GetFloatOutputData(mojo_base::BigBuffer big_buffer,
                                       mojom::Operand::DataType type) {
-  std::vector<float> output_data;
-  if (type == mojom::Operand::DataType::kFloat16) {
-    output_data =
-        Float16ToFloat32(BigBufferToVector<float16>(std::move(big_buffer)));
-  } else if (type == mojom::Operand::DataType::kFloat32) {
-    output_data = BigBufferToVector<float>(std::move(big_buffer));
-  } else {
-    DLOG(ERROR) << "This data type is not supported.";
-    NOTREACHED_NORETURN();
+  switch (type) {
+    case mojom::Operand_DataType::kFloat32:
+      return BigBufferToVector<float>(std::move(big_buffer));
+    case mojom::Operand_DataType::kFloat16:
+      return Float16ToFloat32(
+          BigBufferToVector<float16>(std::move(big_buffer)));
+    case mojom::Operand_DataType::kInt32:
+    case mojom::Operand_DataType::kUint32:
+    case mojom::Operand_DataType::kInt64:
+    case mojom::Operand_DataType::kUint64:
+    case mojom::Operand_DataType::kInt8:
+    case mojom::Operand_DataType::kUint8:
+      NOTREACHED_NORETURN();
   }
-
-  return output_data;
 }
 
 template <typename T>
@@ -4603,41 +4579,24 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the dml::ContextImpl through context provider.
-  bool was_callback_called = false;
-  base::RunLoop run_loop_create_context;
-  auto options = mojom::CreateContextOptions::New();
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateContextResultPtr create_context_result) {
-            if (create_context_result->is_context_remote()) {
-              webnn_context_remote.Bind(
-                  std::move(create_context_result->get_context_remote()));
-            }
-            was_callback_called = true;
-            run_loop_create_context.Quit();
-          }));
-  run_loop_create_context.Run();
-  EXPECT_TRUE(was_callback_called);
+      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  if (create_context_result->is_context_remote()) {
+    webnn_context_remote.Bind(
+        std::move(create_context_result->get_context_remote()));
+  }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
   // The dml::GraphImpl should be built successfully.
-  base::RunLoop run_loop_create_graph;
-  was_callback_called = false;
-  webnn_context_remote.set_disconnect_handler(
-      base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
-                     &run_loop_create_graph));
-  webnn_context_remote->CreateGraph(
-      builder.CloneGraphInfo(),
-      base::BindLambdaForTesting(
-          [&](mojom::CreateGraphResultPtr create_graph_result) {
-            webnn_graph_remote.Bind(
-                std::move(create_graph_result->get_graph_remote()));
-            was_callback_called = true;
-            run_loop_create_graph.Quit();
-          }));
-  run_loop_create_graph.Run();
-  EXPECT_TRUE(was_callback_called);
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  EXPECT_FALSE(create_graph_result->is_error());
+  webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
   EXPECT_TRUE(webnn_graph_remote.is_bound());
   {
     // Compute for the first time.
@@ -4645,19 +4604,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
 
     // The dml::GraphImpl should compute successfully.
-    base::RunLoop run_loop_graph_compute;
-    was_callback_called = false;
-    webnn_graph_remote->Compute(
-        std::move(named_inputs),
-        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-          EXPECT_TRUE(result->is_named_outputs());
-          EXPECT_FALSE(result->get_named_outputs().empty());
-          was_callback_called = true;
-          named_outputs = std::move(result->get_named_outputs());
-          run_loop_graph_compute.Quit();
-        }));
-    run_loop_graph_compute.Run();
-    EXPECT_TRUE(was_callback_called);
+    base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+    webnn_graph_remote->Compute(std::move(named_inputs),
+                                compute_future.GetCallback());
+    mojom::ComputeResultPtr compute_result = compute_future.Take();
+    ASSERT_TRUE(compute_result->is_named_outputs());
+    EXPECT_FALSE(compute_result->get_named_outputs().empty());
+    named_outputs = std::move(compute_result->get_named_outputs());
 
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
               std::vector<float>({12, 14, 12, 14}));
@@ -4668,19 +4621,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
 
     // The dml::GraphImpl should compute successfully.
-    base::RunLoop run_loop_graph_compute;
-    was_callback_called = false;
-    webnn_graph_remote->Compute(
-        std::move(named_inputs),
-        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-          EXPECT_TRUE(result->is_named_outputs());
-          EXPECT_FALSE(result->get_named_outputs().empty());
-          was_callback_called = true;
-          named_outputs = std::move(result->get_named_outputs());
-          run_loop_graph_compute.Quit();
-        }));
-    run_loop_graph_compute.Run();
-    EXPECT_TRUE(was_callback_called);
+    base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+    webnn_graph_remote->Compute(std::move(named_inputs),
+                                compute_future.GetCallback());
+    mojom::ComputeResultPtr compute_result = compute_future.Take();
+    ASSERT_TRUE(compute_result->is_named_outputs());
+    EXPECT_FALSE(compute_result->get_named_outputs().empty());
+    named_outputs = std::move(compute_result->get_named_outputs());
 
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
               std::vector<float>({12, 14, 12, 14}));
@@ -4691,19 +4638,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({2, 2, 2, 2})});
 
     // The dml::GraphImpl should compute successfully.
-    base::RunLoop run_loop_graph_compute;
-    was_callback_called = false;
-    webnn_graph_remote->Compute(
-        std::move(named_inputs),
-        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
-          EXPECT_TRUE(result->is_named_outputs());
-          EXPECT_FALSE(result->get_named_outputs().empty());
-          was_callback_called = true;
-          named_outputs = std::move(result->get_named_outputs());
-          run_loop_graph_compute.Quit();
-        }));
-    run_loop_graph_compute.Run();
-    EXPECT_TRUE(was_callback_called);
+    base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
+    webnn_graph_remote->Compute(std::move(named_inputs),
+                                compute_future.GetCallback());
+    mojom::ComputeResultPtr compute_result = compute_future.Take();
+    ASSERT_TRUE(compute_result->is_named_outputs());
+    EXPECT_FALSE(compute_result->get_named_outputs().empty());
+    named_outputs = std::move(compute_result->get_named_outputs());
 
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
               std::vector<float>({24, 28, 24, 28}));
