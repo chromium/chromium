@@ -4,13 +4,14 @@
 
 #include "components/variations/client_filterable_state.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 

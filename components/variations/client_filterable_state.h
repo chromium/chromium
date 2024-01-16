@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_CLIENT_FILTERABLE_STATE_H_
 #define COMPONENTS_VARIATIONS_CLIENT_FILTERABLE_STATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -13,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -104,13 +104,13 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // evaluate it if needed (i.e. if a study is filtering by enterprise) and at
   // most once.
   mutable IsEnterpriseFunction is_enterprise_function_;
-  mutable absl::optional<bool> is_enterprise_;
+  mutable std::optional<bool> is_enterprise_;
 
   // Evaluating group memberships involves parsing data received from Chrome
   // Sync server.  For safe rollout we do this only for studies that require
   // inspecting group memberships (and for efficiency we do it only once.)
   mutable GoogleGroupsFunction google_groups_function_;
-  mutable absl::optional<base::flat_set<uint64_t>> google_groups_;
+  mutable std::optional<base::flat_set<uint64_t>> google_groups_;
 };
 
 }  // namespace variations

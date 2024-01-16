@@ -143,7 +143,7 @@ const FieldTrialTestingExperiment
          std::size(array_kEarlyBootFieldTrialConfig_platforms),
          /*form_factors=*/{},
          /*form_factors_size=*/0,
-         /*is_low_end_device=*/absl::nullopt,
+         /*is_low_end_device=*/std::nullopt,
          /*min_os_version=*/nullptr,
          /*params=*/array_kEarlyBootFieldTrialConfig_params,
          /*params_size=*/std::size(array_kEarlyBootFieldTrialConfig_params),

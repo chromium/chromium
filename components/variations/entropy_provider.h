@@ -9,11 +9,11 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
   bool benchmarking_enabled() const { return benchmarking_enabled_; }
 
  private:
-  absl::optional<SHA1EntropyProvider> high_entropy_;
+  std::optional<SHA1EntropyProvider> high_entropy_;
   NormalizedMurmurHashEntropyProvider low_entropy_;
   SessionEntropyProvider session_entropy_;
   bool benchmarking_enabled_;

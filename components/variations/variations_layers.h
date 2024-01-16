@@ -6,12 +6,12 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_LAYERS_H_
 
 #include <map>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/variations_seed.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 

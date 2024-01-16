@@ -6,6 +6,9 @@
 # Format for the JSON schema file:
 # {
 #   "type_name": "DesiredCStructName",
+#   "system-headers": [   // Optional list of system headers to be included by
+#     "header"            // the .h.
+#   ],
 #   "headers": [          // Optional list of headers to be included by the .h.
 #     "path/to/header.h"
 #   ],
@@ -120,6 +123,11 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
 
     f.write(u'#include <cstddef>\n')
     f.write(u'\n')
+
+    if system_headers := schema.get(u'system-headers', []):
+      for header in system_headers:
+        f.write(u'#include <%s>\n' % header)
+      f.write(u'\n')
 
     for header in schema.get(u'headers', []):
       f.write(u'#include "%s"\n' % header)

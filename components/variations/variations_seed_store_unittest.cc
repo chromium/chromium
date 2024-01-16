@@ -901,7 +901,7 @@ struct InvalidSafeSeedTestParams {
   const std::string seed;
   const std::string signature;
   StoreSeedResult store_seed_result;
-  absl::optional<VerifySignatureResult> verify_signature_result = absl::nullopt;
+  std::optional<VerifySignatureResult> verify_signature_result = std::nullopt;
 };
 
 using StoreInvalidSafeSeedTest =
