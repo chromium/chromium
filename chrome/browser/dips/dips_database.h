@@ -287,6 +287,7 @@ class DIPSDatabase {
   size_t purge_entries_ = 300;
   const base::FilePath db_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool db_init_ = false;
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   mutable base::Time last_health_metrics_time_

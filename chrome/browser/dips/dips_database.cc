@@ -470,6 +470,7 @@ sql::InitStatus DIPSDatabase::Init() {
     }
   }
 
+  db_init_ = (status == sql::INIT_OK);
   base::UmaHistogramExactLinear("Privacy.DIPS.DatabaseInit", attempts, 3);
 
   last_health_metrics_time_ = clock_->Now();
@@ -496,7 +497,7 @@ void DIPSDatabase::LogDatabaseMetrics() {
 
 bool DIPSDatabase::CheckDBInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open()) {
+  if (!db_ || !db_->is_open() || !db_init_) {
     return false;
   }
 
