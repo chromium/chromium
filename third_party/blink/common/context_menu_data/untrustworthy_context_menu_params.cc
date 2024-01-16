@@ -14,6 +14,7 @@ UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
       x(0),
       y(0),
       has_image_contents(false),
+      is_image_media_plugin_document(false),
       media_flags(0),
       spellcheck_enabled(false),
       is_editable(false),
