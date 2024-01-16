@@ -633,10 +633,6 @@
       base_feature: "none",
     },
     {
-      name: "ClientHintThirdPartyDelegation",
-      status: "stable",
-    },
-    {
       name: "ClipboardSupportedTypes",
       status: "stable",
     },

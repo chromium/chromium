@@ -651,9 +651,7 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
 void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsExtendedData& data,
     const blink::ParsedPermissionsPolicy& container_policy) {
-  if (container_policy.empty() ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kClientHintThirdPartyDelegation)) {
+  if (container_policy.empty()) {
     return;
   }
 
