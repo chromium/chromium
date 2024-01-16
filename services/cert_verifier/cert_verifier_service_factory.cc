@@ -76,6 +76,22 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
             creation_params->initial_additional_certificates->all_certificates);
     instance_params.additional_distrusted_spkis =
         creation_params->initial_additional_certificates->distrusted_spkis;
+
+    {
+      net::CertificateList anchors_with_constraints;
+      for (const auto& cert_uint8 :
+           creation_params->initial_additional_certificates
+               ->trust_anchors_with_enforced_constraints) {
+        scoped_refptr<net::X509Certificate> x509_root =
+            net::X509Certificate::CreateFromBytes(
+                base::as_byte_span(cert_uint8));
+        if (x509_root) {
+          anchors_with_constraints.push_back(x509_root);
+        }
+      }
+      instance_params.additional_trust_anchors_with_enforced_constraints =
+          net::x509_util::ParseAllCerts(anchors_with_constraints);
+    }
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =

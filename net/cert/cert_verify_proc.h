@@ -115,6 +115,11 @@ class NET_EXPORT CertVerifyProc
     // additional anchors through.
     bssl::ParsedCertificateList additional_trust_anchors;
 
+    // Same as additional_trust_anchors, but embedded anchor constraints and
+    // NotBefore/NotAfter are enforced.
+    bssl::ParsedCertificateList
+        additional_trust_anchors_with_enforced_constraints;
+
     // Additional temporary certs to consider as intermediates during path
     // validation. Ordinarily, implementations of CertVerifier use intermediate
     // certs from the configured system store. This is implementation-specific

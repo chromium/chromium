@@ -532,6 +532,8 @@ cert_verifier::mojom::AdditionalCertificatesPtr
 ProfileNetworkContextService::GetCertificatePolicy() {
   net::CertificateList additional_untrusted_certificates;
   net::CertificateList additional_trust_anchors;
+  std::vector<std::vector<uint8_t>>
+      additional_trust_anchors_enforced_constraints;
   std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   auto* prefs = profile_->GetPrefs();
 
@@ -552,21 +554,12 @@ ProfileNetworkContextService::GetCertificatePolicy() {
   }
 
   for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
-    std::string decoded;
-    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
-      continue;
-    }
+    absl::optional<std::vector<uint8_t>> decoded_opt =
+        base::Base64Decode(cert_b64.GetString());
 
-    scoped_refptr<net::X509Certificate> x509_root =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(decoded)));
-
-    if (x509_root) {
-      // TODO(crbug.com/1477317): anchors added in this way don't have expiry or
-      // anchor constraints enforced. Figure out if we want these enforced or
-      // not. Note how we do this may impact ChromeOS as ChromeOS's current
-      // added anchors also don't have expiry or anchor constraints enforced.
-      additional_trust_anchors.push_back(std::move(x509_root));
+    if (decoded_opt.has_value()) {
+      additional_trust_anchors_enforced_constraints.push_back(
+          std::move(*decoded_opt));
     }
   }
 
@@ -587,6 +580,7 @@ ProfileNetworkContextService::GetCertificatePolicy() {
   return cert_verifier::mojom::AdditionalCertificates::New(
       std::move(additional_untrusted_certificates),
       std::move(additional_trust_anchors),
+      std::move(additional_trust_anchors_enforced_constraints),
       std::move(additional_distrusted_spkis));
 }
 

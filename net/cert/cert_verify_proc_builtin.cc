@@ -554,6 +554,39 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     });
   }
 
+  bssl::CertificateTrust anchor_trust_enforcement =
+      bssl::CertificateTrust::ForTrustAnchor()
+          .WithEnforceAnchorConstraints()
+          .WithEnforceAnchorExpiry();
+
+  for (const auto& cert :
+       instance_params.additional_trust_anchors_with_enforced_constraints) {
+    bssl::CertErrors parsing_errors;
+    additional_trust_store_.AddCertificate(std::move(cert),
+                                           anchor_trust_enforcement);
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      return NetLogAdditionalCert(cert->cert_buffer(), anchor_trust_enforcement,
+                                  parsing_errors);
+    });
+  }
+
+  for (const auto& cert : instance_params.additional_trust_anchors) {
+    bssl::CertErrors parsing_errors;
+    // Only add if it wasn't already present in `additional_trust_store_`. This
+    // is for two reasons:
+    //   (1) TrustStoreInMemory doesn't expect to contain duplicates
+    //   (2) If the same anchor is added with enforced constraints, that takes
+    //       precedence.
+    if (!additional_trust_store_.Contains(cert.get())) {
+      additional_trust_store_.AddTrustAnchor(std::move(cert));
+    }
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      return NetLogAdditionalCert(cert->cert_buffer(),
+                                  bssl::CertificateTrust::ForTrustAnchor(),
+                                  parsing_errors);
+    });
+  }
+
   for (const auto& cert : instance_params.additional_untrusted_authorities) {
     bssl::CertErrors parsing_errors;
     // Only add the untrusted cert if it isn't already present in

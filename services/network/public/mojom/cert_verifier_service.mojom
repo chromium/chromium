@@ -39,6 +39,9 @@ struct AdditionalCertificates {
   // List of additional trust anchors.
   array<network.mojom.X509Certificate> trust_anchors;
 
+  // List of additional trust anchors that have enforced constraints.
+  array<array<uint8>> trust_anchors_with_enforced_constraints;
+
   // List of SPKIs that are explicitly distrusted.
   array<array<uint8>> distrusted_spkis;
 };
