@@ -97,8 +97,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  SSLClientContext ssl_client_context_{&ssl_config_service_,
-                                       &cert_verifier_,
+  SSLClientContext ssl_client_context_{&ssl_config_service_, &cert_verifier_,
                                        &transport_security_state_,
                                        /*ssl_client_session_cache=*/nullptr,
                                        /*sct_auditing_delegate=*/nullptr};
@@ -193,8 +192,9 @@ TEST_F(TransportConnectJobTest, ConnectionTimeout) {
     EXPECT_FALSE(test_delegate.has_result());
 
     // In the async case, the host resolution completes now.
-    if (!host_resolution_synchronous)
+    if (!host_resolution_synchronous) {
       host_resolver_.ResolveOnlyRequestNow();
+    }
 
     // After (almost) the second half of timeout, just before the full timeout
     // period, the ConnectJob is still live.

@@ -155,9 +155,10 @@ void SetInitialRttEstimate(base::TimeDelta estimate,
                            quic::QuicConfig* config) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.InitialRttEsitmateSource", source,
                             INITIAL_RTT_SOURCE_MAX);
-  if (estimate != base::TimeDelta())
+  if (estimate != base::TimeDelta()) {
     config->SetInitialRoundTripTimeUsToSend(
         base::checked_cast<uint64_t>(estimate.InMicroseconds()));
+  }
 }
 
 // An implementation of quic::QuicCryptoClientConfig::ServerIdFilter that wraps
@@ -170,8 +171,9 @@ class ServerIdOriginFilter
       : origin_filter_(origin_filter) {}
 
   bool Matches(const quic::QuicServerId& server_id) const override {
-    if (origin_filter_.is_null())
+    if (origin_filter_.is_null()) {
       return true;
+    }
 
     GURL url(base::StringPrintf("%s%s%s:%d", url::kHttpsScheme,
                                 url::kStandardSchemeSeparator,
@@ -380,8 +382,9 @@ class QuicStreamFactory::Job {
   }
 
   void SetPriority(RequestPriority priority) {
-    if (priority_ == priority)
+    if (priority_ == priority) {
       return;
+    }
 
     priority_ = priority;
     if (resolve_host_request_ && !host_resolution_finished_) {
@@ -574,8 +577,9 @@ QuicStreamFactory::Job::~Job() {
 
 int QuicStreamFactory::Job::Run(CompletionOnceCallback callback) {
   int rv = DoLoop(OK);
-  if (rv == ERR_IO_PENDING)
+  if (rv == ERR_IO_PENDING) {
     callback_ = std::move(callback);
+  }
 
   return rv > 0 ? OK : rv;
 }
@@ -623,8 +627,9 @@ void QuicStreamFactory::Job::OnResolveHostComplete(int rv) {
     request->OnHostResolutionComplete(rv);
   }
 
-  if (rv != ERR_IO_PENDING && !callback_.is_null())
+  if (rv != ERR_IO_PENDING && !callback_.is_null()) {
     std::move(callback_).Run(rv);
+  }
 }
 
 void QuicStreamFactory::Job::OnCryptoConnectComplete(int rv) {
@@ -642,14 +647,16 @@ void QuicStreamFactory::Job::OnCryptoConnectComplete(int rv) {
 
   io_state_ = STATE_CONFIRM_CONNECTION;
   rv = DoLoop(rv);
-  if (rv != ERR_IO_PENDING && !callback_.is_null())
+  if (rv != ERR_IO_PENDING && !callback_.is_null()) {
     std::move(callback_).Run(rv);
+  }
 }
 
 void QuicStreamFactory::Job::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
-  if (!session_)
+  if (!session_) {
     return;
+  }
   details->connection_info = QuicHttpStream::ConnectionInfoFromQuicVersion(
       session_->connection()->version());
   details->quic_connection_error = session_->error();
@@ -675,8 +682,9 @@ int QuicStreamFactory::Job::DoResolveHost() {
 int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
   host_resolution_finished_ = true;
   dns_resolution_end_time_ = base::TimeTicks::Now();
-  if (rv != OK)
+  if (rv != OK) {
     return rv;
+  }
 
   DCHECK(!factory_->HasActiveSession(key_.session_key()));
 
@@ -836,8 +844,9 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
                       base::TimeTicks::Now() - dns_resolution_start_time_);
   net_log_.EndEvent(NetLogEventType::QUIC_STREAM_FACTORY_JOB_CONNECT);
 
-  if (was_alternative_service_recently_broken_)
+  if (was_alternative_service_recently_broken_) {
     UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.ConnectAfterBroken", rv == OK);
+  }
 
   if (retry_on_alternate_network_before_handshake_ && session_ &&
       !session_->OneRttKeysAvailable() &&
@@ -896,8 +905,9 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
                           rv == OK);
   }
 
-  if (rv != OK)
+  if (rv != OK) {
     return rv;
+  }
 
   DCHECK(!factory_->HasActiveSession(key_.session_key()));
   // There may well now be an active session for this IP.  If so, use the
@@ -928,8 +938,9 @@ QuicStreamRequest::QuicStreamRequest(QuicStreamFactory* factory)
     : factory_(factory) {}
 
 QuicStreamRequest::~QuicStreamRequest() {
-  if (factory_ && !callback_.is_null())
+  if (factory_ && !callback_.is_null()) {
     factory_->CancelRequest(this);
+  }
 }
 
 int QuicStreamRequest::Request(
@@ -973,8 +984,9 @@ int QuicStreamRequest::Request(
     factory_ = nullptr;
   }
 
-  if (rv == OK)
+  if (rv == OK) {
     DCHECK(session_);
+  }
   return rv;
 }
 
@@ -1025,25 +1037,29 @@ void QuicStreamRequest::OnRequestComplete(int rv) {
 }
 
 void QuicStreamRequest::OnConnectionFailedOnDefaultNetwork() {
-  if (!failed_on_default_network_callback_.is_null())
+  if (!failed_on_default_network_callback_.is_null()) {
     std::move(failed_on_default_network_callback_).Run(OK);
+  }
 }
 
 base::TimeDelta QuicStreamRequest::GetTimeDelayForWaitingJob() const {
-  if (!factory_)
+  if (!factory_) {
     return base::TimeDelta();
+  }
   return factory_->GetTimeDelayForWaitingJob(session_key_);
 }
 
 void QuicStreamRequest::SetPriority(RequestPriority priority) {
-  if (factory_)
+  if (factory_) {
     factory_->SetRequestPriority(this, priority);
+  }
 }
 
 std::unique_ptr<QuicChromiumClientSession::Handle>
 QuicStreamRequest::ReleaseSessionHandle() {
-  if (!session_ || !session_->IsConnected())
+  if (!session_ || !session_->IsConnected()) {
     return nullptr;
+  }
 
   return std::move(session_);
 }
@@ -1132,8 +1148,9 @@ QuicStreamFactory::QuicStreamFactory(
           NetworkAnonymizationKey::IsPartitioningEnabled()) {
   DCHECK(transport_security_state_);
   DCHECK(http_server_properties_);
-  if (params_.disable_tls_zero_rtt)
+  if (params_.disable_tls_zero_rtt) {
     SetQuicFlag(quic_disable_client_tls_zero_rtt, true);
+  }
   InitializeMigrationOptions();
   cert_verifier_->AddObserver(this);
   CertDatabase::GetInstance()->AddObserver(this);
@@ -1169,8 +1186,9 @@ QuicStreamFactory::~QuicStreamFactory() {
 bool QuicStreamFactory::CanUseExistingSession(
     const QuicSessionKey& session_key,
     const url::SchemeHostPort& destination) const {
-  if (base::Contains(active_sessions_, session_key))
+  if (base::Contains(active_sessions_, session_key)) {
     return true;
+  }
 
   for (const auto& key_value : active_sessions_) {
     QuicChromiumClientSession* session = key_value.second;
@@ -1242,8 +1260,9 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
     task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   }
 
-  if (!tick_clock_)
+  if (!tick_clock_) {
     tick_clock_ = base::DefaultTickClock::GetInstance();
+  }
 
   QuicSessionAliasKey key(destination, session_key);
   std::unique_ptr<Job> job = std::make_unique<Job>(
@@ -1263,8 +1282,9 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   if (rv == OK) {
     auto it = active_sessions_.find(session_key);
     DCHECK(it != active_sessions_.end());
-    if (it == active_sessions_.end())
+    if (it == active_sessions_.end()) {
       return ERR_QUIC_PROTOCOL_ERROR;
+    }
     QuicChromiumClientSession* session = it->second;
     request->SetSession(session->CreateHandle(std::move(destination)));
   }
@@ -1279,8 +1299,9 @@ void QuicStreamFactory::OnSessionGoingAway(QuicChromiumClientSession* session) {
     DCHECK_EQ(session, active_sessions_[session_key]);
     // Track sessions which have recently gone away so that we can disable
     // port suggestions.
-    if (session->goaway_received())
+    if (session->goaway_received()) {
       gone_away_aliases_.insert(alias);
+    }
 
     active_sessions_.erase(session_key);
     ProcessGoingAwaySession(session, session_key.server_id(), true);
@@ -1290,8 +1311,9 @@ void QuicStreamFactory::OnSessionGoingAway(QuicChromiumClientSession* session) {
     DCHECK(base::Contains(session_peer_ip_, session));
     const IPEndPoint peer_address = session_peer_ip_[session];
     ip_aliases_[peer_address].erase(session);
-    if (ip_aliases_[peer_address].empty())
+    if (ip_aliases_[peer_address].empty()) {
       ip_aliases_.erase(peer_address);
+    }
     session_peer_ip_.erase(session);
   }
   UnmapSessionFromSessionAliases(session);
@@ -1307,8 +1329,9 @@ void QuicStreamFactory::OnSessionClosed(QuicChromiumClientSession* session) {
 void QuicStreamFactory::OnBlackholeAfterHandshakeConfirmed(
     QuicChromiumClientSession* session) {
   // Reduce PING timeout when connection blackholes after the handshake.
-  if (ping_timeout_ > reduced_ping_timeout_)
+  if (ping_timeout_ > reduced_ping_timeout_) {
     ping_timeout_ = reduced_ping_timeout_;
+  }
 }
 
 void QuicStreamFactory::CancelRequest(QuicStreamRequest* request) {
@@ -1320,8 +1343,9 @@ void QuicStreamFactory::CancelRequest(QuicStreamRequest* request) {
 void QuicStreamFactory::SetRequestPriority(QuicStreamRequest* request,
                                            RequestPriority priority) {
   auto job_iter = active_jobs_.find(request->session_key());
-  if (job_iter == active_jobs_.end())
+  if (job_iter == active_jobs_.end()) {
     return;
+  }
   job_iter->second->SetPriority(priority);
 }
 
@@ -1576,8 +1600,9 @@ handles::NetworkHandle QuicStreamFactory::FindAlternateNetwork(
   NetworkChangeNotifier::NetworkList network_list;
   NetworkChangeNotifier::GetConnectedNetworks(&network_list);
   for (handles::NetworkHandle new_network : network_list) {
-    if (new_network != old_network)
+    if (new_network != old_network) {
       return new_network;
+    }
   }
   return handles::kInvalidNetworkHandle;
 }
@@ -1587,8 +1612,9 @@ std::unique_ptr<DatagramClientSocket> QuicStreamFactory::CreateSocket(
     const NetLogSource& source) {
   auto socket = client_socket_factory_->CreateDatagramClientSocket(
       DatagramSocket::DEFAULT_BIND, net_log, source);
-  if (params_.enable_socket_recv_optimization)
+  if (params_.enable_socket_recv_optimization) {
     socket->EnableRecvOptimization();
+  }
   return socket;
 }
 
@@ -1597,8 +1623,9 @@ void QuicStreamFactory::OnIPAddressChanged() {
   CollectDataOnPlatformNotification(NETWORK_IP_ADDRESS_CHANGED,
                                     handles::kInvalidNetworkHandle);
   // Do nothing if connection migration is turned on.
-  if (params_.migrate_sessions_on_network_change_v2)
+  if (params_.migrate_sessions_on_network_change_v2) {
     return;
+  }
 
   connectivity_monitor_.OnIPAddressChanged();
 
@@ -1694,8 +1721,9 @@ void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
     ++it;
     session->OnNetworkMadeDefault(network);
   }
-  if (params_.migrate_sessions_on_network_change_v2)
+  if (params_.migrate_sessions_on_network_change_v2) {
     set_is_quic_known_to_work_on_current_network(false);
+  }
 }
 
 void QuicStreamFactory::OnTrustStoreChanged() {
@@ -1761,8 +1789,9 @@ base::TimeDelta QuicStreamFactory::GetTimeDelayForWaitingJob(
   // Picked 300ms based on mean time from
   // Net.QuicSession.HostResolution.HandshakeConfirmedTime histogram.
   const int kDefaultRTT = 300 * quic::kNumMicrosPerMilli;
-  if (!srtt)
+  if (!srtt) {
     srtt = kDefaultRTT;
+  }
   return base::Microseconds(srtt);
 }
 
@@ -1786,13 +1815,15 @@ bool QuicStreamFactory::HasMatchingIpSession(
   const quic::QuicServerId& server_id(key.server_id());
   DCHECK(!HasActiveSession(key.session_key()));
   for (const auto& address : ip_endpoints) {
-    if (!base::Contains(ip_aliases_, address))
+    if (!base::Contains(ip_aliases_, address)) {
       continue;
+    }
 
     const SessionSet& sessions = ip_aliases_[address];
     for (QuicChromiumClientSession* session : sessions) {
-      if (!session->CanPool(server_id.host(), key.session_key()))
+      if (!session->CanPool(server_id.host(), key.session_key())) {
         continue;
+      }
       active_sessions_[key.session_key()] = session;
 
       std::set<std::string> dns_aliases;
@@ -2086,8 +2117,9 @@ void QuicStreamFactory::MarkAllActiveSessionsGoingAway(
     QuicChromiumClientSession* session = active_sessions_.begin()->second;
     // If IP address change is detected, disable session's connectivity
     // monitoring by remove the Delegate.
-    if (reason == kIPAddressChanged)
+    if (reason == kIPAddressChanged) {
       connectivity_monitor_.OnSessionGoingAwayOnIPAddressChange(session);
+    }
     OnSessionGoingAway(session);
   }
 }
@@ -2143,8 +2175,9 @@ const base::TimeDelta* QuicStreamFactory::GetServerNetworkStatsSmoothedRtt(
   const ServerNetworkStats* stats =
       http_server_properties_->GetServerNetworkStats(server,
                                                      network_anonymization_key);
-  if (stats == nullptr)
+  if (stats == nullptr) {
     return nullptr;
+  }
   return &(stats->srtt);
 }
 
@@ -2187,8 +2220,9 @@ void QuicStreamFactory::InitializeMigrationOptions() {
   // not be set.
   DCHECK(!(handle_ip_change && migrate_sessions_on_network_change));
 
-  if (handle_ip_change)
+  if (handle_ip_change) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
+  }
 
   if (allow_port_migration) {
     params_.allow_port_migration = true;
@@ -2197,8 +2231,9 @@ void QuicStreamFactory::InitializeMigrationOptions() {
     }
   }
 
-  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported()) {
     return;
+  }
 
   NetworkChangeNotifier::AddNetworkObserver(this);
   // Perform checks on the connection migration options.
@@ -2225,12 +2260,14 @@ void QuicStreamFactory::InitializeMigrationOptions() {
   }
 
   // Enable retry on alternate network before handshake.
-  if (retry_on_alternate_network_before_handshake)
+  if (retry_on_alternate_network_before_handshake) {
     params_.retry_on_alternate_network_before_handshake = true;
+  }
 
   // Enable migration for idle sessions.
-  if (migrate_idle_sessions)
+  if (migrate_idle_sessions) {
     params_.migrate_idle_sessions = true;
+  }
 }
 
 void QuicStreamFactory::InitializeCachedStateInCryptoConfig(
@@ -2260,8 +2297,9 @@ void QuicStreamFactory::ProcessGoingAwaySession(
     QuicChromiumClientSession* session,
     const quic::QuicServerId& server_id,
     bool session_was_active) {
-  if (!http_server_properties_)
+  if (!http_server_properties_) {
     return;
+  }
 
   const quic::QuicConnectionStats& stats = session->connection()->GetStats();
   const AlternativeService alternative_service(
@@ -2294,8 +2332,9 @@ void QuicStreamFactory::ProcessGoingAwaySession(
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicHandshakeNotConfirmedNumPacketsReceived",
                           stats.packets_received);
 
-  if (!session_was_active)
+  if (!session_was_active) {
     return;
+  }
 
   // TODO(rch):  In the special case where the session has received no packets
   // from the peer, we should consider blocking this differently so that we
@@ -2323,8 +2362,9 @@ void QuicStreamFactory::MapSessionToAliasKey(
 
 void QuicStreamFactory::UnmapSessionFromSessionAliases(
     QuicChromiumClientSession* session) {
-  for (const auto& key : session_aliases_[session])
+  for (const auto& key : session_aliases_[session]) {
     dns_aliases_by_session_key_.erase(key.session_key());
+  }
   session_aliases_.erase(session);
 }
 

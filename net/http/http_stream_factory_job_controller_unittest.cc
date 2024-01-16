@@ -282,14 +282,18 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     ASSERT_FALSE(session_deps_.proxy_delegate);
     session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
 
-    if (quic_data_)
+    if (quic_data_) {
       quic_data_->AddSocketDataToFactory(session_deps_.socket_factory.get());
-    if (quic_data2_)
+    }
+    if (quic_data2_) {
       quic_data2_->AddSocketDataToFactory(session_deps_.socket_factory.get());
-    if (tcp_data_)
+    }
+    if (tcp_data_) {
       session_deps_.socket_factory->AddSocketDataProvider(tcp_data_.get());
-    if (tcp_data2_)
+    }
+    if (tcp_data2_) {
       session_deps_.socket_factory->AddSocketDataProvider(tcp_data2_.get());
+    }
 
     session_deps_.proxy_resolution_service->SetProxyDelegate(
         session_deps_.proxy_delegate.get());
@@ -721,8 +725,9 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           break;
         case ErrorPhase::kTunnelRead:
           // Tunnels aren't established for HTTP destinations.
-          if (dest_url.SchemeIs(url::kHttpScheme))
+          if (dest_url.SchemeIs(url::kHttpScheme)) {
             continue;
+          }
           reads.emplace_back(ASYNC, mock_error.error);
           socket_data_proxy_main_job =
               std::make_unique<StaticSocketDataProvider>(reads,
@@ -938,8 +943,9 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           break;
         case ErrorPhase::kTunnelRead:
           // Tunnels aren't established for HTTP destinations.
-          if (dest_url.SchemeIs(url::kHttpScheme))
+          if (dest_url.SchemeIs(url::kHttpScheme)) {
             continue;
+          }
           reads.emplace_back(ASYNC, mock_error.error);
           socket_data_proxy_main_job =
               std::make_unique<StaticSocketDataProvider>(reads,
@@ -4471,10 +4477,10 @@ class HttpStreamFactoryJobControllerMisdirectedRequestRetry
       : HttpStreamFactoryJobControllerTestBase(false) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HttpStreamFactoryJobControllerMisdirectedRequestRetry,
-    ::testing::Combine(::testing::Bool(), ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpStreamFactoryJobControllerMisdirectedRequestRetry,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
        DisableIPBasedPoolingAndAlternativeServices) {
@@ -4496,10 +4502,12 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
 
-  if (!enable_ip_based_pooling)
+  if (!enable_ip_based_pooling) {
     DisableIPBasedPooling();
-  if (!enable_alternative_services)
+  }
+  if (!enable_alternative_services) {
     DisableAlternativeServices();
+  }
 
   Initialize(request_info);
 
@@ -4570,10 +4578,9 @@ class HttpStreamFactoryJobControllerPreconnectTest
   HttpRequestInfo request_info_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HttpStreamFactoryJobControllerPreconnectTest,
-    ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpStreamFactoryJobControllerPreconnectTest,
+                         ::testing::Bool());
 
 TEST_P(HttpStreamFactoryJobControllerPreconnectTest, LimitEarlyPreconnects) {
   std::list<SequencedSocketData> providers;
@@ -4653,8 +4660,9 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   quic::ParsedQuicVersion unsupported_version_2 =
       quic::ParsedQuicVersion::Unsupported();
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
-    if (base::Contains(supported_versions, version))
+    if (base::Contains(supported_versions, version)) {
       continue;
+    }
     if (unsupported_version_1 == quic::ParsedQuicVersion::Unsupported()) {
       unsupported_version_1 = version;
       continue;

@@ -96,8 +96,7 @@ class HttpStreamFactory::Job
                                     const SSLInfo& ssl_info) = 0;
 
     // Invoked when |job| raises failure for SSL Client Auth.
-    virtual void OnNeedsClientAuth(Job* job,
-                                   SSLCertRequestInfo* cert_info) = 0;
+    virtual void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) = 0;
 
     // Invoked when |job| needs proxy authentication.
     virtual void OnNeedsProxyAuth(Job* job,

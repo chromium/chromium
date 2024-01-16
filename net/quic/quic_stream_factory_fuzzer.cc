@@ -166,8 +166,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   callback.WaitForResult();
   std::unique_ptr<QuicChromiumClientSession::Handle> session =
       request.ReleaseSessionHandle();
-  if (!session)
+  if (!session) {
     return 0;
+  }
   auto dns_aliases = session->GetDnsAliasesForSessionKey(request.session_key());
   auto stream = std::make_unique<QuicHttpStream>(std::move(session),
                                                  std::move(dns_aliases));
@@ -184,8 +185,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   HttpResponseInfo response;
   HttpRequestHeaders request_headers;
   if (OK !=
-      stream->SendRequest(request_headers, &response, callback.callback()))
+      stream->SendRequest(request_headers, &response, callback.callback())) {
     return 0;
+  }
 
   // TODO(nedwilliamson): attempt connection migration here
   int rv = stream->ReadResponseHeaders(callback.callback());
@@ -196,8 +198,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   rv = stream->ReadResponseBody(buffer.get(), kBufferSize, callback.callback());
-  if (rv == ERR_IO_PENDING)
+  if (rv == ERR_IO_PENDING) {
     callback.WaitForResult();
+  }
 
   return 0;
 }

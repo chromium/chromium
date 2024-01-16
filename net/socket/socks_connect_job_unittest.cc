@@ -372,8 +372,9 @@ TEST_F(SOCKSConnectJobTest, Priority) {
     for (int new_priority = MINIMUM_PRIORITY; new_priority <= MAXIMUM_PRIORITY;
          ++new_priority) {
       // Don't try changing priority to itself, as APIs may not allow that.
-      if (new_priority == initial_priority)
+      if (new_priority == initial_priority) {
         continue;
+      }
       TestConnectJobDelegate test_delegate;
       SOCKSConnectJob socks_connect_job(
           static_cast<RequestPriority>(initial_priority), SocketTag(),

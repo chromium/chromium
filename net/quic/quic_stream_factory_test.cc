@@ -336,8 +336,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   std::unique_ptr<HttpStream> CreateStream(QuicStreamRequest* request) {
     std::unique_ptr<QuicChromiumClientSession::Handle> session =
         request->ReleaseSessionHandle();
-    if (!session || !session->IsConnected())
+    if (!session || !session->IsConnected()) {
       return nullptr;
+    }
 
     std::set<std::string> dns_aliases =
         session->GetDnsAliasesForSessionKey(request->session_key());
@@ -839,8 +840,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   }
 
   void RunTestLoopUntilIdle() {
-    while (!runner_->GetPostedTasks().empty())
+    while (!runner_->GetPostedTasks().empty()) {
       runner_->RunNextTask();
+    }
   }
 
   quic::QuicStreamId GetNthClientInitiatedBidirectionalStreamId(int n) const {
@@ -4181,8 +4183,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkDisconnected(
   EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
                                     callback_.callback()));
 
-  if (async_write_before)
+  if (async_write_before) {
     session->connection()->SendPing();
+  }
 
   // Set up second socket data provider that is used after migration.
   // The response to the earlier request is read on this new socket.
@@ -4662,8 +4665,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
                                     callback_.callback()));
 
-  if (async_write_before)
+  if (async_write_before) {
     session->connection()->SendPing();
+  }
 
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   // Cause the connection to report path degrading to the session.
@@ -7600,8 +7604,9 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
   // Resume the data to read the connectivity probing response to declare probe
   // as successful. Non-migratable streams will be closed.
   quic_data1.Resume();
-  if (migrate_idle_sessions)
+  if (migrate_idle_sessions) {
     base::RunLoop().RunUntilIdle();
+  }
 
   EXPECT_EQ(migrate_idle_sessions, HasActiveSession(scheme_host_port_));
   EXPECT_EQ(0u, session->GetNumActiveStreams());
@@ -8720,8 +8725,9 @@ void QuicStreamFactoryTestBase::TestMigrationOnWriteErrorNoNewNetwork(
   base::RunLoop().RunUntilIdle();
 
   // Write error causes migration task to be posted. Spin the loop.
-  if (write_error_mode == ASYNC)
+  if (write_error_mode == ASYNC) {
     runner_->RunNextTask();
+  }
 
   // Migration has not yet failed. The session should be alive and active.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -13478,8 +13484,9 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
 // A single QUIC request fails because the certificate does not match the origin
 // hostname, regardless of whether it matches the alternative service hostname.
 TEST_P(QuicStreamFactoryWithDestinationTest, InvalidCertificate) {
-  if (destination_type_ == DIFFERENT)
+  if (destination_type_ == DIFFERENT) {
     return;
+  }
 
   Initialize();
 
@@ -14846,8 +14853,9 @@ struct DnsAliasPoolingTestParams {
 std::string PrintToString(const std::set<std::string>& set) {
   std::string joined;
   for (const std::string& str : set) {
-    if (!joined.empty())
+    if (!joined.empty()) {
       joined += "_";
+    }
     joined += str;
   }
   return joined;

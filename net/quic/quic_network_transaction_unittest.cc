@@ -1649,8 +1649,9 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   // Add support for another QUIC version besides |version_|. Also find an
   // unsupported version.
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
-    if (version == version_)
+    if (version == version_) {
       continue;
+    }
     if (supported_versions_.size() != 2) {
       supported_versions_.push_back(version);
       continue;
@@ -5971,8 +5972,9 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
 // A single QUIC request fails because the certificate does not match the origin
 // hostname, regardless of whether it matches the alternative service hostname.
 TEST_P(QuicNetworkTransactionWithDestinationTest, InvalidCertificate) {
-  if (destination_type_ == DIFFERENT)
+  if (destination_type_ == DIFFERENT) {
     return;
+  }
 
   GURL url("https://mail.example.com/");
   origin1_ = url.host();
@@ -7873,8 +7875,9 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   // Confirm TCP job was resumed.
   // We can not check its failure because HttpStreamFactory::JobController.
   // main_job_net_error is not exposed.
-  while (socket_factory_.mock_data().next_index() < 3u)
+  while (socket_factory_.mock_data().next_index() < 3u) {
     base::RunLoop().RunUntilIdle();
+  }
   // Resume QUIC job.
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();

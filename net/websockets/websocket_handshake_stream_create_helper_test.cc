@@ -113,10 +113,10 @@ struct WebSocketHandshakeResponseInfo;
 
 using ::net::test::IsError;
 using ::net::test::IsOk;
+using ::testing::_;
 using ::testing::StrictMock;
 using ::testing::TestWithParam;
 using ::testing::Values;
-using ::testing::_;
 
 namespace net {
 namespace {

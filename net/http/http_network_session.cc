@@ -59,18 +59,21 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
   // For other setting parameters, set default values only if |http2_settings|
   // does not have a value set for given setting.
   auto it = http2_settings.find(spdy::SETTINGS_HEADER_TABLE_SIZE);
-  if (it == http2_settings.end())
+  if (it == http2_settings.end()) {
     http2_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
+  }
 
   it = http2_settings.find(spdy::SETTINGS_INITIAL_WINDOW_SIZE);
-  if (it == http2_settings.end())
+  if (it == http2_settings.end()) {
     http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
         kSpdyStreamMaxRecvWindowSize;
+  }
 
   it = http2_settings.find(spdy::SETTINGS_MAX_HEADER_LIST_SIZE);
-  if (it == http2_settings.end())
+  if (it == http2_settings.end()) {
     http2_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
         kSpdyMaxHeaderListSize;
+  }
 
   return http2_settings;
 }
@@ -266,18 +269,21 @@ base::Value HttpNetworkSession::QuicInfoToValue() const {
   const QuicParams* quic_params = context_.quic_context->params();
 
   base::Value::List connection_options;
-  for (const auto& option : quic_params->connection_options)
+  for (const auto& option : quic_params->connection_options) {
     connection_options.Append(quic::QuicTagToString(option));
+  }
   dict.Set("connection_options", std::move(connection_options));
 
   base::Value::List supported_versions;
-  for (const auto& version : quic_params->supported_versions)
+  for (const auto& version : quic_params->supported_versions) {
     supported_versions.Append(ParsedQuicVersionToString(version));
+  }
   dict.Set("supported_versions", std::move(supported_versions));
 
   base::Value::List origins_to_force_quic_on;
-  for (const auto& origin : quic_params->origins_to_force_quic_on)
+  for (const auto& origin : quic_params->origins_to_force_quic_on) {
     origins_to_force_quic_on.Append(origin.ToString());
+  }
   dict.Set("origins_to_force_quic_on", std::move(origins_to_force_quic_on));
 
   dict.Set("max_packet_length",

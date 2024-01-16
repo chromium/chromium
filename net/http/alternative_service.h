@@ -146,8 +146,9 @@ class NET_EXPORT_PRIVATE AlternativeServiceInfo {
 
   void set_advertised_versions(
       const quic::ParsedQuicVersionVector& advertised_versions) {
-    if (alternative_service_.protocol != kProtoQUIC)
+    if (alternative_service_.protocol != kProtoQUIC) {
       return;
+    }
 
     advertised_versions_ = advertised_versions;
     std::sort(advertised_versions_.begin(), advertised_versions_.end(),

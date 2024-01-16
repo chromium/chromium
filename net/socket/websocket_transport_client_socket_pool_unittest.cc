@@ -464,8 +464,9 @@ void RequestSocketOnComplete(const ClientSocketPool::GroupId& group_id,
       ClientSocketPool::RespectLimits::ENABLED, nested_callback->callback(),
       ClientSocketPool::ProxyAuthCallback(), pool, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  if (ERR_IO_PENDING != rv)
+  if (ERR_IO_PENDING != rv) {
     nested_callback->callback().Run(rv);
+  }
 }
 
 // Tests the case where a second socket is requested in a completion callback,
@@ -507,8 +508,9 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 
   // Now, kMaxSocketsPerGroup requests should be active.  Let's cancel them.
   ASSERT_LE(kMaxSocketsPerGroup, static_cast<int>(requests()->size()));
-  for (int i = 0; i < kMaxSocketsPerGroup; i++)
+  for (int i = 0; i < kMaxSocketsPerGroup; i++) {
     request(i)->handle()->Reset();
+  }
 
   // Let's wait for the rest to complete now.
   for (size_t i = kMaxSocketsPerGroup; i < requests()->size(); ++i) {
@@ -529,11 +531,13 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   ASSERT_LE(kNumRequests, kMaxSockets);  // Otherwise the test will hang.
 
   // Queue up all the requests
-  for (int i = 0; i < kNumRequests; i++)
+  for (int i = 0; i < kNumRequests; i++) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
+  }
 
-  for (int i = 0; i < kNumRequests; i++)
+  for (int i = 0; i < kNumRequests; i++) {
     EXPECT_THAT(request(i)->WaitForResult(), IsError(ERR_CONNECTION_FAILED));
+  }
 }
 
 // The lock on the endpoint is released when a ClientSocketHandle is reset.
@@ -615,8 +619,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with an IPv6 address first and then an IPv4 address.
-  host_resolver_->rules()->AddIPLiteralRule(
-      "*", "2:abcd::3:4:ff,2.2.2.2", std::string());
+  host_resolver_->rules()->AddIPLiteralRule("*", "2:abcd::3:4:ff,2.2.2.2",
+                                            std::string());
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
@@ -656,8 +660,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
                                    base::Milliseconds(50));
 
   // Resolve an AddressList with an IPv6 address first and then an IPv4 address.
-  host_resolver_->rules()->AddIPLiteralRule(
-      "*", "2:abcd::3:4:ff,2.2.2.2", std::string());
+  host_resolver_->rules()->AddIPLiteralRule("*", "2:abcd::3:4:ff,2.2.2.2",
+                                            std::string());
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
@@ -819,8 +823,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
       MockTransportClientSocketFactory::Type::kTriggerable);
 
   // Resolve an AddressList with an IPv6 addresses and an IPv4 address.
-  host_resolver_->rules()->AddIPLiteralRule(
-      "*", "2:abcd::3:4:ff,2.2.2.2", std::string());
+  host_resolver_->rules()->AddIPLiteralRule("*", "2:abcd::3:4:ff,2.2.2.2",
+                                            std::string());
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
@@ -1152,12 +1156,12 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
     // Each connect job has a different IPv6 address but the same IPv4 address.
     // So the IPv6 connections happen in parallel but the IPv4 ones are
     // serialised.
-    host_resolver_->rules()->AddIPLiteralRule("*",
-                                              base::StringPrintf(
-                                                  "%x:abcd::3:4:ff,"
-                                                  "1.1.1.1",
-                                                  i + 1),
-                                              std::string());
+    host_resolver_->rules()->AddIPLiteralRule(
+        "*",
+        base::StringPrintf("%x:abcd::3:4:ff,"
+                           "1.1.1.1",
+                           i + 1),
+        std::string());
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   }
   // Now we have |kMaxSockets| IPv6 sockets stalled in connect. No IPv4 sockets

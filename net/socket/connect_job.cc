@@ -93,17 +93,20 @@ ConnectJob::ConnectJob(RequestPriority priority,
                                             net_log_source_type)),
       net_log_connect_event_type_(net_log_connect_event_type) {
   DCHECK(delegate);
-  if (top_level_job_)
+  if (top_level_job_) {
     net_log_.BeginEvent(NetLogEventType::CONNECT_JOB);
+  }
 }
 
 ConnectJob::~ConnectJob() {
   // Log end of Connect event if ConnectJob was still in-progress when
   // destroyed.
-  if (delegate_)
+  if (delegate_) {
     LogConnectCompletion(ERR_ABORTED);
-  if (top_level_job_)
+  }
+  if (top_level_job_) {
     net_log().EndEvent(NetLogEventType::CONNECT_JOB);
+  }
 }
 
 std::unique_ptr<StreamSocket> ConnectJob::PassSocket() {
@@ -116,8 +119,9 @@ void ConnectJob::ChangePriority(RequestPriority priority) {
 }
 
 int ConnectJob::Connect() {
-  if (!timeout_duration_.is_zero())
+  if (!timeout_duration_.is_zero()) {
     timer_.Start(FROM_HERE, timeout_duration_, this, &ConnectJob::OnTimeout);
+  }
 
   LogConnectStart();
 
@@ -158,8 +162,9 @@ void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
   if (socket) {
     net_log().AddEventReferencingSource(NetLogEventType::CONNECT_JOB_SET_SOCKET,
                                         socket->NetLog().source());
-    if (dns_aliases)
+    if (dns_aliases) {
       socket->SetDnsAliases(std::move(dns_aliases.value()));
+    }
   }
   socket_ = std::move(socket);
 }
@@ -184,8 +189,9 @@ void ConnectJob::NotifyDelegateOfProxyAuth(
 
 void ConnectJob::ResetTimer(base::TimeDelta remaining_time) {
   timer_.Stop();
-  if (!remaining_time.is_zero())
+  if (!remaining_time.is_zero()) {
     timer_.Start(FROM_HERE, remaining_time, this, &ConnectJob::OnTimeout);
+  }
 }
 
 bool ConnectJob::TimerIsRunning() const {

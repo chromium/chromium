@@ -210,8 +210,9 @@ class MockHttpStreamFactoryForPreconnect : public HttpStreamFactory {
   // HttpStreamFactory methods.
   void OnPreconnectsCompleteInternal() override {
     preconnect_done_ = true;
-    if (waiting_for_preconnect_)
+    if (waiting_for_preconnect_) {
       loop_.QuitWhenIdle();
+    }
   }
 
   bool preconnect_done_ = false;
@@ -231,8 +232,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
     stream_done_ = true;
-    if (loop_)
+    if (loop_) {
       loop_->Quit();
+    }
     stream_ = std::move(stream);
     used_proxy_info_ = used_proxy_info;
   }
@@ -241,8 +243,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override {
     stream_done_ = true;
-    if (loop_)
+    if (loop_) {
       loop_->Quit();
+    }
     websocket_stream_ = std::move(stream);
     used_proxy_info_ = used_proxy_info;
   }
@@ -251,8 +254,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<BidirectionalStreamImpl> stream) override {
     stream_done_ = true;
-    if (loop_)
+    if (loop_) {
       loop_->Quit();
+    }
     bidirectional_stream_impl_ = std::move(stream);
     used_proxy_info_ = used_proxy_info;
   }
@@ -262,8 +266,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override {
     stream_done_ = true;
-    if (loop_)
+    if (loop_) {
       loop_->Quit();
+    }
     error_status_ = status;
   }
 
@@ -280,8 +285,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   void WaitForStream() {
     stream_done_ = false;
     loop_ = std::make_unique<base::RunLoop>();
-    while (!stream_done_)
+    while (!stream_done_) {
       loop_->Run();
+    }
     loop_.reset();
   }
 
@@ -605,10 +611,11 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
     PreconnectHelper(test, session.get());
     // We shouldn't be preconnecting if we have an existing session, which is
     // the case for https://www.google.com.
-    if (test.ssl)
+    if (test.ssl) {
       EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
-    else
+    } else {
       EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
+    }
   }
 }
 
@@ -780,7 +787,8 @@ TEST_F(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
   // A 404 in response to a CONNECT will trigger
   // ERR_TUNNEL_CONNECTION_FAILED.
   MockRead data_reads[] = {
-      MockRead("HTTP/1.1 404 Not Found\r\n\r\n"), MockRead(SYNCHRONOUS, OK),
+      MockRead("HTTP/1.1 404 Not Found\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
   };
 
   // Simulate a failure during CONNECT to bad:99.
@@ -1046,8 +1054,9 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
 int GetSpdySessionCount(HttpNetworkSession* session) {
   std::unique_ptr<base::Value> value(
       session->spdy_session_pool()->SpdySessionPoolInfoToValue());
-  if (!value || !value->is_list())
+  if (!value || !value->is_list()) {
     return -1;
+  }
   return value->GetList().size();
 }
 
@@ -1062,8 +1071,9 @@ int GetHandedOutSocketCount(ClientSocketPool* pool) {
 int GetQuicSessionCount(HttpNetworkSession* session) {
   base::Value dict(session->QuicInfoToValue());
   base::Value::List* session_list = dict.GetDict().FindList("sessions");
-  if (!session_list)
+  if (!session_list) {
     return -1;
+  }
   return session_list->size();
 }
 
@@ -3416,7 +3426,6 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
   HttpNetworkSessionParams session_params_;
   HttpNetworkSessionContext session_context_;
   std::unique_ptr<HttpNetworkSession> session_;
-
 };
 
 TEST_F(ProcessAlternativeServicesTest, ProcessEmptyAltSvc) {

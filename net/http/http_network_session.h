@@ -178,8 +178,8 @@ struct NET_EXPORT HttpNetworkSessionParams {
   bool use_dns_https_svcb_alpn = false;
 };
 
-  // Structure with pointers to the dependencies of the HttpNetworkSession.
-  // These objects must all outlive the HttpNetworkSession.
+// Structure with pointers to the dependencies of the HttpNetworkSession.
+// These objects must all outlive the HttpNetworkSession.
 struct NET_EXPORT HttpNetworkSessionContext {
   HttpNetworkSessionContext();
   HttpNetworkSessionContext(const HttpNetworkSessionContext& other);
@@ -205,7 +205,7 @@ struct NET_EXPORT HttpNetworkSessionContext {
   raw_ptr<NetworkErrorLoggingService> network_error_logging_service;
 #endif
 
-    // Optional factory to use for creating QuicCryptoClientStreams.
+  // Optional factory to use for creating QuicCryptoClientStreams.
   raw_ptr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory;
 };
 
@@ -255,9 +255,7 @@ class NET_EXPORT HttpNetworkSession {
   HttpStreamFactory* http_stream_factory() {
     return http_stream_factory_.get();
   }
-  NetLog* net_log() {
-    return net_log_;
-  }
+  NetLog* net_log() { return net_log_; }
   HostResolver* host_resolver() { return host_resolver_; }
 #if BUILDFLAG(ENABLE_REPORTING)
   ReportingService* reporting_service() const { return reporting_service_; }

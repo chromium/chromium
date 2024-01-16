@@ -91,8 +91,9 @@ bool QuicStreamFactoryPeer::HasLiveSession(QuicStreamFactory* factory,
   QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
                                                    session_key);
   for (const auto& it : factory->all_sessions_) {
-    if (it.second == alias_key)
+    if (it.second == alias_key) {
       return true;
+    }
   }
   return false;
 }
@@ -100,8 +101,9 @@ bool QuicStreamFactoryPeer::HasLiveSession(QuicStreamFactory* factory,
 bool QuicStreamFactoryPeer::IsLiveSession(QuicStreamFactory* factory,
                                           QuicChromiumClientSession* session) {
   for (const auto& it : factory->all_sessions_) {
-    if (it.first == session)
+    if (it.first == session) {
       return true;
+    }
   }
   return false;
 }
