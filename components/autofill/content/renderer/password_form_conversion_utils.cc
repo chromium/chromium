@@ -31,7 +31,6 @@ using blink::WebString;
 namespace autofill {
 
 using form_util::ExtractOption;
-using form_util::WebFormElementToFormData;
 
 namespace {
 
@@ -129,9 +128,9 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
   if (web_form.IsNull()) {
     return nullptr;
   }
-  std::optional<FormData> form = WebFormElementToFormData(
-      web_form, WebFormControlElement(), field_data_manager,
-      {ExtractOption::kValue}, /*field=*/nullptr);
+  std::optional<FormData> form =
+      form_util::ExtractFormData(web_form.GetDocument(), web_form,
+                                 field_data_manager, {ExtractOption::kValue});
   if (!form) {
     return nullptr;
   }

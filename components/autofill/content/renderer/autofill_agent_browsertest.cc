@@ -317,7 +317,7 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   blink::WebVector<blink::WebFormElement> forms =
       GetMainFrame()->GetDocument().Forms();
   EXPECT_EQ(1U, forms.size());
-  FormData form = *form_util::WebFormElementToFormData(
+  FormData form = *form_util::WebFormElementToFormDataForTesting(
       forms[0], blink::WebFormControlElement(),
       *base::MakeRefCounted<FieldDataManager>(),
       {form_util::ExtractOption::kValue}, nullptr);
@@ -342,7 +342,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   blink::WebVector<blink::WebFormElement> forms =
       GetMainFrame()->GetDocument().Forms();
   ASSERT_EQ(1U, forms.size());
-  FormData form = *form_util::WebFormElementToFormData(
+  FormData form = *form_util::WebFormElementToFormDataForTesting(
       forms[0], blink::WebFormControlElement(),
       *base::MakeRefCounted<FieldDataManager>(),
       {form_util::ExtractOption::kValue}, nullptr);

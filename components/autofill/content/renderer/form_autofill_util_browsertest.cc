@@ -213,13 +213,13 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 
 // Tests that WebFormElementToFormData() sets the
 // Form[Field]Data::{name,id_attribute,name_attribute} correctly.
-TEST_F(FormAutofillUtilsTest, WebFormElementToFormDataIdAndNames) {
+TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   LoadHTML(R"(
     <form id=form-id name=form-name>
       <input type=text id=input-id name=input-name>
     </form>
   )");
-  FormData form_data = *WebFormElementToFormData(
+  FormData form_data = *WebFormElementToFormDataForTesting(
       GetFormElementById(GetMainFrame()->GetDocument(), "form-id"),
       WebFormControlElement(), field_data_manager(), {ExtractOption::kOptions},
       /*field=*/nullptr);
@@ -251,7 +251,7 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form");
 
-  FormData form_data = *WebFormElementToFormData(
+  FormData form_data = *WebFormElementToFormDataForTesting(
       web_form, WebFormControlElement(), field_data_manager(),
       {ExtractOption::kOptions}, /*field=*/nullptr);
 
@@ -867,10 +867,10 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form1");
 
-  FormData form_data =
-      *WebFormElementToFormData(web_form, WebFormControlElement(),
-                                field_data_manager(), {ExtractOption::kValue},
-                                /*field=*/nullptr);
+  FormData form_data = *WebFormElementToFormDataForTesting(
+      web_form, WebFormControlElement(), field_data_manager(),
+      {ExtractOption::kValue},
+      /*field=*/nullptr);
 
   EXPECT_FALSE(form_data.is_action_empty);
 }
@@ -880,10 +880,10 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyTrue) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form1");
 
-  FormData form_data =
-      *WebFormElementToFormData(web_form, WebFormControlElement(),
-                                field_data_manager(), {ExtractOption::kValue},
-                                /*field=*/nullptr);
+  FormData form_data = *WebFormElementToFormDataForTesting(
+      web_form, WebFormControlElement(), field_data_manager(),
+      {ExtractOption::kValue},
+      /*field=*/nullptr);
 
   EXPECT_TRUE(form_data.is_action_empty);
 }
@@ -1580,7 +1580,7 @@ INSTANTIATE_TEST_SUITE_P(FormAutofillUtilsTest,
                          SelectListAutofillParamTest,
                          ::testing::Bool());
 
-// Test that WebFormElementToFormData() ignores <selectlist> if
+// Test that WebFormElementToFormDataForTesting() ignores <selectlist> if
 // features::kAutofillEnableSelectList is disabled.
 TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
   LoadHTML(R"(
@@ -1596,7 +1596,7 @@ TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
   WebDocument doc = GetMainFrame()->GetDocument();
 
   auto form_element = GetFormElementById(doc, "form");
-  FormData form_data = *WebFormElementToFormData(
+  FormData form_data = *WebFormElementToFormDataForTesting(
       form_element, WebFormControlElement(), field_data_manager(),
       /*extract_options=*/{},
       /*field=*/nullptr);
@@ -1643,7 +1643,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   WebDocument doc = GetMainFrame()->GetDocument();
   WebFormElement form = GetFormElementById(doc, "f");
   {
-    FormData form_data = *WebFormElementToFormData(
+    FormData form_data = *WebFormElementToFormDataForTesting(
         form, WebFormControlElement(), field_data_manager(),
         /*extract_options=*/{},
         /*field=*/nullptr);
@@ -1656,7 +1656,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   // different numbers of <iframe> elements.
   for (int i = 0; i < 3; ++i) {
     CreateFormElement("iframe");
-    FormData form_data = *WebFormElementToFormData(
+    FormData form_data = *WebFormElementToFormDataForTesting(
         form, WebFormControlElement(), field_data_manager(),
         /*extract_options=*/{},
         /*field=*/nullptr);
@@ -1688,7 +1688,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   WebDocument doc = GetMainFrame()->GetDocument();
   WebFormElement form = GetFormElementById(doc, "f");
   {
-    FormData form_data = *WebFormElementToFormData(
+    FormData form_data = *WebFormElementToFormDataForTesting(
         form, WebFormControlElement(), field_data_manager(),
         /*extract_options=*/{},
         /*field=*/nullptr);
@@ -1702,10 +1702,10 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   for (int i = 0; i < 3; ++i) {
     SCOPED_TRACE(base::NumberToString(i));
     CreateFormElement("input");
-    ASSERT_FALSE(WebFormElementToFormData(form, WebFormControlElement(),
-                                          field_data_manager(),
-                                          /*extract_options=*/{},
-                                          /*field=*/nullptr));
+    ASSERT_FALSE(WebFormElementToFormDataForTesting(
+        form, WebFormControlElement(), field_data_manager(),
+        /*extract_options=*/{},
+        /*field=*/nullptr));
   }
 }
 

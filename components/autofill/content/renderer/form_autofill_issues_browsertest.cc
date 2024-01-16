@@ -209,7 +209,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
       </form>)";
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::WebFormElementToFormData(
+  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
       WebFormElementFromHTML(kHtml), WebFormControlElement(),
       *base::MakeRefCounted<FieldDataManager>(),
       {form_util::ExtractOption::kValue}, nullptr);
@@ -233,7 +233,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
       </form>)";
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::WebFormElementToFormData(
+  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
       WebFormElementFromHTML(kHtml), WebFormControlElement(),
       *base::MakeRefCounted<FieldDataManager>(),
       {form_util::ExtractOption::kValue}, nullptr);

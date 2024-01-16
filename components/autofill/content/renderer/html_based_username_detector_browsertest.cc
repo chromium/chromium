@@ -59,15 +59,13 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
 
   FormData LoadFormDataFromHtml(const std::string& html) {
     LoadHTML(html.data());
-    const WebFormElement& form = GetFormElement();
-    return GetFormDataFromForm(form);
+    return GetFormData(GetFormElement());
   }
 
-  FormData GetFormDataFromForm(const WebFormElement& form) {
-    return *form_util::WebFormElementToFormData(
-        form, WebFormControlElement(),
-        *base::MakeRefCounted<FieldDataManager>(), /*extract_options=*/{},
-        /*field=*/nullptr);
+  FormData GetFormData(const WebFormElement& form) {
+    return *form_util::ExtractFormData(
+        form.GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
+        /*extract_options=*/{});
   }
 
   FieldRendererId GetRendererIdFromWebElementId(const WebString& id) {
@@ -305,7 +303,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // Changing attributes would change the classifier's output. But the output
   // will be the same because it was cached in |username_detector_cache|.
   control_elements[0].SetAttribute("name", "id");
-  form_data = GetFormDataFromForm(GetFormElement());
+  form_data = GetFormData(GetFormElement());
   field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
       control_elements, form_data, &cache, GetFormElement());
   ASSERT_EQ(1u, cache.size());
@@ -328,7 +326,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // Change the attributes again ("username" is stronger signal than "id"),
   // but keep the cache. The classifier's output should be the same.
   control_elements[1].SetAttribute("name", "username");
-  form_data = GetFormDataFromForm(GetFormElement());
+  form_data = GetFormData(GetFormElement());
   field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
       control_elements, form_data, &cache, GetFormElement());
 

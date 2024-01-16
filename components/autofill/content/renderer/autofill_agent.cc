@@ -1153,9 +1153,8 @@ void AutofillAgent::ExtractForm(
   }
   if (WebFormElement form_element = FindFormByRendererId(document, form_id);
       !form_element.IsNull()) {
-    if (std::optional<FormData> form = WebFormElementToFormData(
-            form_element, WebFormControlElement(), field_data_manager(),
-            extract_options, nullptr)) {
+    if (std::optional<FormData> form = form_util::ExtractFormData(
+            document, form_element, field_data_manager(), extract_options)) {
       std::move(callback).Run(std::move(form));
       return;
     }

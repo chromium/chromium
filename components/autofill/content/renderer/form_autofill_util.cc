@@ -1539,6 +1539,54 @@ bool OwnedOrUnownedFormToFormData(
   return success;
 }
 
+// Returns a FormData object corresponding to `form_element`.
+// If `field` is non-NULL, also assigns to `*field` a FormFieldData
+// corresponding to `form_control_element`. `extract_options` controls what data
+// is extracted. Returns std::nullopt if there are no fields or too many fields
+// in the form. Field properties are copied from `field_data_manager`, if it has
+// entry for the corresponding element (see properties in FieldPropertiesFlags).
+std::optional<FormData> WebFormElementToFormData(
+    const blink::WebFormElement& form_element,
+    const blink::WebFormControlElement& form_control_element,
+    const FieldDataManager& field_data_manager,
+    DenseSet<ExtractOption> extract_options,
+    FormFieldData* field) {
+  WebLocalFrame* frame = form_element.GetDocument().GetFrame();
+  if (!frame) {
+    return std::nullopt;
+  }
+  FormData form;
+  form.name = GetFormIdentifier(form_element);
+  form.id_attribute = form_element.GetIdAttribute().Utf16();
+  form.name_attribute = GetAttribute<kName>(form_element).Utf16();
+  form.unique_renderer_id = GetFormRendererId(form_element);
+  form.action = GetCanonicalActionForForm(form_element);
+  form.is_action_empty =
+      form_element.Action().IsNull() || form_element.Action().IsEmpty();
+  form.main_frame_origin = url::Origin();
+  // If the completed URL is not valid, just use the action we get from
+  // WebKit.
+  if (!form.action.is_valid()) {
+    form.action = blink::WebStringToGURL(form_element.Action());
+  }
+  std::vector<WebElement> owned_iframes;
+  WebElementCollection iframes =
+      form_element.GetElementsByHTMLTagName(GetWebString<kIframe>());
+  for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+       iframe = iframes.NextItem()) {
+    if (GetClosestAncestorFormElement(iframe) == form_element &&
+        IsRelevantChildFrame(iframe)) {
+      owned_iframes.push_back(iframe);
+    }
+  }
+  return OwnedOrUnownedFormToFormData(form_element, &form_control_element,
+                                      form_element.GetFormControlElements(),
+                                      owned_iframes, field_data_manager,
+                                      extract_options, form, field)
+             ? std::make_optional(form)
+             : std::nullopt;
+}
+
 // Returns if a script-modified username or credit card number is suitable to
 // store in Password Manager/Autofill given `typed_value`.
 bool ScriptModifiedUsernameOrCreditCardNumberAcceptable(
@@ -2133,40 +2181,6 @@ void WebFormControlElementToFormField(
       field->user_input = user_input.substr(0, kMaxStringLength);
     }
   }
-}
-
-std::optional<FormData> WebFormElementToFormData(
-    const blink::WebFormElement& form_element,
-    const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field) {
-  WebLocalFrame* frame = form_element.GetDocument().GetFrame();
-  if (!frame) {
-    return std::nullopt;
-  }
-  FormData form;
-  form.name = GetFormIdentifier(form_element);
-  form.id_attribute = form_element.GetIdAttribute().Utf16();
-  form.name_attribute = GetAttribute<kName>(form_element).Utf16();
-  form.unique_renderer_id = GetFormRendererId(form_element);
-  form.action = GetCanonicalActionForForm(form_element);
-  form.is_action_empty =
-      form_element.Action().IsNull() || form_element.Action().IsEmpty();
-  form.main_frame_origin = url::Origin();
-  // If the completed URL is not valid, just use the action we get from
-  // WebKit.
-  if (!form.action.is_valid()) {
-    form.action = blink::WebStringToGURL(form_element.Action());
-  }
-  std::vector<WebElement> owned_iframes =
-      GetIframeElements(form_element.GetDocument(), form_element);
-  return OwnedOrUnownedFormToFormData(form_element, &form_control_element,
-                                      form_element.GetFormControlElements(),
-                                      owned_iframes, field_data_manager,
-                                      extract_options, form, field)
-             ? std::make_optional(form)
-             : std::nullopt;
 }
 
 WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
@@ -2949,6 +2963,16 @@ void TraverseDomForFourDigitCombinations(
 
 bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element) {
   return IsVisibleIframe(iframe_element);
+}
+
+std::optional<FormData> WebFormElementToFormDataForTesting(  // IN-TEST
+    const blink::WebFormElement& form_element,
+    const blink::WebFormControlElement& form_control_element,
+    const FieldDataManager& field_data_manager,
+    DenseSet<ExtractOption> extract_options,
+    FormFieldData* field) {
+  return WebFormElementToFormData(form_element, form_control_element,
+                                  field_data_manager, extract_options, field);
 }
 
 }  // namespace autofill::form_util

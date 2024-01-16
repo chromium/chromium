@@ -248,20 +248,6 @@ void WebFormControlElementToFormField(
     FormFieldData* field,
     ShadowFieldData* shadow_data = nullptr);
 
-// Returns a FormData object corresponding to `form_element`.
-// If `field` is non-NULL, also fills `field` with the FormFieldData object.
-// corresponding to `form_control_element`. `extract_options` controls what
-// data is extracted. Returns std::nullopt if there are no fields or too many
-// fields in the form. Field properties will be copied from
-// `field_data_manager`, if the argument is not null and has entry for the
-// corresponding element (see properties in FieldPropertiesFlags).
-std::optional<FormData> WebFormElementToFormData(
-    const blink::WebFormElement& form_element,
-    const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field);
-
 // Returns the form that owns the `form_control`, or a null pointer if no form
 // owns the `form_control`. exists.
 //
@@ -468,6 +454,13 @@ void TraverseDomForFourDigitCombinations(
         potential_matches);
 
 bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element);
+
+std::optional<FormData> WebFormElementToFormDataForTesting(
+    const blink::WebFormElement& form_element,
+    const blink::WebFormControlElement& form_control_element,
+    const FieldDataManager& field_data_manager,
+    DenseSet<ExtractOption> extract_options,
+    FormFieldData* field);
 
 }  // namespace form_util
 }  // namespace autofill

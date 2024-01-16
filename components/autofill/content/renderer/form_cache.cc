@@ -186,9 +186,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return r;
 
   for (const WebFormElement& form_element : document.Forms()) {
-    if (std::optional<FormData> form = WebFormElementToFormData(
-            form_element, WebFormControlElement(), field_data_manager,
-            extract_options, nullptr)) {
+    if (std::optional<FormData> form = ExtractFormData(
+            document, form_element, field_data_manager, extract_options)) {
       if (!ProcessForm(std::move(*form))) {
         PruneInitialValueCaches(observed_unique_renderer_ids);
         return r;
