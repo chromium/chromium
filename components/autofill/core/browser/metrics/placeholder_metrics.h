@@ -12,10 +12,10 @@
 
 namespace autofill::autofill_metrics {
 
-// Log the number of fields that are pre-filled or empty on page load.
+// Enum for logging if a field is pre-filled or empty on page load.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class AutofillPreFilledFields {
+enum class AutofillPreFilledFieldStatus {
   // The field had a pre-filled value on page load.
   kPreFilledOnPageLoad = 0,
   // The field was empty on page load.
@@ -23,9 +23,11 @@ enum class AutofillPreFilledFields {
   kMaxValue = kEmptyOnPageLoad
 };
 
-// Log how many fields were autofilled, or not, and pre-filled, or not.
-void LogPreFilledFields(const std::string_view form_type_name,
-                        const std::optional<bool> initial_value_changed);
+// Logs if the field was pre-filled or empty on page load. Aggregated separately
+// by `form_type_name` and `field_type`.
+void LogPreFilledFieldStatus(std::string_view form_type_name,
+                             std::optional<bool> initial_value_changed,
+                             FieldType field_type);
 
 }  // namespace autofill::autofill_metrics
 
