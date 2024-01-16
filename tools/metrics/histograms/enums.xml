@@ -20451,6 +20451,7 @@ from previous Chrome versions.
   <int value="-1619437172" label="OmniboxMostVisitedTilesOnSrp:enabled"/>
   <int value="-1619146163" label="OverrideSitePrefsForHrefTranslate:disabled"/>
   <int value="-1618707999" label="enable-webfonts-intervention-v2"/>
+  <int value="-1618660008" label="IpProtectionV1:enabled"/>
   <int value="-1618030555" label="ArcAccountRestrictions:enabled"/>
   <int value="-1617805422" label="WebViewUseMetricsUploadService:enabled"/>
   <int value="-1617666878" label="AndroidElegantTextHeight:enabled"/>
@@ -23109,6 +23110,7 @@ from previous Chrome versions.
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>
   <int value="-384349472" label="ReadAnythingWithAlgorithm:disabled"/>
+  <int value="-383795921" label="IpProtectionV1:disabled"/>
   <int value="-382542238" label="CWSInfoFastCheck:disabled"/>
   <int value="-381181808" label="DragAppsInTabletMode:enabled"/>
   <int value="-380992110"

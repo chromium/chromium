@@ -3475,10 +3475,14 @@ const char kTpcdSupportSettingsDescription[] =
     "https://developer.chrome.com/blog/cookie-countdown-2023oct/ for more "
     "details.";
 
+const char kIpProtectionV1Name[] = "IP Protection Setting";
+const char kIpProtectionV1Description[] =
+    "Adds an IP Protection setting to the cookies settings page.";
+
 const char kTrackingProtection3pcdName[] = "Tracking Protection for 3PCD";
 const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
-    "1%. ";
+    "1%.";
 
 const char kTrackingProtectionOnboardingRollbackName[] =
     "Tracking Protection Rollback Flow";
