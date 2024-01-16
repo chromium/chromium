@@ -396,3 +396,4 @@ crbug.com/1504447 [ iOS16-simulator ] paint/invalidation/scroll/repaint-composit
 crbug.com/1504447 [ iOS16-simulator ] paint/invalidation/scroll/resize-scrollable-iframe.html [ Failure ]
 crbug.com/1504447 [ iOS16-simulator ] paint/invalidation/scroll/scrollbar-parts.html [ Failure ]
 crbug.com/1504447 [ iOS16-simulator ] paint/invalidation/text-match-document-change.html [ Failure ]
+crbug.com/1517473 [ iOS16-simulator ] fast/events/touch/compositor-touch-hit-rects-non-composited-scroll.html [ Failure ]

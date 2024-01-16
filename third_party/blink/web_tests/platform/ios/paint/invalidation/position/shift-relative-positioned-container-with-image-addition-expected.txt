@@ -1,0 +1,22 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 829],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 735, 800, 94],
+        [8, 86, 732, 94],
+        [58, 230, 489, 537],
+        [58, 136, 489, 537]
+      ]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [796, 0],
+      "bounds": [4, 600]
+    }
+  ]
+}
+
