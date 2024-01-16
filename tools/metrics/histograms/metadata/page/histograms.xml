@@ -1589,7 +1589,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.{Origin}.LayoutInstability.CumulativeShiftScore"
-    units="ms" expires_after="2024-05-05">
+    units="ms" expires_after="2024-07-07">
   <owner>chikamune@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
@@ -1604,7 +1604,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.{Origin}.LayoutInstability.CumulativeShiftScore.MainFrame"
-    units="ms" expires_after="2024-02-29">
+    units="ms" expires_after="2024-07-07">
   <owner>chikamune@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
