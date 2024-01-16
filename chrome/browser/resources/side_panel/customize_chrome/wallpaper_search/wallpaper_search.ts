@@ -590,11 +590,23 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.openInspirations_ = !this.openInspirations_;
   }
 
-  private onInspirationImageClick_(e: DomRepeatEvent<Inspiration>) {
+  private onInspirationImageClick_(e: Event&{
+    model: {
+      item: Inspiration,
+      parentModel: {
+        item: InspirationGroup,
+      },
+    },
+  }) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_INSPIRATION_THEME_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToInspirationImage(
         e.model.item.id, e.model.item.backgroundUrl);
+
+    const groupDescriptors = e.model.parentModel.item.descriptors;
+    this.selectedDescriptorA_ = groupDescriptors.subject || null;
+    this.selectedDescriptorB_ = groupDescriptors.style || null;
+    this.selectedDescriptorC_ = groupDescriptors.mood || null;
   }
 
   private onLearnMoreClick_(e: Event) {

@@ -1503,7 +1503,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
-          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          4, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1706,6 +1706,65 @@ suite('WallpaperSearchTest', () => {
           'https://example.com/foo_1.png',
           handler.getArgs('setBackgroundToInspirationImage')[0][1].url);
     });
+
+    test('inspirations updates selected descriptors', async () => {
+      createWallpaperSearchElement(
+          /*descriptors=*/ {
+            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+            descriptorC: ['foo', 'bar', 'baz'],
+          },
+          /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'baz',
+                style: 'foo',
+                mood: 'bar',
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description',
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+      assertEquals(
+          undefined,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          undefined,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          undefined,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+
+      const inspirationTile =
+          $$(wallpaperSearchElement, '#inspirationCard .tile.result');
+      assertTrue(!!inspirationTile);
+      (inspirationTile as HTMLElement).click();
+      await flushTasks();
+
+      assertEquals(
+          'baz',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          'foo',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          'bar',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+    });
+
 
     test('inspiration card toggles on click', async () => {
       createWallpaperSearchElement();
