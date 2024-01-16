@@ -265,7 +265,8 @@ WindowOcclusionTracker::ComputeTargetOcclusionForWindow(Window* window) {
 
   Window* root_window = window->GetRootWindow();
   SkRegion occluded_region;
-  RecomputeOcclusionImpl(root_window, gfx::Transform(), nullptr,
+  SkIRect root_window_clip = gfx::RectToSkIRect(root_window->bounds());
+  RecomputeOcclusionImpl(root_window, gfx::Transform(), &root_window_clip,
                          &occluded_region);
 
   return tracked_window_iter->second;
@@ -331,8 +332,10 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
                                                /* is_parent_visible */ false);
           } else {
             SkRegion occluded_region = root_window_pair.second.occluded_region;
-            RecomputeOcclusionImpl(root_window, gfx::Transform(), nullptr,
-                                   &occluded_region);
+            SkIRect root_window_clip =
+                gfx::RectToSkIRect(root_window->bounds());
+            RecomputeOcclusionImpl(root_window, gfx::Transform(),
+                                   &root_window_clip, &occluded_region);
           }
         }
       }
