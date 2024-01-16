@@ -9,8 +9,8 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -18,46 +18,37 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 
 import {getTemplate} from './cryptohome_recovery.html.js';
 
-/**
- * UI mode for the dialog.
- * @enum {string}
- */
-const CryptohomeRecoveryUIState = {
-  LOADING: 'loading',
-  DONE: 'done',
-  ERROR: 'error',
-  REAUTH_NOTIFICATION: 'reauth-notification',
-};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+enum CryptohomeRecoveryUIState {
+  LOADING = 'loading',
+  DONE = 'done',
+  ERROR = 'error',
+  REAUTH_NOTIFICATION = 'reauth-notification',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const CryptohomeRecoveryBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+const CryptohomeRecoveryBase =
+    mixinBehaviors(
+      [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+      PolymerElement) as {
+        new (): PolymerElement & OobeI18nBehaviorInterface &
+            LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+  };
 
-/**
- * @polymer
- */
 class CryptohomeRecovery extends CryptohomeRecoveryBase {
   static get is() {
-    return 'cryptohome-recovery-element';
+    return 'cryptohome-recovery-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Whether the page is being rendered in dark mode.
-       * @private {boolean}
        */
-      isDarkModeActive_: {
+      isDarkModeActive: {
         type: Boolean,
         value: false,
       },
@@ -65,24 +56,27 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
       /**
        * Whether the buttons on the screen are disabled. Prevents sending double
        * requests.
-       * @private {boolean}
        */
-      disabled_: {
+      disabled: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  defaultUIStep() {
+  private isDarkModeActive: boolean;
+  private disabled: boolean;
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): string {
     return CryptohomeRecoveryUIState.LOADING;
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return CryptohomeRecoveryUIState;
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'onRecoverySucceeded',
       'onRecoveryFailed',
@@ -90,8 +84,7 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
     ];
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('CryptohomeRecoveryScreen');
   }
@@ -99,85 +92,87 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   /**
    * Invoked just before being shown.
    */
-  onBeforeShow() {
+  onBeforeShow(): void {
     this.reset();
   }
 
-  reset() {
+  reset(): void {
     this.setUIStep(CryptohomeRecoveryUIState.LOADING);
-    this.disabled_ = false;
+    this.disabled = false;
   }
 
   /**
    * Called when Cryptohome recovery succeeded.
    */
-  onRecoverySucceeded() {
+  onRecoverySucceeded(): void {
     this.setUIStep(CryptohomeRecoveryUIState.DONE);
-    this.disabled_ = false;
+    this.disabled = false;
   }
 
   /**
    * Called when Cryptohome recovery failed.
    */
-  onRecoveryFailed() {
+  onRecoveryFailed(): void {
     this.setUIStep(CryptohomeRecoveryUIState.ERROR);
-    this.disabled_ = false;
+    this.disabled = false;
   }
 
   /**
    * Shows a reauth required message when there's no reauth proof token.
    */
-  showReauthNotification() {
+  showReauthNotification(): void {
     this.setUIStep(CryptohomeRecoveryUIState.REAUTH_NOTIFICATION);
-    this.disabled_ = false;
+    this.disabled = false;
   }
 
   /**
    * Enter old password button click handler.
-   * @private
    */
-  onGoToManualRecovery_() {
-    if (this.disabled_) {
+  private onGoToManualRecovery(): void {
+    if (this.disabled) {
       return;
     }
-    this.disabled_ = true;
+    this.disabled = true;
     this.userActed('enter-old-password');
   }
 
   /**
    * Retry button click handler.
-   * @private
    */
-  onRetry_() {
-    if (this.disabled_) {
+  private onRetry(): void {
+    if (this.disabled) {
       return;
     }
-    this.disabled_ = true;
+    this.disabled = true;
     this.userActed('retry');
   }
 
   /**
    * Done button click handler.
-   * @private
    */
-  onDone_() {
-    if (this.disabled_) {
+  private onDone(): void {
+    if (this.disabled) {
       return;
     }
-    this.disabled_ = true;
+    this.disabled = true;
     this.userActed('done');
   }
 
   /**
    * Click handler for the next button on the reauth notification screen.
-   * @private
    */
-  onReauthButtonClicked_() {
-    if (this.disabled_) {
+  private onReauthButtonClicked(): void {
+    if (this.disabled) {
       return;
     }
-    this.disabled_ = true;
+    this.disabled = true;
     this.userActed('reauth');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [CryptohomeRecovery.is]: CryptohomeRecovery;
   }
 }
 
