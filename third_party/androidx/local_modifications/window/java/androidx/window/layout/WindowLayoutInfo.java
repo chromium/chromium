@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class WindowLayoutInfo {
 
-  List<DisplayFeature> getDisplayFeatures() {
-   return null;
-  }
+    public List<DisplayFeature> getDisplayFeatures() {
+        return null;
+    }
 }
