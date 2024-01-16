@@ -435,7 +435,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void getFooterResourceId_dseOn_returnsWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         assertEquals(
                 "Footer Resource ID should be web_feed_main_menu_item.",
@@ -448,7 +447,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void getFooterResourceId_signedOutUser_dseOn_doesNotReturnWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         assertNotEquals(
                 "Footer Resource ID should not be web_feed_main_menu_item.",
@@ -462,6 +460,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
     }
 
     private void setUpMocksForPageMenu() {
