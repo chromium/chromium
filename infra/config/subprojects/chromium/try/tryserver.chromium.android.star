@@ -268,7 +268,7 @@ try_.builder(
                 "//tools/binary_size:binary_size_trybot_py",
             ],
             "compile_targets": [
-                "monochrome_static_initializers",
+                "check_chrome_static_initializers",
                 "trichrome_32_minimal_apks",
                 "validate_expectations",
             ],
