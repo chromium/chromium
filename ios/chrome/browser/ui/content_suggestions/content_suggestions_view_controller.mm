@@ -509,9 +509,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                               kShortcuts];
     }
   } else {
-    if (!self.shortcutsViews) {
+    if ([self.shortcutsViews count]) {
+      for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
+        [view removeFromSuperview];
+      }
+      [self.shortcutsViews removeAllObjects];
+    } else {
       self.shortcutsViews = [NSMutableArray array];
+      self.shortcutsStackView = [self createShortcutsStackView];
     }
+
+    NSUInteger index = 0;
     // Assumes this only called before viewDidLoad, so there is no need to add
     // the views into the view hierarchy here.
     for (ContentSuggestionsMostVisitedActionItem* item in config
@@ -520,18 +528,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
           [[ContentSuggestionsShortcutTileView alloc]
               initWithConfiguration:item];
       [self.shortcutsViews addObject:view];
-    }
 
-    self.shortcutsStackView = [self createShortcutsStackView];
-  }
-}
-
-- (void)updateShortcutTileConfig:
-    (ContentSuggestionsMostVisitedActionItem*)config {
-  for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-    if (view.config == config) {
-      [view updateConfiguration:config];
-      return;
+      view.accessibilityIdentifier = [NSString
+          stringWithFormat:
+              @"%@%li",
+              kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(contentSuggestionsElementTapped:)];
+      [view addGestureRecognizer:tapRecognizer];
+      [self.mostVisitedTapRecognizers addObject:tapRecognizer];
+      [self.shortcutsStackView addArrangedSubview:view];
+      index++;
     }
   }
 }
@@ -1149,20 +1157,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   shortcutsStackView.spacing =
       ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
   shortcutsStackView.alignment = UIStackViewAlignmentTop;
-  NSUInteger index = 0;
-  for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-    view.accessibilityIdentifier = [NSString
-        stringWithFormat:
-            @"%@%li", kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
-            index];
-    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(contentSuggestionsElementTapped:)];
-    [view addGestureRecognizer:tapRecognizer];
-    [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-    [shortcutsStackView addArrangedSubview:view];
-    index++;
-  }
   return shortcutsStackView;
 }
 
