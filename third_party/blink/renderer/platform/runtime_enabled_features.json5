@@ -633,10 +633,6 @@
       base_feature: "none",
     },
     {
-      name: "ClientHintsMetaHTTPEquivAcceptCH",
-      status: "stable",
-    },
-    {
       name: "ClientHintThirdPartyDelegation",
       status: "stable",
     },

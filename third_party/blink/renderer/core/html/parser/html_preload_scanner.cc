@@ -1023,9 +1023,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                      "content-security-policy")) {
             *is_csp_meta_tag = true;
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
-                                            http_names::kAcceptCH) &&
-                     RuntimeEnabledFeatures::
-                         ClientHintsMetaHTTPEquivAcceptCHEnabled()) {
+                                            http_names::kAcceptCH)) {
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
