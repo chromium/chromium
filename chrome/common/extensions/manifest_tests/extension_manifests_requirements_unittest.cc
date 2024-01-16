@@ -12,8 +12,7 @@ namespace extensions {
 
 namespace errors = manifest_errors;
 
-class RequirementsManifestTest : public ChromeManifestTest {
-};
+using RequirementsManifestTest = ChromeManifestTest;
 
 TEST_F(RequirementsManifestTest, RequirementsInvalid) {
   Testcase testcases[] = {

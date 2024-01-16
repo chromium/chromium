@@ -24,8 +24,7 @@ namespace extensions {
 namespace errors = manifest_errors;
 namespace keys = manifest_keys;
 
-class ExtensionManifestBackgroundTest : public ChromeManifestTest {
-};
+using ExtensionManifestBackgroundTest = ChromeManifestTest;
 
 // TODO(devlin): Can this file move to //extensions?
 

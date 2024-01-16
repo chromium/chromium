@@ -17,8 +17,7 @@ namespace extensions {
 namespace errors = manifest_errors;
 namespace keys = manifest_keys;
 
-class AppLaunchManifestTest : public ChromeManifestTest {
-};
+using AppLaunchManifestTest = ChromeManifestTest;
 
 TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess("launch_tab.json");

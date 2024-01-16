@@ -39,8 +39,7 @@ static constexpr char kBackgroundPageDisallowedWarning[] =
 namespace errors = manifest_errors;
 namespace keys = manifest_keys;
 
-class PlatformAppsManifestTest : public ChromeManifestTest {
-};
+using PlatformAppsManifestTest = ChromeManifestTest;
 
 TEST_F(PlatformAppsManifestTest, PlatformApps) {
   scoped_refptr<Extension> extension =

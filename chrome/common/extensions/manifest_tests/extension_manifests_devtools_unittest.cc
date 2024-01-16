@@ -11,8 +11,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class DevToolsPageManifestTest : public ChromeManifestTest {
-};
+using DevToolsPageManifestTest = ChromeManifestTest;
 
 TEST_F(DevToolsPageManifestTest, DevToolsExtensions) {
   LoadAndExpectError("devtools_extension_url_invalid_type.json",

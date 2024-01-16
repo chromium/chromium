@@ -11,8 +11,7 @@ namespace errors = extensions::manifest_errors;
 namespace keys = extensions::manifest_keys;
 using extensions::ErrorUtils;
 
-class ContentSecurityPolicyManifestTest : public ChromeManifestTest {
-};
+using ContentSecurityPolicyManifestTest = ChromeManifestTest;
 
 TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
   Testcase testcases[] = {
