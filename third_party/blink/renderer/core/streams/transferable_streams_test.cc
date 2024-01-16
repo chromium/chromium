@@ -104,7 +104,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
           script_state->GetIsolate(), "foo"));
       return;
     }
-    Controller()->Enqueue(num);
+    Controller()->Enqueue(v8::Integer::New(script_state->GetIsolate(), num));
   }
 
   const SourceType type_;

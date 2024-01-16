@@ -336,7 +336,8 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
       Controller()->Close();
       return ScriptPromise::CastUndefined(script_state);
     }
-    Controller()->Enqueue(*result);
+    Controller()->Enqueue(
+        v8::Integer::New(script_state->GetIsolate(), *result));
     return ScriptPromise::CastUndefined(script_state);
   }
 

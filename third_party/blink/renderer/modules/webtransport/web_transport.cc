@@ -604,7 +604,11 @@ class WebTransport::StreamVendingUnderlyingSource final
   }
 
  private:
-  void Enqueue(ScriptWrappable* stream) { Controller()->Enqueue(stream); }
+  void Enqueue(ScriptWrappable* stream) {
+    Controller()->Enqueue(
+        ToV8Traits<ScriptWrappable>::ToV8(script_state_, stream)
+            .ToLocalChecked());
+  }
 
   const Member<ScriptState> script_state_;
   const Member<StreamVendor> vendor_;

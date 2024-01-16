@@ -80,7 +80,7 @@ void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
       V8ThrowDOMException::CreateOrDie(
           script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
           String{"Server socket closed: " + net::ErrorToString(error_code)}));
-  Controller()->Error(exception);
+  Controller()->Error(exception.V8Value());
   std::move(on_close_).Run(exception);
 }
 

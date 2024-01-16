@@ -55,46 +55,6 @@ inline v8::Local<v8::Value> ToV8(const bindings::DictionaryBase* dictionary,
   return dictionary->ToV8(script_state).ToLocalChecked();
 }
 
-// Callback function
-
-inline v8::Local<v8::Value> ToV8(CallbackFunctionBase* callback,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  // |creation_context| is intentionally ignored. Callback functions are not
-  // wrappers nor clonable. ToV8 on a callback function must be used only when
-  // it's in the same world.
-  DCHECK(!callback ||
-         (&callback->GetWorld() ==
-          &ScriptState::From(creation_context->GetCreationContextChecked())
-               ->World()));
-  return callback ? callback->CallbackObject().As<v8::Value>()
-                  : v8::Null(isolate).As<v8::Value>();
-}
-
-// Callback interface
-
-inline v8::Local<v8::Value> ToV8(CallbackInterfaceBase* callback,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  // |creation_context| is intentionally ignored. Callback interfaces are not
-  // wrappers nor clonable. ToV8 on a callback interface must be used only when
-  // it's in the same world.
-  DCHECK(!callback ||
-         (&callback->GetWorld() ==
-          &ScriptState::From(creation_context->GetCreationContextChecked())
-               ->World()));
-  return callback ? callback->CallbackObject().As<v8::Value>()
-                  : v8::Null(isolate).As<v8::Value>();
-}
-
-// Enumeration
-
-inline v8::Local<v8::Value> ToV8(const bindings::EnumerationBase& enumeration,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  return V8String(isolate, enumeration.AsCStr());
-}
-
 // Union
 inline v8::Local<v8::Value> ToV8(const bindings::UnionBase* union_value,
                                  v8::Local<v8::Object> creation_context,
@@ -357,13 +317,6 @@ template <typename T>
 inline v8::Local<v8::Value> ToV8(T&& value, ScriptState* script_state) {
   return ToV8(std::forward<T>(value), script_state->GetContext()->Global(),
               script_state->GetIsolate());
-}
-
-// Date
-inline v8::Local<v8::Value> ToV8(base::Time date, ScriptState* script_state) {
-  return v8::Date::New(script_state->GetContext(),
-                       date.InMillisecondsFSinceUnixEpochIgnoringNull())
-      .ToLocalChecked();
 }
 
 // Only declare ToV8(void*,...) for checking function overload mismatch.

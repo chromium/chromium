@@ -336,11 +336,6 @@ def bind_callback_local_vars(code_node, cg_context):
     _1 = "${receiver_context}" if is_receiver_context else "${current_context}"
     local_vars.append(S("creation_context", _format(pattern, _1=_1)))
 
-    # creation_context_object
-    text = ("${v8_receiver}"
-            if is_receiver_context else "${current_context}->Global()")
-    template_vars["creation_context_object"] = T(text)
-
     # script_state
     pattern = "ScriptState* ${script_state} = {_1};"
     _1 = ("${receiver_script_state}"
@@ -3724,7 +3719,9 @@ def make_named_property_enumerator_callback(cg_context, function_name):
         TextNode("""\
 bindings::V8SetReturnValue(
     ${info},
-    ToV8(blink_property_names, ${creation_context_object}, ${isolate}));
+    ToV8Traits<IDLSequence<IDLString>>::ToV8(${script_state},
+                                             blink_property_names)
+         .ToLocalChecked().As<v8::Array>());
 """)
     ])
 

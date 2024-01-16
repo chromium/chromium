@@ -166,15 +166,16 @@ class ScriptPromisePropertyTestBase {
         ->V8Function();
   }
 
-  template <typename T>
-  ScriptValue Wrap(DOMWrapperWorld& world, const T& value) {
+  ScriptValue Wrap(DOMWrapperWorld& world,
+                   GarbageCollectedScriptWrappable* value) {
     v8::HandleScope handle_scope(GetIsolate());
     ScriptState* script_state =
         ScriptState::From(ToV8Context(DomWindow(), world));
     ScriptState::Scope scope(script_state);
     return ScriptValue(
         GetIsolate(),
-        ToV8(value, script_state->GetContext()->Global(), GetIsolate()));
+        ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(script_state, value)
+            .ToLocalChecked());
   }
 
  private:

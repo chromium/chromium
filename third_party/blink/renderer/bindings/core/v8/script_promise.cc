@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -129,7 +129,9 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
     if (--number_of_pending_promises_ > 0)
       return;
 
-    v8::Local<v8::Value> values = ToV8(values_, resolver_.GetScriptState());
+    v8::Local<v8::Value> values = ToV8Traits<IDLSequence<IDLAny>>::ToV8(
+                                      resolver_.GetScriptState(), values_)
+                                      .ToLocalChecked();
     MarkPromiseSettled();
     resolver_.Resolve(values);
   }
@@ -318,9 +320,9 @@ ScriptPromise ScriptPromise::Reject(ScriptState* script_state,
 ScriptPromise ScriptPromise::RejectWithDOMException(ScriptState* script_state,
                                                     DOMException* exception) {
   DCHECK(script_state->GetIsolate()->InContext());
-  return Reject(script_state,
-                ToV8(exception, script_state->GetContext()->Global(),
-                     script_state->GetIsolate()));
+  return Reject(
+      script_state,
+      ToV8Traits<DOMException>::ToV8(script_state, exception).ToLocalChecked());
 }
 
 v8::Local<v8::Promise> ScriptPromise::RejectRaw(ScriptState* script_state,

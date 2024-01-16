@@ -113,7 +113,7 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
                                        String{"Stream aborted by the remote: " +
                                               net::ErrorToString(error_code)}));
 
-  Controller()->Error(exception);
+  Controller()->Error(exception.V8Value());
 
   std::move(on_close_).Run(exception);
 }

@@ -93,7 +93,7 @@ class ModelGenericSession::StreamingResponder final
                   const WTF::String& text) override {
     switch (status) {
       case mojom::blink::ModelStreamingResponseStatus::kOngoing: {
-        Controller()->Enqueue(text);
+        Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
         break;
       }
       case mojom::blink::ModelStreamingResponseStatus::kComplete: {
