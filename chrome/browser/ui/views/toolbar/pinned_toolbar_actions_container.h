@@ -96,6 +96,8 @@ class PinnedToolbarActionsContainer
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   void UpdateAllIcons();
+  gfx::Size CustomFlexRule(const views::View* view,
+                           const views::SizeBounds& size_bounds);
 
   // views::View:
   void OnThemeChanged() override;
@@ -145,6 +147,11 @@ class PinnedToolbarActionsContainer
   void RemovePinnedActionButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPoppedOutButtonFor(const actions::ActionId& id);
+  // Returns the size based on the layout manager's default flex specification.
+  gfx::Size DefaultFlexRule(const views::SizeBounds& size_bounds);
+  // Returns the total width of the `popped_out_buttons_` including margins
+  // between them.
+  int CalculatePoppedOutButtonsWidth();
 
   // Sorts child views to display them in the correct order.
   void ReorderViews();

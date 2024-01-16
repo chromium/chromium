@@ -958,15 +958,13 @@ void ToolbarView::InitLayout() {
   }
 
   if (pinned_toolbar_actions_container_) {
-    const views::FlexSpecification toolbar_actions_flex_rule =
+    pinned_toolbar_actions_container_->SetProperty(
+        views::kFlexBehaviorKey,
         views::FlexSpecification(
-            static_cast<views::FlexLayout*>(
-                pinned_toolbar_actions_container_->GetLayoutManager())
-                ->GetDefaultFlexRule())
-            .WithOrder(kToolbarActionsFlexOrder);
-
-    pinned_toolbar_actions_container_->SetProperty(views::kFlexBehaviorKey,
-                                                   toolbar_actions_flex_rule);
+            base::BindRepeating(
+                &PinnedToolbarActionsContainer::CustomFlexRule,
+                base::Unretained(pinned_toolbar_actions_container_)))
+            .WithOrder(kToolbarActionsFlexOrder));
   } else if (side_panel_container_) {
     const views::FlexSpecification side_panel_flex_rule =
         views::FlexSpecification(
