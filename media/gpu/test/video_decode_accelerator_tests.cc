@@ -749,7 +749,10 @@ int main(int argc, char** argv) {
     if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
                                           // Options below are handled by Chrome
         it->first == "use-gl" || it->first == "v" || it->first == "vmodule" ||
-        it->first == "enable-features" || it->first == "disable-features") {
+        it->first == "enable-features" || it->first == "disable-features" ||
+        it->first == "test-launcher-shard-index" ||
+        it->first == "test-launcher-summary-output" ||
+        it->first == "test-launcher-total-shards") {
       continue;
     }
 
