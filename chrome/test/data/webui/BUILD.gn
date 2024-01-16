@@ -180,6 +180,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ash:ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/nearby_sharing/common:common",
       "//chromeos/ash/components/standalone_browser",
       "//components/manta",
     ]

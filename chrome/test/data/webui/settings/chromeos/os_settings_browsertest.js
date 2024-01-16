@@ -9,7 +9,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
-GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
@@ -100,78 +99,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
      ]
    }
  ],
- [
-   'MultidevicePage',
-   'multidevice_page/multidevice_page_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'MultidevicePageRevamp',
-   'multidevice_page/multidevice_page_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'MultidevicePageMultideviceFeatureItem',
-   'multidevice_page/multidevice_feature_item_test.js'
- ],
- [
-   'MultidevicePageMultideviceFeatureToggle',
-   'multidevice_page/multidevice_feature_toggle_test.js'
- ],
- [
-   'MultidevicePageMultideviceNotificationAccessSetupDialog',
-   'multidevice_page/multidevice_notification_access_setup_dialog_test.js',
- ],
- [
-   'MultidevicePageMultidevicePermissionsSetupDialog',
-   'multidevice_page/multidevice_permissions_setup_dialog_test.js',
- ],
- [
-   'MultidevicePageMultideviceSmartlockItem',
-   'multidevice_page/multidevice_smartlock_item_test.js'
- ],
- [
-   'MultidevicePageMultideviceSubPage',
-   'multidevice_page/multidevice_subpage_test.js'
- ],
- [
-   'MultiDevicePageMultideviceCombinedSetupItem',
-   'multidevice_page/multidevice_combined_setup_item_test.js'
- ],
- [
-   'MultidevicePageMultideviceTaskContinuationDisabledLink',
-   'multidevice_page/multidevice_task_continuation_disabled_link_test.js',
- ],
- [
-   'MultidevicePageMultideviceTaskContinuationItem',
-   'multidevice_page/multidevice_task_continuation_item_test.js',
- ],
- [
-   'MultidevicePageMultideviceWifiSyncDisabledLink',
-   'multidevice_page/multidevice_wifi_sync_disabled_link_test.js',
- ],
- [
-   'MultidevicePageMultideviceWifiSyncItem',
-   'multidevice_page/multidevice_wifi_sync_item_test.js'
- ],
- [
-   'NearbySharePageNearbyShareConfirmPage',
-   'nearby_share_page/nearby_share_confirm_page_test.js'
- ],
- [
-   'NearbySharePageNearbyShareHighVisibilityPage',
-   'nearby_share_page/nearby_share_high_visibility_page_test.js'
- ],
- [
-   'NearbySharePageNearbyShareReceiveDialog',
-   'nearby_share_page/nearby_share_receive_dialog_test.js'
- ],
- [
-   'NearbySharePageNearbyShareSubpage',
-   'nearby_share_page/nearby_share_subpage_test.js',
-   {enabled: ['features::kNearbySharing']},
- ],
- ['OncMojoTest', 'onc_mojo_test.js'],
  [
    'OsA11yPage',
    'os_a11y_page/os_a11y_page_test.js',

@@ -6,6 +6,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -726,4 +727,109 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
                        MainPageContainerRouteNavigation) {
   RunSettingsTest("main_page_container/route_navigation_test.js");
 }
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, MultidevicePage) {
+  RunSettingsTest("multidevice_page/multidevice_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       MultidevicePageRevamp) {
+  RunSettingsTest("multidevice_page/multidevice_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceFeatureItem) {
+  RunSettingsTest("multidevice_page/multidevice_feature_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceFeatureToggle) {
+  RunSettingsTest("multidevice_page/multidevice_feature_toggle_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTest,
+    MultidevicePageMultideviceNotificationAccessSetupDialog) {
+  RunSettingsTest(
+      "multidevice_page/multidevice_notification_access_setup_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultidevicePermissionsSetupDialog) {
+  RunSettingsTest(
+      "multidevice_page/multidevice_permissions_setup_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceSmartlockItem) {
+  RunSettingsTest("multidevice_page/multidevice_smartlock_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, MultidevicePageMultideviceSubPage) {
+  RunSettingsTest("multidevice_page/multidevice_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultiDevicePageMultideviceCombinedSetupItem) {
+  RunSettingsTest("multidevice_page/multidevice_combined_setup_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceTaskContinuationDisabledLink) {
+  RunSettingsTest(
+      "multidevice_page/multidevice_task_continuation_disabled_link_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceTaskContinuationItem) {
+  RunSettingsTest(
+      "multidevice_page/multidevice_task_continuation_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceWifiSyncDisabledLink) {
+  RunSettingsTest(
+      "multidevice_page/multidevice_wifi_sync_disabled_link_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       MultidevicePageMultideviceWifiSyncItem) {
+  RunSettingsTest("multidevice_page/multidevice_wifi_sync_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       NearbySharePageNearbyShareConfirmPage) {
+  RunSettingsTest("nearby_share_page/nearby_share_confirm_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       NearbySharePageNearbyShareHighVisibilityPage) {
+  RunSettingsTest(
+      "nearby_share_page/nearby_share_high_visibility_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       NearbySharePageNearbyShareReceiveDialog) {
+  RunSettingsTest("nearby_share_page/nearby_share_receive_dialog_test.js");
+}
+
+class OSSettingsNearbyShareTestSharingEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsNearbyShareTestSharingEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsNearbyShareTestSharingEnabled,
+                       NearbySharePageNearbyShareSubpage) {
+  RunSettingsTest("nearby_share_page/nearby_share_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OncMojoTest) {
+  RunSettingsTest("onc_mojo_test.js");
+}
+
 }  // namespace ash::settings
