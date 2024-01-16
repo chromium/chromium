@@ -79,7 +79,6 @@ class BoundSessionCookieRefreshServiceImpl
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
  private:
-  class BoundSessionStateTracker;
   friend class BoundSessionCookieRefreshServiceImplTest;
 
   // Used by tests to provide their own implementation of the
