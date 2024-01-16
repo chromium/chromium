@@ -397,9 +397,12 @@ UIImage* DefaultFavicon() {
   _titleContainerTrailingConstraint = [_titleContainer.trailingAnchor
       constraintEqualToAnchor:_closeButton.leadingAnchor
                      constant:-kTitleInset];
+  _titleContainerTrailingConstraint.priority = UILayoutPriorityDefaultLow;
   _titleContainerCollapsedTrailingConstraint = [_titleContainer.trailingAnchor
       constraintEqualToAnchor:contentView.trailingAnchor
                      constant:-kTitleInset];
+  _titleContainerCollapsedTrailingConstraint.priority =
+      UILayoutPriorityDefaultLow;
   [NSLayoutConstraint activateConstraints:@[
     [_titleContainer.leadingAnchor
         constraintEqualToAnchor:leadingImageGuide.trailingAnchor
