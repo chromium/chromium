@@ -15,7 +15,7 @@ namespace enterprise_data_protection {
 // following policies:
 // - DataLeakPreventionRulesList
 // - OnBulkDataEntryEnterpriseConnector
-// TODO(b/302340176): Add support for DataControlsRules
+// - DataControlsRules
 //
 // This function will always call `callback` after policies are evaluated with
 // true if the paste is allowed to proceed and false if it is not. However, if

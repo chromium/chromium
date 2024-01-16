@@ -52,6 +52,28 @@ class DataControlsDialog : public views::DialogDelegate {
     // kClipboardCopyWarn,
   };
 
+  // Test observer to validate the dialog was shown/closed at appropriate
+  // timings, which buttons were pressed, etc. Only one `TestObserver` should be
+  // instantiated per test.
+  class TestObserver {
+   public:
+    TestObserver();
+    ~TestObserver();
+
+    // Called as the last statement in the DataControlsDialog constructor.
+    virtual void OnConstructed(DataControlsDialog* dialog) {}
+
+    // Called when OnWidgetInitialized is called. This is used to give the test
+    // a proper hook to close the dialog after it's first shown.
+    virtual void OnWidgetInitialized(DataControlsDialog* dialog) {}
+
+    // Called as the last statement in the DataControlsDialog destructor. As
+    // such, do not keep `dialog` after this function returns, only use it
+    // locally to validate test assertions.
+    virtual void OnDestructed(DataControlsDialog* dialog) {}
+  };
+  static void SetObserverForTesting(TestObserver* observer);
+
   static void Show(content::WebContents* web_contents,
                    Type type,
                    base::OnceCallback<void(bool bypassed)> callback =
@@ -65,6 +87,7 @@ class DataControlsDialog : public views::DialogDelegate {
   views::Widget* GetWidget() override;
   ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
+  void OnWidgetInitialized() override;
 
  private:
   DataControlsDialog(Type type,

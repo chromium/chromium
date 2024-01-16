@@ -5538,7 +5538,10 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (enterprise_data_controls) {
-      sources += [ "//chrome/browser/enterprise/data_controls/data_controls_dialog_browsertests.cc" ]
+      sources += [
+        "//chrome/browser/enterprise/data_controls/data_controls_dialog_browsertests.cc",
+        "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_browsertests.cc",
+      ]
       deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
     }
 
