@@ -197,6 +197,8 @@ if (enable_vr) {
         "openxr/openxr_scene_plane.h",
         "openxr/openxr_scene_understanding_manager.cc",
         "openxr/openxr_scene_understanding_manager.h",
+        "openxr/openxr_scene_understanding_manager_msft.cc",
+        "openxr/openxr_scene_understanding_manager_msft.h",
         "openxr/openxr_stage_bounds_provider.h",
         "openxr/openxr_stage_bounds_provider_basic.cc",
         "openxr/openxr_stage_bounds_provider_basic.h",

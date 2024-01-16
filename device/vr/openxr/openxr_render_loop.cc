@@ -696,12 +696,13 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     OpenXRSceneUnderstandingManager* scene_understanding_manager =
         openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
     if (scene_understanding_manager) {
+      scene_understanding_manager->OnFrameUpdate(
+          openxr_->GetPredictedDisplayTime());
       device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
                                     *frame_data->mojo_from_viewer->orientation);
       // Get results for hit test subscriptions.
       frame_data->hit_test_subscription_results =
-          scene_understanding_manager->ProcessHitTestResultsForFrame(
-              openxr_->GetPredictedDisplayTime(),
+          scene_understanding_manager->GetHitTestResults(
               mojo_from_viewer.ToTransform(), frame_data->input_state.value());
     }
   }

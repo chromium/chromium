@@ -12,7 +12,7 @@
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_hand_tracker_meta.h"
-#include "device/vr/openxr/openxr_scene_understanding_manager.h"
+#include "device/vr/openxr/openxr_scene_understanding_manager_msft.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 // Included on all platforms so that we can check the extension names, even
@@ -103,6 +103,7 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
           const_cast<PFN_xrCreateSpatialAnchorSpaceMSFT*>(
               &extension_methods_.xrCreateSpatialAnchorSpaceMSFT)));
 
+  // MSFT Scene Understanding Methods
   std::ignore = xrGetInstanceProcAddr(
       instance, "xrEnumerateSceneComputeFeaturesMSFT",
       reinterpret_cast<PFN_xrVoidFunction*>(
@@ -240,8 +241,12 @@ std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     XrSession session,
     XrSpace base_space) const {
-  return std::make_unique<OpenXRSceneUnderstandingManager>(*this, session,
-                                                           base_space);
+  if (IsExtensionSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME)) {
+    return std::make_unique<OpenXRSceneUnderstandingManagerMSFT>(*this, session,
+                                                                 base_space);
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<OpenXrStageBoundsProvider>
