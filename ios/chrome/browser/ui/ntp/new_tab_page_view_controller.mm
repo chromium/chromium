@@ -62,7 +62,6 @@ const CGFloat kModuleMinMargin = 16;
 // the omnibox to allow it to stick to the top of the NTP.
 // With Web Channels enabled, also determines if the feed header is stuck to the
 // top.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 @property(nonatomic, assign, getter=isScrolledIntoFeed) BOOL scrolledIntoFeed;
 
 // Whether or not the fake omnibox is pinned to the top of the NTP. Redefined
@@ -80,7 +79,6 @@ const CGFloat kModuleMinMargin = 16;
 
 // Array of constraints used to pin the feed header to the top of the NTP. Only
 // applicable with Web Channels enabled.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* feedHeaderConstraints;
 
@@ -1371,7 +1369,6 @@ const CGFloat kModuleMinMargin = 16;
 // `force` is YES, the sticky elements will always be set based on the scroll
 // position. If `force` is NO, the sticky elements will only based on
 // `isScrolledIntoFeed` to prevent pinning them multiple times.
-// TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
   // Handles the sticky omnibox. Does not stick for iPads.

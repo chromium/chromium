@@ -23,7 +23,6 @@ class SyncService;
 }
 
 // Configuration object used by the DiscoverFeedService.
-// TODO(crbug.com/1277504): Rename this to FeedConfiguration.
 @interface DiscoverFeedConfiguration : NSObject
 
 // AuthenticationService used by DiscoverFeedService.
