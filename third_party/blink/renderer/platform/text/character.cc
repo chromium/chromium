@@ -94,6 +94,20 @@ HanKerningCharType Character::GetHanKerningCharType(UChar32 character) {
       static_cast<unsigned>(CharacterProperty::kHanKerningShift));
 }
 
+bool Character::MaybeHanKerningOpenSlow(UChar32 ch) {
+  // See `HanKerning::GetCharType`.
+  const HanKerningCharType type = Character::GetHanKerningCharType(ch);
+  return type == HanKerningCharType::kOpen ||
+         type == HanKerningCharType::kOpenQuote;
+}
+
+bool Character::MaybeHanKerningCloseSlow(UChar32 ch) {
+  // See `HanKerning::GetCharType`.
+  const HanKerningCharType type = Character::GetHanKerningCharType(ch);
+  return type == HanKerningCharType::kClose ||
+         type == HanKerningCharType::kCloseQuote;
+}
+
 unsigned Character::ExpansionOpportunityCount(
     base::span<const LChar> characters,
     TextDirection direction,

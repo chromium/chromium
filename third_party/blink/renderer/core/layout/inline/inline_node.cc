@@ -1359,7 +1359,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
             RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled() &&
             ShouldTrimStartOfParagraph(
                 font.GetFontDescription().GetTextSpacingTrim()) &&
-            HanKerning::MaybeOpen(text_content[start_item.StartOffset()]),
+            Character::MaybeHanKerningOpen(
+                text_content[start_item.StartOffset()]),
     });
     is_next_start_of_paragraph = false;
     TextDirection direction = start_item.Direction();

@@ -130,16 +130,6 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED_NORETURN();
 }
 
-bool HanKerning::MaybeOpen(UChar ch) {
-  const CharType type = Character::GetHanKerningCharType(ch);
-  return type == CharType::kOpen || type == CharType::kOpenQuote;
-}
-
-bool HanKerning::MaybeClose(UChar ch) {
-  const CharType type = Character::GetHanKerningCharType(ch);
-  return type == CharType::kClose || type == CharType::kCloseQuote;
-}
-
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||

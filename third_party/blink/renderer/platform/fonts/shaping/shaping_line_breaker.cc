@@ -97,9 +97,7 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
   }
   if (UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
       UNLIKELY(ShouldTrimStartOfWrappedLine(text_spacing_trim_)) &&
-      // TODO(crbug.com/1463891): `MaybeOpen` is likely to hit the performance
-      // for non-CJK documents. We should try harder not to require reshaping.
-      UNLIKELY(HanKerning::MaybeOpen(GetText()[start]))) {
+      UNLIKELY(Character::MaybeHanKerningOpen(GetText()[start]))) {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply
     // `HanKerning` if applicable. Note, it may not actually apply, if the font
@@ -322,7 +320,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   if (candidate_break < range_end &&
       UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
       ShouldTrimEnd(text_spacing_trim_) &&
-      UNLIKELY(HanKerning::MaybeClose(text[candidate_break]))) {
+      UNLIKELY(Character::MaybeHanKerningClose(text[candidate_break]))) {
     const unsigned adjusted_candidate_break = candidate_break + 1;
     if (break_iterator_->IsBreakable(adjusted_candidate_break)) {
       last_safe = result_->CachedPreviousSafeToBreakOffset(candidate_break);

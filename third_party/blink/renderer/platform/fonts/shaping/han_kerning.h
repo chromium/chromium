@@ -101,13 +101,6 @@ class PLATFORM_EXPORT HanKerning {
     CharType type_for_semicolon = CharType::kOther;
   };
 
-  // Check if the `CharType` of a character may be `kOpen` without knowing the
-  // font. `CharType` depends on fonts, so it may not be `kOpen` even when this
-  // function returns `true`.
-  static bool MaybeOpen(UChar ch);
-  // Same as `MaybeOpen` but for `kClose`.
-  static bool MaybeClose(UChar ch);
-
  private:
   static CharType GetCharType(UChar ch, const FontData& font_data);
 
