@@ -298,6 +298,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // command line as overridden. See b/284986126.
   static bool ParseFieldTrialsString(
       const base::StringPiece field_trials_string,
+      bool override_trials,
       std::vector<State>& entries);
 
   // Returns a '--force-fieldtrials' formatted string representing the list of
@@ -580,7 +581,10 @@ class BASE_EXPORT FieldTrialList {
   // through a command line argument to the browser process. Created field
   // trials will be marked "used" for the purposes of active trial reporting
   // if they are prefixed with |kActivationMarker|.
-  static bool CreateTrialsFromString(const std::string& trials_string);
+  // If `override_trials` is true, `FieldTrial::SetOverridden()` is called for
+  // created trials.
+  static bool CreateTrialsFromString(const std::string& trials_string,
+                                     bool override_trials = false);
 
   // Creates trials in a child process from a command line that was produced
   // via PopulateLaunchOptionsWithFieldTrialState() in the parent process.

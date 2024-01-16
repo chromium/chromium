@@ -50,6 +50,7 @@ class PrefRegistrySyncable;
 }
 
 namespace variations {
+struct StudyGroupNames;
 class VariationsSeed;
 }
 
@@ -205,6 +206,10 @@ class VariationsService
           extra_overrides,
       std::unique_ptr<base::FeatureList> feature_list,
       PlatformFieldTrials* platform_field_trials);
+
+  // Returns the names of studies and their groups which could possibly be
+  // forced.
+  std::vector<StudyGroupNames> GetStudiesAvailableToForce();
 
   // The seed type used.
   SeedType GetSeedType() const;

@@ -34,6 +34,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/field_trial_internals_utils.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
@@ -528,6 +529,7 @@ void VariationsService::RegisterPrefs(PrefRegistrySimple* registry) {
   SafeSeedManager::RegisterPrefs(registry);
   VariationsSeedStore::RegisterPrefs(registry);
   LimitedEntropySyntheticTrial::RegisterPrefs(registry);
+  RegisterFieldTrialInternalsPrefs(*registry);
 
   registry->RegisterIntegerPref(
       prefs::kDeviceVariationsRestrictionsByPolicy,
@@ -947,10 +949,26 @@ bool VariationsService::SetUpFieldTrials(
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
     PlatformFieldTrials* platform_field_trials) {
+  ForceTrialsAtStartup(*local_state_);
+
   return field_trial_creator_.SetUpFieldTrials(
       variation_ids, command_line_variation_ids, extra_overrides,
       std::move(feature_list), state_manager_, platform_field_trials,
       &safe_seed_manager_, /*add_entropy_source_to_variations_ids=*/true);
+}
+
+std::vector<StudyGroupNames> VariationsService::GetStudiesAvailableToForce() {
+  VariationsSeed seed;
+  std::string seed_data;
+  std::string base64_seed_signature;
+  if (!field_trial_creator_.seed_store()->LoadSeed(&seed, &seed_data,
+                                                   &base64_seed_signature)) {
+    return {};
+  }
+
+  return variations::GetStudiesAvailableToForce(
+      std::move(seed), *state_manager_->CreateEntropyProviders(),
+      *GetClientFilterableStateForVersion());
 }
 
 SeedType VariationsService::GetSeedType() const {

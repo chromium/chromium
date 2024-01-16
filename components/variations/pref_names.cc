@@ -144,5 +144,18 @@ const char kVariationsSeedDate[] = "variations_seed_date";
 // Digital signature of the binary variations seed data, base64-encoded.
 const char kVariationsSeedSignature[] = "variations_seed_signature";
 
+// Stores the list of field trials forced by field-trial-internals.
+const char kVariationsForcedFieldTrials[] = "variations_forced_field_trials";
+
+// The expiration time for all forced field trials.
+// See components/variations/field_trial_internals_utils.h for more detail.
+const char kVariationsForcedTrialExpiration[] =
+    "variations_forced_trial_expiration";
+
+// Number of Chrome starts which have occurred after forcing field trials.
+// Forced trials are automatically stopped after a few Chrome starts,
+// See components/variations/field_trial_internals_utils.h for more detail.
+const char kVariationsForcedTrialStarts[] = "variations_forced_trial_starts";
+
 }  // namespace prefs
 }  // namespace variations

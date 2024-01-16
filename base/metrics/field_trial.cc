@@ -356,6 +356,7 @@ FieldTrial* FieldTrial::CreateSimulatedFieldTrial(
 
 // static
 bool FieldTrial::ParseFieldTrialsString(const base::StringPiece trials_string,
+                                        bool override_trials,
                                         std::vector<State>& entries) {
   const StringPiece trials_string_piece(trials_string);
 
@@ -396,6 +397,7 @@ bool FieldTrial::ParseFieldTrialsString(const base::StringPiece trials_string,
         trials_string_piece.substr(next_item, trial_name_end - next_item);
     entry.group_name = trials_string_piece.substr(
         trial_name_end + 1, group_name_end - trial_name_end - 1);
+    entry.is_overridden = override_trials;
     // The next item starts after the delimiter, if it exists.
     next_item = group_name_end + 1;
 
@@ -685,13 +687,15 @@ std::set<std::string> FieldTrialList::GetActiveTrialsOfParentProcess() {
 }
 
 // static
-bool FieldTrialList::CreateTrialsFromString(const std::string& trials_string) {
+bool FieldTrialList::CreateTrialsFromString(const std::string& trials_string,
+                                            bool override_trials) {
   DCHECK(global_);
   if (trials_string.empty() || !global_)
     return true;
 
   std::vector<FieldTrial::State> entries;
-  if (!FieldTrial::ParseFieldTrialsString(trials_string, entries)) {
+  if (!FieldTrial::ParseFieldTrialsString(trials_string, override_trials,
+                                          entries)) {
     return false;
   }
 
