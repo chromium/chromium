@@ -1901,7 +1901,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig(
         feature_engagement::events::kPasswordManagerWidgetPromoTriggered,
-        Comparator(LESS_THAN, 3), 360, 360);
+        Comparator(LESS_THAN, 2), 360, 360);
     config->used =
         EventConfig(feature_engagement::events::kPasswordManagerWidgetPromoUsed,
                     Comparator(EQUAL, 0), 360, 360);
