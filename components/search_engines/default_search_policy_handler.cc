@@ -77,8 +77,6 @@ const PolicyToPreferenceMapEntry kDefaultSearchPolicyDataMap[] = {
      DefaultSearchManager::kAlternateURLs, base::Value::Type::LIST},
     {key::kDefaultSearchProviderImageURL, DefaultSearchManager::kImageURL,
      base::Value::Type::STRING},
-    {key::kDefaultSearchProviderNewTabURL, DefaultSearchManager::kNewTabURL,
-     base::Value::Type::STRING},
     {key::kDefaultSearchProviderSearchURLPostParams,
      DefaultSearchManager::kSearchURLPostParams, base::Value::Type::STRING},
     {key::kDefaultSearchProviderSuggestURLPostParams,
@@ -90,6 +88,8 @@ const PolicyToPreferenceMapEntry kDefaultSearchPolicyDataMap[] = {
     {key::kDefaultSearchProviderContextMenuAccessAllowed,
      prefs::kDefaultSearchProviderContextMenuAccessAllowed,
      base::Value::Type::BOOLEAN},
+    {key::kDefaultSearchProviderNewTabURL, DefaultSearchManager::kNewTabURL,
+     base::Value::Type::STRING},
 #endif
 };
 
@@ -176,8 +176,6 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                 DefaultSearchManager::kAlternateURLs, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderImageURL,
                   DefaultSearchManager::kImageURL, dict);
-  SetStringInPref(policies, key::kDefaultSearchProviderNewTabURL,
-                  DefaultSearchManager::kNewTabURL, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderSearchURLPostParams,
                   DefaultSearchManager::kSearchURLPostParams, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderSuggestURLPostParams,
@@ -188,9 +186,11 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   SetBooleanInPref(policies,
                    key::kDefaultSearchProviderContextMenuAccessAllowed,
                    prefs::kDefaultSearchProviderContextMenuAccessAllowed, dict);
+  SetStringInPref(policies, key::kDefaultSearchProviderNewTabURL,
+                  DefaultSearchManager::kNewTabURL, dict);
   size_t policyCount = 13;
 #else
-  size_t policyCount = 12;
+  size_t policyCount = 11;
 #endif
 
   CHECK_EQ(policyCount, std::size(kDefaultSearchPolicyDataMap));

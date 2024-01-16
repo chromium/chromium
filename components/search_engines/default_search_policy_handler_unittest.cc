@@ -40,9 +40,11 @@ class DefaultSearchPolicyHandlerTest
   static const char kReplacementKey[];
   static const char kImageURL[];
   static const char kImageParams[];
-  static const char kNewTabURL[];
   static const char kFileSearchURL[];
   static const char kHostName[];
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  static const char kNewTabURL[];
+#endif
 
   // Build a default search policy by setting search-related keys in |policy| to
   // reasonable values. You can update any of the keys after calling this
@@ -64,11 +66,13 @@ const char DefaultSearchPolicyHandlerTest::kImageURL[] =
     "http://test.com/searchbyimage/upload";
 const char DefaultSearchPolicyHandlerTest::kImageParams[] =
     "image_content=content,image_url=http://test.com/test.png";
-const char DefaultSearchPolicyHandlerTest::kNewTabURL[] =
-    "http://test.com/newtab";
 const char DefaultSearchPolicyHandlerTest::kFileSearchURL[] =
     "file:///c:/path/to/search?t={searchTerms}";
 const char DefaultSearchPolicyHandlerTest::kHostName[] = "test.com";
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+const char DefaultSearchPolicyHandlerTest::kNewTabURL[] =
+    "http://test.com/newtab";
+#endif
 
 void DefaultSearchPolicyHandlerTest::
     BuildDefaultSearchPolicy(PolicyMap* policy) {
@@ -102,9 +106,11 @@ void DefaultSearchPolicyHandlerTest::
   policy->Set(key::kDefaultSearchProviderImageURLPostParams,
               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
               base::Value(kImageParams), nullptr);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   policy->Set(key::kDefaultSearchProviderNewTabURL, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kNewTabURL),
               nullptr);
+#endif
 }
 
 // Checks that if the default search policy is missing, that no elements of the
@@ -149,8 +155,11 @@ TEST_F(DefaultSearchPolicyHandlerTest, InvalidType) {
       key::kDefaultSearchProviderEncodings,
       key::kDefaultSearchProviderAlternateURLs,
       key::kDefaultSearchProviderImageURL,
+      key::kDefaultSearchProviderImageURLPostParams,
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       key::kDefaultSearchProviderNewTabURL,
-      key::kDefaultSearchProviderImageURLPostParams};
+#endif
+  };
 
   PolicyMap policy;
   BuildDefaultSearchPolicy(&policy);
