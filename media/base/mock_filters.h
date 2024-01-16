@@ -720,9 +720,12 @@ class MockCdmSessionPromise : public NewSessionCdmPromise {
 class MockCdmKeyStatusPromise : public KeyStatusCdmPromise {
  public:
   // |expect_success| is true if resolve() should be called, false if reject()
-  // is expected. |key_status| is updated with the key status on resolve().
+  // is expected. |key_status| is updated with the key status on resolve(),
+  // |exception| is updated with the exception on reject() if |exception| is
+  // set.
   MockCdmKeyStatusPromise(bool expect_success,
-                          CdmKeyInformation::KeyStatus* key_status);
+                          CdmKeyInformation::KeyStatus* key_status,
+                          CdmPromise::Exception* exception = nullptr);
 
   MockCdmKeyStatusPromise(const MockCdmKeyStatusPromise&) = delete;
   MockCdmKeyStatusPromise& operator=(const MockCdmKeyStatusPromise&) = delete;

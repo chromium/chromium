@@ -314,11 +314,14 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_FeatureFlagDisabled) {
   EXPECT_TRUE(media_drm_bridge_);
 
   CdmKeyInformation::KeyStatus key_status;
+  CdmPromise::Exception exception;
 
   media_drm_bridge_->GetStatusForPolicy(
       HdcpVersion::kHdcpVersionNone,
       std::make_unique<MockCdmKeyStatusPromise>(
-          /*expect_success=*/false, &key_status));
+          /*expect_success=*/false, &key_status, &exception));
+
+  EXPECT_EQ(exception, CdmPromise::Exception::NOT_SUPPORTED_ERROR);
 }
 
 TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
