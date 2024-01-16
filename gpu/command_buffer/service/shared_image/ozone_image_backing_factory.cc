@@ -294,8 +294,10 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
   auto* factory = ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  if (!factory->CanCreateNativePixmapForFormat(ToBufferFormat(format)))
+  if (HasEquivalentBufferFormat(format) &&
+      !factory->CanCreateNativePixmapForFormat(ToBufferFormat(format))) {
     return false;
+  }
 
   ui::GLOzone* gl_ozone = factory->GetCurrentGLOzone();
   if (used_by_gl && (!gl_ozone || !gl_ozone->CanImportNativePixmap())) {
