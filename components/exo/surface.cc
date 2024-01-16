@@ -1683,8 +1683,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // Draw quad is only needed if buffer is not fully transparent.
       const bool requires_texture_draw_quad =
           state_.basic_state.only_visible_on_secure_output ||
-          state_.overlay_priority_hint != OverlayPriority::LOW ||
-          force_rgbx_for_opaque;
+          state_.overlay_priority_hint != OverlayPriority::LOW;
 
       if (requires_texture_draw_quad) {
         viz::TextureDrawQuad* texture_quad =
