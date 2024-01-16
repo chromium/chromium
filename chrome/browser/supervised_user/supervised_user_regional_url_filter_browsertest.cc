@@ -187,8 +187,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
   EXPECT_CALL(*this, ClassifyUrlRequestMonitor(_, _))
       .Times(::testing::AnyNumber());
   // Last expectation takes precedence.
-  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(kClassifyUrlConfig.service_path,
-                                               expected.SerializeAsString()))
+  EXPECT_CALL(*this,
+              ClassifyUrlRequestMonitor(kClassifyUrlConfig.StaticServicePath(),
+                                        expected.SerializeAsString()))
       .Times(number_of_expected_calls);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url_to_classify)));
