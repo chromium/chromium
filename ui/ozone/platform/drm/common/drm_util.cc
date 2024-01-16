@@ -555,7 +555,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       GetPrivacyScreenState(drm, info->connector());
   const bool has_content_protection_key =
       HasContentProtectionKey(drm, info->connector());
-  const bool has_color_correction_matrix =
+  display::DisplaySnapshot::ColorInfo color_info;
+  color_info.supports_color_temperature_adjustment =
       HasColorCorrectionMatrix(drm, info->crtc());
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(drm);
   const display::VariableRefreshRateState variable_refresh_rate_state =
@@ -568,9 +569,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
-  gfx::ColorSpace display_color_space;
-  uint32_t bits_per_channel = 8u;
-  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata{};
+  color_info.bits_per_channel = 8u;
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
   absl::optional<uint16_t> vsync_rate_min;
@@ -594,13 +593,24 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     year_of_manufacture = edid_parser.year_of_manufacture();
     has_overscan =
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
-    display_color_space = display::GetColorSpaceFromEdid(edid_parser);
+    color_info.color_space = display::GetColorSpaceFromEdid(edid_parser);
+    // Populate the EDID primaries and gamma from the gfx::ColorSpace.
+    // TODO(https://crbug.com/1505062): Extract this directly.
+    if (auto sk_color_space = color_info.color_space.ToSkColorSpace()) {
+      skcms_TransferFunction fn;
+      skcms_Matrix3x3 to_xyzd50;
+      sk_color_space->toXYZD50(&to_xyzd50);
+      sk_color_space->transferFn(&fn);
+      color_info.edid_primaries =
+          skia::GetD65PrimariesFromToXYZD50Matrix(to_xyzd50);
+      color_info.edid_gamma = fn.g;
+    }
     base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.IsHDR",
-                              display_color_space.IsHDR());
-    bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
+                              color_info.color_space.IsHDR());
+    color_info.bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
-                                bits_per_channel);
-    hdr_static_metadata = edid_parser.hdr_static_metadata();
+                                color_info.bits_per_channel);
+    color_info.hdr_static_metadata = edid_parser.hdr_static_metadata();
     vsync_rate_min = edid_parser.vsync_rate_min();
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
@@ -619,12 +629,10 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       port_display_id, port_display_id, edid_display_id, connector_index,
       gfx::Point(), physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
-      has_content_protection_key, has_color_correction_matrix,
-      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
-      drm.device_path(), std::move(modes), panel_orientation, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size, variable_refresh_rate_state, vsync_rate_min,
-      drm_formats_and_modifiers);
+      has_content_protection_key, color_info, display_name, drm.device_path(),
+      std::move(modes), panel_orientation, edid, current_mode, native_mode,
+      product_code, year_of_manufacture, maximum_cursor_size,
+      variable_refresh_rate_state, vsync_rate_min, drm_formats_and_modifiers);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

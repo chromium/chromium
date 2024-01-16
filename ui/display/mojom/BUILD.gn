@@ -151,6 +151,10 @@ mojom("mojom") {
           cpp = "::std::unique_ptr<::display::DisplaySnapshot>"
           move_only = true
         },
+        {
+          mojom = "display.mojom.DisplaySnapshotColorInfo"
+          cpp = "::display::DisplaySnapshot::ColorInfo"
+        },
       ]
       traits_sources = [ "display_snapshot_mojom_traits.cc" ]
       traits_headers = [ "display_snapshot_mojom_traits.h" ]

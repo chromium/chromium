@@ -17,6 +17,7 @@
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 #include "ui/display/mojom/display_mode_mojom_traits.h"
 #include "ui/display/mojom/display_mojom_traits.h"
+#include "ui/display/mojom/display_snapshot.mojom.h"
 #include "ui/display/mojom/display_snapshot_mojom_traits.h"
 #include "ui/display/mojom/gamma_ramp_rgb_entry.mojom.h"
 #include "ui/display/mojom/gamma_ramp_rgb_entry_mojom_traits.h"
@@ -110,6 +111,17 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
 
   EXPECT_EQ(input.maximum_cursor_size(), output.maximum_cursor_size());
   EXPECT_EQ(input.color_space(), output.color_space());
+  EXPECT_EQ(input.color_info().color_space, output.color_info().color_space);
+  EXPECT_EQ(input.color_info().edid_primaries,
+            output.color_info().edid_primaries);
+  EXPECT_EQ(input.color_info().edid_gamma, output.color_info().edid_gamma);
+  EXPECT_EQ(input.color_info().hdr_static_metadata,
+            output.color_info().hdr_static_metadata);
+  EXPECT_EQ(input.color_info().supports_color_temperature_adjustment,
+            output.color_info().supports_color_temperature_adjustment);
+  EXPECT_EQ(input.color_info().bits_per_channel,
+            output.color_info().bits_per_channel);
+
   EXPECT_EQ(input.bits_per_channel(), output.bits_per_channel());
   EXPECT_EQ(input.hdr_static_metadata(), output.hdr_static_metadata());
   EXPECT_EQ(input.variable_refresh_rate_state(),
@@ -352,10 +364,13 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const bool has_overscan = true;
   const PrivacyScreenState privacy_screen_state = kEnabled;
   const bool has_content_protection_key = false;
-  const bool has_color_correction_matrix = true;
-  const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
-  const int32_t bits_per_channel = 8;
-  const gfx::HDRStaticMetadata hdr_static_metadata(
+  display::DisplaySnapshot::ColorInfo color_info;
+  color_info.supports_color_temperature_adjustment = true;
+  color_info.color_space = gfx::ColorSpace::CreateREC709();
+  color_info.edid_primaries = SkNamedPrimariesExt::kP3;
+  color_info.edid_gamma = 1.8;
+  color_info.bits_per_channel = 8;
+  color_info.hdr_static_metadata.emplace(
       100.0, 80.0, 0.0,
       gfx::HDRStaticMetadata::EotfMask(
           {gfx::HDRStaticMetadata::Eotf::kGammaSdrRange}));
@@ -384,9 +399,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
       port_display_id, port_display_id, edid_display_id, connector_index,
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
-      has_content_protection_key, has_color_correction_matrix,
-      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
-      sys_path, std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      has_content_protection_key, color_info, display_name, sys_path,
+      std::move(modes), PanelOrientation::kNormal, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
       variable_refresh_rate_state, vsync_rate_min,
       std::move(drm_formats_and_modifiers));
@@ -413,10 +427,11 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const bool has_overscan = true;
   const PrivacyScreenState privacy_screen_state = kEnabled;
   const bool has_content_protection_key = false;
-  const bool has_color_correction_matrix = true;
-  const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
-  const uint32_t bits_per_channel = 8u;
-  const gfx::HDRStaticMetadata hdr_static_metadata(
+  DisplaySnapshot::ColorInfo color_info;
+  color_info.supports_color_temperature_adjustment = true;
+  color_info.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  color_info.bits_per_channel = 8u;
+  color_info.hdr_static_metadata.emplace(
       100.0, 80.0, 0.0,
       gfx::HDRStaticMetadata::EotfMask(
           {gfx::HDRStaticMetadata::Eotf::kGammaSdrRange}));
@@ -445,9 +460,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
       port_display_id, port_display_id, edid_display_id, connector_index,
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
-      has_content_protection_key, has_color_correction_matrix,
-      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
-      sys_path, std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      has_content_protection_key, color_info, display_name, sys_path,
+      std::move(modes), PanelOrientation::kNormal, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
       variable_refresh_rate_state, vsync_rate_min,
       std::move(drm_formats_and_modifiers));
@@ -474,11 +488,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const bool has_overscan = false;
   const PrivacyScreenState privacy_screen_state = kDisabled;
   const bool has_content_protection_key = true;
-  const bool has_color_correction_matrix = false;
+  DisplaySnapshot::ColorInfo color_info;
+  color_info.supports_color_temperature_adjustment = false;
   const std::string display_name("HP Z24i");
-  const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t bits_per_channel = 8u;
-  const gfx::HDRStaticMetadata hdr_static_metadata(
+  color_info.color_space = gfx::ColorSpace::CreateSRGB();
+  color_info.bits_per_channel = 8u;
+  color_info.hdr_static_metadata.emplace(
       100.0, 80.0, 0.0,
       gfx::HDRStaticMetadata::EotfMask(
           {gfx::HDRStaticMetadata::Eotf::kGammaSdrRange}));
@@ -512,9 +527,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
       port_display_id, port_display_id, edid_display_id, connector_index,
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
-      has_content_protection_key, has_color_correction_matrix,
-      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
-      sys_path, std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
+      has_content_protection_key, color_info, display_name, sys_path,
+      std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
       variable_refresh_rate_state, vsync_rate_min,
       std::move(drm_formats_and_modifiers));
@@ -540,11 +554,11 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const bool has_overscan = false;
   const PrivacyScreenState privacy_screen_state = kNotSupported;
   const bool has_content_protection_key = false;
-  const bool has_color_correction_matrix = false;
-  const gfx::ColorSpace display_color_space =
-      gfx::ColorSpace::CreateDisplayP3D65();
-  const uint32_t bits_per_channel = 9u;
-  const gfx::HDRStaticMetadata hdr_static_metadata(
+  DisplaySnapshot::ColorInfo color_info;
+  color_info.supports_color_temperature_adjustment = false;
+  color_info.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  color_info.bits_per_channel = 9u;
+  color_info.hdr_static_metadata.emplace(
       200.0, 100.0, 0.0,
       gfx::HDRStaticMetadata::EotfMask({
           gfx::HDRStaticMetadata::Eotf::kGammaSdrRange,
@@ -572,12 +586,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
       port_display_id, port_display_id, edid_display_id, connector_index,
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
-      has_content_protection_key, has_color_correction_matrix,
-      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
-      sys_path, std::move(modes), PanelOrientation::kRightUp, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size, variable_refresh_rate_state, absl::nullopt,
-      drm_formats_and_modifiers);
+      has_content_protection_key, color_info, display_name, sys_path,
+      std::move(modes), PanelOrientation::kRightUp, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size,
+      variable_refresh_rate_state, absl::nullopt, drm_formats_and_modifiers);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

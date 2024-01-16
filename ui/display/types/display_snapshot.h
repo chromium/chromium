@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -31,37 +32,55 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
  public:
   using DisplayModeList = std::vector<std::unique_ptr<const DisplayMode>>;
 
-  DisplaySnapshot(
-      int64_t display_id,
-      int64_t port_display_id,
-      int64_t edid_display_id,
-      uint16_t connector_index,
-      const gfx::Point& origin,
-      const gfx::Size& physical_size,
-      DisplayConnectionType type,
-      uint64_t base_connector_id,
-      const std::vector<uint64_t>& path_topology,
-      bool is_aspect_preserving_scaling,
-      bool has_overscan,
-      PrivacyScreenState privacy_screen_state,
-      bool has_content_protection_key,
-      bool has_color_correction_matrix,
-      const gfx::ColorSpace& color_space,
-      uint32_t bits_per_channel,
-      const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
-      std::string display_name,
-      const base::FilePath& sys_path,
-      DisplayModeList modes,
-      PanelOrientation panel_orientation,
-      const std::vector<uint8_t>& edid,
-      const DisplayMode* current_mode,
-      const DisplayMode* native_mode,
-      int64_t product_code,
-      int32_t year_of_manufacture,
-      const gfx::Size& maximum_cursor_size,
-      VariableRefreshRateState variable_refresh_rate_state,
-      const absl::optional<uint16_t>& vsync_rate_min,
-      const DrmFormatsAndModifiers& drm_formats_and_modifiers_);
+  struct ColorInfo {
+    // The color space of the display.
+    // TODO(https://crbug.com/1505062): This should be derived from other
+    // members.
+    gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+    // Primaries and gamma indicicated by the EDID.
+    SkColorSpacePrimaries edid_primaries = SkNamedPrimariesExt::kSRGB;
+    float edid_gamma = 2.2;
+
+    // HDR static metadata, if available.
+    absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata;
+
+    // True if the display's color management is capable of applying color
+    // temperature adjustment. If not, then color temperature adjustment
+    // must be performed in software.
+    bool supports_color_temperature_adjustment = false;
+
+    // The number of bits per color channel.
+    uint32_t bits_per_channel = 8u;
+  };
+
+  DisplaySnapshot(int64_t display_id,
+                  int64_t port_display_id,
+                  int64_t edid_display_id,
+                  uint16_t connector_index,
+                  const gfx::Point& origin,
+                  const gfx::Size& physical_size,
+                  DisplayConnectionType type,
+                  uint64_t base_connector_id,
+                  const std::vector<uint64_t>& path_topology,
+                  bool is_aspect_preserving_scaling,
+                  bool has_overscan,
+                  PrivacyScreenState privacy_screen_state,
+                  bool has_content_protection_key,
+                  const ColorInfo& color_info,
+                  std::string display_name,
+                  const base::FilePath& sys_path,
+                  DisplayModeList modes,
+                  PanelOrientation panel_orientation,
+                  const std::vector<uint8_t>& edid,
+                  const DisplayMode* current_mode,
+                  const DisplayMode* native_mode,
+                  int64_t product_code,
+                  int32_t year_of_manufacture,
+                  const gfx::Size& maximum_cursor_size,
+                  VariableRefreshRateState variable_refresh_rate_state,
+                  const absl::optional<uint16_t>& vsync_rate_min,
+                  const DrmFormatsAndModifiers& drm_formats_and_modifiers_);
 
   DisplaySnapshot(const DisplaySnapshot&) = delete;
   DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
@@ -94,12 +113,13 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
     return has_content_protection_key_;
   }
   bool has_color_correction_matrix() const {
-    return has_color_correction_matrix_;
+    return color_info_.supports_color_temperature_adjustment;
   }
-  const gfx::ColorSpace& color_space() const { return color_space_; }
-  uint32_t bits_per_channel() const { return bits_per_channel_; }
+  const ColorInfo& color_info() const { return color_info_; }
+  const gfx::ColorSpace& color_space() const { return color_info_.color_space; }
+  uint32_t bits_per_channel() const { return color_info_.bits_per_channel; }
   const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
-    return hdr_static_metadata_;
+    return color_info_.hdr_static_metadata;
   }
   const std::string& display_name() const { return display_name_; }
   const base::FilePath& sys_path() const { return sys_path_; }
@@ -224,12 +244,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   const bool has_content_protection_key_;
 
-  // Whether this display has advanced color correction available.
-  const bool has_color_correction_matrix_;
-
-  const gfx::ColorSpace color_space_;
-  uint32_t bits_per_channel_;
-  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
+  const ColorInfo color_info_;
 
   const std::string display_name_;
 
