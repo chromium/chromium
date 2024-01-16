@@ -17,10 +17,11 @@ class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
       const VirtualDisplayMacUtilInteractiveUitest&) = delete;
 
  protected:
-  VirtualDisplayMacUtilInteractiveUitest() = default;
+  VirtualDisplayMacUtilInteractiveUitest()
+      : virtual_display_mac_util_(display::Screen::GetScreen()) {}
 
   void SetUp() override {
-    if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
+    if (!virtual_display_mac_util_.IsAPIAvailable()) {
       GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
     }
 
@@ -31,12 +32,15 @@ class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
   display::ScopedNativeScreen screen_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
+
+ protected:
+  // This must be initialized after ScopedNativeScreen when
+  // display::Screen::GetScreen() is non-null.
+  display::test::VirtualDisplayMacUtil virtual_display_mac_util_;
 };
 
 TEST_F(VirtualDisplayMacUtilInteractiveUitest, AddDisplay) {
-  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-
-  int64_t id = virtual_display_mac_util.AddDisplay(
+  int64_t id = virtual_display_mac_util_.AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);
   EXPECT_NE(id, display::kInvalidDisplayId);
 
@@ -46,14 +50,12 @@ TEST_F(VirtualDisplayMacUtilInteractiveUitest, AddDisplay) {
 }
 
 TEST_F(VirtualDisplayMacUtilInteractiveUitest, RemoveDisplay) {
-  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-
-  int64_t id = virtual_display_mac_util.AddDisplay(
+  int64_t id = virtual_display_mac_util_.AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);
   int display_count = display::Screen::GetScreen()->GetNumDisplays();
   EXPECT_GT(display_count, 1);
 
-  virtual_display_mac_util.RemoveDisplay(id);
+  virtual_display_mac_util_.RemoveDisplay(id);
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count - 1);
 
   display::Display d;
@@ -62,35 +64,38 @@ TEST_F(VirtualDisplayMacUtilInteractiveUitest, RemoveDisplay) {
 }
 
 TEST_F(VirtualDisplayMacUtilInteractiveUitest, IsAPIAvailable) {
-  EXPECT_TRUE(display::test::VirtualDisplayMacUtil::IsAPIAvailable());
+  EXPECT_TRUE(virtual_display_mac_util_.IsAPIAvailable());
 }
 
 TEST_F(VirtualDisplayMacUtilInteractiveUitest, HotPlug) {
   int display_count = display::Screen::GetScreen()->GetNumDisplays();
 
-  std::unique_ptr<display::test::VirtualDisplayMacUtil>
-      virtual_display_mac_util =
-          std::make_unique<display::test::VirtualDisplayMacUtil>();
-
-  virtual_display_mac_util->AddDisplay(
+  virtual_display_mac_util_.AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count + 1);
 
-  virtual_display_mac_util->AddDisplay(
+  virtual_display_mac_util_.AddDisplay(
       2, display::test::VirtualDisplayMacUtil::k1920x1080);
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count + 2);
 
-  virtual_display_mac_util.reset();
+  virtual_display_mac_util_.ResetDisplays();
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count);
 }
 
-TEST_F(VirtualDisplayMacUtilInteractiveUitest, EnsureDisplayWithResolution) {
-  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-
-  int64_t id = virtual_display_mac_util.AddDisplay(
-      1, display::test::VirtualDisplayMacUtil::k1920x1080);
+TEST_F(VirtualDisplayMacUtilInteractiveUitest, EnsureDisplayWithResolutionHD) {
+  int64_t id = virtual_display_mac_util_.AddDisplay(
+      1, display::test::VirtualDisplayUtil::k1920x1080);
 
   display::Display d;
   display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
   EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
+}
+
+TEST_F(VirtualDisplayMacUtilInteractiveUitest, EnsureDisplayWithResolutionXGA) {
+  int64_t id = virtual_display_mac_util_.AddDisplay(
+      1, display::test::VirtualDisplayUtil::k1024x768);
+
+  display::Display d;
+  display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
+  EXPECT_EQ(d.size(), gfx::Size(1024, 768));
 }

@@ -177,6 +177,8 @@ static_library("test_support") {
     "test/display_test_util.h",
     "test/test_screen.cc",
     "test/test_screen.h",
+    "test/virtual_display_util.cc",
+    "test/virtual_display_util.h",
   ]
   public_deps = [ ":display" ]
   deps = [
