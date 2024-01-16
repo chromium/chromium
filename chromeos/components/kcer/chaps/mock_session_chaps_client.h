@@ -54,6 +54,16 @@ class MockSessionChapsClient : public SessionChapsClient {
                SessionChapsClient::FindObjectsCallback callback),
               (override));
   MOCK_METHOD(void,
+              Sign,
+              (SessionChapsClient::SlotId slot_id,
+               uint64_t mechanism_type,
+               std::vector<uint8_t> mechanism_parameter,
+               SessionChapsClient::ObjectHandle key_handle,
+               std::vector<uint8_t> data,
+               int attempts_left,
+               SessionChapsClient::SignCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GenerateKeyPair,
               (SessionChapsClient::SlotId slot_id,
                uint64_t mechanism_type,

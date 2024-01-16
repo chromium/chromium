@@ -736,16 +736,12 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToSearch) {
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
 
-  chaps::AttributeList find_objects_attrs;
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
-      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
-                      RunOnceCallback<2>(result_object_list, result_code)));
+      .WillOnce(RunOnceCallback<2>(result_object_list, result_code));
 
   base::test::TestFuture<base::expected<void, Error>> waiter;
   token_.RemoveKeyAndCerts(PrivateKeyHandle(public_key), waiter.GetCallback());
 
-  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
-                            rsa_pkcs11_id_.value()));
   ASSERT_FALSE(waiter.Get().has_value());
   EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
 }
@@ -780,11 +776,9 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToDestroy) {
   std::vector<ObjectHandle> result_object_list{};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
 
-  chaps::AttributeList find_objects_attrs;
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
-      .WillOnce(DoAll(
-          MoveArg<1>(&find_objects_attrs),
-          RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK)));
+      .WillOnce(
+          RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
@@ -793,8 +787,6 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToDestroy) {
   base::test::TestFuture<base::expected<void, Error>> waiter;
   token_.RemoveKeyAndCerts(PrivateKeyHandle(public_key), waiter.GetCallback());
 
-  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
-                            rsa_pkcs11_id_.value()));
   ASSERT_FALSE(waiter.Get().has_value());
   EXPECT_EQ(waiter.Get().error(), Error::kFailedToRemoveObjects);
   expected_notifications_count_ = 1;
@@ -845,6 +837,10 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyExistsSuccess) {
   token_.DoesPrivateKeyExist(PrivateKeyHandle(public_key),
                              waiter.GetCallback());
 
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
   EXPECT_TRUE(
       FindAttribute(attrs, chromeos::PKCS11_CKA_ID, rsa_pkcs11_id_.value()));
   ASSERT_TRUE(waiter.Get().has_value());
@@ -869,6 +865,10 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyDoesNotExistsSuccess) {
   token_.DoesPrivateKeyExist(PrivateKeyHandle(public_key),
                              waiter.GetCallback());
 
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
   EXPECT_TRUE(
       FindAttribute(attrs, chromeos::PKCS11_CKA_ID, rsa_pkcs11_id_.value()));
   ASSERT_TRUE(waiter.Get<0>().has_value());
@@ -918,6 +918,283 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistRetryOnSessionError) {
   EXPECT_EQ(waiter.Get<0>().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that Sign can successfully create a RsaSha1 signature.
+TEST_F(KcerTokenImplTest, SignRsaSha1Success) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha1;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // Digest for the same data and algorithm is always the same and was recorded
+  // from a working device.
+  std::vector<uint8_t> expected_digest =
+      base::Base64Decode("MCEwCQYFKw4DAhoFAAQUxTkeMIryW0LVk01qIBo06JjSVcY=")
+          .value();
+  ObjectHandle expected_key_handle(10);
+
+  std::vector<ObjectHandle> result_object_list({expected_key_handle});
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+  std::vector<uint8_t> result_signature_bytes({11, 12, 13, 14, 15});
+  Signature result_signature(result_signature_bytes);
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+  EXPECT_CALL(
+      chaps_client_,
+      Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS,
+           std::vector<uint8_t>(), expected_key_handle, expected_digest, _))
+      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_TRUE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().value(), result_signature);
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+}
+
+// Test that Sign can successfully create a RsaSha256 signature.
+TEST_F(KcerTokenImplTest, SignRsaSha256Success) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha256;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // Digest for the same data and algorithm is always the same and was recorded
+  // from a working device.
+  std::vector<uint8_t> expected_digest =
+      base::Base64Decode(
+          "MDEwDQYJYIZIAWUDBAIBBQAEIMhI4QE/"
+          "nwSp1j+kPOf9SvA1FSx8ZppKQEtnEHzuXy5O")
+          .value();
+  ObjectHandle expected_key_handle(10);
+
+  std::vector<ObjectHandle> result_object_list({expected_key_handle});
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+  std::vector<uint8_t> result_signature_bytes({11, 12, 13, 14, 15});
+  Signature result_signature(result_signature_bytes);
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+  EXPECT_CALL(
+      chaps_client_,
+      Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS,
+           std::vector<uint8_t>(), expected_key_handle, expected_digest, _))
+      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_TRUE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().value(), result_signature);
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+}
+
+// Test that Sign can successfully create a RsaPssSha256 signature.
+TEST_F(KcerTokenImplTest, SignRsaPssSha256Success) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPssRsaeSha256;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // Digest for the same data and algorithm is always the same and was recorded
+  // from a working device.
+  std::vector<uint8_t> expected_digest =
+      base::Base64Decode("yEjhAT+fBKnWP6Q85/1K8DUVLHxmmkpAS2cQfO5fLk4=")
+          .value();
+  // Mechanism parameters are always the same for a given algorithm.
+  std::vector<uint8_t> expected_mechanism_param =
+      base::Base64Decode("UAIAAAAAAAACAAAAAAAAACAAAAAAAAAA").value();
+  ObjectHandle expected_key_handle(10);
+
+  std::vector<ObjectHandle> result_object_list({expected_key_handle});
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+  std::vector<uint8_t> result_signature_bytes({11, 12, 13, 14, 15});
+  Signature result_signature(result_signature_bytes);
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+  EXPECT_CALL(
+      chaps_client_,
+      Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS_PSS,
+           expected_mechanism_param, expected_key_handle, expected_digest, _))
+      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_TRUE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().value(), result_signature);
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+}
+
+// Test that Sign can successfully create a EcSha256 signature.
+TEST_F(KcerTokenImplTest, SignEcSha256) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, ec_pkcs11_id_, ec_spki_);
+  SigningScheme signing_scheme = SigningScheme::kEcdsaSecp256r1Sha256;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // Digest for the same data and algorithm is always the same and was recorded
+  // from a working device.
+  std::vector<uint8_t> expected_digest =
+      base::Base64Decode("yEjhAT+fBKnWP6Q85/1K8DUVLHxmmkpAS2cQfO5fLk4=")
+          .value();
+  ObjectHandle expected_key_handle(10);
+
+  std::vector<ObjectHandle> result_object_list({expected_key_handle});
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+  // Signature is different for each key, this one was recorded from a working
+  // device.
+  std::vector<uint8_t> result_chaps_signature =
+      base::Base64Decode(
+          "aNhCYZ1TL7eSxbrA6t/+XBAllGfi0zom4Ybo++iwW81Yob2LDKX6OOUX2h661/"
+          "INbTVYGDO5kNDqLBc1BUxgkA==")
+          .value();
+  // `result_chaps_signature` needs to be reencoded by Kcer into a different
+  // format, this is the expected result.
+  Signature result_signature(
+      base::Base64Decode("MEQCIGjYQmGdUy+3ksW6wOrf/"
+                         "lwQJZRn4tM6JuGG6PvosFvNAiBYob2LDKX6OOUX2h661/"
+                         "INbTVYGDO5kNDqLBc1BUxgkA==")
+          .value());
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+  EXPECT_CALL(chaps_client_, Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_ECDSA,
+                                  std::vector<uint8_t>(), expected_key_handle,
+                                  expected_digest, _))
+      .WillOnce(DoAll(RunOnceCallback<5>(result_chaps_signature, result_code)));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_TRUE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().value(), result_signature);
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            ec_pkcs11_id_.value()));
+}
+
+// Test that Sign correctly fails when it fails to find the key.
+TEST_F(KcerTokenImplTest, SignFailToSearch) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha1;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that Sign retries several times when the search for the key fails with a
+// session error.
+TEST_F(KcerTokenImplTest, SignRetrySearchOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha1;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that Sign correctly fails when Chaps fails to sign.
+TEST_F(KcerTokenImplTest, SignFailToSign) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha1;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(
+          RunOnceCallback<2>(std::vector<ObjectHandle>({ObjectHandle(10)}),
+                             chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, Sign)
+      .WillOnce(RunOnceCallback<5>(std::vector<uint8_t>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kFailedToSign);
+}
+
+// Test that Sign retries several times when Chaps fails to sign with a session
+// error.
+TEST_F(KcerTokenImplTest, SignRetrySignOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha1;
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>({ObjectHandle(10)}),
+          chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, Sign)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<5>(
+          std::vector<uint8_t>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+              sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that all methods are queued until the token is initialized and unblocked
 // after that. In this scenario fail all the methods for simplicity.
 TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
@@ -939,17 +1216,22 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   base::test::TestFuture<base::expected<bool, Error>> key_exists_waiter;
   token_.DoesPrivateKeyExist(PrivateKeyHandle(public_key),
                              key_exists_waiter.GetCallback());
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
+              DataToSign({1, 2, 3}), sign_waiter.GetCallback());
 
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
   EXPECT_FALSE(remove_key_waiter.IsReady());
   EXPECT_FALSE(key_exists_waiter.IsReady());
+  EXPECT_FALSE(sign_waiter.IsReady());
 
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   EXPECT_FALSE(generate_rsa_waiter.Get<>().has_value());
   EXPECT_FALSE(remove_key_waiter.Get<>().has_value());
   EXPECT_FALSE(key_exists_waiter.Get<>().has_value());
+  EXPECT_FALSE(sign_waiter.Get<>().has_value());
 }
 
 }  // namespace

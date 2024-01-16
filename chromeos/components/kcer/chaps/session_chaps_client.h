@@ -53,6 +53,8 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
   using FindObjectsCallback =
       base::OnceCallback<void(std::vector<ObjectHandle> object_list,
                               uint32_t result_code)>;
+  using SignCallback = base::OnceCallback<void(std::vector<uint8_t> signature,
+                                               uint32_t result_code)>;
   using GenerateKeyPairCallback =
       base::OnceCallback<void(ObjectHandle public_key_handle,
                               ObjectHandle private_key_handle,
@@ -110,6 +112,16 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
                            std::vector<uint8_t> attributes,
                            int attempts_left,
                            FindObjectsCallback callback) = 0;
+
+  // Combines SignInit and Sign, PKCS #11 v2.20 section 11.7 page 152-153.
+  virtual void Sign(SlotId slot_id,
+                    uint64_t mechanism_type,
+                    std::vector<uint8_t> mechanism_parameter,
+                    ObjectHandle key_handle,
+                    std::vector<uint8_t> data,
+                    int attempts_left,
+                    SignCallback callback) = 0;
+
   // PKCS #11 v2.20 section 11.14 page 176.
   virtual void GenerateKeyPair(SlotId slot_id,
                                uint64_t mechanism_type,
@@ -155,6 +167,13 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
                    std::vector<uint8_t> attributes,
                    int attempts_left,
                    FindObjectsCallback callback) override;
+  void Sign(SlotId slot_id,
+            uint64_t mechanism_type,
+            std::vector<uint8_t> mechanism_parameter,
+            ObjectHandle key_handle,
+            std::vector<uint8_t> data,
+            int attempts_left,
+            SignCallback callback) override;
   void GenerateKeyPair(SlotId slot_id,
                        uint64_t mechanism_type,
                        // Serialized chaps::AttributeList-s.
@@ -191,6 +210,15 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
                            FindObjectsCallback callback,
                            std::vector<ObjectHandle> object_list,
                            uint32_t result_code);
+  void DidSignInit(SlotId slot_id,
+                   std::vector<uint8_t> data,
+                   SignCallback callback,
+                   uint32_t result_code);
+  void DidSign(SlotId slot_id,
+               SignCallback callback,
+               uint64_t actual_out_length,
+               const std::vector<uint8_t>& signature,
+               uint32_t result_code);
   void DidGenerateKeyPair(SlotId slot_id,
                           GenerateKeyPairCallback callback,
                           uint64_t public_key_id,

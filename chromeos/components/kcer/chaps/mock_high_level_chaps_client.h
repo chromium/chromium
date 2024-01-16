@@ -63,6 +63,15 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHAPS) MockHighLevelChapsClient
                SessionChapsClient::FindObjectsCallback callback),
               (override));
   MOCK_METHOD(void,
+              Sign,
+              (SessionChapsClient::SlotId slot_id,
+               uint64_t mechanism_type,
+               const std::vector<uint8_t>& mechanism_parameter,
+               SessionChapsClient::ObjectHandle key_handle,
+               std::vector<uint8_t> data,
+               SessionChapsClient::SignCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GenerateKeyPair,
               (SessionChapsClient::SlotId slot_id,
                uint64_t mechanism_type,

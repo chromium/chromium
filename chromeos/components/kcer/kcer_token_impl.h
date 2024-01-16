@@ -143,17 +143,17 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   };
   void GenerateEcKeyImpl(GenerateEcKeyTask task);
   void DidGenerateEcKey(GenerateEcKeyTask task,
-                        SessionChapsClient::ObjectHandle public_key_id,
-                        SessionChapsClient::ObjectHandle private_key_id,
+                        ObjectHandle public_key_id,
+                        ObjectHandle private_key_id,
                         uint32_t result_code);
   void DidGetEcPublicKey(GenerateEcKeyTask task,
-                         SessionChapsClient::ObjectHandle public_key_id,
-                         SessionChapsClient::ObjectHandle private_key_id,
+                         ObjectHandle public_key_id,
+                         ObjectHandle private_key_id,
                          chaps::AttributeList public_key_attributes,
                          uint32_t result_code);
   void DidAssignEcKeyId(GenerateEcKeyTask task,
-                        SessionChapsClient::ObjectHandle public_key_id,
-                        SessionChapsClient::ObjectHandle private_key_id,
+                        ObjectHandle public_key_id,
+                        ObjectHandle private_key_id,
                         PublicKey kcer_public_key,
                         uint32_t result_code);
 
@@ -187,6 +187,32 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   void DidDoesPrivateKeyExist(DoesPrivateKeyExistTask task,
                               std::vector<ObjectHandle> object_list,
                               uint32_t result_code);
+
+  struct SignTask {
+    SignTask(PrivateKeyHandle in_key,
+             SigningScheme in_signing_scheme,
+             DataToSign in_data,
+             Kcer::SignCallback in_callback);
+    SignTask(SignTask&& other);
+    ~SignTask();
+
+    const PrivateKeyHandle key;
+    const SigningScheme signing_scheme;
+    const DataToSign data;
+    Kcer::SignCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void SignImpl(SignTask task);
+  void SignWithKeyHandle(SignTask task,
+                         std::vector<ObjectHandle> key_handles,
+                         uint32_t result_code);
+  void SignWithKeyHandleAndDigest(
+      SignTask task,
+      ObjectHandle key_handle,
+      base::expected<DigestWithPrefix, Error> digest);
+  void DidSign(SignTask task,
+               std::vector<uint8_t> signature,
+               uint32_t result_code);
 
   void NotifyCertsChanged(base::OnceClosure callback);
 

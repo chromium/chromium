@@ -321,6 +321,20 @@ void HighLevelChapsClientImpl::FindObjects(
 
 //==============================================================================
 
+void HighLevelChapsClientImpl::Sign(
+    SessionChapsClient::SlotId slot_id,
+    uint64_t mechanism_type,
+    const std::vector<uint8_t>& mechanism_parameter,
+    SessionChapsClient::ObjectHandle key_handle,
+    std::vector<uint8_t> data,
+    SessionChapsClient::SignCallback callback) {
+  session_chaps_client_->Sign(slot_id, mechanism_type, mechanism_parameter,
+                              key_handle, std::move(data), kDefaultAttempts,
+                              std::move(callback));
+}
+
+//==============================================================================
+
 void HighLevelChapsClientImpl::GenerateKeyPair(
     SessionChapsClient::SlotId slot_id,
     uint64_t mechanism_type,

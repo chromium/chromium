@@ -86,6 +86,16 @@ class HighLevelChapsClient {
       SessionChapsClient::SlotId slot_id,
       const chaps::AttributeList& attributes,
       SessionChapsClient::FindObjectsCallback callback) = 0;
+  // Combines SignInit and Sign, PKCS #11 v2.20 section 11.7 page 152-153.
+  // `mechanism_parameter` is the bytes of a struct containing the parameter.
+  // RSA-PKCS1 and ECDSA mechanisms don't take any parameters, for RSA_PSS see
+  // chromeos::PKCS11_CK_RSA_PKCS_PSS_PARAMS struct.
+  virtual void Sign(SessionChapsClient::SlotId slot_id,
+                    uint64_t mechanism_type,
+                    const std::vector<uint8_t>& mechanism_parameter,
+                    SessionChapsClient::ObjectHandle key_handle,
+                    std::vector<uint8_t> data,
+                    SessionChapsClient::SignCallback callback) = 0;
   // Similar to PKCS #11 v2.20 section 11.7 page 135.
   virtual void GenerateKeyPair(
       SessionChapsClient::SlotId slot_id,
@@ -133,6 +143,12 @@ class COMPONENT_EXPORT(KCER) HighLevelChapsClientImpl
   void FindObjects(SessionChapsClient::SlotId slot_id,
                    const chaps::AttributeList& attributes,
                    SessionChapsClient::FindObjectsCallback callback) override;
+  void Sign(SessionChapsClient::SlotId slot_id,
+            uint64_t mechanism_type,
+            const std::vector<uint8_t>& mechanism_parameter,
+            SessionChapsClient::ObjectHandle key_handle,
+            std::vector<uint8_t> data,
+            SessionChapsClient::SignCallback callback) override;
   void GenerateKeyPair(
       SessionChapsClient::SlotId slot_id,
       uint64_t mechanism_type,

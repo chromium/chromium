@@ -269,6 +269,108 @@ TEST_F(SessionChapsClientTest, FindObjectsSuccess) {
   EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
 }
 
+// Test that FindObjects correctly fails when mojom::FindObjectsInit returns an
+// error.
+TEST_F(SessionChapsClientTest, FindObjectsInitFailed) {
+  constexpr uint32_t kExpectedErrorCode = 11;
+
+  EXPECT_CALL(chaps_mojo_, FindObjectsInit)
+      .WillOnce(RunOnceCallback<2>(kExpectedErrorCode));
+  EXPECT_CALL(chaps_mojo_, FindObjects).Times(0);
+  EXPECT_CALL(chaps_mojo_, FindObjectsFinal).Times(0);
+
+  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
+  client_.FindObjects(SlotId(1), /*attributes=*/{},
+                      /*attempts_left=*/1, waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get<std::vector<ObjectHandle>>().empty());
+  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
+}
+
+// Test that FindObjects correctly fails when  mojom::FindObjects returns an
+// error.
+TEST_F(SessionChapsClientTest, FindObjectsFailed) {
+  constexpr uint32_t kExpectedErrorCode = 11;
+
+  EXPECT_CALL(chaps_mojo_, FindObjectsInit)
+      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_mojo_, FindObjects)
+      .WillOnce(
+          RunOnceCallback<2>(std::vector<uint64_t>(), kExpectedErrorCode));
+  EXPECT_CALL(chaps_mojo_, FindObjectsFinal).Times(0);
+
+  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
+  client_.FindObjects(SlotId(1), /*attributes=*/{},
+                      /*attempts_left=*/1, waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get<std::vector<ObjectHandle>>().empty());
+  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
+}
+
+// Test that Sign correctly forwards the arguments to the mojo layer and the
+// result back from it.
+TEST_F(SessionChapsClientTest, SignSuccess) {
+  constexpr uint64_t kExpectedMechanismType = 11;
+  const std::vector<uint8_t> kExpectedMechanismParams = {2, 2, 2};
+  constexpr uint64_t kExpectedKeyHandle = 33;
+  constexpr ObjectHandle kTypedKeyHandle(kExpectedKeyHandle);
+  constexpr uint64_t kExpectedMaxOutLength = 512;
+  const std::vector<uint8_t> kExpectedData = {4, 4, 4};
+  constexpr uint64_t kExpectedActualOutLength = 55;
+  const std::vector<uint8_t> kExpectedSignature = {6, 6};
+  constexpr uint32_t kExpectedResultCode = 77;
+
+  EXPECT_CALL(chaps_mojo_,
+              SignInit(kSessionId, kExpectedMechanismType,
+                       kExpectedMechanismParams, kExpectedKeyHandle, _))
+      .WillOnce(RunOnceCallback<4>(chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_mojo_,
+              Sign(kSessionId, kExpectedData, kExpectedMaxOutLength, _))
+      .WillOnce(RunOnceCallback<3>(kExpectedActualOutLength, kExpectedSignature,
+                                   kExpectedResultCode));
+
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+  client_.Sign(SlotId(1), kExpectedMechanismType, kExpectedMechanismParams,
+               kTypedKeyHandle, kExpectedData,
+               /*attempts_left=*/1, waiter.GetCallback());
+  EXPECT_EQ(waiter.Get<std::vector<uint8_t>>(), kExpectedSignature);
+  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
+}
+
+// Test that Sign correctly fails when mojom::SignInit returns an error.
+TEST_F(SessionChapsClientTest, SignInitFailed) {
+  constexpr uint32_t kExpectedErrorCode = 11;
+
+  EXPECT_CALL(chaps_mojo_, SignInit)
+      .WillOnce(RunOnceCallback<4>(kExpectedErrorCode));
+  EXPECT_CALL(chaps_mojo_, Sign).Times(0);
+
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+  client_.Sign(SlotId(1), /*mechanism_type=*/0, /*mechanism_parameter=*/{},
+               /*key_handle=*/ObjectHandle(0), /*data=*/{},
+               /*attempts_left=*/1, waiter.GetCallback());
+  EXPECT_TRUE(waiter.Get<std::vector<uint8_t>>().empty());
+  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
+}
+
+// Test that Sign correctly fails when mojom::Sign returns an error.
+TEST_F(SessionChapsClientTest, SignFailed) {
+  constexpr uint32_t kExpectedErrorCode = 11;
+
+  EXPECT_CALL(chaps_mojo_, SignInit)
+      .WillOnce(RunOnceCallback<4>(chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_mojo_, Sign)
+      .WillOnce(
+          RunOnceCallback<3>(0, std::vector<uint8_t>(), kExpectedErrorCode));
+
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+  client_.Sign(SlotId(1), /*mechanism_type=*/0, /*mechanism_parameter=*/{},
+               /*key_handle=*/ObjectHandle(0), /*data=*/{},
+               /*attempts_left=*/1, waiter.GetCallback());
+  EXPECT_TRUE(waiter.Get<std::vector<uint8_t>>().empty());
+  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
+}
+
 // Test that GenerateKeyPair correctly forwards the arguments to the mojo layer
 // and the result back from it.
 TEST_F(SessionChapsClientTest, GenerateKeyPairSuccess) {
@@ -369,6 +471,19 @@ TEST_F(SessionChapsClientTest, AllMethodsDontReopenSession) {
   }
 
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
+    EXPECT_CALL(chaps_mojo_, SignInit)
+        .WillOnce(RunOnceCallback<4>(chromeos::PKCS11_CKR_OK));
+    EXPECT_CALL(chaps_mojo_, Sign)
+        .WillOnce(RunOnceCallback<3>(0, std::vector<uint8_t>(),
+                                     chromeos::PKCS11_CKR_OK));
+    base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+    client_.Sign(SlotId(slot_id), /*mechanism_type=*/0,
+                 /*mechanism_parameter=*/{}, /*key_handle=*/ObjectHandle(0),
+                 /*data=*/{}, /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
     EXPECT_CALL(chaps_mojo_, GenerateKeyPair)
         .WillOnce(RunOnceCallback<5>(0, 0, chromeos::PKCS11_CKR_OK));
     base::test::TestFuture<ObjectHandle, ObjectHandle, uint32_t> waiter;
@@ -432,6 +547,19 @@ TEST_F(SessionChapsClientTest, AllMethodsTryReopenSession) {
     base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
     client_.FindObjects(SlotId(kSlotId),
                         /*attributes=*/{}, kAttempts, waiter.GetCallback());
+    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
+    Mock::VerifyAndClear(&chaps_mojo_);
+  }
+
+  {
+    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
+        .Times(kAttempts)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
+    base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+    client_.Sign(SlotId(kSlotId), /*mechanism_type=*/0,
+                 /*mechanism_parameter=*/{}, /*key_handle=*/ObjectHandle(0),
+                 /*data=*/{}, kAttempts, waiter.GetCallback());
     EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
     Mock::VerifyAndClear(&chaps_mojo_);
   }

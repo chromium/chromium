@@ -4,8 +4,15 @@
 
 #include "chromeos/components/kcer/kcer_token_impl.h"
 
+#include <stdint.h>
+
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/components/kcer/attributes.pb.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
@@ -248,6 +255,24 @@ PublicKeySpki MakeEcSpki(const base::span<const uint8_t>& ec_point) {
   return PublicKeySpki(std::vector<uint8_t>(der, der + der_len));
 }
 
+uint64_t SigningSchemeToPkcs11Mechanism(SigningScheme scheme) {
+  switch (scheme) {
+    case SigningScheme::kRsaPkcs1Sha1:
+    case SigningScheme::kRsaPkcs1Sha256:
+    case SigningScheme::kRsaPkcs1Sha384:
+    case SigningScheme::kRsaPkcs1Sha512:
+      return chromeos::PKCS11_CKM_RSA_PKCS;
+    case SigningScheme::kEcdsaSecp256r1Sha256:
+    case SigningScheme::kEcdsaSecp384r1Sha384:
+    case SigningScheme::kEcdsaSecp521r1Sha512:
+      return chromeos::PKCS11_CKM_ECDSA;
+    case SigningScheme::kRsaPssRsaeSha256:
+    case SigningScheme::kRsaPssRsaeSha384:
+    case SigningScheme::kRsaPssRsaeSha512:
+      return chromeos::PKCS11_CKM_RSA_PKCS_PSS;
+  }
+}
+
 void RunClosure(base::OnceClosure closure, uint32_t /*result_code*/) {
   std::move(closure).Run();
 }
@@ -261,6 +286,125 @@ base::OnceCallback<void(uint32_t)> Bind(
     Error error) {
   return base::BindOnce(&RunClosure, base::BindOnce(std::move(callback),
                                                     base::unexpected(error)));
+}
+
+// Creates a digest for `data_to_sign` with the correct prefix (if needed) for
+// `kcer_signing_scheme`.
+base::expected<DigestWithPrefix, Error> DigestOnWorkerThread(
+    SigningScheme kcer_signing_scheme,
+    DataToSign data_to_sign) {
+  // SigningScheme is defined in a way where this cast is meaningful.
+  uint16_t ssl_algorithm = static_cast<uint16_t>(kcer_signing_scheme);
+
+  const EVP_MD* digest_method =
+      SSL_get_signature_algorithm_digest(ssl_algorithm);
+  uint8_t digest_buffer[EVP_MAX_MD_SIZE];
+  uint8_t* digest = digest_buffer;
+  unsigned int digest_len = 0;
+  if (!digest_method ||
+      !EVP_Digest(data_to_sign->data(), data_to_sign->size(), digest,
+                  &digest_len, digest_method, nullptr)) {
+    return base::unexpected(Error::kFailedToSignFailedToDigest);
+  }
+
+  bssl::UniquePtr<uint8_t> free_digest_info;
+  if ((SSL_get_signature_algorithm_key_type(ssl_algorithm) == EVP_PKEY_RSA) &&
+      !SSL_is_signature_algorithm_rsa_pss(ssl_algorithm)) {
+    // PKCS#11 Sign expects the caller to prepend the DigestInfo for PKCS #1.
+    int hash_nid =
+        EVP_MD_type(SSL_get_signature_algorithm_digest(ssl_algorithm));
+    int is_alloced = 0;
+    size_t digest_with_prefix_len = 0;
+    if (!RSA_add_pkcs1_prefix(&digest, &digest_with_prefix_len, &is_alloced,
+                              hash_nid, digest, digest_len)) {
+      return base::unexpected(Error::kFailedToSignFailedToAddPrefix);
+    }
+    digest_len = digest_with_prefix_len;
+    if (is_alloced) {
+      free_digest_info.reset(digest);
+    }
+  }
+
+  return DigestWithPrefix(std::vector<uint8_t>(digest, digest + digest_len));
+}
+
+// The EC signature returned by Chaps is a concatenation of two numbers r and s
+// (see PKCS#11 v2.40: 2.3.1 EC Signatures). Kcer needs to return it as a DER
+// encoding of the following ASN.1 notations:
+// Ecdsa-Sig-Value ::= SEQUENCE {
+//     r       INTEGER,
+//     s       INTEGER
+// }
+// (according to the RFC 8422, Section 5.4).
+// This function reencodes the signature.
+base::expected<std::vector<uint8_t>, Error> ReencodeEcSignature(
+    base::span<const uint8_t> signature) {
+  if (signature.size() % 2 != 0) {
+    return base::unexpected(Error::kFailedToSignBadSignatureLength);
+  }
+  size_t order_size_bytes = signature.size() / 2;
+  base::span<const uint8_t> r_bytes = signature.first(order_size_bytes);
+  base::span<const uint8_t> s_bytes = signature.subspan(order_size_bytes);
+
+  // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
+  bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
+  if (!sig || !BN_bin2bn(r_bytes.data(), r_bytes.size(), sig->r) ||
+      !BN_bin2bn(s_bytes.data(), s_bytes.size(), sig->s)) {
+    return base::unexpected(Error::kFailedToDerEncode);
+  }
+
+  std::vector<uint8_t> result_signature;
+
+  {
+    const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
+    if (len <= 0) {
+      return base::unexpected(Error::kFailedToSignBadSignatureLength);
+    }
+    result_signature.resize(len);
+  }
+
+  {
+    uint8_t* ptr = result_signature.data();
+    const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
+    if (len <= 0) {
+      return base::unexpected(Error::kFailedToDerEncode);
+    }
+  }
+
+  return result_signature;
+}
+
+std::vector<uint8_t> GetPssSignParams(SigningScheme kcer_signing_scheme) {
+  chromeos::PKCS11_CK_RSA_PKCS_PSS_PARAMS pss_params;
+
+  uint16_t ssl_algorithm = static_cast<uint16_t>(kcer_signing_scheme);
+  CHECK(SSL_is_signature_algorithm_rsa_pss(ssl_algorithm));
+
+  const EVP_MD* digest_method =
+      SSL_get_signature_algorithm_digest(ssl_algorithm);
+
+  switch (EVP_MD_type(digest_method)) {
+    case NID_sha256:
+      pss_params.hashAlg = CKM_SHA256;
+      pss_params.mgf = CKG_MGF1_SHA256;
+      break;
+    case NID_sha384:
+      pss_params.hashAlg = CKM_SHA384;
+      pss_params.mgf = CKG_MGF1_SHA384;
+      break;
+    case NID_sha512:
+      pss_params.hashAlg = CKM_SHA512;
+      pss_params.mgf = CKG_MGF1_SHA512;
+      break;
+    default:
+      return {};
+  }
+
+  // Use the hash length for the salt length.
+  pss_params.sLen = EVP_MD_size(digest_method);
+
+  const uint8_t* params_ptr = reinterpret_cast<const uint8_t*>(&pss_params);
+  return std::vector<uint8_t>(params_ptr, params_ptr + sizeof(pss_params));
 }
 
 }  // namespace
@@ -874,11 +1018,142 @@ void KcerTokenImpl::DidDoesPrivateKeyExist(
 
 //==============================================================================
 
+KcerTokenImpl::SignTask::SignTask(PrivateKeyHandle in_key,
+                                  SigningScheme in_signing_scheme,
+                                  DataToSign in_data,
+                                  Kcer::SignCallback in_callback)
+    : key(std::move(in_key)),
+      signing_scheme(in_signing_scheme),
+      data(std::move(in_data)),
+      callback(std::move(in_callback)) {}
+KcerTokenImpl::SignTask::SignTask(SignTask&& other) = default;
+KcerTokenImpl::SignTask::~SignTask() = default;
+
 void KcerTokenImpl::Sign(PrivateKeyHandle key,
                          SigningScheme signing_scheme,
                          DataToSign data,
                          Kcer::SignCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::Sign, weak_factory_.GetWeakPtr(), std::move(key),
+        signing_scheme, std::move(data), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  if (!EnsurePkcs11IdIsSet(key)) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  SignImpl(SignTask(std::move(key), signing_scheme, std::move(data),
+                    std::move(unblocking_callback)));
+}
+
+// Finds the key.
+void KcerTokenImpl::SignImpl(SignTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  const chromeos::PKCS11_CK_OBJECT_CLASS kPrivKeyClass =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chaps::AttributeList private_key_attrs;
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_CLASS,
+               MakeSpan(&kPrivKeyClass));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_ID,
+               task.key.GetPkcs11IdInternal().value());
+
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(private_key_attrs),
+      base::BindOnce(&KcerTokenImpl::SignWithKeyHandle,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Digests the data.
+void KcerTokenImpl::SignWithKeyHandle(SignTask task,
+                                      std::vector<ObjectHandle> key_handles,
+                                      uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return SignImpl(std::move(task));
+  }
+  if ((result_code != chromeos::PKCS11_CKR_OK) || key_handles.empty()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+  DCHECK_EQ(key_handles.size(), 1u);
+
+  DataToSign data = task.data;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&DigestOnWorkerThread, task.signing_scheme,
+                     std::move(data)),
+      base::BindOnce(&KcerTokenImpl::SignWithKeyHandleAndDigest,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     key_handles.front()));
+}
+
+// Signs the data.
+void KcerTokenImpl::SignWithKeyHandleAndDigest(
+    SignTask task,
+    ObjectHandle key_handle,
+    base::expected<DigestWithPrefix, Error> digest) {
+  if (!digest.has_value()) {
+    return std::move(task.callback).Run(base::unexpected(digest.error()));
+  }
+
+  uint64_t mechanism = SigningSchemeToPkcs11Mechanism(task.signing_scheme);
+  std::vector<uint8_t> mechanism_params;
+
+  if (mechanism == chromeos::PKCS11_CKM_RSA_PKCS_PSS) {
+    mechanism_params = GetPssSignParams(task.signing_scheme);
+  }
+
+  auto chaps_callback = base::BindOnce(
+      &KcerTokenImpl::DidSign, weak_factory_.GetWeakPtr(), std::move(task));
+
+  chaps_client_->Sign(pkcs_11_slot_id_, mechanism, mechanism_params, key_handle,
+                      std::move(digest).value().value(),
+                      std::move(chaps_callback));
+}
+
+// Re-encodes the signature if needed.
+void KcerTokenImpl::DidSign(SignTask task,
+                            std::vector<uint8_t> signature,
+                            uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return SignImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback).Run(base::unexpected(Error::kFailedToSign));
+  }
+
+  // ECDSA signatures have to be reencoded.
+  uint64_t mechanism = SigningSchemeToPkcs11Mechanism(task.signing_scheme);
+  if (mechanism == chromeos::PKCS11_CKM_ECDSA) {
+    base::expected<std::vector<uint8_t>, Error> reencoded_signature =
+        ReencodeEcSignature(std::move(signature));
+    if (!reencoded_signature.has_value()) {
+      return std::move(task.callback)
+          .Run(base::unexpected(reencoded_signature.error()));
+    }
+    signature = std::move(reencoded_signature).value();
+  }
+
+  return std::move(task.callback).Run(Signature(signature));
 }
 
 //==============================================================================

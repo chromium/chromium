@@ -41,6 +41,8 @@ using Pkcs12Blob =
     base::StrongAlias<class TypeTagPkcs12Blob, std::vector<uint8_t>>;
 using DataToSign =
     base::StrongAlias<class TypeTagDataToSign, std::vector<uint8_t>>;
+// Digest of the DataToSign. If the signing algorithm expects a prefix (such as
+// DigestInfo for RSA), it is already prepended for this type.
 using DigestWithPrefix =
     base::StrongAlias<class TypeTagDigestWithPrefix, std::vector<uint8_t>>;
 
