@@ -2979,6 +2979,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-ipad-feed-ghost-cards",
+    "owners": [ "adamta@google.com", "chrome-feed-fundamentals@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-isolated-sandboxed-iframes",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     "expiry_milestone": 128

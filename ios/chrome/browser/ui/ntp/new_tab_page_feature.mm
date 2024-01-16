@@ -59,6 +59,10 @@ BASE_FEATURE(kEnableSignedOutViewDemotion,
              "EnableSignedOutViewDemotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableiPadFeedGhostCards,
+             "EnableiPadFeedGhostCards",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -181,4 +185,8 @@ bool IsFollowManagementInstantReloadEnabled() {
 
 bool IsSignedOutViewDemotionEnabled() {
   return base::FeatureList::IsEnabled(kEnableSignedOutViewDemotion);
+}
+
+bool IsiPadFeedGhostCardsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
 }

@@ -1613,6 +1613,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPanelForceShowEntrypointName,
      flag_descriptions::kContextualPanelForceShowEntrypointDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContextualPanelForceShowEntrypoint)},
+    {"enable-ipad-feed-ghost-cards",
+     flag_descriptions::kEnableiPadFeedGhostCardsName,
+     flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableiPadFeedGhostCards)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

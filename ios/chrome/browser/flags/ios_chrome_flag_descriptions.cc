@@ -394,6 +394,10 @@ const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
 const char kEnableFollowUIUpdateDescription[] =
     "Enable Follow UI Update for the Feed.";
 
+const char kEnableiPadFeedGhostCardsName[] = "Enable ghost cards on iPad feeds";
+const char kEnableiPadFeedGhostCardsDescription[] =
+    "Enables ghost cards placeholder when feed is loading on iPads.";
+
 const char kEnablePreferencesAccountStorageName[] =
     "Enable the account data storage for preferences for syncing users";
 const char kEnablePreferencesAccountStorageDescription[] =

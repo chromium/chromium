@@ -335,6 +335,10 @@ extern const char kEnableFeedAblationDescription[];
 extern const char kEnableFeedContainmentName[];
 extern const char kEnableFeedContainmentDescription[];
 
+// Title and description for the flag to enable ghost cards on the iPad feed.
+extern const char kEnableiPadFeedGhostCardsName[];
+extern const char kEnableiPadFeedGhostCardsDescription[];
+
 // Title and description for the flag to enable the preferences account storage.
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];
