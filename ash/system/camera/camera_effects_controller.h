@@ -73,6 +73,14 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     base::Time last_accessed;
     base::FilePath basename;
     std::string jpeg_bytes;
+    std::string metadata;
+
+    BackgroundImageInfo(const BackgroundImageInfo& info);
+    BackgroundImageInfo(const base::Time& creation_time,
+                        const base::Time& last_accessed,
+                        const base::FilePath& basename,
+                        const std::string& jpeg_bytes,
+                        const std::string& metadata);
   };
 
   CameraEffectsController();
@@ -100,9 +108,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   void SetBackgroundImage(const base::FilePath& relative_path,
                           base::OnceCallback<void(bool)> callback);
 
-  // Saves the `jpeg_bytes` as an image file and apply that as camera
-  // background.
+  // Saves the `jpeg_bytes` as an image file with `metadata` and apply that as
+  // camera background.
   void SetBackgroundImageFromContent(std::string&& jpeg_bytes,
+                                     const std::string& metadata,
                                      base::OnceCallback<void(bool)> callback);
 
   // Removes `basename` from the camera background directory; remove background

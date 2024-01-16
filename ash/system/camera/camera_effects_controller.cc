@@ -52,6 +52,10 @@ using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
 constexpr char kCameraBackgroundOriginalDir[] =
     "custom-camera-backgrounds/original";
 
+constexpr char kMetadataSuffix[] = ".metadata";
+
+constexpr char kSupportedImages[] = FILE_PATH_LITERAL("*.jpeg");
+
 constexpr unsigned int k3M = 3 * 1024 * 1024;
 
 // Max number of images kept as camera background.
@@ -163,23 +167,48 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
 
 base::FilePath HashAsFileName(const std::string& jpeg_bytes) {
   return base::FilePath(
-      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpg"}));
+      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpeg"}));
+}
+
+inline base::FilePath GetMetadataFilePath(const base::FilePath& filepath) {
+  return filepath.AddExtensionASCII(kMetadataSuffix);
+}
+
+// Remove the file and its metadata if exists.
+bool RemoveBackgroundImageOnWorker(const base::FilePath& filepath) {
+  if (!base::DeleteFile(filepath)) {
+    return false;
+  }
+
+  const auto metadata_filepath = GetMetadataFilePath(filepath);
+  if (base::PathExists(metadata_filepath) &&
+      !base::DeleteFile(metadata_filepath)) {
+    return false;
+  }
+
+  return true;
 }
 
 // Writes `jpeg_bytes` to the `camera_background_img_dir`.
 // Returns basename if succeeds, empty path otherwise.
 base::FilePath WriteImageToBackgroundDir(
     const base::FilePath& camera_background_img_dir,
-    std::string&& jpeg_bytes) {
+    std::string&& jpeg_bytes,
+    const std::string& metadata) {
   const base::FilePath basename = HashAsFileName(jpeg_bytes);
   const base::FilePath background_image_filepath =
       camera_background_img_dir.Append(basename);
+  const base::FilePath background_metadata_filepath =
+      GetMetadataFilePath(background_image_filepath);
 
   if (base::CreateDirectory(camera_background_img_dir) &&
-      base::WriteFile(background_image_filepath, jpeg_bytes)) {
+      base::WriteFile(background_image_filepath, jpeg_bytes) &&
+      base::WriteFile(background_metadata_filepath, metadata)) {
     return basename;
   }
 
+  // We don't want keep corrupted images.
+  RemoveBackgroundImageOnWorker(background_image_filepath);
   return base::FilePath();
 }
 
@@ -198,9 +227,9 @@ bool CopyBackgroundImageFile(const base::FilePath& background_image_filepath,
                     file_info.last_modified);
 
     // Remove all other images in the background_run_dir`.
-    base::FileEnumerator enumerator(background_run_dir,
-                                    /*recursive=*/false,
-                                    base::FileEnumerator::FILES);
+    base::FileEnumerator enumerator(
+        background_run_dir,
+        /*recursive=*/false, base::FileEnumerator::FILES, kSupportedImages);
     for (auto path = enumerator.Next(); !path.empty();
          path = enumerator.Next()) {
       if (enumerator.GetInfo().GetName() != basename) {
@@ -225,9 +254,9 @@ std::vector<base::FilePath> GetBackgroundImageFileNamesOnWorker(
   std::vector<FileNameAndTime> filenames_and_modified_time;
 
   // Loop through all files in `camera_background_img_dir`.
-  base::FileEnumerator enumerator(camera_background_img_dir,
-                                  /*recursive=*/false,
-                                  base::FileEnumerator::FILES);
+  base::FileEnumerator enumerator(
+      camera_background_img_dir,
+      /*recursive=*/false, base::FileEnumerator::FILES, kSupportedImages);
   for (auto path = enumerator.Next(); !path.empty(); path = enumerator.Next()) {
     base::File::Info file_info;
     base::GetFileInfo(path, &file_info);
@@ -246,9 +275,12 @@ std::vector<base::FilePath> GetBackgroundImageFileNamesOnWorker(
   if (filenames_and_modified_time.size() > kMaxNumberOfImageKeptOnDisk) {
     for (std::size_t i = kMaxNumberOfImageKeptOnDisk;
          i < filenames_and_modified_time.size(); i++) {
-      base::DeleteFile(camera_background_img_dir.Append(
-          filenames_and_modified_time[i].first));
+      const auto filename = camera_background_img_dir.Append(
+          filenames_and_modified_time[i].first);
+      RemoveBackgroundImageOnWorker(filename);
     }
+
+    filenames_and_modified_time.resize(kMaxNumberOfImageKeptOnDisk);
   }
 
   std::vector<base::FilePath> filenames;
@@ -268,12 +300,17 @@ std::optional<BackgroundImageInfo> GetBackgroundImageInfoOnWorker(
   }
 
   BackgroundImageInfo info{file_info.creation_time, file_info.last_accessed,
-                           filename.BaseName(), ""};
+                           filename.BaseName(), "", ""};
 
   // TODO(b/314186143): resize the image since we don't need the full size
   // image here.
   if (!base::ReadFileToString(filename, &info.jpeg_bytes)) {
     return std::nullopt;
+  }
+
+  // if the metadata is not read successfully, then set it as empty.
+  if (!base::ReadFileToString(GetMetadataFilePath(filename), &info.metadata)) {
+    info.metadata = "";
   }
 
   return info;
@@ -321,6 +358,19 @@ void SetBackgroundReplaceUiVisible(bool visible) {
 }
 
 }  // namespace
+
+BackgroundImageInfo::BackgroundImageInfo(const BackgroundImageInfo& info) =
+    default;
+BackgroundImageInfo::BackgroundImageInfo(const base::Time& creation_time,
+                                         const base::Time& last_accessed,
+                                         const base::FilePath& basename,
+                                         const std::string& jpeg_bytes,
+                                         const std::string& metadata)
+    : creation_time(creation_time),
+      last_accessed(last_accessed),
+      basename(basename),
+      jpeg_bytes(jpeg_bytes),
+      metadata(metadata) {}
 
 CameraEffectsController::CameraEffectsController()
     : camera_background_run_dir_(kImageDirForCameraModule),
@@ -403,6 +453,7 @@ void CameraEffectsController::SetBackgroundImage(
 
 void CameraEffectsController::SetBackgroundImageFromContent(
     std::string&& jpeg_bytes,
+    const std::string& metadata,
     base::OnceCallback<void(bool)> callback) {
   CHECK(!camera_background_img_dir_.empty())
       << "SetBackgroundImageFromContent should not be called when "
@@ -415,7 +466,7 @@ void CameraEffectsController::SetBackgroundImageFromContent(
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteImageToBackgroundDir, camera_background_img_dir_,
-                     std::move(jpeg_bytes)),
+                     std::move(jpeg_bytes), metadata),
       base::BindOnce(
           &CameraEffectsController::OnSaveBackgroundImageFileComplete,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -442,7 +493,7 @@ void CameraEffectsController::RemoveBackgroundImage(
   // Remove file.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&base::DeleteFile,
+      base::BindOnce(&RemoveBackgroundImageOnWorker,
                      camera_background_img_dir_.Append(basename)),
       std::move(callback));
 }
