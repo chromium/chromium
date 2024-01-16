@@ -10,6 +10,7 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "data_sharing_network_loader.h",
     "data_sharing_service.h",
     "features.cc",
     "features.h",
@@ -18,6 +19,7 @@ source_set("public") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//net/traffic_annotation",
   ]
 }
 

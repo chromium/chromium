@@ -8,11 +8,13 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace data_sharing {
 // static
@@ -32,7 +34,9 @@ DataSharingServiceFactory::DataSharingServiceFactory()
           "DataSharingService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 
@@ -43,7 +47,11 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
     return new EmptyDataSharingService();
   }
 
-  return new DataSharingServiceImpl();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return new DataSharingServiceImpl(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace data_sharing

@@ -14,6 +14,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace data_sharing {
+class DataSharingNetworkLoader;
 
 // The core class for managing data sharing.
 class DataSharingService : public KeyedService, public base::SupportsUserData {
@@ -36,6 +37,9 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Chromium build disables RTTI, and we need to be able to verify that we are
   // using an empty service from the Chrome embedder.
   virtual bool IsEmptyService() = 0;
+
+  // Returns the network loader for fetching data.
+  virtual DataSharingNetworkLoader* GetDataSharingNetworkLoader() = 0;
 };
 
 }  // namespace data_sharing
