@@ -162,7 +162,7 @@ public class NewTabPageTest {
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
     private static final String HISTOGRAM_NTP_MODULE_LONGCLICK = "NewTabPage.Module.LongClick";
 
-    private static final String SURFACE_POLISH_PARAMS = "force-fieldtrial-params=Study.Group:";
+    private static final String SURFACE_POLISH_BASE_PARAMS = "force-fieldtrial-params=Study.Group:";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -979,7 +979,7 @@ public class NewTabPageTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
+        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/true"
     })
     public void testSingleTabCardShowAndClick() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -1222,7 +1222,7 @@ public class NewTabPageTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
+        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/true"
     })
     public void test1RowMvtOnNtpAfterPolish() {
         verifyMostVisitedTileMarginPolish();
@@ -1244,9 +1244,13 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/false"
+    })
     public void test2RowMvtOnNtpAfterPolish() {
         verifyMostVisitedTileMarginPolish();
 

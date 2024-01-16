@@ -339,7 +339,11 @@ public class StartSurfaceTabSwitcherTest {
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.waitForTabModel(cta);
-        onViewWaiting(withId(R.id.logo));
+        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            onViewWaiting(withId(R.id.search_provider_logo));
+        } else {
+            onViewWaiting(withId(R.id.logo));
+        }
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
         // Launches the first site in MV tiles.

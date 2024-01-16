@@ -1424,6 +1424,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testNotInitializeLogoWhenShownHomepage() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
@@ -1465,6 +1466,7 @@ public class StartSurfaceMediatorUnitTest {
     public void testNotInitializeLogoWhenSurfacePolishedMoveDownLogoDisabled() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
+        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(false);
         Assert.assertFalse(ReturnToChromeUtil.moveDownLogo());
 
         StartSurfaceMediator mediator =
@@ -1807,6 +1809,9 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testDefaultSearchEngineChanged() {
+        boolean isMoveDownLogoEnabled =
+                ChromeFeatureList.sSurfacePolish.isEnabled()
+                        && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
         mProfileSupplier = new ObservableSupplierImpl<>();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(
@@ -1817,7 +1822,8 @@ public class StartSurfaceMediatorUnitTest {
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         mProfileSupplier.set(mProfile);
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        verify(mTemplateUrlService, times(isMoveDownLogoEnabled ? 2 : 1))
+                .addObserver(mTemplateUrlServiceObserverCaptor.capture());
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
         assertTrue(mPropertyModel.get(IS_LENS_BUTTON_VISIBLE));
@@ -1827,7 +1833,8 @@ public class StartSurfaceMediatorUnitTest {
         assertFalse(mPropertyModel.get(IS_LENS_BUTTON_VISIBLE));
 
         mediator.destroy();
-        verify(mTemplateUrlService).removeObserver(mTemplateUrlServiceObserverCaptor.capture());
+        verify(mTemplateUrlService, times(isMoveDownLogoEnabled ? 2 : 1))
+                .removeObserver(mTemplateUrlServiceObserverCaptor.capture());
     }
 
     @Test
