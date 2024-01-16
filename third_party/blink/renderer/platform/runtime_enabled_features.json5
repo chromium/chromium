@@ -2270,6 +2270,10 @@
       base_feature: "none",
     },
     {
+      name: "LockedMode",
+      status: "test",
+    },
+    {
       // Enable AnimationFrameTimingMonitor, which measures long animation
       // frames. Can be used for UKM or for the perofrmance API.
       name: "LongAnimationFrameMonitoring",

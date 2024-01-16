@@ -6537,6 +6537,7 @@ interface Navigator
     getter keyboard
     getter language
     getter languages
+    getter lockedMode
     getter locks
     getter login
     getter managed
