@@ -53,24 +53,39 @@ AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
       ui_manager_(std::move(ui_manager)) {}
 
 AsyncCheckTracker::~AsyncCheckTracker() {
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   std::move(pending_checker_));
-  }
+  DeletePendingCheckers(/*excluded_navigation_id=*/absl::nullopt);
 }
 
 void AsyncCheckTracker::TransferUrlChecker(
     std::unique_ptr<UrlCheckerOnSB> checker) {
-  pending_checker_ = std::move(checker);
-  pending_checker_->SwapCompleteCallback(base::BindRepeating(
-      &AsyncCheckTracker::PendingCheckerCompleted, GetWeakPtr()));
+  absl::optional<int64_t> navigation_id = checker->navigation_id();
+  CHECK(navigation_id.has_value());
+  int64_t id = navigation_id.value();
+  // If there is an old checker with the same navigation_id, we should delete
+  // the old one since the navigation only holds one url_loader and it has
+  // decided to delete the old one.
+  MaybeDeleteChecker(id);
+  pending_checkers_[id] = std::move(checker);
+  pending_checkers_[id]->SwapCompleteCallback(base::BindRepeating(
+      &AsyncCheckTracker::PendingCheckerCompleted, GetWeakPtr(), id));
 }
 
 void AsyncCheckTracker::PendingCheckerCompleted(
+    int64_t navigation_id,
     UrlCheckerOnSB::OnCompleteCheckResult result) {
+  if (!base::Contains(pending_checkers_, navigation_id)) {
+    return;
+  }
   if (result.has_post_commit_interstitial_skipped) {
     CHECK(!result.proceed);
     show_interstitial_after_finish_navigation_ = true;
+  }
+  if (!result.proceed) {
+    // No need to keep the checker around if proceed is false. However, we
+    // cannot delete the checker if proceed is true, because
+    // PendingCheckerCompleted may be called multiple times during server
+    // redirects.
+    MaybeDeleteChecker(navigation_id);
   }
 }
 
@@ -88,11 +103,18 @@ void AsyncCheckTracker::DidStartNavigation(content::NavigationHandle* handle) {
 }
 
 void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
-  pending_navigation_ids_.erase(handle->GetNavigationId());
+  int64_t navigation_id = handle->GetNavigationId();
+  pending_navigation_ids_.erase(navigation_id);
+  // TODO(crbug.com/1501194): Add histograms to track the size of
+  // pending_navigation_ids_ and pending_checkers_.
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument() ||
       !handle->HasCommitted()) {
     return;
   }
+
+  // If a new main page has committed, remove other checkers because we have
+  // navigated away.
+  DeletePendingCheckers(/*excluded_navigation_id=*/navigation_id);
 
   if (!show_interstitial_after_finish_navigation_) {
     return;
@@ -123,8 +145,39 @@ void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
   ui_manager_->DisplayBlockingPage(resource);
 }
 
-bool AsyncCheckTracker::HasPendingCheckerForTesting() {
-  return !!pending_checker_;
+void AsyncCheckTracker::MaybeDeleteChecker(int64_t navigation_id) {
+  if (!base::Contains(pending_checkers_, navigation_id)) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+    pending_checkers_[navigation_id].reset();
+  } else {
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, std::move(pending_checkers_[navigation_id]));
+  }
+  pending_checkers_.erase(navigation_id);
+}
+
+void AsyncCheckTracker::DeletePendingCheckers(
+    absl::optional<int64_t> excluded_navigation_id) {
+  for (auto it = pending_checkers_.begin(); it != pending_checkers_.end();) {
+    if (excluded_navigation_id.has_value() &&
+        it->first == excluded_navigation_id.value()) {
+      it++;
+      continue;
+    }
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      it->second.reset();
+    } else {
+      content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                     std::move(it->second));
+    }
+    it = pending_checkers_.erase(it);
+  }
+}
+
+size_t AsyncCheckTracker::PendingCheckersSizeForTesting() {
+  return pending_checkers_.size();
 }
 
 base::WeakPtr<AsyncCheckTracker> AsyncCheckTracker::GetWeakPtr() {

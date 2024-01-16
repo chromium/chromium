@@ -107,6 +107,8 @@ class UrlCheckerOnSB final {
   void SetUrlCheckerForTesting(
       std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker);
 
+  absl::optional<int64_t> navigation_id() { return navigation_id_; }
+
   bool IsRealTimeCheckForTesting();
 
   base::WeakPtr<UrlCheckerOnSB> AsWeakPtr() {

@@ -27,9 +27,8 @@ class BaseUIManager;
 // WillProcessResponse, SafeBrowsingNavigationThrottle will trigger the warning.
 // If the check is completed after DidFinishNavigation,
 // BaseUIManager::DisplayBlockingPage will trigger the warning.
-// * Track and provide the status of async `UrlCheckerOnSB`.
-// This class should only be called on the UI thread.
-// TODO(crbug.com/1501194): Implement this class.
+// * Track and provide the status of navigation that is associated with
+// UnsafeResource. This class should only be called on the UI thread.
 class AsyncCheckTracker
     : public content::WebContentsUserData<AsyncCheckTracker>,
       public content::WebContentsObserver {
@@ -60,7 +59,7 @@ class AsyncCheckTracker
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
-  bool HasPendingCheckerForTesting();
+  size_t PendingCheckersSizeForTesting();
 
   base::WeakPtr<AsyncCheckTracker> GetWeakPtr();
 
@@ -73,14 +72,23 @@ class AsyncCheckTracker
                     scoped_refptr<BaseUIManager> ui_manager);
 
   // Called by `UrlCheckerOnSB`, when the check completes.
-  void PendingCheckerCompleted(UrlCheckerOnSB::OnCompleteCheckResult result);
+  void PendingCheckerCompleted(int64_t navigation_id,
+                               UrlCheckerOnSB::OnCompleteCheckResult result);
+
+  // Deletes the pending checker in `pending_checkers_` that is keyed by
+  // `navigation_id`. Does nothing if `navigation_id` is not found.
+  void MaybeDeleteChecker(int64_t navigation_id);
+
+  // Deletes all pending checkers in `pending_checkers_` except the checker that
+  // is keyed by `excluded_navigation_id`.
+  void DeletePendingCheckers(absl::optional<int64_t> excluded_navigation_id);
 
   // Used to display a warning.
   scoped_refptr<BaseUIManager> ui_manager_;
 
-  // Pending Safe Browsing checks on the current page.
-  // TODO(crbug.com/1501194): Support holding multiple checkers.
-  std::unique_ptr<UrlCheckerOnSB> pending_checker_;
+  // Pending Safe Browsing checkers on the current page, keyed by the
+  // navigation_id.
+  base::flat_map<int64_t, std::unique_ptr<UrlCheckerOnSB>> pending_checkers_;
 
   // Set to true if interstitial should be shown after DidFinishNavigation is
   // called. Reset to false after interstitial is triggered.

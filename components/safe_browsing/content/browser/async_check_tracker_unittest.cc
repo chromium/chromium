@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_on_sb.h"
@@ -48,16 +50,28 @@ class MockUIManager : public BaseUIManager {
 
 }  // namespace
 
-class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
+class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness,
+                              public testing::WithParamInterface<bool> {
  protected:
-  AsyncCheckTrackerTest() {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingAsyncRealTimeCheck);
+  AsyncCheckTrackerTest()
+      : RenderViewHostTestHarness(
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+    bool sb_on_ui_thread_enabled = GetParam();
+    if (sb_on_ui_thread_enabled) {
+      feature_list_.InitWithFeatures(
+          {kSafeBrowsingAsyncRealTimeCheck, kSafeBrowsingOnUIThread}, {});
+    } else {
+      feature_list_.InitWithFeatures({kSafeBrowsingAsyncRealTimeCheck},
+                                     {kSafeBrowsingOnUIThread});
+    }
   }
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
     url_ = GURL("https://example.com/");
+    EXPECT_CALL(mock_web_contents_getter_, Run())
+        .WillRepeatedly(testing::Return(nullptr));
     ui_manager_ = base::MakeRefCounted<MockUIManager>();
     tracker_ = AsyncCheckTracker::GetOrCreateForWebContents(web_contents(),
                                                             ui_manager_.get());
@@ -68,13 +82,14 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void CallDidFinishNavigation(bool has_committed) {
-    content::MockNavigationHandle handle(url_, main_rfh());
+  void CallDidFinishNavigation(content::MockNavigationHandle& handle,
+                               bool has_committed) {
     handle.set_has_committed(has_committed);
     tracker_->DidFinishNavigation(&handle);
   }
 
-  void CallPendingCheckerCompleted(bool proceed,
+  void CallPendingCheckerCompleted(int64_t navigation_id,
+                                   bool proceed,
                                    bool has_post_commit_interstitial_skipped) {
     if (!proceed) {
       // This mocks how BaseUIManager caches unsafe resource if
@@ -88,49 +103,93 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
         proceed, /*showed_interstitial=*/true,
         has_post_commit_interstitial_skipped,
         SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck);
-    tracker_->PendingCheckerCompleted(result);
+    tracker_->PendingCheckerCompleted(navigation_id, result);
+  }
+
+  void CallTransferUrlChecker(int64_t navigation_id) {
+    auto checker = std::make_unique<UrlCheckerOnSB>(
+        /*delegate_getter=*/base::NullCallback(), /*frame_tree_node_id=*/-1,
+        navigation_id, mock_web_contents_getter_.Get(),
+        /*complete_callback=*/base::NullCallback(),
+        /*url_real_time_lookup_enabled=*/false,
+        /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
+        /*can_check_high_confidence_allowlist=*/true,
+        /*url_lookup_service_metric_suffix=*/"",
+        /*url_lookup_service=*/nullptr,
+        /*hash_realtime_service=*/nullptr,
+        /*hash_realtime_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
+    tracker_->TransferUrlChecker(std::move(checker));
   }
 
   base::test::ScopedFeatureList feature_list_;
   GURL url_;
+  base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
+      mock_web_contents_getter_;
   scoped_refptr<MockUIManager> ui_manager_;
   raw_ptr<AsyncCheckTracker> tracker_;
 };
 
-TEST_F(AsyncCheckTrackerTest,
+INSTANTIATE_TEST_SUITE_P(SafeBrowsingOnUIThreadEnabled,
+                         AsyncCheckTrackerTest,
+                         testing::Bool());
+
+TEST_P(AsyncCheckTrackerTest,
+       DisplayBlockingPageNotCalled_PendingCheckNotFound) {
+  content::MockNavigationHandle handle(url_, main_rfh());
+  // This can happen when the complete callback is scheduled before the checker
+  // is scheduled to be deleted on the SB thread. Mock this scenario by not
+  // calling CallTransferUrlChecker.
+  CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
+                              /*has_post_commit_interstitial_skipped=*/true);
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
+  EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
+}
+
+TEST_P(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_PendingCheckNotCompleted) {
-  CallDidFinishNavigation(/*has_committed=*/true);
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallTransferUrlChecker(handle.GetNavigationId());
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
 
-TEST_F(AsyncCheckTrackerTest,
+TEST_P(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_PendingCheckProceed) {
-  CallPendingCheckerCompleted(/*proceed=*/true,
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallTransferUrlChecker(handle.GetNavigationId());
+  CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/true,
                               /*has_post_commit_interstitial_skipped=*/false);
-  CallDidFinishNavigation(/*has_committed=*/true);
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
 
-TEST_F(AsyncCheckTrackerTest,
+TEST_P(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_PostCommitInterstitialNotSkipped) {
-  CallPendingCheckerCompleted(/*proceed=*/false,
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallTransferUrlChecker(handle.GetNavigationId());
+  CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
                               /*has_post_commit_interstitial_skipped=*/false);
-  CallDidFinishNavigation(/*has_committed=*/true);
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
 
-TEST_F(AsyncCheckTrackerTest,
+TEST_P(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_NavigationNotCommitted) {
-  CallPendingCheckerCompleted(/*proceed=*/false,
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallTransferUrlChecker(handle.GetNavigationId());
+  CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
                               /*has_post_commit_interstitial_skipped=*/true);
-  CallDidFinishNavigation(/*has_committed=*/false);
+  CallDidFinishNavigation(handle, /*has_committed=*/false);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
 
-TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
-  CallPendingCheckerCompleted(/*proceed=*/false,
+TEST_P(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
+  content::MockNavigationHandle handle(url_, main_rfh());
+  CallTransferUrlChecker(handle.GetNavigationId());
+  CallPendingCheckerCompleted(handle.GetNavigationId(), /*proceed=*/false,
                               /*has_post_commit_interstitial_skipped=*/true);
-  CallDidFinishNavigation(/*has_committed=*/true);
+  CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
   UnsafeResource resource = ui_manager_->GetDisplayedResource();
   EXPECT_EQ(resource.threat_type, SB_THREAT_TYPE_URL_PHISHING);
@@ -139,7 +198,7 @@ TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
 }
 
-TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
+TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
@@ -155,7 +214,7 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 }
 
-TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
+TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
@@ -168,6 +227,73 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   // UnsafeResource::IsMainPageLoadPendingWithSyncCheck.
   resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
+}
+
+TEST_P(AsyncCheckTrackerTest,
+       PendingCheckersManagement_TransferWithSameNavigationId) {
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 0u);
+  CallTransferUrlChecker(/*navigation_id=*/1);
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
+  CallTransferUrlChecker(/*navigation_id=*/2);
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 2u);
+  // Transfer a checker with the same navigation id. This scenario can be
+  // triggered by HTTP client hints.
+  CallTransferUrlChecker(/*navigation_id=*/2);
+  // The previous checker should be deleted. The deletion should happen on the
+  // SB thread.
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 2u);
+}
+
+TEST_P(AsyncCheckTrackerTest,
+       PendingCheckersManagement_DeleteOldCheckersAfterDidFinishNavigation) {
+  content::MockNavigationHandle handle_1(url_, main_rfh());
+  content::MockNavigationHandle handle_2(url_, main_rfh());
+  content::MockNavigationHandle handle_3(url_, main_rfh());
+  CallTransferUrlChecker(handle_1.GetNavigationId());
+  CallTransferUrlChecker(handle_2.GetNavigationId());
+  CallTransferUrlChecker(handle_3.GetNavigationId());
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 3u);
+
+  // Only the third navigation is committed successfully.
+  CallDidFinishNavigation(handle_1, /*has_committed=*/false);
+  CallDidFinishNavigation(handle_2, /*has_committed=*/false);
+  CallDidFinishNavigation(handle_3, /*has_committed=*/true);
+  // Only keep the checker for the committed navigation.
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
+
+  CallPendingCheckerCompleted(handle_3.GetNavigationId(), /*proceed=*/false,
+                              /*has_post_commit_interstitial_skipped=*/true);
+  // The remaining checker is deleted because proceed is false.
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 0u);
+}
+
+TEST_P(AsyncCheckTrackerTest,
+       PendingCheckersManagement_CheckerNotDeletedIfProceedTrue) {
+  CallTransferUrlChecker(/*navigation_id=*/1);
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
+
+  CallPendingCheckerCompleted(/*navigation_id=*/1, /*proceed=*/true,
+                              /*has_post_commit_interstitial_skipped=*/false);
+  // If proceed is true, the checker should be kept alive to receive upcoming
+  // result from the checker. This scenario can happen if there are server
+  // redirects.
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 1u);
+
+  CallPendingCheckerCompleted(/*navigation_id=*/1, /*proceed=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 0u);
+}
+
+TEST_P(AsyncCheckTrackerTest,
+       PendingCheckersManagement_DestructWithPendingCheckers) {
+  CallTransferUrlChecker(/*navigation_id=*/1);
+  CallTransferUrlChecker(/*navigation_id=*/2);
+  EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 2u);
+
+  tracker_ = nullptr;
+  DeleteContents();
+  // Tracker is deleted together with the WebContents. pending checkers that the
+  // tracker currently owns should also be deleted on the SB thread.
 }
 
 }  // namespace safe_browsing

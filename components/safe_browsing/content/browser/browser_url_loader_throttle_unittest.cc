@@ -350,7 +350,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               UnsafeResource::kNoRenderProcessId,
               /*render_frame_token=*/std::nullopt,
               UnsafeResource::kNoFrameTreeNodeId,
-              /*navigation_id=*/absl::nullopt, url_real_time_lookup_enabled,
+              /*navigation_id=*/0, url_real_time_lookup_enabled,
               /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
               /*can_check_high_confidence_allowlist=*/true,
               /*url_lookup_service_metric_suffix=*/"",
@@ -884,7 +884,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyDefer_AsyncNotDeferred) {
   defer = CallWillProcessResponse();
   EXPECT_FALSE(defer);
   // Async check is transferred to the tracker.
-  EXPECT_TRUE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
 
   // Async check completed afterwards doesn't cause a crash.
   EXPECT_FALSE(async_url_checker_.WasInvalidated());
@@ -906,11 +906,11 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyDefer_SyncResumed) {
   EXPECT_TRUE(defer);
   // Async check is not yet transferred to the tracker because sync check has
   // not completed.
-  EXPECT_FALSE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 
   sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
 }
 
 // Async check completed -> WillProcessResponse called -> Sync check completed.
@@ -935,7 +935,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
 
   EXPECT_TRUE(throttle_delegate_->IsResumed());
   // Async check already completed, so it is not transferred to the tracker.
-  EXPECT_FALSE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
 // URL redirected -> Sync check completed -> WillProcessResponse called.
@@ -958,7 +958,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
 
   bool defer = CallWillProcessResponse();
   EXPECT_FALSE(defer);
-  EXPECT_TRUE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
 }
 
 // Async check completed -> Sync check completed -> WillProcessResponse called.
@@ -979,7 +979,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
 
   bool defer = CallWillProcessResponse();
   EXPECT_FALSE(defer);
-  EXPECT_FALSE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
 // WillProcessResponse called -> Async check completed -> Sync check completed.
@@ -1023,7 +1023,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   // Although async check has not completed, it should be deleted because the
   // loader is already blocked by sync check.
   EXPECT_TRUE(async_url_checker_.WasInvalidated());
-  EXPECT_FALSE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
@@ -1049,7 +1049,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   // Although async check has not completed, it should be deleted because the
   // loader is already blocked by sync check.
   EXPECT_TRUE(async_url_checker_.WasInvalidated());
-  EXPECT_FALSE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
@@ -1069,7 +1069,7 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
 
   bool defer = CallWillProcessResponse();
   EXPECT_TRUE(defer);
-  EXPECT_FALSE(async_check_tracker_->HasPendingCheckerForTesting());
+  EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
 class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest

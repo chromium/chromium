@@ -87,6 +87,10 @@ UrlCheckerOnSB::UrlCheckerOnSB(
 }
 
 UrlCheckerOnSB::~UrlCheckerOnSB() {
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
   base::UmaHistogramMediumTimes(
       "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
       base::TimeTicks::Now() - creation_time_);
