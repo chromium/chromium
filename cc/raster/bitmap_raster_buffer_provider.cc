@@ -6,16 +6,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-#include <algorithm>
-#include <limits>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/process/memory.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -26,9 +20,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 namespace {
