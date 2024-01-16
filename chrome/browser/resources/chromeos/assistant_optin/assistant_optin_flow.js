@@ -49,7 +49,7 @@ const AssistantOptInFlowBase = mixinBehaviors(
 /**
  * @polymer
  */
-class AssistantOptInFlow extends AssistantOptInFlowBase {
+export class AssistantOptInFlow extends AssistantOptInFlowBase {
   static get is() {
     return 'assistant-optin-flow-element';
   }

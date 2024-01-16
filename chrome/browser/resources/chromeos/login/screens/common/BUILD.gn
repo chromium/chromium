@@ -26,7 +26,6 @@ js_type_check("closure_compile_local") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    #":assistant_optin",
     ":consolidated_consent",
     ":error_message",
     ":gaia_signin",
@@ -53,12 +52,6 @@ js_type_check("closure_compile_multidevice_setup") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("assistant_optin") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/assistant_optin.js" ]
-  deps = []
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("consolidated_consent") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.js" ]
