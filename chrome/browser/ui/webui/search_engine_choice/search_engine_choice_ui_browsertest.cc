@@ -58,7 +58,13 @@ class MockSearchEngineChoiceDialogService
         // engines.
         choice.prepopulate_id = i + 1;
         choice.SetShortName(kShortName);
-        choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
+        if (i % 2 == 0) {
+          // The bing icon should be bundled with Chrome.
+          choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
+        } else {
+          // Uses the default generic favicon.
+          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
+        }
         choices.push_back(std::make_unique<TemplateURL>(choice));
       }
       return choices;
