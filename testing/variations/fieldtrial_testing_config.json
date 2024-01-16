@@ -2684,6 +2684,22 @@
             ]
         }
     ],
+    "BorealisZinkGlDriver": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BorealisZinkGlDriver"
+                    ]
+                }
+            ]
+        }
+    ],
     "BottomOmniboxPhase2IOS": [
         {
             "platforms": [
