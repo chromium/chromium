@@ -98,6 +98,9 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
   }
 }
 void PlusAddressCreationControllerDesktop::OnCanceled() {
+  // TODO(b/319874782) Prevent over-recording cancel metric when error occur
+  // as cancel is the only available option. Consider replacing with no-op or
+  // classified event as error (or cancel after error).
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
   RecordModalShownDuration(
@@ -115,10 +118,15 @@ PlusAddressCreationControllerDesktop::get_view_for_testing() {
 
 void PlusAddressCreationControllerDesktop::RecordModalShownDuration(
     const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
-  CHECK(modal_shown_time_.has_value());
-  PlusAddressMetrics::RecordModalShownDuration(
-      status, clock_->Now() - modal_shown_time_.value());
-  modal_shown_time_.reset();
+  // Only record modal shown duration once on the first user action.
+  // TODO(b/319874782) Record error status if error occurs. Currently, if
+  // `ConfirmPlusAddress` fails, modal will not be dismissed and subsequent
+  // action to close or cancel modal is not recorded on the metrics.
+  if (modal_shown_time_.has_value()) {
+    PlusAddressMetrics::RecordModalShownDuration(
+        status, clock_->Now() - modal_shown_time_.value());
+    modal_shown_time_.reset();
+  }
 }
 
 void PlusAddressCreationControllerDesktop::set_suppress_ui_for_testing(

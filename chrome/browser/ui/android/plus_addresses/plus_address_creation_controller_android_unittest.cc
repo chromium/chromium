@@ -60,6 +60,12 @@ class FakePlusAddressService : public PlusAddressService {
   void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
                           PlusAddressRequestCallback on_completed) override {
+    if (should_fail_to_confirm_) {
+      std::move(on_completed)
+          .Run(base::unexpected(PlusAddressRequestError(
+              PlusAddressRequestErrorType::kNetworkError)));
+      return;
+    }
     is_confirmed_ = true;
     PlusProfile profile({.facet = facet_,
                          .plus_address = plus_address,
@@ -79,10 +85,16 @@ class FakePlusAddressService : public PlusAddressService {
     on_confirmed = std::move(callback);
   }
 
+  // Used to test scenarios where error occurs on `ConfirmPlusAddress`.
+  void set_should_fail_to_confirm(bool status) {
+    should_fail_to_confirm_ = status;
+  }
+
   std::optional<PlusAddressRequestCallback> on_confirmed;
   std::string facet_ = "facet.bar";
   bool is_confirmed_ = false;
   std::string primary_email_address_ = "primary@plus.plus";
+  bool should_fail_to_confirm_ = false;
 
   std::optional<std::string> GetPrimaryEmail() override {
     // Ensure the value is present without requiring identity setup.
@@ -159,6 +171,53 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, DirectCallback) {
                        1),
           base::Bucket(
               PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          PlusAddressMetrics::PlusAddressModalCompletionStatus::
+              kModalConfirmed),
+      duration_, 1);
+}
+
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+  controller->SetClockForTesting(&test_clock_);
+  base::test::TestFuture<const std::string&> future;
+  test_clock_.SetNow(start_time_);
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
+
+  fake_plus_address_service_->set_should_fail_to_confirm(true);
+
+  test_clock_.SetNow(start_time_ + duration_);
+
+  controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
+
+  // When `ConfirmPlusAddress` fails, `OnCanceled` may be called after
+  // `OnConfirmed`.
+  controller->OnCanceled();
+
+  // Ensure that plus address can be canceled after erroneous confirm event and
+  // metric is recorded.
+  // TODO(b/319874782) Verify specific error event metric instead of
+  // `kModalConfirmed`.
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
+                       1),
+          base::Bucket(
+              PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed, 1),
+          base::Bucket(
+              PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled, 1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
           PlusAddressMetrics::PlusAddressModalCompletionStatus::
