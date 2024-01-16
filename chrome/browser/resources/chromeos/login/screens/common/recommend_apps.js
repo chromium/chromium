@@ -59,7 +59,6 @@ const RecommendAppsElementBase = mixinBehaviors(
  * @typedef {{
  *   appsDialog:  OobeAdaptiveDialog,
  *   appView:  WebView,
- *   appsList: OobeAppsList,
  * }}
  */
 RecommendAppsElementBase.$;
@@ -199,6 +198,7 @@ class RecommendAppsElement extends RecommendAppsElementBase {
     assert(this.appsSelected_ > 0);
     // Can't use this.$.appsList here as the element is in a <dom-if>.
     const appsList = this.shadowRoot.querySelector('#appsList');
+    /** @suppress {checkTypes} */
     const packageNames = appsList.getSelectedApps();
     this.userActed(['recommendAppsInstall', packageNames]);
   }

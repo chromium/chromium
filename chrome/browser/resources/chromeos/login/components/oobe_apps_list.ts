@@ -8,33 +8,30 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/ash/common/cr_scrollable_behavior.js';
 import '//resources/cr_elements/icons.html.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
 
+import {getTemplate} from './oobe_apps_list.html.js';
 
 const MAX_IMG_LOADING_TIME_SEC = 7;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- */
-const OobeAppsListBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
+const OobeAppsListBase = mixinBehaviors([OobeI18nBehavior],
+    PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface,
+    };
 
-/**
- * @polymer
- */
 export class OobeAppsList extends OobeAppsListBase {
   static get is() {
-    return 'oobe-apps-list';
+    return 'oobe-apps-list' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Apps list.
@@ -42,7 +39,7 @@ export class OobeAppsList extends OobeAppsListBase {
       appList: {
         type: Array,
         value: [],
-        observer: 'onAppListSet_',
+        observer: 'onAppListSet',
       },
 
       appsSelected: {
@@ -53,51 +50,52 @@ export class OobeAppsList extends OobeAppsListBase {
     };
   }
 
+  appList: any[];
+  appsSelected: number;
+  private loadingTimer: number|undefined;
+  allSelected: boolean;
+  loadedImagesCount: number;
+
   constructor() {
     super();
     /**
      * Timer id of pending load.
-     * @type {number|undefined}
-     * @private
      */
-    this.loadingTimer_ = undefined;
-    this.allSelected_ = false;
-    this.loadedImagesCount_ = 0;
+    this.loadingTimer = undefined;
+    this.allSelected = false;
+    this.loadedImagesCount = 0;
   }
 
   /**
    * Clears loading timer.
-   * @private
    */
-  clearLoadingTimer_() {
-    if (this.loadingTimer_) {
-      clearTimeout(this.loadingTimer_);
-      this.loadingTimer_ = undefined;
+  private clearloadingTimer(): void {
+    if (this.loadingTimer) {
+      clearTimeout(this.loadingTimer);
+      this.loadingTimer = undefined;
     }
   }
 
   /**
    * Called when app list is changed. We assume that non-empty list is set only
    * once.
-   * @private
    */
-  onAppListSet_() {
+  private onAppListSet(): void {
     if (this.appList.length === 0) {
       return;
     }
-    this.clearLoadingTimer_();
+    this.clearloadingTimer();
     // Wait a few seconds before at least some icons are downloaded. If it
     // happens faster we will exit waiting timer.
-    this.loadingTimer_ = setTimeout(
-        this.onLoadingTimeOut_.bind(this), MAX_IMG_LOADING_TIME_SEC * 1000);
+    this.loadingTimer = setTimeout(
+        this.onLoadingTimeOut.bind(this), MAX_IMG_LOADING_TIME_SEC * 1000);
   }
 
   /**
    * Handler for icons loading timeout.
-   * @private
    */
-  onLoadingTimeOut_() {
-    this.loadingTimer_ = undefined;
+  private onLoadingTimeOut(): void {
+    this.loadingTimer = undefined;
     this.dispatchEvent(
         new CustomEvent('apps-list-loaded', {bubbles: true, composed: true}));
   }
@@ -105,12 +103,11 @@ export class OobeAppsList extends OobeAppsListBase {
   /**
    * Wrap the icon as a image into a html snippet.
    *
-   * @param {string} iconUri the icon uri to be wrapped.
-   * @return {string} wrapped html snippet.
+   * @param iconUri the icon uri to be wrapped.
+   * @return wrapped html snippet.
    *
-   * @private
    */
-  getWrappedIcon_(iconUri) {
+  private getWrappedIcon(iconUri: string): string {
     return ('data:text/html;charset=utf-8,' + encodeURIComponent(String.raw`
     <html>
       <style>
@@ -128,23 +125,21 @@ export class OobeAppsList extends OobeAppsListBase {
 
   /**
    * After any change in selection update current counter.
-   * @private
    */
-  updateCount_() {
+  private updateCount(): void {
     let appsSelected = 0;
     this.appList.forEach((app) => {
       appsSelected += app.checked;
     });
     this.appsSelected = appsSelected;
-    this.allSelected_ = this.appsSelected === this.appList.length;
+    this.allSelected = this.appsSelected === this.appList.length;
   }
 
   /**
    * Set all checkboxes to a new value.
-   * @param {boolean} value new state for all checkboxes
-   * @private
+   * @param value new state for all checkboxes
    */
-  updateSelectionTo_(value) {
+  private updateSelectionTo(value: boolean): void {
     this.appList.forEach((_, index) => {
       this.set('appList.' + index + '.checked', value);
     });
@@ -157,30 +152,28 @@ export class OobeAppsList extends OobeAppsListBase {
    *  3) nothing is selected.
    * Clicking the button in states 1 and 2 leads to a state 3; from state 3 to
    * state 1.
-   * @private
    */
-  updateSelection_() {
-    if (this.allSelected_ && this.appsSelected === 0) {
-      this.updateSelectionTo_(true);
+  private updateSelection(): void {
+    if (this.allSelected && this.appsSelected === 0) {
+      this.updateSelectionTo(true);
     } else {
-      this.updateSelectionTo_(false);
+      this.updateSelectionTo(false);
     }
     // When there are selected apps clicking on this checkbox should unselect
     // them. Keep checkbox unchecked.
-    if (this.allSelected_ && this.appsSelected > 0) {
-      this.allSelected_ = false;
+    if (this.allSelected && this.appsSelected > 0) {
+      this.allSelected = false;
     }
-    this.updateCount_();
+    this.updateCount();
   }
 
   /**
    * Called when single webview loads app icon.
-   * @private
    */
-  onImageLoaded_() {
-    this.loadedImagesCount_ += 1;
-    if (this.loadedImagesCount_ === this.appList.length) {
-      this.clearLoadingTimer_();
+  private onImageLoaded(): void {
+    this.loadedImagesCount += 1;
+    if (this.loadedImagesCount === this.appList.length) {
+      this.clearloadingTimer();
 
       this.dispatchEvent(
           new CustomEvent('apps-list-loaded', {bubbles: true, composed: true}));
@@ -189,10 +182,9 @@ export class OobeAppsList extends OobeAppsListBase {
 
   /**
    * Return a list of selected apps.
-   * @returns {!Array<String>}
    */
-  getSelectedApps() {
-    const packageNames = [];
+  getSelectedApps(): string[] {
+    const packageNames: string[] = [];
     this.appList.forEach((app) => {
       if (app.checked) {
         packageNames.push(app.package_name);
@@ -201,14 +193,30 @@ export class OobeAppsList extends OobeAppsListBase {
     return packageNames;
   }
 
-  unselectSymbolHidden_(appsSelected) {
-    if (appsSelected > 0 && appsSelected < this.appList.length) {
-      this.$.selectAll.classList.add('some-selected');
-      return false;
-    } else {
-      this.$.selectAll.classList.remove('some-selected');
+  unselectSymbolHidden(appsSelected: number): boolean {
+    // TOOD(b/320253448): Investigate why shadowRoot is null during OOBE
+    // initialization.
+    if (this.shadowRoot === null) {
       return true;
     }
+    const selectAll = this.shadowRoot.getElementById(
+      'selectAll')!;
+    if (selectAll === null) {
+      return true;
+    }
+    if (appsSelected > 0 && appsSelected < this.appList.length) {
+      selectAll.classList.add('some-selected');
+      return false;
+    } else {
+      selectAll.classList.remove('some-selected');
+      return true;
+    }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeAppsList.is]: OobeAppsList;
   }
 }
 

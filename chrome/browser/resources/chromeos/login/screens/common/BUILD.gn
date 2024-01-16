@@ -197,7 +197,6 @@ js_library("quick_start") {
 js_library("recommend_apps") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.js" ]
   deps = [
-    "../../components:oobe_apps_list",
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
