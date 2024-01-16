@@ -750,6 +750,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/omnibox/adder.tflite",
     "//components/test/data/omnibox/in_memory_url_index_test.sql",
     "//components/test/data/omnibox/in_memory_url_index_test_limited.sql",
+    "//components/test/data/omnibox/on_device_head_test_deep_model.bin",
     "//components/test/data/omnibox/on_device_head_test_model_index.bin",
     "//components/test/data/omnibox/test_tail_model.tflite",
     "//components/test/data/omnibox/vocab_test.txt",

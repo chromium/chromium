@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 
 namespace {
 // The offset of the root node for the tree. The first two bytes is reserved to
@@ -31,7 +32,7 @@ struct MatchCandidate {
   bool is_complete_suggestion;
 
   // If is_complete_suggestion is true, this is the score for the suggestion;
-  // Otherwise it will be set as max_score_as_root of the node.
+  // Otherwise it will be set as the maximum score for its sub tree.
   uint32_t score;
 
   // The address of the node in the model file. It is not required if
@@ -293,10 +294,20 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
       candidate->score = score_or_address;
       candidate->is_complete_suggestion = true;
     } else {
-      // For non leaf child, score has been set as the max_score_as_root
-      // found at the beginning of the current node.
       candidate->address = score_or_address;
       candidate->is_complete_suggestion = false;
+
+      // TODO(crbug.com/1506547): remove this guard after evaluating the fix.
+      if (OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix()) {
+        MatchCandidate unused_candidate;
+        uint32_t address = params->GetModelFileStream()->tellg();
+        uint32_t max_score = ReadMaxScoreAsRoot(
+            params, score_or_address, &unused_candidate, &is_successful);
+        params->GetModelFileStream()->seekg(address);
+        if (is_successful) {
+          candidate->score = max_score;
+        }
+      }
     }
     delete[] last_block;
   }

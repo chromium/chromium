@@ -8,7 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -151,4 +153,56 @@ TEST_F(OnDeviceHeadModelTest, NonEnglishLanguage) {
   suggestions =
       OnDeviceHeadModel::GetSuggestionsForPrefix(model_filename_, 4, "пере");
   EXPECT_THAT(suggestions, ElementsAre(Pair("переводчик", 32759)));
+}
+
+// Test for https://crbug.com/1506547. Similar to
+// OnDeviceHeadModelTest.GetSuggestions but search results are collected from
+// deeper and wider subtree. Closer to what is done in real model.
+TEST(OnDeviceHeadDeepModelTest, SearchSuggestions) {
+  // Test model contents.
+  // ----------------------
+  // Query            Score
+  // ----------------------
+  // ping 11           1008
+  // pong 11           1007
+  // ping 12           1006
+  // pong 12           1005
+  // ping 21           1004
+  // pong 21           1003
+  // ping 22           1002
+  // pong 22           1001
+
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
+  file_path = file_path.AppendASCII(
+      "components/test/data/omnibox/on_device_head_test_deep_model.bin");
+  ASSERT_TRUE(base::PathExists(file_path));
+  std::string model_filename;
+#if BUILDFLAG(IS_WIN)
+  model_filename = base::WideToUTF8(file_path.value());
+#else
+  model_filename = file_path.value();
+#endif
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOnDeviceHeadProviderNonIncognito,
+      {
+          {OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix, "true"},
+      });
+
+  std::vector<std::pair<std::string, uint32_t>> reference_suggestions{
+      {"ping 11", 1008}, {"pong 11", 1007}, {"ping 12", 1006},
+      {"pong 12", 1005}, {"ping 21", 1004}, {"pong 21", 1003},
+      {"ping 22", 1002}, {"pong 22", 1001},
+  };
+
+  // Check that for any number of requested matches OnDeviceHeadModel returns
+  // top entries.
+  while (!reference_suggestions.empty()) {
+    auto suggestions = OnDeviceHeadModel::GetSuggestionsForPrefix(
+        model_filename, reference_suggestions.size(), "p");
+    EXPECT_EQ(suggestions, reference_suggestions);
+    reference_suggestions.pop_back();
+  }
 }

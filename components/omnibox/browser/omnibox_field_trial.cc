@@ -596,6 +596,17 @@ bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
                                                  /*default_value=*/false);
 }
 
+bool OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             omnibox::kOnDeviceHeadProviderNonIncognito,
+             OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
+             /*default_value=*/false) ||
+         base::GetFieldTrialParamByFeatureAsBool(
+             omnibox::kOnDeviceHeadProviderIncognito,
+             OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
+             /*default_value=*/false);
+}
+
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
     const std::string& locale) {
   if (IsKoreanLocale(locale) &&
@@ -785,6 +796,7 @@ const char OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam[] =
 
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";
+const char OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix[] = "SelectionFix";
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
