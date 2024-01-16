@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -139,6 +140,11 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
                                    views::MaximumFlexSizeRule::kPreferred));
 
   SetupFocus(this);
+
+  // TODO(yongshun): Remove this when the desk button is re-structured with the
+  // new specs.
+  views::FocusRing::Get(this)->SetHasFocusPredicate(base::BindRepeating(
+      [](const views::View* view) { return view->HasFocus(); }));
 
   // The previous desk button should always be on the left and the next desk
   // button on the right even in RTL mode to respect the direction of the desk
@@ -392,8 +398,19 @@ void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
       ->MaybeFocusOut(reverse);
 }
 
+// TODO(yongshun): Remove this when the desk button is re-structured with the
+// new specs.
+void DeskButton::OnViewFocused(views::View* observed_view) {
+  views::Button::OnViewFocused(observed_view);
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
+// TODO(yongshun): Remove this when the desk button is re-structured with the
+// new specs.
 void DeskButton::OnViewBlurred(views::View* observed_view) {
   MaybeContract();
+  views::Button::OnViewBlurred(observed_view);
+  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void DeskButton::OnShellDestroying() {
