@@ -16,11 +16,14 @@ This file cannot be upstreamed to WPT until:
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="resources/unload-utils.js"></script>
 <script>
   promise_test(async t => {
-    const gotMessages = waitChannelMessage('Done');
-    const url = 'resources/unload-on-prerender-main-frame-navigation.html';
+    const uid = token();
+    const gotMessages = waitChannelMessage('load another-page', uid);
+    const url = `resources/unload-on-prerender-main-frame-navigation.html?uid=${uid}`;
     window.open(url, '_blank', 'noopener');
     const result = await gotMessages;
 
@@ -38,7 +41,6 @@ This file cannot be upstreamed to WPT until:
       { message: 'visibilitychange main-frame' },
       { message: 'unload main-frame' },
       { message: 'load another-page' },
-      { message: 'Done' },
     ];
     let offset = 0;
     assert_less_than_equal(result.length, expected.length);

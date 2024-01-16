@@ -16,12 +16,14 @@ This file cannot be upstreamed to WPT until:
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="resources/unload-utils.js"></script>
 <script>
 promise_test(async t => {
-  const gotMessages = waitChannelMessage('Done');
-  const url =
-      'resources/unload-on-prerender-cross-origin-subframe-navigation.html';
+  const uid = token();
+  const gotMessages = waitChannelMessage('load cross-origin-frame', uid);
+  const url = `resources/unload-on-prerender-cross-origin-subframe-navigation.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
   const result = await gotMessages;
 
@@ -35,7 +37,6 @@ promise_test(async t => {
     'visibilitychange same-origin-frame',
     'unload same-origin-frame',
     'load cross-origin-frame',
-    'Done',
   ];
   assert_array_equals(result, expected, 'gotMessages');
 }, 'unload after activation on cross origin subframe navigation');
