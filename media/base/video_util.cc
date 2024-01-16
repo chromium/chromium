@@ -788,6 +788,11 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
                                       const gpu::Capabilities& caps) {
   DCHECK(ri);
 
+  // All platforms except android have shipped passthrough command decoder which
+  // supports it. On Android this code path should always use RasterDecoder
+  // which also supports this.
+  DUMP_WILL_BE_CHECK(caps.supports_yuv_to_rgb_conversion);
+
   bool result;
   if (gr_context &&
       !(caps.supports_yuv_to_rgb_conversion &&
