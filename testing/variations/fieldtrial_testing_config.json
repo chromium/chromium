@@ -11834,16 +11834,10 @@
             "experiments": [
                 {
                     "name": "AndroidExperiments",
-                    "params": {
-                        "QueryTilesShowAboveTrends": "true",
-                        "QueryTilesShowAsCarousel": "true"
-                    },
                     "enable_features": [
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxMaxURLMatches",
-                        "OmniboxQueryTilesInZPSOnNTP",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "QueryTiles"
+                        "OmniboxUIExperimentMaxAutocompleteMatches"
                     ]
                 }
             ]
@@ -12140,6 +12134,27 @@
                         "OmniboxGroupingFrameworkForZPS",
                         "OmniboxInspireMe",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxInspireMePhase2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledCarouselAboveTrends",
+                    "params": {
+                        "QueryTilesShowAboveTrends": "true",
+                        "QueryTilesShowAsCarousel": "true",
+                        "experiment_tag": "{maxLevels: 1, rankTiles: true}"
+                    },
+                    "enable_features": [
+                        "OmniboxQueryTilesInZPSOnNTP",
+                        "QueryTiles"
                     ]
                 }
             ]
