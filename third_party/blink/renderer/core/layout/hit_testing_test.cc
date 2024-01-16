@@ -3,17 +3,25 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+using HitNodeCb =
+    base::MockRepeatingCallback<ListBasedHitTestBehavior(const Node& node)>;
+using testing::_;
+using testing::Return;
 
 class HitTestingTest : public RenderingTest {
  protected:
@@ -31,6 +39,33 @@ class HitTestingTest : public RenderingTest {
       return PositionWithAffinity();
     return layout_object->PositionForPoint(hit_result.LocalPoint());
   }
+};
+
+// Helper class used by |HitNodeCb| to allow callers to stop hit testing at a
+// given node.
+class HitNodeCallbackStopper : public GarbageCollected<HitNodeCallbackStopper> {
+ public:
+  explicit HitNodeCallbackStopper(Node* stop_node) : stop_node_(stop_node) {}
+  HitNodeCallbackStopper(const HitNodeCallbackStopper&) = delete;
+  HitNodeCallbackStopper& operator=(const HitNodeCallbackStopper&) = delete;
+  ~HitNodeCallbackStopper() = default;
+
+  ListBasedHitTestBehavior StopAtNode(const Node& node) {
+    did_stop_hit_testing_ = false;
+    if (node == stop_node_) {
+      did_stop_hit_testing_ = true;
+      return ListBasedHitTestBehavior::kStopHitTesting;
+    }
+    return ListBasedHitTestBehavior::kContinueHitTesting;
+  }
+
+  bool DidStopHitTesting() { return did_stop_hit_testing_; }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(stop_node_); }
+
+ private:
+  Member<Node> stop_node_;
+  bool did_stop_hit_testing_ = false;
 };
 
 TEST_F(HitTestingTest, OcclusionHitTest) {
@@ -55,6 +90,79 @@ TEST_F(HitTestingTest, OcclusionHitTest) {
   UpdateAllLifecyclePhasesForTest();
   result = target->GetLayoutObject()->HitTestForOcclusion();
   EXPECT_EQ(result.InnerNode(), occluder);
+}
+
+TEST_F(HitTestingTest, HitTestWithCallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      width: 100px;
+      height: 100px;
+    }
+    </style>
+
+    <div id=target></div>
+    <div id=occluder_1></div>
+    <div id=occluder_2></div>
+    <div id=occluder_3></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  HitNodeCb hit_node_cb;
+
+  // Perform hit test without stopping, and verify that the result innernode is
+  // set to the target.
+  EXPECT_CALL(hit_node_cb, Run(_))
+      .WillRepeatedly(Return(ListBasedHitTestBehavior::kContinueHitTesting));
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  DCHECK(!frame->View()->NeedsLayout());
+  const PhysicalRect& hit_rect =
+      target->GetLayoutObject()->VisualRectInDocument();
+  HitTestRequest::HitTestRequestType hit_type =
+      HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+      HitTestRequest::kIgnoreClipping |
+      HitTestRequest::kIgnoreZeroOpacityObjects |
+      HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
+      HitTestRequest::kPenetratingList | HitTestRequest::kAvoidCache;
+  HitTestLocation location(hit_rect);
+  HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
+      location, hit_type, target->GetLayoutObject(), true, hit_node_cb.Get());
+
+  EXPECT_EQ(result.InnerNode(), target);
+
+  Element* occluder_1 =
+      GetDocument().getElementById(AtomicString("occluder_1"));
+  Element* occluder_2 =
+      GetDocument().getElementById(AtomicString("occluder_2"));
+  Element* occluder_3 =
+      GetDocument().getElementById(AtomicString("occluder_3"));
+
+  // Ensure that occluders intersect with the target.
+  const int div_height =
+      GetLayoutObjectByElementId("target")->StyleRef().UsedHeight().IntValue();
+  occluder_1->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-10px");
+  occluder_2->SetInlineStyleProperty(
+      CSSPropertyID::kMarginTop,
+      String::Format("%dpx", (-div_height * 1) - 10));
+  occluder_3->SetInlineStyleProperty(
+      CSSPropertyID::kMarginTop,
+      String::Format("%dpx", (-div_height * 2) - 10));
+  UpdateAllLifecyclePhasesForTest();
+
+  // Set up HitNodeCb helper, and the HitNodeCb expectations.
+  Node* stop_node = GetDocument().getElementById(AtomicString("occluder_2"));
+  HitNodeCallbackStopper hit_node_callback_stopper(stop_node);
+  EXPECT_CALL(hit_node_cb, Run(_))
+      .WillRepeatedly(testing::Invoke(&hit_node_callback_stopper,
+                                      &HitNodeCallbackStopper::StopAtNode));
+  EXPECT_FALSE(hit_node_callback_stopper.DidStopHitTesting());
+
+  // Perform hit test and verify that hit testing stops at the given node.
+  result = frame->GetEventHandler().HitTestResultAtLocation(
+      location, hit_type, target->GetLayoutObject(), true, hit_node_cb.Get());
+  EXPECT_TRUE(result.ListBasedTestResult().Contains(stop_node));
+  EXPECT_TRUE(hit_node_callback_stopper.DidStopHitTesting());
 }
 
 TEST_F(HitTestingTest, OcclusionHitTestWithClipPath) {

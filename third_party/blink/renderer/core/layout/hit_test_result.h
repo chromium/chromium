@@ -58,11 +58,6 @@ class PhysicalBoxFragment;
 class Scrollbar;
 struct PhysicalOffset;
 
-// List-based hit test testing can continue even after a hit has been found.
-// This is used to support fuzzy matching with rect-based hit tests as well as
-// penetrating tests which collect all nodes (see: HitTestRequest::RequestType).
-enum ListBasedHitTestBehavior { kContinueHitTesting, kStopHitTesting };
-
 class CORE_EXPORT HitTestResult {
   DISALLOW_NEW();
 

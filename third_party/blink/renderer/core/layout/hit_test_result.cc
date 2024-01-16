@@ -550,9 +550,13 @@ HitTestResult::AddNodeToListBasedTestResultInternal(
     return std::make_tuple(false, kContinueHitTesting);
 
   MutableListBasedTestResult().insert(node);
-
-  if (GetHitTestRequest().PenetratingList())
-    return std::make_tuple(false, kContinueHitTesting);
+  if (GetHitTestRequest().PenetratingList()) {
+    ListBasedHitTestBehavior behavior = kContinueHitTesting;
+    if (GetHitTestRequest().UseHitNodeCb()) {
+      behavior = GetHitTestRequest().RunHitNodeCb(*node);
+    }
+    return std::make_tuple(false, behavior);
+  }
 
   // The second argument will be ignored.
   return std::make_tuple(true, kContinueHitTesting);

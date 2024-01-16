@@ -97,7 +97,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kReadOnly |
                                                     HitTestRequest::kActive,
       const LayoutObject* stop_node = nullptr,
-      bool no_lifecycle_update = false);
+      bool no_lifecycle_update = false,
+      std::optional<HitTestRequest::HitNodeCb> hit_node_cb = std::nullopt);
 
   bool MousePressed() const { return mouse_event_manager_->MousePressed(); }
   bool IsMousePositionUnknown() const {
