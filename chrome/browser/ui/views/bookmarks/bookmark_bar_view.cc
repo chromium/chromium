@@ -384,9 +384,6 @@ class BookmarkButton : public BookmarkButtonBase {
     hover_duration_recorded_ = false;
     mouse_has_been_pressed_ = false;
 
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.BookmarkUrlButtonEvent",
-        PreloadBookmarkMetricsEvent::kMouseOver);
     BookmarkButtonBase::OnMouseEntered(event);
 
     if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
@@ -1669,11 +1666,6 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
       /*add_to_group=*/false,
       BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
-  if (event.IsMouseEvent()) {
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.BookmarkUrlButtonEvent",
-        PreloadBookmarkMetricsEvent::kMouseClick);
-  }
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
       profile_metrics::GetBrowserProfileType(browser_->profile()));
