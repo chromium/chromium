@@ -135,6 +135,10 @@ BASE_FEATURE(kNestedArchives,
              "SafeBrowsingArchiveImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
+             "RealTimeUrlFilteringCustomMessage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRedWarningSurvey,
              "RedWarningSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -304,6 +308,7 @@ constexpr struct {
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
+    {&kRealTimeUrlFilteringCustomMessage, true},
     {&kRedInterstitialFacelift, false},
     {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
