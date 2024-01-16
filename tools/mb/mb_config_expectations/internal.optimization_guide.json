@@ -26,9 +26,13 @@
   "optimization_guide-linux": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
+      "chrome_pgo_phase": 0,
       "dcheck_always_on": false,
       "enable_ml_internal": true,
+      "is_chrome_branded": true,
       "is_debug": false,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }
@@ -36,9 +40,13 @@
   "optimization_guide-mac-arm64": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
+      "chrome_pgo_phase": 0,
       "dcheck_always_on": false,
       "enable_ml_internal": true,
+      "is_chrome_branded": true,
       "is_debug": false,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "use_remoteexec": true
@@ -47,9 +55,13 @@
   "optimization_guide-mac-x64": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
+      "chrome_pgo_phase": 0,
       "dcheck_always_on": false,
       "enable_ml_internal": true,
+      "is_chrome_branded": true,
       "is_debug": false,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }
@@ -57,9 +69,13 @@
   "optimization_guide-win32": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
+      "chrome_pgo_phase": 0,
       "dcheck_always_on": false,
       "enable_ml_internal": true,
+      "is_chrome_branded": true,
       "is_debug": false,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_remoteexec": true
@@ -68,9 +84,13 @@
   "optimization_guide-win64": {
     "gn_args": {
       "build_with_internal_optimization_guide": true,
+      "chrome_pgo_phase": 0,
       "dcheck_always_on": false,
       "enable_ml_internal": true,
+      "is_chrome_branded": true,
       "is_debug": false,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }
