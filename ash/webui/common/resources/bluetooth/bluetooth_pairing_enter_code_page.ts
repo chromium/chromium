@@ -74,6 +74,14 @@ export class SettingsBluetoothPairingEnterCodeElement extends
   private buttonBarState_: ButtonBarState;
   private keys_: string[];
 
+  override focus(): void {
+    super.focus();
+    const elem = this.shadowRoot?.querySelector('bluetooth-base-page');
+    if (elem) {
+      elem.focus();
+    }
+  }
+
   private computeKeys_(): string[] {
     if (!this.code) {
       return [];
