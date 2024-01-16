@@ -66,6 +66,7 @@ namespace storage {
 // deprecating the version that they're using, however, then you MUST update
 // them (and ensure that any test data file name changes are also reflected in
 // the code of the unit tests that load them):
+//  * shared_storage.v*.filescheme.sql
 //  * shared_storage.v*.single_origin.sql
 //  * shared_storage.v*.iterator.sql
 //  * shared_storage.v*.empty_values_mapping.5origins.sql
