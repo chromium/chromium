@@ -151,6 +151,11 @@ class CORE_EXPORT HitTestResult {
   }
   bool IsOverResizer() const { return is_over_resizer_; }
 
+  void SetIsOverScrollCorner(bool is_over_scroll_corner) {
+    is_over_scroll_corner_ = is_over_scroll_corner;
+  }
+  bool IsOverScrollCorner() const { return is_over_scroll_corner_; }
+
   bool IsSelected(const HitTestLocation& location) const;
   String Title(TextDirection&) const;
   const AtomicString& AltDisplayString() const;
@@ -242,6 +247,9 @@ class CORE_EXPORT HitTestResult {
   // PaintLayerScrollableArea::IsAbsolutePointInResizeControl for how that is
   // tested.
   bool is_over_resizer_ = false;
+
+  // Returns true if we are over custom scroll corner
+  bool is_over_scroll_corner_ = false;
 
   mutable Member<NodeSet> list_based_test_result_;
   String canvas_region_id_;

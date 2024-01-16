@@ -2098,9 +2098,10 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
     }
   }
 
-  // FIXME: We should hit test the m_scrollCorner and pass it back through the
-  // result.
-
+  if (scroll_corner_ && ScrollCornerRect().Contains(local_point)) {
+    result.SetIsOverScrollCorner(true);
+    return true;
+  }
   return false;
 }
 

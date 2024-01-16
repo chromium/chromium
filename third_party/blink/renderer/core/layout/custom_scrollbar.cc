@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/custom_scrollbar_theme.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
@@ -420,6 +421,29 @@ void CustomScrollbar::PositionScrollbarParts() {
         PhysicalOffset(part_rect.origin()));
     part.value->SetOverriddenSize(PhysicalSize(part_rect.size()));
   }
+}
+
+const ComputedStyle* CustomScrollbar::GetScrollbarPartStyleForCursor(
+    ScrollbarPart part_type) const {
+  const LayoutCustomScrollbarPart* part_layout_object = GetPart(part_type);
+  if (part_layout_object) {
+    return part_layout_object->Style();
+  }
+  switch (part_type) {
+    case kBackButtonStartPart:
+    case kForwardButtonStartPart:
+    case kBackButtonEndPart:
+    case kForwardButtonEndPart:
+    case kTrackBGPart:
+    case kThumbPart:
+      return GetScrollbarPartStyleForCursor(kScrollbarBGPart);
+    case kBackTrackPart:
+    case kForwardTrackPart:
+      return GetScrollbarPartStyleForCursor(kTrackBGPart);
+    default:
+      break;
+  }
+  return nullptr;
 }
 
 void CustomScrollbar::InvalidateDisplayItemClientsOfScrollbarParts() {
