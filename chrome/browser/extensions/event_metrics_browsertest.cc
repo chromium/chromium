@@ -485,6 +485,8 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*expected_count=*/0);
 }
 
+// TODO: refactor to be generic for this feature, then do these two metrics with
+// using to avoid code duplication.
 class ServiceWorkerRedundantWorkerStartMetricsBrowserTest
     : public EventMetricsBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -568,6 +570,9 @@ INSTANTIATE_TEST_SUITE_P(
     /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
        enabled status */
     testing::Bool());
+
+using ServiceWorkerPendingTasksForRunningWorkerMetricsBrowserTest =
+    ServiceWorkerRedundantWorkerStartMetricsBrowserTest;
 
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,

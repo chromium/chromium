@@ -3972,6 +3972,21 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker"
+    enum="Boolean" expires_after="2024-07-09">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    It is emitted every time we add a pending task for a worker. Records true if
+    the worker was ready to run tasks when pendings tasks are added (this is not
+    optimal). Records false if the worker was not ready to run tasks when the
+    pending task was added (this is the optimal expected state).
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result"
     enum="ServiceWorkerExternalRequestResult" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->

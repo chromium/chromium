@@ -399,6 +399,12 @@ void ServiceWorkerTaskQueue::AddPendingTask(
     const LazyContextId& lazy_context_id,
     PendingTask task) {
   DCHECK(lazy_context_id.IsForServiceWorker());
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker",
+      IsReadyToRunTasks(
+          browser_context_,
+          extensions::ExtensionRegistry::Get(browser_context_)
+              ->GetInstalledExtension(lazy_context_id.extension_id())));
 
   // TODO(lazyboy): Do we need to handle incognito context?
 
