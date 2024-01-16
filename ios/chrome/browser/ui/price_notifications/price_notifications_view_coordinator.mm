@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/prefs/pref_service.h"
@@ -231,6 +233,8 @@
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.PriceTracking.IOS.Track.Failure"));
 }
 
 - (void)presentStopPriceTrackingErrorAlertForItem:
@@ -264,6 +268,8 @@
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.PriceTracking.IOS.Untrack.Failure"));
 }
 
 #pragma mark - Private

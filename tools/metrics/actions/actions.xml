@@ -6818,6 +6818,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.IOS.Track.Failure"
+    not_user_triggered="true">
+  <owner>danieltwhite@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a users attempts to price track an item through the UI, but is
+    unsuccessful due to an error. (iOS only)
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.IOS.Untrack.Failure"
+    not_user_triggered="true">
+  <owner>danieltwhite@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a users attempts to untrack an item through the UI, but is
+    unsuccessful due to an error. (iOS only)
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.OmniboxChip.Tracked">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
