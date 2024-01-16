@@ -25,6 +25,7 @@ namespace extensions_features {
 //   have to be globally unique. Thus, it's often best to give features very
 //   specific names (often including "Extension", unlike many C++ class names)
 //   since namespacing doesn't otherwise exist.
+// * Example: --enable-features=Feature1,Feature2. Info: //base/feature_list.h.
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
