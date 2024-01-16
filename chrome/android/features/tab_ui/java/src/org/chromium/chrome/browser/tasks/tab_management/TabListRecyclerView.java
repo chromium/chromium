@@ -183,7 +183,8 @@ class TabListRecyclerView extends RecyclerView
      */
     void runAnimationOnNextLayout(Runnable runnable) {
         assert mOnNextLayoutRunnable == null
-                : "TabListRecyclerView animation on next layout set multiple times without running.";
+                : "TabListRecyclerView animation on next layout set multiple times without"
+                        + " running.";
         mOnNextLayoutRunnable =
                 () -> {
                     if (mDynamicView == null) {
@@ -254,6 +255,13 @@ class TabListRecyclerView extends RecyclerView
         // Stop all the animations to make all the items show up and scroll to position immediately.
         mOriginalAnimator = getItemAnimator();
         setItemAnimator(null);
+    }
+
+    void prepareTabSwitcherPaneView() {
+        endAllAnimations();
+        // Ignore the rest of prepareTabSwitcherView since the pane version doesn't use a dynamic
+        // view and the items should already be visible. Don't replace the item animator as
+        // startShowing is skipped for panes meaning the animator would never be re-added.
     }
 
     /**

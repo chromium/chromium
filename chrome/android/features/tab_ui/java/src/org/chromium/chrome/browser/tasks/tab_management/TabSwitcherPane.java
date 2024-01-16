@@ -65,8 +65,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         // just say "Tabs".
         mReferenceButtonDataSupplier.set(
                 new DrawableButtonData(
-                        R.string.accessibility_tab_switcher,
-                        R.string.accessibility_tab_switcher,
+                        R.string.accessibility_tab_switcher_standard_stack,
+                        R.string.accessibility_tab_switcher_standard_stack,
                         tabSwitcherDrawableCoordinator.getTabSwitcherDrawable()));
 
         mNewTabButtonDataSupplier.set(

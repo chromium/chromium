@@ -673,6 +673,12 @@ public class TabListCoordinator
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
+    void prepareTabSwitcherPaneView() {
+        registerLayoutChangeListener();
+        mRecyclerView.prepareTabSwitcherPaneView();
+        mMediator.registerOnScrolledListener(mRecyclerView);
+    }
+
     private void initializeEmptyStateView() {
         if (mIsEmptyViewInitialized) {
             return;

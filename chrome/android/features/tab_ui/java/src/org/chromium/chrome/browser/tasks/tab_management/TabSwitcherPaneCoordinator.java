@@ -122,7 +122,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         .build();
         mContainerViewModel = containerViewModel;
 
-        // TODO(crbug/1505772): Figure out whether using coordinatorView for rootView is okay.
         mDialogControllerSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
@@ -165,7 +164,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         tabContentManager,
                         tabModelFilterSupplier);
 
-        // TODO(crbug/1505772): Figure out whether using parentView for rootView is okay.
         @DrawableRes
         int emptyImageResId =
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
@@ -203,7 +201,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 PropertyModelChangeProcessor.create(
                         containerViewModel, recyclerView, TabListContainerViewBinder::bind);
 
-        // TODO(crbug/1505772): Figure whether using parentView for rootView is okay.
         TabListEditorManager tabListEditorManager =
                 new TabListEditorManager(
                         activity,
@@ -265,9 +262,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
         mMultiThumbnailCardProvider.initWithNative(originalProfile);
     }
-
-    // TODO(crbug/1505772): Some additional methods are needed here for animation geometry and back
-    // and forth communication with panes.
 
     /** Shows the tab list editor. */
     public void showTabListEditor() {
@@ -364,10 +358,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private void onVisibilityChanged(boolean visible) {
         if (visible) {
-            // TODO(crbug/1505772): This has some possibly unwanted side effects in
-            // TabListRecyclerView where the item animator becomes permanently removed. Consider
-            // modifications downstream (or a parallel method) to ensure this doesn't happen.
-            mTabListCoordinator.prepareTabSwitcherView();
+            mTabListCoordinator.prepareTabSwitcherPaneView();
         } else {
             mTabListCoordinator.postHiding();
         }

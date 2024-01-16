@@ -294,10 +294,10 @@ public class TabSwitcherPaneUnitTest {
         DisplayButtonData buttonData = mTabSwitcherPane.getReferenceButtonDataSupplier().get();
 
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
+                mContext.getString(R.string.accessibility_tab_switcher_standard_stack),
                 buttonData.resolveText(mContext));
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
+                mContext.getString(R.string.accessibility_tab_switcher_standard_stack),
                 buttonData.resolveContentDescription(mContext));
         assertEquals(mTabSwitcherDrawable, buttonData.resolveIcon(mContext));
     }

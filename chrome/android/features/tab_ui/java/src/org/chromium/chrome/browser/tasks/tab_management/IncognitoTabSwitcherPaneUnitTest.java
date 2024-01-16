@@ -326,10 +326,10 @@ public class IncognitoTabSwitcherPaneUnitTest {
         DisplayButtonData buttonData =
                 mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get();
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
+                mContext.getString(R.string.accessibility_tab_switcher_incognito_stack),
                 buttonData.resolveText(mContext));
         assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
+                mContext.getString(R.string.accessibility_tab_switcher_incognito_stack),
                 buttonData.resolveContentDescription(mContext));
         assertNotNull(buttonData.resolveIcon(mContext));
 

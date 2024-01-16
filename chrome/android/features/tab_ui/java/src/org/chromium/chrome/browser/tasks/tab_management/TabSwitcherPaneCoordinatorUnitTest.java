@@ -140,7 +140,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mProfileProviderSupplier.set(mProfileProvider);
         mTabModelFilterSupplier.set(mTabModelFilter);
-        mIsVisibleSupplier.set(true);
+        mIsVisibleSupplier.set(false);
         mIsAnimatingSupplier.set(false);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
@@ -179,6 +179,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         TabListMode.GRID);
 
         mCoordinator.initWithNative();
+
+        mIsVisibleSupplier.set(true);
     }
 
     @After
@@ -306,15 +308,17 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         TabListRecyclerView recyclerView =
                 (TabListRecyclerView) mActivity.findViewById(R.id.tab_list_recycler_view);
-        // Manually size the view so that the children get added.
+        // Manually size the view so that the children get added this is to work around robolectric
+        // view testing limitations.
         recyclerView.measure(0, 0);
         recyclerView.layout(0, 0, 100, 1000);
 
         assertEquals(1, recyclerView.getAdapter().getItemCount());
         assertEquals(1, recyclerView.getChildCount());
-        // This gets called twice initially due to thumbnail size and the fetcher independently
-        // making requests in the view binder.
-        verify(mTabContentManager, times(2))
+        // This gets called three times
+        // 1) Once when the fetcher is set.
+        // 2) Twice due to thumbnail size changes on initial and repeat layout.
+        verify(mTabContentManager, times(3))
                 .getTabThumbnailWithCallback(eq(tabId), any(), any(), anyBoolean(), anyBoolean());
 
         TabThumbnailView thumbnailView =
