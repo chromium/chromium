@@ -28,6 +28,10 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
@@ -574,6 +578,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     }
     color_scheme_ = color_scheme;
   }
+
+  // Returns the color provider stored in the Page via the Document.
+  const ui::ColorProvider* GetColorProvider() const;
 
   bool context_restorable_{true};
   CanvasRenderingContext::LostContextMode context_lost_mode_{

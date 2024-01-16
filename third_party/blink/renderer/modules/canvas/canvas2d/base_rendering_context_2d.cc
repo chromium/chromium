@@ -585,8 +585,8 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
 ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
-  const ColorParseResult parse_result =
-      ParseCanvasColorString(color_string, color_scheme_, color);
+  const ColorParseResult parse_result = ParseCanvasColorString(
+      color_string, color_scheme_, color, GetColorProvider());
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
   }
@@ -608,6 +608,16 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     return ColorParseResult::kColor;
   }
   return parse_result;
+}
+
+const ui::ColorProvider* BaseRenderingContext2D::GetColorProvider() const {
+  if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement()) {
+    // TODO(samomekarajr): Call out during review. Might need to check that a
+    // Page exists for the document.
+    return canvas->GetDocument().GetColorProviderForPainting(color_scheme_);
+  }
+
+  return nullptr;
 }
 
 v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(

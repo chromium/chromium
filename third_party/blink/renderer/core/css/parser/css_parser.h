@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 class Color;
@@ -124,7 +128,8 @@ class CORE_EXPORT CSSParser {
   static bool ParseColor(Color&, const String&, bool strict = false);
   static bool ParseSystemColor(Color&,
                                const String&,
-                               mojom::blink::ColorScheme color_scheme);
+                               mojom::blink::ColorScheme color_scheme,
+                               const ui::ColorProvider* color_provider);
 
   static void ParseSheetForInspector(const CSSParserContext*,
                                      StyleSheetContents*,

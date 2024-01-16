@@ -41,14 +41,17 @@ namespace blink {
 
 static ColorParseResult ParseColor(Color& parsed_color,
                                    const String& color_string,
-                                   mojom::blink::ColorScheme color_scheme) {
+                                   mojom::blink::ColorScheme color_scheme,
+                                   const ui::ColorProvider* color_provider) {
   if (EqualIgnoringASCIICase(color_string, "currentcolor"))
     return ColorParseResult::kCurrentColor;
   const bool kUseStrictParsing = true;
   if (CSSParser::ParseColor(parsed_color, color_string, kUseStrictParsing))
     return ColorParseResult::kColor;
-  if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme))
+  if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme,
+                                  color_provider)) {
     return ColorParseResult::kColor;
+  }
   if (auto* color_mix_value =
           DynamicTo<cssvalue::CSSColorMixValue>(CSSParser::ParseSingleValue(
               CSSPropertyID::kColor, color_string,
@@ -58,17 +61,20 @@ static ColorParseResult ParseColor(Color& parsed_color,
   return ColorParseResult::kParseFailed;
 }
 
-ColorParseResult ParseCanvasColorString(const String& color_string,
-                                        mojom::blink::ColorScheme color_scheme,
-                                        Color& parsed_color) {
+ColorParseResult ParseCanvasColorString(
+    const String& color_string,
+    mojom::blink::ColorScheme color_scheme,
+    Color& parsed_color,
+    const ui::ColorProvider* color_provider) {
   return ParseColor(parsed_color,
                     color_string.StripWhiteSpace(IsHTMLSpace<UChar>),
-                    color_scheme);
+                    color_scheme, color_provider);
 }
 
 bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
-  const ColorParseResult parse_result = ParseCanvasColorString(
-      color_string, mojom::blink::ColorScheme::kLight, parsed_color);
+  const ColorParseResult parse_result =
+      ParseCanvasColorString(color_string, mojom::blink::ColorScheme::kLight,
+                             parsed_color, /*color_provider=*/nullptr);
   switch (parse_result) {
     case ColorParseResult::kColor:
     case ColorParseResult::kColorMix:
