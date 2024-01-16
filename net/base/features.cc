@@ -277,11 +277,11 @@ BASE_FEATURE(kSupportPartitionedBlobUrl,
 
 BASE_FEATURE(kTpcdSupportSettings,
              "TpcdSupportSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTpcdMetadataGrants,
              "TpcdMetadataGrants",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlpsParsing, "AlpsParsing", base::FEATURE_ENABLED_BY_DEFAULT);
 
