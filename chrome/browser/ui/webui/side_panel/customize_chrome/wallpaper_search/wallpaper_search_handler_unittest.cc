@@ -1537,6 +1537,52 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             base::StrCat({kGstaticBaseURL, "baz_2.png"}));
 }
 
+TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
+      inspiration_groups;
+  base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&inspiration_groups](
+              std::optional<std::vector<
+                  side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+                  inspiration_groups_ptr_arg) {
+            inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
+          }));
+  SetUpInspirationsResponseWithData(
+      R"()]}'
+        [{
+            "descriptor_a": "foo",
+            "descriptor_b": "bar",
+            "descriptor_c": "baz",
+            "descriptor_d": {
+                "hex": "#f9cc18",
+                "name": "Yellow"
+            },
+            "images": [
+                {
+                    "background_image": "foo_1.png",
+                    "thumbnail_image": "foo_2.png"
+                }
+            ]
+        }]
+      )");
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetInspirations(callback.Get());
+  task_environment().RunUntilIdle();
+
+  EXPECT_EQ(1u, inspiration_groups.size());
+  const auto& inspiration_descriptors = inspiration_groups[0]->descriptors;
+  EXPECT_EQ("foo", inspiration_descriptors->subject);
+  EXPECT_EQ("bar", inspiration_descriptors->style);
+  EXPECT_EQ("baz", inspiration_descriptors->mood);
+  EXPECT_EQ(side_panel::customize_chrome::mojom::DescriptorDValue::NewName(
+                side_panel::customize_chrome::mojom::DescriptorDName::kYellow),
+            inspiration_descriptors->color);
+}
+
 TEST_F(WallpaperSearchHandlerTest,
        GetInspirations_Failure_InspirationsFormatIncorrect) {
   std::optional<

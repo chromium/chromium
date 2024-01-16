@@ -447,7 +447,9 @@
     <iron-collapse opened="[[openInspirations_]]">
       <div class="inspirations-content">
         <template is="dom-repeat" items="[[inspirationGroups_]]">
-          <div class="inspiration-title">[[item.descriptors.subject]]</div>
+          <div class="inspiration-title">
+            [[getInspirationGroupTitle_(item.descriptors)]]
+          </div>
           <cr-grid columns="3" disable-arrow-navigation>
             <template is="dom-repeat" items="[[item.inspirations]]">
               <div class="tile result" on-click="onInspirationImageClick_"

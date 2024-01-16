@@ -762,6 +762,26 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
     mojo_inspiration_group->descriptors =
         side_panel::customize_chrome::mojom::ResultDescriptors::New();
     mojo_inspiration_group->descriptors->subject = *descriptor_a;
+    if (const std::string* descriptor_b =
+            inspiration_dict.FindString("descriptor_b")) {
+      mojo_inspiration_group->descriptors->style = *descriptor_b;
+    }
+    if (const std::string* descriptor_c =
+            inspiration_dict.FindString("descriptor_c")) {
+      mojo_inspiration_group->descriptors->mood = *descriptor_c;
+    }
+    if (const base::Value::Dict* descriptor_d_dict =
+            inspiration_dict.FindDict("descriptor_d")) {
+      if (const std::string* descriptor_d_name =
+              descriptor_d_dict->FindString("name")) {
+        if (descriptor_d_name->compare("Yellow") == 0) {
+          mojo_inspiration_group->descriptors->color =
+              side_panel::customize_chrome::mojom::DescriptorDValue::NewName(
+                  side_panel::customize_chrome::mojom::DescriptorDName::
+                      kYellow);
+        }
+      }
+    }
     std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
         mojo_inspiration_list;
     for (const auto& image : *images) {

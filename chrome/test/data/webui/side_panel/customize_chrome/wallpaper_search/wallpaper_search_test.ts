@@ -8,7 +8,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {Descriptors, InspirationGroup, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {DescriptorDName, Descriptors, InspirationGroup, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
@@ -1578,8 +1578,8 @@ suite('WallpaperSearchTest', () => {
               '#inspirationCard .inspiration-title');
       assertTrue(!!inspirationTitles);
       assertEquals(2, inspirationTitles.length);
-      assertEquals(inspirationTitles[0]!.textContent, 'foobar');
-      assertEquals(inspirationTitles[1]!.textContent, 'baz');
+      assertEquals('foobar', inspirationTitles[0]!.textContent!.trim());
+      assertEquals('baz', inspirationTitles[1]!.textContent!.trim());
       // Ensure the correct amount of groups show.
       const inspirationsGroups =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
@@ -1609,6 +1609,54 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           'https://example.com/baz_2.png',
           (inspirations[2]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+    });
+
+    test('descriptor titles format properly', async () => {
+      createWallpaperSearchElement(
+          /*descriptors=*/ null, /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'foo',
+                style: 'bar',
+                mood: 'baz',
+                color: {name: DescriptorDName.kYellow},
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+            {
+              descriptors: {
+                subject: 'foo',
+                style: undefined,
+                mood: 'baz',
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
+      await flushTasks();
+
+      const inspirationTitles =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '#inspirationCard .inspiration-title');
+      assertTrue(!!inspirationTitles);
+      assertEquals(2, inspirationTitles.length);
+      assertEquals(
+          'foo, bar, baz, Yellow',
+          inspirationTitles[0]!.textContent!.trim(),
+      );
+      assertEquals('foo, baz', inspirationTitles[1]!.textContent!.trim());
     });
 
     test('setting inspiration to background calls backend', async () => {

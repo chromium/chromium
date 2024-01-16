@@ -35,7 +35,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, Inspiration, InspirationGroup, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {DescriptorA, DescriptorB, DescriptorDName, DescriptorDValue, Descriptors, Inspiration, InspirationGroup, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
@@ -423,6 +423,23 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private getCustomColorCheckedStatus_(): string {
     return this.selectedHue_ !== null ? 'true' : 'false';
+  }
+
+  private getInspirationGroupTitle_(descriptors: ResultDescriptors): string {
+    // Filter out undefined or null values, then join the rest into a comma
+    // separated string.
+    let colorName;
+    switch (descriptors.color?.name) {
+      case DescriptorDName.kYellow:
+        colorName = 'Yellow';
+    }
+    return [
+      descriptors.subject,
+      descriptors.style,
+      descriptors.mood,
+      colorName,
+    ].filter(Boolean)
+        .join(', ');
   }
 
   private getHistoryResultAriaLabel_(

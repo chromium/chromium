@@ -26,6 +26,12 @@ struct DescriptorB {
 union DescriptorDValue {
   skia.mojom.SkColor color;
   float hue;
+  DescriptorDName name;
+};
+
+// Accepted color names for descriptor d.
+enum DescriptorDName {
+  kYellow,
 };
 
 // Full list of possible subject, style, and mood descriptors for the
