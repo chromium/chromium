@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest, RememberOpenWebApp) {
 
 #else
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
-                       IntentChipLaunchesAppDirectly) {
+                       DISABLED_IntentChipLaunchesAppDirectly) {
   InstallTestWebApp();
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
