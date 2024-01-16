@@ -35,6 +35,7 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_hooks.h"
 #include "partition_alloc/partition_root.h"
+#include "partition_alloc/pointers/instance_tracer.h"
 #include "partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
 #include "partition_alloc/pointers/raw_ptr_test_support.h"
 #include "partition_alloc/pointers/raw_ref.h"
@@ -50,15 +51,23 @@
 #endif
 
 using testing::AllOf;
+using testing::Eq;
 using testing::HasSubstr;
+using testing::IsEmpty;
+using testing::Ne;
+using testing::SizeIs;
 using testing::Test;
 
+// The instance tracer has unavoidable per-instance overhead, but when disabled,
+// there should be no size difference between raw_ptr<T> and T*.
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 static_assert(sizeof(raw_ptr<void>) == sizeof(void*),
               "raw_ptr shouldn't add memory overhead");
 static_assert(sizeof(raw_ptr<int>) == sizeof(int*),
               "raw_ptr shouldn't add memory overhead");
 static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
               "raw_ptr shouldn't add memory overhead");
+#endif
 
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&                            \
     !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR) && \
@@ -1597,6 +1606,9 @@ TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
   EXPECT_EQ(ptr.get(), &v1);
 }
 
+// InstanceTracer has additional fields, so just skip this test when instance
+// tracing is enabled.
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 #if defined(COMPILER_GCC) && !defined(__clang__)
 // In GCC this test will optimize the return value of the constructor, so
 // assert fails. Disable optimizations to verify uninitialized attribute works
@@ -1614,6 +1626,7 @@ TEST_F(RawPtrTest, AllowUninitialized) {
 #if defined(COMPILER_GCC) && !defined(__clang__)
 #pragma GCC pop_options
 #endif
+#endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
 }  // namespace
 
@@ -2654,5 +2667,328 @@ TEST(DanglingPtrTest, DetectResetAndDestructor) {
   EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
   EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
+
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER) && \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+TEST(RawPtrInstanceTracerTest, CreateAndDestroy) {
+  auto owned = std::make_unique<int>(8);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<int> ptr1 = owned.get();
+    const auto stacks =
+        InstanceTracer::GetStackTracesForAddressForTest(owned.get());
+    EXPECT_THAT(stacks, SizeIs(1));
+    {
+      // A second raw_ptr to the same object should result in an additional
+      // stack trace.
+      raw_ptr<int> ptr2 = owned.get();
+      EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                  SizeIs(2));
+    }
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                Eq(stacks));
+  }
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, CopyConstruction) {
+  auto owned = std::make_unique<int>(8);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+  {
+    raw_ptr<int> ptr1 = owned.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+    {
+      // Copying `ptr1` to `ptr2` should result in an additional stack trace.
+      raw_ptr<int> ptr2 = ptr1;
+      EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                  SizeIs(2));
+    }
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, CopyAssignment) {
+  auto owned1 = std::make_unique<int>(8);
+  auto owned2 = std::make_unique<int>(9);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<int> ptr1 = owned1.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+
+    raw_ptr<int> ptr2 = owned2.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                SizeIs(1));
+
+    ptr2 = ptr1;
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(2));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, MoveConstruction) {
+  auto owned = std::make_unique<int>(8);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+  {
+    raw_ptr<int> ptr1 = owned.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+    {
+      // Moving `ptr1` to `ptr2` should not result in an additional stack trace.
+      raw_ptr<int> ptr2 = std::move(ptr1);
+      EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                  SizeIs(1));
+    }
+    // Once `ptr2` goes out of scope, there should be no more traces.
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                IsEmpty());
+  }
+}
+
+TEST(RawPtrInstanceTracerTest, MoveAssignment) {
+  auto owned1 = std::make_unique<int>(8);
+  auto owned2 = std::make_unique<int>(9);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<int> ptr1 = owned1.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+
+    raw_ptr<int> ptr2 = owned2.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                SizeIs(1));
+
+    ptr2 = std::move(ptr1);
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, SelfCopy) {
+  auto owned = std::make_unique<int>(8);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<int> ptr = owned.get();
+    auto& ptr2 = ptr;  // To get around compiler self-assignment warning :)
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+
+    ptr2 = ptr;
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, SelfMove) {
+  auto owned = std::make_unique<int>(8);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<int> ptr = owned.get();
+    auto& ptr2 = ptr;  // To get around compiler self-assignment warning :)
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+
+    ptr2 = std::move(ptr);
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, ConversionCreateAndDestroy) {
+  auto owned = std::make_unique<Derived>(1, 2, 3);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<Base1> ptr1 = owned.get();
+    const auto stacks =
+        InstanceTracer::GetStackTracesForAddressForTest(owned.get());
+    EXPECT_THAT(stacks, SizeIs(1));
+    {
+      // A second raw_ptr to the same object should result in an additional
+      // stack trace.
+      raw_ptr<Base2> ptr2 = owned.get();
+      EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                  SizeIs(2));
+    }
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                Eq(stacks));
+  }
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, CopyConversionConstruction) {
+  auto owned = std::make_unique<Derived>(1, 2, 3);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+  {
+    raw_ptr<Derived> ptr1 = owned.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+    {
+      // Copying `ptr1` to `ptr2` should result in an additional stack trace.
+      raw_ptr<Base1> ptr2 = ptr1;
+      EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                  SizeIs(2));
+    }
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, CopyConversionAssignment) {
+  auto owned1 = std::make_unique<Derived>(1, 2, 3);
+  auto owned2 = std::make_unique<Derived>(4, 5, 6);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<Derived> ptr1 = owned1.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+
+    raw_ptr<Base1> ptr2 = owned2.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                SizeIs(1));
+
+    ptr2 = ptr1;
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(2));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+}
+
+TEST(RawPtrInstanceTracerTest, MoveConversionConstruction) {
+  auto owned = std::make_unique<Derived>(1, 2, 3);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+              IsEmpty());
+  {
+    raw_ptr<Derived> ptr1 = owned.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                SizeIs(1));
+    {
+      // Moving `ptr1` to `ptr2` should not result in an additional stack trace.
+      raw_ptr<Base1> ptr2 = std::move(ptr1);
+      EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                  SizeIs(1));
+    }
+    // Once `ptr2` goes out of scope, there should be no more traces.
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned.get()),
+                IsEmpty());
+  }
+}
+
+TEST(RawPtrInstanceTracerTest, MoveConversionAssignment) {
+  auto owned1 = std::make_unique<Derived>(1, 2, 3);
+  auto owned2 = std::make_unique<Derived>(4, 5, 6);
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+
+  {
+    raw_ptr<Derived> ptr1 = owned1.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+
+    raw_ptr<Base1> ptr2 = owned2.get();
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                SizeIs(1));
+
+    ptr2 = std::move(ptr1);
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+                SizeIs(1));
+    EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+                IsEmpty());
+  }
+
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned1.get()),
+              IsEmpty());
+  EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
+              IsEmpty());
+}
+#endif
 
 }  // namespace base::internal

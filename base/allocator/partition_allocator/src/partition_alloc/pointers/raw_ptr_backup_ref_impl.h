@@ -18,6 +18,7 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/pointers/instance_tracer.h"
 #include "partition_alloc/tagging.h"
 
 #if !BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -194,6 +195,7 @@ struct RawPtrBackupRefImpl {
 #endif
       ReleaseInternal(address);
     }
+
     // We are unable to counteract BanSuperPageFromBRPPool(), called from
     // WrapRawPtr(). We only use one bit per super-page and, thus can't tell if
     // there's more than one associated raw_ptr<T> at a given time. The risk of
@@ -421,6 +423,37 @@ struct RawPtrBackupRefImpl {
       return UnpoisonPtr(wrapped_ptr);
     }
   }
+
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+  template <typename T>
+  static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return;
+    }
+
+    uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(wrapped_ptr));
+
+    if (!IsSupportedAndNotNull(address)) {
+      return;
+    }
+
+    InstanceTracer::Trace(owner_id, address);
+  }
+
+  static constexpr void Untrace(uint64_t owner_id) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return;
+    }
+
+    InstanceTracer::Untrace(owner_id);
+  }
+#else
+  // In theory, this shouldn't be needed. In practice, the optimizer is unable
+  // to tell that things like `IsSupportedAndNotNull()` are side-effect free.
+  template <typename T>
+  static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {}
+  static constexpr void Untrace(uint64_t owner_id) {}
+#endif
 
   // This is for accounting only, used by unit tests.
   PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}

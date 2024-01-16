@@ -204,6 +204,10 @@ struct RawPtrHookableImpl {
     return wrapped_ptr;
   }
 
+  template <typename T>
+  static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {}
+  static constexpr void Untrace(uint64_t owner_id) {}
+
   // This is for accounting only, used by unit tests.
   PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
   PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}

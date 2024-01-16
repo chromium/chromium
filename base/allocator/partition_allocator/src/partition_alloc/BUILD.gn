@@ -95,13 +95,14 @@ component("raw_ptr") {
   # actually built.
   check_includes = use_partition_alloc
   public = [
+    "pointers/instance_tracer.h",
     "pointers/raw_ptr.h",
     "pointers/raw_ptr_cast.h",
     "pointers/raw_ptr_exclusion.h",
     "pointers/raw_ptr_noop_impl.h",
     "pointers/raw_ref.h",
   ]
-  sources = []
+  sources = [ "pointers/instance_tracer.cc" ]
   public_configs = [ ":public_includes" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -184,6 +185,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_BACKUP_REF_PTR_SUPPORT=$enable_backup_ref_ptr_support",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
+    "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT=$enable_dangling_raw_ptr_perf_experiment",

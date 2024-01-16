@@ -181,6 +181,9 @@ declare_args() {
   #   dangling during their lifetime.
   # - backup_ref_ptr_poison_oob_ptr: poison out-of-bounds (OOB) pointers to
   #   generate an exception in the event that an OOB pointer is dereferenced.
+  # - enable_backup_ref_ptr_instance_tracer: use a global table to track all
+  #   live raw_ptr/raw_ref instances to help debug dangling pointers at test
+  #   end.
   put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot_default && enable_backup_ref_ptr_support
 
@@ -220,6 +223,8 @@ declare_args() {
 
   # Set to `enable_backup_ref_ptr_support && has_64_bit_pointers` when enabling.
   backup_ref_ptr_poison_oob_ptr = false
+
+  enable_backup_ref_ptr_instance_tracer = false
 }
 
 declare_args() {
@@ -256,6 +261,7 @@ if (!use_partition_alloc) {
   enable_dangling_raw_ptr_perf_experiment = false
   enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
+  enable_backup_ref_ptr_instance_tracer = false
   use_starscan = false
 }
 

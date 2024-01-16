@@ -22,6 +22,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/instance_tracer.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -42,6 +43,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/pending_task.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -600,6 +602,21 @@ void CheckDanglingRawPtrBufferEmpty() {
                   "Memory was released on:\n"
                << entry->task_trace << "\n"
                << entry->stack_trace << "\n";
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+    std::vector<std::array<const void*, 32>> stack_traces =
+        internal::InstanceTracer::GetStackTracesForDanglingRefs(entry->id);
+    for (const auto& raw_stack_trace : stack_traces) {
+      LOG(ERROR) << "Live reference from:\n";
+      LOG(ERROR) << debug::StackTrace(raw_stack_trace.data(),
+                                      raw_stack_trace.size() -
+                                          static_cast<size_t>(ranges::count(
+                                              raw_stack_trace, nullptr)))
+                 << "\n";
+    }
+#else
+    LOG(ERROR) << "Building with enable_backup_ref_ptr_instance_tracer will "
+                  "print out stack traces of any live but dangling references.";
+#endif
   }
   CHECK(!errors);
 #endif

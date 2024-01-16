@@ -23,6 +23,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/pointers/instance_tracer.h"
 #include "partition_alloc/raw_ptr_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -348,18 +349,22 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr& p) noexcept
-      : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {}
+      : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {
+    Impl::Trace(tracer_.owner_id(), p.wrapped_ptr_);
+  }
+
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(const raw_ptr& p) noexcept {
     // Duplicate before releasing, in case the pointer is assigned to itself.
     //
     // Unlike the move version of this operator, don't add |this != &p| branch,
-    // for performance reasons. Even though Duplicate() is not cheap, we
-    // practically never assign a raw_ptr<T> to itself. We suspect that a
-    // cumulative cost of a conditional branch, even if always correctly
-    // predicted, would exceed that.
+    // for performance reasons. Self-assignment is rare, so unconditionally
+    // calling `Duplicate()` is almost certainly cheaper than adding an
+    // additional branch, even if always correctly predicted.
     T* new_ptr = Impl::Duplicate(p.wrapped_ptr_);
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = new_ptr;
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     return *this;
   }
 #else
@@ -376,8 +381,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
     wrapped_ptr_ = p.wrapped_ptr_;
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     if constexpr (kZeroOnMove) {
       p.wrapped_ptr_ = nullptr;
+      Impl::Untrace(p.tracer_.owner_id());
     }
   }
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(raw_ptr&& p) noexcept {
@@ -385,9 +392,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // for correctness.
     if (PA_LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
+      Impl::Untrace(tracer_.owner_id());
       wrapped_ptr_ = p.wrapped_ptr_;
+      Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
       if constexpr (kZeroOnMove) {
         p.wrapped_ptr_ = nullptr;
+        Impl::Untrace(p.tracer_.owner_id());
       }
     }
     return *this;
@@ -407,6 +417,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     // Work around external issues where raw_ptr is used after destruction.
     if constexpr (kZeroOnDestruct) {
       wrapped_ptr_ = nullptr;
@@ -429,6 +440,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
             raw_ptr_traits::ImplForTraits<raw_ptr<T, PassedTraits>::Traits>::
                 UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     // Limit cross-kind conversions only to cases where `kMayDangle` gets added,
     // because that's needed for ExtractAsDangling() and Unretained(Ref)Wrapper.
     // Use a static_assert, instead of disabling via SFINAE, so that the
@@ -454,9 +466,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                              RawPtrTraits::kMayDangle));
 
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
         raw_ptr_traits::ImplForTraits<raw_ptr<T, PassedTraits>::Traits>::
             UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     return *this;
   }
 
@@ -470,7 +484,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(T* p) noexcept
-      : wrapped_ptr_(Impl::WrapRawPtr(p)) {}
+      : wrapped_ptr_(Impl::WrapRawPtr(p)) {
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
+  }
 
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
@@ -480,7 +496,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr<U, Traits>& ptr) noexcept
       : wrapped_ptr_(
-            Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
+            Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
+  }
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
             typename = std::enable_if_t<
@@ -489,19 +507,24 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr<U, Traits>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     if constexpr (kZeroOnMove) {
       ptr.wrapped_ptr_ = nullptr;
+      Impl::Untrace(ptr.tracer_.owner_id());
     }
   }
 
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(std::nullptr_t) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = nullptr;
     return *this;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(T* p) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = Impl::WrapRawPtr(p);
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     return *this;
   }
 
@@ -521,8 +544,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     }
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ =
         Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_));
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     return *this;
   }
   template <typename U,
@@ -540,9 +565,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     }
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = Impl::template Upcast<T, U>(ptr.wrapped_ptr_);
+    Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     if constexpr (kZeroOnMove) {
       ptr.wrapped_ptr_ = nullptr;
+      Impl::Untrace(ptr.tracer_.owner_id());
     }
     return *this;
   }
@@ -919,6 +947,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   T* wrapped_ptr_;
+  PA_NO_UNIQUE_ADDRESS internal::InstanceTracer tracer_;
 
   template <typename U, base::RawPtrTraits R>
   friend class raw_ptr;
