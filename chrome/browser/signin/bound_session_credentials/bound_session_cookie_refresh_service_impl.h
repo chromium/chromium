@@ -57,7 +57,6 @@ class BoundSessionCookieRefreshServiceImpl
 
   // BoundSessionCookieRefreshService:
   void Initialize() override;
-  // Can be called iff the kBoundSessionExplicitRegistration feature is enabled.
   void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) override;
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;

@@ -575,6 +575,22 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       OverrideExistingBoundSessionSameSessionId) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
+
+  auto new_params = CreateTestBoundSessionParams();
+  new_params.clear_credentials();
+  *new_params.add_credentials() = CreateCookieCredential("new_cookie");
+
+  service->RegisterNewBoundSession(new_params);
+
+  VerifyBoundSession(new_params);
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionOverride);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
        OverrideExistingBoundSessionWithInvalidParams) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   auto original_params = CreateTestBoundSessionParams();

@@ -61,8 +61,12 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
   }
   // New session should override an existing one.
   if (cookie_controller_) {
-    session_params_storage_->ClearParams(cookie_controller_->url().spec(),
-                                         cookie_controller_->session_id());
+    bool clear_params = cookie_controller_->url().spec() != params.site() ||
+                        cookie_controller_->session_id() != params.session_id();
+    if (clear_params) {
+      session_params_storage_->ClearParams(cookie_controller_->url().spec(),
+                                           cookie_controller_->session_id());
+    }
     cookie_controller_.reset();
     RecordSessionTerminationTrigger(
         SessionTerminationTrigger::kSessionOverride);
