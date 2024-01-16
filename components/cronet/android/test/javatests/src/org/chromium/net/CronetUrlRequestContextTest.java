@@ -54,7 +54,6 @@ import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.ImplVersion;
 import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
 import org.chromium.net.impl.NetworkExceptionImpl;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -81,23 +80,21 @@ public class CronetUrlRequestContextTest {
     private static final String MOCK_CRONET_TEST_SUCCESS_URL = "http://mock.http/success.txt";
     private static final int MAX_FILE_SIZE = 1000000000;
 
-    private EmbeddedTestServer mTestServer;
     private String mUrl;
     private String mUrl404;
     private String mUrl500;
 
     @Before
     public void setUp() throws Exception {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(mTestRule.getTestFramework().getContext());
-        mUrl = mTestServer.getURL("/echo?status=200");
-        mUrl404 = mTestServer.getURL("/echo?status=404");
-        mUrl500 = mTestServer.getURL("/echo?status=500");
+        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
+        mUrl = NativeTestServer.getSuccessURL();
+        mUrl404 = NativeTestServer.getNotFoundURL();
+        mUrl500 = NativeTestServer.getServerErrorURL();
     }
 
     @After
     public void tearDown() throws Exception {
-        mTestServer.stopAndDestroyServer();
+        NativeTestServer.shutdownNativeTestServer();
     }
 
     class RequestThread extends Thread {

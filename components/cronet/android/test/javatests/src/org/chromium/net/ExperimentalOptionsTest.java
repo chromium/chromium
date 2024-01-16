@@ -37,7 +37,6 @@ import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetUrlRequestContext;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -203,10 +202,9 @@ public class ExperimentalOptionsTest {
     // Tests that basic Cronet functionality works when host cache persistence is enabled, and that
     // persistence works.
     public void testHostCachePersistence() throws Exception {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(mTestRule.getTestFramework().getContext());
+        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
 
-        String realUrl = testServer.getURL("/echo?status=200");
+        String realUrl = NativeTestServer.getFileURL("/echo?status=200");
         URL javaUrl = new URL(realUrl);
         String realHost = javaUrl.getHost();
         int realPort = javaUrl.getPort();
@@ -258,6 +256,7 @@ public class ExperimentalOptionsTest {
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         context.shutdown();
+        NativeTestServer.shutdownNativeTestServer();
     }
 
     @Test

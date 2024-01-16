@@ -29,7 +29,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +49,6 @@ public class NQETest {
 
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    private EmbeddedTestServer mTestServer;
     private String mUrl;
 
     // Thread on which network quality listeners should be notified.
@@ -58,14 +56,13 @@ public class NQETest {
 
     @Before
     public void setUp() throws Exception {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(mTestRule.getTestFramework().getContext());
-        mUrl = mTestServer.getURL("/echo?status=200");
+        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
+        mUrl = NativeTestServer.getFileURL("/echo?status=200");
     }
 
     @After
     public void tearDown() throws Exception {
-        mTestServer.stopAndDestroyServer();
+        NativeTestServer.shutdownNativeTestServer();
     }
 
     private class ExecutorThreadFactory implements ThreadFactory {
