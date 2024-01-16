@@ -2072,6 +2072,11 @@ public class ToolbarManager
         mUrlFocusChangedCallback.onResult(hasFocus);
     }
 
+    @Override
+    public void onUrlAnimationFinished(boolean hasFocus) {
+        mToolbar.onUrlAnimationFinished(hasFocus);
+    }
+
     /** Get the supplier for the current height of the tab strip. Always returns a valid integer. */
     public ObservableSupplier<Integer> getTabStripHeightSupplier() {
         return mTabStripHeightSupplier;

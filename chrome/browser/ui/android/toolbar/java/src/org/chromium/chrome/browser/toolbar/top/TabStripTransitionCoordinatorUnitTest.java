@@ -166,6 +166,23 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    public void hideTabStripWhileUrlBarFocused() {
+        mCoordinator.onUrlFocusChange(true);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
+        Assert.assertEquals(
+                "Height request should be blocked by the url bar focus.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+
+        // Url focus animation finished to unblock the transition
+        mCoordinator.onUrlAnimationFinished(false);
+        Assert.assertEquals(
+                "Height request should go through after the url bar focus.",
+                0,
+                mObserver.heightRequested);
+    }
+
+    @Test
     @Config(qualifiers = "w320dp")
     public void showTabStrip() {
         settleTransitionDuringInitForNarrowWindow();
@@ -205,6 +222,25 @@ public class TabStripTransitionCoordinatorUnitTest {
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
         assertObservedTransitionFinished(true);
+    }
+
+    @Test
+    @Config(qualifiers = "w320dp")
+    public void showTabStripWhileUrlBarFocused() {
+        settleTransitionDuringInitForNarrowWindow();
+        mCoordinator.onUrlFocusChange(true);
+        setDeviceWidthDp(600);
+        Assert.assertEquals(
+                "Height request should be blocked by the url bar focus.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+
+        // Url focus animation finished to unblock the transition
+        mCoordinator.onUrlAnimationFinished(false);
+        Assert.assertEquals(
+                "Height request should go through after the url bar focus.",
+                TEST_TAB_STRIP_HEIGHT,
+                mObserver.heightRequested);
     }
 
     @Test

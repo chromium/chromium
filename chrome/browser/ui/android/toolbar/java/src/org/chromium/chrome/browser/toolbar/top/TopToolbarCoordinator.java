@@ -739,6 +739,15 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbarLayout.onUrlFocusChange(hasFocus);
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.onUrlFocusChange(hasFocus);
+        }
+    }
+
+    public void onUrlAnimationFinished(boolean hasFocus) {
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.onUrlAnimationFinished(hasFocus);
+        }
     }
 
     /** Notified when a navigation to a different page has occurred. */

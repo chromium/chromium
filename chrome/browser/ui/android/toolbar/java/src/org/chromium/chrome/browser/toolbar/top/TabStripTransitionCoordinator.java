@@ -91,6 +91,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
      */
     private int mOnLayoutToken = TokenHolder.INVALID_TOKEN;
 
+    /** Token used to block the transition when URL bar has focus. */
+    private int mUrlBarFocusToken = TokenHolder.INVALID_TOKEN;
+
     /** Tracks the last width seen for the mControlContainer. */
     private int mControlContainerLayoutWidth;
 
@@ -186,6 +189,27 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
     @Override
     public void onLowMemory() {}
+
+    /**
+     * Called when URL bar gains / lost focus. When gaining focus, block the tab strip transition.
+     */
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (hasFocus) {
+            int token = requestDeferTabStripTransitionToken();
+            if (mUrlBarFocusToken != TokenHolder.INVALID_TOKEN) {
+                releaseTabStripToken(mUrlBarFocusToken);
+            }
+            mUrlBarFocusToken = token;
+        }
+    }
+
+    /** Called when URL bar focus animation finished. Release the token for tab strip transition. */
+    public void onUrlAnimationFinished(boolean hasFocus) {
+        if (!hasFocus) {
+            releaseTabStripToken(mUrlBarFocusToken);
+            mUrlBarFocusToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
 
     private void onTokenUpdate() {
         maybeUpdateTabStripVisibility(mControlContainer.getWidth());
