@@ -13,6 +13,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.cached_flags.CachedFlagUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,8 +91,10 @@ public class FeaturesBase {
      * applied to {@link FeatureList}'s internal test-only feature map.
      */
     public abstract static class BaseJUnitProcessor extends Processor {
-        public BaseJUnitProcessor(Class enabledFeatures, Class disabledFeatures) {
-            super(enabledFeatures, disabledFeatures);
+        public BaseJUnitProcessor(
+                Class<? extends Annotation> firstAnnotationType,
+                Class<? extends Annotation>... additionalTypes) {
+            super(firstAnnotationType, additionalTypes);
         }
 
         @Override
@@ -112,8 +115,10 @@ public class FeaturesBase {
      * collected feature states would be applied to {@link CommandLine}.
      */
     public abstract static class BaseInstrumentationProcessor extends Processor {
-        public BaseInstrumentationProcessor(Class enableFeatures, Class disableFeatures) {
-            super(enableFeatures, disableFeatures);
+        public BaseInstrumentationProcessor(
+                Class<? extends Annotation> firstAnnotationType,
+                Class<? extends Annotation>... additionalTypes) {
+            super(firstAnnotationType, additionalTypes);
         }
 
         @Override
@@ -144,8 +149,10 @@ public class FeaturesBase {
      * features.
      */
     private abstract static class Processor extends AnnotationRule {
-        public Processor(Class enableFeatures, Class disableFeatures) {
-            super(enableFeatures, disableFeatures);
+        public Processor(
+                Class<? extends Annotation> firstAnnotationType,
+                Class<? extends Annotation>... additionalTypes) {
+            super(firstAnnotationType, additionalTypes);
         }
 
         @Override

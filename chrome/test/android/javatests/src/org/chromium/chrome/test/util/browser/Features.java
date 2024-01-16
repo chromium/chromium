@@ -67,7 +67,11 @@ public class Features extends FeaturesBase {
      */
     public static class JUnitProcessor extends BaseJUnitProcessor {
         public JUnitProcessor() {
-            super(EnableFeatures.class, DisableFeatures.class);
+            super(
+                    EnableFeatures.class,
+                    DisableFeatures.class,
+                    org.chromium.base.test.util.Features.EnableFeatures.class,
+                    org.chromium.base.test.util.Features.DisableFeatures.class);
             getInstance();
         }
 
@@ -90,7 +94,11 @@ public class Features extends FeaturesBase {
      */
     public static class InstrumentationProcessor extends BaseInstrumentationProcessor {
         public InstrumentationProcessor() {
-            super(EnableFeatures.class, DisableFeatures.class);
+            super(
+                    EnableFeatures.class,
+                    DisableFeatures.class,
+                    org.chromium.base.test.util.Features.EnableFeatures.class,
+                    org.chromium.base.test.util.Features.DisableFeatures.class);
             getInstance();
         }
 
@@ -106,6 +114,13 @@ public class Features extends FeaturesBase {
                 sInstance.enable(((EnableFeatures) annotation).value());
             } else if (annotation instanceof DisableFeatures) {
                 sInstance.disable(((DisableFeatures) annotation).value());
+            } else if (annotation instanceof org.chromium.base.test.util.Features.EnableFeatures) {
+                sInstance.enable(
+                        ((org.chromium.base.test.util.Features.EnableFeatures) annotation).value());
+            } else if (annotation instanceof org.chromium.base.test.util.Features.DisableFeatures) {
+                sInstance.disable(
+                        ((org.chromium.base.test.util.Features.DisableFeatures) annotation)
+                                .value());
             }
         }
     }
