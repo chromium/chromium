@@ -3220,11 +3220,6 @@
       base_feature: "none",
     },
     {
-      name: "ResourceHintsLeastRestrictiveCSP",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ResourceTimingContentType",
       status: "experimental",
       base_feature: "none",
