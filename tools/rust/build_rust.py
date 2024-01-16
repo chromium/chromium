@@ -611,7 +611,10 @@ def GitCherryPick(git_repository, git_remote, commit):
                   fail_hard=False):
         print('Commit already an ancestor; skipping.')
         return
-    RunCommand(['git', '-C', git_repository, 'cherry-pick', commit])
+    RunCommand([
+        'git', '-C', git_repository, 'cherry-pick', '--keep-redundant-commits',
+        commit
+    ])
 
 
 def main():
