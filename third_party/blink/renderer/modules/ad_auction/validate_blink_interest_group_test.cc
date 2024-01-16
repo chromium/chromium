@@ -128,6 +128,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         String::FromUTF8("1"));
     blink_interest_group->trusted_bidding_signals_keys->push_back(
         String::FromUTF8("2"));
+    blink_interest_group->max_trusted_bidding_signals_url_length = 8000;
     blink_interest_group->user_bidding_signals =
         String::FromUTF8("\"This field isn't actually validated\"");
 
@@ -844,7 +845,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
   blink_interest_group->name =
-      WTF::String("paddingTo1048576" + std::string(16, 'P'));
+      WTF::String("paddingTo1048576" + std::string(12, 'P'));
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 13980; ++i) {
     // Each ad component is 75 bytes.
@@ -1237,6 +1238,20 @@ TEST_F(ValidateBlinkInterestGroupTest,
       /*expected_error=*/
       "Interest groups that provide a value of additionalBidKey for negative "
       "targeting must not provide an updateURL.");
+}
+
+TEST_F(ValidateBlinkInterestGroupTest,
+       MaxTrustedBiddingSignalsURLLengthMustNotBeNegative) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->max_trusted_bidding_signals_url_length = -1;
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/
+      String::FromUTF8("maxTrustedBiddingSignalsURLLength"),
+      /*expected_error_field_value=*/String::FromUTF8("-1"),
+      /*expected_error=*/
+      String::FromUTF8("maxTrustedBiddingSignalsURLLength is negative."));
 }
 
 }  // namespace blink

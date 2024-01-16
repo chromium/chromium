@@ -756,6 +756,29 @@ bool CopyTrustedBiddingSignalsSlotSizeModeFromIdlToMojo(
   return true;
 }
 
+bool CopyMaxTrustedBiddingSignalsURLLengthFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  // `maxTrustedBiddingSignalsURLLength` will be set as 0 by default in mojom,
+  // if it is not present in IDL.
+  if (!input.hasMaxTrustedBiddingSignalsURLLength()) {
+    return true;
+  }
+
+  if (input.maxTrustedBiddingSignalsURLLength() < 0) {
+    exception_state.ThrowTypeError(String::Format(
+        "maxTrustedBiddingSignalsURLLength of interest group "
+        "'%s' is less than 0 which is '%d'.",
+        input.name().Characters8(), input.maxTrustedBiddingSignalsURLLength()));
+    return false;
+  }
+
+  output.max_trusted_bidding_signals_url_length =
+      input.maxTrustedBiddingSignalsURLLength();
+  return true;
+}
+
 bool CopyUserBiddingSignalsFromIdlToMojo(const ScriptState& script_state,
                                          ExceptionState& exception_state,
                                          const AuctionAdInterestGroup& input,
@@ -3069,6 +3092,8 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
       !CopyTrustedBiddingSignalsKeysFromIdlToMojo(*group, *mojo_group) ||
       !CopyTrustedBiddingSignalsSlotSizeModeFromIdlToMojo(*group,
                                                           *mojo_group) ||
+      !CopyMaxTrustedBiddingSignalsURLLengthFromIdlToMojo(
+          exception_state, *group, *mojo_group) ||
       !CopyUserBiddingSignalsFromIdlToMojo(*script_state, exception_state,
                                            *group, *mojo_group) ||
       !CopyAdsFromIdlToMojo(*context, *script_state, exception_state, *group,

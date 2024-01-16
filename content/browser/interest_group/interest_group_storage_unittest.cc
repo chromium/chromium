@@ -149,6 +149,7 @@ class InterestGroupStorageTest : public testing::Test {
             .SetTrustedBiddingSignalsSlotSizeMode(
                 blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
                     kAllSlotsRequestedSizes)
+            .SetMaxTrustedBiddingSignalsURLLength(8000)
             .SetUserBiddingSignals("foo")
             .SetAds(std::vector<InterestGroup::Ad>{
                 blink::InterestGroup::Ad(
@@ -875,12 +876,9 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 
   groups = storage->GetInterestGroupsForOwner(test_origin);
 
-  std::vector<StorageInterestGroup::KAnonymityData> expected_bidding = {
-  };
-  std::vector<StorageInterestGroup::KAnonymityData> expected_component_ad = {
-  };
-  std::vector<StorageInterestGroup::KAnonymityData> expected_reporting = {
-  };
+  std::vector<StorageInterestGroup::KAnonymityData> expected_bidding = {};
+  std::vector<StorageInterestGroup::KAnonymityData> expected_component_ad = {};
+  std::vector<StorageInterestGroup::KAnonymityData> expected_reporting = {};
 
   ASSERT_EQ(1u, groups.size());
   EXPECT_THAT(groups[0].bidding_ads_kanon,
@@ -1953,6 +1951,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                       "trusted_bidding_signals_slot_size_mode",
                       &InterestGroup::trusted_bidding_signals_slot_size_mode,
                       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
+                  Field("max_trusted_bidding_signals_url_length",
+                        &InterestGroup::max_trusted_bidding_signals_url_length,
+                        0),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals, std::nullopt),
                   Field("ads", &InterestGroup::ads,
@@ -2036,6 +2037,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                       "trusted_bidding_signals_slot_size_mode",
                       &InterestGroup::trusted_bidding_signals_slot_size_mode,
                       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
+                  Field("max_trusted_bidding_signals_url_length",
+                        &InterestGroup::max_trusted_bidding_signals_url_length,
+                        0),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"1\",\"2\"]]"),
@@ -2120,6 +2124,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                       "trusted_bidding_signals_slot_size_mode",
                       &InterestGroup::trusted_bidding_signals_slot_size_mode,
                       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
+                  Field("max_trusted_bidding_signals_url_length",
+                        &InterestGroup::max_trusted_bidding_signals_url_length,
+                        0),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"1\",\"3\"]]"),
@@ -2204,6 +2211,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                       "trusted_bidding_signals_slot_size_mode",
                       &InterestGroup::trusted_bidding_signals_slot_size_mode,
                       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
+                  Field("max_trusted_bidding_signals_url_length",
+                        &InterestGroup::max_trusted_bidding_signals_url_length,
+                        0),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"3\",\"2\"]]"),

@@ -481,14 +481,14 @@ const SIMPLE_JOIN_LEAVE_TEST_CASES = [
   { expectJoinSucces: true,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-      name: 'a'.repeat(1048520)
+      name: 'a'.repeat(1048516)
     },
     testCaseName: "Largest possible interest group dictionary",
   },
   { expectJoinSucces: false,
     expectLeaveSucces: true,
     interestGroup: { ...BASE_INTEREST_GROUP,
-      name: 'a'.repeat(1048521)
+      name: 'a'.repeat(1048517)
     },
     testCaseName: "Oversized interest group dictionary",
   },

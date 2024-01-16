@@ -1462,6 +1462,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "trustedBiddingSignalsSlotSizeMode": "slot-size",
+"maxTrustedBiddingSignalsURLLength": 8000,
 "userBiddingSignals": {"test":10},
 "updateURL": "%s/interest_group/new_daily_update_partial.json",
 "ads": [{"renderURL": "%s/new_ad_render_url",
@@ -1512,6 +1513,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
   interest_group.user_bidding_signals.emplace();
   interest_group.user_bidding_signals = "{\"test\":4}";
+  interest_group.max_trusted_bidding_signals_url_length = 10000;
   interest_group.ads.emplace();
   std::vector<url::Origin> allowed_reporting_origins = {kOriginF};
   blink::InterestGroup::Ad ad(
@@ -1593,6 +1595,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.trusted_bidding_signals_keys.value()[0], "new_key");
   EXPECT_EQ(group.trusted_bidding_signals_slot_size_mode,
             blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize);
+  EXPECT_EQ(group.max_trusted_bidding_signals_url_length, 8000);
   ASSERT_TRUE(group.user_bidding_signals.has_value());
   EXPECT_EQ(group.user_bidding_signals.value(), "{\"test\":10}");
 
@@ -1820,6 +1823,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
       TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+  interest_group.max_trusted_bidding_signals_url_length = 10000;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
@@ -1855,6 +1859,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   EXPECT_EQ(interest_group.trusted_bidding_signals_slot_size_mode,
             blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
                 kAllSlotsRequestedSizes);
+  EXPECT_EQ(interest_group.max_trusted_bidding_signals_url_length, 10000);
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url(),

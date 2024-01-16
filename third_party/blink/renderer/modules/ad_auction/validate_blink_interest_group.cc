@@ -22,8 +22,9 @@ const size_t kMaxAdRenderIdSize = 12;
 // be cross origin, unlike other interest group URLs, but are still restricted
 // to HTTPS with no embedded credentials.
 bool IsUrlAllowedForRenderUrls(const KURL& url) {
-  if (!url.IsValid() || !url.ProtocolIs(url::kHttpsScheme))
+  if (!url.IsValid() || !url.ProtocolIs(url::kHttpsScheme)) {
     return false;
+  }
 
   return url.User().empty() && url.Pass().empty();
 }
@@ -33,8 +34,9 @@ bool IsUrlAllowedForRenderUrls(const KURL& url) {
 // checked with IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
 // check, and allows references.
 bool IsUrlAllowed(const KURL& url, const mojom::blink::InterestGroup& group) {
-  if (!group.owner->IsSameOriginWith(SecurityOrigin::Create(url).get()))
+  if (!group.owner->IsSameOriginWith(SecurityOrigin::Create(url).get())) {
     return false;
+  }
 
   return IsUrlAllowedForRenderUrls(url) && !url.HasFragmentIdentifier();
 }
@@ -60,10 +62,12 @@ size_t EstimateBlinkInterestGroupSize(
   size += sizeof(group.execution_mode);
   size += sizeof(group.enable_bidding_signals_prioritization);
 
-  if (group.priority_vector)
+  if (group.priority_vector) {
     size += EstimateHashMapSize(*group.priority_vector);
-  if (group.priority_signals_overrides)
+  }
+  if (group.priority_signals_overrides) {
     size += EstimateHashMapSize(*group.priority_signals_overrides);
+  }
   // Tests ensure this matches the blink::InterestGroup size, which is computed
   // from the underlying number of enum bytes (the actual size on disk will
   // vary, but we need a rough estimate for size enforcement).
@@ -74,24 +78,28 @@ size_t EstimateBlinkInterestGroupSize(
     }
   }
   size += kCapabilitiesFlagsSize;  // For all_sellers_capabilities.
-  if (group.bidding_url)
+  if (group.bidding_url) {
     size += group.bidding_url->GetString().length();
+  }
 
-  if (group.bidding_wasm_helper_url)
+  if (group.bidding_wasm_helper_url) {
     size += group.bidding_wasm_helper_url->GetString().length();
+  }
 
   if (group.update_url) {
     size += group.update_url->GetString().length();
   }
 
-  if (group.trusted_bidding_signals_url)
+  if (group.trusted_bidding_signals_url) {
     size += group.trusted_bidding_signals_url->GetString().length();
-
+  }
   if (group.trusted_bidding_signals_keys) {
-    for (const String& key : *group.trusted_bidding_signals_keys)
+    for (const String& key : *group.trusted_bidding_signals_keys) {
       size += key.length();
+    }
   }
   size += sizeof(group.trusted_bidding_signals_slot_size_mode);
+  size += sizeof(group.max_trusted_bidding_signals_url_length);
   size += group.user_bidding_signals.length();
 
   if (group.ads) {
@@ -262,6 +270,15 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     error_field_value = String::Number(
         static_cast<int>(group.trusted_bidding_signals_slot_size_mode));
     error = "trustedBiddingSignalsSlotSizeMode is not valid.";
+    return false;
+  }
+
+  // This check is here to keep it in sync with InterestGroup::IsValid().
+  if (group.max_trusted_bidding_signals_url_length < 0) {
+    error_field_name = "maxTrustedBiddingSignalsURLLength";
+    error_field_value =
+        String::Number(group.max_trusted_bidding_signals_url_length);
+    error = "maxTrustedBiddingSignalsURLLength is negative.";
     return false;
   }
 

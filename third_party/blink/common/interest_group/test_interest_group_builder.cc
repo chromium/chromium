@@ -135,6 +135,14 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetUserBiddingSignals(
   return *this;
 }
 
+TestInterestGroupBuilder&
+TestInterestGroupBuilder::SetMaxTrustedBiddingSignalsURLLength(
+    int32_t max_trusted_bidding_signals_url_length) {
+  interest_group_.max_trusted_bidding_signals_url_length =
+      max_trusted_bidding_signals_url_length;
+  return *this;
+}
+
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAds(
     absl::optional<std::vector<InterestGroup::Ad>> ads) {
   interest_group_.ads = std::move(ads);

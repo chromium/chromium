@@ -150,8 +150,10 @@ struct InterestGroup {
   // `trusted_bidding_signals_url` must match the current frame URL's origin.
   url.mojom.Url? trusted_bidding_signals_url;
   array<string>? trusted_bidding_signals_keys;
+  // Must not be a negative value.
+  int32 max_trusted_bidding_signals_url_length = 0;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
-  string?        user_bidding_signals;
+  string? user_bidding_signals;
   array<InterestGroupAd>? ads;
   array<InterestGroupAd>? ad_components;
   map<string, AdSize>? ad_sizes;
