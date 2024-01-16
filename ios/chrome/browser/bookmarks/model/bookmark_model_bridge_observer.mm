@@ -30,6 +30,11 @@ void BookmarkModelBridge::BookmarkModelBeingDeleted(
     bookmarks::BookmarkModel* model) {
   DCHECK(model_observation_.IsObservingSource(model));
   model_observation_.Reset();
+
+  SEL selector = @selector(bookmarkModelBeingDeleted:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ bookmarkModelBeingDeleted:model];
+  }
 }
 
 void BookmarkModelBridge::BookmarkNodeMoved(

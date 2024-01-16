@@ -52,6 +52,8 @@
 // Called before changing a bookmark node.
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
     willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+// Called when the model is being deleted.
+- (void)bookmarkModelBeingDeleted:(bookmarks::BookmarkModel*)model;
 @end
 
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC
