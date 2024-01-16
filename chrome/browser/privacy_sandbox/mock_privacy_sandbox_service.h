@@ -85,6 +85,10 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (),
               (const, override));
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetChildTopicsCurrentlyAssigned,
+              (const privacy_sandbox::CanonicalTopic& topic),
+              (const, override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetBlockedTopics,
               (),
               (const, override));

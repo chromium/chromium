@@ -841,6 +841,42 @@ TEST_F(PrivacySandboxServiceTest, GetFirstLevelTopics) {
   EXPECT_EQ(kLastTopic, first_level_topics[21]);
 }
 
+TEST_F(PrivacySandboxServiceTest, GetChildTopicsCurrentlyAssigned) {
+  const privacy_sandbox::CanonicalTopic kParentTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(1),  // "Arts & Entertainment"
+          kTestTaxonomyVersion);
+  const privacy_sandbox::CanonicalTopic kDirectChildTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(23),  // "Music & audio"
+          kTestTaxonomyVersion);
+  const privacy_sandbox::CanonicalTopic kIndirectChildTopic =
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(29),  // "Jazz"
+                                      kTestTaxonomyVersion);
+  const privacy_sandbox::CanonicalTopic kNotChildTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(99),  // "Hair Care"
+          kTestTaxonomyVersion);
+
+  // No child topic assigned initially.
+  auto currently_assigned_child_topics =
+      privacy_sandbox_service()->GetChildTopicsCurrentlyAssigned(kParentTopic);
+  ASSERT_EQ(0u, currently_assigned_child_topics.size());
+
+  // Assign some topics.
+  const std::vector<privacy_sandbox::CanonicalTopic> kTopTopics = {
+      kDirectChildTopic, kIndirectChildTopic, kNotChildTopic};
+  ON_CALL(*mock_browsing_topics_service(), GetTopTopicsForDisplay())
+      .WillByDefault(testing::Return(kTopTopics));
+
+  // Both direct and indirect child should be returned.
+  currently_assigned_child_topics =
+      privacy_sandbox_service()->GetChildTopicsCurrentlyAssigned(kParentTopic);
+  ASSERT_EQ(2u, currently_assigned_child_topics.size());
+  EXPECT_EQ(kIndirectChildTopic, currently_assigned_child_topics[0]);
+  EXPECT_EQ(kDirectChildTopic, currently_assigned_child_topics[1]);
+}
+
 TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
   const privacy_sandbox::CanonicalTopic kTestTopic =
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(10),

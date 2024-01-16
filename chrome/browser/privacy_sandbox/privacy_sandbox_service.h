@@ -246,6 +246,12 @@ class PrivacySandboxService : public KeyedService {
   virtual std::vector<privacy_sandbox::CanonicalTopic> GetFirstLevelTopics()
       const = 0;
 
+  // Returns the list of assigned children topics (direct or indirect) of the
+  // passed-in topic.
+  virtual std::vector<privacy_sandbox::CanonicalTopic>
+  GetChildTopicsCurrentlyAssigned(
+      const privacy_sandbox::CanonicalTopic& topic) const = 0;
+
   // Sets a |topic_id|, as both a top topic and topic provided to the web, to be
   // allowed/blocked based on the value of |allowed|. This is stored to
   // preferences and made available to the Topics API via the

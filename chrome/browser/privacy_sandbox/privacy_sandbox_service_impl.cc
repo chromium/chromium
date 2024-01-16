@@ -22,6 +22,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/common/semantic_tree.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -885,6 +886,32 @@ PrivacySandboxServiceImpl::GetFirstLevelTopics() const {
       }());
 
   return *kFirstLevelTopics;
+}
+
+std::vector<privacy_sandbox::CanonicalTopic>
+PrivacySandboxServiceImpl::GetChildTopicsCurrentlyAssigned(
+    const privacy_sandbox::CanonicalTopic& parent_topic) const {
+  browsing_topics::SemanticTree semantic_tree;
+
+  auto descendant_topics =
+      semantic_tree.GetDescendantTopics(parent_topic.topic_id());
+  auto current_assigned_topics = GetCurrentTopTopics();
+
+  std::set<privacy_sandbox::CanonicalTopic> descendant_topics_set;
+  std::transform(
+      std::begin(descendant_topics), std::end(descendant_topics),
+      std::inserter(descendant_topics_set, descendant_topics_set.begin()),
+      [](browsing_topics::Topic topic) {
+        return privacy_sandbox::CanonicalTopic(
+            topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
+      });
+  std::vector<privacy_sandbox::CanonicalTopic> child_topics_assigned;
+  for (const auto topic : current_assigned_topics) {
+    if (descendant_topics_set.contains(topic)) {
+      child_topics_assigned.push_back(topic);
+    }
+  }
+  return child_topics_assigned;
 }
 
 void PrivacySandboxServiceImpl::SetTopicAllowed(

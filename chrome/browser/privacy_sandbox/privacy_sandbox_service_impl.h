@@ -95,6 +95,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const override;
   std::vector<privacy_sandbox::CanonicalTopic> GetFirstLevelTopics()
       const override;
+  std::vector<privacy_sandbox::CanonicalTopic> GetChildTopicsCurrentlyAssigned(
+      const privacy_sandbox::CanonicalTopic& topic) const override;
   void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                        bool allowed) override;
   void TopicsToggleChanged(bool new_value) const override;
