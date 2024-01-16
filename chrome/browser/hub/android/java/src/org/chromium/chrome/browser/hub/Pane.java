@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** A base interface representing a UI that will be displayed as a Pane in the Hub. */
@@ -18,9 +19,13 @@ public interface Pane extends BackPressHandler {
     @PaneId
     int getPaneId();
 
-    /** Returns the {@link View} containing the contents of the Pane. */
+    /** Returns the {@link ViewGroup} containing the contents of the Pane. */
     @NonNull
-    View getRootView();
+    ViewGroup getRootView();
+
+    /** Returns the {@link MenuOrKeyboardActionHandler} for the Pane. */
+    @Nullable
+    MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
 
     /** Returns the desired color scheme. Should be constant for individual panes. */
     @HubColorScheme

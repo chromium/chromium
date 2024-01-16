@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConsta
 
 import android.content.Context;
 import android.os.Handler;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -84,7 +82,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                             mTabSwitcherPaneCoordinatorSupplier,
                             pc -> pc.getHandleBackPressChangedSupplier());
     private final ViewGroup mRootView;
-    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
     private final boolean mIsIncognito;
 
@@ -94,16 +91,13 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     /**
      * @param context The activity context.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
-     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param isIncognito Whether the pane is incognito.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito) {
         mFactory = factory;
-        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mIsIncognito = isIncognito;
 
         mRootView = new FrameLayout(context);
@@ -113,26 +107,22 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
 
     @Override
     public void destroy() {
-        mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
-                mMenuOrKeyboardActionHandler);
         destroyTabSwitcherPaneCoordinator();
     }
 
     @Override
-    public @NonNull View getRootView() {
+    public @NonNull ViewGroup getRootView() {
         return mRootView;
+    }
+
+    @Override
+    public @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
+        return mMenuOrKeyboardActionHandler;
     }
 
     @Override
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {
         mPaneHubController = paneHubController;
-        if (mPaneHubController != null) {
-            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
-                    mMenuOrKeyboardActionHandler);
-        } else {
-            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
-                    mMenuOrKeyboardActionHandler);
-        }
     }
 
     @Override

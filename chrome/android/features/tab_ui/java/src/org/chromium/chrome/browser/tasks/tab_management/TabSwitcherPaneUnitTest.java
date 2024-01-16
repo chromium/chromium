@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -59,7 +58,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -78,10 +76,8 @@ public class TabSwitcherPaneUnitTest {
     @Mock private HubContainerView mHubContainerView;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private TabModelFilter mTabModelFilter;
-    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private PaneHubController mPaneHubController;
 
-    @Captor ArgumentCaptor<MenuOrKeyboardActionHandler> mMenuOrKeyboardActionHandlerCaptor;
     @Captor ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
     @Captor ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
 
@@ -140,7 +136,6 @@ public class TabSwitcherPaneUnitTest {
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mTabModelFilter,
                         mNewTabButtonClickListener,
-                        mMenuOrKeyboardActionController,
                         mTabSwitcherPaneDrawableCoordinator);
         ShadowLooper.runUiThreadTasks();
         verify(mSharedPreferences)
@@ -152,8 +147,6 @@ public class TabSwitcherPaneUnitTest {
     public void tearDown() {
         mTabSwitcherPane.destroy();
         verify(mTabSwitcherPaneCoordinator, times(mTimesCreated)).destroy();
-        verify(mMenuOrKeyboardActionController, atLeastOnce())
-                .unregisterMenuOrKeyboardActionHandler(any());
         verify(mSharedPreferences)
                 .unregisterOnSharedPreferenceChangeListener(
                         mPriceAnnotationsPrefListenerCaptor.getValue());
@@ -390,13 +383,8 @@ public class TabSwitcherPaneUnitTest {
     @Test
     @SmallTest
     public void testShowTabListEditor() {
-        verify(mMenuOrKeyboardActionController, never()).registerMenuOrKeyboardActionHandler(any());
-        mTabSwitcherPane.setPaneHubController(mPaneHubController);
-        verify(mMenuOrKeyboardActionController)
-                .registerMenuOrKeyboardActionHandler(mMenuOrKeyboardActionHandlerCaptor.capture());
-
-        // Check this doesn't crash if there is no coordinator.
-        MenuOrKeyboardActionHandler handler = mMenuOrKeyboardActionHandlerCaptor.getValue();
+        MenuOrKeyboardActionHandler handler = mTabSwitcherPane.getMenuOrKeyboardActionHandler();
+        assertNotNull(handler);
         assertFalse(
                 handler.handleMenuOrKeyboardAction(
                         org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
@@ -414,9 +402,6 @@ public class TabSwitcherPaneUnitTest {
                 handler.handleMenuOrKeyboardAction(
                         org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
         verify(coordinator).showTabListEditor();
-
-        mTabSwitcherPane.setPaneHubController(null);
-        verify(mMenuOrKeyboardActionController).unregisterMenuOrKeyboardActionHandler(handler);
     }
 
     @Test

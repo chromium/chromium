@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
@@ -44,7 +43,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param tabModelFilterSupplier The supplier of the regular {@link TabModelFilter}.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
-     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
      */
     TabSwitcherPane(
@@ -54,12 +52,10 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator) {
         super(
                 context,
                 factory,
-                menuOrKeyboardActionController,
                 /* isIncognito= */ false);
         mSharedPreferences = sharedPreferences;
         mTabModelFilterSupplier = tabModelFilterSupplier;

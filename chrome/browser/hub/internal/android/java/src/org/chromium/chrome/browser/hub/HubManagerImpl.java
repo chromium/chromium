@@ -15,6 +15,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -33,6 +36,8 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull PaneManagerImpl mPaneManager;
     private final @NonNull HubContainerView mHubContainerView;
     private final @NonNull BackPressManager mBackPressManager;
+    private final @NonNull MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
 
@@ -46,11 +51,15 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull Context context,
             @NonNull PaneListBuilder paneListBuilder,
             @NonNull BackPressManager backPressManager,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull SnackbarManager snackbarManager,
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator) {
         mContext = context;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
         mBackPressManager = backPressManager;
+        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
+        mSnackbarManager = snackbarManager;
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
 
@@ -133,13 +142,13 @@ public class HubManagerImpl implements HubManager, HubController {
                         mMenuButtonCoordinator);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
-        if (pane != null) pane.setPaneHubController(mHubCoordinator);
+        attachPaneDependencies(pane);
     }
 
     private void destroyHubCoordinator() {
         if (mHubCoordinator != null) {
             Pane pane = mPaneManager.getFocusedPaneSupplier().get();
-            if (pane != null) pane.setPaneHubController(null);
+            detachPaneDependencies(pane);
 
             mBackPressManager.removeHandler(mHubCoordinator);
             mHubCoordinator.destroy();
@@ -152,7 +161,35 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     private void onFocusedPaneChanged(@Nullable Pane newPane, @Nullable Pane oldPane) {
-        if (oldPane != null) oldPane.setPaneHubController(null);
-        if (newPane != null) newPane.setPaneHubController(mHubCoordinator);
+        detachPaneDependencies(oldPane);
+        if (mHubCoordinator != null) {
+            attachPaneDependencies(newPane);
+        }
+    }
+
+    private void detachPaneDependencies(@Nullable Pane pane) {
+        if (pane == null) return;
+
+        pane.setPaneHubController(null);
+        MenuOrKeyboardActionHandler menuOrKeyboardActionHandler =
+                pane.getMenuOrKeyboardActionHandler();
+        if (menuOrKeyboardActionHandler != null) {
+            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                    menuOrKeyboardActionHandler);
+        }
+        mSnackbarManager.setParentView(null);
+    }
+
+    private void attachPaneDependencies(@Nullable Pane pane) {
+        if (pane == null) return;
+
+        pane.setPaneHubController(mHubCoordinator);
+        MenuOrKeyboardActionHandler menuOrKeyboardActionHandler =
+                pane.getMenuOrKeyboardActionHandler();
+        if (menuOrKeyboardActionHandler != null) {
+            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
+                    menuOrKeyboardActionHandler);
+        }
+        mSnackbarManager.setParentView(pane.getRootView());
     }
 }

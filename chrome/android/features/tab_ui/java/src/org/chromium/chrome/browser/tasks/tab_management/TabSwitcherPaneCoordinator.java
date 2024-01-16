@@ -51,7 +51,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private static final String COMPONENT_NAME = "GridTabSwitcher";
 
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final SnackbarManager mSnackbarManager;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
     private final ObservableSupplier<Boolean> mIsVisibleSupplier;
     private final TabSwitcherPaneMediator mMediator;
@@ -110,7 +109,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull Callback<Integer> onTabClickCallback,
             @TabListMode int mode) {
         mProfileProviderSupplier = profileProviderSupplier;
-        mSnackbarManager = snackbarManager;
         mIsVisibleSupplier = isVisibleSupplier;
         isVisibleSupplier.addObserver(mOnVisibilityChanged);
         assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
@@ -274,15 +272,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     /** Shows the tab list editor. */
     public void showTabListEditor() {
         mTabListEditorManager.showTabListEditor();
-    }
-
-    /**
-     * Changes the parent view of the snackbar.
-     *
-     * @param parentView The parent view to use or null to reset.
-     */
-    public void setSnackbarParentView(@Nullable ViewGroup parentView) {
-        mSnackbarManager.setParentView(parentView);
     }
 
     /**

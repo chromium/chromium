@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -36,6 +37,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
 
@@ -53,9 +57,15 @@ public class HubManagerImplUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private Tab mTab;
     @Mock private Pane mTabSwitcherPane;
+    @Mock private ViewGroup mTabSwitcherPaneView;
+    @Mock private MenuOrKeyboardActionHandler mTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private Pane mIncognitoTabSwitcherPane;
+    @Mock private ViewGroup mIncognitoTabSwitcherPaneView;
+    @Mock private MenuOrKeyboardActionHandler mIncognitoTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private HubLayoutController mHubLayoutController;
     @Mock private ObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
+    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
 
     private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
@@ -73,11 +83,18 @@ public class HubManagerImplUnitTest {
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonDataSupplier);
+        when(mTabSwitcherPane.getRootView()).thenReturn(mTabSwitcherPaneView);
+        when(mTabSwitcherPane.getMenuOrKeyboardActionHandler())
+                .thenReturn(mTabSwitcherMenuOrKeyboardActionHandler);
+
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
                 .thenReturn(mActionButtonDataSupplier);
+        when(mIncognitoTabSwitcherPane.getRootView()).thenReturn(mIncognitoTabSwitcherPaneView);
+        when(mIncognitoTabSwitcherPane.getMenuOrKeyboardActionHandler())
+                .thenReturn(mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
 
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
@@ -109,6 +126,8 @@ public class HubManagerImplUnitTest {
                         mActivity,
                         builder,
                         mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator);
 
@@ -135,10 +154,11 @@ public class HubManagerImplUnitTest {
                         mActivity,
                         builder,
                         mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
-        verify(mTabSwitcherPane).setPaneHubController(null);
 
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
@@ -149,6 +169,9 @@ public class HubManagerImplUnitTest {
         assertNotNull(coordinator);
         verify(mBackPressManager).addHandler(eq(coordinator), eq(BackPressHandler.Type.HUB));
         verify(mTabSwitcherPane).setPaneHubController(coordinator);
+        verify(mSnackbarManager).setParentView(mTabSwitcherPaneView);
+        verify(mMenuOrKeyboardActionController)
+                .registerMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
 
         View containerView = hubController.getContainerView();
         assertNotNull(containerView);
@@ -158,13 +181,24 @@ public class HubManagerImplUnitTest {
         assertEquals(mRootView, containerView.getParent());
 
         hubManager.getPaneManager().focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
-        verify(mTabSwitcherPane, times(2)).setPaneHubController(null);
+        verify(mTabSwitcherPane).setPaneHubController(null);
+        verify(mSnackbarManager).setParentView(null);
+        verify(mMenuOrKeyboardActionController)
+                .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
+        verify(mSnackbarManager).setParentView(mIncognitoTabSwitcherPaneView);
+        verify(mMenuOrKeyboardActionController)
+                .registerMenuOrKeyboardActionHandler(
+                        mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
 
         hubController.onHubLayoutDoneHiding();
         assertNull(hubManager.getHubCoordinatorForTesting());
         verify(mBackPressManager).removeHandler(eq(coordinator));
         verify(mIncognitoTabSwitcherPane).setPaneHubController(null);
+        verify(mSnackbarManager, times(2)).setParentView(null);
+        verify(mMenuOrKeyboardActionController)
+                .unregisterMenuOrKeyboardActionHandler(
+                        mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
 
         // Container is still attached and will be removed separately.
         assertEquals(mRootView, containerView.getParent());
@@ -179,6 +213,8 @@ public class HubManagerImplUnitTest {
                         mActivity,
                         builder,
                         mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator);
         HubController hubController = hubManager.getHubController();

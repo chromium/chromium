@@ -2002,6 +2002,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             this,
                             new DefaultPaneOrderController(),
                             mBackPressManager,
+                            getMenuOrKeyboardActionController(),
+                            this::getSnackbarManager,
                             getTabModelSelectorSupplier(),
                             () -> getToolbarManager().getOverviewModeMenuButtonCoordinator());
         }

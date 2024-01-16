@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /**
  * Main entrypoint for providing core Hub objects to Chrome.
@@ -32,6 +34,10 @@ public class HubProvider {
      * @param context The Android {@link Context} for the Hub.
      * @param orderController The {@link PaneOrderController} for the Hub.
      * @param backPressManager The {@link BackPressManager} for the activity.
+     * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
+     *     activity.
+     * @param snackbarManagerSupplier The supplier of the primary {@link SnackbarManager} for the
+     *     activity.
      * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
      * @param menuButtonCoordinatorSupplier A supplier for the root component for the app menu.
      */
@@ -39,6 +45,8 @@ public class HubProvider {
             @NonNull Context context,
             @NonNull PaneOrderController orderController,
             @NonNull BackPressManager backPressManager,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
@@ -49,10 +57,15 @@ public class HubProvider {
                             ObservableSupplier<Tab> tabSupplier =
                                     tabModelSelectorSupplier.get().getCurrentTabSupplier();
                             assert menuButtonCoordinatorSupplier.hasValue();
+
+                            SnackbarManager snackbarManager = snackbarManagerSupplier.get();
+                            assert snackbarManager != null;
                             return HubManagerFactory.createHubManager(
                                     context,
                                     mPaneListBuilder,
                                     backPressManager,
+                                    menuOrKeyboardActionController,
+                                    snackbarManager,
                                     tabSupplier,
                                     menuButtonCoordinatorSupplier.get());
                         });

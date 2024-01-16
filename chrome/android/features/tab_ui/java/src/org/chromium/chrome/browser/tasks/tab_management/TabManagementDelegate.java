@@ -179,7 +179,6 @@ public interface TabManagementDelegate {
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param incognitoReauthControllerSupplier The incognito reauth controller supplier.
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
-     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param isIncognito Whether this is an incognito pane.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
@@ -196,6 +195,5 @@ public interface TabManagementDelegate {
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito);
 }

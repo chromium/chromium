@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /** A {@link Pane} representing the incognito tab switcher. */
 public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
@@ -94,7 +93,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param incognitoTabModelFilter The incognito tab model filter.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
-     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param incognitoReauthControllerSupplier Supplier for the incognito reauth controller.
      */
     IncognitoTabSwitcherPane(
@@ -102,13 +100,11 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabModelFilter> incognitoTabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @Nullable
                     OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
         super(
                 context,
                 factory,
-                menuOrKeyboardActionController,
                 /* isIncognito= */ true);
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;

@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
-import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -40,7 +40,7 @@ public class HubPaneHostMediatorUnitTest {
 
     private @Mock Pane mPane;
     private @Mock FullButtonData mButtonData;
-    private @Mock View mRootView;
+    private @Mock ViewGroup mRootView;
 
     private ObservableSupplierImpl<Pane> mPaneSupplier;
     private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;

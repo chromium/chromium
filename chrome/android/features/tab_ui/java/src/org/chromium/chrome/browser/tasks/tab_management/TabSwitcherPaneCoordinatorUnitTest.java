@@ -206,16 +206,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testSetSnackbarParentView() {
-        mCoordinator.setSnackbarParentView(mContainerView);
-        verify(mSnackbarManager).setParentView(mContainerView);
-
-        mCoordinator.setSnackbarParentView(null);
-        verify(mSnackbarManager).setParentView(null);
-    }
-
-    @Test
-    @SmallTest
     public void testSetInitialScrollIndexOffset() {
         int index = 8;
         when(mTabModelFilter.index()).thenReturn(index);

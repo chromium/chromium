@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.Incog
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /**
  * Unit tests for {@link IncognitoTabSwitcherPane}. Refer to {@link TabSwitcherPaneUnitTest} for
@@ -69,7 +68,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private TabModelFilter mTabModelFilter;
     @Mock private IncognitoTabModel mIncognitoTabModel;
-    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private PaneHubController mPaneHubController;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
@@ -108,7 +106,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mTabModelFilter,
                         mNewTabButtonClickListener,
-                        mMenuOrKeyboardActionController,
                         mIncognitoReauthControllerSupplier);
     }
 
