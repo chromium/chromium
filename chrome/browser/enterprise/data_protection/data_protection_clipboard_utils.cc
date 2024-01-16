@@ -215,17 +215,25 @@ void PasteIfAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
-  if (clipboard_paste_data.file_paths.empty()) {
-    DCHECK(metadata.size.has_value());
-    pasted_content = *metadata.size;
-  } else {
-    pasted_content = clipboard_paste_data.file_paths;
-  }
 
   if (ui::DataTransferPolicyController::HasInstance()) {
+    absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
+    if (clipboard_paste_data.file_paths.empty()) {
+      DCHECK(metadata.size.has_value());
+      pasted_content = *metadata.size;
+    } else {
+      pasted_content = clipboard_paste_data.file_paths;
+    }
+
+    absl::optional<ui::DataTransferEndpoint> destination_endpoint =
+        absl::nullopt;
+    if (destination.browser_context() &&
+        !destination.browser_context()->IsOffTheRecord()) {
+      destination_endpoint = destination.data_transfer_endpoint();
+    }
+
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        source.data_transfer_endpoint(), destination.data_transfer_endpoint(),
+        source.data_transfer_endpoint(), destination_endpoint,
         std::move(pasted_content),
         destination.web_contents()
             ? destination.web_contents()->GetPrimaryMainFrame()
