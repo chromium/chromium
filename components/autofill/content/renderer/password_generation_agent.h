@@ -127,10 +127,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // all required information is collected.
   bool SetUpTriggeredGeneration();
 
-  // This is called whenever automatic generation could be offered.
-  // If manual generation was already requested, automatic generation will
-  // not be offered.
-  void MaybeOfferAutomaticGeneration();
+  // This is called whenever automatic generation could be offered, and returns
+  // true if generation was offered.
+  // If manual generation was already requested, automatic generation is not
+  // offered.
+  bool MaybeOfferAutomaticGeneration();
 
   // Signals the browser that it should offer automatic password generation
   // as a result of the user focusing a password field eligible for generation.

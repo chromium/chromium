@@ -534,18 +534,19 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
   }
 
   if (current_generation_item_->password_is_generated_) {
-    if (current_generation_item_->generation_element_.Value().length() <
-        kMinimumLengthForEditedPassword) {
+    size_t password_length =
+        current_generation_item_->generation_element_.Value().length();
+    if (password_length < kMinimumLengthForEditedPassword) {
+      // Password is too short to be considered generated.
       PasswordNoLongerGenerated();
-      MaybeOfferAutomaticGeneration();
-      if (current_generation_item_->generation_element_.Value().IsEmpty())
+      if (password_length == 0) {
         current_generation_item_->generation_element_.SetShouldRevealPassword(
             false);
-    } else {
-      current_generation_item_->generation_element_.SetShouldRevealPassword(
-          true);
-      ShowEditingPopup();
+      }
+      return MaybeOfferAutomaticGeneration();
     }
+    current_generation_item_->generation_element_.SetShouldRevealPassword(true);
+    ShowEditingPopup();
     return true;
   }
 
@@ -554,8 +555,7 @@ bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(
   // typing their password and display the password suggestion.
   if (!element.IsReadOnly() && element.IsEnabled() &&
       element.Value().length() <= kMaximumCharsForGenerationOffer) {
-    MaybeOfferAutomaticGeneration();
-    return true;
+    return MaybeOfferAutomaticGeneration();
   }
 
   return false;
@@ -648,11 +648,13 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
   return true;
 }
 
-void PasswordGenerationAgent::MaybeOfferAutomaticGeneration() {
+bool PasswordGenerationAgent::MaybeOfferAutomaticGeneration() {
   // TODO(crbug.com/852309): Add this check to the generation element class.
-  if (!current_generation_item_->is_manually_triggered_) {
-    AutomaticGenerationAvailable();
+  if (current_generation_item_->is_manually_triggered_) {
+    return false;
   }
+  AutomaticGenerationAvailable();
+  return true;
 }
 
 void PasswordGenerationAgent::AutomaticGenerationAvailable() {
