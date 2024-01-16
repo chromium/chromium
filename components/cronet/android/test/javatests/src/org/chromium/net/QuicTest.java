@@ -21,10 +21,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetUrlRequestContext;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -102,7 +102,6 @@ public class QuicTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/1515600")
     public void testQuicLoadUrl() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
@@ -126,7 +125,7 @@ public class QuicTest {
         assertThat(callback.getResponseInfoWithChecks())
                 .hasReceivedByteCountThat()
                 .isGreaterThan((long) expectedContent.length());
-        CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
+        ((CronetUrlRequestContext) cronetEngine).flushWritePropertiesForTesting();
         assertThat(
                         fileContainsString(
                                 "local_prefs.json",
@@ -183,7 +182,6 @@ public class QuicTest {
     @Test
     @LargeTest
     @SuppressWarnings("deprecation")
-    @DisabledTest(message = "crbug.com/1515600")
     public void testNQEWithQuic() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
@@ -242,7 +240,7 @@ public class QuicTest {
         assertThat(cronetEngine.getTransportRttMs()).isAtLeast(0);
         assertThat(cronetEngine.getDownstreamThroughputKbps()).isAtLeast(0);
 
-        CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
+        ((CronetUrlRequestContext) cronetEngine).flushWritePropertiesForTesting();
         assertThat(fileContainsString("local_prefs.json", "network_qualities")).isTrue();
         cronetEngine.shutdown();
     }

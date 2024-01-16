@@ -519,6 +519,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
     }
 
+    public void flushWritePropertiesForTesting() {
+        synchronized (mLock) {
+            CronetUrlRequestContextJni.get()
+                    .flushWritePropertiesForTesting( // IN-TEST
+                            mUrlRequestContextAdapter, CronetUrlRequestContext.this);
+        }
+    }
+
     @CalledByNative
     public void stopNetLogCompleted() {
         mStopNetLogCompleted.open();
@@ -951,6 +959,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void stopNetLog(long nativePtr, CronetUrlRequestContext caller);
+
+        @NativeClassQualifiedName("CronetContextAdapter")
+        void flushWritePropertiesForTesting( // IN-TEST
+                long nativePtr, CronetUrlRequestContext caller);
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void initRequestContextOnInitThread(long nativePtr, CronetUrlRequestContext caller);

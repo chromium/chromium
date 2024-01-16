@@ -205,6 +205,12 @@ void CronetContextAdapter::StopNetLog(JNIEnv* env,
   context_->StopNetLog();
 }
 
+void CronetContextAdapter::FlushWritePropertiesForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  context_->FlushWritePropertiesForTesting();  // IN-TEST
+}
+
 int CronetContextAdapter::default_load_flags() const {
   return context_->default_load_flags();
 }
