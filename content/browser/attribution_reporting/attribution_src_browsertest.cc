@@ -15,16 +15,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/aggregatable_dedup_key.h"
-#include "components/attribution_reporting/aggregatable_trigger_data.h"
-#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -67,7 +62,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
@@ -77,10 +71,8 @@ namespace content {
 
 namespace {
 
-using ::attribution_reporting::AggregationKeys;
 using ::attribution_reporting::DestinationSet;
 using ::attribution_reporting::EventTriggerData;
-using ::attribution_reporting::FilterData;
 using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::TriggerRegistration;
@@ -91,9 +83,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
-using ::testing::IsEmpty;
 using ::testing::Property;
-using ::testing::SizeIs;
 using ::testing::StrictMock;
 
 }  // namespace
@@ -177,25 +167,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
       https_server()->GetURL("c.test", "/register_source_headers.html");
 
   base::RunLoop run_loop;
-  // TODO: These checks are redundant with a variety of unit and/or WPT tests.
   EXPECT_CALL(
       mock_attribution_manager(),
       HandleSource(
-          AllOf(SourceRegistrationIs(AllOf(
-                    Field(&SourceRegistration::source_event_id, 5u),
-                    Field(&SourceRegistration::priority, 0),
-                    Field(&SourceRegistration::debug_key, std::nullopt),
-                    Field(&SourceRegistration::debug_reporting, false),
-                    Field(&SourceRegistration::expiry, base::Days(30)),
-                    Field(&SourceRegistration::filter_data,
-                          Property(&FilterData::filter_values, IsEmpty())),
-                    Field(&SourceRegistration::aggregation_keys,
-                          Property(&AggregationKeys::keys, IsEmpty())),
-                    Field(&SourceRegistration::destination_set,
-                          Property(&DestinationSet::destinations,
-                                   ElementsAre(net::SchemefulSite::Deserialize(
-                                       "https://d.test")))))),
-                SourceTypeIs(SourceType::kEvent),
+          AllOf(SourceTypeIs(SourceType::kEvent),
                 ImpressionOriginIs(*SuitableOrigin::Create(page_url)),
                 ReportingOriginIs(*SuitableOrigin::Create(register_url))),
           web_contents()->GetPrimaryMainFrame()->GetGlobalId()))
@@ -222,25 +197,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     GURL register_url =
         https_server()->GetURL("c.test", "/register_source_headers.html");
     base::RunLoop run_loop;
-    // TODO: These checks are redundant with a variety of unit and/or WPT tests.
     EXPECT_CALL(
         mock_attribution_manager(),
         HandleSource(
             AllOf(
-                SourceRegistrationIs(AllOf(
-                    Field(&SourceRegistration::source_event_id, 5u),
-                    Field(&SourceRegistration::priority, 0),
-                    Field(&SourceRegistration::debug_key, std::nullopt),
-                    Field(&SourceRegistration::debug_reporting, false),
-                    Field(&SourceRegistration::expiry, base::Days(30)),
-                    Field(&SourceRegistration::filter_data,
-                          Property(&FilterData::filter_values, IsEmpty())),
-                    Field(&SourceRegistration::aggregation_keys,
-                          Property(&AggregationKeys::keys, IsEmpty())),
-                    Field(&SourceRegistration::destination_set,
-                          Property(&DestinationSet::destinations,
-                                   ElementsAre(net::SchemefulSite::Deserialize(
-                                       "https://d.test")))))),
                 SourceTypeIs(SourceType::kEvent),
                 ImpressionOriginIs(*SuitableOrigin::Create(page_url)),
                 ReportingOriginIs(*SuitableOrigin::Create(register_url))),
