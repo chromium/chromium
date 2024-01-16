@@ -39,7 +39,11 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private final SwipeAnimationHandler mSwipeAnimationHandler;
     private final boolean mIsFullyVisibileCallbackEnabled;
     private boolean mMessageDismissed;
+    private boolean mFullyVisibleBefore;
+    private boolean mFullyVisibleCallbackInvoked;
+    private final boolean mAreExtraHistogramsEnabled;
 
+    private long mMessageEnqueuedTime;
     // The timestamp when the message was shown. Used for reproting visible duration.
     private long mMessageShownTime;
 
@@ -85,6 +89,8 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
         mModel.set(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK, this::handleSecondaryAction);
+        mMessageEnqueuedTime = MessagesMetrics.now();
+        mAreExtraHistogramsEnabled = MessageFeatureList.areExtraHistogramsEnabled();
     }
 
     /**
@@ -132,13 +138,23 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
             mContainer.addMessage(mView);
         }
 
+        mMessageShownTime = MessagesMetrics.now();
         if (toIndex == Position.FRONT) {
             mContainer.setA11yDelegate(this);
+            if (mAreExtraHistogramsEnabled) {
+                if (!mFullyVisibleBefore) {
+                    MessagesMetrics.recordTimeToFullyShow(
+                            getMessageIdentifier(), mMessageShownTime - mMessageEnqueuedTime);
+                }
+                MessagesMetrics.recordFullyVisible(getMessageIdentifier());
+                mFullyVisibleBefore = true;
+            }
+
             notifyVisibilityChange(true);
         } else {
             notifyVisibilityChange(false);
         }
-        mMessageShownTime = MessagesMetrics.now();
+
         return mMessageBanner.show(fromIndex, toIndex, () -> MessageDimens.from(mContainer, mView));
     }
 
@@ -177,6 +193,20 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                     dismissReason == DismissReason.GESTURE,
                     MessagesMetrics.now() - mMessageShownTime);
         }
+        if (mAreExtraHistogramsEnabled) {
+            if (dismissReason == DismissReason.PRIMARY_ACTION
+                    || dismissReason == DismissReason.SECONDARY_ACTION
+                    || dismissReason == DismissReason.GESTURE
+                    || dismissReason == DismissReason.TIMER) {
+                if (getOnFullyVisibleCallback() != null && !mFullyVisibleCallbackInvoked) {
+                    MessagesMetrics.recordErrorFullyVisibleNotInformed(getMessageIdentifier());
+                }
+            }
+
+            if (!mFullyVisibleBefore) {
+                MessagesMetrics.recordDismissedWithoutFullyVisible(getMessageIdentifier());
+            }
+        }
     }
 
     @Override
@@ -210,16 +240,23 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         mModel.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
     }
 
-    private void notifyVisibilityChange(boolean fullyVisible) {
+    @VisibleForTesting
+    void notifyVisibilityChange(boolean fullyVisible) {
         if (!mIsFullyVisibileCallbackEnabled) return;
-        if (!mModel.containsKey(MessageBannerProperties.ON_FULLY_VISIBLE)) return;
 
-        var callback = mModel.get(MessageBannerProperties.ON_FULLY_VISIBLE);
+        var callback = getOnFullyVisibleCallback();
         if (callback == null) return;
         if (fullyVisible == mModel.get(MessageBannerProperties.IS_FULLY_VISIBLE)) return;
+        mFullyVisibleCallbackInvoked = true;
 
         mModel.set(MessageBannerProperties.IS_FULLY_VISIBLE, fullyVisible);
         callback.onResult(fullyVisible);
+    }
+
+    private @Nullable Callback<Boolean> getOnFullyVisibleCallback() {
+        if (!mModel.containsKey(MessageBannerProperties.ON_FULLY_VISIBLE)) return null;
+
+        return mModel.get(MessageBannerProperties.ON_FULLY_VISIBLE);
     }
 
     @VisibleForTesting

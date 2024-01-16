@@ -17,6 +17,7 @@ namespace {
 const base::Feature* kFeaturesExposedToJava[] = {
     &kMessagesForAndroidStackingAnimation,
     &kMessagesForAndroidFullyVisibleCallback,
+    &kMessagesAndroidExtraHistograms,
 };
 
 // static
@@ -58,6 +59,11 @@ BASE_FEATURE(kMessagesForAndroidStackingAnimation,
 
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              "MessagesForAndroidFullyVisibleCallback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature that enables extra histogram recordings.
+BASE_FEATURE(kMessagesAndroidExtraHistograms,
+             "MessagesAndroidExtraHistograms",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAdsBlockedMessagesUiEnabled() {

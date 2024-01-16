@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 // is fully visible.
 BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
 
+// Feature that enables extra histogram recordings.
+BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
+
 bool IsAdsBlockedMessagesUiEnabled();
 
 bool IsOfferNotificationMessagesUiEnabled();

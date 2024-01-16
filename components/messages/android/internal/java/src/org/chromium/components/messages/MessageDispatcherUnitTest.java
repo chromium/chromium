@@ -13,9 +13,9 @@ import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -23,29 +23,25 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.HashMap;
 
 /** Unit tests for {@link MessageDispatcherImpl}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
+@Features.EnableFeatures({
+    MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION,
+    MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK,
+    MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS
+})
 public class MessageDispatcherUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private MessageQueueManager mQueueManager;
     @Mock private MessageAnimationCoordinator mAnimationCoordinator;
-
-    @Before
-    public void setUp() {
-        var map = new HashMap<String, Boolean>();
-        map.put(MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK, true);
-        map.put(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false);
-        FeatureList.setTestFeatures(map);
-    }
 
     @Test
     public void testEnqueueWindowScopedMessage() {
