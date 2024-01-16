@@ -14,6 +14,7 @@
 
 namespace ash {
 
+class PickerItemView;
 class PickerSearchResult;
 class PickerSectionView;
 
@@ -43,6 +44,10 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   // result can be selected (and subsequently calling this method will do
   // nothing).
   void SelectSearchResult(const PickerSearchResult& result);
+
+  // Creates a result item view based on what type `result` is.
+  std::unique_ptr<PickerItemView> CreateItemView(
+      const PickerSearchResult& result);
 
   SelectSearchResultCallback select_search_result_callback_;
   PickerSearchResults search_results_;

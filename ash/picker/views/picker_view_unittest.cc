@@ -197,8 +197,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
       [&](std::u16string_view query, std::optional<PickerCategory> category) {
         future.SetValue();
         return PickerSearchResults({{
-            PickerSearchResults::Section(u"section",
-                                         {{PickerSearchResult(u"result")}}),
+            PickerSearchResults::Section(
+                u"section", {{PickerSearchResult::Text(u"result")}}),
         }});
       }));
   auto widget = PickerView::CreateWidget(&delegate);
@@ -221,7 +221,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   LeftClickOn(result_view);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(Property(&PickerSearchResult::text, Eq(u"result"))));
+              Optional(PickerSearchResult::Text(u"result")));
 }
 
 TEST_F(PickerViewTest, SwitchesToCategoryView) {

@@ -5,10 +5,13 @@
 #include "ash/picker/views/picker_search_results_view.h"
 
 #include <memory>
+#include <optional>
+#include <variant>
 
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "base/functional/overloaded.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout.h"
@@ -35,10 +38,7 @@ void PickerSearchResultsView::SetSearchResults(
     auto* section_view =
         AddChildView(std::make_unique<PickerSectionView>(section.heading()));
     for (const auto& result : section.results()) {
-      section_view->AddItemView(std::make_unique<PickerItemView>(
-          base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                         base::Unretained(this), result),
-          result.text()));
+      section_view->AddItemView(CreateItemView(result));
     }
     section_views_.push_back(section_view);
   }
@@ -49,6 +49,27 @@ void PickerSearchResultsView::SelectSearchResult(
   if (!select_search_result_callback_.is_null()) {
     std::move(select_search_result_callback_).Run(result);
   }
+}
+
+std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
+    const PickerSearchResult& result) {
+  return std::visit(
+      base::Overloaded{
+          [&, this](const PickerSearchResult::TextData& data) {
+            return std::make_unique<PickerItemView>(
+                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
+                               base::Unretained(this), result),
+                data.text);
+          },
+          [&, this](const PickerSearchResult::GifData& data) {
+            // TODO: b/316936418 - Display the GIF using views.
+            return std::make_unique<PickerItemView>(
+                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
+                               base::Unretained(this), result),
+                u"<gif>");
+          },
+      },
+      result.data());
 }
 
 BEGIN_METADATA(PickerSearchResultsView, views::View)

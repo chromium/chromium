@@ -116,7 +116,7 @@ void PickerController::GetResultsForCategory(PickerCategory category,
   // TODO: b/316936620 - Get actual results for the category.
   callback.Run(PickerSearchResults({{
       PickerSearchResults::Section(u"Recently used",
-                                   {{PickerSearchResult(u"😊")}}),
+                                   {{PickerSearchResult::Text(u"😊")}}),
   }}));
 }
 
@@ -127,13 +127,15 @@ void PickerController::StartSearch(const std::u16string& query,
   callback.Run(PickerSearchResults({{
       PickerSearchResults::Section(
           u"Matching expressions",
-          {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
+          {{PickerSearchResult::Text(u"👍"), PickerSearchResult::Text(u"😊"),
+            PickerSearchResult::Gif(GURL(
+                "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"))}}),
       PickerSearchResults::Section(u"Matching links",
-                                   {{PickerSearchResult(u"www.foo.com"),
-                                     PickerSearchResult(u"crbug.com")}}),
-      PickerSearchResults::Section(u"Matching files",
-                                   {{PickerSearchResult(u"my file"),
-                                     PickerSearchResult(u"my other file")}}),
+                                   {{PickerSearchResult::Text(u"www.foo.com"),
+                                     PickerSearchResult::Text(u"crbug.com")}}),
+      PickerSearchResults::Section(
+          u"Matching files", {{PickerSearchResult::Text(u"my file"),
+                               PickerSearchResult::Text(u"my other file")}}),
   }}));
 }
 
@@ -149,8 +151,12 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // This cancels the previous request if there was one.
-  insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-      input_method, result.text(), kInsertMediaTimeout);
+  // TODO: b/316936577 - Support inserting images.
+  if (const auto* data =
+          std::get_if<PickerSearchResult::TextData>(&result.data())) {
+    insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+        input_method, data->text, kInsertMediaTimeout);
+  }
 }
 
 bool PickerController::ShouldPaint() {

@@ -43,10 +43,10 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   PickerSearchResultsView view(base::DoNothing());
   const PickerSearchResults kSearchResults({{
       PickerSearchResults::Section(u"Section 1",
-                                   {{PickerSearchResult(u"Result A")}}),
-      PickerSearchResults::Section(
-          u"Section 2",
-          {{PickerSearchResult(u"Result B"), PickerSearchResult(u"Result C")}}),
+                                   {{PickerSearchResult::Text(u"Result A")}}),
+      PickerSearchResults::Section(u"Section 2",
+                                   {{PickerSearchResult::Text(u"Result B"),
+                                     PickerSearchResult::Text(u"Result C")}}),
   }});
   view.SetSearchResults(kSearchResults);
 
@@ -61,13 +61,13 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   PickerSearchResultsView view(base::DoNothing());
   const PickerSearchResults kInitialSearchResults({{
       PickerSearchResults::Section(u"Section",
-                                   {{PickerSearchResult(u"Result")}}),
+                                   {{PickerSearchResult::Text(u"Result")}}),
   }});
   view.SetSearchResults(kInitialSearchResults);
 
   const PickerSearchResults kUpdatedSearchResults({{
-      PickerSearchResults::Section(u"Updated Section",
-                                   {{PickerSearchResult(u"Updated Result")}}),
+      PickerSearchResults::Section(
+          u"Updated Section", {{PickerSearchResult::Text(u"Updated Result")}}),
   }});
   view.SetSearchResults(kUpdatedSearchResults);
 
@@ -85,7 +85,7 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsSearchResult) {
       std::make_unique<PickerSearchResultsView>(future.GetCallback()));
   view->SetSearchResults(PickerSearchResults({{
       PickerSearchResults::Section(u"section",
-                                   {{PickerSearchResult(u"result")}}),
+                                   {{PickerSearchResult::Text(u"result")}}),
   }}));
   ASSERT_THAT(view->section_views_for_testing(), Not(IsEmpty()));
   ASSERT_THAT(view->section_views_for_testing()[0]->item_views_for_testing(),
@@ -96,7 +96,7 @@ TEST_F(PickerSearchResultsViewTest, LeftClickSelectsSearchResult) {
   ViewDrawnWaiter().Wait(result_view);
   LeftClickOn(result_view);
 
-  EXPECT_THAT(future.Get(), Property(&PickerSearchResult::text, Eq(u"result")));
+  EXPECT_EQ(future.Get(), PickerSearchResult::Text(u"result"));
 }
 
 }  // namespace
