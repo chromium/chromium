@@ -1817,14 +1817,6 @@ TEST_P(SharedStorageDatabaseParamTest, MaxStringLength) {
 
 class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
  public:
-  void SetUp() override {
-    SharedStorageDatabaseTest::SetUp();
-
-    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
-    db_ = std::make_unique<SharedStorageDatabase>(
-        file_name_, special_storage_policy_, std::move(options));
-  }
-
   void InitSharedStorageFeature() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         {blink::features::kSharedStorageAPI},
