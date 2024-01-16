@@ -12,7 +12,7 @@ BASE_FEATURE(kLocalContentAnalysisEnabled,
 
 BASE_FEATURE(kDialogCustomRuleMessageEnabled,
              "DialogCustomRuleMessageEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDialogCustomRuleMessageEnabled() {
   return base::FeatureList::IsEnabled(kDialogCustomRuleMessageEnabled);
