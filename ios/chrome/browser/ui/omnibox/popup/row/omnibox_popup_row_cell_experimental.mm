@@ -398,7 +398,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
   self.detailTruncatingLabel.displayAsURL = suggestion.isURL;
   UILabel* detailLabel = suggestion.hasAnswer ? self.detailAnswerLabel
                                               : self.detailTruncatingLabel;
-  if (suggestion.detailText.length > 0) {
+  if (suggestion.detailText.length) {
     [self.textStackView addArrangedSubview:detailLabel];
     detailLabel.attributedText =
         self.highlighted
