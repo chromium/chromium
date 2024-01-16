@@ -34,7 +34,7 @@ void FakeTelemetryManagementService::SetAudioGain(
     uint64_t node_id,
     int32_t gain,
     SetAudioGainCallback callback) {
-  std::move(callback).Run();
+  std::move(callback).Run(true);
 }
 
 void FakeTelemetryManagementService::SetAudioVolume(

@@ -88,10 +88,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionManagementApiBrowserTest,
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function setAudioGain() {
-        await chrome.os.management.setAudioGain({
+        const result = await chrome.os.management.setAudioGain({
           nodeId: 1,
           gain: 100,
         });
+        chrome.test.assertTrue(result);
         chrome.test.succeed();
       }
     ]);

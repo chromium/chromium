@@ -72,8 +72,8 @@ void OsManagementSetAudioGainFunction::RunIfAllowed() {
                                    params.value().args.gain, std::move(cb));
 }
 
-void OsManagementSetAudioGainFunction::OnResult() {
-  Respond(NoArguments());
+void OsManagementSetAudioGainFunction::OnResult(bool is_success) {
+  Respond(WithArguments(is_success));
 }
 
 // OsManagementSetAudioVolumeFunction ------------------------------------------

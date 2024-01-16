@@ -71,49 +71,64 @@ TEST_F(TelemetryManagementServiceAshTest, AudioSetGainSuccess) {
   cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioInputNodeId, 10);
 
   constexpr int32_t expected_gain = 60;
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<bool> future;
   management_service()->SetAudioGain(kFakeAudioInputNodeId, expected_gain,
                                      future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
   EXPECT_EQ(
       cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioInputNodeId),
       expected_gain);
 }
 
-// Tests that AudioSetGain returns false when |gain| is above max (100).
+// Tests that AudioSetGain sets gain to max (100) when |gain| exceeds max.
 TEST_F(TelemetryManagementServiceAshTest, AudioSetGainInvalidGainAboveMax) {
   // Set to an arbitrary value first.
   cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioInputNodeId, 10);
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<bool> future;
   management_service()->SetAudioGain(kFakeAudioInputNodeId, 999,
                                      future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
   EXPECT_EQ(
       cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioInputNodeId),
       100);
 }
 
-// Tests that AudioSetGain returns false when |gain| is below min (0).
+// Tests that AudioSetGain sets gain to min (0) when |gain| is below min.
 TEST_F(TelemetryManagementServiceAshTest, AudioSetGainInvalidGainBelowMin) {
   // Set to an arbitrary value first.
   cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioInputNodeId, 10);
 
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<bool> future;
   management_service()->SetAudioGain(kFakeAudioInputNodeId, -100,
                                      future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
   EXPECT_EQ(
       cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioInputNodeId),
       0);
 }
 
-// Tests that AudioSetGain returns true (but no-op) when |node_id| is invalid.
+// Tests that AudioSetGain returns false when |node_id| is invalid.
 TEST_F(TelemetryManagementServiceAshTest, AudioSetGainInvalidNodeId) {
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<bool> future;
   management_service()->SetAudioGain(GetFakeAudioNodeId(), 60,
                                      future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that AudioSetGain return false if the audio node is an output node.
+TEST_F(TelemetryManagementServiceAshTest, AudioSetGainWithOutputNode) {
+  // Set to an arbitrary value first.
+  cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioOutputNodeId,
+                                                     10);
+
+  base::test::TestFuture<bool> future;
+  management_service()->SetAudioGain(kFakeAudioOutputNodeId, 60,
+                                     future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(
+      cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioOutputNodeId),
+      10);
 }
 
 // Tests that AudioSetVolume forwards requests to CrasAudioHandler to set the

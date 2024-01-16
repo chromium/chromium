@@ -66,9 +66,16 @@ void TelemetryManagementServiceAsh::SetAudioGain(
     uint64_t node_id,
     int32_t gain,
     SetAudioGainCallback callback) {
+  // Only input audio node is supported.
+  const AudioDevice* device = CrasAudioHandler::Get()->GetDeviceFromId(node_id);
+  if (!device || !device->is_input) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   gain = std::clamp(gain, kMinAudioGain, kMaxAudioGain);
   CrasAudioHandler::Get()->SetVolumeGainPercentForDevice(node_id, gain);
-  std::move(callback).Run();
+  std::move(callback).Run(true);
 }
 
 void TelemetryManagementServiceAsh::SetAudioVolume(

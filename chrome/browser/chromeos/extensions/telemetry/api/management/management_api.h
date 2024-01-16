@@ -56,7 +56,7 @@ class OsManagementSetAudioGainFunction : public ManagementApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult();
+  void OnResult(bool is_success);
 };
 
 class OsManagementSetAudioVolumeFunction : public ManagementApiFunctionBase {

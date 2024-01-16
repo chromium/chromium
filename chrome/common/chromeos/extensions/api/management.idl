@@ -25,16 +25,13 @@ namespace os.management {
       boolean isMuted;
   };
 
-  callback VoidCallback = void();
-
   callback OperationCallback = void(boolean isSuccess);
 
   interface Functions {
-      // Sets the specified input audio device's gain to value. No-op if
+      // Sets the specified input audio device's gain to value. Returns false if
       // |args.nodeId| is invalid.
-      // TODO(b/317014106): Migrate to OperationCallback.
       [supportsPromises] static void setAudioGain(
-          SetAudioGainArguments args, VoidCallback callback);
+          SetAudioGainArguments args, OperationCallback callback);
       // Sets the specified output audio device's volume and mute state to the
       // given value. Returns false if |args.nodeId| is invalid.
       [supportsPromises] static void setAudioVolume(

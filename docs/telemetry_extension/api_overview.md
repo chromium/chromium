@@ -1100,5 +1100,5 @@ Source:
 
 | Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
 ------------ | ------------- | ------------- | ------------- | ------------- |
-| setAudioGain | (args: SetAudioGainArguments) => Promise<void\> | `os.management.audio` | M122 | Sets the specified input audio device's gain to value. No-op if `args.nodeId` is invalid |
+| setAudioGain | (args: SetAudioGainArguments) => Promise<boolean\> | `os.management.audio` | M122 | Sets the specified input audio device's gain to value. Returns false if `args.nodeId` is invalid |
 | setAudioVolume | (args: SetAudioVolumeArguments) => Promise<boolean\> | `os.management.audio` | M122 | Sets the specified output audio device's volume and mute state to the given value. Returns false if `args.nodeId` is invalid |
