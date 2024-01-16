@@ -50,6 +50,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
          // Custom search engines cannot be used on mobile.
          AutocompleteProvider::TYPE_KEYWORD |
          AutocompleteProvider::TYPE_OPEN_TAB |
+         AutocompleteProvider::TYPE_FEATURED_SEARCH |
 #else
          AutocompleteProvider::TYPE_CLIPBOARD |
          AutocompleteProvider::TYPE_MOST_VISITED_SITES |

@@ -5,8 +5,8 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 
 #include <inttypes.h>
-
 #include <limits.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <map>
@@ -84,6 +84,10 @@
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/featured_search_provider.h"
+#endif
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/actions/history_clusters_action.h"
@@ -959,6 +963,11 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());
     providers_.push_back(open_tab_provider_.get());
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (provider_types & AutocompleteProvider::TYPE_FEATURED_SEARCH) {
+    providers_.push_back(new FeaturedSearchProvider(provider_client_.get()));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void AutocompleteController::UpdateResult(UpdateType update_type) {

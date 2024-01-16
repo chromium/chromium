@@ -409,6 +409,13 @@ static_library("browser") {
     ]
   }
 
+  if (!is_android && !is_ios) {
+    sources += [
+      "featured_search_provider.cc",
+      "featured_search_provider.h",
+    ]
+  }
+
   if (enable_extensions) {
     deps += [ "//extensions/common:common_constants" ]
     sources += [
@@ -834,6 +841,10 @@ source_set("unit_tests") {
       "on_device_tail_model_executor_unittest.cc",
       "on_device_tail_model_service_unittest.cc",
     ]
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [ "featured_search_provider_unittest.cc" ]
   }
 
   deps = [
