@@ -98,23 +98,23 @@ INSTANTIATE_TEST_SUITE_P(
             .model_predictions_feature = true,
             .pattern_provider_feature = "default",
             .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kDefault,
-                                           HeuristicSource::kExperimental,
-                                           HeuristicSource::kNextGen}},
+            .expected_nonactive_sources = {HeuristicSource::kDefault}},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
             .pattern_provider_feature = "default",
             .expected_active_source = HeuristicSource::kDefault,
             .expected_nonactive_sources = {HeuristicSource::kExperimental,
-                                           HeuristicSource::kNextGen,
                                            HeuristicSource::kMachineLearning}},
         HeuristicSourceParams{
             .pattern_provider_feature = "default",
             .expected_active_source = HeuristicSource::kDefault,
-            .expected_nonactive_sources = {HeuristicSource::kExperimental,
-                                           HeuristicSource::kNextGen}},
+            .expected_nonactive_sources = {HeuristicSource::kExperimental}},
 
+        HeuristicSourceParams{
+            .pattern_provider_feature = "experimental",
+            .expected_active_source = HeuristicSource::kExperimental,
+            .expected_nonactive_sources = {HeuristicSource::kNextGen}},
 #endif
         // Tests when `kAutofillParsingPatternProvider` is disabled. In this
         // case, parsing doesn't depend on the pattern source. But since

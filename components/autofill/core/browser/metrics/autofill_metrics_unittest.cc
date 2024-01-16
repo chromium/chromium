@@ -8198,8 +8198,8 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
         {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeDefaultName, field_types[i]},
         {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
-        {UFIT::kHeuristicTypeNextGenName, field_types[i]},
-        {UFIT::kFieldLogEventCountName, field_log_events_count + 4},
+        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+        {UFIT::kFieldLogEventCountName, field_log_events_count + 3},
 #else
         {UFIT::kHeuristicTypeLegacyName, field_types[i]},
         {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
@@ -8610,9 +8610,9 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
           {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
           {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeNextGenName, heuristic_types[i]},
+          {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
       }));
-      field_log_events_count += 4;
+      field_log_events_count += 3;
 #else
           {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
           {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
@@ -8705,8 +8705,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
                                      12, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 35, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 8, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 29, 1);
 #else
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 4, 1);
@@ -9164,8 +9164,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeDefaultName, field_types[i]},
         {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
-        {UFIT::kHeuristicTypeNextGenName, field_types[i]},
-        {UFIT::kFieldLogEventCountName, 4},
+        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+        {UFIT::kFieldLogEventCountName, 3},
 #else
         {UFIT::kHeuristicTypeLegacyName, field_types[i]},
         {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
@@ -9220,8 +9220,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                      3, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent", 8, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 12, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 6, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 8, 1);
 #else
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);

@@ -166,14 +166,9 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
       "Autofill.ShadowPredictions.ExperimentalToDefault", kNoPrediction, 2);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.ShadowPredictions.NextGenToDefault", kNoPrediction, 2);
 #else
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.ShadowPredictions.ExperimentalToDefault"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.ShadowPredictions.NextGenToDefault"),
               IsEmpty());
 #endif
 }
@@ -213,19 +208,6 @@ TEST_F(AutofillShadowPredictionMetricsTest,
       UnorderedElementsAre(
           Bucket(kNameFullSamePredictionValueAgrees, 1),
           Bucket(kSearchTermDifferentPredictionsValueAgreesWithNew, 1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.ShadowPredictions.NextGenToDefault"),
-              UnorderedElementsAre(
-                  Bucket(kNameFullDifferentPredictionsValueAgreesWithOld, 1),
-                  Bucket(kSearchTermSamePredictionValueDisagrees, 1)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Autofill.ShadowPredictions.NextGenToExperimental"),
-      UnorderedElementsAre(
-          Bucket(kNameFullDifferentPredictionsValueAgreesWithOld, 1),
-          Bucket(kEmailAddressDifferentPredictionsValueAgreesWithOld, 1)));
 }
 
 // Test that Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer compares
