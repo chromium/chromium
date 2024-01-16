@@ -1811,6 +1811,12 @@ test("content_browsertests") {
     "//third_party/mesa_headers",
   ]
 
+  data = [
+    "data/",
+    "//media/test/data/",
+    "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
+  ]
+
   if (is_ios) {
     bundle_deps = [
       ":content_test_bundle_data",
@@ -1819,11 +1825,6 @@ test("content_browsertests") {
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
   } else {
-    data = [
-      "data/",
-      "//media/test/data/",
-      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
-    ]
     data_deps += [
       "//testing/buildbot/filters:content_browsertests_filters",
       "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
@@ -3166,7 +3167,7 @@ test("content_unittests") {
       "../browser/media/capture/web_contents_frame_tracker_unittest.cc",
     ]
 
-    if (!is_android) {
+    if (!is_android && !is_ios) {
       deps += [
         "//content/common:buildflags",
         "//media/capture:test_support",

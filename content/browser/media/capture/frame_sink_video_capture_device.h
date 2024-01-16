@@ -117,7 +117,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
  protected:
   MouseCursorOverlayController* cursor_controller() const {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     return cursor_controller_.get();
 #else
     return nullptr;
@@ -231,7 +231,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Controls the overlay that renders the mouse cursor onto each video frame.
   const std::unique_ptr<MouseCursorOverlayController,
                         BrowserThread::DeleteOnUIThread>
