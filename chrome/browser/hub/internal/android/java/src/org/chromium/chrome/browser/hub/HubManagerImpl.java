@@ -14,6 +14,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -33,6 +34,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull HubContainerView mHubContainerView;
     private final @NonNull BackPressManager mBackPressManager;
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
+    private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -44,11 +46,13 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull Context context,
             @NonNull PaneListBuilder paneListBuilder,
             @NonNull BackPressManager backPressManager,
-            @NonNull ObservableSupplier<Tab> tabSupplier) {
+            @NonNull ObservableSupplier<Tab> tabSupplier,
+            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
         mContext = context;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
         mBackPressManager = backPressManager;
         mTabSupplier = tabSupplier;
+        mMenuButtonCoordinator = menuButtonCoordinator;
 
         // TODO(crbug/1487315): Consider making this a xml file so the entire core UI is inflated.
         mHubContainerView = new HubContainerView(mContext);
@@ -122,7 +126,11 @@ public class HubManagerImpl implements HubManager, HubController {
 
         mHubCoordinator =
                 new HubCoordinator(
-                        mHubContainerView, mPaneManager, mHubLayoutController, mTabSupplier);
+                        mHubContainerView,
+                        mPaneManager,
+                        mHubLayoutController,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         if (pane != null) pane.setPaneHubController(mHubCoordinator);

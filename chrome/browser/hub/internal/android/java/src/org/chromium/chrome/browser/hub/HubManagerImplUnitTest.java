@@ -35,6 +35,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
 
@@ -55,6 +56,7 @@ public class HubManagerImplUnitTest {
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private HubLayoutController mHubLayoutController;
     @Mock private ObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
+    @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
 
     private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
@@ -104,7 +106,11 @@ public class HubManagerImplUnitTest {
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         HubManager hubManager =
                 HubManagerFactory.createHubManager(
-                        mActivity, builder, mBackPressManager, mTabSupplier);
+                        mActivity,
+                        builder,
+                        mBackPressManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -125,9 +131,15 @@ public class HubManagerImplUnitTest {
                                 PaneId.INCOGNITO_TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         HubManagerImpl hubManager =
-                new HubManagerImpl(mActivity, builder, mBackPressManager, mTabSupplier);
+                new HubManagerImpl(
+                        mActivity,
+                        builder,
+                        mBackPressManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPane).setPaneHubController(null);
+
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
         assertNull(hubManager.getHubCoordinatorForTesting());
@@ -163,7 +175,12 @@ public class HubManagerImplUnitTest {
     public void testBackNavigation() {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
         HubManagerImpl hubManager =
-                new HubManagerImpl(mActivity, builder, mBackPressManager, mTabSupplier);
+                new HubManagerImpl(
+                        mActivity,
+                        builder,
+                        mBackPressManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 

@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -57,12 +58,14 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * @param paneManager The {@link PaneManager} for Hub.
      * @param hubLayoutController The controller of the {@link HubLayout}.
      * @param currentTabSupplier The supplier of the current {@link Tab}.
+     * @param menuButtonCoordinator Root component for the app menu.
      */
     public HubCoordinator(
             @NonNull FrameLayout containerView,
             @NonNull PaneManager paneManager,
             @NonNull HubLayoutController hubLayoutController,
-            @NonNull ObservableSupplier<Tab> currentTabSupplier) {
+            @NonNull ObservableSupplier<Tab> currentTabSupplier,
+            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
@@ -78,7 +81,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         mContainerView.addView(mMainHubParent);
 
         HubToolbarView hubToolbarView = mContainerView.findViewById(R.id.hub_toolbar);
-        mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView, paneManager);
+        mHubToolbarCoordinator =
+                new HubToolbarCoordinator(hubToolbarView, paneManager, menuButtonCoordinator);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =

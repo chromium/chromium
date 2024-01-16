@@ -36,6 +36,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubProvider}. */
@@ -56,6 +57,7 @@ public class HubProviderUnitTest {
     @Mock private Pane mMockIncognitoTabSwitcherPane;
     @Mock private Pane mMockBookmarksPane;
     @Mock private BackPressManager mBackPressManagerMock;
+    @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
 
     private Activity mActivity;
     private HubProvider mHubProvider;
@@ -70,7 +72,6 @@ public class HubProviderUnitTest {
         when(mTabModelSelector.getCurrentModelTabCountSupplier()).thenReturn(mTabCountSupplier);
         mTabCountSupplier.set(0);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-
     }
 
     private void onActivity(Activity activity) {
@@ -81,7 +82,8 @@ public class HubProviderUnitTest {
                         mActivity,
                         new DefaultPaneOrderController(),
                         mBackPressManagerMock,
-                        () -> mTabModelSelector);
+                        () -> mTabModelSelector,
+                        () -> mMenuButtonCoordinator);
     }
 
     @After

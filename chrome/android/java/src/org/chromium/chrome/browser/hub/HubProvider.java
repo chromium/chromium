@@ -16,6 +16,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 
 /**
  * Main entrypoint for providing core Hub objects to Chrome.
@@ -32,12 +33,14 @@ public class HubProvider {
      * @param orderController The {@link PaneOrderController} for the Hub.
      * @param backPressManager The {@link BackPressManager} for the activity.
      * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
+     * @param menuButtonCoordinatorSupplier A supplier for the root component for the app menu.
      */
     public HubProvider(
             @NonNull Context context,
             @NonNull PaneOrderController orderController,
             @NonNull BackPressManager backPressManager,
-            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier) {
+            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
+            @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
@@ -45,8 +48,13 @@ public class HubProvider {
                             assert tabModelSelectorSupplier.hasValue();
                             ObservableSupplier<Tab> tabSupplier =
                                     tabModelSelectorSupplier.get().getCurrentTabSupplier();
+                            assert menuButtonCoordinatorSupplier.hasValue();
                             return HubManagerFactory.createHubManager(
-                                    context, mPaneListBuilder, backPressManager, tabSupplier);
+                                    context,
+                                    mPaneListBuilder,
+                                    backPressManager,
+                                    tabSupplier,
+                                    menuButtonCoordinatorSupplier.get());
                         });
 
         // Taken from IncognitoToggleTabLayout.

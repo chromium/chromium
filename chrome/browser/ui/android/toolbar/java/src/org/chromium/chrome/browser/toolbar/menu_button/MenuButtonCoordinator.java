@@ -51,19 +51,19 @@ public class MenuButtonCoordinator {
     private PropertyModelChangeProcessor mChangeProcessor;
 
     /**
-     *  @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
-     *         app menu MVC components.
+     * @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
+     *     app menu MVC components.
      * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
-     *         controls.
+     *     controls.
      * @param windowAndroid The WindowAndroid instance.
      * @param setUrlBarFocusFunction Function that allows setting focus on the url bar.
      * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
-     *         containing the app menu button.
+     *     containing the app menu button.
      * @param shouldShowAppUpdateBadge Whether the app menu update badge should be shown if there is
-     *         a pending update.
+     *     a pending update.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
      * @param themeColorProvider Provider of theme color changes.
-     * @param menuButtonStateSupplier Supplief of the menu button state.
+     * @param menuButtonStateSupplier Supplier of the menu button state.
      * @param onMenuButtonClicked Runnable to run on menu button click.
      * @param menuButtonId Resource id that should be used to locate the underlying view.
      */

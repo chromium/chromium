@@ -2480,6 +2480,11 @@ public class ToolbarManager
         return mLocationBar.getVoiceRecognitionHandler();
     }
 
+    /** Returns the app menu coordinator. */
+    public @Nullable MenuButtonCoordinator getOverviewModeMenuButtonCoordinator() {
+        return mOverviewModeMenuButtonCoordinator;
+    }
+
     /**
      * Called whenever the NTP could have been entered or exited (e.g. tab content changed, tab
      * navigated to from the tab strip/tab switcher, etc.). If the user is on a tablet and indeed

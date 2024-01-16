@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 
 /** Factory for creating {@link HubManager}. */
 public class HubManagerFactory {
@@ -22,13 +23,16 @@ public class HubManagerFactory {
      *     PaneManager}.
      * @param backPressManager The {@link BackPressManager} for the activity.
      * @param tabSupplier The supplier of the current tab in the current tab model.
+     * @param menuButtonCoordinator Root component for the app menu.
      * @return an instance of {@link HubManagerImpl}.
      */
     public static HubManager createHubManager(
             @NonNull Context context,
             @NonNull PaneListBuilder paneListBuilder,
             @NonNull BackPressManager backPressManager,
-            @NonNull ObservableSupplier<Tab> tabSupplier) {
-        return new HubManagerImpl(context, paneListBuilder, backPressManager, tabSupplier);
+            @NonNull ObservableSupplier<Tab> tabSupplier,
+            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
+        return new HubManagerImpl(
+                context, paneListBuilder, backPressManager, tabSupplier, menuButtonCoordinator);
     }
 }
