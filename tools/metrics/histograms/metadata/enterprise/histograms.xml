@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2024-02-25">
+    enum="NetErrorCodes" expires_after="2024-05-10">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
