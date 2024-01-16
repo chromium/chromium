@@ -214,8 +214,8 @@ class FakeExtensionProviderOneDrive
   std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
   CreateProvidedFileSystem(
       Profile* profile,
-      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
-      override;
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      ash::file_system_provider::ContentCache* content_cache) override;
 
   // Calls `request_mount_callback` if set.
   bool RequestMount(

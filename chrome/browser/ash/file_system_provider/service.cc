@@ -47,6 +47,9 @@ Service::Service(Profile* profile,
       extension_registry_(extension_registry),
       registry_(new Registry(profile)) {
   extension_registry_->AddObserver(this);
+  if (chromeos::features::IsFileSystemProviderContentCacheEnabled()) {
+    content_cache_ = std::make_unique<ContentCache>();
+  }
 }
 
 Service::~Service() = default;
@@ -184,7 +187,8 @@ base::File::Error Service::MountFileSystemInternal(
   }
 
   std::unique_ptr<ProvidedFileSystemInterface> file_system =
-      provider->CreateProvidedFileSystem(profile_, file_system_info);
+      provider->CreateProvidedFileSystem(profile_, file_system_info,
+                                         content_cache_.get());
   DCHECK(file_system);
   ProvidedFileSystemInterface* file_system_ptr = file_system.get();
   file_system_map_[FileSystemKey(

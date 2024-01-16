@@ -29,9 +29,10 @@ class SmbProvider : public file_system_provider::ProviderInterface {
 
   // file_system_provider::ProviderInterface overrides.
   std::unique_ptr<file_system_provider::ProvidedFileSystemInterface>
-  CreateProvidedFileSystem(Profile* profile,
-                           const file_system_provider::ProvidedFileSystemInfo&
-                               file_system_info) override;
+  CreateProvidedFileSystem(
+      Profile* profile,
+      const file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      file_system_provider::ContentCache* content_cache) override;
   const file_system_provider::Capabilities& GetCapabilities() const override;
   const file_system_provider::ProviderId& GetId() const override;
   const std::string& GetName() const override;

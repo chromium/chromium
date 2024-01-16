@@ -1213,6 +1213,8 @@ source_set("ash") {
     "file_system_provider/abort_callback.h",
     "file_system_provider/cached_file_system.cc",
     "file_system_provider/cached_file_system.h",
+    "file_system_provider/content_cache/content_cache.cc",
+    "file_system_provider/content_cache/content_cache.h",
     "file_system_provider/extension_provider.cc",
     "file_system_provider/extension_provider.h",
     "file_system_provider/fileapi/backend_delegate.cc",
