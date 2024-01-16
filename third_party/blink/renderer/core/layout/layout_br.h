@@ -48,7 +48,6 @@ class LayoutBR : public LayoutText {
     return true;
   }
 
-  String OriginalText() const override;
   int CaretMinOffset() const override;
   int CaretMaxOffset() const override;
 
@@ -56,6 +55,9 @@ class LayoutBR : public LayoutText {
 
   Position PositionForCaretOffset(unsigned) const final;
   absl::optional<unsigned> CaretOffsetForPosition(const Position&) const final;
+
+ private:
+  unsigned NonCollapsedCaretMaxOffset() const override;
 };
 
 template <>

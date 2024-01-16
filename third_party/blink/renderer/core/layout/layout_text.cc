@@ -458,6 +458,7 @@ unsigned LayoutText::OriginalTextLength() const {
   if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()) {
     return TransformedTextLength();
   }
+  DCHECK(!IsBR());
   return OriginalText().length();
 }
 
@@ -1232,11 +1233,17 @@ int LayoutText::CaretMaxOffset() const {
   return text_length;
 }
 
+unsigned LayoutText::NonCollapsedCaretMaxOffset() const {
+  NOT_DESTROYED();
+  return OriginalTextLength();
+}
+
 unsigned LayoutText::ResolvedTextLength() const {
   NOT_DESTROYED();
   if (auto* mapping = GetOffsetMapping()) {
     const Position start_position = PositionForCaretOffset(0);
-    const Position end_position = PositionForCaretOffset(OriginalTextLength());
+    const Position end_position =
+        PositionForCaretOffset(NonCollapsedCaretMaxOffset());
     if (start_position.IsNull()) {
       DCHECK(end_position.IsNull()) << end_position;
       return 0;
@@ -1269,7 +1276,7 @@ bool LayoutText::ContainsCaretOffset(int text_offset) const {
   NOT_DESTROYED();
   DCHECK_GE(text_offset, 0);
   if (auto* mapping = GetOffsetMapping()) {
-    const int text_length = static_cast<int>(OriginalTextLength());
+    const int text_length = static_cast<int>(NonCollapsedCaretMaxOffset());
     if (text_offset > text_length) {
       return false;
     }
@@ -1291,7 +1298,7 @@ bool LayoutText::ContainsCaretOffset(int text_offset) const {
 bool LayoutText::IsBeforeNonCollapsedCharacter(unsigned text_offset) const {
   NOT_DESTROYED();
   if (auto* mapping = GetOffsetMapping()) {
-    if (text_offset >= OriginalTextLength()) {
+    if (text_offset >= NonCollapsedCaretMaxOffset()) {
       return false;
     }
     const Position position = PositionForCaretOffset(text_offset);
