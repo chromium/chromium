@@ -62,6 +62,14 @@ class AutofillProviderAndroid : public AutofillProvider,
   // cached form and the interacted form fails.
   static constexpr char kSimilarityCheckCacheRequestUma[] =
       "Autofill.WebView.FormSimilarityCheck.CachedForm";
+  // The name of the UMA that is emitted when a form similarity check is run in
+  // OnAskForValuesToFill.
+  static constexpr char kSimilarityCheckAskForValuesToFillUma[] =
+      "Autofill.WebView.FormSimilarityCheck.AskForValuesToFill";
+  // The name of the UMA that is emitted when a form similarity check is run in
+  // OnFocusOnFormField.
+  static constexpr char kSimilarityCheckFocusOnFormFieldUma[] =
+      "Autofill.WebView.FormSimilarityCheck.FocusOnFormField";
 
   static void CreateForWebContents(content::WebContents* web_contents);
 
@@ -175,7 +183,10 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   // Same as `IsLinkedForm`, but also checks that `form` and `form_` are
   // similar, using form similarity checks.
-  bool IsLinkedForm(const FormData& form) const;
+  // If `similarity_metric` is not null, it emits a
+  // `FormDataAndroid::SimilarityCheckResult` with the name `similarity_metric`.
+  bool IsLinkedForm(const FormData& form,
+                    const char* similarity_metric = nullptr);
 
   gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);
 

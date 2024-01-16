@@ -179,7 +179,8 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  if (!IsLinkedForm(form)) {
+  if (!IsLinkedForm(
+          form, /*similarity_metric=*/kSimilarityCheckAskForValuesToFillUma)) {
     StartNewSession(manager, form, field, bounding_box);
   }
 
@@ -429,7 +430,8 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
-  if (!IsLinkedForm(form) ||
+  if (!IsLinkedForm(form,
+                    /*similarity_metri=*/kSimilarityCheckFocusOnFormFieldUma) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -586,8 +588,23 @@ bool AutofillProviderAndroid::IsIdOfLinkedForm(FormGlobalId form_id) const {
   return form_ && form_->form().global_id() == form_id;
 }
 
-bool AutofillProviderAndroid::IsLinkedForm(const FormData& form) const {
-  return form_ && form_->SimilarFormAs(form);
+bool AutofillProviderAndroid::IsLinkedForm(const FormData& form,
+                                           const char* similarity_metric) {
+  if (!form_) {
+    return false;
+  }
+
+  if (!similarity_metric) {
+    return form_->SimilarFormAs(form);
+  }
+
+  FormDataAndroid::SimilarityCheckResult similarity_result =
+      form_->SimilarFormAsWithDiagnosis(form);
+  base::UmaHistogramExactLinear(
+      similarity_metric,
+      ProjectSimilarityCheckResultToMetricsValue(similarity_result),
+      FormDataAndroid::kSimilaryCheckResultExclusiveMaximum);
+  return similarity_result == FormDataAndroid::kFormsAreSimilar;
 }
 
 gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
