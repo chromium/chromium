@@ -2539,6 +2539,10 @@ const char kOmniboxMlUrlScoringModelName[] = "Omnibox URL Scoring Model";
 const char kOmniboxMlUrlScoringModelDescription[] =
     "Enables ML scoring model for Omnibox URL sugestions.";
 
+const char kOmniboxMlUrlSearchBlendingName[] = "Omnibox ML URL Search Blending";
+const char kOmniboxMlUrlSearchBlendingDescription[] =
+    "Specifies how to blend URL ML scores and search traditional scores..";
+
 const char kOmniboxOnClobberFocusTypeOnContentName[] =
     "Omnibox On Clobber Focus Type On Content";
 const char kOmniboxOnClobberFocusTypeOnContentDescription[] =

@@ -1311,7 +1311,6 @@ void AutocompleteResult::MaybeCullTailSuggestions(
       if (!default_tail && match.allowed_to_be_default_match)
         default_tail = true;
     } else if (is_history_cluster(match)) {
-      DCHECK(!match.allowed_to_be_default_match);
       any_history_clusters = true;
     } else {
       any_normals = true;

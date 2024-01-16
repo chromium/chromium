@@ -1408,6 +1408,9 @@ extern const char kOmniboxMlUrlScoringDescription[];
 extern const char kOmniboxMlUrlScoringModelName[];
 extern const char kOmniboxMlUrlScoringModelDescription[];
 
+extern const char kOmniboxMlUrlSearchBlendingName[];
+extern const char kOmniboxMlUrlSearchBlendingDescription[];
+
 extern const char kOmniboxModernizeVisualUpdateName[];
 extern const char kOmniboxModernizeVisualUpdateDescription[];
 

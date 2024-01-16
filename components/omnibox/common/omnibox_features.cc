@@ -465,7 +465,14 @@ BASE_FEATURE(kLogUrlScoringSignals,
 // URL suggestions and reranks them.
 BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, creates Omnibox autocompete URL scoring model.
+// If enabled, specifies how URL model scores integrate with search traditional
+// scores.
+BASE_FEATURE(kMlUrlSearchBlending,
+             "MlUrlSearchBlending",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, creates Omnibox autocomplete URL scoring model. Prerequisite for
+// `kMlUrlScoring` & `kMlUrlSearchBlending`.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
