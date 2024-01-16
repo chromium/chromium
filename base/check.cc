@@ -56,13 +56,12 @@ LogSeverity GetNotReachedSeverity(base::NotFatalUntil fatal_milestone) {
   return GetNotFatalUntilSeverity(fatal_milestone);
 }
 
-void DumpWithoutCrashing(LogMessage* log_message,
+void DumpWithoutCrashing(const std::string& crash_string,
                          const base::Location& location) {
-  // Copy the LogMessage message to stack memory to make sure it can be
-  // recovered in crash dumps. This is easier to recover in minidumps than crash
-  // keys during local debugging.
-  DEBUG_ALIAS_FOR_CSTR(log_message_str, log_message->BuildCrashString().c_str(),
-                       1024);
+  // Copy the crash message to stack memory to make sure it can be recovered in
+  // crash dumps. This is easier to recover in minidumps than crash keys during
+  // local debugging.
+  DEBUG_ALIAS_FOR_CSTR(log_message_str, crash_string.c_str(), 1024);
 
   // Report from the same location at most once every 30 days (unless the
   // process has died). This attempts to prevent us from flooding ourselves with
@@ -70,31 +69,29 @@ void DumpWithoutCrashing(LogMessage* log_message,
   base::debug::DumpWithoutCrashing(location, base::Days(30));
 }
 
-void NotReachedDumpWithoutCrashing(LogMessage* log_message,
+void NotReachedDumpWithoutCrashing(const std::string& crash_string,
                                    const base::Location& location) {
 #if !BUILDFLAG(IS_NACL)
-  SCOPED_CRASH_KEY_STRING1024("Logging", "NOTREACHED_MESSAGE",
-                              log_message->BuildCrashString());
+  SCOPED_CRASH_KEY_STRING1024("Logging", "NOTREACHED_MESSAGE", crash_string);
 #endif  // !BUILDFLAG(IS_NACL)
-  DumpWithoutCrashing(log_message, location);
+  DumpWithoutCrashing(crash_string, location);
 }
 
-void DCheckDumpWithoutCrashing(LogMessage* log_message,
+void DCheckDumpWithoutCrashing(const std::string& crash_string,
                                const base::Location& location) {
 #if !BUILDFLAG(IS_NACL)
-  SCOPED_CRASH_KEY_STRING1024("Logging", "DCHECK_MESSAGE",
-                              log_message->BuildCrashString());
+  SCOPED_CRASH_KEY_STRING1024("Logging", "DCHECK_MESSAGE", crash_string);
 #endif  // !BUILDFLAG(IS_NACL)
-  DumpWithoutCrashing(log_message, location);
+  DumpWithoutCrashing(crash_string, location);
 }
 
-void DumpWillBeCheckDumpWithoutCrashing(LogMessage* log_message,
+void DumpWillBeCheckDumpWithoutCrashing(const std::string& crash_string,
                                         const base::Location& location) {
 #if !BUILDFLAG(IS_NACL)
   SCOPED_CRASH_KEY_STRING1024("Logging", "DUMP_WILL_BE_CHECK_MESSAGE",
-                              log_message->BuildCrashString());
+                              crash_string);
 #endif  // !BUILDFLAG(IS_NACL)
-  DumpWithoutCrashing(log_message, location);
+  DumpWithoutCrashing(crash_string, location);
 }
 
 class NotReachedLogMessage : public LogMessage {
@@ -104,7 +101,7 @@ class NotReachedLogMessage : public LogMessage {
         location_(location) {}
   ~NotReachedLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
-      NotReachedDumpWithoutCrashing(this, location_);
+      NotReachedDumpWithoutCrashing(BuildCrashString(), location_);
     }
   }
 
@@ -119,7 +116,7 @@ class DCheckLogMessage : public LogMessage {
         location_(location) {}
   ~DCheckLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
-      DCheckDumpWithoutCrashing(this, location_);
+      DCheckDumpWithoutCrashing(BuildCrashString(), location_);
     }
   }
 
@@ -134,7 +131,7 @@ class CheckLogMessage : public LogMessage {
         location_(location) {}
   ~CheckLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
-      DumpWillBeCheckDumpWithoutCrashing(this, location_);
+      DumpWillBeCheckDumpWithoutCrashing(BuildCrashString(), location_);
     }
   }
 
@@ -155,7 +152,7 @@ class DCheckWin32ErrorLogMessage : public Win32ErrorLogMessage {
         location_(location) {}
   ~DCheckWin32ErrorLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
-      DCheckDumpWithoutCrashing(this, location_);
+      DCheckDumpWithoutCrashing(BuildCrashString(), location_);
     }
   }
 
@@ -175,7 +172,7 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
         location_(location) {}
   ~DCheckErrnoLogMessage() override {
     if (severity() != logging::LOGGING_FATAL) {
-      DCheckDumpWithoutCrashing(this, location_);
+      DCheckDumpWithoutCrashing(BuildCrashString(), location_);
     }
   }
 
