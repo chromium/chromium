@@ -3603,7 +3603,7 @@
     },
     {
       name: "SpeculationRulesImplicitSource",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SpeculationRulesNoVarySearchHint",
