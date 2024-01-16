@@ -1204,14 +1204,11 @@ void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
 void AutofillExternalDelegate::ApplyAutofillOptions(
     std::vector<Suggestion>* suggestions,
     bool is_all_server_suggestions) {
-#if !BUILDFLAG(IS_ANDROID)
   // Add a separator before the Autofill options unless there are no suggestions
   // yet.
-  // TODO(crbug.com/1274134): Clean up once improvements are launched.
   if (!suggestions->empty()) {
     suggestions->push_back(Suggestion(PopupItemId::kSeparator));
   }
-#endif
 
   // The form has been auto-filled, so give the user the chance to clear the
   // form.  Append the 'Clear form' menu item.
