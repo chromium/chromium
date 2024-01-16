@@ -5,6 +5,10 @@
 import {Animator, STANDARD_EASING} from './animator.js';
 
 export class ComposeTextareaAnimator extends Animator {
+  transitionToEditable(): Animation[] {
+    return this.fadeIn('#editButtonContainer', {duration: 100});
+  }
+
   transitionToReadonly(): Animation[] {
     const dimensionsAnimation = this.animate(
         '#inputContainer textarea, #readonlyContainer',

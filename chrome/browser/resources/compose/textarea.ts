@@ -103,6 +103,10 @@ export class ComposeTextareaElement extends PolymerElement {
     return this.allowExitingReadonlyMode && this.readonly;
   }
 
+  transitionToEditable() {
+    this.animator_.transitionToEditable();
+  }
+
   transitionToReadonly() {
     this.animator_.transitionToReadonly();
   }

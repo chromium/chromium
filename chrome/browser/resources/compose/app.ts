@@ -521,6 +521,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.loading_ = false;
     this.undoEnabled_ = response.undoAvailable;
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
+    this.$.textarea.transitionToEditable();
     if (this.partialResponse_) {
       this.animator_.transitionFromPartialToCompleteResult();
     } else {
