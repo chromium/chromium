@@ -441,8 +441,10 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
 
   const base::Uuid collection_uuid =
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
-  const bookmarks::BookmarkNode* collection_node =
-      model->GetNodeByUuid(collection_uuid);
+
+  const bookmarks::BookmarkNode* collection_node = model->GetNodeByUuid(
+      collection_uuid,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
 
   CHECK(!collection_node || collection_node->is_folder());
 
@@ -455,7 +457,11 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
         model->other_node(), model->other_node()->children().size(),
         l10n_util::GetStringUTF16(IDS_SHOPPING_COLLECTION_FOLDER_NAME), nullptr,
         absl::nullopt, collection_uuid);
-    CHECK_EQ(model->GetNodeByUuid(collection_uuid), collection_node);
+    CHECK_EQ(
+        model->GetNodeByUuid(collection_uuid,
+                             bookmarks::BookmarkModel::NodeTypeForUuidLookup::
+                                 kLocalOrSyncableNodes),
+        collection_node);
   }
 
   return collection_node;

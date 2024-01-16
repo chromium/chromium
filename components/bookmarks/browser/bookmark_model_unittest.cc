@@ -58,6 +58,8 @@
 namespace bookmarks {
 namespace {
 
+using NodeTypeForUuidLookup = BookmarkModel::NodeTypeForUuidLookup;
+
 using base::ASCIIToUTF16;
 using base::Time;
 using testing::ElementsAre;
@@ -1922,40 +1924,58 @@ TEST_F(BookmarkModelTest, GetNodeByUuid) {
   ASSERT_TRUE(url_node_with_explicit_uuid);
   ASSERT_TRUE(folder_node_with_explicit_uuid);
 
-  EXPECT_EQ(url_node_with_implicit_uuid,
-            model_->GetNodeByUuid(url_node_with_implicit_uuid->uuid()));
-  EXPECT_EQ(folder_node_with_implicit_uuid,
-            model_->GetNodeByUuid(folder_node_with_implicit_uuid->uuid()));
-  EXPECT_EQ(url_node_with_explicit_uuid, model_->GetNodeByUuid(explicit_uuid1));
+  EXPECT_EQ(
+      url_node_with_implicit_uuid,
+      model_->GetNodeByUuid(url_node_with_implicit_uuid->uuid(),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(
+      folder_node_with_implicit_uuid,
+      model_->GetNodeByUuid(folder_node_with_implicit_uuid->uuid(),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(url_node_with_explicit_uuid,
+            model_->GetNodeByUuid(
+                explicit_uuid1, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
   EXPECT_EQ(folder_node_with_explicit_uuid,
-            model_->GetNodeByUuid(explicit_uuid2));
+            model_->GetNodeByUuid(
+                explicit_uuid2, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   // Verify cases that should return nullptr.
-  EXPECT_EQ(nullptr, model_->GetNodeByUuid(base::Uuid()));
-  EXPECT_EQ(nullptr, model_->GetNodeByUuid(base::Uuid::GenerateRandomV4()));
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(
+                base::Uuid(), NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::GenerateRandomV4(),
+                         NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 }
 
 TEST_F(BookmarkModelTest, GetPermanentNodeByUuid) {
   // Permanent nodes should be returned by UUID.
-  EXPECT_EQ(model_->root_node(),
-            model_->GetNodeByUuid(base::Uuid::ParseLowercase(kRootNodeUuid)));
+  EXPECT_EQ(
+      model_->root_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kRootNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
   EXPECT_EQ(
       model_->bookmark_bar_node(),
-      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid)));
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
   EXPECT_EQ(model_->mobile_node(),
             model_->GetNodeByUuid(
-                base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid)));
-  EXPECT_EQ(model_->other_node(),
-            model_->GetNodeByUuid(
-                base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid)));
+                base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+                NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(
+      model_->other_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   // Managed bookmarks don't exist by default.
   EXPECT_EQ(nullptr, model_->GetNodeByUuid(
-                         base::Uuid::ParseLowercase(kManagedNodeUuid)));
+                         base::Uuid::ParseLowercase(kManagedNodeUuid),
+                         NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   BookmarkPermanentNode* managed_node = ReloadModelWithManagedNode();
   EXPECT_EQ(managed_node, model_->GetNodeByUuid(
-                              base::Uuid::ParseLowercase(kManagedNodeUuid)));
+                              base::Uuid::ParseLowercase(kManagedNodeUuid),
+                              NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 }
 
 TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemove) {
@@ -1967,17 +1987,22 @@ TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemove) {
   const base::Uuid uuid1 = folder1->uuid();
   const base::Uuid uuid2 = folder2->uuid();
 
-  ASSERT_EQ(folder1, model_->GetNodeByUuid(uuid1));
-  ASSERT_EQ(folder2, model_->GetNodeByUuid(uuid2));
+  ASSERT_EQ(folder1, model_->GetNodeByUuid(
+                         uuid1, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  ASSERT_EQ(folder2, model_->GetNodeByUuid(
+                         uuid2, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   model_->Remove(folder1, bookmarks::metrics::BookmarkEditSource::kOther);
 
-  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid1));
-  EXPECT_EQ(folder2, model_->GetNodeByUuid(uuid2));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         uuid1, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(folder2, model_->GetNodeByUuid(
+                         uuid2, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   model_->Remove(folder2, bookmarks::metrics::BookmarkEditSource::kOther);
 
-  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid2));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         uuid2, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 }
 
 TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemoveAllUserBookmarks) {
@@ -1989,18 +2014,23 @@ TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemoveAllUserBookmarks) {
   const base::Uuid uuid1 = folder1->uuid();
   const base::Uuid uuid2 = folder2->uuid();
 
-  ASSERT_EQ(folder1, model_->GetNodeByUuid(uuid1));
-  ASSERT_EQ(folder2, model_->GetNodeByUuid(uuid2));
+  ASSERT_EQ(folder1, model_->GetNodeByUuid(
+                         uuid1, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  ASSERT_EQ(folder2, model_->GetNodeByUuid(
+                         uuid2, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   model_->RemoveAllUserBookmarks();
 
-  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid1));
-  EXPECT_EQ(nullptr, model_->GetNodeByUuid(uuid2));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         uuid1, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         uuid2, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 
   // Permanent nodes should continue to exist and be returned by UUID.
   EXPECT_EQ(
       model_->bookmark_bar_node(),
-      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid)));
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 }
 
 // Verifies the TitledUrlIndex is probably loaded.

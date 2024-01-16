@@ -112,7 +112,11 @@ void BookmarkModelView::SetURL(const bookmarks::BookmarkNode* node,
 
 const bookmarks::BookmarkNode* BookmarkModelView::GetNodeByUuid(
     const base::Uuid& uuid) const {
-  return bookmark_model_->GetNodeByUuid(uuid);
+  // TODO(crbug.com/1494120): The enum `NodeTypeForUuidLookup` should depend on
+  // the precise subclass.
+  return underlying_model()->GetNodeByUuid(
+      uuid,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
 }
 
 const bookmarks::BookmarkNode* BookmarkModelView::AddFolder(

@@ -91,7 +91,11 @@ const bookmarks::BookmarkNode* FindNodeByNodeReference(
   if (!reference.bookmark_model) {
     return nullptr;
   }
-  return reference.bookmark_model->GetNodeByUuid(reference.uuid);
+  // On iOS, only `kLocalOrSyncableNodes` is relevant, given that two separate
+  // BookmarkModel instances are used.
+  return reference.bookmark_model->GetNodeByUuid(
+      reference.uuid,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
 }
 
 NodeSet FindNodesByNodeReferences(NodeReferenceSet references) {
