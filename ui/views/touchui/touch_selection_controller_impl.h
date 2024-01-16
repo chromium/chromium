@@ -135,8 +135,8 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   View* GetHandle1View();
   View* GetHandle2View();
 
-  raw_ptr<ui::TouchEditable, DanglingUntriaged> client_view_;
-  raw_ptr<Widget, DanglingUntriaged> client_widget_ = nullptr;
+  raw_ptr<ui::TouchEditable> client_view_ = nullptr;
+  raw_ptr<Widget> client_widget_ = nullptr;
 
   // Widgets for the selection handles and cursor handle.
   views::UniqueWidgetPtr selection_handle_1_widget_;

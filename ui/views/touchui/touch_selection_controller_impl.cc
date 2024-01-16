@@ -701,6 +701,7 @@ void TouchSelectionControllerImpl::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(client_widget_, widget);
   client_widget_->RemoveObserver(this);
   client_widget_ = nullptr;
+  client_view_ = nullptr;
 }
 
 void TouchSelectionControllerImpl::OnWidgetBoundsChanged(
