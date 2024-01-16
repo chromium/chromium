@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -37,6 +38,11 @@ class MockSyncSessionsClient : public SyncSessionsClient {
               GetLocalSessionEventRouter,
               (),
               (override));
+
+  base::WeakPtr<SyncSessionsClient> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<MockSyncSessionsClient> weak_ptr_factory_{this};
 };
 
 }  // namespace sync_sessions
