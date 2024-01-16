@@ -10,5 +10,8 @@ assert(is_chromeos_ash)
 build_webui_tests("build") {
   files = [ "vc_background_ui_test.ts" ]
 
-  ts_deps = [ "//ash/webui/vc_background_ui/resources:build_ts" ]
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/vc_background_ui/resources:build_ts",
+  ]
 }

@@ -6,11 +6,17 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {makeStoreClientMixin} from 'chrome://resources/cr_elements/store_client/store_client.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {Store} from 'chrome://resources/js/store.js';
 
 import {SeaPenActions} from './sea_pen_actions.js';
-import {SeaPenState} from './sea_pen_state.js';
+import {seaPenReducer} from './sea_pen_reducer.js';
+import {emptyState, SeaPenState} from './sea_pen_state.js';
+
+export class SeaPenStore extends Store<SeaPenState, SeaPenActions> {
+  constructor() {
+    super(emptyState(), seaPenReducer);
+  }
+}
 
 // A helper type to extract public properties from a concrete class
 // implementation.
@@ -27,8 +33,7 @@ export function setSeaPenStore(store: SeaPenStoreInterface) {
 }
 
 export function getSeaPenStore(): SeaPenStoreInterface {
-  assert(instance, 'sea pen store instance must be set');
-  return instance;
+  return instance || (instance = new SeaPenStore());
 }
 
 // SeaPenStoreInterface implements all public methods/properties of

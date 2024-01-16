@@ -25,6 +25,7 @@ class VcBackgroundUISystemAppDelegate : public SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearchAndShelf() const override;
+  bool ShouldCaptureNavigations() const override;
 };
 
 }  // namespace ash::vc_background_ui

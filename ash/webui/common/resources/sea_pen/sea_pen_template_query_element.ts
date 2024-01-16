@@ -7,6 +7,8 @@
  * SeaPen wallpapers.
  */
 
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
@@ -285,3 +287,9 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
 customElements.define(
     SeaPenTemplateQueryElement.is, SeaPenTemplateQueryElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'sea-pen-template-query': SeaPenTemplateQueryElement;
+  }
+}

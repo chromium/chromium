@@ -6,8 +6,22 @@
   <head>
     <title>$i18n{vcBackgroundTitle}</title>
     <meta charset="utf-8">
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body.jelly-enabled {
+        background-color: var(--cros-sys-app_base_shaded);
+      }
+    </style>
+    <link rel="stylesheet"
+        href="chrome://resources/chromeos/colors/cros_styles.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <script type="module" src="vc_background_ui.js"></script>
   </head>
-  <body>
+  <body class="jelly-enabled">
+    <sea-pen-router base-path=""></sea-pen-router>
   </body>
 </html>

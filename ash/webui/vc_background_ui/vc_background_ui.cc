@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/common/sea_pen_resources.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_vc_background_resources.h"
 #include "ash/webui/grit/ash_vc_background_resources_map.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -30,6 +32,14 @@ using std::literals::string_view_literals::operator""sv;
 void AddStrings(content::WebUIDataSource* source) {
   // TODO(b/311416410) real translated title.
   source->AddString("vcBackgroundTitle", u"VC Background");
+  ::ash::common::AddSeaPenStrings(source);
+
+  source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
+}
+
+void AddBooleans(content::WebUIDataSource* source) {
+  ::ash::common::AddSeaPenBooleans(source);
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -65,15 +75,15 @@ VcBackgroundUI::VcBackgroundUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, std::string(kChromeUIVcBackgroundHost));
 
+  ash::EnableTrustedTypesCSP(source);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
-
-  AddStrings(source);
   AddResources(source);
+  AddStrings(source);
+  AddBooleans(source);
 }
 
 VcBackgroundUI::~VcBackgroundUI() = default;

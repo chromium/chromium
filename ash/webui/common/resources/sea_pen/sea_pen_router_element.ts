@@ -78,10 +78,10 @@ export class SeaPenRouterElement extends PolymerElement {
     this.goToRoute(SeaPenPaths.ROOT, {seaPenTemplateId: templateId.toString()});
   }
 
-  goToRoute(path: SeaPenPaths, queryParams: SeaPenQueryParams = {}) {
+  goToRoute(relativePath: SeaPenPaths, queryParams: SeaPenQueryParams = {}) {
     assert(typeof this.basePath === 'string', 'basePath must be set');
     this.setProperties(
-        {path_: this.basePath + path, queryParams_: queryParams});
+        {path_: this.basePath + relativePath, queryParams_: queryParams});
   }
 
   /**
@@ -104,7 +104,11 @@ export class SeaPenRouterElement extends PolymerElement {
     if (!path.startsWith(basePath)) {
       return null;
     }
-    return path.substring(basePath.length);
+    const relativePath = path.substring(basePath.length);
+    // Normalize single slash to empty string.
+    // This keeps path consistent between chrome://vc-background/ and
+    // chrome://personalization/wallpaper/sea-pen.
+    return relativePath === '/' ? '' : relativePath;
   }
 
   private onRelativePathChanged_(relativePath: string|null) {

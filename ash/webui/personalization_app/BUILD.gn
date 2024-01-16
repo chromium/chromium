@@ -31,6 +31,7 @@ static_library("personalization_app") {
     "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
+    "//ash/webui/common:sea_pen_resources",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",

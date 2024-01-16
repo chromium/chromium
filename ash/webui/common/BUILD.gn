@@ -35,6 +35,20 @@ static_library("shortcut_input_key_strings") {
   ]
 }
 
+source_set("sea_pen_resources") {
+  sources = [
+    "sea_pen_resources.cc",
+    "sea_pen_resources.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
 source_set("chrome_os_webui_config") {
   sources = [ "chrome_os_webui_config.h" ]
 

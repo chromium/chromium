@@ -54,4 +54,8 @@ bool VcBackgroundUISystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 
+bool VcBackgroundUISystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
 }  // namespace ash::vc_background_ui

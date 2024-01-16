@@ -7,7 +7,9 @@
  */
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
