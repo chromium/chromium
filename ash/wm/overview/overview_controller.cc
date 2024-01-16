@@ -58,13 +58,6 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
 
 constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 
-bool IsSplitViewDividerDraggedOrAnimated() {
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  return split_view_controller->IsResizingWithDivider() ||
-         split_view_controller->IsDividerAnimating();
-}
-
 // Returns the enter/exit type that should be used if kNormal enter/exit type
 // was originally requested - if the overview is expected to transition to/from
 // the home screen, the normal enter/exit mode is expected to be overridden by
@@ -296,11 +289,6 @@ bool OverviewController::CanEnterOverview() const {
     return false;
   }
 
-  // Prevent entering overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated()) {
-    return false;
-  }
-
   // Don't allow a window overview if the user session is not active (e.g.
   // locked or in user-adding screen) or a modal dialog is open or running in
   // kiosk app session.
@@ -521,10 +509,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
 }
 
 bool OverviewController::CanEndOverview(OverviewEnterExitType type) const {
-  // Prevent ending overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated())
-    return false;
-
   // Do not allow ending overview if we're in single split mode unless swiping
   // up from the shelf in tablet mode, or ending overview immediately without
   // animations.

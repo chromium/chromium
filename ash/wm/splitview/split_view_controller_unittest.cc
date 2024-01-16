@@ -539,6 +539,107 @@ TEST_F(SplitViewControllerTest, StartEndSplitViewOverviewSession) {
                    ->split_view_overview_session());
 }
 
+// Tests that when the divider bouncing animation is triggered in
+// `SplitViewController`, overview will end properly with no crash. See
+// http://b/313517079 for more details about the crash reported.
+TEST_F(SplitViewControllerTest,
+       NoCrashWhenBoucingAnimatingIfTotalSizeExceedsLimit) {
+  UpdateDisplay("900x600");
+  SplitViewController* controller = split_view_controller();
+
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithDelegate(
+      &delegate1, /*id=*/-1, gfx::Rect(200, 300)));
+  EXPECT_FALSE(controller->IsWindowInSplitView(window1.get()));
+
+  // Create `window2` and set the minimum size to be between 1/3 and 1/2 so that
+  // it can only be snapped with 0.5 snap ratio.
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithDelegate(
+      &delegate2, /*id=*/-1, gfx::Rect(450, 600)));
+  delegate2.set_minimum_size(gfx::Size(420, 300));
+  EXPECT_FALSE(controller->IsWindowInSplitView(window2.get()));
+  EXPECT_FALSE(
+      controller->CanSnapWindow(window2.get(), chromeos::kOneThirdSnapRatio));
+  EXPECT_TRUE(
+      controller->CanSnapWindow(window2.get(), chromeos::kDefaultSnapRatio));
+  wm::ActivateWindow(window2.get());
+  wm::ActivateWindow(window1.get());
+
+  const WindowSnapWMEvent snap_event1(WM_EVENT_SNAP_PRIMARY,
+                                      chromeos::kDefaultSnapRatio,
+                                      WindowSnapActionSource::kTest);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_event1);
+  EXPECT_EQ(controller->state(), SplitViewController::State::kPrimarySnapped);
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* item2 = GetOverviewItemForWindow(window2.get());
+  CHECK(item2);
+  GetEventGenerator()->GestureTapAt(
+      gfx::ToRoundedPoint(item2->target_bounds().CenterPoint()));
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
+  EXPECT_FALSE(IsDividerAnimating());
+
+  // Re-snap `window` to trigger the bounce animation.
+  const WindowSnapWMEvent snap_event2(WM_EVENT_SNAP_PRIMARY,
+                                      chromeos::kTwoThirdSnapRatio,
+                                      WindowSnapActionSource::kTest);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_event2);
+  EXPECT_TRUE(IsDividerAnimating());
+  SkipDividerSnapAnimation();
+  EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
+  const auto work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  EXPECT_EQ(
+      static_cast<float>(window1->GetBoundsInScreen().width() + divider_delta) /
+          work_area.width(),
+      0.5f);
+  EXPECT_EQ(
+      static_cast<float>(window2->GetBoundsInScreen().width() + divider_delta) /
+          work_area.width(),
+      0.5f);
+}
+
+// Tests that when creating a new window while dragging the divider there will
+// be no crash. See http://b/315549001 for more details about the crash
+// reported.
+TEST_F(SplitViewControllerTest, NoCrashWhenCreatingNewWindowWhileDragging) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  UpdateDisplay("900x600");
+  SplitViewController* controller = split_view_controller();
+  std::unique_ptr<aura::Window> window1(
+      CreateWindow(gfx::Rect(0, 0, 520, 500)));
+  wm::ActivateWindow(window1.get());
+  EXPECT_FALSE(controller->IsWindowInSplitView(window1.get()));
+
+  controller->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary,
+      WindowSnapActionSource::kTest,
+      /*activate_window=*/false, chromeos::kTwoThirdSnapRatio);
+  EXPECT_EQ(controller->state(), SplitViewController::State::kPrimarySnapped);
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  SplitViewDivider* divider = split_view_divider();
+  EXPECT_TRUE(divider);
+
+  const auto center_point =
+      divider->GetDividerBoundsInScreen(/*is_dragging=*/false).CenterPoint();
+  divider->StartResizeWithDivider(center_point);
+  divider->ResizeWithDivider(center_point + gfx::Vector2d(-20, 0));
+
+  // Verify that `window2` will be auto-snapped and overview will end with no
+  // crash.
+  std::unique_ptr<aura::Window> window2(
+      CreateWindow(gfx::Rect(0, 0, 520, 500)));
+  wm::ActivateWindow(window2.get());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(controller->state(), SplitViewController::State::kBothSnapped);
+}
+
 // Tests that if there are two snapped windows, minimizing one of them will open
 // overview window grid on the minimized window side of the screen. If there is
 // only one snapped windows, minimizing the sanpped window will end split view
@@ -3543,11 +3644,10 @@ TEST_F(SplitViewControllerTest, ResnapASnappedWindowToOppositePosition) {
   // Select `window2` from overview. Since its minimum size is greater than 1/3,
   // it gets snapped at 1/2.
   auto* item2 = GetOverviewItemForWindow(window2.get());
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(
+  GetEventGenerator()->GestureTapAt(
       gfx::ToRoundedPoint(item2->target_bounds().CenterPoint()));
-  event_generator->ClickLeftButton();
 
+  ASSERT_FALSE(IsDividerAnimating());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
   EXPECT_EQ(

@@ -2303,7 +2303,8 @@ void OverviewGrid::OnSplitViewStateChanged(
 }
 
 void OverviewGrid::OnSplitViewDividerPositionChanged() {
-  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+  if (overview_session_->is_shutting_down() ||
+      window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     // If `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` is true,
     // `SplitViewOverviewSession` will manually update the bounds so we don't
     // need to update here.
