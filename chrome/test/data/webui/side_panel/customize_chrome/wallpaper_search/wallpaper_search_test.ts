@@ -1264,7 +1264,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(
-          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1288,7 +1288,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
-          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1331,7 +1331,7 @@ suite('WallpaperSearchTest', () => {
       // Set metric on thumbs down.
       updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
       assertEquals(
-          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1341,7 +1341,7 @@ suite('WallpaperSearchTest', () => {
       // Set metric on thumbs up.
       updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
       assertEquals(
-          4, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1503,7 +1503,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
-          4, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(

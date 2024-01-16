@@ -302,7 +302,8 @@
           label="$i18n{wallpaperSearchSubjectLabel}"
           default-option-label="$i18n{wallpaperSearchSubjectDefaultOptionLabel}"
           items="[[comboboxItems_.a]]"
-          value="{{selectedDescriptorA_}}">
+          value="{{selectedDescriptorA_}}"
+          on-value-changed="onSubjectDescriptorChange_">
       </customize-chrome-combobox>
       <div id="optionalDetails">
         <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
@@ -310,13 +311,15 @@
             label="$i18n{wallpaperSearchStyleLabel}"
             default-option-label="$i18n{wallpaperSearchStyleDefaultOptionLabel}"
             items="[[comboboxItems_.b]]"
-            value="{{selectedDescriptorB_}}">
+            value="{{selectedDescriptorB_}}"
+            on-value-changed="onStyleDescriptorChange_">
         </customize-chrome-combobox>
         <customize-chrome-combobox id="descriptorComboboxC"
             label="$i18n{wallpaperSearchMoodLabel}"
             default-option-label="$i18n{wallpaperSearchMoodDefaultOptionLabel}"
             items="[[comboboxItems_.c]]"
-            value="{{selectedDescriptorC_}}" right-align-dropbox>
+            value="{{selectedDescriptorC_}}" right-align-dropbox
+            on-value-changed="onMoodDescriptorChange_">
         </customize-chrome-combobox>
         <cr-grid columns="6" id="descriptorMenuD">
           <template is="dom-repeat" items="[[descriptorD_]]">

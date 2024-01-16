@@ -165,22 +165,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         type: Number,
         value: CrFeedbackOption.UNSPECIFIED,
       },
-      selectedDescriptorA_: {
-        type: String,
-        observer: 'onSubjectDescriptorChange_',
-      },
-      selectedDescriptorB_: {
-        type: String,
-        observer: 'onStyleDescriptorChange_',
-      },
-      selectedDescriptorC_: {
-        type: String,
-        observer: 'onMoodDescriptorChange_',
-      },
-      selectedDescriptorD_: {
-        type: Object,
-        observer: 'onColorDescriptorChange_',
-      },
+      selectedDescriptorA_: String,
+      selectedDescriptorB_: String,
+      selectedDescriptorC_: String,
+      selectedDescriptorD_: Object,
       selectedHue_: {
         type: Number,
         value: null,
@@ -537,9 +525,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         color: hexColorToSkColor(this.selectedDefaultColor_),
       };
     }
-  }
-
-  private onColorDescriptorChange_() {
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
   }
@@ -618,6 +603,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDefaultColor_ = undefined;
     this.selectedHue_ = this.$.hueSlider.selectedHue;
     this.selectedDescriptorD_ = {hue: this.selectedHue_};
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
   }
 
   private onSelectedHueDelete_() {
