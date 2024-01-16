@@ -2257,6 +2257,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebRTC.Video.HarmonicFrameRate" units="fps"
+    expires_after="2025-01-16">
+  <owner>ssilkin@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Harmonic frame rate for a received video stream. Calculated as the sum of
+    frame durations divided by the sum of squared frame durations. Frame
+    duration is measured at decoder output as the time difference between this
+    and the previous frame delivery events. Recorded when a stream is removed.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.InputFramesPerSecond" units="fps"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
@@ -2987,6 +2999,18 @@ chromium-metrics-reviews@google.com.
     Ratio of sent frames to number of re-encoded frames (due to target bitrate
     overshoot). The value is reported when a stream is removed and is calculated
     as the total number frames sent divided by the number of re-encoded frames.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.Screenshare.HarmonicFrameRate" units="fps"
+    expires_after="2025-01-16">
+  <owner>ssilkin@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Harmonic frame rate for a received screenshare stream. Calculated as the sum
+    of frame durations divided by the sum of squared frame durations. Frame
+    duration is measured at decoder output as the time difference between this
+    and the previous frame delivery events. Recorded when a stream is removed.
   </summary>
 </histogram>
 
