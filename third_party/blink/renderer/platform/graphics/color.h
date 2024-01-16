@@ -174,14 +174,14 @@ class PLATFORM_EXPORT Color {
 
   // Create a color using rgb() syntax.
   static constexpr Color FromRGB(int r, int g, int b) {
-    return Color(0xFF000000 | ClampInt255(r) << 16 | ClampInt255(g) << 8 |
-                 ClampInt255(b));
+    return Color(0xFF000000 | ClampInt(r) << 16 | ClampInt(g) << 8 |
+                 ClampInt(b));
   }
 
   // Create a color using rgba() syntax.
   static constexpr Color FromRGBA(int r, int g, int b, int a) {
-    return Color(ClampInt255(a) << 24 | ClampInt255(r) << 16 |
-                 ClampInt255(g) << 8 | ClampInt255(b));
+    return Color(ClampInt(a) << 24 | ClampInt(r) << 16 | ClampInt(g) << 8 |
+                 ClampInt(b));
   }
 
   static Color FromRGBALegacy(absl::optional<int> r,
@@ -269,7 +269,6 @@ class PLATFORM_EXPORT Color {
   // Color has been converted to SkColor4f it should not be converted back.
   SkColor4f toSkColor4f() const;
 
-  String SerializeInternal() const;
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
   String SerializeAsCSSColor() const;
@@ -400,20 +399,20 @@ class PLATFORM_EXPORT Color {
         param1_is_none_(0),
         param2_is_none_(0),
         alpha_is_none_(0),
-        param0_(((color >> 16) & 0xFF)),
-        param1_(((color >> 8) & 0xFF)),
-        param2_(((color >> 0) & 0xFF)),
+        param0_(((color >> 16) & 0xFF) / 255.f),
+        param1_(((color >> 8) & 0xFF) / 255.f),
+        param2_(((color >> 0) & 0xFF) / 255.f),
         alpha_(((color >> 24) & 0xFF) / 255.f) {}
   constexpr explicit Color(SkColor4f color)
       : param0_is_none_(0),
         param1_is_none_(0),
         param2_is_none_(0),
         alpha_is_none_(0),
-        param0_(color.fR * 255.0),
-        param1_(color.fG * 255.0),
-        param2_(color.fB * 255.0),
+        param0_(color.fR),
+        param1_(color.fG),
+        param2_(color.fB),
         alpha_(color.fA) {}
-  static constexpr int ClampInt255(int x) {
+  static constexpr int ClampInt(int x) {
     return x < 0 ? 0 : (x > 255 ? 255 : x);
   }
   void GetHueMaxMin(double&, double&, double&) const;

@@ -170,9 +170,9 @@ Color Color::FromRGBALegacy(absl::optional<int> r,
                             absl::optional<int> g,
                             absl::optional<int> b,
                             absl::optional<int> a) {
-  Color result = Color(
-      ClampInt255(a.value_or(0.f)) << 24 | ClampInt255(r.value_or(0.f)) << 16 |
-      ClampInt255(g.value_or(0.f)) << 8 | ClampInt255(b.value_or(0.f)));
+  Color result =
+      Color(ClampInt(a.value_or(0.f)) << 24 | ClampInt(r.value_or(0.f)) << 16 |
+            ClampInt(g.value_or(0.f)) << 8 | ClampInt(b.value_or(0.f)));
   result.param0_is_none_ = !r;
   result.param1_is_none_ = !g;
   result.param2_is_none_ = !b;
@@ -466,10 +466,7 @@ Color Color::InterpolateColors(
 
 std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
   switch (color_space_) {
-    case ColorSpace::kSRGBLegacy: {
-      auto [r, g, b] = gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      return gfx::SRGBToXYZD50(r, g, b);
-    }
+    case ColorSpace::kSRGBLegacy:
     case ColorSpace::kSRGB:
       return gfx::SRGBToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kSRGBLinear:
@@ -687,36 +684,25 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
     }
     case ColorSpace::kSRGB:
     case ColorSpace::kSRGBLegacy: {
+      if (color_space_ == ColorSpace::kSRGB ||
+          color_space_ == ColorSpace::kSRGBLegacy) {
+        color_space_ = destination_color_space;
+        return;
+      }
       if (color_space_ == ColorSpace::kHSL) {
         std::tie(param0_, param1_, param2_) =
             gfx::HSLToSRGB(param0_, param1_, param2_);
       } else if (color_space_ == ColorSpace::kHWB) {
         std::tie(param0_, param1_, param2_) =
             gfx::HWBToSRGB(param0_, param1_, param2_);
-      } else if (color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      } else if (color_space_ != ColorSpace::kSRGB) {
-        // Don't go through the whole conversion to xyz for srgb to avoid
-        // rounding issues.
+      } else {
         auto [x, y, z] = ExportAsXYZD50Floats();
         std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGB(x, y, z);
       }
-
-      // All the above conversions result in non-legacy srgb.
-      if (destination_color_space == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToSRGBLegacy(param0_, param1_, param2_);
-      }
-
       color_space_ = destination_color_space;
       return;
     }
     case ColorSpace::kHSL: {
-      if (color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      }
       if (color_space_ == ColorSpace::kSRGB ||
           color_space_ == ColorSpace::kSRGBLegacy) {
         std::tie(param0_, param1_, param2_) =
@@ -742,10 +728,6 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       return;
     }
     case ColorSpace::kHWB: {
-      if (color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      }
       if (color_space_ == ColorSpace::kSRGB ||
           color_space_ == ColorSpace::kSRGBLegacy) {
         std::tie(param0_, param1_, param2_) =
@@ -793,11 +775,8 @@ SkColor4f Color::toSkColor4f() const {
   }
   switch (color_space_) {
     case ColorSpace::kSRGB:
+    case ColorSpace::kSRGBLegacy:
       return SkColor4f{param0_, param1_, param2_, alpha_};
-    case ColorSpace::kSRGBLegacy: {
-      auto [r, g, b] = gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      return SkColor4f{r, g, b, alpha_};
-    }
     case ColorSpace::kSRGBLinear:
       return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kDisplayP3:
@@ -1003,29 +982,24 @@ String Color::SerializeLegacyColorAsCSSColor() const {
     result.Append("rgba(");
   }
 
-  constexpr float kEpsilon = 1e-07;
+  // hsl and hwb colors need to be serialized in srgb.
   auto [r, g, b] = std::make_tuple(param0_, param1_, param2_);
-  if (color_space_ == Color::ColorSpace::kHWB ||
-      color_space_ == Color::ColorSpace::kHSL) {
-    // hsl and hwb colors need to be serialized in srgb.
-    if (color_space_ == Color::ColorSpace::kHSL) {
-      std::tie(r, g, b) = gfx::HSLToSRGB(param0_, param1_, param2_);
-    } else if (color_space_ == Color::ColorSpace::kHWB) {
-      std::tie(r, g, b) = gfx::HWBToSRGB(param0_, param1_, param2_);
-    }
-    // Legacy color channels get serialized with integers in the range [0,255].
-    // Channels that have a value of exactly 0.5 can get incorrectly rounded
-    // down to 127 when being converted to an integer. Add a small epsilon to
-    // avoid this. See crbug.com/1425856.
-    std::tie(r, g, b) =
-        gfx::SRGBToSRGBLegacy(r + kEpsilon, g + kEpsilon, b + kEpsilon);
+  if (color_space_ == Color::ColorSpace::kHSL) {
+    std::tie(r, g, b) = gfx::HSLToSRGB(param0_, param1_, param2_);
+  } else if (color_space_ == Color::ColorSpace::kHWB) {
+    std::tie(r, g, b) = gfx::HWBToSRGB(param0_, param1_, param2_);
   }
 
-  result.AppendNumber(round(ClampTo(r, 0.0, 255.0)));
+  // Legacy color channels get serialized with integers in the range [0,255].
+  // Channels that have a value of exactly 0.5 can get incorrectly rounded
+  // down to 127 when being converted to an integer. Add a small epsilon to
+  // avoid this. See crbug.com/1425856.
+  constexpr float kEpsilon = 1e-07;
+  result.AppendNumber(ClampTo(round((r + kEpsilon) * 255.0), 0.0, 255.0));
   result.Append(", ");
-  result.AppendNumber(round(ClampTo(g, 0.0, 255.0)));
+  result.AppendNumber(ClampTo(round((g + kEpsilon) * 255.0), 0.0, 255.0));
   result.Append(", ");
-  result.AppendNumber(round(ClampTo(b, 0.0, 255.0)));
+  result.AppendNumber(ClampTo(round((b + kEpsilon) * 255.0), 0.0, 255.0));
 
   if (!IsOpaque()) {
     result.Append(", ");
@@ -1053,7 +1027,11 @@ String Color::SerializeLegacyColorAsCSSColor() const {
   return result.ToString();
 }
 
-String Color::SerializeInternal() const {
+String Color::SerializeAsCSSColor() const {
+  if (IsLegacyColorSpace(color_space_)) {
+    return SerializeLegacyColorAsCSSColor();
+  }
+
   StringBuilder result;
   if (IsLightnessFirstComponent(color_space_)) {
     result.Append(ColorSpaceToString(color_space_));
@@ -1079,14 +1057,6 @@ String Color::SerializeInternal() const {
   }
   result.Append(")");
   return result.ToString();
-}
-
-String Color::SerializeAsCSSColor() const {
-  if (IsLegacyColorSpace(color_space_)) {
-    return SerializeLegacyColorAsCSSColor();
-  }
-
-  return SerializeInternal();
 }
 
 String Color::NameForLayoutTreeAsText() const {

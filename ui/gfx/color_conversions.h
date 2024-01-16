@@ -79,14 +79,6 @@ GFX_EXPORT std::tuple<float, float, float> XYZD65TosRGBLinear(float x,
                                                               float y,
                                                               float z);
 
-GFX_EXPORT std::tuple<float, float, float> SRGBToSRGBLegacy(float r,
-                                                            float g,
-                                                            float b);
-
-GFX_EXPORT std::tuple<float, float, float> SRGBLegacyToSRGB(float r,
-                                                            float g,
-                                                            float b);
-
 GFX_EXPORT std::tuple<float, float, float> XYZD50TosRGB(float x,
                                                         float y,
                                                         float z);
