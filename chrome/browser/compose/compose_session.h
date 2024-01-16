@@ -265,12 +265,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   bool skip_inner_text_ = false;
 
   // Logging counters.
-  int compose_count_ = 0;
-  int dialog_shown_count_ = 0;
-  int fre_dialog_shown_count_ = 0;
-  int msbb_dialog_shown_count_ = 0;
-  int undo_count_ = 0;
-  int update_input_count_ = 0;
+  compose::ComposeSessionEvents session_events_;
 
   // If true, the inner-text was received.
   bool got_inner_text_ = false;

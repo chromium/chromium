@@ -200,15 +200,15 @@ ComposeSession::ComposeSession(
 ComposeSession::~ComposeSession() {
   if (!fre_complete_ || fre_completed_in_session_) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
-    compose::LogComposeFirstRunSessionDialogShownCount(fre_close_reason_,
-                                                       fre_dialog_shown_count_);
+    compose::LogComposeFirstRunSessionDialogShownCount(
+        fre_close_reason_, session_events_.fre_dialog_shown_count);
     if (!fre_complete_) {
       return;
     }
   }
   if (!current_msbb_state_ || msbb_enabled_during_session_) {
-    compose::LogComposeMSBBSessionDialogShownCount(msbb_close_reason_,
-                                                   msbb_dialog_shown_count_);
+    compose::LogComposeMSBBSessionDialogShownCount(
+        msbb_close_reason_, session_events_.msbb_dialog_shown_count);
     compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
     if (!current_msbb_state_) {
       return;
@@ -219,9 +219,7 @@ ComposeSession::~ComposeSession() {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
   }
-  LogComposeSessionCloseMetrics(close_reason_, compose_count_,
-                                dialog_shown_count_, undo_count_,
-                                update_input_count_);
+  LogComposeSessionCloseMetrics(close_reason_, session_events_);
 
   // If we have a modeling quality log entry, upload it.
 
@@ -277,7 +275,7 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   if (is_input_edited) {
     compose::LogComposeRequestReason(
         compose::ComposeRequestReason::kUpdateRequest);
-    update_input_count_ += 1;
+    session_events_.update_input_count += 1;
   } else {
     compose::LogComposeRequestReason(
         compose::ComposeRequestReason::kFirstRequest);
@@ -322,7 +320,7 @@ void ComposeSession::MakeRequest(
   }
 
   // Increase compose count regradless of status of request.
-  compose_count_ += 1;
+  session_events_.compose_count += 1;
 
   if (skip_inner_text_ || got_inner_text_) {
     RequestWithSession(std::move(request), is_input_edited);
@@ -510,7 +508,7 @@ void ComposeSession::Undo(UndoCallback callback) {
   }
 
   // Only increase undo count if there are states to undo.
-  undo_count_ += 1;
+  session_events_.undo_count += 1;
 
   std::unique_ptr<ComposeState> undo_state = std::move(undo_states_.top());
   undo_states_.pop();
@@ -645,16 +643,16 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
   }
 
   if (!fre_complete_) {
-    fre_dialog_shown_count_ += 1;
+    session_events_.fre_dialog_shown_count += 1;
     return;
   }
   if (!current_msbb_state_) {
-    msbb_dialog_shown_count_ += 1;
+    session_events_.msbb_dialog_shown_count += 1;
     return;
   }
 
   // Session is initialized at the main dialog UI state.
-  dialog_shown_count_ += 1;
+  session_events_.dialog_shown_count += 1;
 
   RefreshInnerText();
 
@@ -760,7 +758,7 @@ void ComposeSession::SetFirstRunCloseReason(
                           kFirstRunDisclaimerAcknowledgedWithoutInsert) {
     if (current_msbb_state_) {
       // The FRE dialog progresses directly to the main dialog.
-      dialog_shown_count_ = 1;
+      session_events_.dialog_shown_count = 1;
       base::RecordAction(
           base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
     } else {

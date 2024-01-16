@@ -105,6 +105,18 @@ enum class ComposeShowStatus {
   kMaxValue = kFormFieldNestedInFencedFrame,
 };
 
+// Struct containing event and logging information for an individual
+// |ComposeSession|.
+struct ComposeSessionEvents {
+  // Logging counters.
+  unsigned int compose_count = 0;
+  unsigned int dialog_shown_count = 0;
+  unsigned int fre_dialog_shown_count = 0;
+  unsigned int msbb_dialog_shown_count = 0;
+  unsigned int undo_count = 0;
+  unsigned int update_input_count = 0;
+};
+
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
@@ -131,10 +143,7 @@ void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
 
 // Log session based metrics when a session ends.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
-                                   int compose_count,
-                                   int dialog_shown_count,
-                                   int undo_count,
-                                   int update_input_count);
+                                   ComposeSessionEvents session_events);
 
 // Log the amount trimmed from the inner text from the page (in bytes) when the
 // dialog is opened.
@@ -149,6 +158,7 @@ void LogComposeDialogOpenLatency(base::TimeDelta duration);
 
 // Log the character length of the selection when the dialog is opened.
 void LogComposeDialogSelectionLength(int length);
+
 }  // namespace compose
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
