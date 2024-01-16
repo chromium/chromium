@@ -556,7 +556,6 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 
 ## Linux AMD RX 5500 XT ##
 
-crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
 ## Linux NVIDIA / VANGLE - bot NVIDIA driver is too old. ##
 
