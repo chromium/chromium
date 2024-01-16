@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/client/client_shared_image_interface.h"
 
+#include "base/process/memory.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -221,7 +222,12 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       gfx::BufferSizeForBufferFormat(size, buffer_format);
   auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  CHECK(shared_memory_region.IsValid());
+
+  if (!shared_memory_region.IsValid()) {
+    DLOG(ERROR) << "base::UnsafeSharedMemoryRegion::Create() for SharedImage "
+                   "with SHARED_IMAGE_USAGE_CPU_WRITE fails!";
+    base::TerminateBecauseOutOfMemory(buffer_size);
+  }
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::SHARED_MEMORY_BUFFER;
