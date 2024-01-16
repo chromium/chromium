@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "components/sync/service/sync_user_settings.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -111,6 +112,14 @@ TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
   return CreateSessionForBrowser(browser, base_session_webcontents);
 }
 
+void TabOrganizationService::RestartSessionAndShowUI(
+    const Browser* browser,
+    const content::WebContents* base_session_webcontents) {
+  ResetSessionForBrowser(browser, base_session_webcontents);
+  StartRequestIfNotFRE(browser);
+  OnUserInvokedFeature(browser);
+}
+
 void TabOrganizationService::OnUserInvokedFeature(const Browser* browser) {
   for (TabOrganizationObserver& observer : observers_) {
     observer.OnUserInvokedFeature(browser);
@@ -141,6 +150,15 @@ bool TabOrganizationService::CanStartRequest() const {
   }
 
   return true;
+}
+
+void TabOrganizationService::StartRequestIfNotFRE(const Browser* browser) {
+  const PrefService* pref_service = browser->profile()->GetPrefs();
+  bool show_fre =
+      pref_service->GetBoolean(tab_search_prefs::kTabOrganizationShowFRE);
+  if (!show_fre) {
+    StartRequest(browser);
+  }
 }
 
 void TabOrganizationService::StartRequest(const Browser* browser) {
@@ -223,6 +241,7 @@ void TabOrganizationService::AcceptTabOrganization(
 }
 
 void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
+  StartRequestIfNotFRE(browser);
   OnUserInvokedFeature(browser);
   trigger_backoff_->Decrement();
 }
