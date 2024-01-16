@@ -1057,13 +1057,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   // Returns an AsyncCheckTracker object used for holding URL checkers for async
   // Safe Browsing check. It may return nullptr if the WebContents is null,
-  // the ui_manager is null or the real-time check is not enabled.
+  // the ui_manager is null, the real-time check is not enabled, or the loader
+  // is for no-state prefetch or frame prerender.
   safe_browsing::AsyncCheckTracker* GetAsyncCheckTracker(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       bool is_enterprise_lookup_enabled,
       bool is_consumer_lookup_enabled,
       safe_browsing::hash_realtime_utils::HashRealTimeSelection
-          hash_realtime_selection);
+          hash_realtime_selection,
+      int frame_tree_node_id);
 
   // Try to upload an enterprise legacy tech event to the enterprise management
   // server for admins.

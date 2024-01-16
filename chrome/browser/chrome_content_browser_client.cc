@@ -5458,7 +5458,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     safe_browsing::AsyncCheckTracker* async_check_tracker =
         GetAsyncCheckTracker(wc_getter, is_enterprise_lookup_enabled,
                              is_consumer_lookup_enabled,
-                             hash_realtime_selection);
+                             hash_realtime_selection, frame_tree_node_id);
 
     return safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindRepeating(
@@ -6941,7 +6941,8 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
     bool is_enterprise_lookup_enabled,
     bool is_consumer_lookup_enabled,
     safe_browsing::hash_realtime_utils::HashRealTimeSelection
-        hash_realtime_selection) {
+        hash_realtime_selection,
+    int frame_tree_node_id) {
   content::WebContents* contents = wc_getter.Run();
   if (!contents || !safe_browsing_service_ ||
       !safe_browsing_service_->ui_manager()) {
@@ -6950,6 +6951,11 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
   if (!is_enterprise_lookup_enabled && !is_consumer_lookup_enabled &&
       hash_realtime_selection ==
           safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {
+    return nullptr;
+  }
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          contents) ||
+      contents->IsPrerenderedFrame(frame_tree_node_id)) {
     return nullptr;
   }
   if (!base::FeatureList::IsEnabled(

@@ -23,6 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -271,6 +272,12 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
   base::WeakPtrFactory<MockSafeBrowsingUrlChecker> weak_factory_{this};
 };
 
+struct WillStartRequestOptionalArgs {
+  network::mojom::RequestDestination destination =
+      network::mojom::RequestDestination::kDocument;
+  int load_flags = 0;
+};
+
 }  // namespace
 
 class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
@@ -398,20 +405,16 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   }
 
   // This function returns the value of |defer| after the function is called.
-  bool CallWillStartRequestWithDestination(
-      network::mojom::RequestDestination destination) {
+  bool CallWillStartRequest(WillStartRequestOptionalArgs optional_args =
+                                WillStartRequestOptionalArgs()) {
     bool defer = false;
     network::ResourceRequest request;
     request.url = url_;
-    request.destination = destination;
+    request.destination = optional_args.destination;
+    request.load_flags = optional_args.load_flags;
     throttle_->WillStartRequest(&request, &defer);
     task_environment_.RunUntilIdle();
     return defer;
-  }
-
-  bool CallWillStartRequest() {
-    return CallWillStartRequestWithDestination(
-        network::mojom::RequestDestination::kDocument);
   }
 
   // This function returns the value of |defer| after the function is called.
@@ -543,12 +546,11 @@ TEST_P(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnUnsafeDocumentUrl) {
 TEST_P(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DoesNotDeferOnUnsafeIframeUrl) {
   SetUpTest();
-  AddCallbackInfo(/*should_proceed=*/false,
-                  /*should_show_interstitial=*/true,
-                  /*should_delay_callback=*/false);
+  // Do not call |AddSyncCallbackInfo| or |AddAsyncCallbackInfo|, so that if
+  // CheckUrl is called for either (incorrectly), the test will fail.
 
-  bool defer = CallWillStartRequestWithDestination(
-      network::mojom::RequestDestination::kIframe);
+  bool defer = CallWillStartRequest(
+      {.destination = network::mojom::RequestDestination::kIframe});
   EXPECT_FALSE(defer);
   EXPECT_EQ(throttle_delegate_->GetErrorCode(), 0);
 
@@ -580,8 +582,8 @@ TEST_P(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnSkippedUrl) {
                   /*should_delay_callback=*/false);
   url_checker_delegate_->EnableSkipRequestCheck();
 
-  CallWillStartRequestWithDestination(
-      network::mojom::RequestDestination::kEmpty);
+  CallWillStartRequest(
+      {.destination = network::mojom::RequestDestination::kEmpty});
 
   bool defer = CallWillProcessResponse();
   // The loader is not deferred because the check has skipped.
@@ -1091,6 +1093,22 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
 }
 
+TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
+       VerifyAsyncChecksNotEligible_LoadPrefetch) {
+  SetUpTest();
+  AddSyncCallbackInfo(/*should_proceed=*/true,
+                      /*should_delay_callback=*/true);
+  // Do not call |AddAsyncCallbackInfo| so that if the async callback is
+  // called (incorrectly), the test will fail.
+
+  CallWillStartRequest({.load_flags = net::LOAD_PREFETCH});
+  CallWillProcessResponse();
+
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(throttle_delegate_->IsResumed());
+}
+
 class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest
     : public SBBrowserUrlLoaderThrottleTest {
  public:
@@ -1099,6 +1117,13 @@ class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest
   }
 
  protected:
+  void AddSyncCallbackInfo(bool should_proceed, bool should_delay_callback) {
+    sync_url_checker_->AddCallbackInfo(
+        should_proceed,
+        /*should_show_interstitial=*/!should_proceed,
+        /*should_delay_callback=*/should_delay_callback);
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1146,8 +1171,8 @@ TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
                   /*should_show_interstitial=*/true,
                   /*should_delay_callback=*/false);
 
-  bool defer = CallWillStartRequestWithDestination(
-      network::mojom::RequestDestination::kIframe);
+  bool defer = CallWillStartRequest(
+      {.destination = network::mojom::RequestDestination::kIframe});
   // Safe Browsing and URL loader are performed in parallel. Safe Browsing
   // doesn't defer the start of the request.
   EXPECT_FALSE(defer);
@@ -1156,6 +1181,23 @@ TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
 
   defer = CallWillProcessResponse();
   EXPECT_TRUE(defer);
+}
+
+TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
+       VerifyAsyncChecksNotEligible_IframeUrl) {
+  SetUpTest();
+  AddSyncCallbackInfo(/*should_proceed=*/true,
+                      /*should_delay_callback=*/true);
+  // Do not call |AddAsyncCallbackInfo| so that if the async callback is
+  // called (incorrectly), the test will fail.
+
+  CallWillStartRequest(
+      {.destination = network::mojom::RequestDestination::kIframe});
+  CallWillProcessResponse();
+
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(throttle_delegate_->IsResumed());
 }
 
 class SBBrowserUrlLoaderThrottleDisableOnUIThreadTest

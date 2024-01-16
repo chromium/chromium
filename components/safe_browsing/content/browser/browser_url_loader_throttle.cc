@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/load_flags.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -211,9 +212,14 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   bool can_urt_check_subresource_url =
       url_lookup_service_ && url_lookup_service_->CanCheckSubresourceURL();
 
-  // TODO(crbug.com/1501194): Add more checks (e.g. prefetch/prerender) to
-  // ensure this URL loader is eligible for async check.
-  if (async_check_tracker_ && navigation_id_.has_value()) {
+  // TODO(crbug.com/1501194): Add more checks (e.g. enterprise checks) to
+  // ensure this URL loader is eligible for async check, or re-evaluate the
+  // CHECK(can_check_db).
+  if (async_check_tracker_ && navigation_id_.has_value() &&
+      // Once |kSafeBrowsingSkipSubresources| is deprecated, the |kDocument|
+      // check is no longer needed.
+      request->destination == network::mojom::RequestDestination::kDocument &&
+      !(request->load_flags & net::LOAD_PREFETCH)) {
     CHECK(can_check_db);
     CHECK(url_real_time_lookup_enabled_ ||
           hash_realtime_selection_ !=
