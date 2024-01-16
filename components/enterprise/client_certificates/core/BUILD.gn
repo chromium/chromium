@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_client_certificates)
+
+source_set("core") {
+  public = [
+    "private_key.h",
+    "private_key_factory.h",
+    "private_key_types.h",
+  ]
+
+  sources = [
+    "private_key.cc",
+    "private_key_factory.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//crypto",
+  ]
+
+  deps = []
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_private_key.cc",
+    "mock_private_key.h",
+    "mock_private_key_factory.cc",
+    "mock_private_key_factory.h",
+  ]
+
+  deps = [
+    ":core",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "private_key_factory_unittest.cc" ]
+
+  deps = [
+    ":core",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
