@@ -103,7 +103,6 @@ ChipController::~ChipController() {
     active_chip_permission_request_manager_.value()->RemoveObserver(this);
   }
   observation_.Reset();
-  modal_dialog_activated_subscription_ = {};
 }
 
 void ChipController::OnPermissionRequestManagerDestructed() {
@@ -205,7 +204,6 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
 
   observation_.Reset();
-  modal_dialog_activated_subscription_ = {};
 
   // This method will be called only if a user dismissed permission prompt
   // popup bubble. In all other cases, `OnRequestDecided` is called and Widget
@@ -270,20 +268,11 @@ void ChipController::InitializePermissionPrompt(
     active_chip_permission_request_manager_.value()->RemoveObserver(this);
   }
 
-  content::WebContents* const web_contents =
-      delegate->GetAssociatedWebContents();
   active_chip_permission_request_manager_ =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
+      permissions::PermissionRequestManager::FromWebContents(
+          delegate->GetAssociatedWebContents());
   active_chip_permission_request_manager_.value()->AddObserver(this);
   observation_.Observe(chip_);
-
-  web_modal::WebContentsModalDialogManager* const modal_dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  CHECK(modal_dialog_manager);
-  modal_dialog_activated_subscription_ =
-      modal_dialog_manager->AddOnDialogActivatedCallback(base::BindRepeating(
-          &ChipController::OnModalDialogActivated, weak_factory_.GetWeakPtr()));
-
   std::move(callback).Run();
 }
 
@@ -365,7 +354,6 @@ void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
 void ChipController::ResetPermissionPromptChip() {
   RemoveBubbleObserverAndResetTimersAndChipCallbacks();
   observation_.Reset();
-  modal_dialog_activated_subscription_ = {};
   if (permission_prompt_model_) {
     // permission_request_manager_ is empty if the PermissionRequestManager
     // instance has destructed, which triggers the observer method
@@ -526,13 +514,6 @@ void ChipController::OnCollapseAnimationEnded() {
   if (is_waiting_for_confirmation_collapse_) {
     HideChip();
     is_waiting_for_confirmation_collapse_ = false;
-  }
-}
-
-void ChipController::OnModalDialogActivated() {
-  if (PermissionPromptBubbleBaseView* const bubble = GetPromptBubbleView()) {
-    bubble->AsDialogDelegate()->TriggerInputProtection(
-        /*force_early=*/true);
   }
 }
 

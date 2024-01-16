@@ -28,14 +28,6 @@ PermissionPromptBubble::PermissionPromptBubble(
   } else {
     ShowBubble();
   }
-
-  web_modal::WebContentsModalDialogManager* const modal_dialog_manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  CHECK(modal_dialog_manager);
-  modal_dialog_activated_subscription_ =
-      modal_dialog_manager->AddOnDialogActivatedCallback(
-          base::BindRepeating(&PermissionPromptBubble::OnModalDialogActivated,
-                              weak_factory_.GetWeakPtr()));
 }
 
 PermissionPromptBubble::~PermissionPromptBubble() {
@@ -92,11 +84,6 @@ std::optional<gfx::Rect> PermissionPromptBubble::GetViewBoundsInScreen() const {
              ? std::make_optional<gfx::Rect>(
                    GetPromptBubble()->GetWidget()->GetWindowBoundsInScreen())
              : std::nullopt;
-}
-
-void PermissionPromptBubble::OnModalDialogActivated() {
-  GetPromptBubble()->AsDialogDelegate()->TriggerInputProtection(
-      /*force_early=*/true);
 }
 
 bool PermissionPromptBubble::UpdateAnchor() {
