@@ -63,6 +63,7 @@ status of Chromium's C++ support is covered in more detail in
   * In class declarations, group function overrides together within each access
     control section, with one labeled group per parent class.
   * Prefer `(foo == 0)` to `(0 == foo)`.
+  * Use `{}` on all conditionals/loops.
 
 ## Unnamed namespaces
 
