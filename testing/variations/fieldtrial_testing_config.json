@@ -979,6 +979,27 @@
             ]
         }
     ],
+    "AttributionReportingSourceDeactivationAfterFilterMatching": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AttributionReportingDeactivateAfterFilterMatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioFocusEnforcementStudy": [
         {
             "platforms": [
@@ -14196,6 +14217,42 @@
             ]
         }
     ],
+    "PrivacySandboxAdsAPIs": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Notice_M1_AllAPIs_Expanded_NoOT_Stable",
+                    "params": {
+                        "implementation_type": "mparch"
+                    },
+                    "enable_features": [
+                        "AllowURNsInIframes",
+                        "AttributionFencedFrameReportingBeacon",
+                        "AttributionReportingCrossAppWeb",
+                        "BiddingAndScoringDebugReportingAPI",
+                        "BrowsingTopics",
+                        "FencedFrames",
+                        "FencedFramesAPIChanges",
+                        "InterestGroupStorage",
+                        "KAnonymityService",
+                        "PrivacySandboxAdsAPIs",
+                        "PrivacySandboxAdsAPIsM1Override",
+                        "PrivateAggregationApi",
+                        "SharedStorageAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxAdsNoticeCCT": [
         {
             "platforms": [
@@ -14346,71 +14403,6 @@
             ]
         }
     ],
-    "PrivacySandboxV3": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Notice_MPArch_20220505",
-                    "params": {
-                        "implementation_type": "mparch"
-                    },
-                    "enable_features": [
-                        "AllowURNsInIframes",
-                        "AttributionFencedFrameReportingBeacon",
-                        "AttributionReportingCrossAppWeb",
-                        "AttributionReportingDeactivateAfterFilterMatch",
-                        "BiddingAndScoringDebugReportingAPI",
-                        "BrowsingTopics",
-                        "FencedFrames",
-                        "FencedFramesAPIChanges",
-                        "FencedFramesEnforceFocus",
-                        "InterestGroupStorage",
-                        "KAnonymityService",
-                        "KAnonymityServiceOHTTPRequests",
-                        "NoncedPartitionedCookies",
-                        "PrivacySandboxAdsAPIs",
-                        "PrivacySandboxAdsAPIsM1Override",
-                        "PrivateAggregationApi",
-                        "SharedStorageAPI"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Notice_MPArch_20220505_Android",
-                    "params": {
-                        "implementation_type": "mparch"
-                    },
-                    "enable_features": [
-                        "AttributionFencedFrameReportingBeacon",
-                        "AttributionReportingCrossAppWeb",
-                        "BrowsingTopics",
-                        "FencedFrames",
-                        "FencedFramesAPIChanges",
-                        "FencedFramesEnforceFocus",
-                        "NoncedPartitionedCookies",
-                        "PrivacySandboxAdsAPIs",
-                        "PrivacySandboxAdsAPIsM1Override",
-                        "PrivateAggregationApi",
-                        "SharedStorageAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxV4": [
         {
             "platforms": [
@@ -14423,7 +14415,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Notice_GA_Stable",
+                    "params": {
+                        "notice-required": "true",
+                        "restricted-notice": "true"
+                    },
+                    "enable_features": [
+                        "PrivacySandboxSettings4"
+                    ]
+                },
+                {
+                    "name": "Enabled_Consent_GA_Stable",
+                    "params": {
+                        "consent-required": "true",
+                        "restricted-notice": "true"
+                    },
                     "enable_features": [
                         "PrivacySandboxSettings4"
                     ]
