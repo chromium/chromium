@@ -51,5 +51,10 @@ void FakeAffiliationService::GetPSLExtensions(
     base::OnceCallback<void(std::vector<std::string>)> callback) const {
   std::move(callback).Run({});
 }
+void FakeAffiliationService::UpdateAffiliationsAndBranding(
+    const std::vector<FacetURI>& facets,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
 
 }  // namespace password_manager

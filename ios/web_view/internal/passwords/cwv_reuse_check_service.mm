@@ -7,6 +7,7 @@
 #import "base/containers/flat_set.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/passwords_grouper.h"
@@ -64,12 +65,30 @@
     passwordForms.push_back(*password.internalPasswordForm);
   }
 
-  base::OnceClosure closure = base::BindOnce(^{
-    [self groupPasswordsWithCompletionHandler:completionHandler
-                                    passwords:std::move(passwords)];
+  // Convert forms to Facets.
+  std::vector<password_manager::FacetURI> facets;
+  facets.reserve(passwordForms.size());
+  for (const auto& form : passwordForms) {
+    // Blocked forms aren't grouped.
+    if (form.blocked_by_user) {
+      continue;
+    }
+    facets.emplace_back(password_manager::FacetURI::FromPotentiallyInvalidSpec(
+        GetFacetRepresentation(form)));
+  }
+
+  base::OnceClosure updateAffiliationsAndBrandingClosure = base::BindOnce(^{
+    base::OnceClosure groupCredentialsClosure = base::BindOnce(^{
+      [self groupPasswordsWithCompletionHandler:completionHandler
+                                      passwords:std::move(passwords)];
+    });
+
+    self->_passwords_grouper->GroupCredentials(
+        passwordForms, {}, std::move(groupCredentialsClosure));
   });
 
-  _passwords_grouper->GroupCredentials(passwordForms, {}, std::move(closure));
+  _affiliation_service->UpdateAffiliationsAndBranding(
+      facets, std::move(updateAffiliationsAndBrandingClosure));
 }
 
 @end

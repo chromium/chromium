@@ -502,6 +502,7 @@ test("ios_web_view_unittests") {
     "internal/passwords/cwv_leak_check_credential_unittest.mm",
     "internal/passwords/cwv_leak_check_service_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
+    "internal/passwords/cwv_reuse_check_service_unittest.mm",
     "internal/passwords/cwv_weak_check_utils_unittest.mm",
     "internal/passwords/web_view_password_manager_client_unittest.mm",
     "internal/safe_browsing/cwv_unsafe_url_handler_unittest.mm",

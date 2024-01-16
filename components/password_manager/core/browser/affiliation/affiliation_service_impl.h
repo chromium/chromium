@@ -127,6 +127,8 @@ class AffiliationServiceImpl : public AffiliationService,
                        GroupsCallback callback) override;
   void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
                             callback) const override;
+  void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
+                                     base::OnceClosure callback) override;
 
   AffiliationBackend* GetBackendForTesting() { return backend_.get(); }
 

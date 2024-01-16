@@ -112,6 +112,13 @@ class AffiliationService : public KeyedService {
   // considered as PSL match.
   virtual void GetPSLExtensions(
       base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
+
+  // This method will fetch the latest affiliation and branding information for
+  // |facets| even if local cache is still fresh. |callback| is invoked on
+  // completion.
+  virtual void UpdateAffiliationsAndBranding(
+      const std::vector<FacetURI>& facets,
+      base::OnceClosure callback) = 0;
 };
 
 }  // namespace password_manager

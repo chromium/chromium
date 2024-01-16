@@ -27,42 +27,7 @@ constexpr char kFallbackIconQueryParams[] =
 constexpr char kDefaultAndroidIcon[] =
     "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
 
-// Converts signon_realm (url for federated forms) into GURL and strips path. If
-// form is valid Android credential or conversion fails signon_realm is returned
-// as it is.
-std::string GetFacetRepresentation(const PasswordForm& form) {
-  FacetURI facet = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
-  // Return result for android credentials immediately.
-  if (facet.IsValidAndroidFacetURI()) {
-    return facet.potentially_invalid_spec();
-  }
-  GURL url;
-  // For federated credentials use url. For everything else try to parse signon
-  // realm as GURL.
-  if (form.IsFederatedCredential()) {
-    url = form.url;
-  } else {
-    url = GURL(form.signon_realm);
-  }
 
-  // Strip path and everything after that.
-  std::string scheme_and_authority = url.GetWithEmptyPath().spec();
-
-  // If something went wrong (signon_realm is not a valid GURL), use signon
-  // realm as it is.
-  if (scheme_and_authority.empty()) {
-    scheme_and_authority = form.signon_realm;
-  }
-  return FacetURI::FromPotentiallyInvalidSpec(scheme_and_authority)
-      .potentially_invalid_spec();
-}
-
-std::string GetFacetRepresentation(const PasskeyCredential& passkey) {
-  std::string as_url = base::StrCat(
-      {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()});
-  return FacetURI::FromPotentiallyInvalidSpec(as_url)
-      .potentially_invalid_spec();
-}
 
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential,
@@ -388,6 +353,40 @@ void PasswordsGrouper::InitializePSLExtensionList(
     std::vector<std::string> psl_extension_list) {
   psl_extensions_ =
       base::MakeFlatSet<std::string>(std::move(psl_extension_list));
+}
+
+std::string GetFacetRepresentation(const PasswordForm& form) {
+  FacetURI facet = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  // Return result for android credentials immediately.
+  if (facet.IsValidAndroidFacetURI()) {
+    return facet.potentially_invalid_spec();
+  }
+  GURL url;
+  // For federated credentials use url. For everything else try to parse signon
+  // realm as GURL.
+  if (form.IsFederatedCredential()) {
+    url = form.url;
+  } else {
+    url = GURL(form.signon_realm);
+  }
+
+  // Strip path and everything after that.
+  std::string scheme_and_authority = url.GetWithEmptyPath().spec();
+
+  // If something went wrong (signon_realm is not a valid GURL), use signon
+  // realm as it is.
+  if (scheme_and_authority.empty()) {
+    scheme_and_authority = form.signon_realm;
+  }
+  return FacetURI::FromPotentiallyInvalidSpec(scheme_and_authority)
+      .potentially_invalid_spec();
+}
+
+std::string GetFacetRepresentation(const PasskeyCredential& passkey) {
+  std::string as_url = base::StrCat(
+      {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()});
+  return FacetURI::FromPotentiallyInvalidSpec(as_url)
+      .potentially_invalid_spec();
 }
 
 }  // namespace password_manager

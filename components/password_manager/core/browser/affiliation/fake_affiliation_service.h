@@ -34,6 +34,8 @@ class FakeAffiliationService : public AffiliationService {
                        GroupsCallback callback) override;
   void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
                             callback) const override;
+  void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
+                                     base::OnceClosure callback) override;
 };
 
 }  // namespace password_manager
