@@ -315,8 +315,12 @@
     justify-content: flex-end;
   }
 
+  #submitFooter {
+    gap:60px;
+  }
+
   #resultFooter {
-    gap:86px;
+    gap:80px;
   }
 
   .footer-text {
@@ -325,17 +329,13 @@
     gap: 8px;
     margin-inline-end: auto;
     color: var(--cr-secondary-text-color);
-    font-size: 12px;
-    line-height: 20px;
+    font-size: 11px;
+    line-height: 16px;
   }
 
   :host-context([chrome-refresh-2023]) .footer-text {
     color: var(--color-compose-dialog-foreground-subtle);
     line-height: 16px;
-  }
-
-  .footer-text a {
-    font-weight: bold;
   }
 
   .footer-text .icon-buttons-row {
