@@ -19,6 +19,7 @@
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -73,6 +74,7 @@ class WebApkInstaller {
   static void InstallAsync(content::BrowserContext* context,
                            content::WebContents* web_contents,
                            const webapps::ShortcutInfo& shortcut_info,
+                           webapps::WebappInstallSource install_source,
                            FinishCallback finish_callback);
 
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
@@ -85,10 +87,12 @@ class WebApkInstaller {
 
   // Calls the private function |InstallAsync| for testing.
   // Should be used only for testing.
-  static void InstallAsyncForTesting(WebApkInstaller* installer,
-                                     content::WebContents* web_contents,
-                                     const webapps::ShortcutInfo& shortcut_info,
-                                     FinishCallback callback);
+  static void InstallAsyncForTesting(
+      WebApkInstaller* installer,
+      content::WebContents* web_contents,
+      const webapps::ShortcutInfo& shortcut_info,
+      webapps::WebappInstallSource install_source,
+      FinishCallback callback);
 
   // Calls the private function |UpdateAsync| for testing.
   // Should be used only for testing.
@@ -155,6 +159,7 @@ class WebApkInstaller {
   // install completed or failed.
   void InstallAsync(content::WebContents* web_contents,
                     const webapps::ShortcutInfo& shortcut_info,
+                    webapps::WebappInstallSource install_source,
                     FinishCallback finish_callback);
 
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
@@ -236,6 +241,9 @@ class WebApkInstaller {
 
   // Indicates whether the installer is for installing or updating a WebAPK.
   TaskType task_type_;
+
+  // Sources for triggering the WebAPK installs.
+  webapps::WebappInstallSource install_source_;
 
   // Points to the Java Object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

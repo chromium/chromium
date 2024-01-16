@@ -7,7 +7,13 @@
 
 #include <stdint.h>
 
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+
 class GURL;
+
+namespace webapps {
+enum class WebappInstallSource;
+}
 
 // WebApkUkmRecorder is the C++ counterpart of
 // org.chromium.chrome.browser.webapps's WebApkUkmRecorder in Java.
@@ -21,7 +27,9 @@ class WebApkUkmRecorder {
   WebApkUkmRecorder(const WebApkUkmRecorder&) = delete;
   WebApkUkmRecorder& operator=(const WebApkUkmRecorder&) = delete;
 
-  static void RecordInstall(const GURL& manifest_url, int version_code);
+  static void RecordInstall(const GURL& manifest_id,
+                            webapps::WebappInstallSource install_source,
+                            blink::mojom::DisplayMode display);
 
   static void RecordSessionDuration(const GURL& manifest_url,
                                     int64_t distributor,

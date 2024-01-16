@@ -28157,12 +28157,29 @@ be describing additional metrics about the same event.
     WebAPK usage metrics recorded on Install.
   </summary>
   <metric name="AppVersion">
+    <obsolete>
+      No longer needed
+    </obsolete>
     <summary>
       WebAPK app version that the user is installing.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DisplayMode" enum="WebAppDisplayMode">
+    <summary>
+      Records the display mode of the added WebAPK.
+    </summary>
+    <aggregation>
+      <history>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28193,7 +28210,21 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InstallSource" enum="WebappInstallSource">
+    <summary>
+      From where the user initiates the install: app menu, install API, etc.
+    </summary>
+    <aggregation>
+      <history>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28218,7 +28249,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28252,7 +28282,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28277,7 +28306,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28310,7 +28338,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28327,7 +28354,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28343,7 +28369,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28368,7 +28393,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28399,7 +28423,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>
@@ -28415,7 +28438,6 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <index fields="metrics.Distributor"/>
         <index fields="profile.country"/>
         <index fields="profile.form_factor"/>
         <index fields="profile.system_ram"/>

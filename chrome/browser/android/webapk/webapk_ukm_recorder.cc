@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/android/browserservices/metrics/jni_headers/WebApkUkmRecorder_jni.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
@@ -31,8 +32,10 @@ GURL ConvertNullableJavaStringToGURL(JNIEnv* env,
 }  // namespace
 
 // static
-void WebApkUkmRecorder::RecordInstall(const GURL& manifest_url,
-                                      int version_code) {
+void WebApkUkmRecorder::RecordInstall(
+    const GURL& manifest_url,
+    webapps::WebappInstallSource install_source,
+    blink::mojom::DisplayMode display) {
   if (!manifest_url.is_valid())
     return;
 
@@ -43,8 +46,9 @@ void WebApkUkmRecorder::RecordInstall(const GURL& manifest_url,
   // use the "browser" distributor).
   ukm::builders::WebAPK_Install(source_id)
       .SetDistributor(static_cast<int64_t>(webapps::WebApkDistributor::BROWSER))
-      .SetAppVersion(version_code)
       .SetInstall(1)
+      .SetInstallSource(static_cast<int64_t>(install_source))
+      .SetDisplayMode(static_cast<int64_t>(display))
       .Record(ukm::UkmRecorder::Get());
 }
 

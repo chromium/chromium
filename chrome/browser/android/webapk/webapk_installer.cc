@@ -134,10 +134,11 @@ WebApkInstaller::~WebApkInstaller() {
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
                                    content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
+                                   webapps::WebappInstallSource install_source,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallAsync(web_contents, shortcut_info,
+  installer->InstallAsync(web_contents, shortcut_info, install_source,
                           std::move(finish_callback));
 }
 
@@ -155,8 +156,10 @@ void WebApkInstaller::InstallAsyncForTesting(
     WebApkInstaller* installer,
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
+    webapps::WebappInstallSource install_source,
     FinishCallback callback) {
-  installer->InstallAsync(web_contents, shortcut_info, std::move(callback));
+  installer->InstallAsync(web_contents, shortcut_info, install_source,
+                          std::move(callback));
 }
 
 // static
@@ -234,7 +237,8 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
     if (result == webapps::WebApkInstallResult::SUCCESS) {
       webapk::TrackInstallDuration(install_duration_timer_->Elapsed());
       webapk::TrackInstallEvent(webapk::INSTALL_COMPLETED);
-      WebApkUkmRecorder::RecordInstall(manifest_url_, webapk_version_);
+      WebApkUkmRecorder::RecordInstall(manifest_url_, install_source_,
+                                       install_shortcut_info_->display);
     } else {
       DVLOG(1) << "The WebAPK installation failed.";
       webapk::TrackInstallEvent(webapk::INSTALL_FAILED);
@@ -269,6 +273,7 @@ void WebApkInstaller::CreateJavaRef() {
 
 void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
+                                   webapps::WebappInstallSource install_source,
                                    FinishCallback finish_callback) {
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 
@@ -278,6 +283,7 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
   manifest_url_ = install_shortcut_info_->manifest_url;
+  install_source_ = install_source;
   task_type_ = INSTALL;
 
   if (!server_url_.is_valid()) {
