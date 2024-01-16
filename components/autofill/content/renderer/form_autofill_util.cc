@@ -1391,24 +1391,18 @@ std::vector<WebFormControlElement> GetFormControlElements(
 //  * FormData::fields
 //  * FormData::child_frames
 // using the DOM elements in |control_elements| and |iframe_elements|.
-//
-// Optionally, |optional_field| is set to the FormFieldData that corresponds to
-// |form_control_element|.
-//
-// |field_data_manager| and |extract_options| are only passed to
-// WebFormControlElementToFormField().
-bool OwnedOrUnownedFormToFormData(
-    const blink::WebFormElement& form_element,
-    const blink::WebFormControlElement* form_control_element,
-    const WebVector<WebFormControlElement>& control_elements,
-    const std::vector<blink::WebElement>& iframe_elements,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormData& form,
-    FormFieldData* optional_field) {
+bool PopulateFormFieldsAndFrames(const WebDocument& document,
+                                 const WebFormElement& form_element,
+                                 const FieldDataManager& field_data_manager,
+                                 DenseSet<ExtractOption> extract_options,
+                                 FormData& form) {
   CHECK(form.fields.empty());
   CHECK(form.child_frames.empty());
-  CHECK(!optional_field || form_control_element);
+
+  std::vector<WebFormControlElement> control_elements =
+      GetFormControlElements(document, form_element);
+  std::vector<blink::WebElement> iframe_elements =
+      GetIframeElements(document, form_element);
 
   // Extracts fields from |control_elements| into `form->fields` and sets
   // `form->child_frames[i].predecessor` to the field index of the last field
@@ -1487,7 +1481,6 @@ bool OwnedOrUnownedFormToFormData(
   }
 
   // Infers field labels from other tags or <labels> without for="...".
-  bool found_field = false;
   DCHECK_EQ(control_elements.size(), fields_extracted.size());
   DCHECK_EQ(form.fields.size(),
             base::as_unsigned(base::ranges::count(fields_extracted, true)));
@@ -1503,20 +1496,6 @@ bool OwnedOrUnownedFormToFormData(
       field.label = InferLabelForElement(control_element, field.label_source);
     }
     field.label = std::move(field.label).substr(0, kMaxStringLength);
-
-    if (optional_field && *form_control_element == control_element) {
-      *optional_field = field;
-      found_field = true;
-    }
-  }
-
-  // The form_control_element was not found in control_elements. This can
-  // happen if elements are dynamically removed from the form while it is
-  // being processed. See http://crbug.com/849870
-  if (optional_field && !found_field) {
-    form.fields.clear();
-    form.child_frames.clear();
-    return false;
   }
 
   // Extracts the frame tokens of |iframe_elements|.
@@ -1718,12 +1697,8 @@ std::optional<FormData> ExtractFormData(
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options) {
   FormData form = CreateFormDataWithoutFieldsAndFrames(form_element);
-  return OwnedOrUnownedFormToFormData(
-             form_element, /*element=*/nullptr,
-             GetFormControlElements(document, form_element),
-             GetIframeElements(document, form_element), field_data_manager,
-             extract_options, form,
-             /*field=*/nullptr)
+  return PopulateFormFieldsAndFrames(document, form_element, field_data_manager,
+                                     extract_options, form)
              ? std::make_optional(std::move(form))
              : std::nullopt;
 }
@@ -2209,17 +2184,16 @@ FindFormAndFieldForFormControlElement(
   }
 
   extract_options.insert_all({ExtractOption::kValue, ExtractOption::kOptions});
-  WebFormElement form_element = GetOwningForm(element);
   WebDocument document = element.GetDocument();
-  FormData form = CreateFormDataWithoutFieldsAndFrames(form_element);
-  FormFieldData field;
-  if (OwnedOrUnownedFormToFormData(
-          form_element, &element,
-          GetFormControlElements(document, form_element),
-          GetIframeElements(document, form_element), field_data_manager,
-          extract_options, form, &field)) {
-    return std::pair<FormData, FormFieldData>(std::move(form),
-                                              std::move(field));
+  WebFormElement form_element = GetOwningForm(element);
+  std::optional<FormData> form = ExtractFormData(
+      document, form_element, field_data_manager, extract_options);
+  if (form) {
+    if (auto it = base::ranges::find(form->fields, GetFieldRendererId(element),
+                                     &FormFieldData::unique_renderer_id);
+        it != form->fields.end()) {
+      return std::pair<FormData, FormFieldData>(std::move(*form), *it);
+    }
   }
   return std::nullopt;
 }
@@ -2935,16 +2909,22 @@ std::optional<FormData> WebFormElementToFormDataForTesting(  // IN-TEST
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormFieldData* field) {
-  WebDocument document = form_element.GetDocument();
-  FormData form = CreateFormDataWithoutFieldsAndFrames(form_element);
-  if (OwnedOrUnownedFormToFormData(
-          WebFormElement(), &form_control_element,
-          GetFormControlElements(document, form_element),
-          GetIframeElements(document, form_element), field_data_manager,
-          extract_options, form, field)) {
-    return form;
+  std::optional<FormData> form =
+      ExtractFormData(form_element.GetDocument(), form_element,
+                      field_data_manager, extract_options);
+  if (!form) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  if (!form_control_element.IsNull()) {
+    auto it = base::ranges::find(form->fields,
+                                 GetFieldRendererId(form_control_element),
+                                 &FormFieldData::unique_renderer_id);
+    if (it == form->fields.end()) {
+      return std::nullopt;
+    }
+    *field = *it;
+  }
+  return form;
 }
 
 }  // namespace autofill::form_util
