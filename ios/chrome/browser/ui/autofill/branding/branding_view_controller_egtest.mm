@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -97,6 +99,10 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // TODO(crbug.com/1518919): Remove once fixed.
+    config.features_enabled.push_back(kScreenTimeIntegration);
+  }
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;

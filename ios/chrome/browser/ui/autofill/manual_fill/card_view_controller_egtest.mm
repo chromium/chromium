@@ -6,6 +6,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -522,6 +524,13 @@ BOOL WaitForKeyboardToAppear() {
 // there's a warning page that stops the flow because of a
 // NET::ERR_CERT_AUTHORITY_INVALID.
 - (void)testCreditCardLocalNumberDoesntInjectOnHttp {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // TODO(crbug.com/1518919): Remove once fixed.
+    AppLaunchConfiguration config;
+    config.features_enabled.push_back(kScreenTimeIntegration);
+    [[AppLaunchManager sharedManager]
+        ensureAppLaunchedWithConfiguration:config];
+  }
   [self verifyCreditCardButtonWithTitle:kLocalNumberObfuscated
                         doesInjectValue:@""];
 
@@ -533,6 +542,13 @@ BOOL WaitForKeyboardToAppear() {
 // Tests an alert is shown warning the user when trying to fill a credit card
 // number in an HTTP form.
 - (void)testCreditCardLocalNumberShowsWarningOnHttp {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // TODO(crbug.com/1518919): Remove once fixed.
+    AppLaunchConfiguration config;
+    config.features_enabled.push_back(kScreenTimeIntegration);
+    [[AppLaunchManager sharedManager]
+        ensureAppLaunchedWithConfiguration:config];
+  }
   [self verifyCreditCardButtonWithTitle:kLocalNumberObfuscated
                         doesInjectValue:@""];
   // Look for the alert.
