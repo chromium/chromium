@@ -7239,14 +7239,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MPArch.ForkTime" units="ms" expires_after="2020-02-23">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Time to call fork() or clone(), in ms. Recorded at each fork excluding from
-    the zygote, only on posix platforms.
-  </summary>
-</histogram>
-
 <histogram name="MultiProfile.UsersPerSessionIncremental" units="units"
     expires_after="2024-06-30">
   <owner>skuhne@chromium.org</owner>
