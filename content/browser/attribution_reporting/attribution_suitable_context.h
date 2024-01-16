@@ -7,11 +7,12 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -26,10 +27,9 @@ class CONTENT_EXPORT AttributionSuitableContext {
  public:
   // Returns `AttributionSuitableContext` if the rfh is suitable to register
   // attribution.
-  static absl::optional<AttributionSuitableContext> Create(
+  static std::optional<AttributionSuitableContext> Create(
       GlobalRenderFrameHostId initiator_frame_id);
-  static absl::optional<AttributionSuitableContext> Create(
-      RenderFrameHostImpl*);
+  static std::optional<AttributionSuitableContext> Create(RenderFrameHostImpl*);
 
   AttributionSuitableContext(const AttributionSuitableContext&);
   AttributionSuitableContext& operator=(const AttributionSuitableContext&);

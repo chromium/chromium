@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace content {
@@ -31,26 +31,26 @@ using attribution_reporting::SuitableOrigin;
 }  // namespace
 
 // static
-absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
+std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
     GlobalRenderFrameHostId initiator_frame_id) {
   return Create(RenderFrameHostImpl::FromID(initiator_frame_id));
 }
 
 // static
-absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
+std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
     RenderFrameHostImpl* initiator_frame) {
   if (!initiator_frame) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::FeatureList::IsEnabled(
           attribution_reporting::features::kConversionMeasurement)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!initiator_frame->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* initiator_root_frame =
       initiator_frame->GetOutermostMainFrame();
@@ -60,11 +60,11 @@ absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
   // store it as either the source or destination origin. Using
   // `is_web_secure_context` only would allow opaque origins to pass through,
   // but they cannot be handled by the storage layer.
-  absl::optional<attribution_reporting::SuitableOrigin>
+  std::optional<attribution_reporting::SuitableOrigin>
       initiator_root_frame_origin = SuitableOrigin::Create(
           initiator_root_frame->GetLastCommittedOrigin());
   if (!initiator_root_frame_origin.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // If the `initiator_frame` is a subframe, it's origin's security isn't
   // covered by the SuitableOrigin check above, we therefore validate that it's
@@ -73,12 +73,12 @@ absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       !initiator_frame->policy_container_host()
            ->policies()
            .is_web_secure_context) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* web_contents = WebContents::FromRenderFrameHost(initiator_frame);
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto* manager = AttributionManager::FromWebContents(web_contents);
   CHECK(manager);
