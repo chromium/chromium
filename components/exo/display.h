@@ -45,6 +45,8 @@ class XdgShellSurface;
 class Display {
  public:
   Display();
+  explicit Display(
+      std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 
   Display(
       std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
