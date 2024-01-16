@@ -492,6 +492,7 @@ public class ReadAloudController
             mPlayback.removeListener(this);
             mPlayback.release();
             mPlayback = null;
+            mPlayerCoordinator.recordPlaybackDuration();
         }
         if (mTranslationObserverHandle != 0L) {
             assert mCurrentlyPlayingTab != null;

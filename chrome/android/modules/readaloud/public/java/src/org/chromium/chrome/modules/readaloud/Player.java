@@ -121,6 +121,9 @@ public interface Player {
     /** Show mini player. Assumes the playback is running. */
     default void restoreMiniPlayer() {}
 
+    /** Only called after playback is released and no more events are coming. */
+    default void recordPlaybackDuration() {}
+
     /** Hide players, clears playback and sets UI to a stopped state. */
     default void dismissPlayers() {}
 

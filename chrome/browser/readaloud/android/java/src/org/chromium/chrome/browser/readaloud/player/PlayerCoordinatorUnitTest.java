@@ -168,6 +168,12 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testRecordPlaybackDuration() {
+        mPlayerCoordinator.recordPlaybackDuration();
+        verify(mMediator).recordPlaybackDuration();
+    }
+
+    @Test
     public void testExpand() {
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
         mPlayerCoordinator.expand();

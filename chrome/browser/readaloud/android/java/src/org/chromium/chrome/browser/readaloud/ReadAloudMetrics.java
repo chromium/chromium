@@ -28,10 +28,9 @@ public class ReadAloudMetrics {
     @VisibleForTesting
     public static String IS_TAB_PLAYBACK_CREATION_SUCCESSFUL =
             "ReadAloud.IsTabPlaybackCreationSuccessful";
-
     public static String VOICE_CHANGED = "ReadAloud.VoiceChanged.";
-
     public static String VOICE_PREVIEWED = "ReadAloud.VoicePreviewed.";
+    public static String TIME_SPENT_LISTENING = "ReadAloud.DurationListened";
 
     /**
      * The reason why we clear the prepared message.
@@ -94,6 +93,12 @@ public class ReadAloudMetrics {
     }
 
     private static float[] sPlaybackSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
+
+    public static void recordDurationMsListened(long durationMs) {
+        if (durationMs != 0) {
+            RecordHistogram.recordLongTimesHistogram(TIME_SPENT_LISTENING, durationMs);
+        }
+    }
 
     public static void recordIsPageReadable(boolean successful) {
         RecordHistogram.recordBooleanHistogram(IS_READABLE, successful);

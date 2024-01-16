@@ -122,6 +122,11 @@ public class PlayerCoordinator implements Player {
         mMediator.setPlaybackState(PlaybackListener.State.ERROR);
     }
 
+    @Override
+    public void recordPlaybackDuration() {
+        mMediator.recordPlaybackDuration();
+    }
+
     /** Show expanded player. */
     void expand() {
         mExpandedPlayer.show();

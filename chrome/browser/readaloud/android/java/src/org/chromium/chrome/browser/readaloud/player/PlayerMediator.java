@@ -13,6 +13,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -30,6 +31,19 @@ class PlayerMediator implements InteractionHandler {
     private final PlayerCoordinator mCoordinator;
     private final PlayerCoordinator.Delegate mDelegate;
     private final PropertyModel mModel;
+
+    /** Clock to use so we can mock time in tests. */
+    public interface Clock {
+        long currentTimeMillis();
+    }
+
+    private Clock mClock = System::currentTimeMillis;
+
+    // members to record total duration listened per playback
+    private @PlaybackListener.State int mLastState;
+    private long mLastStartTimeMillis;
+    private long mTotalTimeMillis;
+
     private final PlaybackListener mPlaybackListener =
             new PlaybackListener() {
                 @Override
@@ -45,10 +59,22 @@ class PlayerMediator implements InteractionHandler {
                         mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                     }
+
+                    if (data.state() != mLastState) {
+                        if (data.state() == PlaybackListener.State.PLAYING) {
+                            mLastStartTimeMillis = mClock.currentTimeMillis();
+                        } else {
+                            mTotalTimeMillis += mClock.currentTimeMillis() - mLastStartTimeMillis;
+                        }
+
+                        mLastState = data.state();
+                    }
                 }
             };
     private final OnSeekBarChangeListener mSeekBarChangeListener =
             new OnSeekBarChangeListener() {
+                @PlaybackListener.State int mPrevState;
+
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (!fromUser) {
@@ -59,10 +85,15 @@ class PlayerMediator implements InteractionHandler {
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {}
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    mPrevState = mModel.get(PlayerProperties.PLAYBACK_STATE);
+                    setPlaybackState(PlaybackListener.State.PAUSED);
+                }
 
                 @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {}
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    setPlaybackState(mPrevState);
+                }
             };
     private final PlaybackListener mPreviewPlaybackListener =
             new PlaybackListener() {
@@ -117,11 +148,22 @@ class PlayerMediator implements InteractionHandler {
                     mDelegate.getHighlightingEnabledSupplier().get());
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
+
+            mTotalTimeMillis = 0;
+            mLastStartTimeMillis = mClock.currentTimeMillis();
         }
     }
 
     void setPlaybackState(@PlaybackListener.State int currentPlaybackState) {
         mModel.set(PlayerProperties.PLAYBACK_STATE, currentPlaybackState);
+    }
+
+    // Record time spent listening to the playback when playback is reset. Must be called after
+    // playback is released/reset or the timing will be off.
+    public void recordPlaybackDuration() {
+        ReadAloudMetrics.recordDurationMsListened(mTotalTimeMillis);
+        mTotalTimeMillis = 0;
+        mLastStartTimeMillis = 0;
     }
 
     // InteractionHandler implementation
@@ -308,5 +350,9 @@ class PlayerMediator implements InteractionHandler {
                     PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE, PlaybackListener.State.STOPPED);
             mModel.set(PlayerProperties.PREVIEWING_VOICE_ID, null);
         }
+    }
+
+    void setClockForTesting(Clock clock) {
+        mClock = clock;
     }
 }

@@ -41,7 +41,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
@@ -79,6 +81,25 @@ public class PlayerMediatorUnitTest {
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
 
     private PropertyModel mModel;
+    private FakeClock mClock;
+
+    /** FakeClock for setting the time. */
+    static class FakeClock implements PlayerMediator.Clock {
+        private long mCurrentTimeMillis;
+
+        FakeClock() {
+            mCurrentTimeMillis = 0;
+        }
+
+        @Override
+        public long currentTimeMillis() {
+            return mCurrentTimeMillis;
+        }
+
+        void advanceCurrentTimeMillis(long millis) {
+            mCurrentTimeMillis += millis;
+        }
+    }
 
     private static class TestPlaybackData implements PlaybackListener.PlaybackData {
         public int mState;
@@ -142,6 +163,7 @@ public class PlayerMediatorUnitTest {
         mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mPrefsNative);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPlaybackData = new TestPlaybackData();
+        mClock = new FakeClock();
 
         doReturn(true).when(mDelegate).isHighlightingSupported();
         doReturn(mHighlightingEnabledSupplier).when(mDelegate).getHighlightingEnabledSupplier();
@@ -154,6 +176,7 @@ public class PlayerMediatorUnitTest {
         mModel = Mockito.spy(new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build());
         mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, false);
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
+        mMediator.setClockForTesting(mClock);
         mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
     }
 
@@ -228,6 +251,32 @@ public class PlayerMediatorUnitTest {
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
 
         assertEquals(PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+    }
+
+    @Test
+    public void testPlaybackDurationRecorded() {
+        final String histogramName = ReadAloudMetrics.TIME_SPENT_LISTENING;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 123);
+
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mState = PLAYING;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mClock.advanceCurrentTimeMillis(100);
+        mPlaybackData.mState = PAUSED;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mPlaybackData.mState = PLAYING;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mClock.advanceCurrentTimeMillis(23);
+        mPlaybackData.mState = STOPPED;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mMediator.recordPlaybackDuration();
+
+        histogram.assertExpected();
     }
 
     @Test
@@ -355,6 +404,20 @@ public class PlayerMediatorUnitTest {
         // from user, so should seek
         mOnSeekBarChangeListener.onProgressChanged(mSeekbar, 20, true);
         verify(mPlayback).seek(anyLong());
+    }
+
+    @Test
+    public void testOnStartStopTrackingTouch() {
+        int initialState = PLAYING;
+        mMediator.setPlaybackState(initialState);
+
+        // Should set playback state to paused
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+        assertEquals(mModel.get(PlayerProperties.PLAYBACK_STATE), PAUSED);
+
+        // Should set playback state to initial state
+        mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
+        assertEquals(mModel.get(PlayerProperties.PLAYBACK_STATE), initialState);
     }
 
     @Test
