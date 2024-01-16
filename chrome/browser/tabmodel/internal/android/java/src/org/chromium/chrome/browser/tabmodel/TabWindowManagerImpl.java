@@ -82,7 +82,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                                     + res
                                     + ". Requested index: "
                                     + index);
-                    assertIndicesMatch(index, i, "Activity already mapped; ");
+                    assertIndicesMatch(index, i, "Activity already mapped; ", activity);
                     return res;
                 }
             }
@@ -115,12 +115,13 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         mAssignments.put(activity, selector);
 
         Pair res = Pair.create(index, selector);
-        Log.i(TAG_MULTI_INSTANCE, "Returning new selector with index: " + res);
-        assertIndicesMatch(originalIndex, index, "Index in use; ");
+        Log.i(TAG_MULTI_INSTANCE, "Returning new selector for " + activity + " with index: " + res);
+        assertIndicesMatch(originalIndex, index, "Index in use; ", activity);
         return res;
     }
 
-    private void assertIndicesMatch(int requestedIndex, int returnedIndex, String type) {
+    private void assertIndicesMatch(
+            int requestedIndex, int returnedIndex, String type, Activity activity) {
         if (requestedIndex == returnedIndex
                 || !BuildConfig.ENABLE_ASSERTS
                 || BuildConfig.IS_FOR_TEST
@@ -130,9 +131,9 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
         TabModelSelector selectorAtRequestedIndex = mSelectors.get(requestedIndex);
         Activity activityAtRequestedIndex = null;
-        for (Activity activity : mAssignments.keySet()) {
-            if (mAssignments.get(activity).equals(selectorAtRequestedIndex)) {
-                activityAtRequestedIndex = activity;
+        for (Activity mappedActivity : mAssignments.keySet()) {
+            if (mAssignments.get(mappedActivity).equals(selectorAtRequestedIndex)) {
+                activityAtRequestedIndex = mappedActivity;
                 break;
             }
         }
@@ -143,7 +144,9 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         + requestedIndex
                         + " and returned "
                         + returnedIndex
-                        + " activity: "
+                        + " new activity: "
+                        + activity
+                        + " activity at requested index: "
                         + activityAtRequestedIndex;
         if (activityAtRequestedIndex != null) {
             message +=

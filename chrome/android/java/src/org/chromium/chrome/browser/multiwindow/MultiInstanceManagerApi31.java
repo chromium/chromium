@@ -551,8 +551,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             if (info != null && (info.id == removedTaskId || info.taskId == removedTaskId)) {
                 String message =
                         "Removed instance data for Task still available in all app tasks. " + info;
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(message));
                 Log.i(TAG_MULTI_INSTANCE, message);
+                if (info != null && info.isRunning) {
+                    String crashMessage =
+                            "This is not a crash. Removed instance data for running Task still"
+                                    + " available in all app tasks. "
+                                    + info;
+                    ChromePureJavaExceptionReporter.reportJavaException(
+                            new Throwable(crashMessage));
+                }
                 break;
             }
         }
