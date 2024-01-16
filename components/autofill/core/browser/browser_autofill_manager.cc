@@ -722,7 +722,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
 
   bool should_display_gpay_logo = false;
-  auto cards = GetCreditCardSuggestions(field_data, field_type,
+  auto cards = GetCreditCardSuggestions(form, field_data, field_type,
                                         should_display_gpay_logo);
   DCHECK(!cards.empty());
   external_delegate_->OnSuggestionsReturned(
@@ -2784,11 +2784,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
-    const FormFieldData& field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    bool& should_display_gpay_logo) const {
+    bool& should_display_gpay_logo) {
   credit_card_form_event_logger_->OnDidPollSuggestions(
-      field, signin_state_for_metrics_);
+      trigger_field, signin_state_for_metrics_);
 
   std::vector<Suggestion> suggestions;
   bool with_offer = false;
@@ -2799,7 +2800,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
         !four_digit_combinations_in_dom_.empty()) {
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
           virtual_card_guid_to_last_four_map =
-              GetVirtualCreditCardsForStandaloneCvcField(field.origin);
+              GetVirtualCreditCardsForStandaloneCvcField(trigger_field.origin);
       if (!virtual_card_guid_to_last_four_map.empty()) {
         suggestions =
             suggestion_generator_->GetSuggestionsForVirtualCardStandaloneCvc(
@@ -2810,8 +2811,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       }
     } else {
       suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-          field, trigger_field_type, should_display_gpay_logo, with_offer,
-          context);
+          trigger_field, trigger_field_type,
+          ShouldShowScanCreditCard(form, trigger_field),
+          should_display_gpay_logo, with_offer, context);
     }
   }
 
@@ -3508,7 +3510,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
         context->focused_field
             ? context->focused_field->Type().GetStorableType()
             : UNKNOWN_TYPE;
-    *suggestions = GetCreditCardSuggestions(field, trigger_field_type,
+    *suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
                                             context->should_display_gpay_logo);
   } else if (context->filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered

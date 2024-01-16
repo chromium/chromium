@@ -97,14 +97,16 @@ class AutofillSuggestionGenerator {
       const std::set<std::string>& previously_hidden_profiles_guid = {});
 
   // Generates suggestions for all available credit cards based on the
-  // `trigger_field_type` and the value of `field`. `should_display_gpay_logo`
-  // will be set to true if there are no credit card suggestions, or all
-  // suggestions come from Payments server. `with_offer` is set to true if ANY
-  // card has card-linked offers. `metadata_logging_context` contains card
-  // metadata related information used for metrics logging.
+  // `trigger_field_type` and the value of `trigger_field`.
+  // `should_display_gpay_logo` will be set to true if there are no credit card
+  // suggestions, or all suggestions come from Payments server. `with_offer`
+  // is set to true if ANY card has card-linked offers.
+  // `metadata_logging_context` contains card metadata related information used
+  // for metrics logging.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
-      const FormFieldData& field,
+      const FormFieldData& trigger_field,
       FieldType trigger_field_type,
+      bool should_show_scan_credit_card,
       bool& should_display_gpay_logo,
       bool& with_offer,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
@@ -239,6 +241,11 @@ class AutofillSuggestionGenerator {
   void SetCardArtURL(Suggestion& suggestion,
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
+
+  // Returns non credit card suggestions which are displayed below credit card
+  // suggestions in the Autofill popup.
+  std::vector<Suggestion> GetCreditCardFooterSuggestions(
+      bool should_show_scan_credit_card) const;
 
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.

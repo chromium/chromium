@@ -228,8 +228,6 @@ void AutofillExternalDelegate::OnQuery(
   query_field_ = field;
   element_bounds_ = element_bounds;
   trigger_source_ = trigger_source;
-  should_show_scan_credit_card_ =
-      manager_->ShouldShowScanCreditCard(query_form_, query_field_);
   popup_type_ = GetPopupTypeForQuery(*manager_, query_form_, query_field_,
                                      trigger_source);
   should_show_cards_from_account_option_ =
@@ -271,14 +269,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // Hide warnings as appropriate.
   PossiblyRemoveAutofillWarnings(&suggestions);
 
-  if (should_show_scan_credit_card_) {
-    Suggestion scan_credit_card(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD));
-    scan_credit_card.popup_item_id = PopupItemId::kScanCreditCard;
-    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
-    suggestions.push_back(scan_credit_card);
-  }
-
   if (should_show_cards_from_account_option_) {
     suggestions.emplace_back(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS));
@@ -312,16 +302,15 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 
+  shown_suggestion_types_.clear();
+  for (const Suggestion& suggestion : input_suggestions) {
+    shown_suggestion_types_.push_back(suggestion.popup_item_id);
+  }
   // Send to display.
   if (query_field_.is_focusable && manager_->driver().CanShowAutofillUi()) {
     AutofillClient::PopupOpenArgs open_args(element_bounds_,
                                             query_field_.text_direction,
                                             suggestions, trigger_source_);
-
-    shown_suggestion_types_.clear();
-    for (const Suggestion& suggestion : input_suggestions) {
-      shown_suggestion_types_.push_back(suggestion.popup_item_id);
-    }
     manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }
@@ -382,7 +371,7 @@ void AutofillExternalDelegate::OnPopupShown() {
   manager_->DidShowSuggestions(shown_suggestion_types_, query_form_,
                                query_field_);
 
-  if (should_show_scan_credit_card_) {
+  if (base::Contains(shown_suggestion_types_, PopupItemId::kScanCreditCard)) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
         AutofillMetrics::SCAN_CARD_ITEM_SHOWN);
   }
@@ -793,7 +782,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
 
-  if (should_show_scan_credit_card_) {
+  if (base::Contains(shown_suggestion_types_, PopupItemId::kScanCreditCard)) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
         suggestion.popup_item_id == PopupItemId::kScanCreditCard
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED

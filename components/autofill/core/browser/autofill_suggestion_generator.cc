@@ -1459,8 +1459,9 @@ void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
-    const FormFieldData& field,
+    const FormFieldData& trigger_field,
     FieldType trigger_field_type,
+    bool should_show_scan_credit_card,
     bool& should_display_gpay_logo,
     bool& with_offer,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
@@ -1476,7 +1477,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 
   // The field value is sanitized before attempting to match it to the user's
   // data.
-  auto field_contents = SanitizeCreditCardFieldValue(field.value);
+  auto field_contents = SanitizeCreditCardFieldValue(trigger_field.value);
 
   std::vector<CreditCard> cards_to_suggest =
       GetOrderedCardsToSuggest(*autofill_client_, field_contents.empty());
@@ -1506,7 +1507,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
                                   field_contents_lower, trigger_field_type,
                                   credit_card.record_type() ==
                                       CreditCard::RecordType::kMaskedServerCard,
-                                  field.is_autofilled)) {
+                                  trigger_field.is_autofilled)) {
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
       if (ShouldShowVirtualCardOption(&credit_card)) {
@@ -1518,6 +1519,15 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
           credit_card, trigger_field_type,
           /*virtual_card_option=*/false, card_linked_offer_available));
     }
+  }
+
+  if (suggestions.empty()) {
+    return suggestions;
+  }
+
+  for (const Suggestion& suggestion :
+       GetCreditCardFooterSuggestions(should_show_scan_credit_card)) {
+    suggestions.push_back(suggestion);
   }
 
   return suggestions;
@@ -2076,6 +2086,20 @@ void AutofillSuggestionGenerator::SetCardArtURL(
     }
 #endif
   }
+}
+
+std::vector<Suggestion>
+AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
+    bool should_show_scan_credit_card) const {
+  std::vector<Suggestion> footer_suggestions;
+  if (should_show_scan_credit_card) {
+    Suggestion scan_credit_card(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
+        PopupItemId::kScanCreditCard);
+    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
+    footer_suggestions.push_back(scan_credit_card);
+  }
+  return footer_suggestions;
 }
 
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(

@@ -265,7 +265,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   base::flat_map<Section, FieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
 
-  bool should_show_scan_credit_card_ = false;
   PopupType popup_type_ = PopupType::kUnspecified;
 
   bool should_show_cards_from_account_option_ = false;
