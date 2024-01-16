@@ -168,4 +168,17 @@ public class PriceChangeModuleBinderTest {
         mView.performClick();
         assertTrue(buttonClicked.get());
     }
+
+    @Test
+    @SmallTest
+    public void testSetModuleAccessibilityLabel() {
+        String accessibilityLabel = "label";
+        assertNull(mView.getContentDescription());
+
+        mModel.set(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL, accessibilityLabel);
+
+        assertEquals(
+                accessibilityLabel,
+                mModel.get(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL));
+    }
 }

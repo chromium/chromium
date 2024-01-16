@@ -106,9 +106,18 @@ public class PriceChangeModuleMediator {
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_PREVIOUS_PRICE_STRING,
                             data.getPriceDrop().previousPrice);
+                    String domain =
+                            UrlUtilities.getDomainAndRegistry(
+                                    res.get(0).getTab().getUrl().getSpec(), false);
+                    mModel.set(PriceChangeModuleProperties.MODULE_DOMAIN_STRING, domain);
                     mModel.set(
-                            PriceChangeModuleProperties.MODULE_DOMAIN_STRING,
-                            UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false));
+                            PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL,
+                            mContext.getString(
+                                    R.string.price_change_module_accessibility_label,
+                                    data.getPriceDrop().previousPrice,
+                                    data.getPriceDrop().price,
+                                    data.getProductTitle(),
+                                    domain));
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER,
                             v -> mModuleDelegate.onTabClicked(tab.getId(), mModuleType));

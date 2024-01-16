@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -86,8 +86,6 @@ public class PriceChangeModuleMediatorUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock private Context mContext;
-    @Mock private Resources mResources;
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
@@ -99,32 +97,28 @@ public class PriceChangeModuleMediatorUnitTest {
     @Mock private ImageFetcher mImageFetcher;
     @Mock private ModuleDelegate mModuleDelegate;
 
+    private Context mContext;
     private PriceChangeModuleMediator mMediator;
     private SharedPreferencesManager mSharedPreferenceManager;
     private PropertyModel mModel;
     private MockTab mTab;
+    private int mFaviconSize;
 
-    private static final int FAVICON_SIZE = 1;
     private static final GURL PRODUCT_URL = new GURL("https://www.foo.com");
     private static final GURL PRODUCT_IMAGE_URL = new GURL("https://www.foo.com/image");
     private static final String PRODUCT_TITLE = "product foo";
     private static final String PRODUCT_URL_DOMAIN = "foo.com";
     private static final String CURRENT_PRICE = "$100";
     private static final String PREVIOUS_PRICE = "$150";
-    private static final String MODULE_TITLE_SINGULAR = "singular title";
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(MODULE_TITLE_SINGULAR)
-                .when(mResources)
-                .getQuantityString(eq(R.plurals.price_change_module_title), eq(1));
-        doReturn(FAVICON_SIZE).when(mResources).getDimensionPixelSize(R.dimen.default_favicon_size);
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         ShoppingPersistedTabDataService.setServiceForTesting(mService);
 
+        mContext = RuntimeEnvironment.application;
         mTab = new MockTab(123, mProfile);
         mModel = new PropertyModel(PriceChangeModuleProperties.ALL_KEYS);
         mMediator =
@@ -137,6 +131,7 @@ public class PriceChangeModuleMediatorUnitTest {
                         mImageFetcher,
                         mModuleDelegate);
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
+        mFaviconSize = mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
 
         Map<String, Boolean> featureOverride = new HashMap<>();
         featureOverride.put(ChromeFeatureList.PRICE_CHANGE_MODULE, true);
@@ -177,7 +172,13 @@ public class PriceChangeModuleMediatorUnitTest {
     public void testShowModule_ServiceInitialized() {
         showModuleWithInitializedService();
 
-        assertEquals(MODULE_TITLE_SINGULAR, mModel.get(PriceChangeModuleProperties.MODULE_TITLE));
+        assertEquals(
+                mContext.getResources()
+                        .getQuantityString(
+                                org.chromium.chrome.browser.price_change.R.plurals
+                                        .price_change_module_title,
+                                1),
+                mModel.get(PriceChangeModuleProperties.MODULE_TITLE));
         assertEquals(
                 PRODUCT_TITLE, mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING));
         assertEquals(
@@ -187,6 +188,15 @@ public class PriceChangeModuleMediatorUnitTest {
         assertEquals(
                 PREVIOUS_PRICE,
                 mModel.get(PriceChangeModuleProperties.MODULE_PREVIOUS_PRICE_STRING));
+        assertEquals(
+                mContext.getString(
+                        R.string.price_change_module_accessibility_label,
+                        PREVIOUS_PRICE,
+                        CURRENT_PRICE,
+                        PRODUCT_TITLE,
+                        PRODUCT_URL_DOMAIN),
+                mModel.get(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL));
+
         verify(mModuleDelegate).onDataReady(eq(ModuleType.PRICE_CHANGE), eq(mModel));
 
         // Mock return value of FaviconHelper.
@@ -196,7 +206,7 @@ public class PriceChangeModuleMediatorUnitTest {
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
                         eq(PRODUCT_URL),
-                        eq(FAVICON_SIZE),
+                        eq(mFaviconSize),
                         faviconCallbackCaptor.capture());
         faviconCallbackCaptor.getValue().onFaviconAvailable(mFaviconBitmap, new GURL(""));
 
@@ -230,7 +240,7 @@ public class PriceChangeModuleMediatorUnitTest {
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
                         eq(PRODUCT_URL),
-                        eq(FAVICON_SIZE),
+                        eq(mFaviconSize),
                         faviconCallbackCaptor.capture());
         faviconCallbackCaptor.getValue().onFaviconAvailable(null, new GURL(""));
 

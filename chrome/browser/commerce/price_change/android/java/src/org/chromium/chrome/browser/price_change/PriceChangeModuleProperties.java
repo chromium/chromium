@@ -28,6 +28,8 @@ interface PriceChangeModuleProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<OnClickListener> MODULE_ON_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
+    PropertyModel.WritableObjectPropertyKey<String> MODULE_ACCESSIBILITY_LABEL =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -39,5 +41,6 @@ interface PriceChangeModuleProperties {
                 MODULE_CURRENT_PRICE_STRING,
                 MODULE_PRODUCT_IMAGE_BITMAP,
                 MODULE_ON_CLICK_LISTENER,
+                MODULE_ACCESSIBILITY_LABEL,
             };
 }

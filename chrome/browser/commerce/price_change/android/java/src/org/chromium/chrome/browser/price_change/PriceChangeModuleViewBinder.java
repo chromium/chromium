@@ -36,6 +36,9 @@ class PriceChangeModuleViewBinder {
         } else if (PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER == propertyKey) {
             moduleView.setOnClickListener(
                     model.get(PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER));
+        } else if (PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL == propertyKey) {
+            moduleView.setContentDescription(
+                    model.get(PriceChangeModuleProperties.MODULE_ACCESSIBILITY_LABEL));
         } else {
             assert false : "Unhandled property detected in PriceChangeModuleViewBinder!";
         }
