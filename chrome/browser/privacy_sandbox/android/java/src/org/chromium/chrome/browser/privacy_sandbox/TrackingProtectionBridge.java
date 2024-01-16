@@ -17,6 +17,10 @@ public class TrackingProtectionBridge {
         TrackingProtectionBridgeJni.get().noticeActionTaken(noticeType, action);
     }
 
+    public static void noticeRequested(@NoticeType int noticeType) {
+        TrackingProtectionBridgeJni.get().noticeRequested(noticeType);
+    }
+
     public static void noticeShown(@NoticeType int noticeType) {
         TrackingProtectionBridgeJni.get().noticeShown(noticeType);
     }
@@ -27,6 +31,8 @@ public class TrackingProtectionBridge {
 
     @NativeMethods
     public interface Natives {
+        void noticeRequested(int noticeType);
+
         void noticeShown(int noticeType);
 
         void noticeActionTaken(int noticeType, int action);

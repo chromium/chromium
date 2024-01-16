@@ -100,6 +100,7 @@ void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
     case TrackingProtectionOnboarding::OnboardingStatus::kIneligible:
     case TrackingProtectionOnboarding::OnboardingStatus::kEligible:
     case TrackingProtectionOnboarding::OnboardingStatus::kOffboarded:
+    case TrackingProtectionOnboarding::OnboardingStatus::kOnboardingRequested:
       pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
       return;
     case TrackingProtectionOnboarding::OnboardingStatus::kOnboarded:

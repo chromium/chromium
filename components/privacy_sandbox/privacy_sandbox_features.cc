@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+
 #include "base/feature_list.h"
 
 namespace privacy_sandbox {
@@ -144,5 +145,11 @@ BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
 BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
              "PrivateAggregationDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
+             
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTrackingProtectionNoticeRequestTracking,
+             "TrackingProtectionNoticeRequestTracking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace privacy_sandbox

@@ -52069,6 +52069,13 @@ would be helpful to identify which type is being sent.
   <int value="32" label="kMediaCdmOriginData"/>
 </enum>
 
+<enum name="TrackingProtectionInternalOnboardingStatus">
+  <int value="0" label="kIneligible"/>
+  <int value="1" label="kEligible"/>
+  <int value="2" label="kOnboarded"/>
+  <int value="3" label="kRequested"/>
+</enum>
+
 <enum name="TrackingProtectionMetricsNoticeEvent">
   <int value="0" label="kNoticeObjectCreated"/>
   <int value="1" label="kActiveTabChanged"/>
