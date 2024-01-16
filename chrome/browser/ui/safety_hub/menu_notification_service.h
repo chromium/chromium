@@ -86,8 +86,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Dismisses all the active menu notifications.
   void DismissActiveNotification();
 
-  // Dismisses the active menu notification of the password module.
-  void DismissPasswordNotification();
+  // Dismisses the active menu notification of the specified module.
+  void DismissActiveNotificationOfModule(
+      safety_hub::SafetyHubModuleType module);
 
   // Returns the module of the notification that is currently active.
   absl::optional<safety_hub::SafetyHubModuleType>
@@ -96,6 +97,12 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(
       safety_hub::SafetyHubModuleType service_type);
+
+  void UpdateResultGetterForTesting(
+      safety_hub::SafetyHubModuleType type,
+      base::RepeatingCallback<
+          std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+          result_getter);
 
  private:
   // Gets the latest result from each Safety Hub service. Will return

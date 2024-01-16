@@ -846,6 +846,10 @@ namespace developerPrivate {
         DOMString[] extensionIds,
         optional VoidCallback callback);
 
+    // Dismisses the menu notification for the extensions module in Safety Hub
+    // if one is active.
+    static void dismissSafetyHubExtensionsMenuNotification();
+
     [nocompile, deprecated="Use openDevTools"]
         static void inspect(InspectOptions options,
                             optional VoidCallback callback);

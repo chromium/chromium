@@ -15,9 +15,14 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -211,4 +216,61 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
              return activityKey.innerText === 'test.sendMessage';
          });
       )"));
+}
+
+class SafetyHubExtensionSettingsUIBrowserTest
+    : public ExtensionSettingsTestBase {
+ public:
+  SafetyHubExtensionSettingsUIBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kSafetyHub);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SafetyHubExtensionSettingsUIBrowserTest,
+                       TestSafetyHubMenuNotificationDismissed) {
+  Profile* profile = browser()->profile();
+  // Add a couple of extensions that will be marked as unpublished and malware.
+  InstallGoodExtension();
+  InstallGoodExtension();
+  InstallGoodExtension();
+  SafetyHubMenuNotificationService* notification_service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
+  // No unpublished extensions yet, so there shouldn't be a menu notifications.
+  absl::optional<MenuNotificationEntry> notification =
+      notification_service->GetNotificationToShow();
+  ASSERT_FALSE(notification.has_value());
+
+  // Make all extensions unpublished and malware.
+  const extensions::CWSInfoService::CWSInfo cws_info_unpublished{
+      /*is_present=*/true,
+      /*is_live=*/false,
+      /*last_update_time=*/base::Time::Now(),
+      /*violation_type=*/extensions::CWSInfoService::CWSViolationType::kMalware,
+      /*unpublished_long_ago=*/true,
+      /*no_privacy_practice=*/false};
+  testing::NiceMock<safety_hub_test_util::MockCWSInfoService>
+      mock_cws_info_service(profile);
+  ON_CALL(mock_cws_info_service, GetCWSInfo)
+      .WillByDefault(testing::Return(cws_info_unpublished));
+  // Use the mock CWS info service for the menu notification service.
+  notification_service->UpdateResultGetterForTesting(
+      safety_hub::SafetyHubModuleType::EXTENSIONS,
+      base::BindRepeating(&SafetyHubExtensionsResult::GetResult,
+                          base::Unretained(&mock_cws_info_service), profile,
+                          /*only_unpublished_extensions=*/true));
+
+  // An extension was unpublished, so we now should get an associated menu
+  // notification.
+  notification = notification_service->GetNotificationToShow();
+  ASSERT_TRUE(notification.has_value());
+
+  // When the user visits the extensions page, notifications for the extension
+  // module of Safety Hub should be dismissed.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions/")));
+  notification = notification_service->GetNotificationToShow();
+  ASSERT_FALSE(notification.has_value());
 }

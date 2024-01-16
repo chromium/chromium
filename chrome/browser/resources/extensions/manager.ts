@@ -612,6 +612,10 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     const toPage = newPage.page;
     let data: chrome.developerPrivate.ExtensionInfo|undefined;
     let activityLogPlaceholder;
+    if (toPage === Page.LIST) {
+      // Dismiss menu notifications for extensions module of Safety Hub.
+      this.delegate.dismissSafetyHubExtensionsMenuNotification();
+    }
     if (newPage.extensionId) {
       data = this.getData_(newPage.extensionId);
       if (!data) {

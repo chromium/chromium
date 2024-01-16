@@ -33,6 +33,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'deleteErrors',
       'deleteItem',
       'deleteItems',
+      'dismissSafetyHubExtensionsMenuNotification',
       'uninstallItem',
       'downloadActivities',
       'getExtensionActivityLog',
@@ -389,5 +390,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]) {
     this.methodCalled('updateSiteAccess', site, updates);
     return Promise.resolve();
+  }
+
+  dismissSafetyHubExtensionsMenuNotification() {
+    this.methodCalled('dismissSafetyHubExtensionsMenuNotification');
   }
 }
