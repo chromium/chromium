@@ -4151,12 +4151,6 @@
       base_feature: "none",
     },
     {
-      name: "WebAssemblyGC",
-      origin_trial_feature_name: "WebAssemblyGC",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "WebAssemblyJSStringBuiltins",
       origin_trial_feature_name: "WebAssemblyJSStringBuiltins",
       status: "experimental",
