@@ -262,8 +262,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
                                   const gfx::Rect& node_bounds_in_screen) {}
 
   // StylusInterface overrides
-  // Requests to start stylus writing and returns true if successful.
-  bool RequestStartStylusWriting() override;
+  // Check if stylus writing can be started.
+  bool ShouldInitiateStylusWriting() override;
   // Notify whether the hovered element action is stylus writable or not.
   void NotifyHoverActionStylusWritable(bool stylus_writable) override {}
 

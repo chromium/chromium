@@ -126,12 +126,9 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     }
 
     @Override
-    public boolean requestStartStylusWriting(View view) {
+    public boolean shouldInitiateStylusWriting() {
         if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return false;
-        StylusApiOption.recordStylusHandwritingTriggered(Api.DIRECT_WRITING);
         mStylusWritingDetected = true;
-        // We know writing can be started but wait for onEditElementFocusedForStylusWriting to be
-        // called to get the focused edit bounds and caret position.
         return true;
     }
 
@@ -462,7 +459,11 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
 
     @Override
     public EditorBoundsInfo onEditElementFocusedForStylusWriting(
-            Rect focusedEditBounds, Point cursorPosition, float scaleFactor, int contentOffsetY) {
+            Rect focusedEditBounds,
+            Point cursorPosition,
+            float scaleFactor,
+            int contentOffsetY,
+            View view) {
         // Don't start recognition if focused edit bounds are empty as it means stylus writable
         // element was not focused or bounds could not be obtained.
         if (focusedEditBounds.isEmpty()) return null;
@@ -479,11 +480,11 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
                             .setHandwritingBounds(bounds)
                             .build();
         }
+        StylusApiOption.recordStylusHandwritingTriggered(Api.DIRECT_WRITING);
         // Start recognition as stylus writable element is focused.
         startRecognition(focusedEditBounds);
         mCallback.updateEditableBounds(focusedEditBounds, cursorPosition);
-        mBinder.updateEditableBounds(
-                focusedEditBounds, mStylusWritingImeCallback.getContainerView(), false);
+        mBinder.updateEditableBounds(focusedEditBounds, view, false);
         return editorBoundsInfo;
     }
 

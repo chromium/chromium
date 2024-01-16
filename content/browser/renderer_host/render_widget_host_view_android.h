@@ -160,7 +160,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SetIsLoading(bool is_loading) override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
-  bool RequestStartStylusWriting() override;
+  bool ShouldInitiateStylusWriting() override;
   void NotifyHoverActionStylusWritable(bool stylus_writable) override;
   void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,

@@ -1230,7 +1230,7 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private boolean requestStartStylusWriting() {
+    private boolean shouldInitiateStylusWriting() {
         if (mWebContents.getStylusWritingHandler() == null) return false;
 
         // It is possible that current view is not focused when stylus writing is started just after
@@ -1240,7 +1240,7 @@ public class ImeAdapterImpl
         if (!ViewUtils.hasFocus(containerView)) ViewUtils.requestFocus(containerView);
 
         updateInputStateForStylusWriting();
-        return mWebContents.getStylusWritingHandler().requestStartStylusWriting(containerView);
+        return mWebContents.getStylusWritingHandler().shouldInitiateStylusWriting();
     }
 
     @CalledByNative
@@ -1272,7 +1272,11 @@ public class ImeAdapterImpl
                 mWebContents
                         .getStylusWritingHandler()
                         .onEditElementFocusedForStylusWriting(
-                                roundedBounds, cursorPosition, scaleFactor, contentOffsetY);
+                                roundedBounds,
+                                cursorPosition,
+                                scaleFactor,
+                                contentOffsetY,
+                                getContainerView());
         mCursorAnchorInfoController.updateWithEditorBoundsInfo(
                 editorBoundsInfo, getContainerView());
     }

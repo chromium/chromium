@@ -105,7 +105,9 @@ class MockRenderWidgetHostViewForStylusWriting
       : TestRenderWidgetHostView(host) {}
   ~MockRenderWidgetHostViewForStylusWriting() override = default;
 
-  bool RequestStartStylusWriting() override { return supports_stylus_writing_; }
+  bool ShouldInitiateStylusWriting() override {
+    return supports_stylus_writing_;
+  }
 
   void NotifyHoverActionStylusWritable(bool stylus_writable) override {
     hover_action_stylus_writable_ = stylus_writable;
@@ -2342,10 +2344,10 @@ TEST_F(InputRouterImplStylusWritingTest,
        StylusWritingNotStartedForNotWritableTouchAction) {
   PressAndSetTouchActionAuto();
 
-  // Set RequestStartStylusWriting() to return true, to ensure scroll events are
-  // not filtered when touch action is not writable.
+  // Set ShouldInitiateStylusWriting() to return true, to ensure scroll events
+  // are not filtered when touch action is not writable.
   mock_view_->set_supports_stylus_writing(true);
-  ASSERT_TRUE(client_->GetStylusInterface()->RequestStartStylusWriting());
+  ASSERT_TRUE(client_->GetStylusInterface()->ShouldInitiateStylusWriting());
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
   // scroll begin is not filtered when kInternalNotWritable is set.
@@ -2361,8 +2363,8 @@ TEST_F(InputRouterImplStylusWritingTest,
        StylusWritingNotStartedForTouchActionWritable) {
   PressAndSetTouchActionWritable();
 
-  // RequestStartStylusWriting() returns false by default.
-  ASSERT_FALSE(client_->GetStylusInterface()->RequestStartStylusWriting());
+  // ShouldInitiateStylusWriting() returns false by default.
+  ASSERT_FALSE(client_->GetStylusInterface()->ShouldInitiateStylusWriting());
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
@@ -2408,9 +2410,9 @@ TEST_F(InputRouterImplStylusWritingTest,
 TEST_F(InputRouterImplStylusWritingTest, StylusWritingNotStartedForMultiTouch) {
   PressAndSetTouchActionWritable();
 
-  // Set RequestStartStylusWriting() to return true.
+  // Set ShouldInitiateStylusWriting() to return true.
   mock_view_->set_supports_stylus_writing(true);
-  ASSERT_TRUE(client_->GetStylusInterface()->RequestStartStylusWriting());
+  ASSERT_TRUE(client_->GetStylusInterface()->ShouldInitiateStylusWriting());
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 2));
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
@@ -2427,9 +2429,9 @@ TEST_F(InputRouterImplStylusWritingTest,
        StylusWritingStartedForTouchActionWritable) {
   PressAndSetTouchActionWritable();
 
-  // Set RequestStartStylusWriting() to return true.
+  // Set ShouldInitiateStylusWriting() to return true.
   mock_view_->set_supports_stylus_writing(true);
-  ASSERT_TRUE(client_->GetStylusInterface()->RequestStartStylusWriting());
+  ASSERT_TRUE(client_->GetStylusInterface()->ShouldInitiateStylusWriting());
   // GestureScrollBegin is filtered.
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));

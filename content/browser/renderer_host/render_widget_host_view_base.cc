@@ -490,7 +490,7 @@ RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessibleForWindow() {
   return nullptr;
 }
 
-bool RenderWidgetHostViewBase::RequestStartStylusWriting() {
+bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {
   return false;
 }
 

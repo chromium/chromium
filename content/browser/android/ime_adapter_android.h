@@ -125,8 +125,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   void SetBounds(const std::vector<gfx::Rect>& character_bounds,
                  const bool character_bounds_changed,
                  const std::optional<std::vector<gfx::Rect>>& line_bounds);
-  // Requests to start stylus writing and returns true if successful.
-  bool RequestStartStylusWriting();
+  // Check if stylus writing can be started.
+  bool ShouldInitiateStylusWriting();
 
   void OnEditElementFocusedForStylusWriting(
       const gfx::Rect& focused_edit_bounds,

@@ -394,11 +394,11 @@ void ImeAdapterAndroid::FocusedNodeChanged(
   }
 }
 
-bool ImeAdapterAndroid::RequestStartStylusWriting() {
+bool ImeAdapterAndroid::ShouldInitiateStylusWriting() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   if (!obj.is_null()) {
-    return Java_ImeAdapterImpl_requestStartStylusWriting(env, obj);
+    return Java_ImeAdapterImpl_shouldInitiateStylusWriting(env, obj);
   }
   return false;
 }

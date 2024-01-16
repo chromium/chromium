@@ -107,16 +107,22 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     }
 
     @Override
-    public boolean requestStartStylusWriting(View view) {
-        Log.d(TAG, "Requesting Stylus Writing");
-        StylusApiOption.recordStylusHandwritingTriggered(Api.ANDROID);
-        mInputMethodManager.startStylusHandwriting(view);
+    public boolean shouldInitiateStylusWriting() {
         return true;
     }
 
     @Override
     public EditorBoundsInfo onEditElementFocusedForStylusWriting(
-            Rect focusedEditBounds, Point cursorPosition, float scaleFactor, int contentOffsetY) {
+            Rect focusedEditBounds,
+            Point cursorPosition,
+            float scaleFactor,
+            int contentOffsetY,
+            View view) {
+        Log.d(TAG, "Start Stylus Writing");
+        StylusApiOption.recordStylusHandwritingTriggered(Api.ANDROID);
+        // Start stylus writing after edit element is focused so that InputConnection is current
+        // focused element.
+        mInputMethodManager.startStylusHandwriting(view);
         RectF bounds =
                 new RectF(
                         focusedEditBounds.left / scaleFactor,

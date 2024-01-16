@@ -1544,9 +1544,9 @@ void RenderWidgetHostViewAndroid::FocusedNodeChanged(
                                              node_bounds_in_screen);
 }
 
-bool RenderWidgetHostViewAndroid::RequestStartStylusWriting() {
+bool RenderWidgetHostViewAndroid::ShouldInitiateStylusWriting() {
   return ime_adapter_android_ &&
-         ime_adapter_android_->RequestStartStylusWriting();
+         ime_adapter_android_->ShouldInitiateStylusWriting();
 }
 
 void RenderWidgetHostViewAndroid::NotifyHoverActionStylusWritable(
