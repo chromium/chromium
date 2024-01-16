@@ -495,11 +495,9 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
   MockCreditCardSaveManager(
       AutofillDriver* driver,
       AutofillClient* client,
-      payments::TestPaymentsNetworkInterface* payments_network_interface,
       PersonalDataManager* personal_data_manager)
       : TestCreditCardSaveManager(driver,
                                   client,
-                                  payments_network_interface,
                                   personal_data_manager) {}
   MOCK_METHOD(bool,
               AttemptToOfferCvcLocalSave,
@@ -570,7 +568,7 @@ class FormDataImporterTest : public testing::Test {
         .set_virtual_card_enrollment_manager(
             std::move(virtual_card_enrollment_manager));
     auto credit_card_save_manager = std::make_unique<MockCreditCardSaveManager>(
-        nullptr, autofill_client_.get(), nullptr, personal_data_manager_.get());
+        nullptr, autofill_client_.get(), personal_data_manager_.get());
     test_api(form_data_importer())
         .set_credit_card_save_manager(std::move(credit_card_save_manager));
   }

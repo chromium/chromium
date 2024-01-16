@@ -76,8 +76,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
         std::unique_ptr<payments::TestPaymentsNetworkInterface>(
             payments_network_interface_));
     credit_card_save_manager_ = new TestCreditCardSaveManager(
-        autofill_driver_.get(), &autofill_client_, payments_network_interface_,
-        &personal_data());
+        autofill_driver_.get(), &autofill_client_, &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     local_card_migration_manager_ = new TestLocalCardMigrationManager(
         autofill_driver_.get(), &autofill_client_, &personal_data());

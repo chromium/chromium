@@ -151,8 +151,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
     : client_(client),
       credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
           client,
-          // `client` is guaranteed to be present as it owns `this`.
-          client->GetPaymentsNetworkInterface(),
           app_locale,
           personal_data_manager)),
       address_profile_save_manager_(

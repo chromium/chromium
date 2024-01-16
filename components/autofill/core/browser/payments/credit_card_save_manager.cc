@@ -86,11 +86,9 @@ std::u16string RemoveMiddleInitial(const std::u16string& name) {
 
 CreditCardSaveManager::CreditCardSaveManager(
     AutofillClient* client,
-    payments::PaymentsNetworkInterface* payments_network_interface,
     const std::string& app_locale,
     PersonalDataManager* personal_data_manager)
     : client_(client),
-      payments_network_interface_(payments_network_interface),
       app_locale_(app_locale),
       personal_data_manager_(personal_data_manager) {}
 
@@ -218,8 +216,10 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     const FormStructure& submitted_form,
     const CreditCard& card,
     const bool uploading_local_card) {
-  // Abort the uploading if `payments_network_interface_` is nullptr.
-  if (!payments_network_interface_) {
+  payments::PaymentsNetworkInterface* payments_network_interface =
+      client_->GetPaymentsNetworkInterface();
+  // Abort the uploading if `payments_network_interface` is nullptr.
+  if (!payments_network_interface) {
     return;
   }
   upload_request_ = payments::PaymentsNetworkInterface::UploadRequestDetails();
@@ -368,7 +368,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }
 
-  payments_network_interface_->GetUploadDetails(
+  payments_network_interface->GetUploadDetails(
       country_only_profiles, upload_request_.detected_values,
       upload_request_.client_behavior_signals, app_locale_,
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
@@ -597,9 +597,9 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
       return;
     }
 
-    // Do *not* call payments_network_interface_->Prepare() here. We shouldn't
-    // send credentials until the user has explicitly accepted a prompt to
-    // upload.
+    // Do *not* call `client_->GetPaymentsNetworkInterface()->Prepare()` here.
+    // We shouldn't send credentials until the user has explicitly accepted a
+    // prompt to upload.
     if (!supported_card_bin_ranges.empty() &&
         !payments::IsCreditCardNumberSupported(upload_request_.card.number(),
                                                supported_card_bin_ranges)) {
@@ -1236,7 +1236,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
       uploading_local_card_
           ? AutofillMetrics::USER_ACCEPTED_UPLOAD_OF_LOCAL_CARD
           : AutofillMetrics::USER_ACCEPTED_UPLOAD_OF_NEW_CARD);
-  payments_network_interface_->UploadCard(
+  client_->GetPaymentsNetworkInterface()->UploadCard(
       upload_request_, base::BindOnce(&CreditCardSaveManager::OnDidUploadCard,
                                       weak_ptr_factory_.GetWeakPtr()));
 }

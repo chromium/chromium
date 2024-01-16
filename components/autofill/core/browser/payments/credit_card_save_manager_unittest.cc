@@ -214,8 +214,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     ON_CALL(autofill_client_, GetVirtualCardEnrollmentManager())
         .WillByDefault(testing::Return(virtual_card_enrollment_manager_.get()));
     credit_card_save_manager_ = new TestCreditCardSaveManager(
-        autofill_driver_.get(), &autofill_client_,
-        &payments_network_interface(), &personal_data());
+        autofill_driver_.get(), &autofill_client_, &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
         std::make_unique<TestFormDataImporter>(
