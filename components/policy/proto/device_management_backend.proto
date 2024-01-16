@@ -4331,6 +4331,9 @@ message CertProvBackendError {
     // is referencing a non-existent PubSub topic, or the system does not have
     // permission to publish to that PubSub topic.
     PUBSUB_TOPIC_NOT_FOUND = 13;
+    // The Adapter uploaded a certificate that cannot be parsed or was issued
+    // for a wrong public key.
+    BAD_ADAPTER_CERTIFICATE_RECEIVED = 14;
   }
 
   // The specific error type.
