@@ -1237,15 +1237,26 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   if (!context_provider_wrapper_)
     return;
 
+  // These SharedImages are both read and written by the raster interface (both
+  // occur, for example, when copying canvas resources between canvases).
+  // Additionally, these SharedImages can be put into
+  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into GL
+  // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
+  // Hence, GLES2_READ usage is necessary regardless of whether raster is over
+  // GLES.
+  // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
+  // eliminated.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   if (use_oop_rasterization_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER |
             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  } else {
+    // The GLES2_WRITE flag is needed due to raster being over GL.
+    usage = usage | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   auto* sii =
