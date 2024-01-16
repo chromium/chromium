@@ -874,9 +874,9 @@ void OverlayProcessorWebView::UpdateOverlayResource(
     auto result = LockResource(overlay->second);
 
     gpu_thread_sequence_->ScheduleTask(
-        base::BindOnce(&Manager::UpdateOverlayBuffer,
-                       base::Unretained(manager_.get()), overlay->second.id,
-                       result.mailbox, uv_rect, std::move(result.unlock_cb)),
+        base::BindOnce(&Manager::UpdateOverlayBuffer, manager_,
+                       overlay->second.id, result.mailbox, uv_rect,
+                       std::move(result.unlock_cb)),
         {result.sync_token, overlay->second.create_sync_token});
   }
 }
