@@ -122,7 +122,7 @@ class VIEWS_EXPORT DropHelper {
   void NotifyDragExit();
 
   // RootView we were created for.
-  raw_ptr<View, DanglingUntriaged> root_view_;
+  const raw_ptr<View> root_view_;
 
   // View we're targeting events at.
   raw_ptr<View> target_view_ = nullptr;
