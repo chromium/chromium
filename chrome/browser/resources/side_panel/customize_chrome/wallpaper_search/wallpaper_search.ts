@@ -242,10 +242,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchCallbackRouter_ =
         WallpaperSearchProxy.getInstance().callbackRouter;
     this.fetchDescriptors_();
-    this.wallpaperSearchHandler_.getInspirations().then(
-        ({inspirationGroups}) => {
-          this.inspirationGroups_ = inspirationGroups;
-        });
+    if (this.inspirationCardEnabled_) {
+      this.wallpaperSearchHandler_.getInspirations().then(
+          ({inspirationGroups}) => {
+            this.inspirationGroups_ = inspirationGroups;
+          });
+    }
   }
 
   override connectedCallback() {

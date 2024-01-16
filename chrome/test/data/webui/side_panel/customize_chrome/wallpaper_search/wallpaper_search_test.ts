@@ -118,6 +118,7 @@ suite('WallpaperSearchTest', () => {
           createWallpaperSearchElement();
           await flushTasks();
 
+          assertEquals(0, handler.getCallCount('getInspirations'));
           assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
               '#inspirationCard'));
         });
