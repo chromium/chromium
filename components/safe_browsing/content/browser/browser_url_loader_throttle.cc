@@ -136,76 +136,25 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
     base::WeakPtr<AsyncCheckTracker> async_check_tracker)
-    : async_check_tracker_(async_check_tracker) {
+    : async_check_tracker_(async_check_tracker),
+      url_lookup_service_(url_lookup_service),
+      hash_realtime_service_(hash_realtime_service),
+      hash_realtime_selection_(hash_realtime_selection),
+      frame_tree_node_id_(frame_tree_node_id),
+      navigation_id_(navigation_id),
+      delegate_getter_(delegate_getter),
+      web_contents_getter_(web_contents_getter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
   url_real_time_lookup_enabled_ =
-      url_lookup_service ? url_lookup_service->CanPerformFullURLLookup()
-                         : false;
-
-  bool can_urt_check_subresource_url =
-      url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
-
-  // Decide whether safe browsing database can be checked.
-  // If url_lookup_service is null, safe browsing database should be checked by
-  // default.
-  bool can_check_db =
-      url_lookup_service ? url_lookup_service->CanCheckSafeBrowsingDb() : true;
-  bool can_check_high_confidence_allowlist =
-      url_lookup_service
-          ? url_lookup_service->CanCheckSafeBrowsingHighConfidenceAllowlist()
-          : true;
-
+      url_lookup_service_ ? url_lookup_service_->CanPerformFullURLLookup()
+                          : false;
   url_lookup_service_metric_suffix_ =
-      url_real_time_lookup_enabled_ ? url_lookup_service->GetMetricSuffix()
+      url_real_time_lookup_enabled_ ? url_lookup_service_->GetMetricSuffix()
                                     : kNoRealTimeURLLookupService;
-
-  // TODO(crbug.com/1501194): Add more checks (e.g. prefetch/prerender) to
-  // ensure this URL loader is eligible for async check.
-  if (async_check_tracker_ && navigation_id.has_value()) {
-    CHECK(can_check_db);
-    CHECK(url_real_time_lookup_enabled_ ||
-          hash_realtime_selection !=
-              hash_realtime_utils::HashRealTimeSelection::kNone);
-    // If async check is enabled, sync_sb_checker only performs local database
-    // check.
-    sync_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
-        delegate_getter, frame_tree_node_id, navigation_id, web_contents_getter,
-        /*complete_callback=*/
-        base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
-                            weak_factory_.GetWeakPtr()),
-        /*url_real_time_lookup_enabled=*/false,
-        /*can_urt_check_subresource_url=*/false, can_check_db,
-        /*can_check_high_confidence_allowlist=*/true,
-        /*url_lookup_service_metric_suffix=*/kNoRealTimeURLLookupService,
-        /*url_lookup_service=*/nullptr,
-        /*hash_realtime_service=*/nullptr,
-        /*hash_realtime_selection=*/
-        hash_realtime_utils::HashRealTimeSelection::kNone);
-    async_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
-        delegate_getter, frame_tree_node_id, navigation_id, web_contents_getter,
-        /*complete_callback=*/
-        base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteAsyncCheck,
-                            weak_factory_.GetWeakPtr()),
-        url_real_time_lookup_enabled_, can_urt_check_subresource_url,
-        can_check_db, can_check_high_confidence_allowlist,
-        url_lookup_service_metric_suffix_, url_lookup_service,
-        hash_realtime_service, hash_realtime_selection);
-  } else {
-    sync_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
-        delegate_getter, frame_tree_node_id, navigation_id, web_contents_getter,
-        /*complete_callback=*/
-        base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
-                            weak_factory_.GetWeakPtr()),
-        url_real_time_lookup_enabled_, can_urt_check_subresource_url,
-        can_check_db, can_check_high_confidence_allowlist,
-        url_lookup_service_metric_suffix_, url_lookup_service,
-        hash_realtime_service, hash_realtime_selection);
-  }
-
   skip_check_checker_ = std::make_unique<SkipCheckCheckerOnSB>(
-      std::move(delegate_getter), frame_tree_node_id);
+      delegate_getter_, frame_tree_node_id);
 }
 
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
@@ -225,6 +174,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   DCHECK_EQ(0u, pending_sync_checks_);
   DCHECK_EQ(0u, pending_async_checks_);
   DCHECK(!blocked_);
+
   base::UmaHistogramEnumeration(
       "SafeBrowsing.BrowserThrottle.RequestDestination", request->destination);
 
@@ -247,6 +197,74 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   base::UmaHistogramEnumeration(
       "SafeBrowsing.BrowserThrottle.RequestDestination.Checked",
       request->destination);
+
+  // Decide whether safe browsing database can be checked.
+  // If url_lookup_service_ is null, safe browsing database should be checked by
+  // default.
+  bool can_check_db = url_lookup_service_
+                          ? url_lookup_service_->CanCheckSafeBrowsingDb()
+                          : true;
+  bool can_check_high_confidence_allowlist =
+      url_lookup_service_
+          ? url_lookup_service_->CanCheckSafeBrowsingHighConfidenceAllowlist()
+          : true;
+  bool can_urt_check_subresource_url =
+      url_lookup_service_ && url_lookup_service_->CanCheckSubresourceURL();
+
+  // TODO(crbug.com/1501194): Add more checks (e.g. prefetch/prerender) to
+  // ensure this URL loader is eligible for async check.
+  if (async_check_tracker_ && navigation_id_.has_value()) {
+    CHECK(can_check_db);
+    CHECK(url_real_time_lookup_enabled_ ||
+          hash_realtime_selection_ !=
+              hash_realtime_utils::HashRealTimeSelection::kNone);
+    // If async check is enabled, sync_sb_checker only performs local database
+    // check.
+    sync_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
+        delegate_getter_, frame_tree_node_id_, navigation_id_,
+        web_contents_getter_,
+        /*complete_callback=*/
+        base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
+                            weak_factory_.GetWeakPtr()),
+        /*url_real_time_lookup_enabled=*/false,
+        /*can_urt_check_subresource_url=*/false, can_check_db,
+        /*can_check_high_confidence_allowlist=*/true,
+        /*url_lookup_service_metric_suffix=*/kNoRealTimeURLLookupService,
+        /*url_lookup_service=*/nullptr,
+        /*hash_realtime_service=*/nullptr,
+        /*hash_realtime_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
+    async_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
+        delegate_getter_, frame_tree_node_id_, navigation_id_,
+        web_contents_getter_,
+        /*complete_callback=*/
+        base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteAsyncCheck,
+                            weak_factory_.GetWeakPtr()),
+        url_real_time_lookup_enabled_, can_urt_check_subresource_url,
+        can_check_db, can_check_high_confidence_allowlist,
+        url_lookup_service_metric_suffix_, url_lookup_service_,
+        hash_realtime_service_, hash_realtime_selection_);
+    if (on_sync_sb_checker_created_callback_for_testing_) {
+      std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
+    }
+    if (on_async_sb_checker_created_callback_for_testing_) {
+      std::move(on_async_sb_checker_created_callback_for_testing_).Run();
+    }
+  } else {
+    sync_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
+        delegate_getter_, frame_tree_node_id_, navigation_id_,
+        web_contents_getter_,
+        /*complete_callback=*/
+        base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
+                            weak_factory_.GetWeakPtr()),
+        url_real_time_lookup_enabled_, can_urt_check_subresource_url,
+        can_check_db, can_check_high_confidence_allowlist,
+        url_lookup_service_metric_suffix_, url_lookup_service_,
+        hash_realtime_service_, hash_realtime_selection_);
+    if (on_sync_sb_checker_created_callback_for_testing_) {
+      std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
+    }
+  }
 
   pending_sync_checks_++;
   if (async_sb_checker_) {
@@ -451,6 +469,16 @@ UrlCheckerOnSB* BrowserURLLoaderThrottle::GetSyncSBCheckerForTesting() {
 
 UrlCheckerOnSB* BrowserURLLoaderThrottle::GetAsyncSBCheckerForTesting() {
   return async_sb_checker_.get();
+}
+
+void BrowserURLLoaderThrottle::SetOnSyncSBCheckerCreatedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_sync_sb_checker_created_callback_for_testing_ = std::move(callback);
+}
+
+void BrowserURLLoaderThrottle::SetOnAsyncSBCheckerCreatedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_async_sb_checker_created_callback_for_testing_ = std::move(callback);
 }
 
 void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
