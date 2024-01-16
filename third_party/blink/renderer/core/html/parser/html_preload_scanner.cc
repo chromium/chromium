@@ -1036,9 +1036,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                   scanner_type_ == ScannerType::kMainDocument});
             }
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
-                                            http_names::kDelegateCH) &&
-                     RuntimeEnabledFeatures::
-                         ClientHintsMetaEquivDelegateCHEnabled()) {
+                                            http_names::kDelegateCH)) {
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {

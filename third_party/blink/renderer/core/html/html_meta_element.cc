@@ -777,8 +777,6 @@ void HTMLMetaElement::ProcessMetaCH(Document& document,
         return;
       break;
     case network::MetaCHType::HttpEquivDelegateCH:
-      if (!RuntimeEnabledFeatures::ClientHintsMetaEquivDelegateCHEnabled())
-        return;
       break;
   }
 
