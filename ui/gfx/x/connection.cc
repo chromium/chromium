@@ -334,9 +334,7 @@ bool Connection::WmSupportsHint(Atom atom) const {
 }
 
 Connection::Request::Request(ResponseCallback callback)
-    : callback(std::move(callback)) {
-  DUMP_WILL_BE_CHECK(this->callback);
-}
+    : callback(std::move(callback)) {}
 
 Connection::Request::Request(Request&& other) = default;
 
@@ -723,10 +721,19 @@ std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
   }
 
   SequenceType next_request_id = first_request_id_ + requests_.size();
-  DUMP_WILL_BE_CHECK_EQ(CompareSequenceIds(next_request_id, sequence), 0);
 
-  // If we ever reach 2^32 outstanding requests, then bail because sequence IDs
-  // would no longer be unique.
+  // XCB inserts requests every 2^32 requests (or every 2^16 requests if
+  // all outstanding requests don't generate a reply).  Because it's difficult
+  // to track these, increment the sequence counter until ours matches XCB's.
+  CHECK_LT(CompareSequenceIds(sequence, next_request_id), 10);
+  while (CompareSequenceIds(sequence, next_request_id) > 0) {
+    requests_.emplace_back(ResponseCallback());
+    requests_.back().have_response = true;
+    next_request_id++;
+    // If we ever reach 2^32 outstanding requests, then bail because sequence
+    // IDs would no longer be unique.
+    CHECK_NE(next_request_id, first_request_id_);
+  }
   next_request_id++;
   DUMP_WILL_BE_CHECK_NE(next_request_id, first_request_id_);
 
