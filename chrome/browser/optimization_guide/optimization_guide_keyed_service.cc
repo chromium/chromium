@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -39,6 +40,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
@@ -48,6 +50,8 @@
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -170,6 +174,36 @@ GetOnDeviceModelServiceController() {
     service_controller->Init();
   }
   return service_controller;
+}
+
+optimization_guide::proto::ModelExecutionFeature GetModelExecutionFeature(
+    optimization_guide::proto::LogAiDataRequest::FeatureCase feature) {
+  using optimization_guide::proto::ModelExecutionFeature;
+  using optimization_guide::proto::LogAiDataRequest;
+  switch (feature) {
+    case LogAiDataRequest::FeatureCase::kCompose:
+      return ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
+    case LogAiDataRequest::FeatureCase::kTabOrganization:
+      return ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION;
+    case LogAiDataRequest::FeatureCase::kWallpaperSearch:
+      return ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;
+    case LogAiDataRequest::FeatureCase::kDefault:
+      NOTREACHED();
+      return ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
+    case LogAiDataRequest::FeatureCase::FEATURE_NOT_SET:
+      NOTREACHED();
+      return ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
+  }
+}
+
+void RecordUploadStatusHistogram(
+    optimization_guide::proto::ModelExecutionFeature feature,
+    optimization_guide::ModelQualityLogsUploadStatus status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.",
+           optimization_guide::GetStringNameForModelExecutionFeature(feature)}),
+      status);
 }
 
 }  // namespace
@@ -564,6 +598,33 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!model_quality_logs_uploader_service_) {
+    return;
+  }
+
+  // Don't trigger upload for an empty log entry.
+  if (!log_entry && log_entry->log_ai_data_request()) {
+    return;
+  }
+
+  optimization_guide::proto::ModelExecutionFeature feature =
+      GetModelExecutionFeature(
+          log_entry->log_ai_data_request()->feature_case());
+
+  // Model quality logging requires user consent. Skip upload if consent is
+  // missing.
+  if (!g_browser_process->GetMetricsServicesManager()
+           ->IsMetricsConsentGiven()) {
+    RecordUploadStatusHistogram(
+        feature,
+        optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent);
+    return;
+  }
+
+  // Don't upload logs if logging is disabled by enterprise policy.
+  if (!ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
+    RecordUploadStatusHistogram(
+        feature, optimization_guide::ModelQualityLogsUploadStatus::
+                     kDisabledDueToEnterprisePolicy);
     return;
   }
 
