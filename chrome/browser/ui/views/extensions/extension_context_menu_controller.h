@@ -14,7 +14,6 @@
 class ToolbarActionViewController;
 
 namespace views {
-class Button;
 class MenuModelAdapter;
 class MenuRunner;
 }  // namespace views
@@ -41,8 +40,6 @@ class ExtensionContextMenuController : public views::ContextMenuController {
   bool IsMenuRunning() const;
 
  private:
-  void RunExtensionContextMenu(views::Button* source);
-
   // Callback for MenuModelAdapter.
   void OnMenuClosed();
 
