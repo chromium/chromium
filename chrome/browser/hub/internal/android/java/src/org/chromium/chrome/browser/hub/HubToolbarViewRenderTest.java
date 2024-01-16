@@ -44,7 +44,7 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     private Activity mActivity;
@@ -95,6 +95,14 @@ public class HubToolbarViewRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, null));
         mRenderTestRule.render(mToolbar, "noActionButton");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, fullButtonData);
+                    mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, true);
+                    mPropertyModel.set(HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO);
+                });
+        mRenderTestRule.render(mToolbar, "actionButtonIncognito");
     }
 
     @Test
@@ -116,5 +124,11 @@ public class HubToolbarViewRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 1));
         mRenderTestRule.render(mToolbar, "paneSwitcherSelectedIndex");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mPropertyModel.set(
+                                HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO));
+        mRenderTestRule.render(mToolbar, "paneSwitcherIncognito");
     }
 }

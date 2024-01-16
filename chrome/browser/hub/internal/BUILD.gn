@@ -17,6 +17,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubColors.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImpl.java",

@@ -82,6 +82,12 @@ public class HubToolbarView extends LinearLayout {
         mBlockTabSelectionCallback = false;
     }
 
+    void setColorScheme(@HubColorScheme int colorScheme) {
+        Context context = getContext();
+        setBackgroundColor(HubColors.getBackgroundColor(context, colorScheme));
+        // TODO(https://crbug.com/1507839): Icon color, tab layout highlight.
+    }
+
     private OnTabSelectedListener makeTabSelectedListener(
             @NonNull List<FullButtonData> buttonDataList) {
         return new OnTabSelectedListener() {
