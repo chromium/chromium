@@ -165,13 +165,13 @@ enum ItemType : NSInteger {
 @end
 
 @implementation MagicStackParcelListHalfSheetTableViewController {
-  NSArray<ParcelTrackingItem*>* _parcels;
+  NSMutableArray<ParcelTrackingItem*>* _parcels;
 }
 
 - (instancetype)initWithParcels:(NSArray<ParcelTrackingItem*>*)parcels {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _parcels = parcels;
+    _parcels = [parcels mutableCopy];
   }
   return self;
 }
@@ -215,6 +215,7 @@ enum ItemType : NSInteger {
                                   atIndex:parcelItemIndexPath.row];
   [self.tableView deleteRowsAtIndexPaths:@[ parcelItemIndexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
+  [_parcels removeObjectAtIndex:parcelItemIndexPath.row];
   [self.delegate untrackParcel:parcelID carrier:carrier];
 }
 
