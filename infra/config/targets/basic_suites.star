@@ -60,9 +60,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "android_emulator_specific_network_enabled_content_browsertests",
     tests = {
-        "content_browsertests_with_emulator_network": targets.legacy_test_config(
-            ci_only = True,
-        ),
+        "content_browsertests_with_emulator_network": targets.legacy_test_config(),
     },
 )
 

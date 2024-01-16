@@ -4730,7 +4730,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--emulator-enable-network"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [

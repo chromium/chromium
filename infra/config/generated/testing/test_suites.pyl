@@ -64,7 +64,6 @@
         'args': [
           '--gtest_filter=QuicConnectionMigrationTest.*',
         ],
-        'ci_only': True,
       },
     },
 
