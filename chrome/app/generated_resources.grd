@@ -2512,6 +2512,36 @@ are declared in tools/grit/grit_rule.gni.
         Unverified download blocked
       </message>
 
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_DANGEROUS"
+               desc="On the downloads page, the message announced to screenreader users when a dangerous download is saved.">
+        Downloaded dangerous file
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_SUSPICIOUS"
+               desc="On the downloads page, the message announced to screenreader users when a suspicious download is saved.">
+        Downloaded suspicious file
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_INSECURE"
+               desc="On the downloads page, the message announced to screenreader users when an insecure download is saved.">
+        Downloaded insecure file
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_SAVED_UNVERIFIED"
+               desc="On the downloads page, the message announced to screenreader users when an unverified download is saved.">
+        Downloaded unverified file
+      </message>
+
+      <message name="IDS_DOWNLOAD_SCREENREADER_PAUSED"
+               desc="On the downloads page, the message announced to screenreader users when an ongoing download is paused.">
+        Download paused
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_RESUMED"
+               desc="On the downloads page, the message announced to screenreader users when a paused download is resumed.">
+        Download resumed
+      </message>
+      <message name="IDS_DOWNLOAD_SCREENREADER_CANCELED"
+               desc="On the downloads page, the message announced to screenreader users when a download is canceled.">
+        Download canceled
+      </message>
+
       <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE"
                desc="On the downloads page, the title of the dialog to bypass a dangerous download warning.">
         This file could harm your device

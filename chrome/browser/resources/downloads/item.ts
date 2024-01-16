@@ -17,6 +17,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
@@ -812,8 +813,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onCancelClick_() {
     this.restoreFocusAfterCancel_ = true;
-    this.mojoHandler_!.cancel(this.data.id);
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.cancel(this.data.id);
     if (this.improvedDownloadWarningsUx_) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('screenreaderCanceled'));
       this.getMoreActionsMenu().close();
     }
   }
@@ -880,11 +884,29 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         'metricsHandler:recordAction', ['Downloads_OpenUrlOfDownloadedItem']);
   }
 
+  private doPause_() {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.pause(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('screenreaderPaused'));
+    }
+  }
+
+  private doResume_() {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.resume(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('screenreaderResumed'));
+    }
+  }
+
   private onPauseOrResumeClick_() {
     if (this.isInProgress_) {
-      this.mojoHandler_!.pause(this.data.id);
+      this.doPause_();
     } else {
-      this.mojoHandler_!.resume(this.data.id);
+      this.doResume_();
     }
     if (this.improvedDownloadWarningsUx_) {
       this.getMoreActionsMenu().close();
@@ -955,14 +977,19 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
 
     // "Suspicious" types which show up in grey can be validated directly.
-    const SAVED_FROM_PAGE_TYPES = [
-      DisplayType.SUSPICIOUS,
-      DisplayType.UNVERIFIED,
-      DisplayType.INSECURE,
-    ];
-    assert(SAVED_FROM_PAGE_TYPES.includes(this.displayType_));
+    // This maps each such display type to its applicable screenreader
+    // announcement string id.
+    const SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS = new Map([
+      [DisplayType.SUSPICIOUS, 'screenreaderSavedSuspicious'],
+      [DisplayType.UNVERIFIED, 'screenreaderSavedUnverified'],
+      [DisplayType.INSECURE, 'screenreaderSavedInsecure'],
+    ]);
+    assert(SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS.has(this.displayType_));
     assert(!!this.mojoHandler_);
     this.mojoHandler_.saveSuspiciousRequiringGesture(this.data.id);
+    const announcement = loadTimeData.getString(
+        SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS.get(this.displayType_) as string);
+    getAnnouncerInstance().announce(announcement);
   }
 
   private onShowClick_() {

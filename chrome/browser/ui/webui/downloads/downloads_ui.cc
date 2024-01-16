@@ -148,6 +148,17 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"accessibleLabelUnverified",
        IDS_DOWNLOAD_UNVERIFIED_ICON_ACCESSIBLE_LABEL},
 
+      // Screenreader announcements.
+      {"screenreaderSavedDangerous", IDS_DOWNLOAD_SCREENREADER_SAVED_DANGEROUS},
+      {"screenreaderSavedSuspicious",
+       IDS_DOWNLOAD_SCREENREADER_SAVED_SUSPICIOUS},
+      {"screenreaderSavedInsecure", IDS_DOWNLOAD_SCREENREADER_SAVED_INSECURE},
+      {"screenreaderSavedUnverified",
+       IDS_DOWNLOAD_SCREENREADER_SAVED_UNVERIFIED},
+      {"screenreaderPaused", IDS_DOWNLOAD_SCREENREADER_PAUSED},
+      {"screenreaderResumed", IDS_DOWNLOAD_SCREENREADER_RESUMED},
+      {"screenreaderCanceled", IDS_DOWNLOAD_SCREENREADER_CANCELED},
+
       // Warning bypass dialog.
       {"warningBypassDialogTitle", IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE},
       {"warningBypassDialogDescription",
