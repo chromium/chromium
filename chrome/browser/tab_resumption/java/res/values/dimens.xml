@@ -10,4 +10,5 @@ found in the LICENSE file.
     <dimen name="tab_resumption_module_padding_top">16dp</dimen>
     <dimen name="tab_resumption_module_padding_bottom">11dp</dimen>
     <dimen name="tab_resumption_module_padding_lateral">11dp</dimen>
+    <dimen name="tab_resumption_module_icon_source_size">64dp</dimen>
 </resources>
