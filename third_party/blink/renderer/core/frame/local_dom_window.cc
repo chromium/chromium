@@ -1985,6 +1985,7 @@ External* LocalDOMWindow::external() {
   return external_.Get();
 }
 
+// NOLINTNEXTLINE(bugprone-virtual-near-miss)
 bool LocalDOMWindow::isSecureContext() const {
   return IsSecureContext();
 }

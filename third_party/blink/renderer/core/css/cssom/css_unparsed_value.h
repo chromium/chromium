@@ -67,7 +67,11 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
     CSSStyleValue::Trace(visitor);
   }
 
-  String ToString() const { return ToStringInternal(/*separate_tokens=*/true); }
+  // Unlike CSSStyleValue::toString(), this returns tokens without
+  // serialization.
+  String ToUnparsedString() const {
+    return ToStringInternal(/*separate_tokens=*/true);
+  }
 
  private:
   String ToStringInternal(bool separate_tokens) const;

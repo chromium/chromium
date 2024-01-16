@@ -67,7 +67,8 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
     CSSStyleValue* style_value = data.at("--x")->ToCSSStyleValue();
     EXPECT_EQ(style_value->GetType(),
               CSSStyleValue::StyleValueType::kUnparsedType);
-    EXPECT_EQ(static_cast<CSSUnparsedValue*>(style_value)->ToString(), "50");
+    EXPECT_EQ(static_cast<CSSUnparsedValue*>(style_value)->ToUnparsedString(),
+              "50");
     waitable_event->Signal();
   }
 
