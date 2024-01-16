@@ -1064,6 +1064,7 @@ void VideoCaptureImpl::OnBufferReady(
                        (reference_time - base::TimeTicks()).InMicroseconds(),
                        "time_delta", buffer->info->timestamp.InMicroseconds());
 
+  const int buffer_id = buffer->buffer_id;
   // Convert `buffer` into a media::VideoFrame or a gfx::GpuMemoryBuffer.
   absl::optional<VideoFrameInitData> video_frame_init_data =
       CreateVideoFrameInitData(std::move(buffer));
@@ -1071,9 +1072,8 @@ void VideoCaptureImpl::OnBufferReady(
     // Error during initialization of the frame or buffer.
     OnFrameDropped(media::VideoCaptureFrameDropReason::
                        kVideoCaptureImplFailedToWrapDataAsMediaVideoFrame);
-    GetVideoCaptureHost()->ReleaseBuffer(
-        device_id_, video_frame_init_data->ready_buffer->buffer_id,
-        DefaultFeedback());
+    GetVideoCaptureHost()->ReleaseBuffer(device_id_, buffer_id,
+                                         DefaultFeedback());
     return;
   }
 
