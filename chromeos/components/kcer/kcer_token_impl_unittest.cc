@@ -1653,6 +1653,33 @@ TEST_F(KcerTokenImplTest, SignRsaPkcs1RawRetrySignOnSessionError) {
   EXPECT_EQ(sign_waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+TEST_F(KcerTokenImplTest, GetTokenInfoForUserToken) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  base::test::TestFuture<base::expected<TokenInfo, Error>> info_waiter;
+  token_.GetTokenInfo(info_waiter.GetCallback());
+
+  ASSERT_TRUE(info_waiter.Get().has_value());
+  const TokenInfo& info = info_waiter.Get().value();
+  EXPECT_EQ(info.pkcs11_id, pkcs11_slot_id_.value());
+  EXPECT_EQ(info.token_name, "User Token");
+  EXPECT_EQ(info.module_name, "Chaps");
+}
+
+TEST_F(KcerTokenImplTest, GetTokenInfoForDeviceToken) {
+  KcerTokenImpl device_token(Token::kDevice, &chaps_client_);
+  device_token.InitializeWithoutNss(pkcs11_slot_id_);
+
+  base::test::TestFuture<base::expected<TokenInfo, Error>> info_waiter;
+  device_token.GetTokenInfo(info_waiter.GetCallback());
+
+  ASSERT_TRUE(info_waiter.Get().has_value());
+  const TokenInfo& info = info_waiter.Get().value();
+  EXPECT_EQ(info.pkcs11_id, pkcs11_slot_id_.value());
+  EXPECT_EQ(info.token_name, "Device Token");
+  EXPECT_EQ(info.module_name, "Chaps");
+}
+
 // Test that all methods are queued until the token is initialized and unblocked
 // after that. In this scenario fail all the methods for simplicity.
 TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {

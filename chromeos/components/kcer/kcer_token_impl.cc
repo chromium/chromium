@@ -1520,7 +1520,25 @@ void KcerTokenImpl::DidSignRsaPkcs1Raw(SignRsaPkcs1RawTask task,
 //==============================================================================
 
 void KcerTokenImpl::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Do not block the task queue, this method doesn't communicate with Chaps.
+
+  TokenInfo result;
+  result.pkcs11_id = pkcs_11_slot_id_.value();
+  result.module_name = "Chaps";
+
+  switch (token_) {
+    case Token::kUser:
+      result.token_name = "User Token";
+      break;
+    case Token::kDevice:
+      result.token_name = "Device Token";
+      break;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 //==============================================================================
