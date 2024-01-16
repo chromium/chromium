@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"

@@ -16,7 +16,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 
 namespace ui {

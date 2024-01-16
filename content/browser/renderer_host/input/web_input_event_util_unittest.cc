@@ -11,9 +11,9 @@
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
-#include "ui/events/gesture_detection/motion_event_generic.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
 
 using blink::WebInputEvent;
 using blink::WebTouchEvent;

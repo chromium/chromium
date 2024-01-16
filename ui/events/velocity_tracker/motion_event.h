@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_H_
-#define UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_H_
+#ifndef UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_H_
+#define UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "ui/events/gesture_detection/gesture_detection_export.h"
 
 namespace ui {
 
 // Abstract class for a generic motion-related event, patterned after that
 // subset of Android's MotionEvent API used in gesture detection.
-class GESTURE_DETECTION_EXPORT MotionEvent {
+class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
  public:
   enum class Action {
     NONE,
@@ -146,13 +146,13 @@ class GESTURE_DETECTION_EXPORT MotionEvent {
   std::unique_ptr<MotionEvent> Cancel() const;
 };
 
-GESTURE_DETECTION_EXPORT std::ostream& operator<<(
+COMPONENT_EXPORT(VELOCITY_TRACKER) std::ostream& operator<<(
     std::ostream& stream,
     const MotionEvent::Action action);
-GESTURE_DETECTION_EXPORT std::ostream& operator<<(
+COMPONENT_EXPORT(VELOCITY_TRACKER) std::ostream& operator<<(
     std::ostream& stream,
     const MotionEvent::ToolType tool_type);
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_H_
+#endif  // UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_H_

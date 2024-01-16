@@ -452,7 +452,6 @@ component("keyboard_hook") {
 
 component("gesture_detection") {
   sources = [
-    "gesture_detection/bitset_32.h",
     "gesture_detection/filtered_gesture_provider.cc",
     "gesture_detection/filtered_gesture_provider.h",
     "gesture_detection/gesture_configuration.cc",
@@ -472,12 +471,6 @@ component("gesture_detection") {
     "gesture_detection/gesture_provider_config_helper.h",
     "gesture_detection/gesture_touch_uma_histogram.cc",
     "gesture_detection/gesture_touch_uma_histogram.h",
-    "gesture_detection/motion_event.cc",
-    "gesture_detection/motion_event.h",
-    "gesture_detection/motion_event_buffer.cc",
-    "gesture_detection/motion_event_buffer.h",
-    "gesture_detection/motion_event_generic.cc",
-    "gesture_detection/motion_event_generic.h",
     "gesture_detection/scale_gesture_detector.cc",
     "gesture_detection/scale_gesture_detector.h",
     "gesture_detection/scale_gesture_listeners.cc",
@@ -486,11 +479,9 @@ component("gesture_detection") {
     "gesture_detection/snap_scroll_controller.h",
     "gesture_detection/touch_disposition_gesture_filter.cc",
     "gesture_detection/touch_disposition_gesture_filter.h",
-    "gesture_detection/velocity_tracker.cc",
-    "gesture_detection/velocity_tracker.h",
-    "gesture_detection/velocity_tracker_state.cc",
-    "gesture_detection/velocity_tracker_state.h",
   ]
+
+  public_deps = [ ":velocity_tracker" ]
 
   deps = [
     ":events_base",
@@ -517,6 +508,31 @@ component("gesture_detection") {
   } else {
     sources += [ "gesture_detection/gesture_configuration_default.cc" ]
   }
+}
+
+component("velocity_tracker") {
+  sources = [
+    "velocity_tracker/bitset_32.h",
+    "velocity_tracker/motion_event.cc",
+    "velocity_tracker/motion_event.h",
+    "velocity_tracker/motion_event_buffer.cc",
+    "velocity_tracker/motion_event_buffer.h",
+    "velocity_tracker/motion_event_generic.cc",
+    "velocity_tracker/motion_event_generic.h",
+    "velocity_tracker/velocity_tracker.cc",
+    "velocity_tracker/velocity_tracker.h",
+    "velocity_tracker/velocity_tracker_state.cc",
+    "velocity_tracker/velocity_tracker_state.h",
+  ]
+
+  defines = [ "IS_VELOCITY_TRACKER_IMPL" ]
+
+  deps = [
+    ":events_base",
+    "//base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
 }
 
 static_library("test_support") {
@@ -632,15 +648,11 @@ if (use_blink) {
       "event_rewriter_unittest.cc",
       "event_target_unittest.cc",
       "event_unittest.cc",
-      "gesture_detection/bitset_32_unittest.cc",
       "gesture_detection/filtered_gesture_provider_unittest.cc",
       "gesture_detection/gesture_event_data_packet_unittest.cc",
       "gesture_detection/gesture_provider_unittest.cc",
-      "gesture_detection/motion_event_buffer_unittest.cc",
-      "gesture_detection/motion_event_generic_unittest.cc",
       "gesture_detection/snap_scroll_controller_unittest.cc",
       "gesture_detection/touch_disposition_gesture_filter_unittest.cc",
-      "gesture_detection/velocity_tracker_unittest.cc",
       "gestures/blink/web_gesture_curve_impl_unittest.cc",
       "gestures/fling_curve_unittest.cc",
       "gestures/physics_based_fling_curve_unittest.cc",
@@ -651,6 +663,10 @@ if (use_blink) {
       "platform/platform_event_source_unittest.cc",
       "scoped_target_handler_unittest.cc",
       "test/scoped_event_waiter_unittest.cc",
+      "velocity_tracker/bitset_32_unittest.cc",
+      "velocity_tracker/motion_event_buffer_unittest.cc",
+      "velocity_tracker/motion_event_generic_unittest.cc",
+      "velocity_tracker/velocity_tracker_unittest.cc",
     ]
 
     if (is_mac) {
@@ -668,6 +684,7 @@ if (use_blink) {
       ":events_base",
       ":gesture_detection",
       ":test_support",
+      ":velocity_tracker",
       "//base",
       "//base/test:test_support",
       "//cc",

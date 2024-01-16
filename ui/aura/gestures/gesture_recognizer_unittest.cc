@@ -2950,7 +2950,7 @@ TEST_F(GestureRecognizerTest, MultiFingerSwipe) {
   ui::test::EventGenerator generator(root_window(), window.get());
 
   // The unified gesture recognizer assumes a finger has stopped if it hasn't
-  // moved for too long. See ui/events/gesture_detection/velocity_tracker.cc's
+  // moved for too long. See ui/events/velocity_tracker/velocity_tracker.cc's
   // kAssumePointerStoppedTimeMs.
   for (int count = 2; count <= kTouchPoints; ++count) {
     generator.GestureMultiFingerScroll(

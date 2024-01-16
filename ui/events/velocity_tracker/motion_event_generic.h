@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
-#define UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
+#ifndef UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_GENERIC_H_
+#define UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_GENERIC_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,14 +11,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "ui/events/gesture_detection/gesture_detection_export.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 namespace ui {
 
-struct GESTURE_DETECTION_EXPORT PointerProperties {
+struct COMPONENT_EXPORT(VELOCITY_TRACKER) PointerProperties {
   PointerProperties();
   PointerProperties(float x, float y, float touch_major);
   PointerProperties(const MotionEvent& event, size_t pointer_index);
@@ -50,7 +50,8 @@ struct GESTURE_DETECTION_EXPORT PointerProperties {
 };
 
 // A generic MotionEvent implementation.
-class GESTURE_DETECTION_EXPORT MotionEventGeneric : public MotionEvent {
+class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEventGeneric
+    : public MotionEvent {
  public:
   MotionEventGeneric(Action action,
                      base::TimeTicks event_time,
@@ -144,4 +145,4 @@ class GESTURE_DETECTION_EXPORT MotionEventGeneric : public MotionEvent {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_GENERIC_H_
+#endif  // UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_GENERIC_H_

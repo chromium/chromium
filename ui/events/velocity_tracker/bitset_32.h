@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_BITSET_32_H_
-#define UI_EVENTS_GESTURE_DETECTION_BITSET_32_H_
+#ifndef UI_EVENTS_VELOCITY_TRACKER_BITSET_32_H_
+#define UI_EVENTS_VELOCITY_TRACKER_BITSET_32_H_
 
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "build/build_config.h"
 
 namespace ui {
 
@@ -160,4 +161,4 @@ struct BitSet32 {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_BITSET_32_H_
+#endif  // UI_EVENTS_VELOCITY_TRACKER_BITSET_32_H_

@@ -10,10 +10,10 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/events/gesture_detection/bitset_32.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/velocity_tracker/bitset_32.h"
 #include "ui/latency/latency_info.h"
 
 namespace ui {

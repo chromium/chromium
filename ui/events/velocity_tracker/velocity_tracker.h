@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_VELOCITY_TRACKER_H_
-#define UI_EVENTS_GESTURE_DETECTION_VELOCITY_TRACKER_H_
+#ifndef UI_EVENTS_VELOCITY_TRACKER_VELOCITY_TRACKER_H_
+#define UI_EVENTS_VELOCITY_TRACKER_VELOCITY_TRACKER_H_
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "ui/events/gesture_detection/bitset_32.h"
+#include "ui/events/velocity_tracker/bitset_32.h"
 
 namespace ui {
 
@@ -20,13 +21,13 @@ class VelocityTrackerStrategy;
 namespace {
 struct Estimator;
 struct Position;
-}
+}  // namespace
 
 // Port of VelocityTracker from Android
 // * platform/frameworks/native/include/input/VelocityTracker.h
 // * Change-Id: I4983db61b53e28479fc90d9211fafff68f7f49a6
 // * Please update the Change-Id as upstream Android changes are pulled.
-class VelocityTracker {
+class COMPONENT_EXPORT(VELOCITY_TRACKER) VelocityTracker {
  public:
   enum {
     // The maximum number of pointers to use when computing the velocity.
@@ -152,4 +153,4 @@ class VelocityTracker {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_VELOCITY_TRACKER_H_
+#endif  // UI_EVENTS_VELOCITY_TRACKER_VELOCITY_TRACKER_H_

@@ -12,10 +12,10 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/event_constants.h"
-#include "ui/events/gesture_detection/motion_event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 namespace gfx {
 class PointF;

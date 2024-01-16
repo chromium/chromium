@@ -6,7 +6,7 @@
 #define UI_EVENTS_GESTURE_DETECTION_SNAP_SCROLL_CONTROLLER_H_
 
 #include "ui/events/gesture_detection/gesture_detection_export.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"

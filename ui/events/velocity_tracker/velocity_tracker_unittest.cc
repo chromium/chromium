@@ -9,8 +9,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/gesture_detection/velocity_tracker_state.h"
 #include "ui/events/test/motion_event_test_utils.h"
+#include "ui/events/velocity_tracker/velocity_tracker_state.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 

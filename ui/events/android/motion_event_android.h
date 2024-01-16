@@ -14,7 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "ui/events/events_export.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {

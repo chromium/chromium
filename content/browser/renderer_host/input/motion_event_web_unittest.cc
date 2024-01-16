@@ -9,8 +9,8 @@
 #include "base/numerics/math_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/blink/blink_event_util.h"
-#include "ui/events/gesture_detection/motion_event_generic.h"
 #include "ui/events/test/motion_event_test_utils.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
 
 using ui::MotionEvent;
 using ui::MotionEventGeneric;

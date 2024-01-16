@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/gesture_detection/velocity_tracker.h"
+#include "ui/events/velocity_tracker/velocity_tracker.h"
 
 #include <stddef.h>
 
@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 using base::TimeTicks;
 

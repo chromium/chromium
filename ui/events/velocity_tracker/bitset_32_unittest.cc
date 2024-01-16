@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/velocity_tracker/bitset_32.h"
+
 #include <stddef.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/gesture_detection/bitset_32.h"
 
 namespace ui {
 

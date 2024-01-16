@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_BUFFER_H_
-#define UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_BUFFER_H_
+#ifndef UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_BUFFER_H_
+#define UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_BUFFER_H_
 
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "ui/events/gesture_detection/gesture_detection_export.h"
 
 namespace ui {
 
@@ -34,7 +34,7 @@ class MotionEventBufferClient {
 // Note that this class is largely based on code from Android's existing touch
 // pipeline (in particular, logic from ImageTransport, http://goo.gl/Ixsb0D).
 // See the design doc at http://goo.gl/MdmpCf for more details.
-class GESTURE_DETECTION_EXPORT MotionEventBuffer {
+class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEventBuffer {
  public:
   // The provided |client| must not be null, and |enable_resampling| determines
   // resampling behavior (see |resample_|).
@@ -85,4 +85,4 @@ class GESTURE_DETECTION_EXPORT MotionEventBuffer {
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_GESTURE_DETECTION_MOTION_EVENT_BUFFER_H_
+#endif  // UI_EVENTS_VELOCITY_TRACKER_MOTION_EVENT_BUFFER_H_

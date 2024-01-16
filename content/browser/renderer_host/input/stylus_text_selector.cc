@@ -9,7 +9,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_detector.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
-#include "ui/events/gesture_detection/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event.h"
 
 using ui::GestureDetector;
 using ui::MotionEvent;

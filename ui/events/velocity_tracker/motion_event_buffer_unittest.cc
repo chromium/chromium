@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/velocity_tracker/motion_event_buffer.h"
+
 #include <stddef.h>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/gesture_detection/motion_event_buffer.h"
 #include "ui/events/test/motion_event_test_utils.h"
 
 using base::TimeTicks;

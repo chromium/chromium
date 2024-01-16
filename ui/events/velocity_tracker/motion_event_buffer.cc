@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/gesture_detection/motion_event_buffer.h"
+#include "ui/events/velocity_tracker/motion_event_buffer.h"
 
 #include <stddef.h>
 
@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
-#include "ui/events/gesture_detection/motion_event_generic.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
 
 namespace ui {
 namespace {

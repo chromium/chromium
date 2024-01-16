@@ -16,10 +16,10 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
-#include "ui/events/gesture_detection/motion_event.h"
-#include "ui/events/gesture_detection/motion_event_generic.h"
 #include "ui/events/gesture_detection/scale_gesture_listeners.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/velocity_tracker/motion_event.h"
+#include "ui/events/velocity_tracker/motion_event_generic.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
