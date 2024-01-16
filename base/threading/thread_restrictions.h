@@ -439,6 +439,7 @@ namespace base {
 
 namespace android {
 class JavaHandlerThread;
+class PmfUtils;
 class ScopedAllowBlockingForImportantFileWriter;
 }  // namespace android
 
@@ -589,6 +590,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class base::ScopedAllowBlockingForProcessMetrics;
   friend class base::StackSamplingProfiler;
   friend class base::android::ScopedAllowBlockingForImportantFileWriter;
+  friend class base::android::PmfUtils;
   friend class base::debug::StackTrace;
   friend class base::subtle::PlatformSharedMemoryRegion;
   friend class base::win::ScopedAllowBlockingForUserAccountControl;
