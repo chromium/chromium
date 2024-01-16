@@ -6061,6 +6061,15 @@ IN_PROC_BROWSER_TEST_P(
   // In this test case, the spare RenderProcessHost will be used, so verify it
   // and ensure it is ready.
   EXPECT_EQ(spare_rph, speculative_rph);
+
+  // If LoadUrl finished before the task to call
+  // RenderProcessHostImpl::OnChannelConnected is run, wait for the task to be
+  // run.
+  if (!spare_rph->IsReady()) {
+    RenderProcessHostWatcher ready_waiter(
+        spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+    ready_waiter.Wait();
+  }
   EXPECT_TRUE(spare_rph->IsReady());
 
   // The creation of the speculative RenderFrameHost should change the
