@@ -75,27 +75,6 @@ enum class ExtractOption {
   kMaxValue = kDatalist,
 };
 
-// Indicates if an iframe |element| is considered actually visible to the user.
-//
-// This function is not intended to implement a perfect visibility check. It
-// rather aims to strike balance between cheap tests and filtering invisible
-// frames, which can then be skipped during parsing.
-//
-// The current visibility check requires focusability and a sufficiently large
-// bounding box. Thus, particularly elements with "visibility: invisible",
-// "display: none", and "width: 0; height: 0" are considered invisible.
-//
-// Future potential improvements include:
-// * Detect potential visibility of elements with "overflow: visible".
-//   (See WebElement::GetScrollSize().)
-// * Detect invisibility of elements with
-//   - "position: absolute; {left,top,right,bottom}: -100px"
-//   - "opacity: 0.0"
-//   - "clip: rect(0,0,0,0)"
-//
-// Exposed for testing purposes.
-bool IsVisibleIframe(const blink::WebElement& iframe_element);
-
 // Returns the topmost <form> ancestor of |node|, or an IsNull() pointer.
 //
 // Generally, WebFormElements must not be nested [1]. When parsing HTML, Blink
@@ -301,10 +280,6 @@ std::vector<blink::WebFormControlElement> GetUnownedFormFieldElements(
 std::vector<blink::WebFormControlElement>
 GetUnownedAutofillableFormFieldElements(const blink::WebDocument& document);
 
-// Returns the <iframe> elements that are not in the scope of any <form>.
-std::vector<blink::WebElement> GetUnownedIframeElements(
-    const blink::WebDocument& document);
-
 // Returns a list of elements whose id matches one of the ids found in
 // `id_list`.
 std::vector<blink::WebElement> GetWebElementsFromIdList(
@@ -491,6 +466,8 @@ void TraverseDomForFourDigitCombinations(
     const blink::WebDocument& document,
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches);
+
+bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element);
 
 }  // namespace form_util
 }  // namespace autofill

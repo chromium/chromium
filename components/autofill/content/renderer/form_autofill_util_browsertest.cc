@@ -1086,7 +1086,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
           << iframe.GetAttribute("data-false").Ascii());
       ASSERT_TRUE(iframe.HasAttribute("data-visible") !=
                   iframe.HasAttribute("data-invisible"));
-      EXPECT_EQ(IsVisibleIframe(iframe), expectation);
+      EXPECT_EQ(IsVisibleIframeForTesting(iframe), expectation);
     }
   };
 

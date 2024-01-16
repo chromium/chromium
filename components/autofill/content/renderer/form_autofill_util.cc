@@ -1302,6 +1302,83 @@ void MatchLabelsAndFields(
   }
 }
 
+bool IsAdIframe(const WebElement& element) {
+  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
+  WebFrame* iframe = WebFrame::FromFrameOwnerElement(element);
+  return iframe && iframe->IsAdFrame();
+}
+
+// Indicates if an iframe |element| is considered actually visible to the user.
+//
+// This function is not intended to implement a perfect visibility check. It
+// rather aims to strike balance between cheap tests and filtering invisible
+// frames, which can then be skipped during parsing.
+//
+// The current visibility check requires focusability and a sufficiently large
+// bounding box. Thus, particularly elements with "visibility: invisible",
+// "display: none", and "width: 0; height: 0" are considered invisible.
+//
+// Future potential improvements include:
+// * Detect potential visibility of elements with "overflow: visible".
+//   (See WebElement::GetScrollSize().)
+// * Detect invisibility of elements with
+//   - "position: absolute; {left,top,right,bottom}: -100px"
+//   - "opacity: 0.0"
+//   - "clip: rect(0,0,0,0)"
+//
+// TODO(crbug.com/1335257): This check is very similar to IsWebElementVisible()
+// (see the documentation there for the subtle differences: zoom factor and
+// scroll size). We can probably merge them but should do a Finch experiment
+// about it.
+bool IsVisibleIframe(const WebElement& element) {
+  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
+  // It is common for not-humanly-visible elements to have very small yet
+  // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
+  constexpr int kMinPixelSize = 10;
+  gfx::Rect bounds = element.BoundsInWidget();
+  return IsWebElementFocusableForAutofill(element) &&
+         bounds.width() > kMinPixelSize && bounds.height() > kMinPixelSize;
+}
+
+// A necessary condition for an iframe to be added to FormData::child_frames.
+//
+// We also extract invisible iframes for the following reason. An iframe may be
+// invisible at page load (for example, when it contains parts of a credit card
+// form and the user hasn't chosen a payment method yet). Autofill is not
+// notified when the iframe becomes visible. That is, Autofill may have not
+// re-extracted the main frame's form by the time the iframe has become visible
+// and the user has focused a field in that iframe. This outdated form is
+// missing the link in FormData::child_frames between the parent form and the
+// iframe's form, which prevents Autofill from filling across frames.
+//
+// The current implementation extracts visible ad frames. Assuming IsAdIframe()
+// has no false positives, we could omit the IsVisibleIframe() disjunct. We
+// could even take this further and disable Autofill in ad frames.
+//
+// For further details, see crbug.com/1117028#c8 and crbug.com/1245631.
+bool IsRelevantChildFrame(const WebElement& element) {
+  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
+  return IsVisibleIframe(element) || !IsAdIframe(element);
+}
+
+// Returns the <iframe> elements that are
+// - not in the scope of `form_element` if `!form_element.IsNull()`;
+// - not in the scope of any `<form>` otherwise.
+std::vector<WebElement> GetIframeElements(const WebDocument& document,
+                                          const WebFormElement& form_element) {
+  std::vector<WebElement> relevant_iframes;
+  WebElementCollection iframes =
+      document.GetElementsByHTMLTagName(GetWebString<kIframe>());
+  for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+       iframe = iframes.NextItem()) {
+    if (GetClosestAncestorFormElement(iframe) == form_element &&
+        IsRelevantChildFrame(iframe)) {
+      relevant_iframes.push_back(iframe);
+    }
+  }
+  return relevant_iframes;
+}
+
 // Populates the |form|'s
 //  * FormData::fields
 //  * FormData::child_frames
@@ -1524,47 +1601,6 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
   return autocomplete_attribute;
 }
 
-// TODO(crbug.com/1335257): This check is very similar to IsWebElementVisible()
-// (see the documentation there for the subtle differences: zoom factor and
-// scroll size). We can probably merge them but should do a Finch experiment
-// about it.
-bool IsVisibleIframe(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
-  // It is common for not-humanly-visible elements to have very small yet
-  // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
-  constexpr int kMinPixelSize = 10;
-  gfx::Rect bounds = element.BoundsInWidget();
-  return IsWebElementFocusableForAutofill(element) &&
-         bounds.width() > kMinPixelSize && bounds.height() > kMinPixelSize;
-}
-
-bool IsAdIframe(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
-  WebFrame* iframe = WebFrame::FromFrameOwnerElement(element);
-  return iframe && iframe->IsAdFrame();
-}
-
-// A necessary condition for an iframe to be added to FormData::child_frames.
-//
-// We also extract invisible iframes for the following reason. An iframe may be
-// invisible at page load (for example, when it contains parts of a credit card
-// form and the user hasn't chosen a payment method yet). Autofill is not
-// notified when the iframe becomes visible. That is, Autofill may have not
-// re-extracted the main frame's form by the time the iframe has become visible
-// and the user has focused a field in that iframe. This outdated form is
-// missing the link in FormData::child_frames between the parent form and the
-// iframe's form, which prevents Autofill from filling across frames.
-//
-// The current implementation extracts visible ad frames. Assuming IsAdIframe()
-// has no false positives, we could omit the IsVisibleIframe() disjunct. We
-// could even take this further and disable Autofill in ad frames.
-//
-// For further details, see crbug.com/1117028#c8 and crbug.com/1245631.
-bool IsRelevantChildFrame(const WebElement& element) {
-  DCHECK(element.HasHTMLTagName(GetWebString<kIframe>()));
-  return IsVisibleIframe(element) || !IsAdIframe(element);
-}
-
 WebFormElement GetClosestAncestorFormElement(WebNode n) {
   while (!n.IsNull()) {
     if (HasTagName<kForm>(n)) {
@@ -1660,7 +1696,7 @@ std::optional<FormData> ExtractFormData(
   return OwnedOrUnownedFormToFormData(
              WebFormElement(), /*element=*/nullptr,
              GetUnownedAutofillableFormFieldElements(document),
-             GetUnownedIframeElements(document), field_data_manager,
+             GetIframeElements(document, WebFormElement()), field_data_manager,
              extract_options, form, /*field=*/nullptr)
              ? std::make_optional(form)
              : std::nullopt;
@@ -2123,16 +2159,8 @@ std::optional<FormData> WebFormElementToFormData(
   if (!form.action.is_valid()) {
     form.action = blink::WebStringToGURL(form_element.Action());
   }
-  std::vector<WebElement> owned_iframes;
-  WebElementCollection iframes =
-      form_element.GetElementsByHTMLTagName(GetWebString<kIframe>());
-  for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
-       iframe = iframes.NextItem()) {
-    if (GetClosestAncestorFormElement(iframe) == form_element &&
-        IsRelevantChildFrame(iframe)) {
-      owned_iframes.push_back(iframe);
-    }
-  }
+  std::vector<WebElement> owned_iframes =
+      GetIframeElements(form_element.GetDocument(), form_element);
   return OwnedOrUnownedFormToFormData(form_element, &form_control_element,
                                       form_element.GetFormControlElements(),
                                       owned_iframes, field_data_manager,
@@ -2177,20 +2205,6 @@ std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
       GetUnownedFormFieldElements(document));
 }
 
-std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
-  std::vector<WebElement> unowned_iframes;
-  WebElementCollection iframes =
-      document.GetElementsByHTMLTagName(GetWebString<kIframe>());
-  for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
-       iframe = iframes.NextItem()) {
-    if (GetClosestAncestorFormElement(iframe).IsNull() &&
-        IsRelevantChildFrame(iframe)) {
-      unowned_iframes.push_back(iframe);
-    }
-  }
-  return unowned_iframes;
-}
-
 std::optional<std::pair<FormData, FormFieldData>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
@@ -2215,7 +2229,7 @@ FindFormAndFieldForFormControlElement(
     if (OwnedOrUnownedFormToFormData(
             WebFormElement(), &element,
             GetUnownedAutofillableFormFieldElements(document),
-            GetUnownedIframeElements(document), field_data_manager,
+            GetIframeElements(document, WebFormElement()), field_data_manager,
             extract_options, form, &field)) {
       return std::pair<FormData, FormFieldData>(std::move(form),
                                                 std::move(field));
@@ -2931,6 +2945,10 @@ void TraverseDomForFourDigitCombinations(
 
   std::move(potential_matches)
       .Run(std::vector<std::string>(matches.begin(), matches.end()));
+}
+
+bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element) {
+  return IsVisibleIframe(iframe_element);
 }
 
 }  // namespace autofill::form_util
