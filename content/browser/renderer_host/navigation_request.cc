@@ -10182,4 +10182,8 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
   return GetOriginForURLLoaderFactoryUncheckedWithDebugInfo().first;
 }
 
+bool NavigationRequest::HasLoader() const {
+  return loader_.get() != nullptr;
+}
+
 }  // namespace content

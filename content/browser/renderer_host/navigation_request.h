@@ -1322,6 +1322,10 @@ class CONTENT_EXPORT NavigationRequest
     previous_render_frame_host_id_ = id;
   }
 
+  // Returns true if URL Loader has been created and hasn't been reset yet for
+  // this navigation.
+  bool HasLoader() const;
+
  private:
   friend class NavigationRequestTest;
 
