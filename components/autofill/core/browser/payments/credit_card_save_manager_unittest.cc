@@ -133,10 +133,7 @@ class MockPersonalDataManager : public TestPersonalDataManager {
               AddServerCvc,
               (int64_t instrument_id, const std::u16string& cvc),
               (override));
-  MOCK_METHOD(std::string,
-              SaveImportedCreditCard,
-              (const CreditCard& card),
-              (override));
+  MOCK_METHOD(bool, SaveCardLocallyIfNew, (const CreditCard& card), (override));
   MOCK_METHOD(void,
               UpdateLocalCvc,
               (const std::string& guid, const std::u16string& cvc),
@@ -5698,7 +5695,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
        OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure) {
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
 
-  EXPECT_CALL(personal_data(), SaveImportedCreditCard);
+  EXPECT_CALL(personal_data(), SaveCardLocallyIfNew);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -5713,7 +5710,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   card.SetExpirationMonth(0);
   credit_card_save_manager_->set_upload_request_card(card);
 
-  EXPECT_CALL(personal_data(), SaveImportedCreditCard).Times(0);
+  EXPECT_CALL(personal_data(), SaveCardLocallyIfNew).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kPermanentFailure,

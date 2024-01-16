@@ -485,8 +485,7 @@ void CreditCardSaveManager::OnDidUploadCard(
         !upload_request_.card
              .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
              .empty()) {
-      personal_data_manager_->OnAcceptedLocalCreditCardSave(
-          upload_request_.card);
+      personal_data_manager_->SaveCardLocallyIfNew(upload_request_.card);
     }
 
     // If the upload failed and the bubble was actually shown (NOT just the

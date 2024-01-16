@@ -1962,6 +1962,60 @@ TEST_F(PersonalDataManagerTest, Refresh) {
   EXPECT_EQ(profile0, *results[0]);
 }
 
+TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithNewCard) {
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kSettingsOrigin);
+  test::SetCreditCardInfo(&credit_card, "Sunraku Emul",
+                          "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
+
+  EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
+
+  // Add the credit card to the database.
+  bool is_saved = personal_data_->SaveCardLocallyIfNew(credit_card);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  // Expect that the credit card was saved.
+  EXPECT_TRUE(is_saved);
+  std::vector<CreditCard> saved_credit_cards;
+  for (auto* result : personal_data_->GetCreditCards()) {
+    saved_credit_cards.push_back(*result);
+  }
+
+  EXPECT_THAT(saved_credit_cards, ElementsAre(credit_card));
+}
+
+TEST_F(PersonalDataManagerTest, SaveCardLocallyIfNewWithExistingCard) {
+  const char* credit_card_number = "4111 1111 1111 1111" /* Visa */;
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         kSettingsOrigin);
+  test::SetCreditCardInfo(&credit_card, "Sunraku Emul", credit_card_number,
+                          "01", "2999", "");
+
+  // Add the credit card to the database.
+  personal_data_->AddCreditCard(credit_card);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+
+  // Create a new credit card with the same card number but different detailed
+  // information.
+  CreditCard similar_credit_card(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), kSettingsOrigin);
+  test::SetCreditCardInfo(&similar_credit_card, "Sunraku Emul",
+                          credit_card_number, "02", "3999",
+                          "Different billing address");
+  // Try to add the similar credit card to the database.
+  bool is_saved = personal_data_->SaveCardLocallyIfNew(similar_credit_card);
+
+  // Expect that the saved credit card was not updated.
+  EXPECT_FALSE(is_saved);
+  std::vector<CreditCard> saved_credit_cards;
+  for (auto* result : personal_data_->GetCreditCards()) {
+    saved_credit_cards.push_back(*result);
+  }
+
+  EXPECT_THAT(saved_credit_cards, ElementsAre(credit_card));
+}
+
 // Ensure that verified credit cards can be saved via
 // OnAcceptedLocalCreditCardSave.
 TEST_F(PersonalDataManagerTest, OnAcceptedLocalCreditCardSaveWithVerifiedData) {

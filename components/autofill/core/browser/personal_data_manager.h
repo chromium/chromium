@@ -242,6 +242,10 @@ class PersonalDataManager : public KeyedService,
   // database accordingly.
   void RecordUseOfIban(Iban& iban);
 
+  // Try to save a credit card locally. If the card already exists, do nothing
+  // and return false. If the card is new, save it locally and return true.
+  virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
+
   // Called when the user accepts the prompt to save the credit card locally.
   // Records some metrics and attempts to save the imported card. Returns the
   // guid of the new or updated card, or the empty string if no card was saved.
