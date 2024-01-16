@@ -1975,14 +1975,13 @@ class TabListMediator {
     }
 
     /**
-     * Removes a special {@link @link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that
-     * has the given {@code uiType} and/or its {@link PropertyModel} has the given
-     * {@code itemIdentifier} from the current {@link TabListModel}.
+     * Removes a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the
+     * given {@code uiType} and/or its {@link PropertyModel} has the given {@code itemIdentifier}
+     * from the current {@link TabListModel}.
      *
      * @param uiType The uiType to match.
-     * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link @link
-     *         org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional
-     *         identifier.
+     * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link
+     *     org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional identifier.
      */
     void removeSpecialItemFromModel(
             @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
@@ -2156,5 +2155,18 @@ class TabListMediator {
         if (filter instanceof TabGroupModelFilter groupFilter) {
             groupFilter.removeTabGroupObserver(mTabGroupObserver);
         }
+    }
+
+    /**
+     * @param itemIdentifier The itemIdentifier to match.
+     * @return whether a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} with the
+     *     given {@code itemIdentifier} for its {@link PropertyModel} exists in the current {@link
+     *     TabListModel}.
+     */
+    boolean specialItemExistsInModel(@MessageService.MessageType int itemIdentifier) {
+        if (itemIdentifier == MessageService.MessageType.ALL) {
+            return mModel.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX;
+        }
+        return mModel.lastIndexForMessageItemFromType(itemIdentifier) != TabModel.INVALID_TAB_INDEX;
     }
 }

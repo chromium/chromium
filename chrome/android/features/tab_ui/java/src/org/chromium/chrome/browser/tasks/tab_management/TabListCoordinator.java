@@ -809,4 +809,11 @@ public class TabListCoordinator
     int getTabListModelSize() {
         return mModel.size();
     }
+
+    /**
+     * @see TabListMediator#specialItemExistsInModel(int)
+     */
+    boolean specialItemExists(@MessageService.MessageType int itemIdentifier) {
+        return mMediator.specialItemExistsInModel(itemIdentifier);
+    }
 }

@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -3028,6 +3029,21 @@ public class TabListMediatorUnitTest {
         verify(mTabGroupModelFilter, times(2)).removeTabGroupObserver(any());
         verify(mIncognitoTabGroupModelFilter, times(2)).addObserver(any());
         verify(mIncognitoTabGroupModelFilter, times(2)).addTabGroupObserver(any());
+    }
+
+    @Test
+    public void testSpecialItemExist() {
+        mMediator.resetWithListOfTabs(null, false);
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(FOR_TESTING);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.LARGE_MESSAGE, model);
+
+        assertTrue(mModel.size() > 0);
+        assertTrue(mMediator.specialItemExistsInModel(FOR_TESTING));
+        assertFalse(mMediator.specialItemExistsInModel(PRICE_MESSAGE));
+        assertTrue(mMediator.specialItemExistsInModel(MessageService.MessageType.ALL));
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
