@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
@@ -157,6 +158,16 @@ LinkCapturingNavigationThrottle::MaybeCreate(
   // middle-mouse-click action, which should not be captured.
   // TODO(crbug.com/1474984): Find a better way to detect middle-clicks.
   if (chrome::FindBrowserWithTab(web_contents) == nullptr) {
+    return nullptr;
+  }
+
+  // Never link capture links that open in a popup window. Popups are closely
+  // associated with the tab that opened them, so the popup should open in the
+  // same (app/non-app) context as its opener.
+  WindowOpenDisposition disposition =
+      GetLinkCapturingSourceDisposition(web_contents);
+  if (disposition == WindowOpenDisposition::NEW_POPUP &&
+      !web_contents->GetLastCommittedURL().is_valid()) {
     return nullptr;
   }
 

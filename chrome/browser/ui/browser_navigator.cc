@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -58,10 +59,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/link_capturing/link_capturing_tab_helper.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -883,17 +880,20 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     params->source_contents->Focus();
   }
 
+  if (contents_to_insert) {
+    // Save data needed for link capturing into apps that cannot otherwise be
+    // inferred later in the navigation. These are only needed when the
+    // navigation happens in a different tab to the link click.
+    apps::SetLinkCapturingSourceDisposition(contents_to_insert.get(),
+                                            params->disposition);
 #if BUILDFLAG(IS_CHROMEOS)
-  // When clicking a link inside an app browser that opens a new tab in a
-  // different browser, save the app ID of the source app. This allows the app
-  // ID to be used for link capturing policy decisions during navigation outside
-  // of the app.
-  if (contents_to_insert && source_browser &&
-      source_browser != params->browser && source_browser->app_controller()) {
-    apps::LinkCapturingTabHelper::CreateForWebContents(
-        contents_to_insert.get(), source_browser->app_controller()->app_id());
-  }
+    if (source_browser && source_browser != params->browser &&
+        source_browser->app_controller()) {
+      apps::SetLinkCapturingSourceAppId(
+          contents_to_insert.get(), source_browser->app_controller()->app_id());
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   if (params->source_contents == contents_to_navigate_or_insert) {
     // The navigation occurred in the source tab.
