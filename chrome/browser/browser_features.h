@@ -77,6 +77,7 @@ BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
 BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);
+BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);

@@ -3203,6 +3203,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
         "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
+        "../browser/net/cookie_encryption_provider_browsertest.cc",
         "../browser/printing/pdf_to_emf_converter_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",

@@ -241,7 +241,14 @@ BASE_FEATURE(kNoAppCompatClearInChildren,
 BASE_FEATURE(kNoPreReadMainDll,
              "NoPreReadMainDll",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+
+// When this feature is enabled, the network service will be passed an
+// OSCryptAsync crypto cookie delegate meaning that OSCryptAsync will be used
+// for cookie encryption.
+BASE_FEATURE(kUseOsCryptAsyncForCookieEncryption,
+             "UseOsCryptAsyncForCookieEncryption",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.

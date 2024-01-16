@@ -27,6 +27,10 @@
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/net/cookie_encryption_provider_impl.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -115,6 +119,13 @@ class SystemNetworkContextManager {
   // NetworkContextParam.
   mojo::PendingReceiver<network::mojom::SSLConfigClient>
   GetSSLConfigClientReceiver();
+
+#if BUILDFLAG(IS_WIN)
+  // Adds a CookieEncryptionManager mojo remote to the specified
+  // `network_context_params`.
+  void AddCookieEncryptionManagerToNetworkContextParams(
+      network::mojom::NetworkContextParams* network_context_params);
+#endif  // BUILDFLAG(IS_WIN)
 
   // Populates |initial_ssl_config| and |ssl_config_client_receiver| members of
   // |network_context_params|. As long as the SystemNetworkContextManager
@@ -276,6 +287,10 @@ class SystemNetworkContextManager {
 #if BUILDFLAG(IS_LINUX)
   GssapiLibraryLoadObserver gssapi_library_loader_observer_{this};
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+  CookieEncryptionProviderImpl cookie_encryption_provider_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 #endif  // CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_
