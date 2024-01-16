@@ -116,15 +116,6 @@ std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
       /*async_bitmap_resolver=*/base::DoNothing());
 }
 
-std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
-  std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue);
-       ++i) {
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
-  }
-  return types;
-}
-
 std::unique_ptr<KeyedService> BuildArcFileSystemBridge(
     content::BrowserContext* context) {
   EXPECT_TRUE(arc::ArcServiceManager::Get());
@@ -830,7 +821,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   base::Value::List persisted_holding_space_items;
 
   // Verify persistent storage is updated when adding each type of item.
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     const base::FilePath file_path = downloads_mount->CreateArbitraryFile();
     const GURL file_system_url = GetFileSystemUrl(GetProfile(), file_path);
     const HoldingSpaceFile::FileSystemType file_system_type =
@@ -1037,7 +1028,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   base::Value::List persisted_holding_space_items;
 
   // Verify persistent storage is updated when adding each type of item.
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     // Note that each item is being added to a unique parent directory so that
     // moving the parent directory later will not affect other items.
     const base::FilePath file_path = downloads_mount->CreateFile(
@@ -1168,7 +1159,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
             primary_holding_space_service->model_for_testing());
 
   // Add each item to the holding space model.
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     const base::FilePath file_path = downloads_mount->CreateFile(
         base::FilePath(base::NumberToString(static_cast<int>(type)))
             .Append("foo.txt"),
@@ -1263,7 +1254,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   // Configure holding space state for the test. For each item adds two holding
   // space items to the model - "src" and "dst" (during the test, the src item's
   // file will be moved to the dst item's path).
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     auto add_item = [&](const std::string& file_name, ItemInfo* info) {
       info->path = downloads_mount->CreateFile(
           base::FilePath(base::NumberToString(static_cast<int>(type)))
@@ -1301,7 +1292,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
   base::Value::List final_persisted_holding_space_items;
   // Runs the test logic.
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     const TestCase& test_case = test_config[type];
 
     const HoldingSpaceItem* src_item =
@@ -1385,7 +1376,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectTotalCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),
@@ -1409,7 +1400,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
         base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
-        for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+        for (const auto type : holding_space_util::GetAllItemTypes()) {
           const base::FilePath file = downloads_mount->CreateArbitraryFile();
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
           const HoldingSpaceFile::FileSystemType file_system_type =
@@ -1499,7 +1490,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   histogram_tester.ExpectBucketCount(
       "HoldingSpace.Item.TotalCount.All",
       secondary_holding_space_model->items().size(), 1);
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectBucketCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),
@@ -1536,7 +1527,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
         base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
-        for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+        for (const auto type : holding_space_util::GetAllItemTypes()) {
           const base::FilePath delayed_mount_file =
               delayed_mount->GetRootPath().Append(delayed_mount_file_name);
           auto delayed_holding_space_item =
@@ -1713,7 +1704,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
         base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
-        for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+        for (const auto type : holding_space_util::GetAllItemTypes()) {
           const base::FilePath delayed_mount_file =
               delayed_mount->GetRootPath().Append(delayed_mount_file_name);
           auto delayed_holding_space_item =
@@ -1862,7 +1853,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
         base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
-        for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+        for (const auto type : holding_space_util::GetAllItemTypes()) {
           const base::FilePath file = downloads_mount->CreateArbitraryFile();
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
           const HoldingSpaceFile::FileSystemType file_system_type =
@@ -2039,7 +2030,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
         base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
-        for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+        for (const auto type : holding_space_util::GetAllItemTypes()) {
           const base::FilePath file = downloads_mount->CreateArbitraryFile();
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
           const HoldingSpaceFile::FileSystemType file_system_type =
@@ -2767,7 +2758,7 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceAddAndRemoveItemTest,
-    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
                      /*enable_camera_app_integration=*/testing::Bool(),
                      /*enable_photoshop_web_integration=*/testing::Bool()));
 
@@ -2783,7 +2774,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectTotalCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),
@@ -2843,7 +2834,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Verify expected histograms after "waiting" for metrics debounce.
   task_environment()->FastForwardBy(base::Seconds(30));
   histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCount.All", 1, 1);
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectBucketCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),
@@ -2874,7 +2865,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Verify expected histograms after "waiting" for metrics debounce.
   task_environment()->FastForwardBy(base::Seconds(30));
   histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCount.All", 0, 1);
-  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectBucketCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),

@@ -73,7 +73,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // so append new values to the end and do not change the meaning of existing
   // values.
   enum class Type {
-    kPinnedFile = 0,
+    kMinValue = 0,
+    kPinnedFile = kMinValue,
     kScreenshot = 1,
     kDownload = 2,
     kNearbyShare = 3,

@@ -91,6 +91,57 @@ std::vector<base::FilePath> ExtractFilePaths(const ui::OSExchangeData& data,
              : paths;
 }
 
+base::flat_set<HoldingSpaceFile::FileSystemType> GetAllFileSystemTypes() {
+  return base::flat_set<HoldingSpaceFile::FileSystemType>({
+      HoldingSpaceFile::FileSystemType::kArcContent,
+      HoldingSpaceFile::FileSystemType::kArcDocumentsProvider,
+      HoldingSpaceFile::FileSystemType::kDeviceMedia,
+      HoldingSpaceFile::FileSystemType::kDeviceMediaAsFileStorage,
+      HoldingSpaceFile::FileSystemType::kDragged,
+      HoldingSpaceFile::FileSystemType::kDriveFs,
+      HoldingSpaceFile::FileSystemType::kExternal,
+      HoldingSpaceFile::FileSystemType::kForTransientFile,
+      HoldingSpaceFile::FileSystemType::kFuseBox,
+      HoldingSpaceFile::FileSystemType::kIsolated,
+      HoldingSpaceFile::FileSystemType::kLocal,
+      HoldingSpaceFile::FileSystemType::kLocalForPlatformApp,
+      HoldingSpaceFile::FileSystemType::kLocalMedia,
+      HoldingSpaceFile::FileSystemType::kPersistent,
+      HoldingSpaceFile::FileSystemType::kProvided,
+      HoldingSpaceFile::FileSystemType::kSmbFs,
+      HoldingSpaceFile::FileSystemType::kSyncable,
+      HoldingSpaceFile::FileSystemType::kSyncableForInternalSync,
+      HoldingSpaceFile::FileSystemType::kTemporary,
+      HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile::FileSystemType::kUnknown,
+  });
+}
+
+base::flat_set<HoldingSpaceItem::Type> GetAllItemTypes() {
+  return base::flat_set<HoldingSpaceItem::Type>({
+      HoldingSpaceItem::Type::kArcDownload,
+      HoldingSpaceItem::Type::kCameraAppPhoto,
+      HoldingSpaceItem::Type::kCameraAppScanJpg,
+      HoldingSpaceItem::Type::kCameraAppScanPdf,
+      HoldingSpaceItem::Type::kCameraAppVideoGif,
+      HoldingSpaceItem::Type::kCameraAppVideoMp4,
+      HoldingSpaceItem::Type::kDiagnosticsLog,
+      HoldingSpaceItem::Type::kDownload,
+      HoldingSpaceItem::Type::kDriveSuggestion,
+      HoldingSpaceItem::Type::kLacrosDownload,
+      HoldingSpaceItem::Type::kLocalSuggestion,
+      HoldingSpaceItem::Type::kNearbyShare,
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      HoldingSpaceItem::Type::kPhotoshopWeb,
+      HoldingSpaceItem::Type::kPinnedFile,
+      HoldingSpaceItem::Type::kPrintedPdf,
+      HoldingSpaceItem::Type::kScan,
+      HoldingSpaceItem::Type::kScreenRecording,
+      HoldingSpaceItem::Type::kScreenRecordingGif,
+      HoldingSpaceItem::Type::kScreenshot,
+  });
+}
+
 gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
   gfx::Size max_size;
   switch (type) {

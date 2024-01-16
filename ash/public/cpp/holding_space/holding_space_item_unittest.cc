@@ -24,13 +24,6 @@ namespace ash {
 
 namespace {
 
-std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
-  std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
-  return types;
-}
-
 std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
@@ -368,8 +361,9 @@ TEST_P(HoldingSpaceItemTest, Text) {
   EXPECT_EQ(holding_space_item->GetText(), u"file_path");
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceItemTest,
-                         testing::ValuesIn(GetHoldingSpaceItemTypes()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceItemTest,
+    testing::ValuesIn(holding_space_util::GetAllItemTypes()));
 
 }  // namespace ash

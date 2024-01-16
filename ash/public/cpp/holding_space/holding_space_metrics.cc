@@ -115,9 +115,7 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items,
   for (const HoldingSpaceItem* item : items)
     ++counts_by_type[item->type()];
 
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue);
-       ++i) {
-    const auto type = static_cast<HoldingSpaceItem::Type>(i);
+  for (const auto type : holding_space_util::GetAllItemTypes()) {
     base::UmaHistogramCounts1000(
         base::StrCat({prefix, ".", holding_space_util::ToString(type)}),
         counts_by_type[type]);

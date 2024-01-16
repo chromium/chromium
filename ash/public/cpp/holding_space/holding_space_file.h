@@ -17,7 +17,8 @@ struct ASH_PUBLIC_EXPORT HoldingSpaceFile {
   // `storage::FileSystemType`. These values are persisted to logs. Entries
   // should not be renumbered and numeric values should never be reused.
   enum class FileSystemType {
-    kUnknown = 0,
+    kMinValue = 0,
+    kUnknown = kMinValue,
     kTemporary = 1,
     kPersistent = 2,
     kIsolated = 3,

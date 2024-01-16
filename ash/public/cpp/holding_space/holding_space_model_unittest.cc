@@ -39,13 +39,6 @@ HoldingSpaceItem::InProgressCommand CreateInProgressCommand(
                                              /*handler=*/base::DoNothing());
 }
 
-std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
-  std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.emplace_back(static_cast<HoldingSpaceItem::Type>(i));
-  return types;
-}
-
 std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
@@ -185,7 +178,7 @@ class HoldingSpaceModelTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceModelTest,
-    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
                      /*predictability_enabled=*/testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
