@@ -269,9 +269,6 @@ fun:*InvokeAccessorGetterCallback*
 src:*third_party/pthreadpool/src/src/fastpath.c
 src:*third_party/pthreadpool/src/src/portable-api.c
 
-# XNNPack casts incorrect function signature.
-src:*third_party/xnnpack/src/src/operators/deconvolution-nhwc.c
-
 ######### Uncategorized
 
 src:*native_client/*

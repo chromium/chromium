@@ -106,8 +106,6 @@ String XnnStatusToString(xnn_status status) {
       return "xnn_status_unsupported_hardware";
     case xnn_status_out_of_memory:
       return "xnn_status_out_of_memory";
-    case xnn_status_reallocation_required:
-      return "xnn_status_reallocation_required";
   }
 }
 
@@ -153,8 +151,6 @@ DOMExceptionCode XnnStatusToDOMExceptionCode(xnn_status status) {
       return DOMExceptionCode::kNotSupportedError;
     case xnn_status_out_of_memory:
       return DOMExceptionCode::kQuotaExceededError;
-    case xnn_status_reallocation_required:
-      return DOMExceptionCode::kDataError;
   }
 }
 

@@ -756,8 +756,8 @@ struct EluTester {
     }
 
     xnn_operator_t elu_op = nullptr;
-    const xnn_status status =
-        xnn_create_elu_nc_f32(options->alpha(), /*flags=*/0, &elu_op);
+    const xnn_status status = xnn_create_elu_nc_f32(
+        channels, channels, channels, options->alpha(), /*flags=*/0, &elu_op);
     ASSERT_EQ(xnn_status_success, status);
     ASSERT_THAT(elu_op, testing::NotNull());
     std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
@@ -769,10 +769,9 @@ struct EluTester {
     xnnpack_input.Grow(input.values.size() + XNN_EXTRA_BYTES / sizeof(float));
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
-    ASSERT_EQ(
-        xnn_status_success,
-        xnn_reshape_elu_nc_f32(elu_op, batch_size, channels, channels, channels,
-                               /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_reshape_elu_nc_f32(elu_op, batch_size,
+                                     /*threadpool=*/nullptr));
     ASSERT_EQ(xnn_status_success,
               xnn_setup_elu_nc_f32(elu_op, xnnpack_input.data(),
                                    xnnpack_output.data()));
@@ -959,8 +958,8 @@ struct SigmoidTester {
     }
 
     xnn_operator_t sigmoid_op = nullptr;
-    const xnn_status status =
-        xnn_create_sigmoid_nc_f32(/*flags=*/0, &sigmoid_op);
+    const xnn_status status = xnn_create_sigmoid_nc_f32(
+        channels, channels, channels, /*flags=*/0, &sigmoid_op);
     ASSERT_EQ(xnn_status_success, status);
     ASSERT_THAT(sigmoid_op, testing::NotNull());
     std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
@@ -973,8 +972,7 @@ struct SigmoidTester {
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
     ASSERT_EQ(xnn_status_success,
-              xnn_reshape_sigmoid_nc_f32(sigmoid_op, batch_size, channels,
-                                         channels, channels,
+              xnn_reshape_sigmoid_nc_f32(sigmoid_op, batch_size,
                                          /*threadpool=*/nullptr));
     ASSERT_EQ(xnn_status_success,
               xnn_setup_sigmoid_nc_f32(sigmoid_op, xnnpack_input.data(),
@@ -1075,7 +1073,8 @@ struct TanhTester {
     }
 
     xnn_operator_t tanh_op = nullptr;
-    const xnn_status status = xnn_create_tanh_nc_f32(/*flags=*/0, &tanh_op);
+    const xnn_status status = xnn_create_tanh_nc_f32(
+        channels, channels, channels, /*flags=*/0, &tanh_op);
     ASSERT_EQ(xnn_status_success, status);
     ASSERT_THAT(tanh_op, testing::NotNull());
     std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
@@ -1088,8 +1087,7 @@ struct TanhTester {
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
     ASSERT_EQ(xnn_status_success,
-              xnn_reshape_tanh_nc_f32(tanh_op, batch_size, channels, channels,
-                                      channels,
+              xnn_reshape_tanh_nc_f32(tanh_op, batch_size,
                                       /*threadpool=*/nullptr));
     ASSERT_EQ(xnn_status_success,
               xnn_setup_tanh_nc_f32(tanh_op, xnnpack_input.data(),
