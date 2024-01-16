@@ -451,19 +451,33 @@ bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
                                        const char* regex_name,
                                        const bool is_country_code_field,
                                        const std::string& json_field_type) {
-  MatchParams match_type =
-      kDefaultMatchParamsWith<FormControlType::kInputTelephone,
-                              FormControlType::kInputNumber>;
-  // Include the selection boxes too for the matching of the phone country code.
-  if (is_country_code_field) {
-    match_type = kDefaultMatchParamsWith<
-        FormControlType::kInputTelephone, FormControlType::kInputNumber,
-        FormControlType::kSelectOne, FormControlType::kSelectList>;
-  }
-
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
       json_field_type, context.page_language, context.pattern_source);
 
+  // Phone country code fields can be discovered via the generic "PHONE" regex
+  // (see e.g. the "Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4" grammar rule).
+  // However, for phone country code fields, <select> elements should also be
+  // considered.
+  if (is_country_code_field) {
+    MatchParams match_type = kDefaultMatchParamsWith<
+        FormControlType::kInputTelephone, FormControlType::kInputNumber,
+        FormControlType::kSelectOne, FormControlType::kSelectList>;
+    return ParseFieldSpecifics(context, scanner, regex, match_type, patterns,
+                               field, regex_name, [](const MatchingPattern& p) {
+                                 return MatchingPattern{
+                .positive_pattern = p.positive_pattern,
+                .negative_pattern = p.negative_pattern,
+                .positive_score = p.positive_score,
+                .match_field_attributes = p.match_field_attributes,
+                .form_control_types =  kDefaultMatchParamsWith<
+        FormControlType::kInputTelephone, FormControlType::kInputNumber,
+        FormControlType::kSelectOne, FormControlType::kSelectList>.field_types};
+                               });
+  }
+
+  MatchParams match_type =
+      kDefaultMatchParamsWith<FormControlType::kInputTelephone,
+                              FormControlType::kInputNumber>;
   return ParseFieldSpecifics(context, scanner, regex, match_type, patterns,
                              field, regex_name);
 }

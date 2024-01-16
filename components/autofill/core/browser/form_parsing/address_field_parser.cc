@@ -91,8 +91,7 @@ constexpr MatchParams kDependentLocalityMatchType =
                             FormControlType::kTextArea>;
 
 constexpr MatchParams kStreetLocationMatchType =
-    kDefaultMatchParamsWith<FormControlType::kTextArea,
-                            FormControlType::kInputSearch>;
+    kDefaultMatchParamsWith<FormControlType::kInputSearch>;
 
 // Select fields are allowed here.  This occurs on top-100 site rediff.com.
 constexpr MatchParams kCityMatchType =
@@ -174,7 +173,8 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       // Ignore email addresses.
     } else if (ParseFieldSpecifics(
                    context, scanner, kEmailRe,
-                   kDefaultMatchParamsWith<FormControlType::kTextArea>,
+                   kDefaultMatchParamsWith<FormControlType::kInputEmail,
+                                           FormControlType::kTextArea>,
                    email_patterns, nullptr, "kEmailRe",
                    [](const MatchingPattern& p) {
                      return WithFieldType(p, FormControlType::kTextArea);
@@ -668,11 +668,13 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   base::span<const MatchPatternRef> address_line_extra_patterns =
       GetMatchPatterns("ADDRESS_LINE_EXTRA", context);
 
-  // Optionally parse address line 3. This uses the same label regexp as
-  // address 2 above.
+  // Optionally parse address line 3. This uses the same regexp as address 2
+  // above.
   pattern = kAddressLinesExtraRe;
   if (!ParseField(context, scanner, pattern, address_line_extra_patterns,
                   &address3_, "kAddressLinesExtraRe") &&
+      !ParseField(context, scanner, kAddressLine2Re, address_line2_patterns,
+                  &address3_, "kAddressLine2Re") &&
       !ParseFieldSpecifics(
           context, scanner, label_pattern,
           MatchParams({MatchAttribute::kLabel}, {FormControlType::kInputText}),

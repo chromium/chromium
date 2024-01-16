@@ -570,6 +570,9 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   base::span<const MatchPatternRef> cc_exp_year_after_month_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_YEAR_AFTER_MONTH", context);
+  base::span<const MatchPatternRef>
+      cc_exp_year_after_month_patterns_experimental = GetMatchPatterns(
+          "CREDIT_CARD_EXP_YEAR_AFTER_MONTH_EXPERIMENTAL", context);
 
   if (ParseFieldSpecifics(context, scanner, kExpirationMonthRe, kMatchCCType,
                           cc_exp_month_patterns, &expiration_month_,
@@ -584,17 +587,22 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   // MM / AA(AA) version).
   scanner->RewindTo(month_year_saved_cursor);
 
-  std::u16string year_pattern =
+  std::u16string year_regex =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)
           ? u"^(yy|yyyy|aa|aaaa)$"
           : u"^(yy|yyyy)$";
+  base::span<const MatchPatternRef> year_pattern =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)
+          ? cc_exp_year_after_month_patterns_experimental
+          : cc_exp_year_after_month_patterns;
   if (ParseFieldSpecifics(context, scanner, u"^mm$", kMatchCCType,
                           cc_exp_month_before_year_patterns, &expiration_month_,
                           "^mm$") &&
-      ParseFieldSpecifics(context, scanner, year_pattern, kMatchCCType,
-                          cc_exp_year_after_month_patterns, &expiration_year_,
-                          base::UTF16ToUTF8(year_pattern).c_str())) {
+      ParseFieldSpecifics(context, scanner, year_regex, kMatchCCType,
+                          year_pattern, &expiration_year_,
+                          base::UTF16ToUTF8(year_regex).c_str())) {
     return true;
   }
 

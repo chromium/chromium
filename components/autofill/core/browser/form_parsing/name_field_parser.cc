@@ -25,6 +25,11 @@ base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
   return GetMatchPatterns(name, context.page_language, context.pattern_source);
 }
 
+constexpr MatchParams kNameIgnoredMatchParams =
+    kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                            FormControlType::kSelectList,
+                            FormControlType::kInputSearch>;
+
 // A form field that can parse a full name field.
 class FullNameField : public NameFieldParser {
  public:
@@ -153,8 +158,9 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
   base::span<const MatchPatternRef> address_name_ignored_patterns =
       GetMatchPatterns("ADDRESS_NAME_IGNORED", context);
   bool should_ignore =
-      ParseField(context, scanner, kNameIgnoredRe, name_ignored_patterns,
-                 nullptr, "kNameIgnoredRe") ||
+      ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
+                          kNameIgnoredMatchParams, name_ignored_patterns,
+                          nullptr, "kNameIgnoredRe") ||
       // This pattern fully migrated to the MatchPattern mechanism. There
       // is no regular expression in autofill_regex_constants.h anymore.
       ParseField(context, scanner, kNoLegacyPattern,
@@ -243,12 +249,9 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     }
 
     // Skip over any unrelated fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(
-            context, scanner, kNameIgnoredRe,
-            kDefaultMatchParamsWith<FormControlType::kSelectOne,
-                                    FormControlType::kSelectList,
-                                    FormControlType::kInputSearch>,
-            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
+    if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
+                            kNameIgnoredMatchParams, name_ignored_patterns,
+                            nullptr, "kNameIgnoredRe")) {
       continue;
     }
 
@@ -327,8 +330,9 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
   scanner->SaveCursor();
 
   bool should_ignore =
-      ParseField(context, scanner, kNameIgnoredRe, name_ignored_patterns,
-                 nullptr, "kNameIgnoredRe") ||
+      ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
+                          kNameIgnoredMatchParams, name_ignored_patterns,
+                          nullptr, "kNameIgnoredRe") ||
       // This pattern fully migrated to the MatchPattern mechanism. There is no
       // regular expression in autofill_regex_constants.h anymore.
       ParseField(context, scanner, kNoLegacyPattern,
@@ -444,12 +448,9 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     }
 
     // Skip over any unrelated name fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(
-            context, scanner, kNameIgnoredRe,
-            kDefaultMatchParamsWith<FormControlType::kSelectOne,
-                                    FormControlType::kSelectList,
-                                    FormControlType::kInputSearch>,
-            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
+    if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
+                            kNameIgnoredMatchParams, name_ignored_patterns,
+                            nullptr, "kNameIgnoredRe")) {
       continue;
     }
 
