@@ -311,17 +311,6 @@ std::vector<blink::WebElement> GetWebElementsFromIdList(
     const blink::WebDocument& document,
     const blink::WebString& id_list);
 
-// Returns std::nullopt iff the extraction fails because the number of fields
-// exceeds `kMaxExtractableFields`, or `field` and `element` are not nullptr but
-// `element` is not among `control_elements`.
-std::optional<FormData> UnownedFormElementsToFormData(
-    const std::vector<blink::WebFormControlElement>& control_elements,
-    const std::vector<blink::WebElement>& iframe_elements,
-    const blink::WebFormControlElement* element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field);
-
 // Finds the field that represents `element`, and the form that contains
 // `element` and returns them. |extract_options| control what to extract beside
 // the default options which is {ExtractOption::kValue,

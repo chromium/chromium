@@ -1653,11 +1653,17 @@ std::optional<FormData> ExtractFormData(
                                     field_data_manager, extract_options,
                                     /*field=*/nullptr);
   }
-  return UnownedFormElementsToFormData(
-      GetUnownedAutofillableFormFieldElements(document),
-      GetUnownedIframeElements(document), nullptr, field_data_manager,
-      extract_options,
-      /*field=*/nullptr);
+  FormData form;
+  form.unique_renderer_id = FormRendererId();
+  form.main_frame_origin = url::Origin();
+  form.is_form_tag = false;
+  return OwnedOrUnownedFormToFormData(
+             WebFormElement(), /*element=*/nullptr,
+             GetUnownedAutofillableFormFieldElements(document),
+             GetUnownedIframeElements(document), field_data_manager,
+             extract_options, form, /*field=*/nullptr)
+             ? std::make_optional(form)
+             : std::nullopt;
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {
@@ -2185,24 +2191,6 @@ std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
   return unowned_iframes;
 }
 
-std::optional<FormData> UnownedFormElementsToFormData(
-    const std::vector<blink::WebFormControlElement>& control_elements,
-    const std::vector<blink::WebElement>& iframe_elements,
-    const blink::WebFormControlElement* element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field) {
-  FormData form;
-  form.unique_renderer_id = FormRendererId();
-  form.main_frame_origin = url::Origin();
-  form.is_form_tag = false;
-  return OwnedOrUnownedFormToFormData(
-             WebFormElement(), element, control_elements, iframe_elements,
-             field_data_manager, extract_options, form, field)
-             ? std::make_optional(form)
-             : std::nullopt;
-}
-
 std::optional<std::pair<FormData, FormFieldData>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
@@ -2217,25 +2205,31 @@ FindFormAndFieldForFormControlElement(
   extract_options.insert_all({ExtractOption::kValue, ExtractOption::kOptions});
   WebFormElement form_element = GetOwningForm(element);
 
-  std::optional<FormData> form;
-  FormFieldData field;
   if (form_element.IsNull()) {
-    // No associated form, try the synthetic form for unowned form elements.
     WebDocument document = element.GetDocument();
-    std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(document);
-    std::vector<WebElement> iframe_elements =
-        GetUnownedIframeElements(document);
-    form = UnownedFormElementsToFormData(control_elements, iframe_elements,
-                                         &element, field_data_manager,
-                                         extract_options, &field);
+    FormData form;
+    FormFieldData field;
+    form.unique_renderer_id = FormRendererId();
+    form.main_frame_origin = url::Origin();
+    form.is_form_tag = false;
+    if (OwnedOrUnownedFormToFormData(
+            WebFormElement(), &element,
+            GetUnownedAutofillableFormFieldElements(document),
+            GetUnownedIframeElements(document), field_data_manager,
+            extract_options, form, &field)) {
+      return std::pair<FormData, FormFieldData>(std::move(form),
+                                                std::move(field));
+    }
   } else {
-    form = WebFormElementToFormData(form_element, element, field_data_manager,
-                                    extract_options, &field);
+    FormFieldData field;
+    std::optional<FormData> form = WebFormElementToFormData(
+        form_element, element, field_data_manager, extract_options, &field);
+    if (form) {
+      return std::pair<FormData, FormFieldData>(std::move(*form),
+                                                std::move(field));
+    }
   }
-  return form ? std::make_optional<std::pair<FormData, FormFieldData>>(
-                    std::move(*form), std::move(field))
-              : std::nullopt;
+  return std::nullopt;
 }
 
 std::optional<FormData> FindFormForContentEditable(

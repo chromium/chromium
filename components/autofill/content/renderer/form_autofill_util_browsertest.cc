@@ -53,9 +53,12 @@ using blink::WebNode;
 using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
 using ::testing::Optional;
 using ::testing::Pointwise;
 using ::testing::Values;
@@ -559,39 +562,22 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       "<input type='password' disabled id='name2'>"
       "<input type='password' id='name3'>"
       "<input type='text' id='name4' disabled>");
-
   WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_TRUE(web_frame);
-  std::vector<WebFormControlElement> control_elements;
-  WebElementCollection inputs =
-      web_frame->GetDocument().GetElementsByHTMLTagName("input");
-  for (WebElement element = inputs.FirstItem(); !element.IsNull();
-       element = inputs.NextItem()) {
-    control_elements.push_back(element.To<WebFormControlElement>());
-  }
-
-  std::vector<WebElement> iframe_elements;
-
-  autofill::FormData target =
-      *UnownedFormElementsToFormData(control_elements, iframe_elements,
-                                     /*element=*/nullptr, field_data_manager(),
-                                     /*extract_options=*/{},
-                                     /*field=*/nullptr);
-  const struct {
-    const char16_t* const name;
-    bool enabled;
-  } kExpectedFields[] = {
-      {u"name1", true},
-      {u"name2", false},
-      {u"name3", true},
-      {u"name4", false},
-  };
-  const size_t number_of_cases = std::size(kExpectedFields);
-  ASSERT_EQ(number_of_cases, target.fields.size());
-  for (size_t i = 0; i < number_of_cases; ++i) {
-    EXPECT_EQ(kExpectedFields[i].name, target.fields[i].name);
-    EXPECT_EQ(kExpectedFields[i].enabled, target.fields[i].is_enabled);
-  }
+  std::optional<FormData> form = *ExtractFormData(
+      web_frame->GetDocument(), WebFormElement(), field_data_manager(),
+      /*extract_options=*/{});
+  EXPECT_THAT(
+      form,
+      Optional(Field(
+          &FormData::fields,
+          ElementsAre(AllOf(Field(&FormFieldData::name, u"name1"),
+                            Field(&FormFieldData::is_enabled, IsTrue())),
+                      AllOf(Field(&FormFieldData::name, u"name2"),
+                            Field(&FormFieldData::is_enabled, IsFalse())),
+                      AllOf(Field(&FormFieldData::name, u"name3"),
+                            Field(&FormFieldData::is_enabled, IsTrue())),
+                      AllOf(Field(&FormFieldData::name, u"name4"),
+                            Field(&FormFieldData::is_enabled, IsFalse()))))));
 }
 
 TEST_F(FormAutofillUtilsTest, IsReadonly) {
@@ -600,72 +586,40 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       "<input readonly type='password' id='name2'>"
       "<input type='password' id='name3'>"
       "<input type='text' id='name4' readonly>");
-
   WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_TRUE(web_frame);
-  std::vector<WebFormControlElement> control_elements;
-  WebElementCollection inputs =
-      web_frame->GetDocument().GetElementsByHTMLTagName("input");
-  for (WebElement element = inputs.FirstItem(); !element.IsNull();
-       element = inputs.NextItem()) {
-    control_elements.push_back(element.To<WebFormControlElement>());
-  }
-
-  std::vector<WebElement> iframe_elements;
-
-  autofill::FormData target =
-      *UnownedFormElementsToFormData(control_elements, iframe_elements,
-                                     /*element=*/nullptr, field_data_manager(),
-                                     /*extract_options=*/{},
-                                     /*field=*/nullptr);
-  const struct {
-    const char16_t* const name;
-    bool readonly;
-  } kExpectedFields[] = {
-      {u"name1", false},
-      {u"name2", true},
-      {u"name3", false},
-      {u"name4", true},
-  };
-  const size_t number_of_cases = std::size(kExpectedFields);
-  ASSERT_EQ(number_of_cases, target.fields.size());
-  for (size_t i = 0; i < number_of_cases; ++i) {
-    EXPECT_EQ(kExpectedFields[i].name, target.fields[i].name);
-    EXPECT_EQ(kExpectedFields[i].readonly, target.fields[i].is_readonly);
-  }
+  std::optional<FormData> form = *ExtractFormData(
+      web_frame->GetDocument(), WebFormElement(), field_data_manager(),
+      /*extract_options=*/{});
+  EXPECT_THAT(
+      form,
+      Optional(Field(
+          &FormData::fields,
+          ElementsAre(AllOf(Field(&FormFieldData::name, u"name1"),
+                            Field(&FormFieldData::is_readonly, IsFalse())),
+                      AllOf(Field(&FormFieldData::name, u"name2"),
+                            Field(&FormFieldData::is_readonly, IsTrue())),
+                      AllOf(Field(&FormFieldData::name, u"name3"),
+                            Field(&FormFieldData::is_readonly, IsFalse())),
+                      AllOf(Field(&FormFieldData::name, u"name4"),
+                            Field(&FormFieldData::is_readonly, IsTrue()))))));
 }
 
 TEST_F(FormAutofillUtilsTest, IsFocusable) {
   LoadHTML(
       "<input type='text' id='name1' value='123'>"
       "<input type='text' id='name2' style='display:none'>");
-
   WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_TRUE(web_frame);
-
-  std::vector<WebFormControlElement> control_elements;
-  control_elements.push_back(
-      GetFormControlElementById(web_frame->GetDocument(), "name1"));
-  control_elements.push_back(
-      GetFormControlElementById(web_frame->GetDocument(), "name2"));
-
-  EXPECT_TRUE(autofill::form_util::IsWebElementFocusableForAutofill(
-      control_elements[0]));
-  EXPECT_FALSE(autofill::form_util::IsWebElementFocusableForAutofill(
-      control_elements[1]));
-
-  std::vector<WebElement> iframe_elements;
-
-  autofill::FormData target =
-      *UnownedFormElementsToFormData(control_elements, iframe_elements,
-                                     /*element=*/nullptr, field_data_manager(),
-                                     /*extract_options=*/{},
-                                     /*field=*/nullptr);
-  ASSERT_EQ(2u, target.fields.size());
-  EXPECT_EQ(u"name1", target.fields[0].name);
-  EXPECT_TRUE(target.fields[0].is_focusable);
-  EXPECT_EQ(u"name2", target.fields[1].name);
-  EXPECT_FALSE(target.fields[1].is_focusable);
+  std::optional<FormData> form = *ExtractFormData(
+      web_frame->GetDocument(), WebFormElement(), field_data_manager(),
+      /*extract_options=*/{});
+  EXPECT_THAT(
+      form,
+      Optional(Field(
+          &FormData::fields,
+          ElementsAre(AllOf(Field(&FormFieldData::name, u"name1"),
+                            Field(&FormFieldData::is_focusable, IsTrue())),
+                      AllOf(Field(&FormFieldData::name, u"name2"),
+                            Field(&FormFieldData::is_focusable, IsFalse()))))));
 }
 
 TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
@@ -1466,36 +1420,21 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   WebDocument doc = GetMainFrame()->GetDocument();
 
   // Extract the |form_data|.
-  FormData form_data;
-  FormRendererId host_form;
-  if (!test_case.form_id) {  // Synthetic form.
-    std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(doc);
-    std::vector<WebElement> iframe_elements =
-        form_util::GetUnownedIframeElements(doc);
-    form_data = *UnownedFormElementsToFormData(
-        control_elements, iframe_elements, /*element=*/nullptr,
-        field_data_manager(),
-        /*extract_options=*/{},
-        /*field=*/nullptr);
-    host_form = FormRendererId();
-  } else {  // Real <form>.
-    ASSERT_GT(std::strlen(test_case.form_id), 0u);
-    auto form_element = GetFormElementById(doc, test_case.form_id);
-    form_data = *WebFormElementToFormData(form_element, WebFormControlElement(),
-                                          field_data_manager(),
-                                          /*extract_options=*/{},
-                                          /*field=*/nullptr);
-    host_form = GetFormRendererId(form_element);
-  }
+  auto form_element = test_case.form_id
+                          ? GetFormElementById(doc, test_case.form_id)
+                          : WebFormElement();
+  FormRendererId host_form = GetFormRendererId(form_element);
+  std::optional<FormData> form_data =
+      ExtractFormData(doc, form_element, field_data_manager());
+  ASSERT_TRUE(form_data);
 
   // Check that all fields and iframes were extracted.
-  EXPECT_EQ(form_data.fields.size() + form_data.child_frames.size(),
+  EXPECT_EQ(form_data->fields.size() + form_data->child_frames.size(),
             test_case.fields_and_frames.size());
 
   // Check that all fields were extracted. Do so by checking for each |field| in
   // `test_case.fields_and_frames` that the DOM element with ID `field.id`
-  // corresponds to the next (`i`th) field in `form_data.fields`.
+  // corresponds to the next (`i`th) field in `form_data->fields`.
   size_t i = 0;
   for (const FieldOrFrame& field : test_case.fields_and_frames) {
     if (field.is_frame)
@@ -1505,19 +1444,19 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     WebElement element = GetElementById(doc, field.id);
     ASSERT_FALSE(element.IsNull());
     ASSERT_TRUE(element.IsFormControlElement());
-    EXPECT_EQ(form_data.fields[i].host_form_id, host_form);
+    EXPECT_EQ(form_data->fields[i].host_form_id, host_form);
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
-                                      form_data.fields[i]));
+                                      form_data->fields[i]));
     ++i;
   }
 
-  // Check that all frames were extracted into `form_data.child_frames`
-  // analogously to the above loop for `form_data.fields`.
+  // Check that all frames were extracted into `form_data->child_frames`
+  // analogously to the above loop for `form_data->fields`.
   //
-  // In addition, check that `form_data.child_frames[i].predecessor` encodes the
-  // correct ordering, i.e., that `form_data.child_frames[i].predecessor` is the
-  // index of the last field in `form_data.fields` that precedes the `i`th frame
-  // in `form_data.child_frames`.
+  // In addition, check that `form_data->child_frames[i].predecessor` encodes
+  // the correct ordering, i.e., that `form_data->child_frames[i].predecessor`
+  // is the index of the last field in `form_data->fields` that precedes the
+  // `i`th frame in `form_data->child_frames`.
   i = 0;
   int preceding_field_index = -1;
   for (const auto& frame : test_case.fields_and_frames) {
@@ -1528,9 +1467,9 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     SCOPED_TRACE(testing::Message() << "Checking the " << i
                                     << "th frame (id = " << frame.id << ")");
     auto is_empty = [](auto token) { return token.is_empty(); };
-    EXPECT_FALSE(absl::visit(is_empty, form_data.child_frames[i].token));
-    EXPECT_EQ(form_data.child_frames[i].token, GetFrameToken(doc, frame.id));
-    EXPECT_EQ(form_data.child_frames[i].predecessor, preceding_field_index);
+    EXPECT_FALSE(absl::visit(is_empty, form_data->child_frames[i].token));
+    EXPECT_EQ(form_data->child_frames[i].token, GetFrameToken(doc, frame.id));
+    EXPECT_EQ(form_data->child_frames[i].predecessor, preceding_field_index);
     ++i;
   }
 }

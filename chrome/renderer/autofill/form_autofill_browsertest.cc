@@ -3627,10 +3627,9 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
 
   base::HistogramTester histogram_tester;
   // Simulate seeing an unowned form containing just the input "fieldID".
-  FormData form = *UnownedFormElementsToFormData(
-      {GetFormControlElementById("fieldId")}, {}, /*element=*/nullptr,
-      *base::MakeRefCounted<FieldDataManager>(),
-      /*extract_options=*/{}, nullptr);
+  FormData form =
+      *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
+                       *base::MakeRefCounted<FieldDataManager>());
   ASSERT_EQ(form.fields.size(), 1u);
   FormFieldData& form_field_data = form.fields[0];
 
@@ -5495,11 +5494,6 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
 }
 
 TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
-  std::vector<WebFormControlElement> control_elements;
-
-  const DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
-                                                   ExtractOption::kOptions};
-
   LoadHTML("<HEAD><TITLE>delivery info</TITLE></HEAD>"
            "<DIV>"
            "  <LABEL for='firstname'>First name:</LABEL>"
@@ -5509,19 +5503,9 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
            "  <LABEL for='email'>Email:</LABEL>"
            "  <INPUT type='text' id='email' value='john@example.com'/>"
            "</DIV>");
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
-  ASSERT_EQ(3U, control_elements.size());
-
-  std::vector<WebElement> iframe_elements;
-
-  FormData form = *UnownedFormElementsToFormData(
-      control_elements, iframe_elements, /*element=*/nullptr,
-      *base::MakeRefCounted<FieldDataManager>(), extract_options, nullptr);
+  FormData form =
+      *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
+                       *base::MakeRefCounted<FieldDataManager>());
 
   EXPECT_TRUE(form.name.empty());
   EXPECT_FALSE(form.action.is_valid());
@@ -5553,46 +5537,15 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
 }
 
 TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithForm) {
-  std::vector<WebFormControlElement> control_elements;
-
-  const DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
-                                                   ExtractOption::kOptions};
-
   LoadHTML(kFormHtml);
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
-  ASSERT_TRUE(control_elements.empty());
-  EXPECT_FALSE(UnownedFormElementsToFormData(
-      control_elements, /*iframe_elements=*/{}, /*element=*/nullptr,
-      *base::MakeRefCounted<FieldDataManager>(), extract_options, nullptr));
+  EXPECT_FALSE(ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
+                               *base::MakeRefCounted<FieldDataManager>()));
 }
 
 TEST_F(FormAutofillTest, FormlessForms) {
-  std::vector<WebFormControlElement> control_elements;
-
-  const DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
-                                                   ExtractOption::kOptions};
-
   LoadHTML(kUnownedUntitledFormHtml);
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
-  ASSERT_FALSE(control_elements.empty());
-
-  std::vector<WebElement> iframe_elements;
-
-  {
-    FormData form = *UnownedFormElementsToFormData(
-        control_elements, iframe_elements, /*element=*/nullptr,
-        *base::MakeRefCounted<FieldDataManager>(), extract_options, nullptr);
-  }
+  EXPECT_TRUE(ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
+                              *base::MakeRefCounted<FieldDataManager>()));
 }
 
 TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {

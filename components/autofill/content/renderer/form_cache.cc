@@ -198,14 +198,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   // Look for more extractable fields outside of forms. Create a synthetic form
   // from them.
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document);
-  std::vector<WebElement> iframe_elements =
-      form_util::GetUnownedIframeElements(document);
-
-  std::optional<FormData> synthetic_form = UnownedFormElementsToFormData(
-      control_elements, iframe_elements, /*element=*/nullptr,
-      field_data_manager, extract_options, /*field=*/nullptr);
+  std::optional<FormData> synthetic_form = ExtractFormData(
+      document, WebFormElement(), field_data_manager, extract_options);
   if (!synthetic_form) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;

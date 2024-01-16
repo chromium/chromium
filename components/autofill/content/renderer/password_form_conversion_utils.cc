@@ -31,7 +31,6 @@ using blink::WebString;
 namespace autofill {
 
 using form_util::ExtractOption;
-using form_util::UnownedFormElementsToFormData;
 using form_util::WebFormElementToFormData;
 
 namespace {
@@ -165,16 +164,16 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
   if (control_elements.empty()) {
     return nullptr;
   }
-  std::optional<FormData> form = UnownedFormElementsToFormData(
-      control_elements, /*iframe_elements=*/{}, /*element=*/nullptr,
-      field_data_manager, {ExtractOption::kValue},
-      /*field=*/nullptr);
+  std::optional<FormData> form =
+      form_util::ExtractFormData(frame.GetDocument(), WebFormElement(),
+                                 field_data_manager, {ExtractOption::kValue});
   if (!form) {
     return nullptr;
   }
   auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->username_predictions = GetUsernamePredictions(
-      control_elements, *form_data, username_detector_cache, WebFormElement());
+  form_data->username_predictions =
+      GetUsernamePredictions(std::move(control_elements), *form_data,
+                             username_detector_cache, WebFormElement());
   return form_data;
 }
 
