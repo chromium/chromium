@@ -524,6 +524,9 @@
 // be used to validate that the tab grid normal mode is active.
 + (id<GREYMatcher>)tabGridNormalModePageControl;
 
+// Returns the GREYMatcher for the Inactive Tabs button of the tab grid.
++ (id<GREYMatcher>)tabGridInactiveTabsButton;
+
 // Returns the GREYMatcher for the background of the tab grid.
 + (id<GREYMatcher>)tabGridBackground;
 

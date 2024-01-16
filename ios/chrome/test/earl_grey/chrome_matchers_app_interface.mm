@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -1044,6 +1045,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_descendant(
           [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton]),
       grey_ancestor(grey_kindOfClassName(@"UIToolbar")),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridInactiveTabsButton {
+  return grey_allOf(
+      grey_accessibilityID(kInactiveTabsButtonAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 

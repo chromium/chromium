@@ -61,6 +61,7 @@ using chrome_test_util::LongPressCellAndDragToOffsetOf;
 using chrome_test_util::RegularTabGrid;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridEditMenuCloseAllButton;
+using chrome_test_util::TabGridInactiveTabsButton;
 using chrome_test_util::TabGridIncognitoTabsPanelButton;
 using chrome_test_util::TabGridNormalModePageControl;
 using chrome_test_util::TabGridOpenTabsPanelButton;
@@ -2699,6 +2700,70 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that interacting with the Tab Grid search UI shows the correct header
+// at each step.
+- (void)testSearchHeaderWithInactiveTabs {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
+                           @"only supported on iPhone.");
+  }
+  [self loadTestURLsInNewTabs];
+  [self relaunchAppWithInactiveTabsEnabled];
+
+  [ChromeEarlGreyUI openTabGrid];
+  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+                  @"Expected only one tab (NTP), all other tabs should have "
+                  @"been in inactive tab grid.");
+  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected 4 inactive tabs.");
+
+  // Verify that the Inactive Tabs button is showing.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verify that the Inactive Tabs button is not showing.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that search mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the Search results header is not showing, as the search field
+  // is empty.
+  [[EarlGrey selectElementWithMatcher:SearchOpenTabsSectionHeader()]
+      assertWithMatcher:grey_nil()];
+
+  // Enter some text.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(@"Page")];
+
+  // Verify that the Search results header is showing now.
+  [[EarlGrey selectElementWithMatcher:SearchOpenTabsSectionHeader()]
+      assertWithMatcher:grey_notNil()];
+
+  // Exit search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify that normal mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the Inactive Tabs button is showing.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that the Search results header is not showing, as the search field
+  // is empty.
+  [[EarlGrey selectElementWithMatcher:SearchOpenTabsSectionHeader()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that once an account is signed in, the syncing spinner is eventually

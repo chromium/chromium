@@ -683,6 +683,10 @@ id<GREYMatcher> TabGridNormalModePageControl() {
   return [ChromeMatchersAppInterface tabGridNormalModePageControl];
 }
 
+id<GREYMatcher> TabGridInactiveTabsButton() {
+  return [ChromeMatchersAppInterface tabGridInactiveTabsButton];
+}
+
 id<GREYMatcher> TabGridBackground() {
   return [ChromeMatchersAppInterface tabGridBackground];
 }
