@@ -16,8 +16,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -29,7 +27,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -62,8 +59,6 @@ using enterprise_management::FetchSupportPacketResultNote;
 using enterprise_management::UserSessionType;
 
 namespace {
-
-static const base::FilePath* g_target_directory_for_testing = nullptr;
 
 // The directory that the support packets will be stored.
 constexpr char kTargetDir[] = "/var/spool/support";
@@ -202,15 +197,8 @@ namespace policy {
 const char kFetchSupportPacketFailureHistogramName[] =
     "Enterprise.DeviceRemoteCommand.FetchSupportPacket.Failure";
 
-// static
-void DeviceCommandFetchSupportPacketJob::SetTargetDirForTesting(
-    const base::FilePath* target_dir) {
-  CHECK_IS_TEST();
-  g_target_directory_for_testing = target_dir;
-}
-
-DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob() =
-    default;
+DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob()
+    : target_dir_(kTargetDir) {}
 
 DeviceCommandFetchSupportPacketJob::~DeviceCommandFetchSupportPacketJob() =
     default;
@@ -223,12 +211,10 @@ DeviceCommandFetchSupportPacketJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_FETCH_SUPPORT_PACKET;
 }
 
-const base::FilePath DeviceCommandFetchSupportPacketJob::GetTargetDir() {
-  if (g_target_directory_for_testing) {
-    CHECK_IS_TEST();
-    return *g_target_directory_for_testing;
-  }
-  return base::FilePath(kTargetDir);
+void DeviceCommandFetchSupportPacketJob::SetReportQueueForTesting(
+    std::unique_ptr<reporting::ReportQueue> report_queue) {
+  CHECK_IS_TEST();
+  report_queue_ = std::move(report_queue);
 }
 
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
@@ -323,7 +309,6 @@ void DeviceCommandFetchSupportPacketJob::RunImpl(
                 notes_)));
     return;
   }
-
   StartJobExecution();
 }
 
@@ -382,7 +367,7 @@ void DeviceCommandFetchSupportPacketJob::OnDataCollected(
   }
 
   base::FilePath target_file = GetFilepathToExport(
-      GetTargetDir(), kFilenamePrefix, support_tool_handler_->GetCaseId(),
+      target_dir_, kFilenamePrefix, support_tool_handler_->GetCaseId(),
       base::Time::Now());
 
   std::set<redaction::PIIType> pii_types =
@@ -420,6 +405,15 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
   }
 
   exported_path_ = exported_path;
+
+  // No need to create a `report_queue_` if it is already initialized. Since the
+  // DeviceCommandFetchSupportPacketJob instance will be created per command,
+  // `report_queue_` will only be already initialized for tests by
+  // `SetReportQueueForTesting()` function.
+  if (report_queue_) {
+    EnqueueEvent();
+    return;
+  }
 
   ::reporting::SourceInfo source_info;
   source_info.set_source(::reporting::SourceInfo::ASH);
