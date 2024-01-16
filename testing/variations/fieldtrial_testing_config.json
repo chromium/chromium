@@ -15309,35 +15309,6 @@
             ]
         }
     ],
-    "ResponsiveToolbar": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithSidePanelPinning",
-                    "enable_features": [
-                        "IPH_SidePanelGenericMenuFeature",
-                        "IPH_SidePanelGenericPinnableFeature",
-                        "ResponsiveToolbar",
-                        "SidePanelPinning"
-                    ]
-                },
-                {
-                    "name": "EnabledWithoutSidePanelPinning",
-                    "enable_features": [
-                        "ResponsiveToolbar"
-                    ]
-                }
-            ]
-        }
-    ],
     "RestartToGainAccessToKeychain": [
         {
             "platforms": [
@@ -17406,6 +17377,35 @@
                     },
                     "enable_features": [
                         "SidePanelJourneys"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SidePanelPinningWithResponsiveToolbar": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSidePanelPinning",
+                    "enable_features": [
+                        "IPH_SidePanelGenericMenuFeature",
+                        "IPH_SidePanelGenericPinnableFeature",
+                        "ResponsiveToolbar",
+                        "SidePanelPinning"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutSidePanelPinning",
+                    "enable_features": [
+                        "ResponsiveToolbar"
                     ]
                 }
             ]
