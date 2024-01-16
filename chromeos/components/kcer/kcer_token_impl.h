@@ -101,6 +101,10 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   // Immediately unblocks the queue and attempts to perform the next task.
   void UnblockQueueProcessNextTask();
 
+  void FindPrivateKey(
+      Pkcs11Id id,
+      base::OnceCallback<void(std::vector<ObjectHandle>, uint32_t)> callback);
+
   struct GenerateRsaKeyTask {
     GenerateRsaKeyTask(RsaModulusLength in_modulus_length_bits,
                        bool in_hardware_backed,
@@ -216,9 +220,29 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
 
   void NotifyCertsChanged(base::OnceClosure callback);
 
-  // Indicates whether the task queue is blocked. Task queue should be blocked
-  // until the token is initialized, during the processing of most requests and
-  // during updating the cache.
+  struct SignRsaPkcs1RawTask {
+    SignRsaPkcs1RawTask(PrivateKeyHandle in_key,
+                        DigestWithPrefix in_digest_with_prefix,
+                        Kcer::SignCallback in_callback);
+    SignRsaPkcs1RawTask(SignRsaPkcs1RawTask&& other);
+    ~SignRsaPkcs1RawTask();
+
+    const PrivateKeyHandle key;
+    const DigestWithPrefix digest_with_prefix;
+    Kcer::SignCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void SignRsaPkcs1RawImpl(SignRsaPkcs1RawTask task);
+  void SignRsaPkcs1RawWithKeyHandle(SignRsaPkcs1RawTask task,
+                                    std::vector<ObjectHandle> key_handles,
+                                    uint32_t result_code);
+  void DidSignRsaPkcs1Raw(SignRsaPkcs1RawTask task,
+                          std::vector<uint8_t> signature,
+                          uint32_t result_code);
+
+  // Indicates whether the task queue is blocked. Task queue should be
+  // blocked until the token is initialized, during the processing of most
+  // requests and during updating the cache.
   bool is_blocked_ = true;
   // Token type of this KcerToken.
   const Token token_;

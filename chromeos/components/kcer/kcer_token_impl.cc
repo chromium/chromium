@@ -1063,18 +1063,10 @@ void KcerTokenImpl::SignImpl(SignTask task) {
         .Run(base::unexpected(Error::kPkcs11SessionFailure));
   }
 
-  const chromeos::PKCS11_CK_OBJECT_CLASS kPrivKeyClass =
-      chromeos::PKCS11_CKO_PRIVATE_KEY;
-  chaps::AttributeList private_key_attrs;
-  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_CLASS,
-               MakeSpan(&kPrivKeyClass));
-  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_ID,
-               task.key.GetPkcs11IdInternal().value());
-
-  chaps_client_->FindObjects(
-      pkcs_11_slot_id_, std::move(private_key_attrs),
-      base::BindOnce(&KcerTokenImpl::SignWithKeyHandle,
-                     weak_factory_.GetWeakPtr(), std::move(task)));
+  Pkcs11Id key_id = task.key.GetPkcs11IdInternal();
+  FindPrivateKey(std::move(key_id),
+                 base::BindOnce(&KcerTokenImpl::SignWithKeyHandle,
+                                weak_factory_.GetWeakPtr(), std::move(task)));
 }
 
 // Digests the data.
@@ -1158,10 +1150,100 @@ void KcerTokenImpl::DidSign(SignTask task,
 
 //==============================================================================
 
+KcerTokenImpl::SignRsaPkcs1RawTask::SignRsaPkcs1RawTask(
+    PrivateKeyHandle in_key,
+    DigestWithPrefix in_digest_with_prefix,
+    Kcer::SignCallback in_callback)
+    : key(std::move(in_key)),
+      digest_with_prefix(std::move(in_digest_with_prefix)),
+      callback(std::move(in_callback)) {}
+KcerTokenImpl::SignRsaPkcs1RawTask::SignRsaPkcs1RawTask(
+    SignRsaPkcs1RawTask&& other) = default;
+KcerTokenImpl::SignRsaPkcs1RawTask::~SignRsaPkcs1RawTask() = default;
+
 void KcerTokenImpl::SignRsaPkcs1Raw(PrivateKeyHandle key,
                                     DigestWithPrefix digest_with_prefix,
                                     Kcer::SignCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::SignRsaPkcs1Raw, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(digest_with_prefix), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  if (!EnsurePkcs11IdIsSet(key)) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  SignRsaPkcs1RawImpl(SignRsaPkcs1RawTask(std::move(key),
+                                          std::move(digest_with_prefix),
+                                          std::move(unblocking_callback)));
+}
+
+// Finds the key.
+void KcerTokenImpl::SignRsaPkcs1RawImpl(SignRsaPkcs1RawTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  Pkcs11Id key_id = task.key.GetPkcs11IdInternal();
+  FindPrivateKey(std::move(key_id),
+                 base::BindOnce(&KcerTokenImpl::SignRsaPkcs1RawWithKeyHandle,
+                                weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Sings the data.
+void KcerTokenImpl::SignRsaPkcs1RawWithKeyHandle(
+    SignRsaPkcs1RawTask task,
+    std::vector<ObjectHandle> key_handles,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return SignRsaPkcs1RawImpl(std::move(task));
+  }
+  if ((result_code != chromeos::PKCS11_CKR_OK) || key_handles.empty()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+  DCHECK_EQ(key_handles.size(), 1u);
+  ObjectHandle key_handle = key_handles.front();
+
+  uint64_t mechanism =
+      SigningSchemeToPkcs11Mechanism(SigningScheme::kRsaPkcs1Sha256);
+
+  std::vector<uint8_t> digest = task.digest_with_prefix.value();
+  auto chaps_callback =
+      base::BindOnce(&KcerTokenImpl::DidSignRsaPkcs1Raw,
+                     weak_factory_.GetWeakPtr(), std::move(task));
+
+  chaps_client_->Sign(pkcs_11_slot_id_, mechanism,
+                      /*mechanism_parameter=*/std::vector<uint8_t>(),
+                      key_handle, std::move(digest), std::move(chaps_callback));
+}
+
+void KcerTokenImpl::DidSignRsaPkcs1Raw(SignRsaPkcs1RawTask task,
+                                       std::vector<uint8_t> signature,
+                                       uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return SignRsaPkcs1RawImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback).Run(base::unexpected(Error::kFailedToSign));
+  }
+
+  return std::move(task.callback).Run(Signature(signature));
 }
 
 //==============================================================================
@@ -1251,6 +1333,22 @@ void KcerTokenImpl::UnblockQueueProcessNextTask() {
   base::OnceClosure next_task = std::move(task_queue_.front());
   task_queue_.pop_front();
   std::move(next_task).Run();
+}
+
+void KcerTokenImpl::FindPrivateKey(
+    Pkcs11Id id,
+    base::OnceCallback<void(std::vector<ObjectHandle>, uint32_t)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const chromeos::PKCS11_CK_OBJECT_CLASS kPrivKeyClass =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chaps::AttributeList private_key_attrs;
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_CLASS,
+               MakeSpan(&kPrivKeyClass));
+  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_ID, id.value());
+
+  chaps_client_->FindObjects(pkcs_11_slot_id_, std::move(private_key_attrs),
+                             std::move(callback));
 }
 
 }  // namespace kcer::internal

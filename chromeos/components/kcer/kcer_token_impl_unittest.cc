@@ -1195,6 +1195,128 @@ TEST_F(KcerTokenImplTest, SignRetrySignOnSessionError) {
   EXPECT_EQ(sign_waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that SignRsaPkcs1Raw can successfully create a signature.
+TEST_F(KcerTokenImplTest, SignRsaPkcs1RawSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  DigestWithPrefix digest({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  ObjectHandle expected_key_handle(10);
+
+  std::vector<ObjectHandle> result_object_list({expected_key_handle});
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+  std::vector<uint8_t> result_signature_bytes({11, 12, 13, 14, 15});
+  Signature result_signature(result_signature_bytes);
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(result_object_list, result_code)));
+  EXPECT_CALL(
+      chaps_client_,
+      Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS,
+           std::vector<uint8_t>(), expected_key_handle, digest.value(), _))
+      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key), digest,
+                         sign_waiter.GetCallback());
+
+  ASSERT_TRUE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().value(), result_signature);
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+}
+
+// Test that SignRsaPkcs1Raw correctly fails when it fails to find the key.
+TEST_F(KcerTokenImplTest, SignRsaPkcs1RawFailToSearch) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  DigestWithPrefix digest({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key), digest,
+                         sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that SignRsaPkcs1Raw retries several times when the search for the key
+// fails with a session error.
+TEST_F(KcerTokenImplTest, SignRsaPkcs1RawRetrySearchOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  DigestWithPrefix digest({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key), digest,
+                         sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that SignRsaPkcs1Raw correctly fails when Chaps fails to sign.
+TEST_F(KcerTokenImplTest, SignRsaPkcs1RawFailToSign) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  DigestWithPrefix digest({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(
+          RunOnceCallback<2>(std::vector<ObjectHandle>({ObjectHandle(10)}),
+                             chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, Sign)
+      .WillOnce(RunOnceCallback<5>(std::vector<uint8_t>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key), digest,
+                         sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kFailedToSign);
+}
+
+// Test that SignRsaPkcs1Raw retries several times when Chaps fails to sign with
+// a session error.
+TEST_F(KcerTokenImplTest, SignRsaPkcs1RawRetrySignOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  DigestWithPrefix digest({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>({ObjectHandle(10)}),
+          chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, Sign)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<5>(
+          std::vector<uint8_t>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key), digest,
+                         sign_waiter.GetCallback());
+
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that all methods are queued until the token is initialized and unblocked
 // after that. In this scenario fail all the methods for simplicity.
 TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
@@ -1219,12 +1341,17 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
               DataToSign({1, 2, 3}), sign_waiter.GetCallback());
+  base::test::TestFuture<base::expected<Signature, Error>> sign_raw_waiter;
+  token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key),
+                         DigestWithPrefix({1, 2, 3}),
+                         sign_raw_waiter.GetCallback());
 
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
   EXPECT_FALSE(remove_key_waiter.IsReady());
   EXPECT_FALSE(key_exists_waiter.IsReady());
   EXPECT_FALSE(sign_waiter.IsReady());
+  EXPECT_FALSE(sign_raw_waiter.IsReady());
 
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
@@ -1232,6 +1359,7 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(remove_key_waiter.Get<>().has_value());
   EXPECT_FALSE(key_exists_waiter.Get<>().has_value());
   EXPECT_FALSE(sign_waiter.Get<>().has_value());
+  EXPECT_FALSE(sign_raw_waiter.Get<>().has_value());
 }
 
 }  // namespace
