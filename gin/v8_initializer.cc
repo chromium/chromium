@@ -252,6 +252,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8PerContextMarkingWorklist,
                          "--stress-per-context-marking-worklist",
                          "--no-stress-per-context-marking-worklist");
+  SetV8FlagsIfOverridden(
+      features::kV8ProfileGuidedOptimization, "--profile-guided-optimization",
+      "--profile-guided-optimization-for-empty-feedback-vector");
   SetV8FlagsIfOverridden(features::kV8FlushEmbeddedBlobICache,
                          "--experimental-flush-embedded-blob-icache",
                          "--no-experimental-flush-embedded-blob-icache");
