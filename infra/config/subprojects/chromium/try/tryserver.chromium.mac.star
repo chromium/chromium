@@ -179,8 +179,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
-    # Allow both x64 and arm64 bots.
-    cpu = None,
+    cpu = cpu.ARM64,
     main_list_view = "try",
 )
 
