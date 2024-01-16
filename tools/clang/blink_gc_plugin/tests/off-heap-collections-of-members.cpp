@@ -22,7 +22,10 @@ class WithCollections : public GarbageCollected<WithCollections> {
     (void)map_value_untraced_;
     (void)vector_pair_;
     (void)ignored_set_;
-    (void)array_;
+
+    for (int i = 0; i < 4; ++i) {
+      v->Trace(array_[i]);
+    }
 
     v->Trace(heap_hash_set_);
     v->Trace(heap_deque_);

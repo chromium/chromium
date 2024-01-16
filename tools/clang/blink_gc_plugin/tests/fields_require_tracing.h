@@ -41,6 +41,8 @@ public:
 
 private:
     PartObject m_part;
+    Member<HeapObject> m_array1[2];
+    std::array<Member<HeapObject>, 2> m_array2;
     Member<HeapObject> m_obj;
 };
 
