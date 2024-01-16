@@ -87,6 +87,10 @@
     visibility: hidden;
   }
 
+  p {
+    padding-inline-end: 3px;
+  }
+
   button {
     font: var(--cros-button-2-font);
     padding: 8px 32px 8px 16px;
@@ -118,7 +122,7 @@
   <div id="searchButtons">
     <cr-button id="inspire" on-click="onClickInspire_">
       <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
-      [[i18n('seaPenInspireMeButton')]]
+      <p>[[i18n('seaPenInspireMeButton')]]</p>
     </cr-button>
     <cr-button
         id="searchButton"
@@ -126,7 +130,7 @@
         on-click="onClickSearchButton_">
       <iron-icon icon="[[getSearchButtonIcon_(path)]]" slot="prefix-icon">
       </iron-icon>
-      [[getSearchButtonText_(path)]]
+      <p>[[getSearchButtonText_(path)]]</p>
     </cr-button>
   </div>
   <cr-action-menu>
