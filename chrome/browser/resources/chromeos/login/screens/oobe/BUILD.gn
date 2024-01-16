@@ -19,7 +19,6 @@ js_type_check("closure_compile") {
   deps = [
     ":consumer_update",
     ":enterprise_enrollment",
-    ":hid_detection",
     ":oobe_network",
     ":welcome",
     ":welcome_dialog",
@@ -59,20 +58,6 @@ js_library("enterprise_enrollment") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("hid_detection") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/hid_detection.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
   extra_deps = [ ":web_components" ]
 }
 
