@@ -1,6 +1,4 @@
 // META: title=Test configurationchange event
-// META: script=/resources/testharness.js
-// META: script=/resources/testharnessreport.js
 // META: script=/mediacapture-image/resources/imagecapture-helpers.js
 
 image_capture_test(async (t, imageCaptureTest) => {
