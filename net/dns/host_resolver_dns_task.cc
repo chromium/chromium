@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 #include "net/base/features.h"
 #include "net/dns/address_sorter.h"
@@ -18,20 +19,11 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/util.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
 namespace {
-
-// TODO(bashi): Avoid duplication.
-base::StringPiece GetScheme(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    return absl::get<url::SchemeHostPort>(host).scheme();
-  }
-
-  return base::StringPiece();
-}
 
 // TODO(bashi): Avoid duplication.
 base::StringPiece GetHostname(
@@ -846,14 +838,20 @@ bool HostResolverDnsTask::ShouldTriggerHttpToHttpsUpgrade(
     const Results& results) {
   // Upgrade if at least one HTTPS record was compatible, and the host uses an
   // upgradable scheme.
+
+  if (!absl::holds_alternative<url::SchemeHostPort>(host_)) {
+    return false;
+  }
+
+  base::StringPiece scheme = absl::get<url::SchemeHostPort>(host_).scheme();
+  if (scheme != url::kHttpScheme && scheme != url::kWsScheme) {
+    return false;
+  }
+
   return base::ranges::any_of(
-             results,
-             [](const std::unique_ptr<HostResolverInternalResult>& result) {
-               return result->type() ==
-                      HostResolverInternalResult::Type::kMetadata;
-             }) &&
-         (GetScheme(host_) == url::kHttpScheme ||
-          GetScheme(host_) == url::kWsScheme);
+      results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return result->type() == HostResolverInternalResult::Type::kMetadata;
+      });
 }
 
 }  // namespace net
