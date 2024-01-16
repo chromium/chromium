@@ -92,16 +92,14 @@ class ScopedMultiSourceObservation {
 
   // Returns the sources being observed. Note: It is invalid to add or remove
   // sources while iterating on it.
-  const std::vector<raw_ptr<Source, LeakedDanglingUntriaged>>& sources() const {
-    return sources_;
-  }
+  const std::vector<raw_ptr<Source>>& sources() const { return sources_; }
 
  private:
   using Traits = ScopedObservationTraits<Source, Observer>;
 
   const raw_ptr<Observer> observer_;
 
-  std::vector<raw_ptr<Source, LeakedDanglingUntriaged>> sources_;
+  std::vector<raw_ptr<Source>> sources_;
 };
 
 }  // namespace base

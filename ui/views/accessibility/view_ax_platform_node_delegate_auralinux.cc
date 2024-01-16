@@ -85,8 +85,10 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
       return;
 
     widget = GetToplevelWidgetIncludingTransientWindows(widget);
-    if (!widget || base::Contains(widgets_, widget))
+    if (!widget || !widget->native_widget() ||
+        base::Contains(widgets_, widget)) {
       return;
+    }
 
     widgets_.push_back(widget);
     widget_observations_.AddObservation(widget);
