@@ -59,7 +59,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bitflags",
- "bytes",
  "cfg-if",
  "cxx",
  "cxxbridge-cmd",
@@ -67,7 +66,6 @@ dependencies = [
  "hex",
  "hex-literal",
  "lazy_static",
- "libc",
  "log",
  "memoffset",
  "nom",
