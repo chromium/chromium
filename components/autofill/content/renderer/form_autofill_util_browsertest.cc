@@ -1357,7 +1357,7 @@ class FieldFramesTest
 // Check if the unowned form control elements are properly extracted.
 // Form control elements are button, fieldset, input, textarea, output and
 // select elements.
-TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
+TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
   LoadHTML(R"(
     <button id='unowned_button'>Unowned button</button>
     <fieldset id='unowned_fieldset'>
@@ -1398,7 +1398,7 @@ TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   std::vector<WebFormControlElement> unowned_form_fields =
-      GetUnownedFormFieldElements(doc);
+      form_util::GetFormControlElements(doc, WebFormElement());
 
   EXPECT_THAT(
       unowned_form_fields,

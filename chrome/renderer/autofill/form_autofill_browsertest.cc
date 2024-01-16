@@ -1313,7 +1313,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
     WebFormElement form_element = input_element.Form();
     std::vector<WebFormControlElement> control_elements =
-        ExtractAutofillableElementsInForm(form_element);
+        GetAutofillableFormControlElements(input_element.GetDocument(),
+                                           form_element);
 
     ASSERT_EQ(6U, control_elements.size());
     // We now modify the values.
@@ -1496,7 +1497,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
     WebFormElement form_element = input_element.Form();
     std::vector<WebFormControlElement> control_elements =
-        ExtractAutofillableElementsInForm(form_element);
+        GetAutofillableFormControlElements(input_element.GetDocument(),
+                                           form_element);
 
     ASSERT_EQ(3U, control_elements.size());
     // We now modify the values.
@@ -1612,7 +1614,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("cc");
     WebFormElement form_element = input_element.Form();
     std::vector<WebFormControlElement> control_elements =
-        ExtractAutofillableElementsInForm(form_element);
+        GetAutofillableFormControlElements(input_element.GetDocument(),
+                                           form_element);
 
     ASSERT_EQ(3U, control_elements.size());
     // We now modify the values.
@@ -1728,7 +1731,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("cc");
     WebFormElement form_element = input_element.Form();
     std::vector<WebFormControlElement> control_elements =
-        ExtractAutofillableElementsInForm(form_element);
+        GetAutofillableFormControlElements(input_element.GetDocument(),
+                                           form_element);
 
     ASSERT_EQ(3U, control_elements.size());
     // We now modify the values.

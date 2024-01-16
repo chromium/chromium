@@ -1379,14 +1379,6 @@ std::vector<WebElement> GetIframeElements(const WebDocument& document,
   return relevant_iframes;
 }
 
-std::vector<WebFormControlElement> GetFormControlElements(
-    const WebDocument& document,
-    const WebFormElement& form_element) {
-  return !form_element.IsNull()
-             ? form_element.GetFormControlElements().ReleaseVector()
-             : GetUnownedAutofillableFormFieldElements(document);
-}
-
 std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebDocument& document,
     const WebFormElement& form_element,
@@ -1927,22 +1919,21 @@ base::i18n::TextDirection GetTextDirectionForElement(
   return direction;
 }
 
-std::vector<blink::WebFormControlElement> ExtractAutofillableElementsFromSet(
-    const WebVector<WebFormControlElement>& control_elements) {
-  std::vector<blink::WebFormControlElement> autofillable_elements;
-  for (const auto& element : control_elements) {
-    if (!IsAutofillableElement(element))
-      continue;
-
-    autofillable_elements.push_back(element);
-  }
-  return autofillable_elements;
+std::vector<WebFormControlElement> GetFormControlElements(
+    const WebDocument& document,
+    const WebFormElement& form_element) {
+  return !form_element.IsNull()
+             ? form_element.GetFormControlElements().ReleaseVector()
+             : document.UnassociatedFormControls().ReleaseVector();
 }
 
-std::vector<WebFormControlElement> ExtractAutofillableElementsInForm(
+std::vector<blink::WebFormControlElement> GetAutofillableFormControlElements(
+    const WebDocument& document,
     const WebFormElement& form_element) {
-  return ExtractAutofillableElementsFromSet(
-      form_element.GetFormControlElements());
+  std::vector<blink::WebFormControlElement> elements =
+      GetFormControlElements(document, form_element);
+  std::erase_if(elements, std::not_fn(&IsAutofillableElement));
+  return elements;
 }
 
 void WebFormControlElementToFormField(
@@ -2145,17 +2136,6 @@ WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
   return WebFormElement();
 }
 
-std::vector<WebFormControlElement> GetUnownedFormFieldElements(
-    const WebDocument& document) {
-  return document.UnassociatedFormControls().ReleaseVector();
-}
-
-std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
-    const WebDocument& document) {
-  return ExtractAutofillableElementsFromSet(
-      GetUnownedFormFieldElements(document));
-}
-
 std::optional<std::pair<FormData, FormFieldData>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
@@ -2254,9 +2234,8 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
 
   WebFormElement form_element = GetOwningForm(initiating_element);
   std::vector<WebFormControlElement> control_elements =
-      form_element.IsNull() ? GetUnownedAutofillableFormFieldElements(
-                                  initiating_element.GetDocument())
-                            : ExtractAutofillableElementsInForm(form_element);
+      GetAutofillableFormControlElements(initiating_element.GetDocument(),
+                                         form_element);
   if (!IsElementInControlElementSet(initiating_element, control_elements)) {
     return {};
   }
@@ -2384,9 +2363,8 @@ void ClearPreviewedElements(
     // If this is a synthetic form, get the unowned form elements. Otherwise,
     // get all element associated with the form of the initiated field.
     std::vector<WebFormControlElement> form_elements =
-        initiating_element.Form().IsNull()
-            ? GetUnownedFormFieldElements(initiating_element.GetDocument())
-            : ExtractAutofillableElementsInForm(initiating_element.Form());
+        GetAutofillableFormControlElements(initiating_element.GetDocument(),
+                                           initiating_element.Form());
 
     // Allow the highlighting of already autofilled fields again.
     for (auto& element : form_elements) {

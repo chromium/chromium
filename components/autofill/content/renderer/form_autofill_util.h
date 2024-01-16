@@ -156,10 +156,14 @@ bool IsCheckableElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is one of the input element types that can be
 // autofilled. {Text, Radiobutton, Checkbox}.
+// TODO(crbug.com/1007974): IsAutofillableInputElement() are currently used
+// inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableInputElement(const blink::WebInputElement& element);
 
 // Returns true if |element| is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
+// TODO(crbug.com/1007974): IsAutofillableElement() are currently used
+// inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
 FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type);
@@ -226,12 +230,18 @@ FieldRendererId GetFieldRendererId(const blink::WebElement& e);
 base::i18n::TextDirection GetTextDirectionForElement(
     const blink::WebFormControlElement& element);
 
-// Returns all the auto-fillable form control elements in |control_elements|.
-std::vector<blink::WebFormControlElement> ExtractAutofillableElementsFromSet(
-    const blink::WebVector<blink::WebFormControlElement>& control_elements);
+// Returns all the form control elements
+// - owned by `form_element` if `!form_element.IsNull()`;
+// - owned by no form otherwise.
+std::vector<blink::WebFormControlElement> GetFormControlElements(
+    const blink::WebDocument& document,
+    const blink::WebFormElement& form_element);
 
-// Returns all the auto-fillable form control elements in |form_element|.
-std::vector<blink::WebFormControlElement> ExtractAutofillableElementsInForm(
+// Returns all the autofillable form control elements
+// - owned by `form_element` if `!form_element.IsNull()`;
+// - owned by no form otherwise.
+std::vector<blink::WebFormControlElement> GetAutofillableFormControlElements(
+    const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 
 struct ShadowFieldData;
@@ -256,15 +266,6 @@ void WebFormControlElementToFormField(
 // - the closest shadow-including ancestor WebFormElement.
 blink::WebFormElement GetOwningForm(
     const blink::WebFormControlElement& form_control);
-
-// Get all form control elements from |elements| that are not part of a form.
-std::vector<blink::WebFormControlElement> GetUnownedFormFieldElements(
-    const blink::WebDocument& document);
-
-// A shorthand for filtering the results of GetUnownedFormFieldElements with
-// ExtractAutofillableElementsFromSet.
-std::vector<blink::WebFormControlElement>
-GetUnownedAutofillableFormFieldElements(const blink::WebDocument& document);
 
 // Returns a list of elements whose id matches one of the ids found in
 // `id_list`.

@@ -307,10 +307,10 @@ void SetAttributeAsync(blink::WebElement target,
 // Annotate |fields| with field signatures, form signature and visibility state
 // as HTML attributes.
 void AnnotateFieldsWithSignatures(
-    std::vector<blink::WebFormControlElement>& fields,
+    base::span<const blink::WebFormControlElement> fields,
     const std::string& form_signature,
     const std::string& alternative_form_signature) {
-  for (blink::WebFormControlElement& control_element : fields) {
+  for (const blink::WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
         form_util::ToAutofillFormControlType(
@@ -352,13 +352,9 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
     const WebInputElement& password_element) {
   DCHECK(!password_element.IsNull());
 
-  std::vector<WebFormControlElement> elements;
-  if (password_element.Form().IsNull()) {
-    elements = form_util::GetUnownedAutofillableFormFieldElements(
-        frame->GetDocument());
-  } else {
-    elements = password_element.Form().GetFormControlElements().ReleaseVector();
-  }
+  std::vector<WebFormControlElement> elements =
+      form_util::GetAutofillableFormControlElements(frame->GetDocument(),
+                                                    password_element.Form());
 
   auto iter = base::ranges::find(elements, password_element);
   if (iter == elements.end())
@@ -1216,13 +1212,17 @@ void PasswordAutofillAgent::UserGestureObserved() {
 
 void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     WebVector<WebFormElement>& forms) {
+  if (!render_frame()) {
+    return;
+  }
+  WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   for (WebFormElement& form : forms) {
     std::unique_ptr<FormData> form_data = GetFormDataFromWebForm(form);
     std::string form_signature;
     std::string alternative_form_signature;
     if (form_data) {
       // GetAlternativeFormSignatureAsString() require the FormData::url.
-      form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
+      form_data->url = document.Url();
       form_signature = GetFormSignatureAsString(*form_data);
       alternative_form_signature =
           GetAlternativeFormSignatureAsString(*form_data);
@@ -1230,15 +1230,11 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
       SetAttributeAsync(form, kDebugAttributeForAlternativeFormSignature,
                         alternative_form_signature);
     }
-    std::vector<WebFormControlElement> form_fields =
-        form_util::ExtractAutofillableElementsInForm(form);
-    AnnotateFieldsWithSignatures(form_fields, form_signature,
-                                 alternative_form_signature);
+    AnnotateFieldsWithSignatures(
+        form_util::GetAutofillableFormControlElements(document, form),
+        form_signature, alternative_form_signature);
   }
 
-  std::vector<WebFormControlElement> unowned_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(
-          render_frame()->GetWebFrame()->GetDocument());
   std::unique_ptr<FormData> form_data = GetFormDataFromUnownedInputElements();
   std::string form_signature;
   std::string alternative_form_signature;
@@ -1249,8 +1245,9 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     alternative_form_signature =
         GetAlternativeFormSignatureAsString(*form_data);
   }
-  AnnotateFieldsWithSignatures(unowned_elements, form_signature,
-                               alternative_form_signature);
+  AnnotateFieldsWithSignatures(
+      form_util::GetAutofillableFormControlElements(document, WebFormElement()),
+      form_signature, alternative_form_signature);
 }
 
 void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
@@ -1331,8 +1328,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   bool add_unowned_inputs = true;
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
-        form_util::GetUnownedAutofillableFormFieldElements(
-            frame->GetDocument());
+        form_util::GetAutofillableFormControlElements(frame->GetDocument(),
+                                                      WebFormElement());
     add_unowned_inputs = base::ranges::any_of(
         control_elements, &IsWebElementFocusableForAutofill);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,

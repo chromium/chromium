@@ -159,7 +159,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache) {
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedFormFieldElements(frame.GetDocument());
+      form_util::GetFormControlElements(frame.GetDocument(), WebFormElement());
   if (control_elements.empty()) {
     return nullptr;
   }

@@ -186,8 +186,8 @@ TEST_F(
   WebLocalFrame* web_frame = GetMainFrame();
 
   std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_util::GetUnownedAutofillableFormFieldElements(
-                        web_frame->GetDocument()),
+      GetFormIssues(form_util::GetAutofillableFormControlElements(
+                        web_frame->GetDocument(), WebFormElement()),
                     {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(

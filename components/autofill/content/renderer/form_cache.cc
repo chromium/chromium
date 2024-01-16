@@ -281,10 +281,8 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element,
   // * Send the focus event.
   WebFormElement form_element = element.Form();
   std::vector<WebFormControlElement> control_elements =
-      form_element.IsNull()
-          ? form_util::GetUnownedAutofillableFormFieldElements(
-                element.GetDocument())
-          : form_util::ExtractAutofillableElementsInForm(form_element);
+      form_util::GetAutofillableFormControlElements(element.GetDocument(),
+                                                    form_element);
 
   if (control_elements.empty())
     return true;
@@ -326,23 +324,11 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                 bool attach_predictions_to_dom) {
   DCHECK_EQ(form.data.fields.size(), form.fields.size());
 
-  std::vector<WebFormControlElement> control_elements;
-
-  if (form.data.unique_renderer_id.is_null()) {  // Form is synthetic.
-    WebDocument document = frame_->GetDocument();
-    control_elements =
-        form_util::GetUnownedAutofillableFormFieldElements(document);
-  } else {
-    for (const WebFormElement& form_element : frame_->GetDocument().Forms()) {
-      if (form_util::GetFormRendererId(form_element) ==
-          form.data.unique_renderer_id) {
-        control_elements =
-            form_util::ExtractAutofillableElementsInForm(form_element);
-        break;
-      }
-    }
-  }
-
+  WebDocument document = frame_->GetDocument();
+  WebFormElement form_element =
+      form_util::FindFormByRendererId(document, form.data.unique_renderer_id);
+  std::vector<WebFormControlElement> control_elements =
+      form_util::GetAutofillableFormControlElements(document, form_element);
   if (control_elements.size() != form.fields.size()) {
     // Keep things simple.  Don't show predictions for forms that were modified
     // between page load and the server's response to our query.

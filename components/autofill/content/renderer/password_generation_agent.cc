@@ -482,17 +482,15 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
       generation_enabled_fields_, last_focused_password_element_id);
 
   if (!is_automatic_generation_available) {
-    WebFormElement form = last_focused_password_element.Form();
-    std::vector<WebFormControlElement> control_elements;
-    if (!form.IsNull()) {
-      control_elements = form_util::ExtractAutofillableElementsInForm(form);
-    } else {
-      const WebLocalFrame& frame = *render_frame()->GetWebFrame();
-      blink::WebDocument doc = frame.GetDocument();
-      if (doc.IsNull())
-        return false;
-      control_elements = form_util::GetUnownedFormFieldElements(doc);
+    blink::WebDocument document =
+        render_frame() ? render_frame()->GetWebFrame()->GetDocument()
+                       : WebDocument();
+    if (document.IsNull()) {
+      return false;
     }
+    WebFormElement form = last_focused_password_element.Form();
+    std::vector<WebFormControlElement> control_elements =
+        form_util::GetAutofillableFormControlElements(document, form);
 
     MaybeCreateCurrentGenerationItem(
         last_focused_password_element,

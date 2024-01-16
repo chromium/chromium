@@ -324,7 +324,7 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
   }
   // Get issues from input elements that belong to no form.
   form_issues = form_issues::GetFormIssues(
-      form_util::GetUnownedAutofillableFormFieldElements(document),
+      form_util::GetAutofillableFormControlElements(document, WebFormElement()),
       std::move(form_issues));
   // Look for fields that after parsed were found to have labels incorrectly
   // used.
