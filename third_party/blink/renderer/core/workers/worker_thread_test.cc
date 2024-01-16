@@ -296,7 +296,15 @@ TEST_F(WorkerThreadTest, SyncTerminate_ImmediatelyAfterStart) {
               ExitCode::kSyncForciblyTerminated == exit_code);
 }
 
-TEST_F(WorkerThreadTest, AsyncTerminate_WhileTaskIsRunning) {
+// TODO(crbug.com/1503519): The test is flaky on Linux TSan
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_AsyncTerminate_WhileTaskIsRunning \
+  DISABLED_AsyncTerminate_WhileTaskIsRunning
+#else
+#define MAYBE_AsyncTerminate_WhileTaskIsRunning \
+  AsyncTerminate_WhileTaskIsRunning
+#endif
+TEST_F(WorkerThreadTest, MAYBE_AsyncTerminate_WhileTaskIsRunning) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
@@ -498,7 +506,15 @@ TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
 }
 
 // Tests terminating a worker when debugger is paused.
-TEST_F(WorkerThreadTest, TerminateWhileWorkerPausedByDebugger) {
+// TODO(crbug.com/1503316): The test is flaky on Linux TSan
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TerminateWhileWorkerPausedByDebugger \
+  DISABLED_TerminateWhileWorkerPausedByDebugger
+#else
+#define MAYBE_TerminateWhileWorkerPausedByDebugger \
+  TerminateWhileWorkerPausedByDebugger
+#endif
+TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
@@ -519,7 +535,13 @@ TEST_F(WorkerThreadTest, TerminateWhileWorkerPausedByDebugger) {
   EXPECT_EQ(ExitCode::kAsyncForciblyTerminated, GetExitCode());
 }
 
-TEST_F(WorkerThreadTest, TerminateFrozenScript) {
+// TODO(crbug.com/1503287): The test is flaky on Linux TSan
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TerminateFrozenScript DISABLED_TerminateFrozenScript
+#else
+#define MAYBE_TerminateFrozenScript TerminateFrozenScript
+#endif
+TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
