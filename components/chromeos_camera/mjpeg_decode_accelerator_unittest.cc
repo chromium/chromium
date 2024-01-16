@@ -17,6 +17,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -104,9 +105,8 @@ struct ParsedJpegImage {
         << file_path;
 
     media::JpegParseResult parse_result;
-    LOG_ASSERT(ParseJpegPicture(
-        reinterpret_cast<const uint8_t*>(image->data_str.data()),
-        image->data_str.size(), &parse_result));
+    LOG_ASSERT(
+        ParseJpegPicture(base::as_byte_span(image->data_str), &parse_result));
 
     image->InitializeSizes(parse_result.frame_header.visible_width,
                            parse_result.frame_header.visible_height);
