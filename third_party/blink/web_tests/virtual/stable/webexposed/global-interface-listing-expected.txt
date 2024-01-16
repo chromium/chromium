@@ -4354,7 +4354,6 @@ interface HTMLTableSectionElement : HTMLElement
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
-    getter shadowRoot
     getter shadowRootMode
     method constructor
     setter shadowRootMode

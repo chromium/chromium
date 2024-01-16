@@ -1250,10 +1250,9 @@
       status: "test",
     },
     {
-      // TODO(crbug.com/1396384) This is being disabled, very slowly, via
-      // Finch over 119 and 120. For now, it is enabled in code, and will be
-      // removed from code starting in M121, assuming things go well.
-      name: "DeprecatedNonStreamingDeclarativeShadowDOM",
+      // This is a killswitch (enabled by *enabling* the feature) for the
+      // removal of the IDL reflection of the old 'shadowroot' attribute.
+      name: "DeprecatedTemplateShadowRoot",
     },
     {
       name: "DesktopCaptureDisableLocalEchoControl",

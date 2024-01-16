@@ -1067,7 +1067,7 @@
   },
   {
     "prefix": "dom-parts-disabled",
-    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/dom/parts",
@@ -1075,6 +1075,17 @@
     ],
     "args": ["--disable-features=DOMPartsAPI",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "Jul 1, 2024"
+  },
+  {
+    "prefix": "template-shadowroot-enabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/shadow-dom/declarative",
+      "shadow-dom/template-shadowroot-reflection.html"
+    ],
+    "args": ["--enable-blink-features=DeprecatedTemplateShadowRoot"],
     "expires": "Jul 1, 2024"
   },
   {

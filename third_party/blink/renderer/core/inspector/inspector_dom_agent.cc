@@ -1870,12 +1870,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     }
 
     if (auto* template_element = DynamicTo<HTMLTemplateElement>(*element)) {
-      // The inspector should not try to access the .content() property of
-      // declarative Shadow DOM <template> elements, because it will be null.
-      if (!template_element->IsDeclarativeShadowRoot() &&
-          template_element->content()) {
-        value->setTemplateContent(BuildObjectForNode(
-            template_element->content(), 0, pierce, nodes_map, flatten_result));
+      if (DocumentFragment* content = template_element->content()) {
+        value->setTemplateContent(
+            BuildObjectForNode(content, 0, pierce, nodes_map, flatten_result));
         force_push_children = true;
       }
     }

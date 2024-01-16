@@ -322,6 +322,7 @@
       ],
       chrome_status_feature: 6239658726391808,
       milestone: 119,
+      obsolete_to_be_removed_after_milestone: 132,
     },
     {
       name: "NoSysexWebMIDIWithoutPermission",

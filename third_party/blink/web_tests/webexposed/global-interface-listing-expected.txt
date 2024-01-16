@@ -4930,7 +4930,6 @@ interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
     getter parseparts
-    getter shadowRoot
     getter shadowRootMode
     method constructor
     setter parseparts

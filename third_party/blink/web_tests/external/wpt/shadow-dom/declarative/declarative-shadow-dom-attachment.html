@@ -60,7 +60,7 @@ function testElementType(allowed, nochildren, elementType, mode, delegatesFocus)
       }, 'Calling attachShadow a second time on an element with a declarative shadow fails (opposite mode)');
     } else {
       if (!nochildren) {
-        // Invalid elements should retain a <template> element child with a shadowroot attribute.
+        // Invalid elements should retain a <template> element child with a shadowrootmode attribute.
         const template = nodes.wrapper.querySelector('template[shadowrootmode]');
         assert_true(!!template);
         assert_equals(template.getAttribute('shadowrootmode'), mode, `Template with shadowrootmode=${mode} should be left over`);

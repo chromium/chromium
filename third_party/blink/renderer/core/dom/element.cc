@@ -5241,21 +5241,17 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   return &shadow_root;
 }
 
-bool Element::AttachStreamingDeclarativeShadowRoot(
-    HTMLTemplateElement& template_element,
-    ShadowRootType type,
-    FocusDelegation focus_delegation,
-    SlotAssignmentMode slot_assignment) {
+bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
+                                          ShadowRootType type,
+                                          FocusDelegation focus_delegation,
+                                          SlotAssignmentMode slot_assignment) {
   CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
-  CHECK(!template_element.IsNonStreamingDeclarativeShadowRoot());
 
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
   // attach a shadow root, catch it, and ignore the exception.
   if (const char* error_message = ErrorMessageForAttachShadow()) {
-    template_element.SetDeclarativeShadowRootType(
-        DeclarativeShadowRootType::kNone);
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError, error_message));
@@ -5270,55 +5266,6 @@ bool Element::AttachStreamingDeclarativeShadowRoot(
   // 13.NEW. Set declarative shadow host element's shadow host's "available
   // to element internals" to true.
   shadow_root.SetAvailableToElementInternals(true);
-  return true;
-}
-
-// TODO(crbug.com/1396384) Remove this entire function when the older version
-// of declarative shadow DOM is removed.
-bool Element::AttachDeprecatedNonStreamingDeclarativeShadowRoot(
-    HTMLTemplateElement& template_element,
-    ShadowRootType type,
-    FocusDelegation focus_delegation,
-    SlotAssignmentMode slot_assignment) {
-  CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
-  CHECK(template_element.IsNonStreamingDeclarativeShadowRoot());
-  CHECK(RuntimeEnabledFeatures::
-            DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
-
-  Deprecation::CountDeprecation(
-      GetDocument().GetExecutionContext(),
-      mojom::blink::WebFeature::kDeclarativeShadowRoot);
-
-  // 12. Run attach a shadow root with shadow host equal to declarative shadow
-  // host element, mode equal to declarative shadow mode, and delegates focus
-  // equal to declarative shadow delegates focus. If an exception was thrown by
-  // attach a shadow root, catch it, and ignore the exception.
-  if (const char* error_message = ErrorMessageForAttachShadow()) {
-    template_element.SetDeclarativeShadowRootType(
-        DeclarativeShadowRootType::kNone);
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kError, error_message));
-    return false;
-  }
-
-  ShadowRoot& shadow_root =
-      AttachShadowRootInternal(type, focus_delegation, slot_assignment);
-  // 13.1. Set declarative shadow host element's shadow host's "is declarative
-  // shadow root" property to true.
-  shadow_root.SetIsDeclarativeShadowRoot(true);
-  // 13.NEW. Set declarative shadow host element's shadow host's "available
-  // to element internals" to true.
-  shadow_root.SetAvailableToElementInternals(true);
-
-  // 13.2. Append the declarative template element's DocumentFragment to the
-  // newly-created shadow root.
-  shadow_root.ParserTakeAllChildrenFrom(
-      *template_element.DeclarativeShadowContent());
-  // 13.3. Remove the declarative template element from the document.
-  if (template_element.parentNode()) {
-    template_element.parentNode()->ParserRemoveChild(template_element);
-  }
   return true;
 }
 
@@ -6648,11 +6595,7 @@ void Element::SetInnerHTMLInternal(const String& html,
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
-        // Allow replacing innerHTML on declarative shadow templates, prior to
-        // their closing tag being parsed.
-        container = template_element->IsDeclarativeShadowRoot()
-                        ? template_element->DeclarativeShadowContent()
-                        : template_element->content();
+        container = template_element->content();
         swap_dom_parts =
             template_element->hasAttribute(html_names::kParsepartsAttr);
       }
