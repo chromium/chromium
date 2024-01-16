@@ -8,3 +8,8 @@ per-file device_command_remote_powerwash_job*=file://chromeos/ash/components/pol
 # https://issuetracker.google.com/issues/new?component=1111632 (internal) or at
 # https://issuetracker.google.com/issues/new?component=1185302 (public).
 per-file device_command_refresh_machine_certificate_job*=file://chromeos/ash/components/policy/REMOTE_MANAGEMENT_OWNERS
+
+# For device status fetch. Please report issues at
+# https://issuetracker.google.com/issues/new?component=817866 (internal) or at
+# https://issuetracker.google.com/issues/new?component=1240924 (public).
+per-file device_command_fetch_status_job*=file://components/reporting/OWNERS
