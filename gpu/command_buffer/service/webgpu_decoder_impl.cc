@@ -1890,7 +1890,8 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     std::vector<wgpu::TextureFormat> view_formats) {
   std::unique_ptr<DawnImageRepresentation> shared_image =
       shared_image_representation_factory_->ProduceDawn(
-          mailbox, device, backendType, std::move(view_formats));
+          mailbox, device, backendType, std::move(view_formats),
+          shared_context_state_);
 
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";

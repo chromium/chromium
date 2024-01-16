@@ -1059,9 +1059,10 @@ SharedImageRepresentationFactory::ProduceDawn(
     const Mailbox& mailbox,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   return manager_->ProduceDawn(mailbox, tracker_.get(), device, backend_type,
-                               std::move(view_formats));
+                               std::move(view_formats), context_state);
 }
 
 std::unique_ptr<OverlayImageRepresentation>

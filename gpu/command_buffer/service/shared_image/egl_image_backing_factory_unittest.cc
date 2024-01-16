@@ -453,7 +453,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
     // Create a DawnImageRepresentation using WGPUBackendType_OpenGLES backend.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::OpenGLES, {});
+            mailbox, device, wgpu::BackendType::OpenGLES, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -539,7 +539,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
     // Create a DawnImageRepresentation using the OpenGLES backend.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device, wgpu::BackendType::OpenGLES, {});
+            mailbox, device, wgpu::BackendType::OpenGLES, {}, context_state_);
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(

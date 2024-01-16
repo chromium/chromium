@@ -1063,7 +1063,8 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(USE_DAWN)
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format());
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
@@ -1146,8 +1147,9 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
 #if BUILDFLAG(SKIA_USE_DAWN)
     auto device = context_state->dawn_context_provider()->GetDevice();
     auto backend_type = context_state->dawn_context_provider()->backend_type();
-    auto dawn_representation = ProduceDawn(manager, tracker, device,
-                                           backend_type, /*view_formats=*/{});
+    auto dawn_representation =
+        ProduceDawn(manager, tracker, device, backend_type, /*view_formats=*/{},
+                    context_state);
     if (!dawn_representation) {
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;

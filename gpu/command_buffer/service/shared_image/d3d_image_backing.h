@@ -105,7 +105,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
 #endif  // BUILDFLAG(USE_DAWN)
   void UpdateExternalFence(
       scoped_refptr<gfx::D3DSharedFence> external_fence) override;

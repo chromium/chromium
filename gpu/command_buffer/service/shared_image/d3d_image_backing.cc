@@ -572,7 +572,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == wgpu::BackendType::OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
@@ -1049,8 +1050,9 @@ D3DImageBacking::ProduceSkiaGraphite(
   auto device = context_state->dawn_context_provider()->GetDevice();
   wgpu::AdapterProperties adapter_properties;
   device.GetAdapter().GetProperties(&adapter_properties);
-  auto dawn_representation = ProduceDawn(manager, tracker, device.Get(),
-                                         adapter_properties.backendType, {});
+  auto dawn_representation =
+      ProduceDawn(manager, tracker, device.Get(),
+                  adapter_properties.backendType, {}, context_state);
   const bool is_yuv_plane = NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,

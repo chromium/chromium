@@ -676,7 +676,8 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& wgpuDevice,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DAWN)
   auto wgpu_format = ToDawnFormat(format());
 

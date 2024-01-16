@@ -239,7 +239,8 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -250,8 +251,9 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceDawn(
-      this, tracker, device, backend_type, std::move(view_formats));
+  auto representation =
+      (*found)->ProduceDawn(this, tracker, device, backend_type,
+                            std::move(view_formats), context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
                   "Dawn representation from an incompatible backing: "

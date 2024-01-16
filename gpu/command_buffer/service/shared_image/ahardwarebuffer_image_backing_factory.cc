@@ -251,7 +251,8 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
-      std::vector<wgpu::TextureFormat> view_formats) override;
+      std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
 
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -462,8 +463,8 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
 #if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   auto backend_type = context_state->dawn_context_provider()->backend_type();
-  auto dawn_representation =
-      ProduceDawn(manager, tracker, device, backend_type, /*view_formats=*/{});
+  auto dawn_representation = ProduceDawn(manager, tracker, device, backend_type,
+                                         /*view_formats=*/{}, context_state);
   if (!dawn_representation) {
     LOG(ERROR) << "Could not create Dawn Representation";
     return nullptr;
@@ -542,7 +543,8 @@ AHardwareBufferImageBacking::ProduceDawn(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
-    std::vector<wgpu::TextureFormat> view_formats) {
+    std::vector<wgpu::TextureFormat> view_formats,
+    scoped_refptr<SharedContextState> context_state) {
 #if BUILDFLAG(USE_DAWN)
   // Use same texture for all the texture representations generated from same
   // backing.

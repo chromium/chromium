@@ -194,9 +194,9 @@ TEST_F(SharedImageRepresentationTest, DawnClearing) {
   procs.textureRelease = [](WGPUTexture) {};
   dawnProcSetProcs(&procs);
 
-  auto representation =
-      manager_.ProduceDawn(mailbox_, tracker_.get(), /*device=*/nullptr,
-                           wgpu::BackendType::Null, {});
+  auto representation = manager_.ProduceDawn(
+      mailbox_, tracker_.get(), /*device=*/nullptr, wgpu::BackendType::Null, {},
+      /*context_state=*/nullptr);
   EXPECT_FALSE(representation->IsCleared());
 
   // We should not be able to begin access with |allow_uncleared| == false.
