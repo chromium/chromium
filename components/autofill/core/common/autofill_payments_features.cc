@@ -119,13 +119,6 @@ BASE_FEATURE(kAutofillEnableUserAvatarInSaveCardFooter,
              "AutofillEnableUserAvatarInSaveCardFooter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, client side URL filtering will be triggered for the merchant
-// opt-out use-case, so that virtual card suggestions are not shown on websites
-// that are opted-out of virtual cards.
-BASE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering,
-             "AutofillEnableMerchantOptOutClientSideUrlFiltering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on desktop.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop,

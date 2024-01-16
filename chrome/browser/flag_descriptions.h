@@ -290,10 +290,6 @@ extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
 extern const char kAutofillEnableUserAvatarInSaveCardFooterName[];
 extern const char kAutofillEnableUserAvatarInSaveCardFooterDescription[];
 
-extern const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[];
-extern const char
-    kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[];
-
 extern const char kAutofillEnableCardArtImageName[];
 extern const char kAutofillEnableCardArtImageDescription[];
 

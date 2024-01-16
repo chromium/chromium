@@ -121,9 +121,6 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
 // when we have seen a credit card form, and meet all of the pre-requisites for
 // the Visa merchant opt-out use-case.
 TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -144,9 +141,6 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
 // when we have seen a credit card form, but the network is not Visa.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_VcnMerchantOptOut_NotVisaNetwork) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -167,9 +161,6 @@ TEST_F(AutofillOptimizationGuideTest,
 // enrollment
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_VcnMerchantOptOut_IssuerEnrollment) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -190,9 +181,6 @@ TEST_F(AutofillOptimizationGuideTest,
 // the account.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_VcnMerchantOptOut_NotEnrolledInVirtualCard) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -211,33 +199,9 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that no optimization type is registered when we have seen a credit card
 // form, and meet all of the pre-requisites for the Visa merchant opt-out
-// use-case, but the flag is turned off.
-TEST_F(AutofillOptimizationGuideTest,
-       CreditCardFormFound_VcnMerchantOptOut_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
-
-  EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
-
-  autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
-}
-
-// Test that no optimization type is registered when we have seen a credit card
-// form, and meet all of the pre-requisites for the Visa merchant opt-out
 // use-case, but there is no personal data manager present.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_VcnMerchantOptOut_NoPersonalDataManager) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -255,9 +219,6 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that if the field type does not correlate to any optimization type we
 // have, that no optimization type is registered.
 TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableMerchantOptOutClientSideUrlFiltering}, {});
   AutofillField field;
   FormData form_data;
   form_data.fields = {field};
@@ -276,9 +237,6 @@ TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
 // registered.
 TEST_F(AutofillOptimizationGuideTest,
        FormWithMultipleOptimizationTypesToRegisterFound) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableMerchantOptOutClientSideUrlFiltering}, {});
   FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
                                                     /*use_month_type=*/false);
   base::ranges::move(CreateTestIbanFormData().fields,
@@ -366,9 +324,6 @@ TEST_F(
 // merchant opt-out use-case.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
@@ -392,9 +347,6 @@ TEST_F(AutofillOptimizationGuideTest,
 // suggestion in the VCN merchant opt-out use-case.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_UrlNotBlocked) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
@@ -414,40 +366,10 @@ TEST_F(AutofillOptimizationGuideTest,
       url, &virtual_card));
 }
 
-// Test that if all of the prerequisites are met to block a virtual card
-// suggestion for the VCN merchant opt-out use-case, but the flag is off, that
-// we do not block the virtual card suggestion from being displayed.
-TEST_F(AutofillOptimizationGuideTest,
-       ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
-  GURL url("https://example.com/");
-  CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::kNetwork);
-  test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
-
-  EXPECT_CALL(
-      *decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(0);
-
-  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
-      url, &virtual_card));
-}
-
 // Test that we do not block virtual card suggestions in the VCN merchant
 // opt-out use-case if the card is an issuer-level enrollment.
 TEST_F(AutofillOptimizationGuideTest,
        ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_IssuerEnrollment) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
@@ -473,9 +395,6 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(
     AutofillOptimizationGuideTest,
     ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_NetworkDoesNotHaveBlocklist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(

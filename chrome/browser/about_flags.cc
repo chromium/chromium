@@ -10110,15 +10110,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(user_notes::kUserNotes)},
 #endif
 
-    {"autofill-enable-merchant-opt-out-client-side-url-filtering",
-     flag_descriptions::kAutofillEnableMerchantOptOutClientSideUrlFilteringName,
-     flag_descriptions::
-         kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableMerchantOptOutClientSideUrlFiltering)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-eol-notification-reset-dismissed-prefs",
      flag_descriptions::kEolResetDismissedPrefsName,

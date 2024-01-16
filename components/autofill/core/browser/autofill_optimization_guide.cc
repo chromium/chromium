@@ -70,9 +70,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
     optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantOptOutClientSideUrlFiltering) &&
-      personal_data_manager) {
+  if (personal_data_manager) {
     bool has_credit_card_field =
         base::ranges::any_of(form_structure, [](const auto& field) {
           return field->Type().group() == FieldTypeGroup::kCreditCard;
@@ -129,11 +127,6 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
 bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
     const GURL& url,
     const CreditCard* card) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantOptOutClientSideUrlFiltering)) {
-    return false;
-  }
-
   if (auto optimization_type =
           GetVcnMerchantOptOutOptimizationTypeForCard(card);
       optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {
