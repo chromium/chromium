@@ -16,6 +16,7 @@
 namespace content {
 
 class AttributionDataHostManager;
+class RenderFrameHostImpl;
 
 // The `AttributionSuitableContext` encapsulates the context necessary from a
 // `RenderFrameHost` for a `KeepAliveAttributionRequestHelper` to be created.
@@ -27,6 +28,8 @@ class CONTENT_EXPORT AttributionSuitableContext {
   // attribution.
   static absl::optional<AttributionSuitableContext> Create(
       GlobalRenderFrameHostId initiator_frame_id);
+  static absl::optional<AttributionSuitableContext> Create(
+      RenderFrameHostImpl*);
 
   AttributionSuitableContext(const AttributionSuitableContext&);
   AttributionSuitableContext& operator=(const AttributionSuitableContext&);

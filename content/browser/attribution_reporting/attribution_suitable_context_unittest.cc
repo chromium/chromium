@@ -104,6 +104,10 @@ TEST_F(AttributionSuitableContextTest,
 
   auto context = AttributionSuitableContext::Create(subframe->GetGlobalId());
   ASSERT_TRUE(context.has_value());
+  // Can also be created by passing the pointer directly instead of the id.
+  ASSERT_TRUE(AttributionSuitableContext::Create(
+                  static_cast<RenderFrameHostImpl*>(subframe))
+                  .has_value());
 
   EXPECT_FALSE(context->is_nested_within_fenced_frame());
   EXPECT_EQ(context->root_render_frame_id(),

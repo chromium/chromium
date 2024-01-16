@@ -33,13 +33,18 @@ using attribution_reporting::SuitableOrigin;
 // static
 absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
     GlobalRenderFrameHostId initiator_frame_id) {
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::kConversionMeasurement)) {
+  return Create(RenderFrameHostImpl::FromID(initiator_frame_id));
+}
+
+// static
+absl::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
+    RenderFrameHostImpl* initiator_frame) {
+  if (!initiator_frame) {
     return absl::nullopt;
   }
 
-  auto* initiator_frame = RenderFrameHostImpl::FromID(initiator_frame_id);
-  if (!initiator_frame) {
+  if (!base::FeatureList::IsEnabled(
+          attribution_reporting::features::kConversionMeasurement)) {
     return absl::nullopt;
   }
 

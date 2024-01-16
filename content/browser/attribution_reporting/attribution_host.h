@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,10 +23,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
-
-namespace attribution_reporting {
-class SuitableOrigin;
-}  // namespace attribution_reporting
 
 namespace content {
 
@@ -105,12 +102,6 @@ class CONTENT_EXPORT AttributionHost
   void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle,
                                         bool is_final_response);
 
-  // Returns the top frame origin corresponding to the current target frame.
-  // Returns `std::nullopt` and reports a bad message if the top frame origin
-  // is not potentially trustworthy or the current target frame is not a secure
-  // context.
-  std::optional<attribution_reporting::SuitableOrigin>
-  TopFrameOriginForSecureContext();
 
   AttributionInputEvent GetMostRecentNavigationInputEvent() const;
 
