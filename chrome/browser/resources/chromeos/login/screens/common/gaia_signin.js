@@ -934,7 +934,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.reset();
     this.emailDomain_ = domain;
     this.$.enrollmentNudge.showDialog();
-    afterNextRender(this, () => this.$.enterpriseEnrollment.focus());
   }
 
   /**
