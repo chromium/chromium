@@ -155,7 +155,7 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
 // displayed instead of the info bar on Android.
 BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet,
              "AutofillEnablePaymentsAndroidBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, in use-cases where we would not have triggered any user-visible
