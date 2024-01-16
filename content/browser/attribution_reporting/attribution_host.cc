@@ -447,9 +447,7 @@ bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
 
   AttributionInputEvent input_event;
   if (navigation_id.has_value()) {
-    input_event = AttributionHost::FromWebContents(
-                      WebContents::FromRenderFrameHost(initiator_frame_host))
-                      ->GetMostRecentNavigationInputEvent();
+    input_event = GetMostRecentNavigationInputEvent();
   }
 
   AttributionManager* attribution_manager =

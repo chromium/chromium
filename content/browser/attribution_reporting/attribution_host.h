@@ -68,7 +68,8 @@ class CONTENT_EXPORT AttributionHost
   // later. This should be called before the navigation committed for a
   // navigation beacon.
   // This function should only be invoked if Attribution Reporting API is
-  // enabled on the page.
+  // enabled on the page, and for the instance associated with the navigation
+  // initiator's web contents.
   // `navigation_id` will be set if this beacon is being sent as the result of a
   // top navigation initiated by a fenced frame. This is used to track
   // attributions that occur on a navigated page after the current page has been
