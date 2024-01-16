@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
@@ -226,6 +227,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
+     * @param incognitoTabSwitcherSupplier Supplier of the incognito {@link TabSwitcher}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
@@ -273,6 +275,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
+            @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
@@ -320,6 +323,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 tabModelSelectorSupplier,
                 startSurfaceSupplier,
                 tabSwitcherSupplier,
+                incognitoTabSwitcherSupplier,
                 intentMetadataOneshotSupplier,
                 layoutStateProviderOneshotSupplier,
                 startSurfaceParentTabSupplier,
@@ -635,6 +639,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new IncognitoReauthTopToolbarDelegate() {
                     @Override
                     public int disableNewTabButton() {
+                        // Hub handles this at the pane level.
+                        if (HubFieldTrial.isHubEnabled()) return 0;
                         return mToolbarManager
                                 .getTopToolbarInteractabilityManager()
                                 .disableNewTabButton();
@@ -642,6 +648,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
                     @Override
                     public void enableNewTabButton(int clientToken) {
+                        // Hub handles this at the pane level.
+                        if (HubFieldTrial.isHubEnabled()) return;
                         mToolbarManager
                                 .getTopToolbarInteractabilityManager()
                                 .enableNewTabButton(clientToken);
@@ -677,7 +685,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     });
                         }));
 
-        mTabSwitcherSupplier.onAvailable(
+        mIncognitoTabSwitcherSupplier.onAvailable(
                 mTabSwitcherCustomViewManagerCallbackController.makeCancelable(
                         (tabSwitcher) -> {
                             if (incognitoReauthCoordinatorFactory.getTabSwitcherCustomViewManager()

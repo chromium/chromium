@@ -17,11 +17,11 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
  * <p>TODO(crbug.com/1489724): Actually show the menu in the screen; this just calls
  * #onMenuOrKeyboardAction() at the moment.
  */
-public class AppMenuFacility extends StationFacility<BasePageStation> {
+public class PageAppMenuFacility extends StationFacility<BasePageStation> {
 
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
-    public AppMenuFacility(
+    public PageAppMenuFacility(
             BasePageStation station, ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
         super(station);
         mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;

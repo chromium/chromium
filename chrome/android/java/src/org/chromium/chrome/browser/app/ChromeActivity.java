@@ -568,6 +568,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
                 () -> null,
                 mBrowserControlsManagerSupplier.get(),
                 getWindowAndroid(),

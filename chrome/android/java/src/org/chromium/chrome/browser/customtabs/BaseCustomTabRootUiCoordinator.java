@@ -198,6 +198,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
                 () -> null,
                 browserControlsManager,
                 windowAndroid,

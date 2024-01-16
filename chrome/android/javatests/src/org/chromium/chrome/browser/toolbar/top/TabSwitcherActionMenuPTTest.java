@@ -23,9 +23,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.AppMenuFacility;
 import org.chromium.chrome.test.transit.BasePageStation;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.TabSwitcherStation;
@@ -93,7 +93,7 @@ public class TabSwitcherActionMenuPTTest {
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         BasePageStation page = mTransitEntryPoints.startOnBlankPage();
 
-        AppMenuFacility appMenu = page.openAppMenu();
+        PageAppMenuFacility appMenu = page.openAppMenu();
         page = appMenu.openNewIncognitoTab();
 
         appMenu = page.openAppMenu();

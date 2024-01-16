@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.test.transit;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.CoreMatchers.allOf;
 
 import android.view.View;
 
@@ -13,6 +18,7 @@ import androidx.test.espresso.Espresso;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
@@ -24,14 +30,17 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The Hub screen, with several panes and a toolbar. */
 public class HubStation extends TransitStation {
-    // TODO(crbug/1498446): Uncomment once Hub toolbar has a non-zero height.
-    // public static final Matcher<View> HUB_TOOLBAR = withId(R.id.hub_toolbar);
+    public static final Matcher<View> HUB_TOOLBAR = withId(R.id.hub_toolbar);
     public static final Matcher<View> HUB_PANE_HOST = withId(R.id.hub_pane_host);
+    public static final Matcher<View> HUB_MENU_BUTTON =
+            allOf(
+                    isDescendantOfA(withId(R.id.hub_toolbar)),
+                    withId(org.chromium.chrome.R.id.menu_button));
 
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
     /**
-     * @params chromeTabbedActivityTestRule The {@link ChromeTabbedActivityTestRule} of the test.
+     * @param chromeTabbedActivityTestRule The {@link ChromeTabbedActivityTestRule} of the test.
      */
     public HubStation(ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
         super();
@@ -40,9 +49,9 @@ public class HubStation extends TransitStation {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        // TODO(crbug/1498446): Uncomment once Hub toolbar has a non-zero height.
-        // elements.declareView(HUB_TOOLBAR);
+        elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
+        elements.declareView(HUB_MENU_BUTTON);
 
         elements.declareEnterCondition(new HubIsEnabled());
         elements.declareEnterCondition(new HubLayoutShowing());
@@ -64,6 +73,19 @@ public class HubStation extends TransitStation {
                         /* incognito= */ false,
                         /* isOpeningTab= */ false);
         return Trip.travelSync(this, destination, (t) -> Espresso.pressBack());
+    }
+
+    /**
+     * Opens the app menu on the current pane.
+     *
+     * @return the {@link HubAppMenuFacility} for the Hub.
+     */
+    public HubAppMenuFacility openAppMenu() {
+        recheckEnterConditions();
+
+        HubAppMenuFacility menu = new HubAppMenuFacility(this, mChromeTabbedActivityTestRule);
+
+        return StationFacility.enterSync(menu, (e) -> onView(HUB_MENU_BUTTON).perform(click()));
     }
 
     private class HubIsEnabled extends UiThreadCondition {

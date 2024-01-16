@@ -53,10 +53,10 @@ public abstract class BasePageStation extends TransitStation {
                 menu, (e) -> onView(TAB_SWITCHER_BUTTON).perform(longClick()));
     }
 
-    public AppMenuFacility openAppMenu() {
+    public PageAppMenuFacility openAppMenu() {
         recheckEnterConditions();
 
-        AppMenuFacility menu = new AppMenuFacility(this, mChromeTabbedActivityTestRule);
+        PageAppMenuFacility menu = new PageAppMenuFacility(this, mChromeTabbedActivityTestRule);
 
         // TODO(crbug.com/1489724): Put a real trigger, the app menu doesn't currently show on the
         // screen.
