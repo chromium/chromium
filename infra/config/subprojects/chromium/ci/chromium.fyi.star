@@ -1725,7 +1725,7 @@ fyi_mac_builder(
         category = "mac",
         short_name = "cmp",
     ),
-    execution_timeout = 14 * time.hour,
+    execution_timeout = 16 * time.hour,
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
