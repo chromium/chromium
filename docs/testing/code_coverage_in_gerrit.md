@@ -41,7 +41,11 @@ For some teams in Chrome, we have turned on a coverage check, which blocks a CL 
 
 Once the tests are added, another run of coverage builders (through CQ+1 or CQ+2) changes the label to `CodeCoverage+1`, allowing CLs to proceed with submission.
 
-Devs can also choose to bypass this block, in case they think they are being unfairly punished. They can do so by adding a *Low-Coverage-Reason: reason* footer to the change description. The `reason` string should mention the category the bypass reason belongs to. For e.g. *Low-Coverage-Reason: TRIVIAL_CHANGE This change contains only minor cosmetic changes.* (TRIVIAL_CHANGE is the category)
+Devs can also choose to bypass this block, in case they think they are being unfairly punished. They can do so by adding a *Low-Coverage-Reason: reason* footer to the change description. This should follow certain formatting constraints which are mentioned below
+
+### Mention the Bypass Category
+
+The `reason` string should mention the category the bypass reason belongs to. For e.g. *Low-Coverage-Reason: TRIVIAL_CHANGE This change contains only minor cosmetic changes.* (TRIVIAL_CHANGE is the category)
 
 Available category choices are:
 * **TRIVIAL_CHANGE**: CL contains mostly minor changes e.g. renaming, file moves, logging statements, simple interface definitions etc.
@@ -55,6 +59,19 @@ Available category choices are:
 
 In case the developer doesn't specify the coverage category as prescribed, a warning will be shown in the UI, with details on how to fix
 ![impropery_formatted_coverage_footer]
+
+### No empty line after the footer
+In order for *Low-Coverage-Reason: reason* to work properly, it should occur after the last empty line in CL description, otherwise gerrit recognizes it as part of the commit message, rather than the footer i.e. Following would not work
+![empty_line_after_footer]
+
+Removing the empty line should fix it
+![no_empty_line_after_footer]
+
+### Be careful with long footer strings
+Either keep the footer message in one line i.e. do not add line breaks; or if you do, add whitespace on new footer lines, otherwise [gerrit doesn’t parse them right]. e.g. a long footer message can be written as
+![long_footer]
+or
+![line_break_footer]
 
 ## Contacts
 
@@ -87,9 +104,14 @@ in Gerrit.
 [code_coverage_annotations]: images/code_coverage_annotations.png
 [code_coverage_percentages]: images/code_coverage_percentages.png
 [low_coverage_message]: images/low_coverage_message.png
+[empty_line_after_footer]: images/empty_line_after_footer.png
+[no_empty_line_after_footer]: images/no_empty_line_after_footer.png
+[long_footer]: images/long_footer.png
+[line_break_footer]: images/line_break_footer.png
 [impropery_formatted_coverage_footer]: images/improperly_formatted_coverage_footer.png
 [file a bug]: https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ETest%3ECodeCoverage
 [code-coverage group]: https://groups.google.com/a/chromium.org/forum/#!forum/code-coverage
 [code_coverage.md]: code_coverage.md
 [clang_code_coverage_wrapper]: https://chromium.googlesource.com/chromium/src/+/main/docs/clang_code_coverage_wrapper.md
 [chromium-coverage Gerrit plugin]: https://chromium.googlesource.com/infra/gerrit-plugins/code-coverage/
+[gerrit doesn’t parse them right]: https://bugs.chromium.org/p/chromium/issues/detail?id=1459714#c9
