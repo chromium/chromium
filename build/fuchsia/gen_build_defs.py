@@ -262,6 +262,7 @@ _CONVERSION_FUNCTION_MAP = {
     'loadable_module': ConvertLoadableModule,
 
     # No need to build targets for these types yet.
+    'bind_library': ConvertNoOp,
     'companion_host_tool': ConvertNoOp,
     'component_manifest': ConvertNoOp,
     'config': ConvertNoOp,
@@ -272,6 +273,7 @@ _CONVERSION_FUNCTION_MAP = {
     'ffx_tool': ConvertNoOp,
     'host_tool': ConvertNoOp,
     'image': ConvertNoOp,
+    'package': ConvertNoOp,
     'sysroot': ConvertNoOp,
 }
 
