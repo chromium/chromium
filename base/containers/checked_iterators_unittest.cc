@@ -109,19 +109,20 @@ struct DisableDerefAndIncr : Iterator {
 
 // Inherit `pointer_traits` specialization from the base class.
 template <typename Iter>
-struct ::std::pointer_traits<DisableDerefAndIncr<Iter>>
+struct std::pointer_traits<DisableDerefAndIncr<Iter>>
     : ::std::pointer_traits<Iter> {};
 
 namespace base {
 
 // Tests that using std::copy with CheckedContiguousIterator<int> results in an
 // optimized code-path that does not invoke the iterator's dereference and
-// increment operations. This would fail to compile if std::copy was not
-// optimized.
+// increment operations, as expected in libc++. This fails to compile if
+// std::copy is not optimized.
 // NOTE: This test relies on implementation details of the STL and thus might
 // break in the future during a libc++ roll. If this does happen, please reach
 // out to memory-safety-dev@chromium.org to reevaluate whether this test will
 // still be needed.
+#if defined(_LIBCPP_VERSION)
 TEST(CheckedContiguousIterator, OptimizedCopy) {
   using Iter = DisableDerefAndIncr<CheckedContiguousIterator<int>>;
 
@@ -136,5 +137,6 @@ TEST(CheckedContiguousIterator, OptimizedCopy) {
 
   EXPECT_TRUE(ranges::equal(arr_in, arr_out));
 }
+#endif  // defined(_LIBCPP_VERSION)
 
 }  // namespace base
