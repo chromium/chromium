@@ -32,6 +32,7 @@ AllowStatus check(std::string board,
 }  // namespace
 
 TEST(BorealisTokenHardwareCheckerTest, Volteer) {
+  // Previous CPU name branding
   EXPECT_EQ(check("volteer", "lindar",
                   "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 8, ""),
             AllowStatus::kAllowed);
@@ -39,12 +40,27 @@ TEST(BorealisTokenHardwareCheckerTest, Volteer) {
                   "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 8, ""),
             AllowStatus::kAllowed);
 
-  // Insufficient ram/cpu
+  // New CPU name branding
+  // Note: These are not real Board/Model/CPU combinations.
+  EXPECT_EQ(check("volteer", "lindar", "11th Gen Intel(R) Core(TM) 5 NOT_A_CPU",
+                  8, ""),
+            AllowStatus::kAllowed);
+
+  // Insufficient ram/cpu - previous CPU name branding
   EXPECT_EQ(check("volteer", "lindar",
                   "11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz", 2, ""),
             AllowStatus::kHardwareChecksFailed);
   EXPECT_EQ(check("volteer", "lindar",
                   "11th Gen Intel(R) Core(TM) i1-1145G7 @ 2.60GHz", 8, ""),
+            AllowStatus::kHardwareChecksFailed);
+
+  // Insufficient ram/cpu - new CPU name branding
+  // Note: These are not real Board/Model/CPU combinations.
+  EXPECT_EQ(check("volteer", "lindar", "11th Gen Intel(R) Core(TM) 1 NOT_A_CPU",
+                  8, ""),
+            AllowStatus::kHardwareChecksFailed);
+  EXPECT_EQ(check("volteer", "lindar", "11th Gen Intel(R) Core(TM) 5 NOT_A_CPU",
+                  2, ""),
             AllowStatus::kHardwareChecksFailed);
 
   // Bad model

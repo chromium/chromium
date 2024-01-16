@@ -19,8 +19,9 @@ constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
 // Regex used for CPU checks on intel processors, this means "any i{3,5,7}
 // processor". e.g.:
 //  - Valid:   11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz
+//  - Valid:   Intel(R) Core(TM) 5 ...
 //  - Invalid: Intel(R) Pentium(R) Gold 7505
-constexpr char kIntelCpuRegex[] = "i[357]-";
+constexpr char kIntelCpuRegex[] = "((i[357]-)|(Core.* [357]))";
 
 // As above, for AMD processors, e.g. "AMD Ryzen 3 5125C with Radeon Graphics".
 constexpr char kAmdCpuRegex[] = "Ryzen [357]";
