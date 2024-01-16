@@ -196,6 +196,41 @@ aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
   return FindTopMostChild(lowest_common_parent, windows);
 }
 
+std::vector<aura::Window*> SortWindowsBottomToTop(
+    std::set<aura::Window*> window_set) {
+  std::vector<aura::Window*> ordered;
+  std::vector<aura::Window*> root_windows;
+  std::stack<aura::Window*> stack;
+
+  // Collect unique root windows and put them on the stack.
+  for (auto* window : window_set) {
+    // The call to `GetRootWindow` here traverses up the window tree to the
+    // root, so this is technically quadratic time in the worst case, but is
+    // effectively linear time for shallow trees, which are common.
+    root_windows.push_back(window->GetRootWindow());
+  }
+  for (auto* window : base::flat_set<aura::Window*>(std::move(root_windows))) {
+    stack.push(window);
+  }
+
+  // Pre-order DFS from bottom-most to top-most windows.
+  while (!stack.empty()) {
+    auto* window = stack.top();
+    stack.pop();
+
+    if (window_set.erase(window)) {
+      ordered.push_back(window);
+    }
+
+    // Push so bottom-most is on the top of the stack.
+    for (aura::Window* child : base::Reversed(window->children())) {
+      stack.push(child);
+    }
+  }
+
+  return ordered;
+}
+
 aura::Window* GetCaptureWindow() {
   return aura::client::GetCaptureWindow(Shell::GetPrimaryRootWindow());
 }

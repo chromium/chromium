@@ -46,6 +46,12 @@ ASH_EXPORT bool IsStackedBelow(aura::Window* win1, aura::Window* win2);
 // account of the visibility of the windows.
 ASH_EXPORT aura::Window* GetTopMostWindow(const aura::Window::Windows& windows);
 
+// Sort the windows in `window_set` according to their stacking order in the
+// window tree. Windows which are descendants of a different root window will be
+// returned in an arbitrary order relative to each-other.
+ASH_EXPORT std::vector<aura::Window*> SortWindowsBottomToTop(
+    std::set<aura::Window*> window_set);
+
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
 
