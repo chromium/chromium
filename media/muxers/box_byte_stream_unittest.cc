@@ -77,7 +77,7 @@ TEST(BoxByteStreamTest, Default) {
   }
 
   std::vector<uint8_t> written_data = box_byte_stream.Flush();
-  base::BigEndianReader reader(written_data.data(), written_data.size());
+  base::BigEndianReader reader(written_data);
   for (auto& data : test_data) {
     uint64_t ret_value = 0;
     switch (data.type) {
@@ -143,7 +143,7 @@ TEST(BoxByteStreamTest, GrowLimit) {
   box_byte_stream.EndBox();
 
   std::vector<uint8_t> written_data = box_byte_stream.Flush();
-  base::BigEndianReader reader(written_data.data(), written_data.size());
+  base::BigEndianReader reader(written_data);
 
   uint32_t expected_total_size =
       8 + BoxByteStream::kDefaultBufferLimit + 8 + 2 + 4;
@@ -214,7 +214,7 @@ TEST(BoxByteStreamTest, EndBoxAndFlushDiff) {
 
     // Read.
     std::vector<uint8_t> written_data = box_byte_stream.Flush();
-    base::BigEndianReader reader(written_data.data(), written_data.size());
+    base::BigEndianReader reader(written_data);
 
     uint32_t parent;
     uint32_t fourcc;
@@ -291,7 +291,7 @@ TEST(BoxByteStreamTest, OffsetPlaceholderAndFlush) {
   }
 
   std::vector<uint8_t> written_data = box_byte_stream.Flush();
-  base::BigEndianReader reader(written_data.data(), written_data.size());
+  base::BigEndianReader reader(written_data);
   uint32_t fourcc;
   reader.Skip(4);
   reader.ReadU32(&fourcc);

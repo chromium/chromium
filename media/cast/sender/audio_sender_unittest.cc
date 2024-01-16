@@ -63,7 +63,7 @@ class TestPacketSender : public PacketTransport {
   TestPacketSender& operator=(const TestPacketSender&) = delete;
 
   bool SendPacket(PacketRef packet, base::OnceClosure cb) final {
-    if (IsRtcpPacket(&packet->data[0], packet->data.size())) {
+    if (IsRtcpPacket(packet->data)) {
       ++number_of_rtcp_packets_;
     } else {
       // Check that at least one RTCP packet was sent before the first RTP

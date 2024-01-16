@@ -50,13 +50,10 @@ CastReceiverImpl::CastReceiverImpl(
 CastReceiverImpl::~CastReceiverImpl() = default;
 
 void CastReceiverImpl::ReceivePacket(std::unique_ptr<Packet> packet) {
-  const uint8_t* const data = &packet->front();
-  const size_t length = packet->size();
-
   uint32_t ssrc_of_sender;
-  if (IsRtcpPacket(data, length)) {
-    ssrc_of_sender = GetSsrcOfSender(data, length);
-  } else if (!RtpParser::ParseSsrc(data, length, &ssrc_of_sender)) {
+  if (IsRtcpPacket(*packet)) {
+    ssrc_of_sender = GetSsrcOfSender(*packet);
+  } else if (!RtpParser::ParseSsrc(*packet, &ssrc_of_sender)) {
     VLOG(1) << "Invalid RTP packet.";
     return;
   }

@@ -45,8 +45,8 @@ class RtpParserTest : public ::testing::Test {
     RtpCastHeader parsed_header;
     const uint8_t* payload = NULL;
     size_t payload_size = static_cast<size_t>(-1);
-    EXPECT_TRUE(rtp_parser_.ParsePacket(
-        packet_, kPacketLength, &parsed_header, &payload, &payload_size));
+    EXPECT_TRUE(rtp_parser_.ParsePacket(packet_, &parsed_header, &payload,
+                                        &payload_size));
 
     EXPECT_EQ(cast_header_.marker, parsed_header.marker);
     EXPECT_EQ(cast_header_.payload_type, parsed_header.payload_type);
@@ -69,8 +69,8 @@ class RtpParserTest : public ::testing::Test {
     RtpCastHeader parsed_header;
     const uint8_t* payload = NULL;
     size_t payload_size = static_cast<size_t>(-1);
-    EXPECT_FALSE(rtp_parser_.ParsePacket(
-        packet_, kPacketLength, &parsed_header, &payload, &payload_size));
+    EXPECT_FALSE(rtp_parser_.ParsePacket(packet_, &parsed_header, &payload,
+                                         &payload_size));
   }
 
   RtpPacketBuilder packet_builder_;

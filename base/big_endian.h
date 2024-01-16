@@ -84,8 +84,10 @@ class BASE_EXPORT BigEndianReader {
  public:
   static BigEndianReader FromStringPiece(base::StringPiece string_piece);
 
-  BigEndianReader(const uint8_t* buf, size_t len);
   explicit BigEndianReader(base::span<const uint8_t> buf);
+
+  // TODO(crbug.com/1490484): Remove this overload.
+  BigEndianReader(const uint8_t* buf, size_t len);
 
   const uint8_t* ptr() const { return ptr_; }
   size_t remaining() const { return static_cast<size_t>(end_ - ptr_); }

@@ -304,12 +304,10 @@ void CastTransportImpl::SendRawEvents() {
 }
 
 bool CastTransportImpl::OnReceivedPacket(std::unique_ptr<Packet> packet) {
-  const uint8_t* const data = &packet->front();
-  const size_t length = packet->size();
   uint32_t ssrc;
-  if (IsRtcpPacket(data, length)) {
-    ssrc = GetSsrcOfSender(data, length);
-  } else if (!RtpParser::ParseSsrc(data, length, &ssrc)) {
+  if (IsRtcpPacket(*packet)) {
+    ssrc = GetSsrcOfSender(*packet);
+  } else if (!RtpParser::ParseSsrc(*packet, &ssrc)) {
     VLOG(1) << "Invalid RTP packet.";
     return false;
   }
@@ -319,8 +317,9 @@ bool CastTransportImpl::OnReceivedPacket(std::unique_ptr<Packet> packet) {
   }
 
   for (const auto& session : sessions_) {
-    if (session.second->rtcp_session->IncomingRtcpPacket(data, length))
+    if (session.second->rtcp_session->IncomingRtcpPacket(*packet)) {
       return true;
+    }
   }
 
   transport_client_->ProcessRtpPacket(std::move(packet));

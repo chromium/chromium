@@ -88,8 +88,7 @@ class TestRtpPacketTransport : public PacketTransport {
     RtpCastHeader rtp_header;
     const uint8_t* payload_data;
     size_t payload_size;
-    parser.ParsePacket(&packet->data[0], packet->data.size(), &rtp_header,
-                       &payload_data, &payload_size);
+    parser.ParsePacket(packet->data, &rtp_header, &payload_data, &payload_size);
     VerifyRtpHeader(rtp_header);
     ++sequence_number_;
     ++expected_packet_id_;

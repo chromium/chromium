@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
@@ -30,13 +31,12 @@ class RtpParser {
   // payload data.  Returns false if the data appears to be invalid, is not from
   // the expected sender (as identified by the SSRC field), or is not the
   // expected payload type.
-  bool ParsePacket(const uint8_t* packet,
-                   size_t length,
+  bool ParsePacket(base::span<const uint8_t> packet,
                    RtpCastHeader* rtp_header,
                    const uint8_t** payload_data,
                    size_t* payload_size);
 
-  static bool ParseSsrc(const uint8_t* packet, size_t length, uint32_t* ssrc);
+  static bool ParseSsrc(base::span<const uint8_t> packet, uint32_t* ssrc);
 
  private:
   const uint32_t expected_sender_ssrc_;

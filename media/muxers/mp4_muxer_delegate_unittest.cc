@@ -1125,9 +1125,8 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
     mfra_box_size += (total_written_data[last_index - j] << (j * 8));
   }
 
-  uint8_t* last_offset_of_mp4_file =
-      total_written_data.data() + total_written_data.size();
-  uint8_t* mfra_start_offset = last_offset_of_mp4_file - mfra_box_size;
+  size_t last_offset_of_mp4_file = total_written_data.size();
+  size_t mfra_start_offset = last_offset_of_mp4_file - mfra_box_size;
 
   // Locates the first and fourth `moof` boxes from the `mfra` box.
   // compare the data.
@@ -1136,9 +1135,10 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   constexpr uint32_t kTfraBoxSize = 24u;
   constexpr uint32_t kTfraEntrySize = 28u;
 
-  uint8_t* tfra_box_offset = mfra_start_offset + kMfraBoxSize;
-  uint8_t* track_id = tfra_box_offset + kFullBoxSize;
-  base::BigEndianReader big_endian_reader(track_id, 12);
+  size_t tfra_box_offset = mfra_start_offset + kMfraBoxSize;
+  size_t track_id = tfra_box_offset + kFullBoxSize;
+  base::BigEndianReader big_endian_reader(
+      base::span(total_written_data).subspan(track_id, 12u));
 
   uint32_t value;
   big_endian_reader.ReadU32(&value);
@@ -1153,9 +1153,10 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   EXPECT_EQ(value, 2u);  // number of entries.
 
   // Third entry.
-  uint8_t* third_tfra_entry = tfra_box_offset + kTfraBoxSize;
-  base::BigEndianReader big_endian_reader2(third_tfra_entry,
-                                           kTfraEntrySize * 2);
+  size_t third_tfra_entry = tfra_box_offset + kTfraBoxSize;
+  base::BigEndianReader big_endian_reader2(
+      base::span(total_written_data)
+          .subspan(third_tfra_entry, kTfraEntrySize * 2u));
   uint64_t time;
   big_endian_reader2.ReadU64(&time);
   EXPECT_EQ(time, 0u);  // time.
