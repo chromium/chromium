@@ -13,6 +13,7 @@
 
 class AuthenticationService;
 @protocol NotificationsAlertPresenter;
+@protocol NotificationsConfirmationPresenter;
 @protocol FeedTopSectionConsumer;
 @protocol NewTabPageDelegate;
 class PrefService;
@@ -77,6 +78,10 @@ enum class ContentNotificationTopOfFeedPromoEvent {
 // Handler for displaying notification related alerts.
 @property(nonatomic, weak) id<NotificationsAlertPresenter>
     notificationsPresenter;
+
+// The presenter displays the notification confirmation message.
+@property(nonatomic, weak) id<NotificationsConfirmationPresenter>
+    messagePresenter;
 
 // Initializes the mediator.
 - (void)setUp;

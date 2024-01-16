@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 
 using base::RecordAction;
 using base::UmaHistogramEnumeration;
@@ -202,6 +203,7 @@ using base::UserMetricsAction;
     if (promptShown && granted) {
       // If the OS prompt is shown and the user granted notifications access,
       // save the preference and close the promo.
+      [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
       [self closeNotificationPromoAndEnablePref:YES];
       RecordAction(UserMetricsAction(
           "ContentNotifications.Promo.TopOfFeed.Permission.Accepted"));
@@ -222,6 +224,7 @@ using base::UserMetricsAction;
     if (!promptShown && granted) {
       // If the OS prompt has been previously shown but notifications are not
       // active on Chrome activate the notifications. This is an edge case.
+      [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
       [self closeNotificationPromoAndEnablePref:YES];
       [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
                                      kNotifActive];
