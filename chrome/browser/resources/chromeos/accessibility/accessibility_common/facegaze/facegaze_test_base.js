@@ -14,6 +14,8 @@ class Config {
     this.gestureToAction = null;
     /** @type {?Map<FacialGesture, number>} */
     this.gestureToConfidence = null;
+    /** @type {number} */
+    this.bufferSize = -1;
   }
 
   /**
@@ -42,6 +44,15 @@ class Config {
     this.gestureToConfidence = gestureToConfidence;
     return this;
   }
+
+  /**
+   * @param {number} bufferSize
+   * @return {!Config}
+   */
+  withBufferSize(bufferSize) {
+    this.bufferSize = bufferSize;
+    return this;
+  }
 }
 
 /** A class that represents a fake FaceLandmarkerResult. */
@@ -52,7 +63,8 @@ class MockFaceLandmarkerResult {
      * forehead landmark, which corresponds to index 8.
      * @type {!Array<?Array<?<x: number, y: number, z: number>>>}
      */
-    this.faceLandmarks = [[null, null, null, null, null, null, null, null, []]];
+    this.faceLandmarks =
+        [[null, null, null, null, null, null, null, null, null]];
 
     /** @type {!Array<!Object>} */
     this.faceBlendshapes = [{categories: []}];
@@ -153,6 +165,10 @@ FaceGazeTestBase = class extends E2ETestBase {
 
     if (config.gestureToConfidence) {
       faceGaze.gestureToConfidence_ = new Map(config.gestureToConfidence);
+    }
+
+    if (config.bufferSize !== -1) {
+      faceGaze.mouseController_.bufferSize_ = config.bufferSize;
     }
 
     return new Promise(resolve => {

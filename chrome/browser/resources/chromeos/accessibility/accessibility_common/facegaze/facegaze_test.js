@@ -12,17 +12,114 @@ FaceGazeTest = class extends FaceGazeTestBase {
         /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
         /*failOnConsoleError=*/ true);
   }
+
+  async startFacegazeWithConfigAndForeheadLocation_(
+      config, forehead_x, forehead_y) {
+    await this.configureFaceGaze(config);
+
+    // No matter the starting location, the cursor position won't change
+    // initially, and upcoming forehead locations will be computed relative to
+    // this.
+    const result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+        forehead_x, forehead_y);
+    this.processFaceLandmarkerResult(result);
+    const cursorPosition =
+        this.mockAccessibilityPrivate.getLatestCursorPosition();
+    assertEquals(config.mouseLocation.x, cursorPosition.x);
+    assertEquals(config.mouseLocation.y, cursorPosition.y);
+  }
 };
 
 AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
-  const config = new Config().withMouseLocation({x: 600, y: 400});
-  await this.configureFaceGaze(config);
+  const config =
+      new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
-  const result =
+  // Move left and down. Note that increasing the x coordinate results in
+  // moving left because the image is mirrored, while increasing y moves
+  // downward as expected.
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.11, 0.21);
+  this.processFaceLandmarkerResult(result);
+  cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertEquals(594, cursorPosition.x);
+  assertEquals(404, cursorPosition.y);
+
+  // Move to where we were. Since the buffer size is 1, should end up at the
+  // exact same location.
+  result =
       new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.1, 0.2);
   this.processFaceLandmarkerResult(result);
-  assertEquals(1080, this.mockAccessibilityPrivate.getLatestCursorPosition().x);
-  assertEquals(160, this.mockAccessibilityPrivate.getLatestCursorPosition().y);
+  cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertEquals(600, cursorPosition.x);
+  assertEquals(400, cursorPosition.y);
+});
+
+// Test that if the forehead location is moving around a different part of
+// the screen, it still has the same offsets (i.e. we aren't tracking
+// absolute forehead position, but instead relative).
+// This test should use the same cursor positions as the previous version,
+// but different forehead locations (with the same offsets).
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationFromDifferentForeheadLocation',
+    async function() {
+      const config =
+          new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.6, 0.7);
+
+      // Move left and down. Note that increasing the x coordinate results in
+      // moving left because the image is mirrored.
+      result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+          0.61, 0.71);
+      this.processFaceLandmarkerResult(result);
+      cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+      assertEquals(594, cursorPosition.x);
+      assertEquals(404, cursorPosition.y);
+
+      // Move to where we were. Since the buffer size is 1, should end up at the
+      // exact same location.
+      result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+          0.6, 0.7);
+      this.processFaceLandmarkerResult(result);
+      cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+      assertEquals(600, cursorPosition.x);
+      assertEquals(400, cursorPosition.y);
+    });
+
+AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
+  const config =
+      new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(6);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  // Move left and down. Note that increasing the x coordinate results in
+  // moving left because the image is mirrored.
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.11, 0.21);
+  this.processFaceLandmarkerResult(result);
+  cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertTrue(cursorPosition.x < 600);
+  assertTrue(cursorPosition.y > 400);
+
+  // Move right and up. Due to smoothing, we don't exactly reach (600,400)
+  // again, but do get closer to it.
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.1, 0.2);
+  this.processFaceLandmarkerResult(result);
+  let newCursorPosition =
+      this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertTrue(newCursorPosition.x > cursorPosition.x);
+  assertTrue(newCursorPosition.y < cursorPosition.y);
+  assertTrue(newCursorPosition.x < 600);
+  assertTrue(newCursorPosition.y > 400);
+
+  cursorPosition = newCursorPosition;
+  // Process the same result again. We move even closer to (600, 400).
+  this.processFaceLandmarkerResult(result);
+  newCursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertTrue(newCursorPosition.x > cursorPosition.x);
+  assertTrue(newCursorPosition.y < cursorPosition.y);
+  assertTrue(newCursorPosition.x < 600);
+  assertTrue(newCursorPosition.y > 400);
 });
 
 AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {

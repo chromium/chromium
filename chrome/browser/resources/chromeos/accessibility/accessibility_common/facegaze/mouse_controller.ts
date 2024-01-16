@@ -9,23 +9,38 @@ import {EventHandler} from '../../common/event_handler.js';
 import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
 
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
+import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
+
+// A ScreenPoint represents an integer screen coordinate, whereas
+// a FloatingPoint2D represents a (x, y) floating point number
+// (which may be used for screen position or velocity).
+interface FloatingPoint2D {
+  x: number;
+  y: number;
+}
+
 
 /** Handles all interaction with the mouse. */
 export class MouseController {
   /** Last seen mouse location (cached from event in onMouseMovedOrDragged_). */
-  private mouseLocation_: chrome.accessibilityPrivate.ScreenPoint|undefined;
+  private mouseLocation_: ScreenPoint|undefined;
   private onMouseMovedHandler_: EventHandler;
   private onMouseDraggedHandler_: EventHandler;
   private screenBounds_: ScreenRect|undefined;
-  /**
-   * TODO(b/317235785): Set this according to the user's preference.
-   * The delta value that must be exceeded for FaceGaze to move the mouse.
-   * Represented in density-independent pixels.
-   */
-  private movementThreshold_ = 0;
+
+  /** Smoothing buffer size. */
+  private bufferSize_ = MouseController.BUFFER_SIZE;
+
+  /** The most recent raw face landmark mouse locations. */
+  private buffer_: ScreenPoint[] = [];
+
+  /** Used for smoothing the recent points in the buffer. */
+  private smoothKernel_: number[] = [];
+
+  /** The most recent smoothed mouse location. */
+  private previousSmoothedLocation_: FloatingPoint2D|undefined;
 
   constructor() {
-
     this.onMouseMovedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_MOVED,
         event => this.onMouseMovedOrDragged_(event));
@@ -33,6 +48,8 @@ export class MouseController {
     this.onMouseDraggedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_DRAGGED,
         event => this.onMouseMovedOrDragged_(event));
+
+    this.calcSmoothKernel_();
   }
 
   async init(): Promise<void> {
@@ -43,6 +60,7 @@ export class MouseController {
     this.onMouseDraggedHandler_.setNodes(desktop);
     this.onMouseDraggedHandler_.start();
 
+    // TODO(b/309121742): Handle display bounds changed.
     const screens = await new Promise<ScreenRect[]>((resolve) => {
       chrome.accessibilityPrivate.getDisplayBounds((screens: ScreenRect[]) => {
         resolve(screens);
@@ -79,38 +97,57 @@ export class MouseController {
       return;
     }
 
+    // These scale from 0 to 1.
     const foreheadLocation =
         result.faceLandmarks[0][MouseController.FOREHEAD_LANDMARK_INDEX];
-    // These scale from 0 to 1.
-    const x = foreheadLocation.x;
-    const y = foreheadLocation.y;
 
     // Calculate the absolute position on the screen, where the top left
     // corner represents (0,0) and the bottom right corner represents
     // (this.screenBounds_.width, this.screenBounds_.height).
-    // TODO(b/309121742): Handle multiple displays.
-    const absoluteY = Math.round(y * this.screenBounds_.height);
+    // TODO(b/309121742): Handle multiple displays, and displays where
+    // the (left, top) is not (0, 0).
+    const absoluteY =
+        Math.round(foreheadLocation.y * this.screenBounds_.height);
     // Reflect the x coordinate since the webcam doesn't mirror in the
     // horizontal direction.
-    const scaledX = Math.round(x * this.screenBounds_.width);
+    const scaledX = Math.round(foreheadLocation.x * this.screenBounds_.width);
     const absoluteX = (scaledX * -1) + this.screenBounds_.width;
 
-    // Now translate this into a position on a coordinate system where (0,0) is
-    // at the center of the screen. This will give us delta values for x and y.
-    const deltaX = absoluteX - (this.screenBounds_.width / 2);
-    const deltaY = (absoluteY * -1) + (this.screenBounds_.height / 2);
-
-    // Apply deltas to current mouse position. `this.mouseLocation_` is
-    // operating on the coordinate system where (0,0) is in the top left corner,
-    // so ensure these deltas are applied in the correct direction.
-    // TODO(b/317235785): Apply sensitivity and smoothing to improve the user
-    // experience.
-    if (Math.abs(deltaX) > this.movementThreshold_ &&
-        Math.abs(deltaY) > this.movementThreshold_) {
-      const newX = this.mouseLocation_.x + deltaX;
-      const newY = this.mouseLocation_.y - deltaY;
-      chrome.accessibilityPrivate.setCursorPosition({x: newX, y: newY});
+    // Add this latest point to the buffer.
+    if (this.buffer_.length === this.bufferSize_) {
+      this.buffer_.shift();
     }
+    this.buffer_.push({x: absoluteX, y: absoluteY});
+    while (this.buffer_.length < this.bufferSize_) {
+      this.buffer_.push({x: absoluteX, y: absoluteY});
+    }
+
+    // Smooth the buffer to get the latest target point.
+    const smoothed = this.applySmoothing_();
+
+    // Compute the velocity: how position has changed compared to the previous
+    // point. Note that we are assuming points come in at a regular interval,
+    // but we could also run this regularly in a timeout to reduce the rate at
+    // which points must be seen.
+    if (!this.previousSmoothedLocation_) {
+      // Initialize previous location to the current to avoid a jump at
+      // start-up.
+      this.previousSmoothedLocation_ = smoothed;
+    }
+    const velocityX = smoothed.x - this.previousSmoothedLocation_.x;
+    const velocityY = smoothed.y - this.previousSmoothedLocation_.y;
+    const scaledVel = this.asymmetryScale_({x: velocityX, y: velocityY});
+    this.previousSmoothedLocation_ = smoothed;
+
+    // The mouse location is the previous location plus the velocity.
+    const newX = this.mouseLocation_.x + scaledVel.x;
+    const newY = this.mouseLocation_.y + scaledVel.y;
+
+    // Update mouse location: onMouseMovedOrChanged_ is async and may not
+    // be called again until after another point is received from the
+    // face tracking, so better to keep a fresh copy.
+    this.mouseLocation_ = {x: Math.round(newX), y: Math.round(newY)};
+    chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
   }
 
   clickLeft(): void {
@@ -136,8 +173,9 @@ export class MouseController {
     if (!this.screenBounds_) {
       return;
     }
-    const x = this.screenBounds_.width / 2;
-    const y = this.screenBounds_.height / 2;
+    const x = Math.round(this.screenBounds_.width / 2);
+    const y = Math.round(this.screenBounds_.height / 2);
+    this.mouseLocation_ = {x, y};
     chrome.accessibilityPrivate.setCursorPosition({x, y});
   }
 
@@ -151,9 +189,66 @@ export class MouseController {
       void {
     this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
   }
+
+  /**
+   * Construct a kernel for smoothing the recent facegaze points.
+   * Specifically, this is a Hamming curve with M = BUFFER_SIZE * 2,
+   * matching the project-gameface Python implementation.
+   */
+  private calcSmoothKernel_(): void {
+    let sum = 0;
+    for (let i = 0; i < this.bufferSize_; i++) {
+      const value =
+          .54 - .46 * Math.cos((2 * Math.PI * i) / (this.bufferSize_ * 2 - 1));
+      this.smoothKernel_.push(value);
+      sum += value;
+    }
+    for (let i = 0; i < this.bufferSize_; i++) {
+      this.smoothKernel_[i] /= sum;
+    }
+  }
+
+  /**
+   * Applies the `smoothKernel_` to the `buffer_` of recent points to generate
+   * a single point.
+   */
+  private applySmoothing_(): FloatingPoint2D {
+    const result = {x: 0, y: 0};
+    for (let i = 0; i < this.bufferSize_; i++) {
+      const kernelPart = this.smoothKernel_[i];
+      result.x += this.buffer_[i].x * kernelPart;
+      result.y += this.buffer_[i].y * kernelPart;
+    }
+    return result;
+  }
+
+  /**
+   * Magnifies velocities. This means the user has to move their head less far
+   * to get to the edges of the screens.
+   */
+  private asymmetryScale_(vel: FloatingPoint2D): FloatingPoint2D {
+    if (vel.x > 0) {
+      vel.x *= MouseController.SPD_RIGHT;
+    } else {
+      vel.x *= MouseController.SPD_LEFT;
+    }
+    if (vel.y > 0) {
+      vel.y *= MouseController.SPD_DOWN;
+    } else {
+      vel.y *= MouseController.SPD_UP;
+    }
+    return vel;
+  }
 }
 
 export namespace MouseController {
   /** The index of the forehead landmark in a FaceLandmarkerResult. */
   export const FOREHEAD_LANDMARK_INDEX = 8;
+
+  // TODO(b/309121742): These constants should become prefs.
+  export const BUFFER_SIZE = 6;
+  export const SPD_RIGHT = 20;
+  export const SPD_LEFT = 20;
+  export const SPD_DOWN = 20;
+  export const SPD_UP = 20;
 }
