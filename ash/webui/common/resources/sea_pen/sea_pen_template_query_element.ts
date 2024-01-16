@@ -16,50 +16,20 @@ import {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {getSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
-import {isNonEmptyArray} from './sea_pen_utils.js';
+import {ChipToken, getDefaultOptions, getTemplateTokens, TemplateToken} from './sea_pen_utils.js';
 
 export interface SeaPenTemplateQueryElement {
   $: {
     optionList: DomRepeat,
   };
 }
-
-/**
- * Returns a random number between [0, max).
- */
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
-}
-
-function isChip(word: string): boolean {
-  return !!word && word.startsWith('<') && word.endsWith('>');
-}
-
-function toChip(word: string): SeaPenTemplateChip {
-  return parseInt(word.slice(1, -1)) as SeaPenTemplateChip;
-}
-
-/**
- * A template token that is a chip.
- */
-export interface ChipToken {
-  // The translated string displayed on the UI.
-  translation: string;
-  // The identifier of the chip.
-  id: SeaPenTemplateChip;
-}
-
-/**
- * A tokenized unit of the `SeaPenTemplate`. Used to render the prompt on the UI
- */
-type TemplateToken = string|ChipToken;
 
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
@@ -156,19 +126,13 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     // Notifies the selected chip's translation has changed to the UI.
     this.set('selectedChip_.translation', option.translation);
     this.selectedOptions_.set(this.selectedChip_!.id, option);
-    this.templateTokens_ = this.computeTemplateTokens_(
-        this.seaPenTemplate_, this.selectedOptions_);
+    this.templateTokens_ =
+        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
   }
 
   private onClickInspire_() {
-    this.seaPenTemplate_.options.forEach((options, chip) => {
-      if (isNonEmptyArray(options)) {
-        const option = options[getRandomInt(options.length)];
-        this.selectedOptions_.set(chip, option);
-      } else {
-        console.warn('empty options for', this.seaPenTemplate_.id);
-      }
-    });
+    this.selectedOptions_ =
+        getDefaultOptions(this.seaPenTemplate_, /*random=*/ true);
     if (this.selectedChip_) {
       // The selected chip translation might have changed due to randomized
       // option. Notifies the UI to update its value.
@@ -176,44 +140,17 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
           `selectedChip_.translation`,
           this.selectedOptions_.get(this.selectedChip_.id)?.translation);
     }
-    this.templateTokens_ = this.computeTemplateTokens_(
-        this.seaPenTemplate_, this.selectedOptions_);
+    this.templateTokens_ =
+        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
   }
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
-    const selectedOptions = new Map<SeaPenTemplateChip, SeaPenOption>();
-    template.options.forEach((options, chip) => {
-      if (isNonEmptyArray(options)) {
-        const option = options[0];
-        selectedOptions.set(chip, option);
-      } else {
-        console.warn('empty options for', template.id);
-      }
-    });
+    const selectedOptions = getDefaultOptions(template);
     this.selectedChip_ = null;
     this.options_ = null;
     this.selectedOptions_ = selectedOptions;
-    this.templateTokens_ = this.computeTemplateTokens_(
-        this.seaPenTemplate_, this.selectedOptions_);
-  }
-
-  private computeTemplateTokens_(
-      template: SeaPenTemplate,
-      selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>) {
-    const strs = parseTemplateText(template.text);
-    const tokens: TemplateToken[] = [];
-    strs.forEach(str => {
-      if (isChip(str)) {
-        const templateChip = toChip(str);
-        tokens.push({
-          translation: selectedOptions.get(templateChip)?.translation || '',
-          id: templateChip,
-        });
-      } else if (str.trim().length > 0) {
-        tokens.push(str);
-      }
-    });
-    return tokens;
+    this.templateTokens_ =
+        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
   }
 
   private getChipClassName_(chip: ChipToken, selectedChip: ChipToken|null):

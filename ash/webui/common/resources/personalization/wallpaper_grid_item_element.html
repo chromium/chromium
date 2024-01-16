@@ -249,7 +249,7 @@
       if="[[isTextVisible_(imageStatus_, primaryText, secondaryText)]]"
       restamp>
     <div id="textShadow" part="textShadow"></div>
-    <div id="text">
+    <div part="text" id="text">
       <slot name="text">
         <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]" restamp>
           <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>

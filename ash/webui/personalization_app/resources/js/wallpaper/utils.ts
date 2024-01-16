@@ -198,4 +198,3 @@ export function findAlbumById(
   }
   return null;
 }
-
