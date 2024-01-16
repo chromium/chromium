@@ -29,6 +29,9 @@ int GetDefaultLength(AttributeId attribute_id) {
       return 3;
     case AttributeId::kEcPoint:
       return 67;
+    case AttributeId::kPkcs11Id:
+      // The size of a SHA-1 hash, a typical size for CKA_ID.
+      return 20;
   }
 }
 

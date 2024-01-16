@@ -933,8 +933,279 @@ void KcerTokenImpl::RemoveCert(scoped_refptr<const Cert> cert,
 
 //==============================================================================
 
+KcerTokenImpl::ListKeysTask::ListKeysTask(TokenListKeysCallback in_callback)
+    : callback(std::move(in_callback)) {}
+KcerTokenImpl::ListKeysTask::ListKeysTask(ListKeysTask&& other) = default;
+KcerTokenImpl::ListKeysTask::~ListKeysTask() = default;
+
 void KcerTokenImpl::ListKeys(TokenListKeysCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(&KcerTokenImpl::ListKeys,
+                                                weak_factory_.GetWeakPtr(),
+                                                std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  ListKeysImpl(ListKeysTask(std::move(unblocking_callback)));
+}
+
+// Starts by finding RSA key objects.
+void KcerTokenImpl::ListKeysImpl(ListKeysTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  // For RSA keys the required attributes are stored in the private key objects.
+  chromeos::PKCS11_CK_OBJECT_CLASS obj_class = chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_RSA;
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_CLASS, MakeSpan(&obj_class));
+  AddAttribute(attributes, chromeos::PKCS11_CKA_KEY_TYPE, MakeSpan(&key_type));
+
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::ListKeysWithRsaHandles,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Starts iterating over the RSA keys.
+void KcerTokenImpl::ListKeysWithRsaHandles(ListKeysTask task,
+                                           std::vector<ObjectHandle> handles,
+                                           uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ListKeysImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+
+  ListKeysGetOneRsaKey(std::move(task), std::move(handles),
+                       std::vector<PublicKey>());
+}
+
+// This is called repeatedly until `handles` is empty.
+void KcerTokenImpl::ListKeysGetOneRsaKey(ListKeysTask task,
+                                         std::vector<ObjectHandle> handles,
+                                         std::vector<PublicKey> result_keys) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (handles.empty()) {
+    // All RSA keys are handled, now search for EC keys.
+    return ListKeysFindEcKeys(std::move(task), std::move(result_keys));
+  }
+
+  ObjectHandle current_handle = handles.back();
+  handles.pop_back();
+
+  chaps_client_->GetAttributeValue(
+      pkcs_11_slot_id_, current_handle,
+      {AttributeId::kPkcs11Id, AttributeId::kModulus,
+       AttributeId::kPublicExponent},
+      base::BindOnce(&KcerTokenImpl::ListKeysDidGetOneRsaKey,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(handles), std::move(result_keys)));
+}
+
+// Receives attributes for a single RSA key and creates kcer::PublicKey from
+// them.
+void KcerTokenImpl::ListKeysDidGetOneRsaKey(ListKeysTask task,
+                                            std::vector<ObjectHandle> handles,
+                                            std::vector<PublicKey> result_keys,
+                                            chaps::AttributeList attributes,
+                                            uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ListKeysImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    // Try to get as many keys as possible even if some of them fail.
+    return ListKeysGetOneRsaKey(std::move(task), std::move(handles),
+                                std::move(result_keys));
+  }
+
+  base::span<const uint8_t> pkcs11_id =
+      GetAttributeValue(attributes, AttributeId::kPkcs11Id);
+  base::span<const uint8_t> modulus =
+      GetAttributeValue(attributes, AttributeId::kModulus);
+  base::span<const uint8_t> public_exponent =
+      GetAttributeValue(attributes, AttributeId::kPublicExponent);
+  if (pkcs11_id.empty() || modulus.empty() || public_exponent.empty()) {
+    LOG(WARNING) << "Invalid RSA key was fetched from Chaps, skipping it.";
+    return ListKeysGetOneRsaKey(std::move(task), std::move(handles),
+                                std::move(result_keys));
+  }
+
+  PublicKeySpki spki = MakeRsaSpki(modulus, public_exponent);
+  if (spki->empty()) {
+    LOG(WARNING) << "Invalid RSA key was fetched from Chaps, skipping it.";
+    return ListKeysGetOneRsaKey(std::move(task), std::move(handles),
+                                std::move(result_keys));
+  }
+
+  std::vector<uint8_t> id(pkcs11_id.begin(), pkcs11_id.end());
+  result_keys.emplace_back(token_, Pkcs11Id(std::move(id)), std::move(spki));
+  return ListKeysGetOneRsaKey(std::move(task), std::move(handles),
+                              std::move(result_keys));
+}
+
+// Finds EC key objects.
+void KcerTokenImpl::ListKeysFindEcKeys(ListKeysTask task,
+                                       std::vector<PublicKey> result_keys) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // For EC keys the required attributes are stored in the public key objects.
+  chromeos::PKCS11_CK_OBJECT_CLASS obj_class = chromeos::PKCS11_CKO_PUBLIC_KEY;
+  chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_EC;
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_CLASS, MakeSpan(&obj_class));
+  AddAttribute(attributes, chromeos::PKCS11_CKA_KEY_TYPE, MakeSpan(&key_type));
+
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::ListKeysWithEcHandles,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(result_keys)));
+}
+
+// Starts iterating over the EC keys.
+void KcerTokenImpl::ListKeysWithEcHandles(ListKeysTask task,
+                                          std::vector<PublicKey> result_keys,
+                                          std::vector<ObjectHandle> handles,
+                                          uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ListKeysImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+
+  ListKeysGetOneEcKey(std::move(task), std::move(handles),
+                      std::move(result_keys));
+}
+
+// This is called repeatedly until `handles` is empty.
+void KcerTokenImpl::ListKeysGetOneEcKey(ListKeysTask task,
+                                        std::vector<ObjectHandle> handles,
+                                        std::vector<PublicKey> result_keys) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (handles.empty()) {
+    // All RSA and EC keys are handled, return the final result.
+    return std::move(task.callback).Run(std::move(result_keys));
+  }
+
+  ObjectHandle current_handle = handles.back();
+  handles.pop_back();
+
+  chaps_client_->GetAttributeValue(
+      pkcs_11_slot_id_, current_handle,
+      {AttributeId::kPkcs11Id, AttributeId::kEcPoint},
+      base::BindOnce(&KcerTokenImpl::ListKeysDidGetOneEcKey,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(handles), std::move(result_keys)));
+}
+
+// Receives attributes for a single EC key and creates kcer::PublicKey from
+// them.
+void KcerTokenImpl::ListKeysDidGetOneEcKey(ListKeysTask task,
+                                           std::vector<ObjectHandle> handles,
+                                           std::vector<PublicKey> result_keys,
+                                           chaps::AttributeList attributes,
+                                           uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ListKeysImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    // Try to get as many keys as possible even if some of them fail.
+    return ListKeysGetOneEcKey(std::move(task), std::move(handles),
+                               std::move(result_keys));
+  }
+
+  base::span<const uint8_t> pkcs11_id =
+      GetAttributeValue(attributes, AttributeId::kPkcs11Id);
+  base::span<const uint8_t> wrapped_ec_point =
+      GetAttributeValue(attributes, AttributeId::kEcPoint);
+  if (pkcs11_id.empty() || wrapped_ec_point.empty()) {
+    LOG(WARNING) << "Invalid EC key was fetched from Chaps, skipping it.";
+    return ListKeysGetOneEcKey(std::move(task), std::move(handles),
+                               std::move(result_keys));
+  }
+
+  bssl::UniquePtr<ASN1_OCTET_STRING> ec_point_oct =
+      UnwrapEcPoint(wrapped_ec_point);
+  if (!ec_point_oct) {
+    LOG(WARNING) << "Invalid EC key was fetched from Chaps, skipping it.";
+    return ListKeysGetOneEcKey(std::move(task), std::move(handles),
+                               std::move(result_keys));
+  }
+  const uint8_t* ec_point_data = ASN1_STRING_data(ec_point_oct.get());
+  size_t ec_point_data_len = ASN1_STRING_length(ec_point_oct.get());
+  base::span<const uint8_t> ec_point =
+      base::make_span(ec_point_data, ec_point_data_len);
+
+  PublicKeySpki spki = MakeEcSpki(ec_point);
+  if (spki->empty()) {
+    LOG(WARNING) << "Invalid EC key was fetched from Chaps, skipping it.";
+    return ListKeysGetOneEcKey(std::move(task), std::move(handles),
+                               std::move(result_keys));
+  }
+
+  std::vector<uint8_t> id(pkcs11_id.begin(), pkcs11_id.end());
+  PublicKey public_key(token_, Pkcs11Id(std::move(id)), std::move(spki));
+
+  chromeos::PKCS11_CK_OBJECT_CLASS obj_class = chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_EC;
+  chaps::AttributeList private_key_attributes;
+  AddAttribute(private_key_attributes, chromeos::PKCS11_CKA_CLASS,
+               MakeSpan(&obj_class));
+  AddAttribute(private_key_attributes, chromeos::PKCS11_CKA_KEY_TYPE,
+               MakeSpan(&key_type));
+  AddAttribute(private_key_attributes, chromeos::PKCS11_CKA_ID,
+               public_key.GetPkcs11Id().value());
+
+  // Check that the private key for public key exists in Chaps. RSA keys don't
+  // need this check because key attributes can be read from the RSA private key
+  // objects.
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(private_key_attributes),
+      base::BindOnce(&KcerTokenImpl::ListKeysDidFindEcPrivateKey,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(handles), std::move(result_keys),
+                     std::move(public_key)));
+}
+
+void KcerTokenImpl::ListKeysDidFindEcPrivateKey(
+    ListKeysTask task,
+    std::vector<ObjectHandle> handles,
+    std::vector<PublicKey> result_keys,
+    PublicKey current_public_key,
+    std::vector<ObjectHandle> private_key_handles,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!private_key_handles.empty()) {
+    result_keys.push_back(std::move(current_public_key));
+  }
+
+  return ListKeysGetOneEcKey(std::move(task), std::move(handles),
+                             std::move(result_keys));
 }
 
 //==============================================================================

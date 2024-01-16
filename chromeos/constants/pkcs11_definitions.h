@@ -19,6 +19,7 @@ using PKCS11_CK_BBOOL = PKCS11_CK_BYTE;
 using PKCS11_CK_ULONG = unsigned long int;
 // PKCS #11 v2.20 section 9.4 pages 48-50.
 using PKCS11_CK_OBJECT_CLASS = PKCS11_CK_ULONG;
+using PKCS11_CK_KEY_TYPE = PKCS11_CK_ULONG;
 using PKCS11_CK_ATTRIBUTE_TYPE = PKCS11_CK_ULONG;
 // PKCS #11 v2.20 section 9.5 page 52.
 using PKCS11_CK_MECHANISM_TYPE = PKCS11_CK_ULONG;
@@ -52,6 +53,10 @@ inline constexpr uint32_t PKCS11_CKO_CERTIFICATE = 0x00000001;
 inline constexpr uint32_t PKCS11_CKO_PUBLIC_KEY = 0x00000002;
 inline constexpr uint32_t PKCS11_CKO_PRIVATE_KEY = 0x00000003;
 
+// PKCS #11 v2.20 section A Manifest constants page 375.
+inline constexpr uint32_t PKCS11_CKK_RSA = 0x00000000;
+inline constexpr uint32_t PKCS11_CKK_EC = 0x00000003;
+
 // PKCS #11 v2.20 section A Manifest constants pages 376-377.
 inline constexpr uint32_t PKCS11_CKA_CLASS = 0x00000000;
 inline constexpr uint32_t PKCS11_CKA_TOKEN = 0x00000001;
@@ -61,6 +66,7 @@ inline constexpr uint32_t PKCS11_CKA_VALUE = 0x00000011;
 inline constexpr uint32_t PKCS11_CKA_CERTIFICATE_TYPE = 0x00000080;
 inline constexpr uint32_t PKCS11_CKA_ISSUER = 0x00000081;
 inline constexpr uint32_t PKCS11_CKA_SERIAL_NUMBER = 0x00000082;
+inline constexpr uint32_t PKCS11_CKA_KEY_TYPE = 0x00000100;
 inline constexpr uint32_t PKCS11_CKA_SUBJECT = 0x00000101;
 inline constexpr uint32_t PKCS11_CKA_ID = 0x00000102;
 inline constexpr uint32_t PKCS11_CKA_SENSITIVE = 0x00000103;

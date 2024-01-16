@@ -177,6 +177,48 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                                           uint32_t result_code);
   void DidRemoveKeyAndCerts(RemoveKeyAndCertsTask task, uint32_t result_code);
 
+  struct ListKeysTask {
+    explicit ListKeysTask(TokenListKeysCallback in_callback);
+    ListKeysTask(ListKeysTask&& other);
+    ~ListKeysTask();
+
+    TokenListKeysCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void ListKeysImpl(ListKeysTask task);
+  void ListKeysWithRsaHandles(ListKeysTask task,
+                              std::vector<ObjectHandle> handles,
+                              uint32_t result_code);
+  void ListKeysGetOneRsaKey(ListKeysTask task,
+                            std::vector<ObjectHandle> handles,
+                            std::vector<PublicKey> result_keys);
+  void ListKeysDidGetOneRsaKey(ListKeysTask task,
+                               std::vector<ObjectHandle> handles,
+                               std::vector<PublicKey> result_keys,
+                               chaps::AttributeList attributes,
+                               uint32_t result_code);
+  void ListKeysFindEcKeys(ListKeysTask task,
+                          std::vector<PublicKey> result_keys);
+  void ListKeysWithEcHandles(ListKeysTask task,
+                             std::vector<PublicKey> result_keys,
+                             std::vector<ObjectHandle> handles,
+                             uint32_t result_code);
+  void ListKeysGetOneEcKey(ListKeysTask task,
+                           std::vector<ObjectHandle> handles,
+                           std::vector<PublicKey> result_keys);
+  void ListKeysDidGetOneEcKey(ListKeysTask task,
+                              std::vector<ObjectHandle> handles,
+                              std::vector<PublicKey> result_keys,
+                              chaps::AttributeList attributes,
+                              uint32_t result_code);
+  void ListKeysDidFindEcPrivateKey(
+      ListKeysTask task,
+      std::vector<ObjectHandle> handles,
+      std::vector<PublicKey> result_keys,
+      PublicKey current_public_key,
+      std::vector<ObjectHandle> private_key_handles,
+      uint32_t result_code);
+
   struct DoesPrivateKeyExistTask {
     DoesPrivateKeyExistTask(PrivateKeyHandle in_key,
                             Kcer::DoesKeyExistCallback in_callback);

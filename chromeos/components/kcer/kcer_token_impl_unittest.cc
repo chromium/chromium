@@ -20,7 +20,9 @@ using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
 using testing::_;
 using testing::DoAll;
+using testing::Invoke;
 using ObjectHandle = kcer::SessionChapsClient::ObjectHandle;
+using AttributeId = kcer::HighLevelChapsClient::AttributeId;
 
 namespace kcer::internal {
 namespace {
@@ -86,6 +88,33 @@ bool FindAttribute(chaps::AttributeList attrs,
 template <typename T>
 base::span<const uint8_t> MakeSpan(T* value) {
   return base::as_bytes(base::span<T>(value, /*count=*/1u));
+}
+
+void AddAttribute(chaps::AttributeList& attr_list,
+                  chromeos::PKCS11_CK_ATTRIBUTE_TYPE type,
+                  base::span<const uint8_t> data) {
+  chaps::Attribute* new_attr = attr_list.add_attributes();
+  new_attr->set_type(type);
+  new_attr->set_value(std::string(data.begin(), data.end()));
+  new_attr->set_length(data.size());
+}
+
+chaps::AttributeList GetRsaKeyAttrs(base::span<const uint8_t> pkcs11_id,
+                                    base::span<const uint8_t> modulus,
+                                    base::span<const uint8_t> exponent) {
+  chaps::AttributeList rsa_attrs;
+  AddAttribute(rsa_attrs, chromeos::PKCS11_CKA_ID, pkcs11_id);
+  AddAttribute(rsa_attrs, chromeos::PKCS11_CKA_MODULUS, modulus);
+  AddAttribute(rsa_attrs, chromeos::PKCS11_CKA_PUBLIC_EXPONENT, exponent);
+  return rsa_attrs;
+}
+
+chaps::AttributeList GetEcKeyAttrs(base::span<const uint8_t> pkcs11_id,
+                                   base::span<const uint8_t> ec_point) {
+  chaps::AttributeList ec_attrs;
+  AddAttribute(ec_attrs, chromeos::PKCS11_CKA_ID, pkcs11_id);
+  AddAttribute(ec_attrs, chromeos::PKCS11_CKA_EC_POINT, ec_point);
+  return ec_attrs;
 }
 
 class ScopedNotificationsObserver : public net::CertDatabase::Observer {
@@ -819,6 +848,313 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetryDestroyOnSessionError) {
   EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that ListKeys can successfully list keys when there are no keys.
+TEST_F(KcerTokenImplTest, ListKeysSuccessWithNoKeys) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::vector<ObjectHandle> result_object_list{};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(2)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(result_object_list,
+                                                   chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_TRUE(waiter.Get().has_value());
+  EXPECT_TRUE(waiter.Get().value().empty());
+}
+
+// Test that ListKeys can successfully list keys when there is one RSA key.
+TEST_F(KcerTokenImplTest, ListKeysSuccessWithOneRsaKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle rsa_handle{1};
+  std::vector<ObjectHandle> rsa_handles{rsa_handle};
+  std::vector<ObjectHandle> ec_handles{};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(2)
+      .WillOnce(RunOnceCallback<2>(rsa_handles, chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ec_handles, chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList rsa_attrs =
+      GetRsaKeyAttrs(rsa_pkcs11_id_.value(), rsa_modulus_, rsa_pub_exponent_);
+  EXPECT_CALL(
+      chaps_client_,
+      GetAttributeValue(pkcs11_slot_id_, rsa_handle,
+                        std::vector<AttributeId>{AttributeId::kPkcs11Id,
+                                                 AttributeId::kModulus,
+                                                 AttributeId::kPublicExponent},
+                        _))
+      .WillOnce(RunOnceCallback<3>(rsa_attrs, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_TRUE(waiter.Get().has_value());
+  ASSERT_EQ(waiter.Get().value().size(), 1u);
+  PublicKey pub_key = waiter.Get().value().front();
+  EXPECT_EQ(pub_key.GetPkcs11Id(), rsa_pkcs11_id_);
+  EXPECT_EQ(pub_key.GetSpki(), rsa_spki_);
+  EXPECT_EQ(pub_key.GetToken(), Token::kUser);
+}
+
+// Test that ListKeys can successfully list keys when there is one EC key.
+TEST_F(KcerTokenImplTest, ListKeysSuccessWithOneEcKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle ec_handle{1};
+  std::vector<ObjectHandle> rsa_handles{};
+  std::vector<ObjectHandle> ec_handles{ec_handle};
+  std::vector<ObjectHandle> priv_key_handles{ObjectHandle(2)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(3)
+      .WillOnce(RunOnceCallback<2>(rsa_handles, chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ec_handles, chromeos::PKCS11_CKR_OK))
+      // For each EC handle `token_` will check that the private key exists.
+      .WillOnce(RunOnceCallback<2>(priv_key_handles, chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList ec_attrs =
+      GetEcKeyAttrs(ec_pkcs11_id_.value(), ec_public_value_);
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, ec_handle,
+                                std::vector<AttributeId>{AttributeId::kPkcs11Id,
+                                                         AttributeId::kEcPoint},
+                                _))
+      .WillOnce(RunOnceCallback<3>(ec_attrs, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_TRUE(waiter.Get().has_value());
+  ASSERT_EQ(waiter.Get().value().size(), 1u);
+  PublicKey pub_key = waiter.Get().value().front();
+  EXPECT_EQ(pub_key.GetPkcs11Id(), ec_pkcs11_id_);
+  EXPECT_EQ(pub_key.GetSpki(), ec_spki_);
+  EXPECT_EQ(pub_key.GetToken(), Token::kUser);
+}
+
+// Test that ListKeys can successfully list keys when there is one RSA and one
+// EC key.
+TEST_F(KcerTokenImplTest, ListKeysSuccessWithTwoKeys) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  ObjectHandle rsa_handle{1};
+  ObjectHandle ec_handle{2};
+  std::vector<ObjectHandle> rsa_handles{rsa_handle};
+  std::vector<ObjectHandle> ec_handles{ec_handle};
+  std::vector<ObjectHandle> priv_key_handles{ObjectHandle(3)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(3)
+      .WillOnce(RunOnceCallback<2>(rsa_handles, chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ec_handles, chromeos::PKCS11_CKR_OK))
+      // For each EC handle `token_` will check that the private key exists.
+      .WillOnce(RunOnceCallback<2>(priv_key_handles, chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList rsa_attrs =
+      GetRsaKeyAttrs(rsa_pkcs11_id_.value(), rsa_modulus_, rsa_pub_exponent_);
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, rsa_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(rsa_attrs, chromeos::PKCS11_CKR_OK));
+  chaps::AttributeList ec_attrs =
+      GetEcKeyAttrs(ec_pkcs11_id_.value(), ec_public_value_);
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, ec_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(ec_attrs, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_TRUE(waiter.Get().has_value());
+  ASSERT_EQ(waiter.Get().value().size(), 2u);
+  // The order is not guaranteed, but in practice should be stable.
+  PublicKey rsa_pub_key = waiter.Get().value().front();
+  PublicKey ec_pub_key = waiter.Get().value().back();
+  EXPECT_EQ(rsa_pub_key.GetPkcs11Id(), rsa_pkcs11_id_);
+  EXPECT_EQ(rsa_pub_key.GetSpki(), rsa_spki_);
+  EXPECT_EQ(rsa_pub_key.GetToken(), Token::kUser);
+  EXPECT_EQ(ec_pub_key.GetPkcs11Id(), ec_pkcs11_id_);
+  EXPECT_EQ(ec_pub_key.GetSpki(), ec_spki_);
+  EXPECT_EQ(ec_pub_key.GetToken(), Token::kUser);
+}
+
+// Test that ListKeys correctly skips invalid keys.
+TEST_F(KcerTokenImplTest, ListKeysBadKeysAreSkipped) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  // Same handles will be returned for RSA and EC keys, that's not realistic,
+  // but good enough for the test.
+  std::vector<ObjectHandle> result_object_list{ObjectHandle{1},
+                                               ObjectHandle{2}};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(2)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(result_object_list,
+                                                   chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList bad_rsa_attrs = GetRsaKeyAttrs(
+      rsa_pkcs11_id_.value(),
+      std::vector<uint8_t>(rsa_modulus_.begin(), rsa_modulus_.end() - 1),
+      rsa_pub_exponent_);
+  chaps::AttributeList bad_ec_attrs = GetEcKeyAttrs(
+      ec_pkcs11_id_.value(), std::vector<uint8_t>(ec_public_value_.begin(),
+                                                  ec_public_value_.end() - 1));
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .Times(4)
+      .WillOnce(
+          RunOnceCallback<3>(chaps::AttributeList(), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<3>(bad_rsa_attrs, chromeos::PKCS11_CKR_OK))
+      .WillOnce(
+          RunOnceCallback<3>(chaps::AttributeList(), chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<3>(bad_ec_attrs, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_TRUE(waiter.Get().has_value());
+  EXPECT_TRUE(waiter.Get().value().empty());
+}
+
+// Test that ListKeys correctly fails when Chaps fails to find RSA keys.
+TEST_F(KcerTokenImplTest, ListKeysFailedToListRsaKeys) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::vector<ObjectHandle> handles{};
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(
+          RunOnceCallback<2>(handles, chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ListKeys correctly fails when Chaps fails to find EC keys.
+TEST_F(KcerTokenImplTest, ListKeysFailedToListEcKeys) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::vector<ObjectHandle> handles{};
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2)
+      .WillOnce(RunOnceCallback<2>(handles, chromeos::PKCS11_CKR_OK))
+      .WillOnce(
+          RunOnceCallback<2>(handles, chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ListKeys correctly retries when Chaps fails to find RSA keys with a
+// session error.
+TEST_F(KcerTokenImplTest, ListKeysRetryFindRsaOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::vector<ObjectHandle> handles{};
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          handles, chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ListKeys correctly retries when Chaps fails to retrieve attributes
+// for RSA keys with a session error.
+TEST_F(KcerTokenImplTest, ListKeysRetryGetRsaOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::vector<ObjectHandle> handles{ObjectHandle(1)};
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<2>(handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ListKeys correctly retries when Chaps fails to find EC keys with a
+// session error.
+TEST_F(KcerTokenImplTest, ListKeysRetryFindEcOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  // Alternates between replying with OK and SESSION_CLOSED to handle
+  // alternating calls for RSA and EC keys.
+  auto fake_find_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_rsa = true;
+    bool is_rsa = std::exchange(next_is_rsa, /*new_value=*/!next_is_rsa);
+    if (is_rsa) {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_SESSION_CLOSED);
+    }
+  };
+
+  std::vector<ObjectHandle> handles{ObjectHandle(1)};
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_find_objects));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ListKeys correctly retries when Chaps fails to retrieve attributes
+// for EC keys with a session error.
+TEST_F(KcerTokenImplTest, ListKeysRetryGetEcOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  // Alternates between returning no handles and one handle to process
+  // alternating calls for RSA and EC keys.
+  auto fake_find_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_rsa = true;
+    bool is_rsa = std::exchange(next_is_rsa, /*new_value=*/!next_is_rsa);
+    if (is_rsa) {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                     chromeos::PKCS11_CKR_OK);
+    }
+  };
+
+  std::vector<ObjectHandle> handles{ObjectHandle(1)};
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_find_objects));
+
+  EXPECT_CALL(chaps_client_, GetAttributeValue)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>> waiter;
+  token_.ListKeys(waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that DoesPrivateKeyExist can successfully check whether a private key
 // exists when it exists.
 TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyExistsSuccess) {
@@ -829,7 +1165,7 @@ TEST_F(KcerTokenImplTest, DoesPrivateKeyExistKeyExistsSuccess) {
   uint32_t result_code = chromeos::PKCS11_CKR_OK;
 
   chaps::AttributeList attrs;
-  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+  EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(DoAll(MoveArg<1>(&attrs),
                       RunOnceCallback<2>(result_object_list, result_code)));
 
@@ -1338,6 +1674,7 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   base::test::TestFuture<base::expected<bool, Error>> key_exists_waiter;
   token_.DoesPrivateKeyExist(PrivateKeyHandle(public_key),
                              key_exists_waiter.GetCallback());
+
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
               DataToSign({1, 2, 3}), sign_waiter.GetCallback());
@@ -1345,6 +1682,9 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key),
                          DigestWithPrefix({1, 2, 3}),
                          sign_raw_waiter.GetCallback());
+  base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>>
+      list_keys_waiter;
+  token_.ListKeys(list_keys_waiter.GetCallback());
 
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
@@ -1352,14 +1692,16 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(key_exists_waiter.IsReady());
   EXPECT_FALSE(sign_waiter.IsReady());
   EXPECT_FALSE(sign_raw_waiter.IsReady());
+  EXPECT_FALSE(list_keys_waiter.IsReady());
 
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  EXPECT_FALSE(generate_rsa_waiter.Get<>().has_value());
-  EXPECT_FALSE(remove_key_waiter.Get<>().has_value());
-  EXPECT_FALSE(key_exists_waiter.Get<>().has_value());
-  EXPECT_FALSE(sign_waiter.Get<>().has_value());
-  EXPECT_FALSE(sign_raw_waiter.Get<>().has_value());
+  EXPECT_FALSE(generate_rsa_waiter.Get().has_value());
+  EXPECT_FALSE(remove_key_waiter.Get().has_value());
+  EXPECT_FALSE(key_exists_waiter.Get().has_value());
+  EXPECT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_FALSE(sign_raw_waiter.Get().has_value());
+  EXPECT_FALSE(list_keys_waiter.Get().has_value());
 }
 
 }  // namespace
