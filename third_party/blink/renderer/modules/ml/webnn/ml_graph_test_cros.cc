@@ -9,6 +9,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -132,11 +134,11 @@ class TfLiteRuntime {
   TfLiteStatus Load(const mojo_base::BigBuffer& buffer,
                     blink_mojom::ModelInfoPtr& info) {
     const tflite::Model* model = tflite::GetModel(buffer.data());
-    EXPECT_NE(model, nullptr);
+    EXPECT_THAT(model, testing::NotNull());
     TfLiteOpResolver op_resolver;
     EXPECT_EQ(tflite::InterpreterBuilder(model, op_resolver)(&interpreter_),
               kTfLiteOk);
-    EXPECT_NE(interpreter_, nullptr);
+    EXPECT_THAT(interpreter_, testing::NotNull());
     EXPECT_EQ(interpreter_->AllocateTensors(), kTfLiteOk);
 
     for (auto index : interpreter_->inputs()) {
@@ -269,14 +271,14 @@ struct ElementWiseAddTester {
     EXPECT_EQ(output->DataType(), expected.data_type);
     auto [graph, exception] =
         helper.BuildGraph(scope, builder, {{"output", output}});
-    EXPECT_NE(graph, nullptr);
+    ASSERT_THAT(graph, testing::NotNull());
     MLGraphCrOS* cros_graph = static_cast<MLGraphCrOS*>(graph.Get());
     const auto& input_tensor_info = cros_graph->GetInputResourcesInfo();
     EXPECT_EQ(input_tensor_info.size(), 1u);
-    EXPECT_EQ(input_tensor_info.Contains("input"), true);
+    EXPECT_TRUE(input_tensor_info.Contains("input"));
     const auto& output_tensor_info = cros_graph->GetOutputResourcesInfo();
     EXPECT_EQ(output_tensor_info.size(), 1u);
-    EXPECT_EQ(output_tensor_info.Contains("output"), true);
+    EXPECT_TRUE(output_tensor_info.Contains("output"));
 
     // Compute the graph.
     MLNamedArrayBufferViews inputs(
@@ -285,7 +287,7 @@ struct ElementWiseAddTester {
         {{"output", CreateArrayBufferViewForOperand(output)}});
     auto* compute_exception =
         helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
+    EXPECT_THAT(compute_exception, testing::IsNull());
     auto results = GetArrayBufferViewValues<T>(outputs[0].second);
     EXPECT_EQ(results, expected.values);
   }
