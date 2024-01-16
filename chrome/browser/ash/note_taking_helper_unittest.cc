@@ -47,7 +47,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -328,10 +327,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   void InitWebAppProvider(Profile* profile) {
-    web_app::FakeWebAppProvider* fake_provider =
-        web_app::FakeWebAppProvider::Get(profile);
-    fake_provider->SetWebAppUiManager(
-        std::make_unique<web_app::WebAppUiManagerImpl>(profile));
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
   }
 
@@ -892,75 +887,6 @@ TEST_F(NoteTakingHelperTest, LaunchChromeApp) {
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kDefaultLaunchResultHistogramName,
       static_cast<int>(LaunchResult::CHROME_SUCCESS), 1);
-}
-
-TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
-  Init(ENABLE_PALETTE);
-  GURL app_url("https://yielding-large-chef.glitch.me/");
-  // Install a default-allowed web app corresponding to ID of
-  // |NoteTakingHelper::kNoteTakingWebAppIdTest|.
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = app_url;
-  app_info->title = u"Default Allowed Web App";
-  std::string app_id =
-      web_app::test::InstallWebApp(profile(), std::move(app_info));
-  ASSERT_EQ(app_id, NoteTakingHelper::kNoteTakingWebAppIdTest);
-
-  // Fire a "Create Note" action and check the app is launched.
-  HistogramTester histogram_tester;
-  SetNoteTakingClientProfile(profile());
-
-  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
-  NoteTakingClient::GetInstance()->CreateNote();
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(tab_waiter.Wait());
-
-  // Web app, so no launched_chrome_apps.
-  EXPECT_EQ(0u, launched_chrome_apps_.size());
-
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kPreferredLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kDefaultLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
-
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  ASSERT_EQ(app_url, url);
-}
-
-TEST_F(NoteTakingHelperTest, LaunchWebApp) {
-  Init(ENABLE_PALETTE);
-
-  // Install a web app with a note_taking_new_note_url.
-  GURL new_note_url("http://some.url/new-note");
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = GURL("http://some.url");
-  app_info->scope = GURL("http://some.url");
-  app_info->title = u"Web App 2";
-  app_info->note_taking_new_note_url = new_note_url;
-  std::string app_id =
-      web_app::test::InstallWebApp(profile(), std::move(app_info));
-  ASSERT_EQ(helper()->GetAvailableApps(profile()).size(), 1u);
-
-  // Fire a "Create Note" action and check the app is launched.
-  HistogramTester histogram_tester;
-  SetNoteTakingClientProfile(profile());
-  ui_test_utils::AllBrowserTabAddedWaiter tab_added_observer;
-  NoteTakingClient::GetInstance()->CreateNote();
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(tab_added_observer.Wait());
-
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kPreferredLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kDefaultLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  ASSERT_EQ(new_note_url, url);
 }
 
 TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
