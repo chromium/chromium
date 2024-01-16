@@ -109,6 +109,7 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
   void LoadChildFrame() {
+    child_frame_token_ = blink::LocalFrameToken();
     mojom::CreateFrameWidgetParamsPtr widget_params =
         mojom::CreateFrameWidgetParams::New();
     widget_params->routing_id = kSubframeWidgetRouteId;
@@ -161,7 +162,7 @@ class RenderFrameImplTest : public RenderViewTest {
                  std::move(remote_main_frame_interfaces));
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
-        *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
+        *agent_scheduling_group_, child_frame_token_, kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
@@ -197,8 +198,9 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
   TestRenderFrame& child_frame() const {
-    return CHECK_DEREF(static_cast<TestRenderFrame*>(
-        RenderFrameImpl::FromRoutingID(kSubframeRouteId)));
+    return CHECK_DEREF(
+        static_cast<TestRenderFrame*>(RenderFrameImpl::FromWebFrame(
+            blink::WebLocalFrame::FromFrameToken(child_frame_token_))));
   }
 
   blink::WebFrameWidget* frame_widget() const {
@@ -219,6 +221,7 @@ class RenderFrameImplTest : public RenderViewTest {
 
  private:
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
+  blink::LocalFrameToken child_frame_token_;
 };
 
 class RenderFrameTestObserver : public RenderFrameObserver {
