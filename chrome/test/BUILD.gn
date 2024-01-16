@@ -4690,7 +4690,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/policy/networking/network_policy_application_browsertest.cc",
         "../browser/ash/policy/networking/policy_certs_browsertest.cc",
         "../browser/ash/policy/remote_commands/curtain_mode_chromeos_browsertest.cc",
-        "../browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_browsertest.cc",
         "../browser/ash/policy/remote_commands/device_command_reboot_job_browsertest.cc",
         "../browser/ash/policy/remote_commands/device_command_set_volume_job_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer_browsertest.cc",
