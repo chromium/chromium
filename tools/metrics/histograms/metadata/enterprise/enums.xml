@@ -316,6 +316,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Use Another Account button clicked"/>
 </enum>
 
+<enum name="EnrollmentRecoveryOnBootAction">
+  <summary>
+    The action taken on boot when enrollment recovery is marked in the local
+    state.
+  </summary>
+  <int value="0" label="Proceed with recovery"/>
+  <int value="1" label="False flag, the device policy is good"/>
+  <int value="2" label="Device without serial number, skip recovery"/>
+</enum>
+
 <enum name="EnterpriseAccountStatus">
   <summary>Account status fetched before enrollment process starts.</summary>
   <int value="0" label="Unknown account"/>

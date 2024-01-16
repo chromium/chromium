@@ -3003,6 +3003,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.EnrollementRecoveryOnBoot"
+    enum="EnrollmentRecoveryOnBootAction" expires_after="2025-01-12">
+  <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    The action taken on boot when enrollment recovery is marked in the local
+    state.
+  </summary>
+</histogram>
+
 <histogram name="EnterpriseCheck.InDomain" enum="BooleanEnabled"
     expires_after="2024-03-01">
   <owner>ydago@chromium.org</owner>

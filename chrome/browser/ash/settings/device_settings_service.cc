@@ -409,6 +409,10 @@ bool DeviceSettingsService::IsDeviceManaged() const {
   }
 }
 
+bool DeviceSettingsService::HasDmToken() const {
+  return policy_data_ && policy_data_->has_request_token();
+}
+
 std::ostream& operator<<(std::ostream& ostream,
                          DeviceSettingsService::OwnershipStatus status) {
   switch (status) {

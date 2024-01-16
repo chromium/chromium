@@ -230,6 +230,9 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Returns if the device is managed according to the device settings.
   bool IsDeviceManaged() const;
 
+  // Returns if the device policy is loaded and contains the DM token.
+  bool HasDmToken() const;
+
   // Adds an observer.
   void AddObserver(Observer* observer);
   // Removes an observer.
