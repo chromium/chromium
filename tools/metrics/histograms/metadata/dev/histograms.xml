@@ -148,9 +148,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceLoaded"
-    enum="DevToolsDeveloperResourceLoaded" expires_after="2024-02-25">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
   <summary>
     Records for each developer resource load that the DevTools front-end issues
     (e.g. to load a source map) several enum values encoding which load method
@@ -183,9 +183,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2024-02-25">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsDeveloperResourceScheme" expires_after="2024-12-31">
   <owner>bmeurer@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
   <summary>
     Records for each developer resource load that the DevTools front-end issues
     (e.g. to load a source map) one enum value that records the scheme of the
