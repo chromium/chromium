@@ -232,13 +232,14 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
     return OpenOutcome::kFailed;
 
     // The hardware latency is fixed and will not change during the call.
-    // TODO(crbug/1413450): Currently, we set the latency as 0 for iOS. Please
-    // incorporate a platform-specific implementation for iOS to accurately
-    // obtain hardware latency values.
 #if BUILDFLAG(IS_MAC)
   hardware_latency_ = core_audio_mac::GetHardwareLatency(
       audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
       format_.mSampleRate);
+#else
+  AudioManagerIOS* manager_ios = static_cast<AudioManagerIOS*>(manager_);
+  hardware_latency_ = base::Seconds(manager_ios->HardwareLatency(
+      /*is_input=*/true));
 #endif
 
   return OpenOutcome::kSuccess;
