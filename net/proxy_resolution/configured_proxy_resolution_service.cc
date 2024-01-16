@@ -45,10 +45,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "net/proxy_resolution/win/proxy_resolver_winhttp.h"
-#elif BUILDFLAG(IS_IOS)
-#include "net/proxy_resolution/proxy_resolver_mac.h"
-#elif BUILDFLAG(IS_MAC)
-#include "net/proxy_resolution/proxy_resolver_mac.h"
+#elif BUILDFLAG(IS_APPLE)
+#include "net/proxy_resolution/proxy_resolver_apple.h"
 #endif
 
 using base::TimeTicks;
@@ -229,7 +227,7 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
 #if BUILDFLAG(IS_WIN)
     return std::make_unique<ProxyResolverFactoryWinHttp>();
 #elif BUILDFLAG(IS_APPLE)
-    return std::make_unique<ProxyResolverFactoryMac>();
+    return std::make_unique<ProxyResolverFactoryApple>();
 #else
     NOTREACHED();
     return nullptr;

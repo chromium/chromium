@@ -18,7 +18,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
-#include "net/proxy_resolution/proxy_chain_util_mac.h"
+#include "net/proxy_resolution/proxy_chain_util_apple.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {

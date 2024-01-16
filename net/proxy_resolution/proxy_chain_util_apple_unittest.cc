@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/proxy_chain_util_mac.h"
+#include "net/proxy_resolution/proxy_chain_util_apple.h"
 
 #include <CFNetwork/CFProxySupport.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -16,7 +16,7 @@ namespace net {
 
 // Test convert ProxyDictionary To ProxyChain with invalid inputs.
 // https://crbug.com/1478580
-TEST(ProxyChainUtilMacTest, InvalidProxyDictionaryToProxyChain) {
+TEST(ProxyChainUtilAppleTest, InvalidProxyDictionaryToProxyChain) {
   CFStringRef host_key = CFSTR("HttpHost");
   CFStringRef port_key = CFSTR("HttpPort");
   CFStringRef value = CFSTR("127.1110.0.1");

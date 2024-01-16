@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/proxy_chain_util_mac.h"
+#include "net/proxy_resolution/proxy_chain_util_apple.h"
 
 #include <CFNetwork/CFProxySupport.h>
 #include <CoreFoundation/CoreFoundation.h>
