@@ -405,10 +405,6 @@ void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-void IsolatedWebAppInstallerViewController::OnManageProfilesLinkClicked() {
-  // TODO(crbug.com/1479140): Implement
-}
-
 void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
   // Currently all child dialogs should close the installer when closed.
   Close();

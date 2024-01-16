@@ -317,11 +317,7 @@ class ShowMetadataView : public InstallerDialogView {
             CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
-            IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE,
-            IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES,
-            base::BindRepeating(&IsolatedWebAppInstallerView::Delegate::
-                                    OnManageProfilesLinkClicked,
-                                base::Unretained(delegate))) {
+            IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE) {
     // Initialize the View with dummy data so the initial height calculation
     // will be roughly accurate.
     std::vector<std::pair<int, std::u16string>> info = {
