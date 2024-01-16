@@ -109,10 +109,10 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
 TextQueryProviderForOrca::TextQueryProviderForOrca(
     mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
     Profile* profile,
-    EditorSwitch* editor_switch)
+    EditorMetricsRecorder* metrics_recorder)
     : text_query_provider_receiver_(this, std::move(receiver)),
       orca_provider_(CreateProvider(profile)),
-      editor_switch_(editor_switch) {}
+      metrics_recorder_(metrics_recorder) {}
 
 TextQueryProviderForOrca::~TextQueryProviderForOrca() = default;
 
@@ -132,9 +132,10 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
   orca_provider_->Call(
       CreateProviderRequest(std::move(request)),
       base::BindOnce(
-          [](const std::string& request_id, EditorMode editor_mode,
-             ProcessCallback process_callback,
-             base::Value::Dict dict, manta::MantaStatus status) {
+          [](const std::string& request_id,
+             EditorMetricsRecorder* metrics_recorder,
+             ProcessCallback process_callback, base::Value::Dict dict,
+             manta::MantaStatus status) {
             std::move(process_callback)
                 .Run(status.status_code == manta::MantaStatusCode::kOk
                          ? orca::mojom::TextQueryResponse::NewResults(
@@ -142,12 +143,12 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
                          : orca::mojom::TextQueryResponse::NewError(
                                ConvertErrorResponse(status)));
 
-            LogEditorState(status.status_code == manta::MantaStatusCode::kOk
-                               ? EditorStates::kSuccessResponse
-                               : EditorStates::kErrorResponse,
-                           editor_mode);
+            metrics_recorder->LogEditorState(
+                status.status_code == manta::MantaStatusCode::kOk
+                    ? EditorStates::kSuccessResponse
+                    : EditorStates::kErrorResponse);
           },
-          base::NumberToString(request_id_), editor_switch_->GetEditorMode(),
+          base::NumberToString(request_id_), metrics_recorder_,
           std::move(callback)));
 }
 

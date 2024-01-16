@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/ash/input_method/editor_switch.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "components/manta/orca_provider.h"
@@ -31,7 +31,7 @@ class TextQueryProviderForOrca : public EditorTextQueryProvider {
   TextQueryProviderForOrca(
       mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
       Profile* profile,
-      EditorSwitch* editor_switch);
+      EditorMetricsRecorder* metrics_recorder);
 
   ~TextQueryProviderForOrca() override;
 
@@ -48,7 +48,7 @@ class TextQueryProviderForOrca : public EditorTextQueryProvider {
   std::unique_ptr<manta::OrcaProvider> orca_provider_;
 
   // not owned by this class
-  raw_ptr<EditorSwitch> editor_switch_;
+  raw_ptr<EditorMetricsRecorder> metrics_recorder_;
 
   // Unsigned to allow safe overflows.
   unsigned int request_id_ = 0;

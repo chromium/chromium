@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 
@@ -147,17 +148,18 @@ bool EditorPanelManager::IsEditorMenuVisible() const {
 
 void EditorPanelManager::LogEditorMode(
     crosapi::mojom::EditorPanelMode mode) {
-  LogEditorNativeUIShowOpportunityState(delegate_->GetEditorOpportunityMode());
-  switch (mode) {
-    case crosapi::mojom::EditorPanelMode::kRewrite:
-      LogEditorState(EditorStates::kNativeUIShown, EditorMode::kRewrite);
-      return;
-    case crosapi::mojom::EditorPanelMode::kWrite:
-      LogEditorState(EditorStates::kNativeUIShown, EditorMode::kWrite);
-      return;
-    case crosapi::mojom::EditorPanelMode::kBlocked:
-    case crosapi::mojom::EditorPanelMode::kPromoCard:
-      return;
+  EditorOpportunityMode opportunity_mode =
+      delegate_->GetEditorOpportunityMode();
+  EditorMetricsRecorder* logger = delegate_->GetMetricsRecorder();
+  logger->SetMode(opportunity_mode);
+  if (opportunity_mode == EditorOpportunityMode::kRewrite ||
+      opportunity_mode == EditorOpportunityMode::kWrite) {
+    logger->LogEditorState(EditorStates::kNativeUIShowOpportunity);
+  }
+
+  if (mode == crosapi::mojom::EditorPanelMode::kRewrite ||
+      mode == crosapi::mojom::EditorPanelMode::kWrite) {
+    logger->LogEditorState(EditorStates::kNativeUIShown);
   }
 }
 

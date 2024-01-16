@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
@@ -72,6 +73,7 @@ class EditorMediator : public EditorEventSink,
   // accommodated.
   EditorOpportunityMode GetEditorOpportunityMode() const override;
   void CacheContext() override;
+  EditorMetricsRecorder* GetMetricsRecorder() const override;
 
   // display::DisplayObserver overrides
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -116,6 +118,7 @@ class EditorMediator : public EditorEventSink,
   MakoBubbleCoordinator mako_bubble_coordinator_;
 
   std::unique_ptr<EditorSwitch> editor_switch_;
+  std::unique_ptr<EditorMetricsRecorder> metrics_recorder_;
   std::unique_ptr<EditorConsentStore> consent_store_;
   EditorServiceConnector editor_service_connector_;
 

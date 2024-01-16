@@ -7,6 +7,18 @@
 
 namespace ash::input_method {
 
+enum class EditorTone {
+  kUnset = 0,
+  kRephrase = 1,
+  kEmojify = 2,
+  kShorten = 3,
+  kElaborate = 4,
+  kFormalize = 5,
+  kFreeformRewrite = 6,
+  kUnknown = 7,
+  kMaxValue = kUnknown,
+};
+
 // Must match with IMEEditorStates in enums.xml
 //
 // These values are persisted to logs. Entries should not be renumbered and

@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
@@ -29,9 +30,11 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
       panel_manager_(this),
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
+      metrics_recorder_(
+          std::make_unique<EditorMetricsRecorder>(GetEditorOpportunityMode())),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
-                                               editor_switch_.get())) {
+                                               metrics_recorder_.get())) {
   editor_switch_->OnTabletModeUpdated(
       display::Screen::GetScreen()->InTabletMode());
 }
@@ -63,7 +66,7 @@ void EditorMediator::SetUpNewEditorService() {
         this);
     text_query_provider_ = std::make_unique<TextQueryProviderForOrca>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-        profile_, editor_switch_.get());
+        profile_, metrics_recorder_.get());
     editor_client_connector_ = std::make_unique<EditorClientConnector>(
         editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
     editor_event_proxy_ = std::make_unique<EditorEventProxy>(
@@ -179,12 +182,12 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
                                             preset_query_id, freeform_text);
-      LogEditorState(EditorStates::kNativeRequest, EditorMode::kRewrite);
+      metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
     case EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
                                             preset_query_id, freeform_text);
-      LogEditorState(EditorStates::kNativeRequest, EditorMode::kWrite);
+      metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);
@@ -220,6 +223,10 @@ bool EditorMediator::IsAllowedForUse() {
 
 EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
+}
+
+EditorMetricsRecorder* EditorMediator::GetMetricsRecorder() const {
+  return metrics_recorder_.get();
 }
 
 EditorOpportunityMode EditorMediator::GetEditorOpportunityMode() const {

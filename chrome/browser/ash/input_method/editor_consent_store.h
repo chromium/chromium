@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -17,13 +18,8 @@ namespace ash::input_method {
 // store.
 class EditorConsentStore {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    virtual EditorMode GetEditorMode() const = 0;
-  };
-  explicit EditorConsentStore(PrefService* pref_service, Delegate* delegate);
+  explicit EditorConsentStore(PrefService* pref_service,
+                              EditorMetricsRecorder* metrics_recorder);
   EditorConsentStore(const EditorConsentStore&) = delete;
   EditorConsentStore& operator=(const EditorConsentStore&) = delete;
   ~EditorConsentStore();
@@ -49,7 +45,7 @@ class EditorConsentStore {
 
   // Not owned by this class.
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<EditorMetricsRecorder> metrics_recorder_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

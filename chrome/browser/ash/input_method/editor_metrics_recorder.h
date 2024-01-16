@@ -10,14 +10,20 @@
 
 namespace ash::input_method {
 
-void LogEditorState(EditorStates state, EditorMode mode);
+class EditorMetricsRecorder {
+ public:
+  explicit EditorMetricsRecorder(EditorOpportunityMode mode);
 
-void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
+  void SetMode(EditorOpportunityMode mode);
+  void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
 
-void LogNumberOfCharactersInserted(EditorMode mode, int number_of_characters);
+  void LogEditorState(EditorStates state);
+  void LogNumberOfCharactersInserted(int number_of_characters);
+  void LogNumberOfCharactersSelectedForInsert(int number_of_characters);
 
-void LogNumberOfCharactersSelectedForInsert(EditorMode mode,
-                                            int number_of_characters);
+ private:
+  EditorOpportunityMode mode_;
+};
 
 }  // namespace ash::input_method
 

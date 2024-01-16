@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -38,6 +39,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
         std::optional<std::string_view> preset_query_id,
         std::optional<std::string_view> freeform_text) = 0;
     virtual EditorMode GetEditorMode() const = 0;
+    virtual EditorMetricsRecorder* GetMetricsRecorder() const = 0;
     virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
 
     virtual void CacheContext() = 0;
