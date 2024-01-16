@@ -185,9 +185,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // environment or the reason why it is not allowed.
   Status GetM1TopicAllowedStatus() const;
 
-  // Whether Attribution Reporting API can be allowed given the current
-  // environment or the reason why it is not allowed.
-  Status GetM1AttributionReportingAllowedStatus(
+  // Whether ad measurement APIs can be allowed given the current environment or
+  // the reason why it is not allowed.
+  Status GetM1AdMeasurementAllowedStatus(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const;
 

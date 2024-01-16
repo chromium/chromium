@@ -358,7 +358,7 @@ base::Time PrivacySandboxSettingsImpl::TopicsDataAccessibleSince() const {
 }
 
 PrivacySandboxSettingsImpl::Status
-PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
+PrivacySandboxSettingsImpl::GetM1AdMeasurementAllowedStatus(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   Status status = GetM1PrivacySandboxApiEnabledStatus(
@@ -398,8 +398,8 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     return false;
   }
 
-  Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                         reporting_origin);
+  Status status =
+      GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
   JoinHistogram(kIsAttributionReportingAllowedHistogram, status);
   return IsAllowed(status);
 }
@@ -425,11 +425,11 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     return false;
   }
 
-  Status status = GetM1AttributionReportingAllowedStatus(
+  Status status = GetM1AdMeasurementAllowedStatus(
       /*top_frame_origin=*/source_origin,
       /*reporting_origin=*/reporting_origin);
   if (IsAllowed(status)) {
-    status = GetM1AttributionReportingAllowedStatus(
+    status = GetM1AdMeasurementAllowedStatus(
         /*top_frame_origin=*/destination_origin,
         /*reporting_origin=*/reporting_origin);
   }
@@ -661,8 +661,8 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     return false;
   }
 
-  Status status = GetM1AttributionReportingAllowedStatus(top_frame_origin,
-                                                         reporting_origin);
+  Status status =
+      GetM1AdMeasurementAllowedStatus(top_frame_origin, reporting_origin);
   JoinHistogram(kIsPrivateAggregationAllowedHistogram, status);
   return IsAllowed(status);
 }
