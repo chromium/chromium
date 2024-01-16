@@ -1609,6 +1609,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"contextual-panel", flag_descriptions::kContextualPanelName,
      flag_descriptions::kContextualPanelDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kContextualPanel)},
+    {"contextual-panel-force-show-entrypoint",
+     flag_descriptions::kContextualPanelForceShowEntrypointName,
+     flag_descriptions::kContextualPanelForceShowEntrypointDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContextualPanelForceShowEntrypoint)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

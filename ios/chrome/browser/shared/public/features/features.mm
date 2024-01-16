@@ -160,6 +160,14 @@ bool IsNewTabGridTransitionsEnabled() {
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
 }
 
+BASE_FEATURE(kContextualPanelForceShowEntrypoint,
+             "ContextualPanelForceShowEntrypoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContextualPanelForceShowEntrypointEnabled() {
+  return base::FeatureList::IsEnabled(kContextualPanelForceShowEntrypoint);
+}
+
 BASE_FEATURE(kContextualPanel,
              "ContextualPanel",
              base::FEATURE_DISABLED_BY_DEFAULT);

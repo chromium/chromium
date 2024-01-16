@@ -177,6 +177,11 @@ extern const char kClearUndecryptablePasswordsOnSyncDescription[];
 extern const char kContentPushNotificationsName[];
 extern const char kContentPushNotificationsDescription[];
 
+// Title and description for the flag to enable force showing the Contextual
+// Panel entrypoint, mainly for testing purposes.
+extern const char kContextualPanelForceShowEntrypointName[];
+extern const char kContextualPanelForceShowEntrypointDescription[];
+
 // Title and description for the flag to enable the contextual panel.
 extern const char kContextualPanelName[];
 extern const char kContextualPanelDescription[];

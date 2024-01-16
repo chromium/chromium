@@ -150,6 +150,11 @@ BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 // Whether the new tab grid tabs transitions should be enabled.
 bool IsNewTabGridTransitionsEnabled();
 
+// Feature to enable force showing the Contextual Panel entrypoint.
+BASE_DECLARE_FEATURE(kContextualPanelForceShowEntrypoint);
+
+bool IsContextualPanelForceShowEntrypointEnabled();
+
 // Feature to enable the contextual panel.
 BASE_DECLARE_FEATURE(kContextualPanel);
 
