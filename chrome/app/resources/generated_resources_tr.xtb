@@ -355,6 +355,7 @@
 <translation id="1264337193001759725">Ağ kullanıcı arayüzü günlüklerini görmek için: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Uygulamalarınız ve ayarlarınız, Google hesabınızla oturum açtığınız tüm ChromeOS Flex cihazlarda senkronize edilir. Tarayıcı senkronizasyon seçenekleri için <ph name="LINK_BEGIN" />Chrome ayarlarına<ph name="LINK_END" /> gidin.</translation>
 <translation id="126710816202626562">Çeviri dili:</translation>
+<translation id="1267649802567297774"><ph name="STYLE" /> stilini ve <ph name="MOOD" /> ruh halini içeren <ph name="SUBJECT" /> resimden <ph name="INDEX" />. resim oluşturuldu</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Durdur</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Desteklenen bağlantıların<ph name="END_LINK" /> açılması</translation>
@@ -4481,6 +4482,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4471354919263203780">Konuşma tanıma dosyaları indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4472298120638043495">Tercih ettiğiniz Google Hesabı dilini (<ph name="NEW_LOCALE_FROM_GAIA" />) kullanabilirsiniz.</translation>
 <translation id="447252321002412580">Chrome'un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> stilini içeren <ph name="SUBJECT" /> resimden <ph name="INDEX" />. resim oluşturuldu</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4473996011558324141">süre hesaplanıyor</translation>
 <translation id="4474155171896946103">Tüm sekmelere yer işareti koy...</translation>
@@ -6999,6 +7001,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6509207748479174212">Medya lisansı</translation>
 <translation id="6511607461419653612">Chromebook'unuzu yeniden başlatıp tekrar deneyin</translation>
 <translation id="6511827214781912955">Bu cihazı kullanan diğer kişilerin şifrelerinizi görmemesi için <ph name="FILENAME" /> dosyasını silebilirsiniz.</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> ruh hali içeren <ph name="SUBJECT" /> resimden <ph name="INDEX" />. resim oluşturuldu.</translation>
 <translation id="6513247462497316522">Başka bir ağa bağlı değilseniz Google Chrome mobil verileri kullanır.</translation>
 <translation id="6514010653036109809">Kullanılabilir cihaz:</translation>
 <translation id="6514565641373682518">Bu sayfa fare imlecinizi devre dışı bıraktı.</translation>
@@ -7022,6 +7025,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6528179044667508675">Rahatsız etme</translation>
 <translation id="652937045869844725">Üçüncü taraf çerezlerine izin vermeyi deneyin. Bu durumda daha az korunursunuz ancak site özelliklerinin çalışma olasılığı daha yüksektir</translation>
 <translation id="652948702951888897">Chrome geçmişi</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" /> resimden <ph name="INDEX" />. resim oluşturuldu</translation>
 <translation id="6530186581263215931">Bu ayarlar yöneticiniz tarafınızdan uygulanıyor</translation>
 <translation id="6530267432324197764">Profil <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="6531282281159901044">Tehlikeli dosyayı tut</translation>

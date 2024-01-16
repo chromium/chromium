@@ -355,6 +355,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1264337193001759725">Para ver registros de interfaz de usuario de la red, consulta: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Tus aplicaciones y ajustes se sincronizarán en todos los dispositivos ChromeOS Flex en los que hayas iniciado sesión con tu cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Idioma de traducción:</translation>
+<translation id="1267649802567297774">Imagen generada n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estilo <ph name="STYLE" /> y el estado de ánimo <ph name="MOOD" /></translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1272508081857842302">Al abrir <ph name="BEGIN_LINK" />enlaces compatibles<ph name="END_LINK" /></translation>
@@ -4483,6 +4484,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4471354919263203780">Descargando archivos de reconocimiento de voz... <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Puedes usar el idioma preferido de tu cuenta de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
+<translation id="4472533928615930332">Imagen generada n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estilo <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Empezar</translation>
 <translation id="4473996011558324141">Calculando tiempo</translation>
 <translation id="4474155171896946103">Añadir todas las pestañas a marcadores...</translation>
@@ -7000,6 +7002,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6509207748479174212">Licencia de contenido multimedia</translation>
 <translation id="6511607461419653612">Reinicia tu Chromebook y vuelve a intentarlo</translation>
 <translation id="6511827214781912955">Te recomendamos que elimines <ph name="FILENAME" /> para que otras personas que usen este dispositivo no puedan ver tus contraseñas</translation>
+<translation id="6512759338201777379">Imagen generada n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" /></translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móviles si no te has conectado a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
 <translation id="6514565641373682518">Esta página ha inhabilitado el cursor de tu ratón.</translation>
@@ -7023,6 +7026,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6528179044667508675">No molestar</translation>
 <translation id="652937045869844725">Prueba a permitir las cookies de terceros, lo que disminuirá la protección, pero aumentará la probabilidad de que las opciones del sitio funcionen</translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
+<translation id="6530030995840538405">Imagen generada n.º <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">El administrador aplica estas opciones</translation>
 <translation id="6530267432324197764">Perfil gestionado por <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Conservar archivo peligroso</translation>

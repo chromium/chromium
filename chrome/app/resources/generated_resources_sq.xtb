@@ -355,6 +355,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1264337193001759725">Për të shikuar evidencat e ndërfaqes së përdoruesit të rrjetit, shiko: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Aplikacionet dhe cilësimet e tua do të sinkronizohen në të gjitha pajisjet Chrome OS Flex ku je identifikuar me "Llogarinë tënde të Google". Për opsionet e sinkronizimit të shfletuesit, shko te <ph name="LINK_BEGIN" />cilësimet e Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Gjuha e përkthimit:</translation>
+<translation id="1267649802567297774">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />", me atmosferë "<ph name="MOOD" />".</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Ndalo</translation>
 <translation id="1272508081857842302">Hapja e <ph name="BEGIN_LINK" />lidhjeve të mbështetura<ph name="END_LINK" /></translation>
@@ -4481,6 +4482,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4471354919263203780">Po shkarkon skedarët e njohjes së ligjërimit... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Mund të përdorësh gjuhën tënde të preferuar të "Llogarisë së Google" (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Ndihmo në përmirësimin e funksioneve dhe cilësisë së funksionimit të Chrome</translation>
+<translation id="4472533928615930332">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />"</translation>
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4473996011558324141">po përllogaritet koha</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
@@ -5908,7 +5910,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5620568081365989559">DevTools kërkon të ketë qasje të plotë te <ph name="FOLDER_PATH" />. Sigurohu që të mos ekspozosh informacione delikate.</translation>
 <translation id="5620612546311710611">statistikat e përdorimit</translation>
 <translation id="5621272825308610394">Nuk ka emër prezantues</translation>
-<translation id="5621350029086078628">Kjo është një veçori eksperimentale e IA.</translation>
+<translation id="5621350029086078628">Kjo është një veçori eksperimentale nga IA.</translation>
 <translation id="562250930904332809">&amp;Çaktivizo "Titrat në çast"</translation>
 <translation id="5623282979409330487">Kjo faqe po të hap sensorët e lëvizjes.</translation>
 <translation id="5623842676595125836">Ditari</translation>
@@ -6998,6 +7000,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6509207748479174212">Licenca e medias</translation>
 <translation id="6511607461419653612">Rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
 <translation id="6511827214781912955">Ki parasysh që ta fshish <ph name="FILENAME" />, në mënyrë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua</translation>
+<translation id="6512759338201777379">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", me atmosferë "<ph name="MOOD" />".</translation>
 <translation id="6513247462497316522">Google Chrome do të përdorë të dhënat celulare nëse nuk je i lidhur me një rrjet tjetër.</translation>
 <translation id="6514010653036109809">Pajisja e disponueshme:</translation>
 <translation id="6514565641373682518">Kjo faqe ka çaktivizuar kursorin e miut.</translation>
@@ -7021,6 +7024,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6528179044667508675">Mos shqetëso</translation>
 <translation id="652937045869844725">Provo të lejosh kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
 <translation id="652948702951888897">Historiku i Chrome</translation>
+<translation id="6530030995840538405">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />"</translation>
 <translation id="6530186581263215931">Këto cilësime janë të detyruara nga administratori</translation>
 <translation id="6530267432324197764">Profili menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Mbaje skedarin e rrezikshëm</translation>

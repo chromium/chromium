@@ -357,6 +357,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1264337193001759725">Untuk menampilkan log UI jaringan, buka: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Aplikasi dan setelan Anda akan disinkronkan di semua perangkat ChromeOS Flex tempat Anda login dengan Akun Google Anda. Untuk opsi sinkronisasi browser, buka <ph name="LINK_BEGIN" />setelan Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Bahasa terjemahan:</translation>
+<translation id="1267649802567297774">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" />, dalam gaya <ph name="STYLE" />, dengan mood <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1272508081857842302">Membuka <ph name="BEGIN_LINK" />link yang didukung<ph name="END_LINK" /></translation>
@@ -4498,6 +4499,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4471354919263203780">Mendownload file pengenalan ucapan ... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Anda dapat menggunakan bahasa Akun Google pilihan (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Bantu sempurnakan fitur dan performa Chrome</translation>
+<translation id="4472533928615930332">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" />, dalam gaya <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4473996011558324141">memperkirakan waktu</translation>
 <translation id="4474155171896946103">Bookmark semua tab...</translation>
@@ -7016,6 +7018,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6509207748479174212">Lisensi Media</translation>
 <translation id="6511607461419653612">Mulai ulang Chromebook Anda, lalu coba lagi</translation>
 <translation id="6511827214781912955">Sebaiknya hapus <ph name="FILENAME" />, agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda</translation>
+<translation id="6512759338201777379">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" />, dengan mood <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome akan menggunakan data seluler jika Anda tidak terhubung ke jaringan lain.</translation>
 <translation id="6514010653036109809">Perangkat yang tersedia:</translation>
 <translation id="6514565641373682518">Halaman ini telah menonaktifkan kursor mouse Anda.</translation>
@@ -7039,6 +7042,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6528179044667508675">Jangan ganggu</translation>
 <translation id="652937045869844725">Coba izinkan cookie pihak ketiga, yang berarti lebih sedikit perlindungan, tetapi fitur situs biasanya berfungsi</translation>
 <translation id="652948702951888897">Histori Chrome</translation>
+<translation id="6530030995840538405">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">Setelan ini diberlakukan oleh administrator</translation>
 <translation id="6530267432324197764">Profil dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Simpan file berbahaya</translation>

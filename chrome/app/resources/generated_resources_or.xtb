@@ -356,6 +356,7 @@
 <translation id="1264337193001759725">ନେଟୱାର୍କ UI ଲଗଗୁଡ଼ିକ ଏଠାରେ ଦେଖନ୍ତୁ: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରିଥିବା ସମସ୍ତ ChromeOS Flex ଡିଭାଇସରେ ଆପଣଙ୍କ ଆପ ଏବଂ ସେଟିଂସ ସିଙ୍କ ହେବ। ବ୍ରାଉଜର ସିଙ୍କ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ, <ph name="LINK_BEGIN" />Chrome ସେଟିଂସ<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="126710816202626562">ଭାଷାର ଅନୁବାଦ:</translation>
+<translation id="1267649802567297774"><ph name="MOOD" /> ମୁଡ ସହିତ <ph name="STYLE" /> ଷ୍ଟାଇଲରେ <ph name="SUBJECT" />ର ଜେନେରେଟ କରାଯାଇଥିବା ଇମେଜ <ph name="INDEX" />।</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଖୋଲିବା</translation>
@@ -4480,6 +4481,7 @@
 <translation id="4471354919263203780">ସ୍ପିଚ୍ ଚିହ୍ନଟକରଣ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଉଛି... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">ଆପଣ ଆପଣଙ୍କ ପସନ୍ଦର Google ଆକାଉଣ୍ଟର ଭାଷା (<ph name="NEW_LOCALE_FROM_GAIA" />) ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="447252321002412580">Chromeର ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକୁ ଏବଂ କାର୍ଯ୍ୟଦକ୍ଷତାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରେ</translation>
+<translation id="4472533928615930332"><ph name="STYLE" /> ଷ୍ଟାଇଲରେ <ph name="SUBJECT" />ର ଜେନେରେଟ କରାଯାଇଥିବା ଇମେଜ <ph name="INDEX" /></translation>
 <translation id="4472575034687746823">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4473996011558324141">ଆନୁମାନିକ ସମୟ</translation>
 <translation id="4474155171896946103">ସମସ୍ତ ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ...</translation>
@@ -6995,6 +6997,7 @@
 <translation id="6509207748479174212">ମେଡିଆ ଲାଇସେନ୍ସ</translation>
 <translation id="6511607461419653612">ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />କୁ ଡିଲିଟ କରିବା ପାଇଁ ବିଚାର କରନ୍ତୁ, ଯାହା ଫଳରେ ଏହି ଡିଭାଇସ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟମାନେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିପାରିବେ ନାହିଁ</translation>
+<translation id="6512759338201777379"><ph name="MOOD" /> ମୁଡ ସହିତ <ph name="SUBJECT" />ର ଜେନେରେଟ କରାଯାଇଥିବା ଇମେଜ <ph name="INDEX" />।</translation>
 <translation id="6513247462497316522">ଆପଣ ଯଦି କୌଣସି ଅନ୍ୟ ନେଟ୍‌ୱାର୍କରେ ସଂଯୁକ୍ତ ନାହାଁନ୍ତି, ତେବେ
 Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବ।</translation>
 <translation id="6514010653036109809">ଉପଲବ୍ଧ ଡିଭାଇସ୍:</translation>
@@ -7019,6 +7022,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6528179044667508675">ବିରକ୍ତ କରନାହିଁ</translation>
 <translation id="652937045869844725">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଅନୁମତି ଦେବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ, ଯାହାର ଅର୍ଥ ହେଉଛି କମ ସୁରକ୍ଷା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ</translation>
 <translation id="652948702951888897">Chrome ଇତିବୃତ୍ତି</translation>
+<translation id="6530030995840538405"><ph name="SUBJECT" />ର ଜେନେରେଟ କରାଯାଇଥିବା ଇମେଜ <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଏହି ସେଟିଂସ୍‌ ବାଧ୍ୟତାମୂଳକ ଭାବେ ଲାଗୁ କରାଯାଇଛି</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> ଦ୍ୱାରା ପ୍ରୋଫାଇଲ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="6531282281159901044">ବିପଜ୍ଜନକ ଫାଇଲ୍‌କୁ ରଖନ୍ତୁ</translation>

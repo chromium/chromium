@@ -359,7 +359,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1264337193001759725">Za prikaz zapisnika korisničkog interfejsa mreže pogledajte: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Vaše aplikacije i postavke će se sinhronizirati na svim ChromeOS Flex uređajima na kojima ste prijavljeni putem Google računa. Za opcije sinhronizacije preglednika idite na <ph name="LINK_BEGIN" />postavke Chromea<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Jezik prijevoda:</translation>
-<translation id="1267649802567297774">Generirana slika <ph name="INDEX" /> za <ph name="SUBJECT" /> u stilu <ph name="STYLE" />, s ugođajem <ph name="MOOD" />.</translation>
+<translation id="1267649802567297774"><ph name="INDEX" />. generirana slika; predmet: <ph name="SUBJECT" />; stil: <ph name="STYLE" />; raspoloženje: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16 x</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1272508081857842302">Otvaranje <ph name="BEGIN_LINK" />podržanih linkova<ph name="END_LINK" /></translation>
@@ -4498,7 +4498,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4471354919263203780">Preuzimanje fajlova za prepoznavanje govora... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Možete koristiti željeni jezik Google računa (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
-<translation id="4472533928615930332">Generirana slika <ph name="INDEX" /> za <ph name="SUBJECT" /> u stilu <ph name="STYLE" /></translation>
+<translation id="4472533928615930332"><ph name="INDEX" />. generirana slika; predmet: <ph name="SUBJECT" />; stil: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Započnite</translation>
 <translation id="4473996011558324141">procjenjivanje vremena</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
@@ -7017,7 +7017,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6509207748479174212">Licenca za medije</translation>
 <translation id="6511607461419653612">Ponovo pokrenite Chromebook i pokušajte ponovo.</translation>
 <translation id="6511827214781912955">Razmislite o tom da izbrišete fajl <ph name="FILENAME" /> da drugi koji koriste ovaj uređaj ne mogu vidjeti vaše lozinke</translation>
-<translation id="6512759338201777379">Generirana je slika <ph name="INDEX" /> za <ph name="SUBJECT" /> s ugođajem <ph name="MOOD" />.</translation>
+<translation id="6512759338201777379"><ph name="INDEX" />. generirana slika; predmet: <ph name="SUBJECT" />; raspoloženje: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Ako niste povezani na drugu mrežu, Google Chrome će koristiti prijenos podataka na mobilnoj mreži.</translation>
 <translation id="6514010653036109809">Dostupni uređaj:</translation>
 <translation id="6514565641373682518">Ova stranica je onemogućila kursor miša.</translation>
@@ -7041,7 +7041,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6528179044667508675">Ne ometaj</translation>
 <translation id="652937045869844725">Pokušajte dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati</translation>
 <translation id="652948702951888897">Historija Chromea</translation>
-<translation id="6530030995840538405">Generirana slika <ph name="INDEX" /> za <ph name="SUBJECT" /></translation>
+<translation id="6530030995840538405"><ph name="INDEX" />. generirana slika; predmet: <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Ove postavke je primijenio vaš administrator</translation>
 <translation id="6530267432324197764">Profilom upravlja <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Zadrži opasan fajl</translation>

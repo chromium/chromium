@@ -358,6 +358,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1264337193001759725">Ukuze ubuke amalogu wenethiwekhi ye-UI, bona: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Ama-app namasethingi wakho kuzovunyelwaniswa kuwo wonke amadivayisi we-ChromeOS Flex lapho ongene khona ngemvume nge-Google Account yakho. Ukuthola izinketho zokuvumelanisa isiphequluli, iya kumasethingi we-<ph name="LINK_BEGIN" />Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Ulimi lokuhumusha:</translation>
+<translation id="1267649802567297774">Isithombe esikhiqiziwe <ph name="INDEX" /> se-<ph name="SUBJECT" />, ngesitayela esithi <ph name="STYLE" />, ngesimomizwa esithi <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Misa</translation>
 <translation id="1272508081857842302">Vula <ph name="BEGIN_LINK" />amalinki wosekelo<ph name="END_LINK" /></translation>
@@ -4498,6 +4499,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4471354919263203780">Ilanda amafayela okubonwa kwengxoxo... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Ungasebenzisa ulimi lwe-akhawunti yakho ye-Google oluncamelayo (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Siza ukuthuthukisa izici ze-Chrome nokusebenza</translation>
+<translation id="4472533928615930332">Kukhiqizwe isithombe <ph name="INDEX" /> se-<ph name="SUBJECT" />, ngesitayela esithi <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Qalisa</translation>
 <translation id="4473996011558324141">ukulinganisela isikhathi</translation>
 <translation id="4474155171896946103">Beka uphawu lokubekisa wonke amathebhu...</translation>
@@ -7017,6 +7019,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6509207748479174212">Ilayisense yemidiya</translation>
 <translation id="6511607461419653612">Qala kabusha i-Chromebook bese uzama futhi</translation>
 <translation id="6511827214781912955">Cabangela ukusula i-<ph name="FILENAME" />, ukuze abanye abasebenzisa le divayisi bangakwazi ukubona amaphasiwedi akho.</translation>
+<translation id="6512759338201777379">Kukhiqizwe isithombe <ph name="INDEX" /> se-<ph name="SUBJECT" />, ngesimomizwa esithi <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">I-Google Chrome izosebenzisa idatha yeselula uma ngabe ungaxhunyiwe kwenye inethiwekhi</translation>
 <translation id="6514010653036109809">Idivayisi etholakalayo:</translation>
 <translation id="6514565641373682518">Leli khasi likhubaze umcibisholo wegundane lakho.</translation>
@@ -7040,6 +7043,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6528179044667508675">Ungaphazamisi</translation>
 <translation id="652937045869844725">Zama ukuvumela amakhukhi ezinkampani zangaphandle, okusho ukuvikeleka okuncane kodwa izakhi zesayithi cishe zizosebenza</translation>
 <translation id="652948702951888897">Umlando we-Chrome</translation>
+<translation id="6530030995840538405">Kukhiqizwe isithombe <ph name="INDEX" /> se-<ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Lezi zilungiselelo ziphoqwa ngumlawuli wakho</translation>
 <translation id="6530267432324197764">Iphrofayela iphethwe ngu-<ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Gcina ifayela eliyingozi</translation>

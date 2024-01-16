@@ -357,6 +357,7 @@
 <translation id="1264337193001759725">Ցանցային միջերեսի մատյանները դիտելու համար անցեք <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Ձեր հավելվածներն ու կարգավորումները կհամաժամացվեն բոլոր ChromeOS Flex սարքերում, որոնցում մտել եք ձեր Google հաշիվ։ Դիտարկիչներում համաժամացման տարբերակներին ծանոթանալու համար անցեք <ph name="LINK_BEGIN" />Chrome-ի կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="126710816202626562">Թարգմանության լեզուն՝</translation>
+<translation id="1267649802567297774">Գեներացված պատկեր <ph name="INDEX" />՝ <ph name="SUBJECT" /> թեմայով, <ph name="STYLE" /> ոճով, <ph name="MOOD" /> տրամադրությամբ։</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Աջակցվող հղումների<ph name="END_LINK" /> բացում</translation>
@@ -4481,6 +4482,7 @@
 <translation id="4471354919263203780">Խոսքի ճանաչման ֆայլերը ներբեռնվում են… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Կարող եք օգտագործել Google հաշվի ձեր նախընտրած լեզուն (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
+<translation id="4472533928615930332">Գեներացված պատկեր <ph name="INDEX" />՝ <ph name="SUBJECT" /> թեմայով, <ph name="STYLE" /> ոճով</translation>
 <translation id="4472575034687746823">Սկսել</translation>
 <translation id="4473996011558324141">մոտավոր ժամանակը</translation>
 <translation id="4474155171896946103">Էջանշել բոլոր ներդիրները…</translation>
@@ -6996,6 +6998,7 @@
 <translation id="6509207748479174212">Մեդիա արտոնագիր</translation>
 <translation id="6511607461419653612">Վերագործարկեք Chromebook-ը և նորից փորձեք</translation>
 <translation id="6511827214781912955">Խորհուրդ ենք տալիս ջնջել <ph name="FILENAME" /> ֆայլը, որպեսզի այս սարքի մյուս օգտատերերը չկարողանան տեսնել ձեր գաղտնաբառերը</translation>
+<translation id="6512759338201777379">Գեներացված պատկեր <ph name="INDEX" />՝ <ph name="SUBJECT" /> թեմայով, <ph name="MOOD" /> տրամադրությամբ։</translation>
 <translation id="6513247462497316522">Եթե կապակցված չեք այլ ցանցի, Google Chrome-ը կօգտագործի տվյալների փոխանցման բջջային ցանցը:</translation>
 <translation id="6514010653036109809">Հասանելի սարք՝</translation>
 <translation id="6514565641373682518">Այս էջը կողպել է ձեր մկնիկի նշորդը:</translation>
@@ -7019,6 +7022,7 @@
 <translation id="6528179044667508675">Չանհանգստացնել</translation>
 <translation id="652937045869844725">Փորձեք թույլատրել երրորդ կողմի քուքիները։ Սա կթուլացնի ձեր պաշտպանությունը, սակայն կայքի գործառույթները, ամենայն հավանականությամբ, կաշխատեն</translation>
 <translation id="652948702951888897">Chrome-ի պատմություն</translation>
+<translation id="6530030995840538405">Գեներացված պատկեր <ph name="INDEX" />՝ <ph name="SUBJECT" /> թեմայով</translation>
 <translation id="6530186581263215931">Այս կարգավորումները պարտադրված են ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6530267432324197764">Պրոֆիլը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="6531282281159901044">Պահել վտանգավոր ֆայլը</translation>

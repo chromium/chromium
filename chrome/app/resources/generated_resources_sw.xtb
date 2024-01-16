@@ -357,6 +357,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1264337193001759725">Ili uangalie kumbukumbu za kiolesura cha mtandao, fungua: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Mipangilio na programu zako zitasawazishwa kwenye vifaa vyote vinavyotumia ChromeOS Flex ambavyo umeingia kwa kutumia akaunti yako ya Google. Ili upate chaguo za kusawazisha kwenye kivinjari, nenda katika <ph name="LINK_BEGIN" />Mipangilio ya Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Lugha ya kutafsiri:</translation>
+<translation id="1267649802567297774">Umezalisha picha ya <ph name="INDEX" /> kwenye <ph name="SUBJECT" />, katika muundo wa <ph name="STYLE" /> yenye hali ya <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Simamisha</translation>
 <translation id="1272508081857842302">Kufungua <ph name="BEGIN_LINK" />viungo vinavyoweza kutumika<ph name="END_LINK" /></translation>
@@ -4493,6 +4494,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4471354919263203780">Inapakua faili za utambuzi wa matamshi... <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Unaweza kutumia lugha yako unayopendelea ya Akaunti ya Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Tusaidie tuboreshe utendaji na vipengele vya Chrome</translation>
+<translation id="4472533928615930332">Umezalisha picha ya <ph name="INDEX" /> kwenye <ph name="SUBJECT" />, katika muundo wa <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4473996011558324141">muda unaokadiriwa</translation>
 <translation id="4474155171896946103">Alamisha vichupo vyote...</translation>
@@ -7011,6 +7013,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6509207748479174212">Leseni ya maudhui</translation>
 <translation id="6511607461419653612">Funga kisha ufungue Chromebook yako kisha ujaribu tena</translation>
 <translation id="6511827214781912955">Hakikisha unafuta <ph name="FILENAME" />, ili watu wengine wanaotumia kifaa hiki wasione manenosiri yako</translation>
+<translation id="6512759338201777379">Umezalisha picha ya <ph name="INDEX" /> kwenye <ph name="SUBJECT" />, yenye hali ya <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome itatumia data ya simu ya mkononi ukiwa hujaunganishwa kwenye mtandao mwingine.</translation>
 <translation id="6514010653036109809">Kifaa kinachopatikana:</translation>
 <translation id="6514565641373682518">Ukurasa huu umekilemza kiteuzi chako cha kipanya.</translation>
@@ -7034,6 +7037,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6528179044667508675">Usinisumbue</translation>
 <translation id="652937045869844725">Jaribu kuruhusu vidakuzi vya mshirika mwingine, jambo linalomaanisha ulinzi mdogo lakini vipengele vina uwezekano mkubwa wa kufanya kazi.</translation>
 <translation id="652948702951888897">Historia ya Chrome</translation>
+<translation id="6530030995840538405">Umezalisha picha ya <ph name="INDEX" /> kwenye <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Mipangilio hii inatekelezwa na msimamizi wako</translation>
 <translation id="6530267432324197764">Wasifu unadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Hifadhi faili hatari</translation>

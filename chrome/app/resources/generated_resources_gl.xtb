@@ -355,6 +355,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1264337193001759725">Para ver rexistros da interface de usuario da rede, consulta a ligazón seguinte: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS Flex nos que teñas a sesión iniciada na túa conta de Google. Para ver as opcións de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Idioma da tradución:</translation>
+<translation id="1267649802567297774">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Deter</translation>
 <translation id="1272508081857842302">Apertura de <ph name="BEGIN_LINK" />ligazóns compatibles<ph name="END_LINK" /></translation>
@@ -4485,6 +4486,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4471354919263203780">Descargando ficheiros de recoñecemento de voz… <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Podes usar o idioma preferido da túa Conta de Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
+<translation id="4472533928615930332">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4473996011558324141">calculando tempo necesario</translation>
 <translation id="4474155171896946103">Engadir todas as pestanas a marcadores...</translation>
@@ -6999,6 +7001,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6509207748479174212">Licenza multimedia</translation>
 <translation id="6511607461419653612">Reinicia o Chromebook e téntao de novo</translation>
 <translation id="6511827214781912955">Considera a posibilidade de eliminar <ph name="FILENAME" />, de modo que outras persoas que usen este dispositivo non vexan os teus contrasinais</translation>
+<translation id="6512759338201777379">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móbiles se non estás conectado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo dispoñible:</translation>
 <translation id="6514565641373682518">Esta páxina desactivou o cursor do rato.</translation>
@@ -7022,6 +7025,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6528179044667508675">Non molestar</translation>
 <translation id="652937045869844725">Proba a permitir as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian ben</translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
+<translation id="6530030995840538405">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">O teu administrador aplica estas opcións de configuración</translation>
 <translation id="6530267432324197764">Perfil xestionado por <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Conservar ficheiro perigoso</translation>

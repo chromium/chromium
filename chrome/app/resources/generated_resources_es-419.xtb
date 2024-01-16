@@ -3741,7 +3741,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3875815154304214043">La app de <ph name="APP_NAME" /> está configurada para abrirse en una nueva pestaña del navegador. Los vínculos compatibles también se abrirán en el navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_NAME" />, quien comparte contenido con la cuenta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
-<translation id="3880513902716032002">Algunas de las páginas que visitas están precargadas</translation>
+<translation id="3880513902716032002">Se precargan algunas de las páginas que visitas</translation>
 <translation id="3883482240657453056">Obtener descuentos para <ph name="MERCHANT_NAME_1" /> y <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">El administrador gestiona las actualizaciones</translation>

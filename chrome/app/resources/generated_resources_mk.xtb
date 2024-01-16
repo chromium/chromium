@@ -358,6 +358,7 @@
 <translation id="1264337193001759725">За да ја прегледате евиденцијата за корисничкиот интерфејс на мрежата, одете на: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Вашите апликации и поставки ќе се синхронизираат на сите уреди со ChromeOS Flex каде што сте најавени со сметката на Google. За да ги видите опциите за синхронизација на прелистувачот, одете во <ph name="LINK_BEGIN" />поставките за Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Јазик на превод:</translation>
+<translation id="1267649802567297774">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" />, со расположение: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1272508081857842302">Отворање <ph name="BEGIN_LINK" />поддржани линкови<ph name="END_LINK" /></translation>
@@ -4499,6 +4500,7 @@
 <translation id="4471354919263203780">Се преземаат датотеки за препознавање говор… <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Може да го користите посакуваниот јазик на сметката на Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
+<translation id="4472533928615930332">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4473996011558324141">се пресметува времетраењето</translation>
 <translation id="4474155171896946103">Обележи ги сите картички</translation>
@@ -7017,6 +7019,7 @@
 <translation id="6509207748479174212">Дозвола за аудио-визуелни содржини</translation>
 <translation id="6511607461419653612">Рестартирајте го вашиот Chromebook и обидете се повторно</translation>
 <translation id="6511827214781912955">Размислете да ја избришете <ph name="FILENAME" /> за да не можат другите луѓе кои го користат уредов да ги гледаат вашите лозинки</translation>
+<translation id="6512759338201777379">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, со расположение: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome ќе користи мобилен интернет ако не сте поврзани на друга мрежа.</translation>
 <translation id="6514010653036109809">Достапен уред:</translation>
 <translation id="6514565641373682518">Оваа страница го оневозможи курсорот на глушецот.</translation>
@@ -7040,6 +7043,7 @@
 <translation id="6528179044667508675">Не вознем.</translation>
 <translation id="652937045869844725">Обидете се со дозволување колачиња од трети страни, што значи помала заштита, но поголема веројатност да функционираат функциите на сајтот</translation>
 <translation id="652948702951888897">Историја на Chrome</translation>
+<translation id="6530030995840538405">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Овие поставки ги наметнува вашиот администратор</translation>
 <translation id="6530267432324197764">Со профилот управува <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Задржи ја опасната датотека</translation>

@@ -358,6 +358,7 @@
 <translation id="1264337193001759725">Чтобы посмотреть журналы интерфейса сети, откройте страницу <ph name="DEVICE_LOG_LINK" />.</translation>
 <translation id="1265279736024499987">Ваши приложения и настройки будут синхронизироваться на всех устройствах с Chrome OS Flex, на которых вы вошли в аккаунт Google. Изменить параметры синхронизации браузера можно в <ph name="LINK_BEGIN" />настройках Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Перевести на:</translation>
+<translation id="1267649802567297774">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />. Настроение: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Поддерживаемые ссылки<ph name="END_LINK" /></translation>
@@ -4485,6 +4486,7 @@
 <translation id="4471354919263203780">Скачивание файлов распознавания речи: <ph name="PERCENT" /> %…</translation>
 <translation id="4472298120638043495">Можно использовать предпочитаемый язык, установленный в вашем аккаунте Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="447252321002412580">Помогать повышать производительность Chrome и улучшать функции</translation>
+<translation id="4472533928615930332">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />.</translation>
 <translation id="4472575034687746823">Начать</translation>
 <translation id="4473996011558324141">Оценка времени…</translation>
 <translation id="4474155171896946103">Добавить все вкладки в закладки…</translation>
@@ -7002,6 +7004,7 @@
 <translation id="6509207748479174212">Лицензии</translation>
 <translation id="6511607461419653612">Перезапустите Chromebook и повторите попытку.</translation>
 <translation id="6511827214781912955">Рекомендуем удалить файл <ph name="FILENAME" />, чтобы другие пользователи, которые работают с этим устройством, не могли видеть ваши пароли.</translation>
+<translation id="6512759338201777379">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Настроение: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">При отсутствии подключения к другой сети Google Chrome будет использовать мобильную сеть передачи данных.</translation>
 <translation id="6514010653036109809">Доступное устройство:</translation>
 <translation id="6514565641373682518">Эта страница скрыла курсор.</translation>
@@ -7025,6 +7028,7 @@
 <translation id="6528179044667508675">Не беспокоить</translation>
 <translation id="652937045869844725">Попробуйте разрешить сторонние файлы cookie. Это снизит вашу защиту, зато функции сайта, скорее всего, будут работать.</translation>
 <translation id="652948702951888897">История Chrome</translation>
+<translation id="6530030995840538405">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />.</translation>
 <translation id="6530186581263215931">Эти настройки определяются администратором</translation>
 <translation id="6530267432324197764">Профилем управляет <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Сохранить</translation>

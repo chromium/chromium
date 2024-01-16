@@ -357,6 +357,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1264337193001759725">Protokoly uživatelského rozhraní sítě zobrazíte zde: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Vaše aplikace a nastavení se budou synchronizovat do všech zařízení ChromeOS Flex, na kterých jste přihlášeni pomocí svého účtu Google. Možnosti synchronizace prohlížeče naleznete v <ph name="LINK_BEGIN" />nastavení Chromu<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Jazyk překladu:</translation>
+<translation id="1267649802567297774">Vygenerovaný obrázek <ph name="INDEX" /> na téma <ph name="SUBJECT" /> ve stylu <ph name="STYLE" /> s náladou <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16×</translation>
 <translation id="1272079795634619415">Zastavit</translation>
 <translation id="1272508081857842302">Otevírání <ph name="BEGIN_LINK" />podporovaných odkazů<ph name="END_LINK" /></translation>
@@ -4484,6 +4485,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4471354919263203780">Stahování souborů k rozpoznávání řeči… <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Můžete použít preferovaný jazyk účtu Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
 <translation id="447252321002412580">Pomoci s vylepšováním funkcí a výkonu prohlížeče Chrome</translation>
+<translation id="4472533928615930332">Vygenerovaný obrázek <ph name="INDEX" /> na téma <ph name="SUBJECT" /> ve stylu <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Začít</translation>
 <translation id="4473996011558324141">odhadování času</translation>
 <translation id="4474155171896946103">Přidat do záložek všechny karty...</translation>
@@ -6998,6 +7000,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6509207748479174212">Mediální licence</translation>
 <translation id="6511607461419653612">Restartujte Chromebook a zkuste to znovu</translation>
 <translation id="6511827214781912955">Zvažte smazání souboru <ph name="FILENAME" />, aby ostatní uživatelé tohoto zařízení neviděli vaše hesla</translation>
+<translation id="6512759338201777379">Vygenerovaný obrázek <ph name="INDEX" /> na téma <ph name="SUBJECT" /> s náladou <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Pokud nebudete připojeni k jiné síti, použije prohlížeč Google Chrome mobilní data.</translation>
 <translation id="6514010653036109809">Dostupné zařízení:</translation>
 <translation id="6514565641373682518">Tato stránka deaktivovala ukazatel myši.</translation>
@@ -7021,6 +7024,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6528179044667508675">Nerušit</translation>
 <translation id="652937045869844725">Zkuste povolit soubory cookie třetích stran – budete méně chráněni, ale funkce webu budou s větší pravděpodobností fungovat</translation>
 <translation id="652948702951888897">Historie Chromu</translation>
+<translation id="6530030995840538405">Vygenerovaný obrázek <ph name="INDEX" /> na téma <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Tato nastavení jsou vynucena administrátorem</translation>
 <translation id="6530267432324197764">Profil spravovaný administrátorem <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Ponechat nebezpečný soubor</translation>

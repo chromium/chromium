@@ -360,6 +360,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1264337193001759725">Če si želite ogledati dnevnike omrežnega uporabniškega vmesnika, obiščite: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Vaše aplikacije in nastavitve se bodo sinhronizirale v vseh napravah ChromeOS Flex, v katerih ste prijavljeni z računom Google. Če vas zanimajo možnosti sinhronizacije brskalnika, odprite <ph name="LINK_BEGIN" />Chromove nastavitve<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Jezik prevoda:</translation>
+<translation id="1267649802567297774">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />« v slogu <ph name="STYLE" /> z razpoloženjem <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16 x</translation>
 <translation id="1272079795634619415">Ustavi</translation>
 <translation id="1272508081857842302">Odpiranje <ph name="BEGIN_LINK" />podprtih povezav<ph name="END_LINK" /></translation>
@@ -4501,6 +4502,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4471354919263203780">Prenašanje datotek za prepoznavanje govora … <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Uporabite lahko prednostni jezik računa Google (<ph name="NEW_LOCALE_FROM_GAIA" />).</translation>
 <translation id="447252321002412580">Pomagajte izboljšati funkcije in delovanje Chroma</translation>
+<translation id="4472533928615930332">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />« v slogu <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4473996011558324141">ocena časa</translation>
 <translation id="4474155171896946103">Dodaj vse zavihke med zaznamke ...</translation>
@@ -7021,6 +7023,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6509207748479174212">Licenca za predstavnost</translation>
 <translation id="6511607461419653612">Znova zaženite Chromebook in poskusite znova</translation>
 <translation id="6511827214781912955">Priporočamo, da izbrišete datoteko <ph name="FILENAME" />, da drugi uporabniki te naprave ne bodo mogli videti vaših gesel.</translation>
+<translation id="6512759338201777379">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />« z razpoloženjem <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome bo uporabil mobilno podatkovno povezavo, če niste povezani z drugim omrežjem.</translation>
 <translation id="6514010653036109809">Razpoložljiva naprava:</translation>
 <translation id="6514565641373682518">Ta stran je onemogočila miškin kazalec.</translation>
@@ -7044,6 +7047,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6528179044667508675">Ne moti</translation>
 <translation id="652937045869844725">Poskusite omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
 <translation id="652948702951888897">Zgodovina v Chromu</translation>
+<translation id="6530030995840538405">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />«</translation>
 <translation id="6530186581263215931">Te nastavitve je uveljavil skrbnik</translation>
 <translation id="6530267432324197764">Upravitelj profila: <ph name="MANAGER" /></translation>
 <translation id="6531282281159901044">Obdrži nevarno datoteko</translation>
