@@ -37,6 +37,32 @@ std::u16string GetLocalizedRepresentationInternal(
   return l10n_util::GetStringUTF16(localized_name_message_id.value());
 }
 
+std::u16string GetLocalizedDescriptionInternal(
+    browsing_topics::Topic topic_id) {
+  browsing_topics::SemanticTree semantic_tree;
+
+  auto children = semantic_tree.GetAtMostTwoChildren(topic_id);
+
+  if (children.size() == 0 || children.size() > 2) {
+    return std::u16string();
+  }
+
+  if (children.size() == 1) {
+    return l10n_util::GetStringUTF16(
+        semantic_tree.GetLatestLocalizedNameMessageId(children[0]).value());
+  }
+
+  absl::optional<int> message_id_1 =
+      semantic_tree.GetLatestLocalizedNameMessageId(children[0]);
+  absl::optional<int> message_id_2 =
+      semantic_tree.GetLatestLocalizedNameMessageId(children[1]);
+
+  return l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_TOPICS_PAGE_FIRST_LEVEL_TOPIC_DESCRIPTOR,
+      l10n_util::GetStringUTF16(message_id_1.value()),
+      l10n_util::GetStringUTF16(message_id_2.value()));
+}
+
 }  // namespace
 
 namespace privacy_sandbox {
@@ -47,6 +73,10 @@ CanonicalTopic::CanonicalTopic(browsing_topics::Topic topic_id,
 
 std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
   return GetLocalizedRepresentationInternal(topic_id_);
+}
+
+std::u16string CanonicalTopic::GetLocalizedDescription() const {
+  return GetLocalizedDescriptionInternal(topic_id_);
 }
 
 base::Value CanonicalTopic::ToValue() const {

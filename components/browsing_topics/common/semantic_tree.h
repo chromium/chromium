@@ -30,10 +30,20 @@ class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
   Topic GetRandomTopic(int taxonomy_version,
                        uint64_t random_topic_index_decision);
 
+  // Returns all first level topics (aka Top Level topics, topics without
+  // parents).
+  std::vector<Topic> GetFirstLevelTopicsInCurrentTaxonomy();
+
+  // Returns at most 2 direct children topics for a given topic.
+  std::vector<Topic> GetAtMostTwoChildren(const Topic& topic);
+
   // Get whether the `taxonomy_version` is supported by the semantic tree.
   bool IsTaxonomySupported(int taxonomy_version);
 
-  std::vector<Topic> GetDescendantTopics(const Topic& topic);
+  // Returns the list of all the descendant topics for a given `topic`. When
+  // `only_direct` is set to true it returns only the direct descendants.
+  std::vector<Topic> GetDescendantTopics(const Topic& topic,
+                                         bool only_direct = false);
   std::vector<Topic> GetAncestorTopics(const Topic& topic);
   // Get the most recent localized name message id as of the version in
   // `blink::features::kBrowsingTopicsTaxonomyVersion.Get()`.

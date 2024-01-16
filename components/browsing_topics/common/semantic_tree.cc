@@ -4,6 +4,8 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include <set>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
@@ -793,10 +795,11 @@ std::vector<Topic> GetParentTopics(Topic topic) {
   return parents;
 }
 
-bool IsAncestorTopic(Topic src, Topic target) {
+bool IsAncestorTopic(Topic src, Topic target, bool only_direct = false) {
   std::vector<Topic> parent_topics = GetParentTopics(src);
   for (Topic topic : parent_topics) {
-    if (topic == target || IsAncestorTopic(topic, target)) {
+    if (topic == target ||
+        (!only_direct && IsAncestorTopic(topic, target, only_direct))) {
       return true;
     }
   }
@@ -832,6 +835,29 @@ const std::vector<Topic>& GetTopicsInTaxonomy(int taxonomy_version) {
   }
   return GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2];
 }
+
+std::set<int> GetTopicsInCurrentTaxonomy() {
+  static const base::NoDestructor<std::set<int>> kTopicsInCurrentTaxonomy(
+      []() -> std::set<int> {
+        int current_taxonomy =
+            blink::features::kBrowsingTopicsTaxonomyVersion.Get();
+        std::vector<Topic> topics_in_current_taxonomy;
+        if (current_taxonomy == 1) {
+          for (size_t i = 1; i <= kInitialNumTopics; i++) {
+            topics_in_current_taxonomy.emplace_back(base::checked_cast<int>(i));
+          }
+        } else {
+          topics_in_current_taxonomy = GetTopicsInTaxonomy(current_taxonomy);
+        }
+
+        std::set<int> current_topics(std::begin(topics_in_current_taxonomy),
+                                     std::end(topics_in_current_taxonomy));
+
+        return current_topics;
+      }());
+
+  return *kTopicsInCurrentTaxonomy;
+}
 }  // namespace
 
 SemanticTree::SemanticTree() = default;
@@ -849,11 +875,48 @@ Topic SemanticTree::GetRandomTopic(int taxonomy_version,
   return topics[random_topic_index];
 }
 
+std::vector<Topic> SemanticTree::GetFirstLevelTopicsInCurrentTaxonomy() {
+  static const base::NoDestructor<std::vector<Topic>> kFirstLevelTopics(
+      []() -> std::vector<Topic> {
+        std::set<int> current_topics = GetTopicsInCurrentTaxonomy();
+        std::vector<Topic> first_level_topics;
+        const int kTopicWithNoParent = 0;
+        for (uint16_t i = 0; i < std::size(kChildToFirstParent); i++) {
+          if (kChildToFirstParent[i] == kTopicWithNoParent &&
+              current_topics.contains(i + 1)) {
+            first_level_topics.emplace_back(i + 1);
+          }
+        }
+        return first_level_topics;
+      }());
+
+  return *kFirstLevelTopics;
+}
+
+std::vector<Topic> SemanticTree::GetAtMostTwoChildren(const Topic& topic) {
+  std::vector<Topic> children =
+      GetDescendantTopics(topic, /*only_direct=*/true);
+  std::set<int> current_topics = GetTopicsInCurrentTaxonomy();
+
+  std::vector<Topic> popular_children;
+  for (auto& child : children) {
+    if (popular_children.size() == 2) {
+      return popular_children;
+    }
+    if (current_topics.contains(child.value())) {
+      popular_children.emplace_back(child.value());
+    }
+  }
+
+  return popular_children;
+}
+
 bool SemanticTree::IsTaxonomySupported(int taxonomy_version) {
   return taxonomy_version > 0 && taxonomy_version <= kMaxTaxonomyVersion;
 }
 
-std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
+std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic,
+                                                     bool only_direct) {
   if (!IsTopicValid(topic)) {
     return {};
   }
@@ -861,7 +924,7 @@ std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
   std::vector<Topic> ret;
   for (size_t i = 0; i < kNumTopics; ++i) {
     Topic cur_topic = Topic(i + 1);
-    if (IsAncestorTopic(cur_topic, topic)) {
+    if (IsAncestorTopic(cur_topic, topic, only_direct)) {
       ret.push_back(cur_topic);
     }
   }

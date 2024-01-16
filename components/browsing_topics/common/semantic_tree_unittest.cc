@@ -6,6 +6,7 @@
 
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -158,4 +159,56 @@ TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTopic) {
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(9999));
   EXPECT_FALSE(message_id.has_value());
 }
+
+TEST_F(SemanticTreeUnittest, GetFirstLevelTopic) {
+  const size_t kFirstLevelTopicsV2Size = 22;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "2"}});
+  std::vector<Topic> first_level_topics =
+      semantic_tree_.GetFirstLevelTopicsInCurrentTaxonomy();
+  EXPECT_EQ(std::size(first_level_topics), kFirstLevelTopicsV2Size);
+}
+
+TEST_F(SemanticTreeUnittest, GetFirstLevelTopicsSizeNotReturningDeletedTopics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "2"}});
+  std::vector<Topic> first_level_topics =
+      semantic_tree_.GetFirstLevelTopicsInCurrentTaxonomy();
+  std::set<Topic> first_level_topics_set(std::begin(first_level_topics),
+                                         std::end(first_level_topics));
+
+  const Topic kFirstLevelV2DeletedTopic = Topic(275);
+  EXPECT_FALSE(first_level_topics_set.contains(kFirstLevelV2DeletedTopic));
+}
+
+TEST_F(SemanticTreeUnittest, GetPopularChildrenReturnsCorrectTopics) {
+  std::vector<Topic> popular_children =
+      semantic_tree_.GetAtMostTwoChildren(Topic(126));
+
+  EXPECT_EQ(std::size(popular_children), 2u);
+  EXPECT_EQ(popular_children[0], Topic(129));
+  EXPECT_EQ(popular_children[1], Topic(137));
+
+  popular_children = semantic_tree_.GetAtMostTwoChildren(Topic(250));
+
+  EXPECT_EQ(std::size(popular_children), 1u);
+  EXPECT_EQ(popular_children[0], Topic(253));
+
+  popular_children = semantic_tree_.GetAtMostTwoChildren(Topic(999999));
+
+  EXPECT_EQ(std::size(popular_children), 0u);
+}
+
+TEST_F(SemanticTreeUnittest, GetPopularChildrenNeverEmptyForFirstLevelTopics) {
+  std::vector<Topic> first_level_topics =
+      semantic_tree_.GetFirstLevelTopicsInCurrentTaxonomy();
+
+  for (auto topic : first_level_topics) {
+    EXPECT_FALSE(semantic_tree_.GetAtMostTwoChildren(topic).empty());
+  }
+}
+
 }  // namespace browsing_topics

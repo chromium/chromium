@@ -241,6 +241,11 @@ class PrivacySandboxService : public KeyedService {
   virtual std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics()
       const = 0;
 
+  // Returns the first level topic: they are the root topics, meaning that they
+  // have no parent.
+  virtual std::vector<privacy_sandbox::CanonicalTopic> GetFirstLevelTopics()
+      const = 0;
+
   // Sets a |topic_id|, as both a top topic and topic provided to the web, to be
   // allowed/blocked based on the value of |allowed|. This is stored to
   // preferences and made available to the Topics API via the

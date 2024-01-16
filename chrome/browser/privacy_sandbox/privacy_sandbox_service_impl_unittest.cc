@@ -821,6 +821,26 @@ TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
   EXPECT_EQ(kSecondTopic, blocked_topics[1]);
 }
 
+TEST_F(PrivacySandboxServiceTest, GetFirstLevelTopics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "2"}});
+
+  // Check that blocked topics are correctly alphabetically sorted and returned.
+  const privacy_sandbox::CanonicalTopic kFirstTopic =
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(1),
+                                      kTestTaxonomyVersion);
+  const privacy_sandbox::CanonicalTopic kLastTopic =
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(332),
+                                      kTestTaxonomyVersion);
+
+  auto first_level_topics = privacy_sandbox_service()->GetFirstLevelTopics();
+
+  ASSERT_EQ(22u, first_level_topics.size());
+  EXPECT_EQ(kFirstTopic, first_level_topics[0]);
+  EXPECT_EQ(kLastTopic, first_level_topics[21]);
+}
+
 TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
   const privacy_sandbox::CanonicalTopic kTestTopic =
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(10),

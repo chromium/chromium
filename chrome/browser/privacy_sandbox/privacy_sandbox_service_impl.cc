@@ -22,6 +22,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/browsing_topics/common/semantic_tree.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -859,6 +860,31 @@ PrivacySandboxServiceImpl::GetBlockedTopics() const {
 
   SortAndDeduplicateTopicsForDisplay(blocked_topics);
   return blocked_topics;
+}
+
+std::vector<privacy_sandbox::CanonicalTopic>
+PrivacySandboxServiceImpl::GetFirstLevelTopics() const {
+  static const base::NoDestructor<std::vector<privacy_sandbox::CanonicalTopic>>
+      kFirstLevelTopics([]() -> std::vector<privacy_sandbox::CanonicalTopic> {
+        browsing_topics::SemanticTree semantic_tree;
+
+        auto topics = semantic_tree.GetFirstLevelTopicsInCurrentTaxonomy();
+        std::vector<privacy_sandbox::CanonicalTopic> first_level_topics;
+        first_level_topics.reserve(topics.size());
+        std::transform(
+            topics.begin(), topics.end(),
+            std::back_inserter(first_level_topics),
+            [&](const browsing_topics::Topic& topic) {
+              return privacy_sandbox::CanonicalTopic(
+                  topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
+            });
+
+        SortAndDeduplicateTopicsForDisplay(first_level_topics);
+
+        return first_level_topics;
+      }());
+
+  return *kFirstLevelTopics;
 }
 
 void PrivacySandboxServiceImpl::SetTopicAllowed(
