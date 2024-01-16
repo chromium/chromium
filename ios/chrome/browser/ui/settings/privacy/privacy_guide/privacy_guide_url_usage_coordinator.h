@@ -7,8 +7,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol PrivacyGuideURLUsageCoordinatorDelegate;
+
 // Coordinator for the URL usage step of the Privacy Guide.
 @interface PrivacyGuideURLUsageCoordinator : ChromeCoordinator
+
+// Delegate
+@property(nonatomic, weak) id<PrivacyGuideURLUsageCoordinatorDelegate> delegate;
 
 // Designated initializer.
 // `navigationController`: navigation controller.

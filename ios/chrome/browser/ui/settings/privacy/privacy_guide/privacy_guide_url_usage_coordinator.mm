@@ -7,7 +7,13 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_presentation_delegate.h"
+
+@interface PrivacyGuideURLUsageCoordinator () <
+    PrivacyGuideURLUsageViewControllerPresentationDelegate>
+@end
 
 @implementation PrivacyGuideURLUsageCoordinator {
   PrivacyGuideURLUsageViewController* _viewController;
@@ -31,7 +37,7 @@
 
 - (void)start {
   _viewController = [[PrivacyGuideURLUsageViewController alloc] init];
-  // TODO(crbug.com/1509830): Add a delegate for the "Back" button callback.
+  _viewController.presentationDelegate = self;
 
   CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:_viewController
@@ -39,7 +45,16 @@
 }
 
 - (void)stop {
+  _viewController.presentationDelegate = nil;
   _viewController = nil;
+}
+
+#pragma mark - PrivacyGuideURLUsageViewControllerPresentationDelegate
+
+- (void)privacyGuideURLUsageViewControllerDidRemove:
+    (PrivacyGuideURLUsageViewController*)controller {
+  CHECK_EQ(_viewController, controller);
+  [self.delegate privacyGuideURLUsageCoordinatorDidRemove:self];
 }
 
 @end

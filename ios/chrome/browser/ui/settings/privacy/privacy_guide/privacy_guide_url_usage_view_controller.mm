@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_presentation_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -32,6 +33,13 @@ NSString* kURLUsageBannerName = @"url_usage_illustration";
   self.subtitleBottomMargin = 0;
 
   [super viewDidLoad];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  if (!parent) {
+    [self.presentationDelegate
+        privacyGuideURLUsageViewControllerDidRemove:self];
+  }
 }
 
 @end

@@ -6,5 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+NSString* const kPrivacyGuideNavigationBarViewID =
+    @"kPrivacyGuideNavigationBarViewID";
 NSString* const kPrivacyGuideWelcomeViewID = @"kPrivacyGuideWelcomeViewID";
 NSString* const kPrivacyGuideURLUsageViewID = @"kPrivacyGuideURLUsageViewID";

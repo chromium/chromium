@@ -13,6 +13,7 @@
 // of the guide's steps.
 @interface PrivacyGuideMainCoordinator : ChromeCoordinator
 
+// Delegate
 @property(nonatomic, weak) id<PrivacyGuideMainCoordinatorDelegate> delegate;
 
 @end

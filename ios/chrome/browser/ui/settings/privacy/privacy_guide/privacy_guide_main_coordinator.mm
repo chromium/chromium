@@ -15,10 +15,12 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
 
 @interface PrivacyGuideMainCoordinator () <
     PrivacyGuideCommands,
+    PrivacyGuideURLUsageCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -47,6 +49,8 @@
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.navigationBar.accessibilityIdentifier =
+      kPrivacyGuideNavigationBarViewID;
   _navigationController.presentationController.delegate = self;
 
   [self startNextCoordinator];
@@ -84,6 +88,18 @@
   [self.delegate privacyGuideMainCoordinatorDidRemove:self];
 }
 
+#pragma mark - PrivacyGuideURLUsageCoordinatorDelegate
+
+- (void)privacyGuideURLUsageCoordinatorDidRemove:
+    (PrivacyGuideURLUsageCoordinator*)coordinator {
+  CHECK([self.childCoordinators containsObject:coordinator]);
+
+  coordinator.delegate = nil;
+  [coordinator stop];
+
+  [self.childCoordinators removeObject:coordinator];
+}
+
 #pragma mark - Private
 
 // Initializes the Welcome step coordinator and starts it.
@@ -103,6 +119,7 @@
       [[PrivacyGuideURLUsageCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser];
+  coordinator.delegate = self;
   [coordinator start];
 
   [self.childCoordinators addObject:coordinator];
