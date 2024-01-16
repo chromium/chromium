@@ -399,14 +399,15 @@ class MockHashRealTimeService : public HashRealTimeService {
   base::WeakPtrFactory<MockHashRealTimeService> weak_factory_{this};
 };
 
-}  // namespace
-
 struct CreateSafeBrowsingUrlCheckerOptionalArgs {
   network::mojom::RequestDestination request_destination =
       network::mojom::RequestDestination::kDocument;
   bool can_urt_check_subresource_url = false;
   std::string url_lookup_service_metric_suffix = ".Enterprise";
 };
+
+}  // namespace
+
 class SafeBrowsingUrlCheckerTest : public PlatformTest {
  public:
   SafeBrowsingUrlCheckerTest() = default;
