@@ -62,6 +62,10 @@
     background-color: var(--cros-bg-color);
     margin-inline: 0;
   }
+
+  .dropdown-item > iron-icon {
+    margin-inline-end: 8px;
+  }
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
   <h2 class="wallpaper-collections-heading">[[i18n('seaPenRecentWallpapersHeading')]]</h2>
@@ -92,14 +96,17 @@
         <cr-action-menu class="action-menu-container">
           <button data-id$="[[index]]" class="dropdown-item more-like-this-option"
               on-click="onClickMoreLikeThis_">
+            <iron-icon icon="cr:add"></iron-icon>
             [[i18n('seaPenCreateMore')]]
           </button>
           <button class="dropdown-item delete-wallpaper-option"
               on-click="onClickDeleteWallpaper_">
+            <iron-icon icon="sea-pen:delete"></iron-icon>
             [[i18n('seaPenDeleteWallpaper')]]
           </button>
           <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
               on-click="onClickWallpaperInfo_">
+            <iron-icon icon="cr:info-outline"></iron-icon>
             [[i18n('seaPenAbout')]]
           </button>
         </cr-action-menu>
