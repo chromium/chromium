@@ -82,6 +82,14 @@ void StructuredMetricsRecorder::OnKeyReady() {
   }
 }
 
+void StructuredMetricsRecorder::AddEventsObserver(Observer* watcher) {
+  watchers_.AddObserver(watcher);
+}
+
+void StructuredMetricsRecorder::RemoveEventsObserver(Observer* watcher) {
+  watchers_.RemoveObserver(watcher);
+}
+
 void StructuredMetricsRecorder::ProvideUmaEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
   // no-op
@@ -238,6 +246,7 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   LogEventSerializedSizeBytes(event_proto.ByteSizeLong());
 
   Recorder::GetInstance()->OnEventRecorded(&event_proto);
+  NotifyEventRecorded(event_proto);
 
   // Add new event to storage.
   event_storage_->AddEvent(std::move(event_proto));
@@ -446,6 +455,13 @@ bool StructuredMetricsRecorder::IsProfileEvent(const Event& event) const {
 
 bool StructuredMetricsRecorder::CanProvideMetrics() {
   return recording_enabled() && (IsInitialized() || IsProfileInitialized());
+}
+
+void StructuredMetricsRecorder::NotifyEventRecorded(
+    const StructuredEventProto& event) {
+  for (Observer& watcher : watchers_) {
+    watcher.OnEventRecorded(event);
+  }
 }
 
 }  // namespace metrics::structured

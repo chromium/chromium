@@ -13,7 +13,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/debug/structured/structured_metrics_watcher.h"
+#include "components/metrics/debug/structured/structured_metrics_debug_provider.h"
 #endif
 
 // UI Handler for chrome://metrics-internals.
@@ -60,8 +60,8 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler {
   std::unique_ptr<metrics::MetricsServiceObserver> uma_log_observer_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<metrics::structured::StructuredMetricsWatcher>
-      structured_metrics_watcher_;
+  std::unique_ptr<metrics::structured::StructuredMetricsDebugProvider>
+      structured_metrics_debug_provider_;
 #endif
 
   // The callback subscription to |uma_log_observer_| that notifies the WebUI

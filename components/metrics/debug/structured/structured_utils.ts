@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.js';
  */
 interface KeyValue {
   key: string;
-  value: number|string|boolean;
+  value: number|string|boolean|[number];
 }
 
 /**

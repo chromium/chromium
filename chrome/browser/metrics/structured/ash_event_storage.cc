@@ -124,14 +124,15 @@ void AshEventStorage::AddBatchEvents(
   }
 }
 
-void AshEventStorage::GetEvents(EventsProto* proto) {
+void AshEventStorage::CopyEvents(EventsProto* events_proto) const {
   if (IsPreUserStorageReadable() &&
       pre_user_events()->non_uma_events_size() > 0) {
-    proto->mutable_non_uma_events()->MergeFrom(
+    events_proto->mutable_non_uma_events()->MergeFrom(
         pre_user_events()->non_uma_events());
   }
   if (IsProfileReady() && user_events()->non_uma_events_size() > 0) {
-    proto->mutable_non_uma_events()->MergeFrom(user_events()->non_uma_events());
+    events_proto->mutable_non_uma_events()->MergeFrom(
+        user_events()->non_uma_events());
   }
 }
 

@@ -24,8 +24,8 @@ MetricsInternalsHandler::MetricsInternalsHandler() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  structured_metrics_watcher_ =
-      std::make_unique<metrics::structured::StructuredMetricsWatcher>(
+  structured_metrics_debug_provider_ =
+      std::make_unique<metrics::structured::StructuredMetricsDebugProvider>(
           g_browser_process->GetMetricsServicesManager()
               ->GetStructuredMetricsService());
 #endif
@@ -145,9 +145,8 @@ void MetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
     const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id,
-                            metrics::structured::ConvertEventsIntoValue(
-                                structured_metrics_watcher_->events()));
+  ResolveJavascriptCallback(
+      callback_id, structured_metrics_debug_provider_->events().Clone());
 }
 
 void MetricsInternalsHandler::HandleFetchStructuredMetricsSummary(

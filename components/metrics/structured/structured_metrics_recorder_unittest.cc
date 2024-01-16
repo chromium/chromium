@@ -812,4 +812,39 @@ TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {
   ASSERT_EQ((*event_validator)->GetMetricName(kMetricTwoHash), kMetricTwoName);
 }
 
+class TestWatcher : public StructuredMetricsRecorder::Observer {
+ public:
+  TestWatcher(uint64_t expected_event) : expected_event_(expected_event) {}
+
+  void OnEventRecorded(const StructuredEventProto& event) override {
+    EXPECT_EQ(event.event_name_hash(), expected_event_);
+    ++event_count_;
+  }
+
+  int EventCount() { return event_count_; }
+
+ private:
+  const uint64_t expected_event_;
+  int event_count_ = 0;
+};
+
+TEST_F(StructuredMetricsRecorderTest, WatcherTest) {
+  Init();
+
+  TestWatcher watcher(kEventOneHash);
+
+  recorder_->AddEventsObserver(&watcher);
+
+  events::v2::test_project_one::TestEventOne()
+      .SetTestMetricOne(kValueOne)
+      .SetTestMetricTwo(12345)
+      .Record();
+
+  Wait();
+
+  EXPECT_EQ(watcher.EventCount(), 1);
+
+  recorder_->RemoveEventsObserver(&watcher);
+}
+
 }  // namespace metrics::structured

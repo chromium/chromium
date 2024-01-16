@@ -16,6 +16,8 @@ class ChromeUserMetricsExtension;
 
 namespace metrics::structured {
 
+class EventsProto;
+
 // Abstraction for how events are stored in Structured Metrics.
 class EventStorage {
  public:
@@ -48,6 +50,9 @@ class EventStorage {
 
   // Temporary API for notifying storage that a profile has been added.
   virtual void OnProfileAdded(const base::FilePath& path) {}
+
+  // Copies the events out of the event storage.
+  virtual void CopyEvents(EventsProto* events_proto) const {}
 
   // Temporary API for external metrics.
   virtual void AddBatchEvents(

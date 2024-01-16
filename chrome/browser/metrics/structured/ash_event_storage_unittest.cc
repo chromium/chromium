@@ -87,7 +87,7 @@ TEST_F(AshEventStorageTest, StoreAndProvideEvents) {
   storage->AddEvent(BuildTestEvent());
 
   EventsProto events;
-  storage->GetEvents(&events);
+  storage->CopyEvents(&events);
   EXPECT_EQ(events.non_uma_events_size(), 1);
 
   StructuredDataProto proto = GetReport(storage.get());
@@ -95,7 +95,7 @@ TEST_F(AshEventStorageTest, StoreAndProvideEvents) {
 
   // Storage should have no events after a successful dump.
   events.Clear();
-  storage->GetEvents(&events);
+  storage->CopyEvents(&events);
   EXPECT_EQ(events.non_uma_events_size(), 0);
 
   ExpectNoErrors();
@@ -119,7 +119,7 @@ TEST_F(AshEventStorageTest, PreRecordedEventsProcessedCorrectly) {
   ASSERT_TRUE(storage->IsReady());
 
   EventsProto events;
-  storage->GetEvents(&events);
+  storage->CopyEvents(&events);
   EXPECT_EQ(events.non_uma_events_size(), 1);
 
   ExpectNoErrors();
@@ -184,7 +184,7 @@ TEST_F(AshEventStorageTest, EventsPreProfilePersistedCorrectly) {
 
   // Ensure that the event is persisted.
   EventsProto events;
-  storage->GetEvents(&events);
+  storage->CopyEvents(&events);
   EXPECT_EQ(events.non_uma_events_size(), 1);
   ExpectNoErrors();
 

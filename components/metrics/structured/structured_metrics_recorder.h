@@ -38,6 +38,12 @@ namespace metrics::structured {
 class StructuredMetricsRecorder : public Recorder::RecorderImpl,
                                   KeyDataProvider::Observer {
  public:
+  // Interface for watching for the recording of Structured Metrics Events.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEventRecorded(const StructuredEventProto& event) = 0;
+  };
+
   StructuredMetricsRecorder(std::unique_ptr<KeyDataProvider> key_data_provider,
                             std::unique_ptr<EventStorage> event_storage);
   ~StructuredMetricsRecorder() override;
@@ -71,6 +77,10 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
 
   // KeyDataProvider::Observer:
   void OnKeyReady() override;
+
+  // Interface for adding and remove watchers.
+  void AddEventsObserver(Observer* watcher);
+  void RemoveEventsObserver(Observer* watcher);
 
   EventStorage* event_storage() { return event_storage_.get(); }
 
@@ -192,6 +202,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // Adds a project to the diallowed list for testing.
   void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
+  void NotifyEventRecorded(const StructuredEventProto& event);
+
  protected:
   // Key data provider that provides device and profile keys.
   std::unique_ptr<KeyDataProvider> key_data_provider_;
@@ -233,6 +245,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // A set of projects that are not allowed to be recorded. This is a cache of
   // GetDisabledProjects().
   base::flat_set<uint64_t> disallowed_projects_;
+
+  base::ObserverList<Observer> watchers_;
 
   // Callbacks for tests whenever an event is recorded.
   base::RepeatingClosure test_callback_on_record_ = base::DoNothing();
