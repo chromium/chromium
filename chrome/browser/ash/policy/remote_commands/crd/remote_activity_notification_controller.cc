@@ -66,7 +66,7 @@ void RemoteActivityNotificationController::
     OnRemoteAdminWasPresentPrefChanged() {
   if (!remote_admin_was_present_.GetValue()) {
     // Remember the notification was dismissed by the user.
-    notification_.Hide();
+    notification_.SetAsHidden();
   }
 
   if (is_current_session_curtained_.Run()) {
@@ -94,6 +94,10 @@ void RemoteActivityNotificationController::Notification::Hide() {
       is_showing_ = false;
     }
   }
+}
+
+void RemoteActivityNotificationController::Notification::SetAsHidden() {
+  is_showing_ = false;
 }
 
 }  // namespace policy

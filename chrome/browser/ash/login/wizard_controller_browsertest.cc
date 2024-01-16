@@ -3054,6 +3054,51 @@ IN_PROC_BROWSER_TEST_F(RemoteActivityNotificationTestWhenPrefIsNotSet,
   EXPECT_FALSE(IsRemoteActivityScreenVisible());
 }
 
+class RemoteActivityNotificationTestWhenNoLoginAccountPresentTest
+    : public WizardControllerTest {
+ public:
+  // WizardControllerTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    WizardControllerTest::SetUpInProcessBrowserTestFixture();
+    feature_list_.InitAndEnableFeature(
+        remoting::features::kEnableCrdAdminRemoteAccessV2);
+  }
+
+  void SetUpOnMainThread() override {
+    WizardControllerTest::SetUpOnMainThread();
+  }
+
+  PrefService* local_state() { return g_browser_process->local_state(); }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  DeviceStateMixin device_state_{&mixin_host_,
+                                 DeviceStateMixin::State::BEFORE_OOBE};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_};
+  LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
+                                 &gaia_mixin_};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    RemoteActivityNotificationTestWhenNoLoginAccountPresentTest,
+    PRE_ShouldGoToPreviousScreenWhenNotificationIsDismissed) {
+  CheckCurrentScreen(UserCreationView::kScreenId);
+
+  local_state()->SetBoolean(prefs::kRemoteAdminWasPresent, true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RemoteActivityNotificationTestWhenNoLoginAccountPresentTest,
+    ShouldGoToPreviousScreenWhenNotificationIsDismissed) {
+  OobeScreenWaiter(RemoteActivityNotificationView::kScreenId).Wait();
+  CheckCurrentScreen(RemoteActivityNotificationView::kScreenId);
+
+  test::OobeJS().ClickOnPath({"remote-activity-notification", "cancelButton"});
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  CheckCurrentScreen(UserCreationView::kScreenId);
+}
+
 class WizardControllerThemeSelectionTest : public WizardControllerTest {
  protected:
   FakeGaiaMixin gaia_mixin_{&mixin_host_};

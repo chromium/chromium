@@ -2535,10 +2535,17 @@ void WizardController::OnRemoteActivityNotificationScreenExit() {
   // Remember the user acknowledged the message.
   GetLocalState()->SetBoolean(::prefs::kRemoteAdminWasPresent, false);
 
-  // Cleanup OOBE state.
+  // Check if there are any local accounts present for the lock screen which
+  // suggest that the OOBE flow was completed and the dialog should be hidden.
   if (LoginDisplayHost::default_host()->HasUserPods()) {
     LoginDisplayHost::default_host()->HideOobeDialog();
+    return;
   }
+
+  // When, there is no local accounts present and the OOBE flow must be
+  // continued. Hence, we go back to the previous screen present in the flow.
+  bool switched_screen = MaybeSetToPreviousScreen();
+  CHECK(switched_screen);
 }
 
 void WizardController::OnAppDownloadingScreenExit() {

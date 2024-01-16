@@ -43,6 +43,7 @@ class RemoteActivityNotificationController
    public:
     void Show();
     void Hide();
+    void SetAsHidden();
 
    private:
     // Unfortunately the `LocalHost` has no API to query if the notification
