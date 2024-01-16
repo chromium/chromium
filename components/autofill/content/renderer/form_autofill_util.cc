@@ -1387,17 +1387,34 @@ std::vector<WebFormControlElement> GetFormControlElements(
              : GetUnownedAutofillableFormFieldElements(document);
 }
 
-// Populates the |form|'s
-//  * FormData::fields
-//  * FormData::child_frames
-// using the DOM elements in |control_elements| and |iframe_elements|.
-bool PopulateFormFieldsAndFrames(const WebDocument& document,
-                                 const WebFormElement& form_element,
-                                 const FieldDataManager& field_data_manager,
-                                 DenseSet<ExtractOption> extract_options,
-                                 FormData& form) {
-  CHECK(form.fields.empty());
-  CHECK(form.child_frames.empty());
+std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
+    const WebDocument& document,
+    const WebFormElement& form_element,
+    const FieldDataManager& field_data_manager,
+    DenseSet<ExtractOption> extract_options) {
+  FormData form = [&form_element]() {
+    FormData form;
+    if (form_element.IsNull()) {
+      DCHECK(form.unique_renderer_id.is_null());
+      DCHECK(form.main_frame_origin.opaque());
+      form.is_form_tag = false;
+      return form;
+    }
+    form.name = GetFormIdentifier(form_element);
+    form.id_attribute = form_element.GetIdAttribute().Utf16();
+    form.name_attribute = GetAttribute<kName>(form_element).Utf16();
+    form.unique_renderer_id = GetFormRendererId(form_element);
+    form.action = GetCanonicalActionForForm(form_element);
+    form.is_action_empty =
+        form_element.Action().IsNull() || form_element.Action().IsEmpty();
+    form.main_frame_origin = url::Origin();
+    // If the completed URL is not valid, just use the action we get from
+    // WebKit.
+    if (!form.action.is_valid()) {
+      form.action = blink::WebStringToGURL(form_element.Action());
+    }
+    return form;
+  }();
 
   std::vector<WebFormControlElement> control_elements =
       GetFormControlElements(document, form_element);
@@ -1451,9 +1468,7 @@ bool PopulateFormFieldsAndFrames(const WebDocument& document,
       form.child_frames[k].predecessor = form.fields.size() - 1;
     }
     if (form.fields.size() > kMaxExtractableFields) {
-      form.child_frames.clear();
-      form.fields.clear();
-      return false;
+      return std::nullopt;
     }
     DCHECK_LE(form.fields.size(), control_elements.size());
   }
@@ -1520,33 +1535,7 @@ bool PopulateFormFieldsAndFrames(const WebDocument& document,
   const bool success = (!form.fields.empty() || !form.child_frames.empty()) &&
                        form.fields.size() < kMaxExtractableFields;
   if (!success) {
-    form.fields.clear();
-    form.child_frames.clear();
-  }
-  return success;
-}
-
-FormData CreateFormDataWithoutFieldsAndFrames(
-    const blink::WebFormElement& form_element) {
-  FormData form;
-  if (form_element.IsNull()) {
-    DCHECK(form.unique_renderer_id.is_null());
-    DCHECK(form.main_frame_origin.opaque());
-    form.is_form_tag = false;
-    return form;
-  }
-  form.name = GetFormIdentifier(form_element);
-  form.id_attribute = form_element.GetIdAttribute().Utf16();
-  form.name_attribute = GetAttribute<kName>(form_element).Utf16();
-  form.unique_renderer_id = GetFormRendererId(form_element);
-  form.action = GetCanonicalActionForForm(form_element);
-  form.is_action_empty =
-      form_element.Action().IsNull() || form_element.Action().IsEmpty();
-  form.main_frame_origin = url::Origin();
-  // If the completed URL is not valid, just use the action we get from
-  // WebKit.
-  if (!form.action.is_valid()) {
-    form.action = blink::WebStringToGURL(form_element.Action());
+    return std::nullopt;
   }
   return form;
 }
@@ -1696,11 +1685,8 @@ std::optional<FormData> ExtractFormData(
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options) {
-  FormData form = CreateFormDataWithoutFieldsAndFrames(form_element);
-  return PopulateFormFieldsAndFrames(document, form_element, field_data_manager,
-                                     extract_options, form)
-             ? std::make_optional(std::move(form))
-             : std::nullopt;
+  return ExtractFormDataWithFieldsAndFrames(
+      document, form_element, field_data_manager, extract_options);
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {
