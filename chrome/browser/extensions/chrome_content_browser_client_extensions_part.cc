@@ -71,7 +71,6 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
