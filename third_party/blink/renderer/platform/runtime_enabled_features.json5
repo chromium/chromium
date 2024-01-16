@@ -1200,7 +1200,7 @@
       // For instance, "@container (width > 0px) or (foo: bar)" will never
       // select or match any containers.
       name: "CSSUnknownContainerQueriesNoSelection",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSUpdateMediaFeature",
