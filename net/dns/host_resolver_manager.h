@@ -274,7 +274,6 @@ class NET_EXPORT HostResolverManager
   class Job;
   struct JobKey;
   class LoopbackProbeJob;
-  class DnsTask;
   class RequestImpl;
   class ProbeRequestImpl;
   using JobMap = std::map<JobKey, std::unique_ptr<Job>>;
