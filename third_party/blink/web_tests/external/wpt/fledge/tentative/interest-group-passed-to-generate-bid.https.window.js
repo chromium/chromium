@@ -9,7 +9,9 @@
 // META: variant=?16-20
 // META: variant=?21-25
 // META: variant=?26-30
-// META: variant=?31-last
+// META: variant=?31-35
+// META: variant=?36-40
+// META: variant=?41-last
 
 "use strict;"
 
@@ -76,14 +78,14 @@ makeTest({
   name: 'InterestGroup.owner with non-normalized origin.',
   fieldName: 'owner',
   fieldValue: OTHER_ORIGIN1,
-  interestGroupOverrides: {seller: ` ${OTHER_ORIGIN1.toUpperCase()} `}
+  interestGroupOverrides: {owner: ` ${OTHER_ORIGIN1.toUpperCase()} `}
 });
 
 makeTest({
   name: 'InterestGroup.owner is URL.',
   fieldName: 'owner',
   fieldValue: OTHER_ORIGIN1,
-  interestGroupOverrides: {seller: OTHER_ORIGIN1 + "/Foopy"}
+  interestGroupOverrides: {owner: OTHER_ORIGIN1 + '/Foopy'}
 });
 
 makeTest({
@@ -96,6 +98,19 @@ makeTest({
   name: 'InterestGroup.name with unicode characters.',
   fieldName: 'name',
   fieldValue: '\u2665'
+});
+
+makeTest({
+  name: 'InterestGroup.name with empty name.',
+  fieldName: 'name',
+  fieldValue: ''
+});
+
+makeTest({
+  name: 'InterestGroup.name with unpaired surrogate characters, which should be replaced with "\\uFFFD".',
+  fieldName: 'name',
+  fieldValue: '\uFFFD,\uFFFD',
+  interestGroupOverrides: {name: '\uD800,\uDBF0'}
 });
 
 makeTest({
@@ -130,6 +145,15 @@ makeTest({
   fieldValue: { 'a': -1, 'b': 2 }
 });
 
+// TODO: This is currently using USVString internally, so doesn't allow unpaired
+// surrogates, but the spec says it should.
+makeTest({
+  name: 'InterestGroup.priorityVector with unpaired surrogate character.',
+  fieldName: 'priorityVector',
+  fieldValue: { '\uFFFD': -1 },
+  interestGroupOverrides: { prioritySignalsOverrides: { '\uD800': -1 } }
+});
+
 makeTest({
   name: 'InterestGroup.prioritySignalsOverrides should not be passed in, since it can be changed by auctions.',
   fieldName: 'prioritySignalsOverrides',
@@ -137,7 +161,6 @@ makeTest({
   interestGroupOverrides: { prioritySignalsOverrides: { 'a': 1, 'b': 2 } }
 });
 
-// TODO(mmenke): These next 4 violate spec. Fix the code, and update the tests.
 makeTest({
   name: 'InterestGroup.enableBiddingSignalsPrioritization not set.',
   fieldName: 'enableBiddingSignalsPrioritization',
@@ -217,8 +240,17 @@ makeTest({
   fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}this-file-does-not-exist.json`,
   interestGroupOverrides: {
     owner: OTHER_ORIGIN1,
-    trustedScoringSignalsURL:
+    trustedBiddingSignalsURL:
         `${OTHER_ORIGIN1.toUpperCase()}${BASE_PATH}this-file-does-not-exist.json`
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.trustedBiddingSignalsURL with unpaired surrogate characters, which should be replaced with "\\uFFFD".',
+  fieldName: 'trustedBiddingSignalsURL',
+  fieldValue: (new URL(`${BASE_URL}\uFFFD.\uFFFD`)).href,
+  interestGroupOverrides: {
+    trustedBiddingSignalsURL: `${BASE_URL}\uD800.\uDBF0`
   }
 });
 
@@ -239,6 +271,13 @@ makeTest({
   fieldName: 'trustedBiddingSignalsKeys',
   fieldValue: ['1', '2', '3'],
   interestGroupOverrides: { trustedBiddingSignalsKeys: [1, 0x2, '3'] }
+});
+
+makeTest({
+  name: 'InterestGroup.trustedBiddingSignalsKeys unpaired surrogate characters, which should be replaced with "\\uFFFD".',
+  fieldName: 'trustedBiddingSignalsKeys',
+  fieldValue: ['\uFFFD', '\uFFFD', '\uFFFD.\uFFFD'],
+  interestGroupOverrides: { trustedBiddingSignalsKeys: ['\uD800', '\uDBF0', '\uD800.\uDBF0'] }
 });
 
 makeTest({
@@ -295,6 +334,18 @@ makeTest({
   name: 'InterestGroup.userBiddingSignals is object.',
   fieldName: 'userBiddingSignals',
   fieldValue: {a:1, b:32.5, c:['d', 'e']}
+});
+
+makeTest({
+  name: 'InterestGroup.userBiddingSignals unpaired surrogate characters, which should be kept as-is.',
+  fieldName: 'userBiddingSignals',
+  fieldValue: '\uD800.\uDBF0'
+});
+
+makeTest({
+  name: 'InterestGroup.userBiddingSignals unpaired surrogate characters in an object, which should be kept as-is.',
+  fieldName: 'userBiddingSignals',
+  fieldValue: {'\uD800': '\uDBF0', '\uDBF0':['\uD800']}
 });
 
 makeTest({
