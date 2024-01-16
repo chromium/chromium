@@ -3186,6 +3186,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SpeechInput.CountryCodeNotDetected" enum="BooleanHit"
+    expires_after="2025-01-16">
+  <owner>ajuma@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    A boolean that is used to indicate that neither the device's current locale
+    nor the locale corresponding to the device's preferred language has a valid
+    country code. Recorded every time that SpeechInputLocaleConfigImpl attempts
+    to detect the country code but fails to do so.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
     expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>

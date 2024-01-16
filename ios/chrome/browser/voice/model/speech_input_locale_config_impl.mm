@@ -11,6 +11,7 @@
 #import "base/apple/scoped_cftyperef.h"
 #import "base/containers/contains.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_match.h"
@@ -149,7 +150,7 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
   // In production, in very rare cases the country code cannot be detected.
   // Default to en-US.
   if (!country.length) {
-    base::debug::DumpWithoutCrashing();
+    base::UmaHistogramBoolean("IOS.SpeechInput.CountryCodeNotDetected", true);
     return GetCanonicalLocaleForLocale(@"en-US");
   }
 
