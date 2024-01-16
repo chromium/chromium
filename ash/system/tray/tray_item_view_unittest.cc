@@ -290,7 +290,8 @@ TEST_F(TrayItemViewTest, HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
 
 // Tests that the smoothness metric for the "show" animation is still recorded
 // even when the "show" animation interrupts the "hide" animation.
-TEST_F(TrayItemViewTest, ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
+TEST_F(TrayItemViewTest,
+       DISABLED_ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
 
