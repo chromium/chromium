@@ -9231,9 +9231,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // IS_WIN
 #endif  // ENABLE_EXTENSIONS
 
+#if !BUILDFLAG(IS_ANDROID)
     {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,
-     flag_descriptions::kCanvasOopRasterizationDescription, kOsAll,
+     flag_descriptions::kCanvasOopRasterizationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
     {"captured-surface-control", flag_descriptions::kCapturedSurfaceControlName,

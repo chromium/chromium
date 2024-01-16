@@ -150,6 +150,7 @@ BASE_FEATURE(kDefaultEnableGpuRasterization,
 #endif
 );
 
+#if !BUILDFLAG(IS_ANDROID)
 // Enables the use of out of process rasterization for canvas.
 BASE_FEATURE(kCanvasOopRasterization,
              "CanvasOopRasterization",
@@ -161,6 +162,7 @@ BASE_FEATURE(kCanvasOopRasterization,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+#endif
 
 // Enables the use of out of process rasterization for canvas even when GPU tile
 // rasterization is disabled. CanvasOopRasterization is still required to be
@@ -733,7 +735,11 @@ bool EnablePruneOldTransferCacheEntries() {
 }
 
 bool IsCanvasOopRasterizationEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
   return base::FeatureList::IsEnabled(kCanvasOopRasterization);
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
