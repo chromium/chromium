@@ -97,11 +97,11 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 // Permutations of supported parameters.
 const TestParam kTestParams[] = {
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/1515948): Fix and re-add test with
-    // "ShowSearchEngineOmnibox" parameter.
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
+    {.test_suffix = "ShowSearchEngineOmnibox",
+     .show_search_engine_omnibox = true},
     {.test_suffix = "MediumSize", .dialog_dimensions = gfx::Size(800, 700)},
     {.test_suffix = "NarrowSize", .dialog_dimensions = gfx::Size(300, 900)},
 #endif
