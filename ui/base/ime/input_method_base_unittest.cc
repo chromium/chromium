@@ -8,7 +8,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
@@ -103,12 +102,8 @@ class ClientChangeVerifier {
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION TextInputClient* previous_client_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION TextInputClient* next_client_ = nullptr;
+  raw_ptr<TextInputClient> previous_client_ = nullptr;
+  raw_ptr<TextInputClient> next_client_ = nullptr;
   bool call_expected_ = false;
   bool on_will_change_focused_client_called_ = false;
   bool on_did_change_focused_client_called_ = false;

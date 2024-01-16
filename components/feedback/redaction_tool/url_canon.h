@@ -124,8 +124,8 @@ class CanonOutputT {
     return true;
   }
 
-  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data).
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data.
   RAW_PTR_EXCLUSION T* buffer_ = nullptr;
   size_t buffer_len_ = 0;
 

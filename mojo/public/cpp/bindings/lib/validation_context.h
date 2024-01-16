@@ -161,7 +161,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
     return end > begin && begin >= data_begin_ && end <= data_end_;
   }
 
-  // Not a raw_ptr<...> for performance reasons: on-stack pointer + based on
+  // RAW_PTR_EXCLUSION: Performance reasons: on-stack pointer + based on
   // analysis of sampling profiler data (MultiplexRouter::ProcessIncomingMessage
   // -> PipeControlMessageHandler::Accept -> PipeControlMessageHandler::Validate
   // -> constructs ValidationContext).

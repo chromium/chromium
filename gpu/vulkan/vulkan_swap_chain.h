@@ -15,7 +15,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -53,9 +52,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     VkSemaphore end_semaphore() const { return end_semaphore_; }
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION VulkanSwapChain* swap_chain_ = nullptr;
+    raw_ptr<VulkanSwapChain> swap_chain_ = nullptr;
     bool success_ = false;
     VkImage image_ = VK_NULL_HANDLE;
     uint32_t image_index_ = 0;

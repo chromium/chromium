@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -110,9 +109,7 @@ class TestScreenCapturer : public DesktopCapturer {
   void FailNthFrame(int n) { capture_request_index_to_fail_ = n; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION Callback* callback_ = nullptr;
+  raw_ptr<Callback> callback_ = nullptr;
   int frame_index_ = 0;
 
   int capture_request_index_to_fail_ = -1;

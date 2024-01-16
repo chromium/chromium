@@ -307,7 +307,7 @@ class NET_EXPORT URLRequestContext final {
   void set_transport_security_persister(
       std::unique_ptr<TransportSecurityPersister> transport_security_persister);
 
-  raw_ptr<NetLog> net_log_ = nullptr;
+  raw_ptr<NetLog, DanglingUntriaged> net_log_ = nullptr;
 
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;

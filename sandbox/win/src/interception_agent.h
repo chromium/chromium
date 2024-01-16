@@ -79,7 +79,7 @@ class InterceptionAgent {
   ResolverThunk* GetResolver(InterceptionType type);
 
   // Shared memory containing the list of functions to intercept.
-  // The field is accessed too early during the process startup to support
+  // RAW_PTR_EXCLUSION: Accessed too early during the process startup to support
   // raw_ptr<T>.
   RAW_PTR_EXCLUSION SharedMemory* interceptions_;
 

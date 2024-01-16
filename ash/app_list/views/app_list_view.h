@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
@@ -99,9 +98,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     ~ScopedContentsResetDisabler();
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION AppListView* const view_;
+    const raw_ptr<AppListView> view_;
   };
 
   // Does not take ownership of |delegate|.

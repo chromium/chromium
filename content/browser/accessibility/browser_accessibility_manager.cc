@@ -501,7 +501,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
     // IsDescendantOf() also returns true in the case of equality.
     if (focus && focus != event_target && focus->IsDescendantOf(event_target)) {
-      FireGeneratedEvent(targeted_event.event_params.event,
+      FireGeneratedEvent(targeted_event.event_params->event,
                          event_target->node());
     } else {
       deferred_events.push_back(targeted_event);
@@ -532,7 +532,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (!event_target->CanFireEvents())
       continue;
 
-    FireGeneratedEvent(targeted_event.event_params.event, event_target->node());
+    FireGeneratedEvent(targeted_event.event_params->event,
+                       event_target->node());
   }
   event_generator().ClearEvents();
 

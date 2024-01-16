@@ -1016,7 +1016,7 @@ void UsbDeviceHandleImpl::RefreshEndpointMap() {
 
     for (const auto& endpoint : interface_info.alternate->endpoints) {
       endpoint_map_[ConvertEndpointNumberToAddress(*endpoint)] = {
-          interface_info.interface, endpoint.get()};
+          interface_info.interface.get(), endpoint.get()};
     }
   }
 }

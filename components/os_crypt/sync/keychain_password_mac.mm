@@ -81,7 +81,7 @@ KeychainPassword::~KeychainPassword() = default;
 std::string KeychainPassword::GetPassword() const {
   UInt32 password_length = 0;
   void* password_data = nullptr;
-  OSStatus error = keychain_.FindGenericPassword(
+  OSStatus error = keychain_->FindGenericPassword(
       GetServiceName().size(), GetServiceName().c_str(),
       GetAccountName().size(), GetAccountName().c_str(), &password_length,
       &password_data, /*item=*/nullptr);
@@ -89,13 +89,13 @@ std::string KeychainPassword::GetPassword() const {
   if (error == noErr) {
     std::string password =
         std::string(static_cast<char*>(password_data), password_length);
-    keychain_.ItemFreeContent(password_data);
+    keychain_->ItemFreeContent(password_data);
     return password;
   }
 
   if (error == errSecItemNotFound) {
     std::string password = AddRandomPasswordToKeychain(
-        keychain_, GetServiceName(), GetAccountName());
+        *keychain_, GetServiceName(), GetAccountName());
     return password;
   }
 

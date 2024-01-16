@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager {
@@ -22,26 +22,26 @@ struct NoGraphChange {};
 struct GraphChangeAddFrame {
   explicit GraphChangeAddFrame(const FrameNode* node) : frame_node(node) {}
 
-  RAW_PTR_EXCLUSION const FrameNode* frame_node;
+  raw_ptr<const FrameNode> frame_node;
 };
 
 struct GraphChangeRemoveFrame {
   explicit GraphChangeRemoveFrame(const FrameNode* node) : frame_node(node) {}
 
-  RAW_PTR_EXCLUSION const FrameNode* frame_node;
+  raw_ptr<const FrameNode> frame_node;
 };
 
 struct GraphChangeAddWorker {
   explicit GraphChangeAddWorker(const WorkerNode* node) : worker_node(node) {}
 
-  RAW_PTR_EXCLUSION const WorkerNode* worker_node;
+  raw_ptr<const WorkerNode> worker_node;
 };
 
 struct GraphChangeRemoveWorker {
   explicit GraphChangeRemoveWorker(const WorkerNode* node)
       : worker_node(node) {}
 
-  RAW_PTR_EXCLUSION const WorkerNode* worker_node;
+  raw_ptr<const WorkerNode> worker_node;
 };
 
 struct GraphChangeAddClientFrameToWorker {
@@ -49,8 +49,8 @@ struct GraphChangeAddClientFrameToWorker {
                                     const FrameNode* client_node)
       : worker_node(node), client_frame_node(client_node) {}
 
-  RAW_PTR_EXCLUSION const WorkerNode* worker_node;
-  RAW_PTR_EXCLUSION const FrameNode* client_frame_node;
+  raw_ptr<const WorkerNode> worker_node;
+  raw_ptr<const FrameNode> client_frame_node;
 };
 
 struct GraphChangeRemoveClientFrameFromWorker {
@@ -58,8 +58,8 @@ struct GraphChangeRemoveClientFrameFromWorker {
                                          const FrameNode* client_node)
       : worker_node(node), client_frame_node(client_node) {}
 
-  RAW_PTR_EXCLUSION const WorkerNode* worker_node;
-  RAW_PTR_EXCLUSION const FrameNode* client_frame_node;
+  raw_ptr<const WorkerNode> worker_node;
+  raw_ptr<const FrameNode> client_frame_node;
 };
 
 struct GraphChangeAddClientWorkerToWorker {
@@ -67,8 +67,8 @@ struct GraphChangeAddClientWorkerToWorker {
                                      const WorkerNode* client_node)
       : worker_node(node), client_worker_node(client_node) {}
 
-  RAW_PTR_EXCLUSION const WorkerNode* worker_node;
-  RAW_PTR_EXCLUSION const WorkerNode* client_worker_node;
+  raw_ptr<const WorkerNode> worker_node;
+  raw_ptr<const WorkerNode> client_worker_node;
 };
 
 struct GraphChangeRemoveClientWorkerFromWorker {
@@ -76,8 +76,8 @@ struct GraphChangeRemoveClientWorkerFromWorker {
                                           const WorkerNode* client_node)
       : worker_node(node), client_worker_node(client_node) {}
 
-  RAW_PTR_EXCLUSION const WorkerNode* worker_node;
-  RAW_PTR_EXCLUSION const WorkerNode* client_worker_node;
+  raw_ptr<const WorkerNode> worker_node;
+  raw_ptr<const WorkerNode> client_worker_node;
 };
 
 using GraphChange = absl::variant<NoGraphChange,

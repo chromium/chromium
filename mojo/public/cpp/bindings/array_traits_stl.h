@@ -86,7 +86,7 @@ struct ArrayTraits<base::flat_set<T>> {
 template <typename K, typename V>
 struct MapValuesArrayView {
   explicit MapValuesArrayView(const std::map<K, V>& map) : map(map) {}
-  // `map` is not a raw_ref<...> as that leads to a binary size increase.
+  // RAW_PTR_EXCLUSION: Binary size increase.
   RAW_PTR_EXCLUSION const std::map<K, V>& map;
 };
 

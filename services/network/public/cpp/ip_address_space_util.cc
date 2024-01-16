@@ -328,8 +328,8 @@ namespace {
 const GURL& ResponseUrl(
     const GURL& request_url,
     absl::optional<CalculateClientAddressSpaceParams> params) {
-  if (params.has_value() && !params->url_list_via_service_worker.empty()) {
-    return params.value().url_list_via_service_worker.back();
+  if (params.has_value() && !params->url_list_via_service_worker->empty()) {
+    return params.value().url_list_via_service_worker->back();
   }
   return request_url;
 }
@@ -361,15 +361,15 @@ mojom::IPAddressSpace CalculateClientAddressSpace(
 
   // First, check whether the response forces itself into a public address space
   // as per https://wicg.github.io/cors-rfc1918/#csp.
-  DCHECK(params->parsed_headers) << "CalculateIPAddressSpace() called for URL "
-                                 << url << " with null parsed_headers.";
+  DCHECK(*params->parsed_headers) << "CalculateIPAddressSpace() called for URL "
+                                  << url << " with null parsed_headers.";
   if (ShouldTreatAsPublicAddress(
-          params->parsed_headers->content_security_policy)) {
+          (*params->parsed_headers)->content_security_policy)) {
     return mojom::IPAddressSpace::kPublic;
   }
 
   // Otherwise, calculate the address space via the provided IP address.
-  return IPEndPointToIPAddressSpace(params->remote_endpoint);
+  return IPEndPointToIPAddressSpace(*params->remote_endpoint);
 }
 
 mojom::IPAddressSpace CalculateResourceAddressSpace(

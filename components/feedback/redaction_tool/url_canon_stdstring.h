@@ -53,8 +53,8 @@ class StdStringCanonOutput : public CanonOutput {
   void Resize(size_t sz) override;
 
  protected:
-  // `str_` is not a raw_ptr<...> for performance reasons (based on analysis of
-  // sampling profiler data and tab_search:top100:2020).
+  // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+  // profiler data and tab_search:top100:2020.
   RAW_PTR_EXCLUSION std::string* str_;
 };
 

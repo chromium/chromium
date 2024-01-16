@@ -51,9 +51,7 @@ struct CONTENT_EXPORT ContentMainParams {
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
 #elif !BUILDFLAG(IS_ANDROID)
   int argc = 0;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const char** argv = nullptr;
+  raw_ptr<const char*> argv = nullptr;
 #endif
 
   // Used by BrowserTestBase. If set, BrowserMainLoop runs this task instead of

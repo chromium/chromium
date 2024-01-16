@@ -1344,7 +1344,7 @@ TEST_F(StorageKeyTest, FromWireReturnValue) {
       const raw_ref<const net::SchemefulSite> top_level_site;
       const raw_ref<const net::SchemefulSite>
           top_level_site_if_third_party_enabled;
-      // Excluded: can't wrap `absl::nullopt` in `raw_ref`.
+      // RAW_PTR_EXCLUSION: Can't wrap `absl::nullopt` in `raw_ref`.
       RAW_PTR_EXCLUSION const absl::optional<base::UnguessableToken>& nonce;
       AncestorChainBit ancestor_chain_bit;
       AncestorChainBit ancestor_chain_bit_if_third_party_enabled;

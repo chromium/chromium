@@ -88,8 +88,8 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
       ~TaskMetadata();
 
       base::TimeTicks execution_start_time;
-      // Not a raw_ptr<...> for performance reasons: based on analysis of
-      // sampling profiler data (JankMonitorImpl::WillRunTaskOrEvent ->
+      // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+      // profiler data (JankMonitorImpl::WillRunTaskOrEvent ->
       // JankMonitorImpl::ThreadExecutionState::WillRunTaskOrEvent -> emplaces
       // TaskMetadata in a vector).
       RAW_PTR_EXCLUSION const void* identifier;

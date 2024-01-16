@@ -8,6 +8,8 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -134,25 +136,25 @@ class SCOPED_LOCKABLE BasicAutoLock {
 
   explicit BasicAutoLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
       : lock_(lock) {
-    lock_.Acquire();
+    lock_->Acquire();
   }
 
   BasicAutoLock(LockType& lock, const AlreadyAcquired&)
       EXCLUSIVE_LOCKS_REQUIRED(lock)
       : lock_(lock) {
-    lock_.AssertAcquired();
+    lock_->AssertAcquired();
   }
 
   BasicAutoLock(const BasicAutoLock&) = delete;
   BasicAutoLock& operator=(const BasicAutoLock&) = delete;
 
   ~BasicAutoLock() UNLOCK_FUNCTION() {
-    lock_.AssertAcquired();
-    lock_.Release();
+    lock_->AssertAcquired();
+    lock_->Release();
   }
 
  private:
-  LockType& lock_;
+  const raw_ref<LockType, DanglingUntriaged> lock_;
 };
 
 // This is an implementation used for AutoTryLock templated on the lock type.
@@ -160,22 +162,22 @@ template <class LockType>
 class SCOPED_LOCKABLE BasicAutoTryLock {
  public:
   explicit BasicAutoTryLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
-      : lock_(lock), is_acquired_(lock_.Try()) {}
+      : lock_(lock), is_acquired_(lock_->Try()) {}
 
   BasicAutoTryLock(const BasicAutoTryLock&) = delete;
   BasicAutoTryLock& operator=(const BasicAutoTryLock&) = delete;
 
   ~BasicAutoTryLock() UNLOCK_FUNCTION() {
     if (is_acquired_) {
-      lock_.AssertAcquired();
-      lock_.Release();
+      lock_->AssertAcquired();
+      lock_->Release();
     }
   }
 
   bool is_acquired() const { return is_acquired_; }
 
  private:
-  LockType& lock_;
+  const raw_ref<LockType> lock_;
   const bool is_acquired_;
 };
 
@@ -185,17 +187,17 @@ class BasicAutoUnlock {
  public:
   explicit BasicAutoUnlock(LockType& lock) : lock_(lock) {
     // We require our caller to have the lock.
-    lock_.AssertAcquired();
-    lock_.Release();
+    lock_->AssertAcquired();
+    lock_->Release();
   }
 
   BasicAutoUnlock(const BasicAutoUnlock&) = delete;
   BasicAutoUnlock& operator=(const BasicAutoUnlock&) = delete;
 
-  ~BasicAutoUnlock() { lock_.Acquire(); }
+  ~BasicAutoUnlock() { lock_->Acquire(); }
 
  private:
-  LockType& lock_;
+  const raw_ref<LockType> lock_;
 };
 
 // This is an implementation used for AutoLockMaybe templated on the lock type.
@@ -219,7 +221,7 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
   }
 
  private:
-  LockType* const lock_;
+  const raw_ptr<LockType> lock_;
 };
 
 // This is an implementation used for ReleasableAutoLock templated on the lock
@@ -251,7 +253,7 @@ class SCOPED_LOCKABLE BasicReleasableAutoLock {
   }
 
  private:
-  LockType* lock_;
+  raw_ptr<LockType> lock_;
 };
 
 }  // namespace internal

@@ -118,8 +118,9 @@ void PostAnnouncementNotification(NSString* announcement,
 bool BrowserAccessibilityManagerMac::IsInGeneratedEventBatch(
     ui::AXEventGenerator::Event event_type) const {
   for (const auto& event : event_generator()) {
-    if (event.event_params.event == event_type)
+    if (event.event_params->event == event_type) {
       return true;  // Any side effects will have already been handled.
+    }
   }
   return false;
 }

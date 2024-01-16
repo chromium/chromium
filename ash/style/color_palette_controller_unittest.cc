@@ -23,7 +23,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -84,9 +84,7 @@ class TestObserver : public ui::NativeThemeObserver {
   ui::NativeTheme* last_theme() { return last_theme_; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION ui::NativeTheme* last_theme_ = nullptr;
+  raw_ptr<ui::NativeTheme> last_theme_ = nullptr;
   int call_count_ = 0;
 };
 

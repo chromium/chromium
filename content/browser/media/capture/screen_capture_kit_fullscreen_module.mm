@@ -214,7 +214,7 @@ void ScreenCaptureKitFullscreenModule::OnFullscreenShareableContentCreated(
       if (window.windowID == fullscreen_window_id_) {
         if (!window.isOnScreen) {
           fullscreen_mode_active_ = false;
-          reset_stream_interface_.ResetStreamTo(editor_window);
+          reset_stream_interface_->ResetStreamTo(editor_window);
         }
         break;
       }
@@ -229,7 +229,7 @@ void ScreenCaptureKitFullscreenModule::OnFullscreenShareableContentCreated(
       // instead.
       fullscreen_mode_active_ = true;
       fullscreen_window_id_ = fullscreen_window.windowID;
-      reset_stream_interface_.ResetStreamTo(fullscreen_window);
+      reset_stream_interface_->ResetStreamTo(fullscreen_window);
     }
   }
 }

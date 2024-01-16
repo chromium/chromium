@@ -253,9 +253,7 @@ class CC_EXPORT PictureLayerTiling {
     bool AtEnd() const;
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
+    raw_ptr<PictureLayerTiling> tiling_;
     PictureLayerTiling::TileMap::iterator iter_;
   };
 
@@ -291,16 +289,16 @@ class CC_EXPORT PictureLayerTiling {
    private:
     gfx::Rect ComputeGeometryRect() const;
 
-    // `tiling_` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+    // profiler data and tab_search:top100:2020.
     RAW_PTR_EXCLUSION const PictureLayerTiling* tiling_ = nullptr;
 
     gfx::Size coverage_rect_max_bounds_;
     gfx::Rect coverage_rect_;
     gfx::AxisTransform2d coverage_to_content_;
 
-    // `current_tile_` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
+    // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
+    // profiler data and tab_search:top100:2020.
     RAW_PTR_EXCLUSION Tile* current_tile_ = nullptr;
 
     gfx::Rect current_geometry_rect_;

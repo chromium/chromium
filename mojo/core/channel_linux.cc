@@ -601,9 +601,8 @@ class ChannelLinux::SharedBuffer {
 
   SharedBuffer(uint8_t* ptr, size_t len) : base_ptr_(ptr), len_(len) {}
 
-  // This field is not a raw_ptr<> because it always points to a mmap'd
-  // region of memory outside of the PA heap. Thus, there would be overhead
-  // involved with using a raw_ptr<> but no safety gains.
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
+  // there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION uint8_t* base_ptr_ = nullptr;
   size_t len_ = 0;
 };

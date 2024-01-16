@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -92,9 +91,7 @@ class CrOSSystemTracingSession {
   }
 
   bool is_tracing_ = false;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION ash::DebugDaemonClient* debug_daemon_ = nullptr;
+  raw_ptr<ash::DebugDaemonClient> debug_daemon_ = nullptr;
 };
 
 namespace {

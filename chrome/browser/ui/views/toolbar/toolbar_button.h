@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -271,11 +272,9 @@ class ToolbarButton : public views::LabelButton,
   };
 
   struct VectorIcons {
-    // This field is not a raw_ref<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
+    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+    // global), so there is no benefit to using a raw_ptr, only cost.
     RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
-    // This field is not a raw_ref<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
     RAW_PTR_EXCLUSION const gfx::VectorIcon& touch_icon;
   };
 

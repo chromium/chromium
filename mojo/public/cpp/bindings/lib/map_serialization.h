@@ -37,7 +37,7 @@ class MapReaderBase {
   void* GetDataIfExists() { return nullptr; }
 
  protected:
-  // `input_` is not a raw_ref<...> as that leads to a binary size increase.
+  // RAW_PTR_EXCLUSION: Binary size increase.
   RAW_PTR_EXCLUSION MaybeConstUserType& input_;
   MaybeConstIterator iter_;
 };

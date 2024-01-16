@@ -33,8 +33,7 @@ struct ScreenshotArea {
   ScreenshotArea(const ScreenshotArea& area);
 
   const ScreenshotType type;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #union
+  // RAW_PTR_EXCLUSION: Makes `VideoCaptureInfo` a complex struct.
   RAW_PTR_EXCLUSION const aura::Window* window = nullptr;
   const std::optional<const gfx::Rect> rect;
 

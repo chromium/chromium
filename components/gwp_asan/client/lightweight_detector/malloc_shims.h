@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/client/gwp_asan.h"
@@ -34,16 +34,16 @@ struct AllocationInfo {
         ;
   }
 
-  // By the time `address` arrives here, it has already been passed to a
-  // `free()`-like function, and assigning a dangling `T*` to a `raw_ptr<T>` is
-  // forbidden.
+  // RAW_PTR_EXCLUSION: By the time `address` arrives here, it has already been
+  // passed to a `free()`-like function, and assigning a dangling `T*` to a
+  // `raw_ptr<T>` is forbidden.
   RAW_PTR_EXCLUSION void* address = nullptr;
   uint32_t size = 0;  // Intentionally not `size_t` to save space.
   FreeFunctionKind free_fn_kind = FreeFunctionKind::kUnknown;
 
 #if BUILDFLAG(IS_APPLE)  // Not used on other platforms.
-  // On macOS and iOS, this is a pointer to an OS-internal `malloc_zone_t`,
-  // which can't be protected by raw_ptr<T>.
+  // RAW_PTR_EXCLUSION: On macOS and iOS, this is a pointer to an OS-internal
+  // `malloc_zone_t`, which can't be protected by raw_ptr<T>.
   RAW_PTR_EXCLUSION void* context = nullptr;
 #endif  // BUILDFLAG(IS_APPLE)
 };

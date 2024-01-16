@@ -233,9 +233,9 @@ class UnexpectedDeducer {
   constexpr operator E() && noexcept { return std::move(lambda_)(); }
 
  private:
-  // `raw_ptr<>` and `raw_ref<>` aren't intended to handle &&-qualified members.
+  // RAW_PTR_EXCLUSION: Not intended to handle &&-qualified members.
   // `UnexpectedDeducer` is a short-lived temporary and tries to minimize
-  // copying and other overhead; using those types goes against this design
+  // copying and other overhead; using raw_ptr/ref goes against this design
   // without adding meaningful safety.
   RAW_PTR_EXCLUSION Lambda&& lambda_;
 };

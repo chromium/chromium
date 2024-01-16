@@ -87,8 +87,7 @@ class MessageFragment {
   }
 
  private:
-  // Exclude from `raw_ref` rewriter - increases Android binary size by
-  // ~350K.
+  // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
   size_t index_ = kInvalidFragmentIndex;
 };
@@ -161,8 +160,7 @@ class MessageFragment<Array_Data<T>> {
   }
 
  private:
-  // Exclude from `raw_ref` rewriter - increases Android binary size by
-  // ~350K.
+  // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
   size_t index_ = kInvalidFragmentIndex;
 };

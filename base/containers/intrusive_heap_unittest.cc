@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"
@@ -527,9 +527,7 @@ void ValidateValueType() {
 // the contract expected of the DefaultHeapHandleAccessor.
 struct TestElement {
   int key;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
-  RAW_PTR_EXCLUSION HeapHandle* handle;
+  raw_ptr<HeapHandle> handle;
 
   // Make this a min-heap by return > instead of <.
   bool operator<(const TestElement& other) const { return key > other.key; }

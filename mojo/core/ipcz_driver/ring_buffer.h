@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
@@ -51,9 +51,7 @@ class MOJO_SYSTEM_IMPL_EXPORT RingBuffer {
     }
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION RingBuffer* buffer_;
+    raw_ptr<RingBuffer> buffer_;
     const Bytes bytes_;
   };
 
@@ -83,9 +81,7 @@ class MOJO_SYSTEM_IMPL_EXPORT RingBuffer {
     }
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION RingBuffer* buffer_;
+    raw_ptr<RingBuffer> buffer_;
     const Bytes bytes_;
   };
 

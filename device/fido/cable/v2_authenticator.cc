@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -86,9 +87,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 struct MakeCredRequest {
-  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
-  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
-  // ref-counting mismatch.
+  // RAW_PTR_EXCLUSION: cbor_extract.cc would cast the raw_ptr<T> to a void*,
+  // skipping an AddRef() call and causing a ref-counting mismatch.
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
   RAW_PTR_EXCLUSION const std::string* rp_id;
   RAW_PTR_EXCLUSION const std::string* rp_name;
@@ -150,9 +150,8 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
 };
 
 struct AttestationObject {
-  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
-  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
-  // ref-counting mismatch.
+  // RAW_PTR_EXCLUSION: cbor_extract.cc would cast the raw_ptr<T> to a void*,
+  // skipping an AddRef() call and causing a ref-counting mismatch.
   RAW_PTR_EXCLUSION const std::string* fmt;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* auth_data;
   RAW_PTR_EXCLUSION const cbor::Value* statement;
@@ -174,9 +173,8 @@ static constexpr StepOrByte<AttestationObject> kAttObjParseSteps[] = {
 };
 
 struct GetAssertionRequest {
-  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
-  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
-  // ref-counting mismatch.
+  // RAW_PTR_EXCLUSION: cbor_extract.cc would cast the raw_ptr<T> to a void*,
+  // skipping an AddRef() call and causing a ref-counting mismatch.
   RAW_PTR_EXCLUSION const std::string* rp_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* allowed_credentials;

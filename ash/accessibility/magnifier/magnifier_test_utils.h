@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFIER_TEST_UTILS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -66,9 +65,7 @@ class MagnifierTextInputTestHelper {
  private:
   ui::InputMethod* GetInputMethod();
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION TestTextInputView* text_input_view_ = nullptr;
+  raw_ptr<TestTextInputView> text_input_view_ = nullptr;
 };
 
 }  // namespace ash

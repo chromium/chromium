@@ -35,10 +35,9 @@ class PdfStreamDelegate {
     GURL stream_url;
     GURL original_url;
 
-    // Script to be injected into the internal plugin frame. This should point
-    // at an immutable string with static storage duration.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
+    // Script to be injected into the internal plugin frame.
+    // RAW_PTR_EXCLUSION: Points to an immutable string with static storage
+    // duration.
     RAW_PTR_EXCLUSION const std::string* injected_script = nullptr;
 
     SkColor background_color = SK_ColorTRANSPARENT;

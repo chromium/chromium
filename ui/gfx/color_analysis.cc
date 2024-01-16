@@ -18,7 +18,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
@@ -301,9 +301,7 @@ class ColorBox {
 
   // The set of colors of which this box captures a subset. This vector is not
   // owned but may be modified during the split operation.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION std::vector<SkColor>* color_space_;
+  raw_ptr<std::vector<SkColor>> color_space_;
 
   // The range of indexes into |color_space_| that are part of this box.
   gfx::Range color_range_;

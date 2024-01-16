@@ -946,7 +946,7 @@ void UsbDeviceHandleUsbfs::RefreshEndpointInfo() {
       EndpointInfo& info =
           endpoints_[ConvertEndpointNumberToAddress(*endpoint)];
       info.type = endpoint->type;
-      info.interface = interface.interface;
+      info.interface = interface.interface.get();
     }
   }
 }

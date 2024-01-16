@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
@@ -62,11 +62,9 @@ void CheckPathIsValid(const std::string& path) {
 struct IsEnclosedBy {
   explicit IsEnclosedBy(const std::string& path) : path(path) { }
   bool operator() (const std::string& x) const {
-    return IsEnclosingPath(path, x);
+    return IsEnclosingPath(*path, x);
   }
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION const std::string& path;
+  const raw_ref<const std::string> path;
 };
 
 }  // namespace

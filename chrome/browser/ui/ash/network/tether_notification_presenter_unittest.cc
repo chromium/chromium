@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,9 +82,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     }
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-ctor-field-initializer
-    RAW_PTR_EXCLUSION Profile* last_profile_ = nullptr;
+    raw_ptr<Profile> last_profile_ = nullptr;
     std::string last_settings_subpage_;
   };
 
