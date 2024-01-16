@@ -4,28 +4,34 @@
 
 module on_device_model.mojom;
 
-// Specifies how a client should regard a completed response from a
-// StreamingResponder.
-enum ResponseStatus {
-  // The full response has been streamed successfully and should be taken as-is
-  // by the client.
-  kOk,
+// Partial response received via StreamingResponder.OnResponse().
+struct ResponseChunk {
+  // Text for this chunk of the response.
+  string text;
 
-  // The response is done streaming, but it has been retracted by the service.
-  // The client should discard this response.
-  kRetracted,
+  // Optional TS scores computed against the full response so far, up to and
+  // including `text`. These are probabilities in the range [0, 1].
+  array<float>? ts_scores;
+};
+
+// Information pertaining to a complete response that was streamed by a
+// StreamingResponder.
+struct ResponseSummary {
+  // Optional TS scores computed against the full response. These are
+  // probabilities in the range [0, 1].
+  array<float>? ts_scores;
 };
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
 // the call to |Execute()|.
 interface StreamingResponder {
-  // This is called N times each time a new chunk of text is available.
-  OnResponse(string text);
+  // This is called each time a new chunk of text is available.
+  OnResponse(ResponseChunk chunk);
 
-  // This is called once when all text for the query has been returned.
-  // OnResponse() will not be called after OnComplete() has been called.
-  // `status` specifies how the client should regard this completion.
-  OnComplete(ResponseStatus status);
+  // This is called once when all text for the query has been returned. No other
+  // methods on this interface will be called after OnComplete(). `summary`
+  // conveys metadata about the response that was streamed.
+  OnComplete(ResponseSummary summary);
 };
 
 // Notifies the caller when the model is done processing context. Close this
@@ -58,6 +64,14 @@ struct InputOptions {
   // Execute(). If not set, will output tokens until an end token or the maximum
   // sequence length.
   uint32? max_output_tokens;
+
+  // The interval (in number of tokens) between periodic TS scoring updates
+  // provided by StreamingResponder.UpdateTSScores(). If this is null or
+  // negative, no TS scores are evaluated or sent to the client; if 0, they are
+  // only evaluated and sent only during response completion; otherwise for a
+  // value of N, an update will be provided after every Nth token, as well as
+  // during response completion.
+  uint32? ts_interval;
 };
 
 // A session for a model that allows adding context and then executing an input

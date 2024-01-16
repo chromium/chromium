@@ -19,11 +19,11 @@ void TestResponseHolder::WaitForCompletion() {
   run_loop_.Run();
 }
 
-void TestResponseHolder::OnResponse(const std::string& text) {
-  responses_.push_back(text);
+void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
+  responses_.push_back(chunk->text);
 }
 
-void TestResponseHolder::OnComplete(mojom::ResponseStatus status) {
+void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
   run_loop_.Quit();
 }
 

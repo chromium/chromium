@@ -34,8 +34,8 @@ class TestResponseHolder : public mojom::StreamingResponder {
   void WaitForCompletion();
 
   // mojom::StreamingResponder:
-  void OnResponse(const std::string& text) override;
-  void OnComplete(mojom::ResponseStatus status) override;
+  void OnResponse(mojom::ResponseChunkPtr chunk) override;
+  void OnComplete(mojom::ResponseSummaryPtr summary) override;
 
  private:
   base::RunLoop run_loop_;

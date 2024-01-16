@@ -39,11 +39,16 @@ class SessionImpl : public OnDeviceModel::Session {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
     if (!input->ignore_context) {
       for (const std::string& context : context_) {
-        remote->OnResponse("Context: " + context + "\n");
+        auto chunk = mojom::ResponseChunk::New();
+        chunk->text = "Context: " + context + "\n";
+        remote->OnResponse(std::move(chunk));
       }
     }
-    remote->OnResponse("Input: " + input->text + "\n");
-    remote->OnComplete(mojom::ResponseStatus::kOk);
+
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Input: " + input->text + "\n";
+    remote->OnResponse(std::move(chunk));
+    remote->OnComplete(mojom::ResponseSummary::New());
   }
 
  private:

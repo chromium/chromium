@@ -97,8 +97,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       OptimizationGuideModelExecutionResultStreamingCallback callback) override;
 
   // on_device_model::mojom::StreamingResponder:
-  void OnResponse(const std::string& response) override;
-  void OnComplete(on_device_model::mojom::ResponseStatus status) override;
+  void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
+  void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
 
   // Returns true if the on-device model should be used.
   bool ShouldUseOnDeviceModel() const;

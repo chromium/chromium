@@ -78,7 +78,7 @@ class SessionImpl::ContextProcessor
     session_->GetOrCreateSession().AddContext(
         on_device_model::mojom::InputOptions::New(
             input_, num_tokens, tokens_processed_, /*ignore_context=*/false,
-            /*max_output_tokens=*/std::nullopt),
+            /*max_output_tokens=*/std::nullopt, /*ts_interval=*/std::nullopt),
         client_.BindNewPipeAndPassRemote());
   }
 
@@ -296,14 +296,15 @@ void SessionImpl::ExecuteModel(
       on_device_model::mojom::InputOptions::New(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
           /*token_offset=*/std::nullopt, input->should_ignore_input_context,
-          features::GetOnDeviceModelMaxTokensForOutput()),
+          features::GetOnDeviceModelMaxTokensForOutput(),
+          /*ts_interval=*/std::nullopt),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
   on_device_state_->receiver.set_disconnect_handler(
       base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
 }
 
 // on_device_model::mojom::StreamingResponder:
-void SessionImpl::OnResponse(const std::string& response) {
+void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
   on_device_state_->timer_for_first_response.Stop();
   if (on_device_state_->current_response.empty()) {
     base::TimeDelta time_to_first_response =
@@ -317,11 +318,12 @@ void SessionImpl::OnResponse(const std::string& response) {
         ->set_time_to_first_response_millis(
             time_to_first_response.InMilliseconds());
   }
-  on_device_state_->current_response += response;
+  on_device_state_->current_response += chunk->text;
   SendResponse(ResponseType::kPartial);
 }
 
-void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
+void SessionImpl::OnComplete(
+    on_device_model::mojom::ResponseSummaryPtr summary) {
   base::TimeDelta time_to_completion =
       base::TimeTicks::Now() - on_device_state_->start;
   base::UmaHistogramMediumTimes(
@@ -334,9 +336,7 @@ void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
   if (controller_) {
     controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
   }
-  SendResponse(status == on_device_model::mojom::ResponseStatus::kOk
-                   ? ResponseType::kComplete
-                   : ResponseType::kCompleteUnsafeOutput);
+  SendResponse(ResponseType::kComplete);
   on_device_state_->ResetRequestState();
 }
 

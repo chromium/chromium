@@ -225,7 +225,7 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
                    features::GetOnDeviceModelMaxTokensForOutput();
   service_remote_->LoadModel(
       on_device_model::mojom::LoadModelParams::New(std::move(assets),
-                                                   max_tokens),
+                                                   max_tokens, std::nullopt),
       std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));

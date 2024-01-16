@@ -30,6 +30,10 @@ struct LoadModelParams {
   // The maximum number of input+output tokens the model can handle. This is
   // needed when initializing the model.
   uint32 max_tokens;
+
+  // The number of scores output by the TS model, an implementation defined
+  // default if unspecified.
+  uint32? ts_dimension;
 };
 
 // A service which allows loading trusted models which are stored on-device and

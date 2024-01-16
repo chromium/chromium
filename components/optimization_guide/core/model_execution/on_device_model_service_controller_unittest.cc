@@ -42,10 +42,6 @@ namespace {
 // If non-zero this amount of delay is added before the response is sent.
 base::TimeDelta g_execute_delay = base::TimeDelta();
 
-// Status code supplied to OnComplete().
-on_device_model::mojom::ResponseStatus g_on_complete_response_type =
-    on_device_model::mojom::ResponseStatus::kOk;
-
 // If non-empty, used as the output from Execute().
 std::string g_model_execute_result;
 
@@ -100,14 +96,17 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
     mojo::Remote<on_device_model::mojom::StreamingResponder> remote(
         std::move(response));
     for (const std::string& context : context_) {
-      remote->OnResponse("Context: " + context + "\n");
+      auto chunk = on_device_model::mojom::ResponseChunk::New();
+      chunk->text = "Context: " + context + "\n";
+      remote->OnResponse(std::move(chunk));
     }
-    remote->OnResponse("Input: " +
-                       (g_model_execute_result.empty()
-                            ? input->text
-                            : g_model_execute_result) +
-                       "\n");
-    remote->OnComplete(g_on_complete_response_type);
+    auto chunk = on_device_model::mojom::ResponseChunk::New();
+    chunk->text = "Input: " +
+                  (g_model_execute_result.empty() ? input->text
+                                                  : g_model_execute_result) +
+                  "\n";
+    remote->OnResponse(std::move(chunk));
+    remote->OnComplete(on_device_model::mojom::ResponseSummary::New());
   }
 
   void AddContextInternal(
@@ -248,7 +247,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     g_model_execute_result.clear();
     g_execute_delay = base::TimeDelta();
-    g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel,
@@ -1269,57 +1267,6 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
   // next session should use the server.
   EXPECT_EQ(nullptr, test_controller_->CreateSession(
                          kFeature, base::DoNothing(), &logger_));
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, UsedOnDeviceOutputUnsafe) {
-  Initialize();
-  g_on_complete_response_type =
-      on_device_model::mojom::ResponseStatus::kRetracted;
-  auto session =
-      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
-  ASSERT_TRUE(session);
-  ExecuteModel(*session, "foo");
-  base::HistogramTester histogram_tester;
-  task_environment_.RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
-      ExecuteModelResult::kUsedOnDeviceOutputUnsafe, 1);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
-  Initialize();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  g_on_complete_response_type =
-      on_device_model::mojom::ResponseStatus::kRetracted;
-  auto session =
-      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
-  ASSERT_TRUE(session);
-  ExecuteModel(*session, "foo");
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  ASSERT_TRUE(response_error_);
-  EXPECT_EQ(
-      *response_error_,
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  // Although we send an error, we should be sending a log entry back so the
-  // filtering can be logged.
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos(0)
-                .response()
-                .on_device_model_service_response()
-                .status(),
-            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
