@@ -518,6 +518,10 @@ export class SettingsSecurityPageElement extends
     window.open(loadTimeData.getString('advancedProtectionURL'));
   }
 
+  private onV8SettingsClick_() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_JAVASCRIPT_JIT);
+  }
+
   private onSecurityKeysClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }

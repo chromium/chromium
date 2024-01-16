@@ -123,6 +123,7 @@ export function createSiteSettingsPrefs(
   defaults[ContentSettingsTypes.COOKIES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.IMAGES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.JAVASCRIPT].setting = ContentSetting.ALLOW;
+  defaults[ContentSettingsTypes.JAVASCRIPT_JIT].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.SOUND].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.POPUPS].setting = ContentSetting.BLOCK;
   defaults[ContentSettingsTypes.PROTOCOL_HANDLERS].setting =

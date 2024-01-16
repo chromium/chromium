@@ -106,6 +106,32 @@
       </template>
 </if>
 
+      <template is="dom-if" route-path="/content/v8">
+        <settings-subpage page-title="$i18n{siteSettingsCategoryJavascriptJit}"
+            search-label="$i18n{siteSettingsAllSitesSearch}"
+            search-term="{{searchFilter_}}">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsJavascriptJitDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.JAVASCRIPT_JIT]]"
+              allow-option-label=
+                  "$i18n{siteSettingsJavascriptJitAllowed}"
+              allow-option-sub-label=
+                  "$i18n{siteSettingsJavascriptJitAllowedSubLabel}"
+              block-option-label="$i18n{siteSettingsJavascriptJitBlocked}"
+              block-option-sub-label=
+                  "$i18n{siteSettingsJavascriptJitBlockedSubLabel}">
+          </settings-category-default-radio-group>
+          <category-setting-exceptions
+              category="[[contentSettingsTypesEnum_.JAVASCRIPT_JIT]]"
+              allow-header="$i18n{siteSettingsJavascriptJitAllowedExceptions}"
+              block-header="$i18n{siteSettingsJavascriptJitBlockedExceptions}"
+              search-filter="[[searchFilter_]]">
+          </category-setting-exceptions>
+        </settings-subpage>
+      </template>
+
       <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
         <template is="dom-if" route-path="/securityKeys">
           <settings-subpage associated-control="[[$$('#securityLinkRow')]]"

@@ -71,6 +71,9 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.JAVASCRIPT,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
+              ContentSettingsTypes.JAVASCRIPT_JIT,
+              [createRawSiteException('https://foo.com:443')]),
+          createContentSettingTypeToValuePair(
               ContentSettingsTypes.SOUND,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(

@@ -88,6 +88,9 @@
   <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_MID_SENTENCE" desc="The label used for JavaScript site settings controls when used mid-sentence.">
     javascript
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_JIT" desc="The label for the JavaScript optimizer site settings controls.">
+    V8 optimizer
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOCATION" desc="The label used for geolocation site settings controls." meaning="Geolocation">
     Location
   </message>

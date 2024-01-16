@@ -186,6 +186,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsJavascriptBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_JAVASCRIPT_JIT,
+      id: Id.JAVASCRIPT_JIT,
+      label: 'siteSettingsJavascriptJit',
+      icon: 'settings:lock-outline',
+      enabledLabel: 'siteSettingsJavascriptJitAllowed',
+      disabledLabel: 'siteSettingsJavascriptJitBlocked',
+    },
+    {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
@@ -487,6 +495,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.ANTI_ABUSE,
               Id.SITE_DATA,
               Id.PERFORMANCE,
+              Id.JAVASCRIPT_JIT,
             ]),
           };
         },
