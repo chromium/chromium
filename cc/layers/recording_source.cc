@@ -56,10 +56,8 @@ void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
   }
 }
 
-bool RecordingSource::UpdateAndExpandInvalidation(
-    Region* invalidation,
-    const gfx::Size& layer_size,
-    const gfx::Rect& new_recorded_viewport) {
+bool RecordingSource::UpdateAndExpandInvalidation(Region* invalidation,
+                                                  const gfx::Size& layer_size) {
   bool updated = false;
 
   if (size_ != layer_size)
@@ -68,6 +66,9 @@ bool RecordingSource::UpdateAndExpandInvalidation(
   invalidation_.Swap(invalidation);
   invalidation_.Clear();
 
+  // TODO(crbug.com/1517714): Move this invalidation into
+  // UpdateDisplayItemList() based on the change the display list bounds.
+  gfx::Rect new_recorded_viewport(layer_size);
   if (new_recorded_viewport != recorded_viewport_) {
     UpdateInvalidationForNewViewport(recorded_viewport_, new_recorded_viewport,
                                      invalidation);

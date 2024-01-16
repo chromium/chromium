@@ -62,13 +62,10 @@ FakeContentLayerClient::FakeContentLayerClient() = default;
 
 FakeContentLayerClient::~FakeContentLayerClient() = default;
 
-gfx::Rect FakeContentLayerClient::PaintableRegion() const {
-  CHECK(bounds_set_);
-  return gfx::Rect(bounds_);
-}
-
 scoped_refptr<DisplayItemList>
 FakeContentLayerClient::PaintContentsToDisplayList() {
+  DCHECK(bounds_set_);
+  gfx::Rect paint_bounds(bounds_);
   auto display_list = base::MakeRefCounted<DisplayItemList>();
 
   for (RectPaintVector::const_iterator it = draw_rects_.begin();
@@ -92,7 +89,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
 
     display_list->StartPaint();
     display_list->push<SaveOp>();
-    display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
+    display_list->push<ClipRectOp>(gfx::RectToSkRect(paint_bounds),
                                    SkClipOp::kIntersect, false);
     display_list->push<DrawImageOp>(
         it->image, static_cast<float>(it->point.x()),
@@ -101,7 +98,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
             it->flags.getFilterQuality()),
         &it->flags);
     display_list->push<RestoreOp>();
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(paint_bounds);
 
     if (!it->transform.IsIdentity()) {
       display_list->StartPaint();
@@ -116,7 +113,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
         skottie_data.skottie, gfx::RectToSkRect(skottie_data.dst),
         skottie_data.t, skottie_data.images, skottie_data.color_map,
         skottie_data.text_map);
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(paint_bounds);
   }
 
   if (contains_slow_paths_) {
@@ -128,20 +125,20 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     for (int i = 0; i < 6; ++i) {
       display_list->push<ClipPathOp>(path, SkClipOp::kIntersect, true);
     }
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(paint_bounds);
   }
 
   if (fill_with_nonsolid_color_) {
-    gfx::Rect draw_rect = PaintableRegion();
     PaintFlags flags;
     flags.setColor(SK_ColorRED);
 
     display_list->StartPaint();
+    gfx::Rect draw_rect = paint_bounds;
     while (!draw_rect.IsEmpty()) {
       display_list->push<DrawIRectOp>(gfx::RectToSkIRect(draw_rect), flags);
       draw_rect.Inset(1);
     }
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(paint_bounds);
   }
 
   if (has_non_aa_paint_) {
@@ -149,7 +146,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     flags.setAntiAlias(false);
     display_list->StartPaint();
     display_list->push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(paint_bounds);
   }
 
   if (has_draw_text_op_) {
@@ -157,7 +154,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     SkFont font = skia::DefaultFont();
     display_list->push<DrawTextBlobOp>(SkTextBlob::MakeFromString("any", font),
                                        0.0f, 0.0f, PaintFlags());
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(paint_bounds);
   }
 
   display_list->Finalize();

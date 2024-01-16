@@ -14,17 +14,13 @@
 
 namespace cc {
 
-gfx::Rect SolidColorContentLayerClient::PaintableRegion() const {
-  return gfx::Rect(size_);
-}
-
 scoped_refptr<DisplayItemList>
 SolidColorContentLayerClient::PaintContentsToDisplayList() {
   auto display_list = base::MakeRefCounted<DisplayItemList>();
   display_list->StartPaint();
   display_list->push<SaveOp>();
 
-  SkRect clip = gfx::RectToSkRect(PaintableRegion());
+  SkRect clip = gfx::RectToSkRect(gfx::Rect(size_));
   display_list->push<ClipRectOp>(clip, SkClipOp::kIntersect, false);
   SkColor4f color = SkColors::kTransparent;
   display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
@@ -43,7 +39,7 @@ SolidColorContentLayerClient::PaintContentsToDisplayList() {
                                  flags);
 
   display_list->push<RestoreOp>();
-  display_list->EndPaintOfUnpaired(PaintableRegion());
+  display_list->EndPaintOfUnpaired(gfx::Rect(size_));
   display_list->Finalize();
   return display_list;
 }

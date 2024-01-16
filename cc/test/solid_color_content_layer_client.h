@@ -27,7 +27,6 @@ class SolidColorContentLayerClient : public ContentLayerClient {
         border_color_(border_color) {}
 
   // ContentLayerClient implementation.
-  gfx::Rect PaintableRegion() const override;
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
 

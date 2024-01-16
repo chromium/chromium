@@ -4904,12 +4904,10 @@ void GetClientDataAndUpdateInvalidation(RecordingSource* recording_source,
                                         FakeContentLayerClient* client,
                                         Region invalidation,
                                         gfx::Size layer_bounds) {
-  gfx::Rect new_recorded_viewport = client->PaintableRegion();
   scoped_refptr<DisplayItemList> display_list =
       client->PaintContentsToDisplayList();
 
-  recording_source->UpdateAndExpandInvalidation(&invalidation, layer_bounds,
-                                                new_recorded_viewport);
+  recording_source->UpdateAndExpandInvalidation(&invalidation, layer_bounds);
   recording_source->UpdateDisplayItemList(display_list,
                                           1.f /** recording_scale_factor */);
 }

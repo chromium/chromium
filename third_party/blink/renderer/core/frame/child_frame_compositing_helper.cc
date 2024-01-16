@@ -80,11 +80,6 @@ void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {
   }
 }
 
-gfx::Rect ChildFrameCompositingHelper::PaintableRegion() const {
-  DCHECK(crash_ui_layer_);
-  return gfx::Rect(crash_ui_layer_->bounds());
-}
-
 scoped_refptr<cc::DisplayItemList>
 ChildFrameCompositingHelper::PaintContentsToDisplayList() {
   DCHECK(crash_ui_layer_);

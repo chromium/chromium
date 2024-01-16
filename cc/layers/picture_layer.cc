@@ -151,10 +151,8 @@ bool PictureLayer::Update() {
   // for them.
   DCHECK(picture_layer_inputs_.client);
 
-  auto recorded_viewport = picture_layer_inputs_.client->PaintableRegion();
-
   updated |= recording_source->UpdateAndExpandInvalidation(
-      &last_updated_invalidation_.Write(*this), layer_size, recorded_viewport);
+      &last_updated_invalidation_.Write(*this), layer_size);
 
   if (updated) {
     {

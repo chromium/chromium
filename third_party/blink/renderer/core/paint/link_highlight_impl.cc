@@ -200,16 +200,12 @@ LinkHighlightImpl::LinkHighlightFragment::~LinkHighlightFragment() {
   layer_->ClearClient();
 }
 
-gfx::Rect LinkHighlightImpl::LinkHighlightFragment::PaintableRegion() const {
-  return gfx::Rect(layer_->bounds());
-}
-
 scoped_refptr<cc::DisplayItemList>
 LinkHighlightImpl::LinkHighlightFragment::PaintContentsToDisplayList() {
   auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
 
   PaintRecorder recorder;
-  gfx::Rect record_bounds = PaintableRegion();
+  gfx::Rect record_bounds(layer_->bounds());
   cc::PaintCanvas* canvas = recorder.beginRecording();
 
   cc::PaintFlags flags;

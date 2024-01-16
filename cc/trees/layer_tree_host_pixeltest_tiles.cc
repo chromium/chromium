@@ -72,7 +72,6 @@ class BlueYellowClient : public ContentLayerClient {
   explicit BlueYellowClient(const gfx::Size& size)
       : size_(size), blue_top_(true) {}
 
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(size_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
 
@@ -95,7 +94,7 @@ class BlueYellowClient : public ContentLayerClient {
     flags.setColor(SkColorSetRGB(0xF2, 0xF2, 0x00));
     display_list->push<DrawRectOp>(gfx::RectToSkRect(yellow_rect), flags);
 
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(gfx::Rect(size_));
     display_list->Finalize();
     return display_list;
   }
@@ -151,7 +150,6 @@ class PrimaryColorClient : public ContentLayerClient {
  public:
   explicit PrimaryColorClient(const gfx::Size& size) : size_(size) {}
 
-  gfx::Rect PaintableRegion() const override { return gfx::Rect(size_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     // When painted, the DisplayItemList should produce blocks of red, green,
     // and blue to test primary color reproduction.
@@ -174,7 +172,7 @@ class PrimaryColorClient : public ContentLayerClient {
     flags.setColor(SK_ColorBLUE);
     display_list->push<DrawRectOp>(gfx::RectToSkRect(blue_rect), flags);
 
-    display_list->EndPaintOfUnpaired(PaintableRegion());
+    display_list->EndPaintOfUnpaired(gfx::Rect(size_));
     display_list->Finalize();
     return display_list;
   }

@@ -80,10 +80,9 @@ class FakeRecordingSource : public RecordingSource {
   void Rerecord() {
     SetNeedsDisplayRect(recorded_viewport_);
     Region invalidation;
-    gfx::Rect new_recorded_viewport = client_.PaintableRegion();
     scoped_refptr<DisplayItemList> display_list =
         client_.PaintContentsToDisplayList();
-    UpdateAndExpandInvalidation(&invalidation, size_, new_recorded_viewport);
+    UpdateAndExpandInvalidation(&invalidation, size_);
     UpdateDisplayItemList(display_list, recording_scale_factor_);
   }
 
