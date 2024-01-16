@@ -72,7 +72,9 @@ class InspectorStyle final : public GarbageCollected<InspectorStyle> {
     return parent_style_sheet_.Get();
   }
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForStyle(
-      Element* element = nullptr);
+      Element* element = nullptr,
+      PseudoId pseudo_id = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom);
   bool StyleText(String* result);
   bool TextForRange(const SourceRange&, String* result);
 
@@ -82,9 +84,13 @@ class InspectorStyle final : public GarbageCollected<InspectorStyle> {
   void PopulateAllProperties(Vector<CSSPropertySourceData>& result);
   bool CheckRegisteredPropertySyntaxWithVarSubstitution(
       Element* element,
-      const CSSPropertySourceData& property) const;
+      const CSSPropertySourceData& property,
+      PseudoId pseudo_id = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom) const;
   std::unique_ptr<protocol::CSS::CSSStyle> StyleWithProperties(
-      Element* element);
+      Element* element,
+      PseudoId pseudo_id = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom);
   String ShorthandValue(const String& shorthand_property);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>
   LonghandProperties(const CSSPropertySourceData& property_entry);
@@ -115,7 +121,9 @@ class InspectorStyleSheetBase
 
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForStyle(
       CSSStyleDeclaration*,
-      Element* element);
+      Element* element,
+      PseudoId pseudo_id = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom);
   std::unique_ptr<protocol::CSS::SourceRange> BuildSourceRangeObject(
       const SourceRange&);
   bool LineNumberAndColumnToOffset(unsigned line_number,
@@ -211,7 +219,9 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   BuildObjectForStyleSheetInfo();
   std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRuleWithoutAncestorData(
       CSSStyleRule*,
-      Element* element);
+      Element* element,
+      PseudoId pseudo_id = kPseudoIdNone,
+      const AtomicString& pseudo_argument = g_null_atom);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
   std::unique_ptr<protocol::CSS::CSSTryRule> BuildObjectForTryRule(CSSTryRule*);

@@ -199,6 +199,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   //
   // This is intended for use by the Inspector Agent.
   static const CSSValue* ResolveValue(Element& element,
+                                      PseudoId,
+                                      const AtomicString& pseudo_argument,
                                       const CSSPropertyName&,
                                       const CSSValue&);
 

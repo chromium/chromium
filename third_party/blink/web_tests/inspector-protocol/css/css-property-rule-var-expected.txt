@@ -81,6 +81,43 @@ Validated declarations:
         value : var(--in)
     }
 ]
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --in
+        range : {
+            endColumn : 14
+            endLine : 29
+            startColumn : 4
+            startLine : 29
+        }
+        text : --in: 1px;
+        value : 1px
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : true
+        range : {
+            endColumn : 21
+            endLine : 30
+            startColumn : 4
+            startLine : 30
+        }
+        text : --len: var(--in);
+        value : var(--in)
+    }
+    [2] : {
+        name : --in
+        value : 1px
+    }
+    [3] : {
+        name : --len
+        value : var(--in)
+    }
+]
 Keyframes:
 [
     [0] : {

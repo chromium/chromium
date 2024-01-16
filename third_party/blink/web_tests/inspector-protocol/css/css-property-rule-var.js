@@ -29,6 +29,10 @@
       --color: blue;
     }
   }
+  div::before {
+    --in: 1px;
+    --len: var(--in);
+  }
   </style>
 
   <div>div</div>
@@ -48,7 +52,7 @@
   testRunner.log(computedStyle.find(style => style.name === '--len'));
   testRunner.log(computedStyle.find(style => style.name === '--color'));
 
-  const {result: {matchedCSSRules, cssKeyframesRules}} =
+  const {result: {matchedCSSRules, cssKeyframesRules, pseudoElements}} =
       await dp.CSS.getMatchedStylesForNode({nodeId});
 
   const rules =
@@ -58,6 +62,11 @@
                      .flat()
                      .filter(({name}) => name.startsWith('--'))
                      .flat());
+  testRunner.log(
+      pseudoElements
+          .map(({matches}) => matches.map(({rule}) => rule.style.cssProperties).flat())
+          .flat()
+          .filter(({name}) => name.startsWith('--')));
   testRunner.log('Keyframes:');
   testRunner.log(cssKeyframesRules);
 
