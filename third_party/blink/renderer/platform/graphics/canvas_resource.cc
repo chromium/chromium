@@ -476,18 +476,25 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(shared_image_interface);
 
-  // The GLES2 flag is needed for rendering via GL using a GrContext.
+  // These SharedImages are both read and written by the raster interface (both
+  // occur, for example, when copying canvas resources between canvases).
+  // Additionally, these SharedImages can be put into
+  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into GL
+  // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
+  // Hence, GLES2_READ usage is necessary regardless of whether raster is over
+  // GLES.
   if (use_oop_rasterization_) {
-    // TODO(crbug.com/1050845): Ideally we'd like to get rid of the GLES2 usage
-    // flags. Adding them for now to isolate other errors/prepare for field
-    // trials.
+    // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
+    // eliminated.
     shared_image_usage_flags = shared_image_usage_flags |
                                gpu::SHARED_IMAGE_USAGE_RASTER |
                                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
                                gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                               gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   } else {
+    // The GLES2_WRITE flag is needed due to raster being over GL.
+    // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
+    // eliminated.
     shared_image_usage_flags = shared_image_usage_flags |
                                gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
