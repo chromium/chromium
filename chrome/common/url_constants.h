@@ -554,6 +554,10 @@ inline constexpr char kArcPrivacyPolicyPathFormat[] =
 // Relative to |kChromeOSAssetPath|.
 inline constexpr char kArcTermsPathFormat[] = "arc_tos/%s/terms.html";
 
+// Help center URL for ChromeOS Battery Saver.
+inline constexpr char kCrosBatterySaverLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=battery_saver";
+
 // The URL for the "Learn more" link during Bluetooth pairing.
 // TODO(crbug.com/1010321): Remove 'm100' prefix from link once Bluetooth Revamp
 // has shipped.
