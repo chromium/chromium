@@ -682,7 +682,7 @@
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#close-requests-and-close-watchers
       name: "CloseWatcher",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "CoepReflection",
