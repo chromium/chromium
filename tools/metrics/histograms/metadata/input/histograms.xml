@@ -1406,7 +1406,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.StylusHandwriting.GestureTime" units="ms"
+<histogram name="InputMethod.StylusHandwriting.GestureTime2" units="ms"
     expires_after="2024-05-26">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>

@@ -52,10 +52,10 @@ class OngoingGesture {
         // Log time taken to handle gesture.
         // Expected range is from 0ms to 1000ms (1 second) with 50 buckets.
         RecordHistogram.recordCustomTimesHistogram(
-                "InputMethod.StylusHandwriting.GestureTime",
+                "InputMethod.StylusHandwriting.GestureTime2",
                 timeTaken,
-                /* min= */ 10L,
-                /* max= */ 1000L,
+                /* min= */ 1L,
+                /* max= */ 250L,
                 /* numBuckets= */ 50);
     }
 
