@@ -78,7 +78,6 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     test_start_time_in_microseconds = round(time.time() * 1000000)
 
     # Enroll browser to managedchrome.com domain
-    # managed_chrome_enrollment_token = "3e44bd4d-8c04-4e30-8fda-29762f5ab59b"
     managed_chrome_enrollment_token = self.GetManagedChromeDomainEnrollmentToken(
     )
     self.EnrollBrowserToDomain(managed_chrome_enrollment_token)
