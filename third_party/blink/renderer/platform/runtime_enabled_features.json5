@@ -1165,12 +1165,6 @@
       status: "stable",
     },
     {
-      // Support for the 'border-box', 'content-box' and 'stroke-box' keywords
-      // for the 'transform-box' property.
-      name: "CSSTransformBoxAdditionalKeywords",
-      status: "stable",
-    },
-    {
       name: "CSSTransitionDiscrete",
       status: "stable",
     },
