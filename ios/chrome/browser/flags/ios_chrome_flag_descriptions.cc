@@ -738,6 +738,11 @@ const char kOmniboxPopulateShortcutsDatabaseDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "to provider better suggestions ranking.";
 
+const char kOmniboxPopupRowContentConfigurationName[] =
+    "Omnibox popup row content configuration";
+const char kOmniboxPopupRowContentConfigurationDescription[] =
+    "Enables the use of content configuration for the omnibox popup row.";
+
 extern const char kOmniboxSuggestionsRTLImprovementsName[] =
     "Omnibox Improved RTL Suggestion Layout";
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =

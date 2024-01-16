@@ -6042,6 +6042,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-popup-row-content-configuration",
+    "owners": [ "christianxu@chromium.org", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-pref-based-data-collection-consent-helper",
     "owners": [ "mfacey@chromium.org", "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 125

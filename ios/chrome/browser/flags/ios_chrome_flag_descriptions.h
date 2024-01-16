@@ -649,6 +649,10 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxPopulateShortcutsDatabaseName[];
 extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
 
+// Title and description for using content configuration in omnibox popup row.
+extern const char kOmniboxPopupRowContentConfigurationName[];
+extern const char kOmniboxPopupRowContentConfigurationDescription[];
+
 // Title and description for improved RTL layout of suggestions.
 extern const char kOmniboxSuggestionsRTLImprovementsName[];
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[];
