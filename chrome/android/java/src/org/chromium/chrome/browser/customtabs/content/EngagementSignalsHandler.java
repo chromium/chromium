@@ -117,8 +117,10 @@ public class EngagementSignalsHandler {
                 new CustomTabTabObserver() {
                     @Override
                     protected void onAllTabsClosed() {
-                        mTabObserverRegistrar.unregisterActivityTabObserver(this);
-                        mTabObserverRegistrar = null;
+                        if (mTabObserverRegistrar != null) {
+                            mTabObserverRegistrar.unregisterActivityTabObserver(this);
+                            mTabObserverRegistrar = null;
+                        }
                         if (mObserver != null) {
                             mObserver.destroy();
                             mObserver = null;
