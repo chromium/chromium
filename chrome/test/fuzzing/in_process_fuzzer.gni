@@ -71,6 +71,8 @@ template("in_process_fuzzer") {
         # For testing. Those fuzzers are extremely slow on ClusterFuzz, and
         # using this option doesn't help.
         "fork_server=0",
+
+        "rss_limit_mb=8192",
       ]
 
       if (defined(invoker.asan_options)) {
