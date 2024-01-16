@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
-    units="impressions" expires_after="2024-05-12">
+    units="impressions" expires_after="2024-07-14">
   <owner>mrefaat@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

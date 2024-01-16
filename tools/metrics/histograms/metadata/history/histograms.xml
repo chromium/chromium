@@ -1016,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.DidUpdateClusterTriggerability{Segment}"
-    enum="Boolean" expires_after="2024-03-31">
+    enum="Boolean" expires_after="2024-07-14">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -2058,7 +2058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

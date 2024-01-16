@@ -2032,7 +2032,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2024-04-28">
+    enum="NetErrorCodes" expires_after="2024-07-14">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2728,7 +2728,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.InstallFrictionDialogAction"
-    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-04-28">
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-07-14">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

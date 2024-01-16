@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.BookmarkBar.NavigationOrActivationToFirstMeaningfulPaint"
-    units="ms" expires_after="2024-05-12">
+    units="ms" expires_after="2024-07-14">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

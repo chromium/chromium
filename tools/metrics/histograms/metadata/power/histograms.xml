@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.ShortInterval"
     enum="PerformanceMonitor.UsageScenario.ShortInterval"
-    expires_after="2024-05-12">
+    expires_after="2024-07-14">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
