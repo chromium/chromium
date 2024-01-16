@@ -7194,7 +7194,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 
 <enum name="DevToolsKeyboardShortcutAction">
   <int value="0" label="Other shortcut"/>
-  <int value="1" label="commandMenu.show"/>
+  <int value="1" label="quick-open.show-command-menu"/>
   <int value="2" label="console.clear"/>
   <int value="3" label="console.show"/>
   <int value="4" label="debugger.step"/>
@@ -7214,7 +7214,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="18" label="network.hide-request-details"/>
   <int value="19" label="network.search"/>
   <int value="20" label="network.toggle-recording"/>
-  <int value="21" label="quickOpen.show"/>
+  <int value="21" label="quick-open.show"/>
   <int value="22" label="settings.show"/>
   <int value="23" label="sources.search"/>
   <int value="24" label="background-service.toggle-recording"/>
@@ -7240,9 +7240,9 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="44" label="input.start-replaying"/>
   <int value="45" label="input.toggle-pause"/>
   <int value="46" label="input.toggle-recording"/>
-  <int value="47" label="inspector_main.focus-debuggee"/>
-  <int value="48" label="inspector_main.hard-reload"/>
-  <int value="49" label="inspector_main.reload"/>
+  <int value="47" label="inspector-main.focus-debuggee"/>
+  <int value="48" label="inspector-main.hard-reload"/>
+  <int value="49" label="inspector-main.reload"/>
   <int value="50" label="live-heap-profile.start-with-reload"/>
   <int value="51" label="live-heap-profile.toggle-recording"/>
   <int value="52" label="main.debug-reload"/>
@@ -7301,10 +7301,10 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="105" label="layers.right"/>
   <int value="106" label="help.report-translation-issue"/>
   <int value="107" label="rendering.toggle-prefers-color-scheme"/>
-  <int value="108" label="chrome_recorder.start-recording"/>
-  <int value="109" label="chrome_recorder.replay-recording"/>
-  <int value="110" label="chrome_recorder.toggle-code-view"/>
-  <int value="111" label="chrome_recorder.copy-recording-or-step"/>
+  <int value="108" label="chrome-recorder.start-recording"/>
+  <int value="109" label="chrome-recorder.replay-recording"/>
+  <int value="110" label="chrome-recorder.toggle-code-view"/>
+  <int value="111" label="chrome-recorder.copy-recording-or-step"/>
   <int value="112" label="changes.revert"/>
   <int value="113" label="changes.copy"/>
   <int value="114" label="elements.new-style-rule"/>
