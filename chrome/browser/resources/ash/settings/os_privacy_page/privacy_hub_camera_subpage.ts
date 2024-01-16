@@ -51,8 +51,15 @@ export class SettingsPrivacyHubCameraSubpage extends
     return {
       /**
        * Apps with camera permission defined.
+       * Only contains apps that are displayed in the App Management page.
+       * Does not contain system apps.
        */
       appList_: {
+        type: Array,
+        value: [],
+      },
+
+      systemApps_: {
         type: Array,
         value: [],
       },
@@ -92,6 +99,7 @@ export class SettingsPrivacyHubCameraSubpage extends
   private isCameraListEmpty_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private shouldDisableCameraToggle_: boolean;
+  private systemApps_: App[];
 
   constructor() {
     super();
@@ -128,7 +136,7 @@ export class SettingsPrivacyHubCameraSubpage extends
     this.mojoInterfaceProvider_.addObserver(
         this.appPermissionsObserverReceiver_.$.bindNewPipeAndPassRemote());
 
-    this.updateAppList_();
+    this.updateAppLists_();
   }
 
   override disconnectedCallback(): void {
@@ -136,9 +144,25 @@ export class SettingsPrivacyHubCameraSubpage extends
     this.appPermissionsObserverReceiver_!.$.close();
   }
 
-  private async updateAppList_(): Promise<void> {
+  private async updateAppLists_(): Promise<void> {
     const apps = (await this.mojoInterfaceProvider_.getApps()).apps;
     this.appList_ = apps.filter(hasCameraPermission);
+
+    this.systemApps_ =
+        (await this.mojoInterfaceProvider_.getSystemAppsThatUseCamera()).apps;
+  }
+
+  private getSystemServicesPermissionText_(): string {
+    const cameraAllowed = this.getPref<string>('ash.user.camera_allowed').value;
+    return cameraAllowed ? this.i18n('privacyHubSystemServicesAllowedText') :
+                           this.i18n('privacyHubSystemServicesBlockedText');
+  }
+
+  /**
+   * The function is used for sorting app names alphabetically.
+   */
+  private alphabeticalSort_(first: App, second: App): number {
+    return first.name!.localeCompare(second.name!);
   }
 
   private isCameraPermissionEnabled_(app: App): boolean {

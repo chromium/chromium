@@ -528,6 +528,12 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"noAppCanUseCameraText",
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT},
       {"blockedForAllText", IDS_OS_SETTINGS_PRIVACY_HUB_BLOCKED_FOR_ALL_TEXT},
+      {"privacyHubSystemServicesSectionTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE},
+      {"privacyHubSystemServicesAllowedText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT},
+      {"privacyHubSystemServicesBlockedText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_BLOCKED_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

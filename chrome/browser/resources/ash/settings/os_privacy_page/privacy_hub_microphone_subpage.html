@@ -78,7 +78,8 @@
   <template is="dom-if" if="[[prefs.ash.user.microphone_allowed.value]]"
       restamp>
     <div class="list-frame">
-      <template id="appList" is="dom-repeat" items="[[appList_]]" as="app">
+      <template id="appList" is="dom-repeat" items="[[appList_]]" as="app"
+          sort="alphabeticalSort_">
           <settings-privacy-hub-app-permission-row
               class="list-item"
               app="[[app]]"
@@ -109,5 +110,23 @@
   <div id="noWebsiteHasAccessText" class="settings-box-text subsection"
       hidden="[[prefs.ash.user.microphone_allowed.value]]">
     $i18n{noWebsiteCanUseMicText}
+  </div>
+</div>
+<div class="hr"></div>
+<div id="systemServicesSection">
+  <h2 id="systemServicesSectionTitle">
+    $i18n{privacyHubSystemServicesSectionTitle}
+  </h2>
+  <div class="list-frame">
+    <template id="systemServiceList" is="dom-repeat" items="[[systemApps_]]"
+        as="app" sort="alphabeticalSort_">
+      <settings-privacy-hub-system-service-row
+          class="list-item"
+          name="[[app.name]]"
+          permission-state="[[getSystemServicesPermissionText_(
+            prefs.ash.user.microphone_allowed.value)]]"
+          icon-source="chrome://app-icon/[[app.id]]/64">
+      </settings-privacy-hub-system-service-row>
+    </template>
   </div>
 </div>

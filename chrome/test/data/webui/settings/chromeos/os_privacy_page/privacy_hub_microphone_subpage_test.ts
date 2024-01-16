@@ -17,7 +17,7 @@ import {FakeMediaDevices} from '../fake_media_devices.js';
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
-import {createApp, createFakeMetricsPrivate} from './privacy_hub_app_permission_test_util.js';
+import {createApp, createFakeMetricsPrivate, getSystemServicePermissionText, getSystemServicesFromSubpage} from './privacy_hub_app_permission_test_util.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 type App = appPermissionHandlerMojom.App;
@@ -474,5 +474,36 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         metrics.countMetricValue(
             'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
             PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED));
+  });
+
+  test('System services section when microphone is allowed', async () => {
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n(
+            'privacyHubSystemServicesSectionTitle'),
+        privacyHubMicrophoneSubpage.shadowRoot!
+            .querySelector('#systemServicesSectionTitle')!.textContent!.trim());
+
+    await flushTasks();
+    const systemServices =
+        getSystemServicesFromSubpage(privacyHubMicrophoneSubpage);
+    assertEquals(1, systemServices.length);
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('privacyHubSystemServicesAllowedText'),
+        getSystemServicePermissionText(systemServices[0]!));
+  });
+
+  test('System services section when microphone is not allowed', async () => {
+    mediaDevices.addDevice('audioinput', 'Fake Microphone');
+    await flushTasks();
+    // Toggle microphone access.
+    getMicrophoneCrToggle().click();
+    flush();
+
+    const systemServices =
+        getSystemServicesFromSubpage(privacyHubMicrophoneSubpage);
+    assertEquals(1, systemServices.length);
+    assertEquals(
+        privacyHubMicrophoneSubpage.i18n('privacyHubSystemServicesBlockedText'),
+        getSystemServicePermissionText(systemServices[0]!));
   });
 });
