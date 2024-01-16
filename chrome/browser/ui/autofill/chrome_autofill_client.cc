@@ -995,7 +995,7 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #endif
 }
 
-bool ChromeAutofillClient::HasCreditCardScanFeature() {
+bool ChromeAutofillClient::HasCreditCardScanFeature() const {
   return CreditCardScannerController::HasCreditCardScanFeature();
 }
 

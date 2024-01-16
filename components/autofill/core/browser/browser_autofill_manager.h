@@ -122,7 +122,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Whether the |field| should show an entry to scan a credit card.
   virtual bool ShouldShowScanCreditCard(const FormData& form,
-                                        const FormFieldData& field);
+                                        const FormFieldData& field) const;
 
   // Handlers for the "Show Cards From Account" row. This row should be shown to
   // users who have cards in their account and can use Sync Transport. Clicking
@@ -327,8 +327,9 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Returns the field corresponding to |form| and |field| that can be
   // autofilled. Returns NULL if the field cannot be autofilled.
-  [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
-                                                const FormFieldData& field);
+  [[nodiscard]] AutofillField* GetAutofillField(
+      const FormData& form,
+      const FormFieldData& field) const;
 
   // Notifies the `BrowserAutofillManager` that `credit_card` has been fetched
   // from the server. Opens a manual filling dialog for virtual credit cards.
@@ -526,7 +527,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
-      bool& should_display_gpay_logo);
+      bool& should_display_gpay_logo) const;
 
   // Returns a mapping of credit card guid values to virtual card last fours for
   // standalone CVC field. Cards will only be added to the returned map if they

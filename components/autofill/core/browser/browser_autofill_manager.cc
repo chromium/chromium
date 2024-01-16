@@ -658,7 +658,7 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
 
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
-    const FormFieldData& field) {
+    const FormFieldData& field) const {
   if (!client().HasCreditCardScanFeature() ||
       !IsAutofillPaymentMethodsEnabled()) {
     return false;
@@ -2672,7 +2672,7 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
 
 AutofillField* BrowserAutofillManager::GetAutofillField(
     const FormData& form,
-    const FormFieldData& field) {
+    const FormFieldData& field) const {
   if (!client().GetPersonalDataManager()) {
     return nullptr;
   }
@@ -2787,7 +2787,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    bool& should_display_gpay_logo) {
+    bool& should_display_gpay_logo) const {
   credit_card_form_event_logger_->OnDidPollSuggestions(
       trigger_field, signin_state_for_metrics_);
 

@@ -237,7 +237,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const AutofillProfile* original_profile,
       SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) override;
-  bool HasCreditCardScanFeature() override;
+  bool HasCreditCardScanFeature() const override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,

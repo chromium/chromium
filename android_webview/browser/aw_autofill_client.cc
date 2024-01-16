@@ -192,7 +192,7 @@ void AwAutofillClient::ConfirmSaveAddressProfile(
   NOTIMPLEMENTED();
 }
 
-bool AwAutofillClient::HasCreditCardScanFeature() {
+bool AwAutofillClient::HasCreditCardScanFeature() const {
   return false;
 }
 

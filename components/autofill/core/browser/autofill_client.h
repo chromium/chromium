@@ -759,7 +759,7 @@ class AutofillClient {
 
   // Returns true if both the platform and the device support scanning credit
   // cards. Should be called before ScanCreditCard().
-  virtual bool HasCreditCardScanFeature() = 0;
+  virtual bool HasCreditCardScanFeature() const = 0;
 
   // Shows the user interface for scanning a credit card. Invokes the |callback|
   // when a credit card is scanned successfully. Should be called only if

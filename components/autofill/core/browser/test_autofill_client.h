@@ -433,7 +433,7 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
 
-  bool HasCreditCardScanFeature() override { return false; }
+  bool HasCreditCardScanFeature() const override { return false; }
 
   void ScanCreditCard(
       AutofillClient::CreditCardScanCallback callback) override {}

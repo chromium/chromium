@@ -442,7 +442,7 @@ class MockAutofillClient : public TestAutofillClient {
                AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));
-  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
+  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(plus_addresses::PlusAddressService*,
               GetPlusAddressService,
               (),
