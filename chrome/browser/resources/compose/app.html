@@ -243,6 +243,8 @@
   }
 
   .result-container {
+    --compose-result-text-color-while-loading: var(--cr-primary-text-color);
+    --compose-result-text-color: var(--cr-primary-text-color);
     border-radius: 8px;
     padding: 16px;
     box-sizing: border-box;
@@ -253,7 +255,9 @@
   }
 
   :host-context([chrome-refresh-2023]) .result-container {
-    color: var(--color-compose-dialog-result-foreground);
+    --compose-result-text-color-while-loading: var(
+        --color-compose-dialog-result-foreground-while-loading);
+    --compose-result-text-color: var(--color-compose-dialog-result-foreground);
     line-height: 16px;
   }
 
