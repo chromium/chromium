@@ -459,8 +459,9 @@ class TopIconAnimation : public AppListFolderView::Animation,
       gfx::RectF bounds_in_container(item->GetLocalBounds());
       views::View::ConvertRectToTarget(item, scroll_view_,
                                        &bounds_in_container);
-      if (!container_bounds.Contains(bounds_in_container))
+      if (!container_bounds.Intersects(bounds_in_container)) {
         break;
+      }
 
       // Return the item bounds in AppListFolderView coordinates.
       gfx::RectF bounds_in_folder(item->GetLocalBounds());
@@ -928,6 +929,7 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   // Transition all the states immediately to the end of folder closing
   // animation.
   background_view_->SetVisible(false);
+  contents_container_->SetTransform(gfx::Transform());
 
   if (restore_folder_item_view_state && folder_item_view_) {
     folder_item_view_->SetIconVisible(true);
