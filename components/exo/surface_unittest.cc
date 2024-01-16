@@ -1329,7 +1329,8 @@ TEST_P(SurfaceTest, UpdatesOcclusionOnDestroyingSubsurface) {
   child_surface->Commit();
   surface->Commit();
 
-  SurfaceObserverForTest observer;
+  SurfaceObserverForTest observer(
+      child_surface.get()->window()->GetOcclusionState());
   ScopedSurface scoped_child_surface(child_surface.get(), &observer);
 
   // Destroy the subsurface and expect to get an occlusion update.

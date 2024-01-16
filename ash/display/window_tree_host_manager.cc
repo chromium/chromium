@@ -880,6 +880,8 @@ void WindowTreeHostManager::CloseMirroringDisplayIfNotNecessary() {
 }
 
 void WindowTreeHostManager::PreDisplayConfigurationChange(bool clear_focus) {
+  // Pause occlusion tracking during display configuration updates.
+  scoped_pause_ = std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
   for (auto& observer : observers_)
     observer.OnDisplayConfigurationChanging();
   focus_activation_store_->Store(clear_focus);
@@ -1012,6 +1014,9 @@ void WindowTreeHostManager::PostDisplayConfigurationChange() {
     Shell::Get()->window_bounds_tracker()->MaybeRestoreWindowsOnDisplayAdded();
     should_restore_windows_on_display_added_ = false;
   }
+
+  // Unpause occlusion tracking.
+  scoped_pause_.reset();
 }
 
 ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(

@@ -29,6 +29,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
@@ -3418,7 +3419,8 @@ TEST_F(ShellSurfaceTest, Reparent) {
 
 TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
   auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
-  SurfaceObserverForTest observer;
+  SurfaceObserverForTest observer(
+      shell_surface->root_surface()->window()->GetOcclusionState());
   shell_surface->root_surface()->AddSurfaceObserver(&observer);
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
 
@@ -4402,6 +4404,84 @@ TEST_F(ShellSurfaceTest, DisplayLayoutConfigurationUpdatesSurfaceOrigin) {
       builder.Build());
 
   EXPECT_EQ(kNewOrigin + gfx::Vector2d(0, kVerticalOffset), client_origin);
+}
+
+TEST_F(ShellSurfaceTest, DisplayScaleChangeDoesNotSendOcclusionUpdates) {
+  std::unique_ptr<ShellSurface> shell_surface1 =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  std::unique_ptr<ShellSurface> shell_surface2 =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  shell_surface1->GetWidget()->GetNativeWindow()->SetProperty(
+      chromeos::kWindowManagerManagesOpacityKey, true);
+  shell_surface2->GetWidget()->GetNativeWindow()->SetProperty(
+      chromeos::kWindowManagerManagesOpacityKey, true);
+
+  // Do state change after setting kWindowManagerManagesOpacityKey so it
+  // applies properly.
+  shell_surface1->Maximize();
+  shell_surface2->Maximize();
+
+  auto* surface1 = shell_surface1->root_surface();
+  auto* surface2 = shell_surface2->root_surface();
+
+  // Update root surfaces (this happens asynchronously normally) and set
+  // occlusion tracking.
+  surface1->SetOcclusionTracking(true);
+  auto surface1_buffer =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface1->GetWidget()->GetWindowBoundsInScreen().size()));
+  surface1->Attach(surface1_buffer.get());
+  surface1->Commit();
+  surface2->SetOcclusionTracking(true);
+  auto surface2_buffer =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface2->GetWidget()->GetWindowBoundsInScreen().size()));
+  surface2->Attach(surface2_buffer.get());
+  surface2->Commit();
+
+  SurfaceObserverForTest observer1(surface1->window()->GetOcclusionState());
+  surface1->AddSurfaceObserver(&observer1);
+  SurfaceObserverForTest observer2(surface2->window()->GetOcclusionState());
+  surface2->AddSurfaceObserver(&observer2);
+
+  EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
+            surface1->window()->GetOcclusionState());
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
+            surface2->window()->GetOcclusionState());
+
+  auto* display_manager = ash::Shell::Get()->display_manager();
+  const auto display_id = display_manager->GetDisplayAt(0).id();
+
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
+
+  display_manager->ZoomDisplay(display_id, /*up=*/true);
+
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
+
+  // Update root surfaces (this happens asynchronously normally).
+  auto surface1_buffer_zoom =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface1->GetWidget()->GetWindowBoundsInScreen().size()));
+  surface1->Attach(surface1_buffer_zoom.get());
+  surface1->Commit();
+  auto surface2_buffer_zoom =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+          shell_surface2->GetWidget()->GetWindowBoundsInScreen().size()));
+  surface2->Attach(surface2_buffer_zoom.get());
+  surface2->Commit();
+
+  display_manager->ZoomDisplay(display_id, /*up=*/false);
+
+  // Should not get any occlusion changes - requires occlusion tracking clip
+  // to the root window and that the shelf occlude what is below it, too.
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(0, observer2.num_occlusion_state_changes());
+
+  surface1->RemoveSurfaceObserver(&observer1);
+  surface2->RemoveSurfaceObserver(&observer2);
 }
 
 }  // namespace exo
