@@ -42,7 +42,7 @@ public class WebApkUninstallUmaTracker {
                     uninstallTimestamp = fallbackUninstallTimestamp;
                 }
                 WebApkUkmRecorder.recordWebApkUninstall(
-                        webappDataStorage.getWebApkManifestUrl(),
+                        webappDataStorage.getWebApkManifestId(),
                         WebApkDistributor.BROWSER,
                         webappDataStorage.getWebApkVersionCode(),
                         webappDataStorage.getLaunchCount(),

@@ -225,7 +225,7 @@ class WebApkInstaller {
   // WebAPK server URL.
   GURL server_url_;
 
-  GURL manifest_url_;
+  GURL manifest_id_;
 
   // The number of milliseconds to wait for the WebAPK server to respond.
   int webapk_server_timeout_ms_;

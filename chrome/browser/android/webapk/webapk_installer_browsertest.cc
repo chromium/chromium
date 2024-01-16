@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest, Success) {
   EXPECT_EQ(
       ukm_recorder.GetSourceForSourceId(webapk_install_entries[0].source_id)
           ->url(),
-      shortcut_info.manifest_url);
+      shortcut_info.manifest_id);
 }
 
 // Test that installation fails if there is not enough space on device.

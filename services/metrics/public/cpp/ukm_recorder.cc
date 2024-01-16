@@ -46,10 +46,10 @@ ukm::SourceId UkmRecorder::GetSourceIdForPaymentAppFromScope(
 }
 
 // static
-ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestUrl(
-    base::PassKey<WebApkUkmRecorder>,
-    const GURL& manifest_url) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(manifest_url,
+ukm::SourceId UkmRecorder::GetSourceIdForWebApkManifestId(
+    base::PassKey<webapk::WebApkUkmRecorder>,
+    const GURL& manifest_id) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(manifest_id,
                                                SourceIdType::WEBAPK_ID);
 }
 

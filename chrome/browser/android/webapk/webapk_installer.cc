@@ -237,8 +237,8 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
     if (result == webapps::WebApkInstallResult::SUCCESS) {
       webapk::TrackInstallDuration(install_duration_timer_->Elapsed());
       webapk::TrackInstallEvent(webapk::INSTALL_COMPLETED);
-      WebApkUkmRecorder::RecordInstall(manifest_url_, install_source_,
-                                       install_shortcut_info_->display);
+      webapk::WebApkUkmRecorder::RecordInstall(manifest_id_, install_source_,
+                                               install_shortcut_info_->display);
     } else {
       DVLOG(1) << "The WebAPK installation failed.";
       webapk::TrackInstallEvent(webapk::INSTALL_FAILED);
@@ -246,7 +246,7 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
         web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
             base::StringPrintf(kWebApkFailureMessageTemplate,
-                               manifest_url_.spec().c_str()));
+                               manifest_id_.spec().c_str()));
       }
     }
     webapk::TrackInstallResult(result);
@@ -282,7 +282,7 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
       std::make_unique<webapps::ShortcutInfo>(shortcut_info);
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
-  manifest_url_ = install_shortcut_info_->manifest_url;
+  manifest_id_ = install_shortcut_info_->manifest_id;
   install_source_ = install_source;
   task_type_ = INSTALL;
 

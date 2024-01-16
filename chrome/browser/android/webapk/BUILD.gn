@@ -34,6 +34,7 @@ source_set("webapk_sources") {
     "//chrome/common:channel_info",
     "//components/crx_file:crx_file",
     "//components/sync",
+    "//components/ukm:ukm",
     "//components/webapps/browser",
     "//components/webapps/common",
     "//content/public/browser",

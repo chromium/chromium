@@ -68,7 +68,7 @@ ChromeAppBannerManagerAndroid::~ChromeAppBannerManagerAndroid() = default;
 void ChromeAppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
   if (data.errors.empty()) {
-    WebApkUkmRecorder::RecordWebApkableVisit(*data.manifest_url);
+    webapk::WebApkUkmRecorder::RecordWebApkableVisit(manifest_id_);
   }
 
   AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(data);
