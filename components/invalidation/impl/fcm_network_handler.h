@@ -76,23 +76,6 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
       std::unique_ptr<base::OneShotTimer> token_validation_timer);
 
  private:
-  struct FCMNetworkHandlerDiagnostic {
-    FCMNetworkHandlerDiagnostic();
-
-    std::string token;
-    instance_id::InstanceID::Result registration_result =
-        instance_id::InstanceID::UNKNOWN_ERROR;
-    instance_id::InstanceID::Result token_verification_result =
-        instance_id::InstanceID::UNKNOWN_ERROR;
-    bool token_changed = false;
-    base::Time instance_id_token_requested;
-    base::Time instance_id_token_was_received;
-    base::Time instance_id_token_verification_requested;
-    base::Time instance_id_token_verified;
-
-    int token_validation_requested_num = 0;
-  };
-
   // Called when a subscription token is obtained from the GCM server.
   void DidRetrieveToken(const std::string& subscription_token,
                         instance_id::InstanceID::Result result);
@@ -112,7 +95,6 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
   const std::string sender_id_;
   const std::string app_id_;
 
-  FCMNetworkHandlerDiagnostic diagnostic_info_;
   base::WeakPtrFactory<FCMNetworkHandler> weak_ptr_factory_{this};
 };
 

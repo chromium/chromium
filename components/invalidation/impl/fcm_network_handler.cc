@@ -175,7 +175,6 @@ void FCMNetworkHandler::StartListening() {
   // Being the listener is pre-requirement for token operations.
   gcm_driver_->AddAppHandler(app_id_, this);
 
-  diagnostic_info_.instance_id_token_requested = base::Time::Now();
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, kGCMScope, GetTimeToLive(sender_id_),
       /*flags=*/{InstanceID::Flags::kIsLazy},
@@ -196,9 +195,6 @@ void FCMNetworkHandler::DidRetrieveToken(const std::string& subscription_token,
                                          InstanceID::Result result) {
   base::UmaHistogramEnumeration("FCMInvalidations.InitialTokenRetrievalStatus",
                                 result);
-  diagnostic_info_.registration_result = result;
-  diagnostic_info_.token = subscription_token;
-  diagnostic_info_.instance_id_token_was_received = base::Time::Now();
   switch (result) {
     case InstanceID::SUCCESS:
       // The received token is assumed to be valid, therefore, we reschedule
@@ -233,8 +229,6 @@ void FCMNetworkHandler::ScheduleNextTokenValidation() {
 void FCMNetworkHandler::StartTokenValidation() {
   DCHECK(IsListening());
 
-  diagnostic_info_.instance_id_token_verification_requested = base::Time::Now();
-  diagnostic_info_.token_validation_requested_num++;
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, kGCMScope, GetTimeToLive(sender_id_),
       /*flags=*/{InstanceID::Flags::kIsLazy},
@@ -251,12 +245,9 @@ void FCMNetworkHandler::DidReceiveTokenForValidation(
     return;
   }
 
-  diagnostic_info_.instance_id_token_verified = base::Time::Now();
-  diagnostic_info_.token_verification_result = result;
   if (result == InstanceID::SUCCESS) {
     UpdateChannelState(FcmChannelState::ENABLED);
     if (token_ != new_token) {
-      diagnostic_info_.token_changed = true;
       token_ = new_token;
       DeliverToken(new_token);
     }
@@ -317,8 +308,5 @@ void FCMNetworkHandler::SetTokenValidationTimerForTesting(
     std::unique_ptr<base::OneShotTimer> token_validation_timer) {
   token_validation_timer_ = std::move(token_validation_timer);
 }
-
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() =
-    default;
 
 }  // namespace invalidation
