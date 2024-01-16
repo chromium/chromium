@@ -11,6 +11,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "base/barrier_callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/account_id/account_id.h"
@@ -28,6 +29,9 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -293,12 +297,16 @@ PineContentsView::PineContentsView(const AppsData& apps) {
               views::Builder<views::View>().CopyAddressTo(&spacer),
               views::Builder<views::ImageButton>(
                   views::CreateVectorImageButtonWithNativeTheme(
-                      views::Button::PressedCallback(), kSettingsIcon,
-                      kSettingsIconSize))
+                      base::BindRepeating(
+                          &PineContentsView::OnSettingsButtonPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+                      kSettingsIcon, kSettingsIconSize))
+                  .CopyAddressTo(&settings_button_view_)
                   .SetBackground(views::CreateRoundedRectBackground(
                       SK_ColorWHITE, kSettingsIconSize))
                   .SetTooltipText(u"Settings"))
           .Build());
+
   views::AsViewClass<views::BoxLayoutView>(spacer->parent())
       ->SetFlexForView(spacer, 1);
 
@@ -338,6 +346,33 @@ std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
   widget->SetContentsView(std::move(contents_view));
   return widget;
+}
+
+void PineContentsView::OnSettingsButtonPressed() {
+  context_menu_model_ = std::make_unique<PineContextMenuModel>();
+  menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+      context_menu_model_.get(),
+      base::BindRepeating(&PineContentsView::OnMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  std::unique_ptr<views::MenuItemView> root_menu_item =
+      menu_model_adapter_->CreateMenu();
+  const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
+                        views::MenuRunner::CONTEXT_MENU |
+                        views::MenuRunner::FIXED_ANCHOR;
+
+  menu_runner_ =
+      std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
+  menu_runner_->RunMenuAt(
+      settings_button_view_->GetWidget(), /*button_controller=*/nullptr,
+      settings_button_view_->GetBoundsInScreen(),
+      views::MenuAnchorPosition::kBubbleRight, ui::MENU_SOURCE_NONE);
+}
+
+void PineContentsView::OnMenuClosed() {
+  context_menu_model_.reset();
+  menu_model_adapter_.reset();
+  menu_runner_.reset();
 }
 
 BEGIN_METADATA(PineContentsView, views::BoxLayoutView)

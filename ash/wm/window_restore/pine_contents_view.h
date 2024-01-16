@@ -9,13 +9,22 @@
 #include <string>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
 
+namespace views {
+class ImageButton;
+class MenuModelAdapter;
+class MenuRunner;
+}  // namespace views
+
 namespace ash {
 
-class PineContentsView : public views::BoxLayoutView {
+class PineContextMenuModel;
+
+class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(PineContentsView);
 
@@ -30,6 +39,25 @@ class PineContentsView : public views::BoxLayoutView {
   ~PineContentsView() override;
 
   static std::unique_ptr<views::Widget> Create(aura::Window* root);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(PineTest, ShowContextMenuOnSettingsButtonClicked);
+
+  void OnSettingsButtonPressed();
+
+  // Called when the pine context menu is closed. Used as a callback for
+  // `menu_model_adapter_`.
+  void OnMenuClosed();
+
+  raw_ptr<views::ImageButton> settings_button_view_ = nullptr;
+
+  // The context menu model and its adapter for `settings_button_view_`.
+  std::unique_ptr<PineContextMenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
+  // The menu runner that is responsible for the context menu.
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  base::WeakPtrFactory<PineContentsView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, PineContentsView, views::BoxLayoutView)
