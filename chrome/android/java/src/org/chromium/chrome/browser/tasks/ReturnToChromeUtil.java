@@ -896,12 +896,12 @@ public final class ReturnToChromeUtil {
     }
 
     private static void updateFeedVisibility() {
+        Profile profile = Profile.getLastUsedRegularProfile();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE,
-                        FeedFeatures.isFeedEnabled()
-                                && UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE));
+                        FeedFeatures.isFeedEnabled(profile)
+                                && UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE));
     }
 
     /** Returns whether the Feed articles are visible. */

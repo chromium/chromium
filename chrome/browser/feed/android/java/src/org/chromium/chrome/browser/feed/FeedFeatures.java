@@ -31,12 +31,12 @@ public final class FeedFeatures {
     private static boolean sIsFirstFeedTabStickinessCheckSinceLaunch = true;
 
     /**
+     * @param profile the profile of the current user.
      * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
-     *         enterprise policy, or by flag. The value returned should not be cached as it may
-     * change.
+     *     enterprise policy, or by flag. The value returned should not be cached as it may change.
      */
-    public static boolean isFeedEnabled() {
-        return FeedServiceBridge.isEnabled() && isFeedEnabledByDSE();
+    public static boolean isFeedEnabled(Profile profile) {
+        return FeedServiceBridge.isEnabled() && isFeedEnabledByDSE(profile);
     }
 
     /**
@@ -57,12 +57,12 @@ public final class FeedFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
                 && isPrimaryAccountSignedIn
                 && !profile.isChild()
-                && isFeedEnabledByDSE();
+                && isFeedEnabledByDSE(profile);
     }
 
-    private static boolean isFeedEnabledByDSE() {
+    private static boolean isFeedEnabledByDSE(Profile profile) {
         return !ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()
-                || getPrefService().getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
+                || getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
     }
 
     public static boolean shouldUseWebFeedAwarenessIPH() {
@@ -73,7 +73,7 @@ public final class FeedFeatures {
                 && (awarenessStyleParam.equals("IPH") || awarenessStyleParam.isEmpty());
     }
 
-    public static boolean shouldUseNewIndicator() {
+    public static boolean shouldUseNewIndicator(Profile profile) {
         // Return true if we are not rate limited.
         if (ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
@@ -86,8 +86,8 @@ public final class FeedFeatures {
         if (ChromeFeatureList.getFieldTrialParamByFeature(
                                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
                         .equals("new_animation")
-                && !getPrefService().getBoolean(Pref.HAS_SEEN_WEB_FEED)) {
-            String timestamp = getPrefService().getString(Pref.LAST_BADGE_ANIMATION_TIME);
+                && !getPrefService(profile).getBoolean(Pref.HAS_SEEN_WEB_FEED)) {
+            String timestamp = getPrefService(profile).getString(Pref.LAST_BADGE_ANIMATION_TIME);
             long currentTime = System.currentTimeMillis();
             long parsedTime;
             try {
@@ -102,13 +102,14 @@ public final class FeedFeatures {
     }
 
     /** Updates the timestamp for the last time the new indicator was seen to now. */
-    public static void updateNewIndicatorTimestamp() {
-        getPrefService().setString(Pref.LAST_BADGE_ANIMATION_TIME, "" + System.currentTimeMillis());
+    public static void updateNewIndicatorTimestamp(Profile profile) {
+        getPrefService(profile)
+                .setString(Pref.LAST_BADGE_ANIMATION_TIME, "" + System.currentTimeMillis());
     }
 
     /** Updates that the following feed has been seen. */
-    public static void updateFollowingFeedSeen() {
-        getPrefService().setBoolean(Pref.HAS_SEEN_WEB_FEED, true);
+    public static void updateFollowingFeedSeen(Profile profile) {
+        getPrefService(profile).setBoolean(Pref.HAS_SEEN_WEB_FEED, true);
     }
 
     /**
@@ -121,11 +122,11 @@ public final class FeedFeatures {
         return commandLine.hasSwitch("feed-screenshot-mode");
     }
 
-    public static PrefService getPrefService() {
+    public static PrefService getPrefService(Profile profile) {
         if (sFakePrefServiceForTest != null) {
             return sFakePrefServiceForTest;
         }
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(profile);
     }
 
     public static void setFakePrefsForTest(PrefService fakePref) {
@@ -141,7 +142,7 @@ public final class FeedFeatures {
      * - indefinitely_persisted: tab choice is kept forever.
      * - reset_upon_chrome_restart: tab choice is reset upon Chrome relaunch.
      */
-    public static @StreamTabId int getFeedTabIdToRestore() {
+    public static @StreamTabId int getFeedTabIdToRestore(Profile profile) {
         String stickinessLogic =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED, FEED_TAB_STICKYNESS_LOGIC_PARAM);
@@ -149,30 +150,30 @@ public final class FeedFeatures {
         if (RESET_UPON_CHROME_RESTART.equals(stickinessLogic)) {
             if (sIsFirstFeedTabStickinessCheckSinceLaunch) {
                 sIsFirstFeedTabStickinessCheckSinceLaunch = false;
-                setLastSeenFeedTabId(StreamTabId.FOR_YOU);
+                setLastSeenFeedTabId(profile, StreamTabId.FOR_YOU);
                 return StreamTabId.FOR_YOU;
             }
-            return getLastSeenFeedTabId();
+            return getLastSeenFeedTabId(profile);
         }
         if (INDEFINITELY_PERSISTED.equals(stickinessLogic)) {
-            return getLastSeenFeedTabId();
+            return getLastSeenFeedTabId(profile);
         }
 
         // Default behavior (reset_for_every_new_ntp).
-        setLastSeenFeedTabId(StreamTabId.FOR_YOU);
+        setLastSeenFeedTabId(profile, StreamTabId.FOR_YOU);
         return StreamTabId.FOR_YOU;
     }
 
-    public static void setLastSeenFeedTabId(@StreamTabId int tabId) {
+    public static void setLastSeenFeedTabId(Profile profile, @StreamTabId int tabId) {
         // Note: the "first check" flag is updated here to make sure that if setLastSeenFeedTabId is
         // called before getFeedTabIdToRestore, the value set here is taken into account in by the
         // latter at least for some of the restore logic atlernatives.
         sIsFirstFeedTabStickinessCheckSinceLaunch = false;
-        getPrefService().setInteger(Pref.LAST_SEEN_FEED_TYPE, tabId);
+        getPrefService(profile).setInteger(Pref.LAST_SEEN_FEED_TYPE, tabId);
     }
 
-    private static @StreamTabId int getLastSeenFeedTabId() {
-        return getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+    private static @StreamTabId int getLastSeenFeedTabId(Profile profile) {
+        return getPrefService(profile).getInteger(Pref.LAST_SEEN_FEED_TYPE);
     }
 
     static void resetInternalStateForTesting() {

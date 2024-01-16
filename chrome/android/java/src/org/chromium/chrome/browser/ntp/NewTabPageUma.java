@@ -229,7 +229,7 @@ public class NewTabPageUma {
         } else if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)) {
             // Disabled when swapping NTP is enabled and the default search engine isn't Google.
             status = ContentSuggestionsDisplayStatus.DISABLED_BY_DSE;
-        } else if (!FeedFeatures.isFeedEnabled()) {
+        } else if (!FeedFeatures.isFeedEnabled(profile)) {
             status = ContentSuggestionsDisplayStatus.DISABLED;
         } else if (!UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
             // Articles are collapsed.

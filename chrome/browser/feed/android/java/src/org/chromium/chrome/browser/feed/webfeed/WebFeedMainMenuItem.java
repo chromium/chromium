@@ -213,10 +213,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
                                         mUrl,
                                         mTitle,
                                         WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU);
-                                PrefService prefs = FeedFeatures.getPrefService();
+                                PrefService prefs = FeedFeatures.getPrefService(mTab.getProfile());
                                 if (!prefs.getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
                                     prefs.setBoolean(Pref.ARTICLES_LIST_VISIBLE, true);
-                                    FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
+                                    FeedFeatures.setLastSeenFeedTabId(
+                                            mTab.getProfile(), StreamTabId.FOLLOWING);
                                 }
                             };
                     if (mRecommendedWebFeedName != null) {
