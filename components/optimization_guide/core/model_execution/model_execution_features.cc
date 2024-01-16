@@ -29,6 +29,10 @@ BASE_FEATURE(kExperimentalAIIPHPromoRampUp,
              "ExperimentalAIIPHPromoRampUp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kModelExecutionCapabilityDisable,
+             "ModelExecutionCapabilityDisable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature) {
   switch (feature) {
