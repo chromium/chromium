@@ -36,6 +36,26 @@ namespace performance_manager::resource_attribution {
 
 namespace {
 
+// Returns true if `resource_context` refers to a node that's been removed from
+// the PM graph.
+bool IsDeadContext(const ResourceContext& resource_context) {
+  return absl::visit(base::Overloaded{
+                         [](const FrameContext& context) {
+                           return context.GetFrameNode() == nullptr;
+                         },
+                         [](const PageContext& context) {
+                           return context.GetPageNode() == nullptr;
+                         },
+                         [](const ProcessContext& context) {
+                           return context.GetProcessNode() == nullptr;
+                         },
+                         [](const WorkerContext& context) {
+                           return context.GetWorkerNode() == nullptr;
+                         },
+                     },
+                     resource_context);
+}
+
 // Returns true if `result` is in the default-initialized state.
 bool IsEmptyCPUTimeResult(const CPUTimeResult& result) {
   if (result.metadata.measurement_time.is_null()) {
@@ -174,6 +194,14 @@ CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
     }
     results.emplace(context, QueryResult(result));
   }
+
+  // After a node is deleted its measurements should only be kept until used
+  // for one query result. This was that query.
+  std::erase_if(measurement_results_,
+                [](const std::pair<ResourceContext, CPUTimeResult>& entry) {
+                  return IsDeadContext(entry.first);
+                });
+
   return results;
 }
 

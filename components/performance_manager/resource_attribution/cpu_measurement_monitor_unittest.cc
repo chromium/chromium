@@ -1202,10 +1202,8 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(process_node);
     EXPECT_FALSE(process_node->GetProcess().IsValid());
 
-    // CPUMeasurementMonitor will continue to return the last measured usage of
-    // the process and its main frame.
-    // TODO(crbug.com/1410503): Capture the final CPU usage correctly, and after
-    // the main FrameNode is deleted, only cache it for the length of one query.
+    // CPUMeasurementMonitor will return the last measured usage of the process
+    // and its main frame for one query after the FrameNode is deleted.
     const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
 
     ASSERT_TRUE(
@@ -1222,8 +1220,11 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     cumulative_frame_cpu = new_frame_cpu;
   });
 
-  // Assign a new process to the same renderer. This should add the CPU usage of
-  // the new process to the existing CPU usage.
+  // Assign a new process to the same ProcessNode. This should add the CPU usage
+  // of the new process to the existing CPU usage of the process. The frame
+  // should NOT be included in the new result, since it's no longer live.
+  // (Navigating the renderer will create a new frame tree in that process.)
+  EXPECT_FALSE(main_rfh()->IsRenderFrameLive());
   EXPECT_TRUE(process()->MayReuseHost());
   RunInGraph(set_process_on_pm_sequence);
 
@@ -1241,11 +1242,7 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     EXPECT_GE(new_process_cpu, cumulative_process_cpu);
     cumulative_process_cpu = new_process_cpu;
 
-    ASSERT_TRUE(base::Contains(measurements, frame_context));
-    const base::TimeDelta new_frame_cpu =
-        get_cumulative_cpu(measurements, frame_context);
-    EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
-    cumulative_frame_cpu = new_frame_cpu;
+    EXPECT_FALSE(base::Contains(measurements, frame_context));
   });
 }
 
