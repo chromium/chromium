@@ -19,6 +19,7 @@ test("gcp_unittests") {
     "../gaiacp/gaia_credential_unittests.cc",
     "../gaiacp/gcp_utils_unittests.cc",
     "../gaiacp/gem_device_details_manager_unittests.cc",
+    "../gaiacp/os_gaia_user_manager_unittests.cc",
     "../gaiacp/reauth_credential_unittests.cc",
     "../gaiacp/user_policies_manager_unittests.cc",
     "../gaiacp/win_http_url_fetcher_unittests.cc",
