@@ -11,6 +11,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
+class Profile;
+
 namespace base {
 class HistogramTester;
 }  // namespace base
@@ -27,6 +29,9 @@ int RetryForHistogramUntilCountReached(
 // Builds a test models response.
 std::unique_ptr<optimization_guide::proto::GetModelsResponse>
 BuildGetModelsResponse();
+
+// Enables sign-in with the account having model execution capability.
+void EnableSigninAndModelExecutionCapability(Profile* profile);
 
 // Helper to receive modelinfo updates.
 class ModelFileObserver : public OptimizationTargetModelObserver {

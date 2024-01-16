@@ -7,7 +7,11 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace optimization_guide {
@@ -68,6 +72,16 @@ BuildGetModelsResponse() {
       "https://example.com/model");
 
   return get_models_response;
+}
+
+void EnableSigninAndModelExecutionCapability(Profile* profile) {
+  // Sign-in and enable account capability.
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSync);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 
 ModelFileObserver::ModelFileObserver() = default;

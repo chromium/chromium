@@ -25,6 +25,7 @@ class AccountCapabilitiesTestMutator {
   void set_is_opted_in_to_parental_supervision(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_can_use_chrome_ip_protection(bool value);
+  void set_can_use_model_execution_features(bool value);
   void set_is_allowed_for_machine_learning(bool value);
   void set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
       bool value);

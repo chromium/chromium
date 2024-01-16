@@ -49,6 +49,9 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Returned result as not enabled because feature was disabled by
              enterprise policy"/>
+  <int value="5"
+      label="Returned result as not enabled because model execution
+             capability was disabled for the user account"/>
 </enum>
 
 <enum name="FeaturesSettingsVisibilityResult">
@@ -60,6 +63,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Visible because field trial is enabled"/>
   <int value="5"
       label="Not visible because feature was disabled by enterprise policy"/>
+  <int value="6"
+      label="Not visible because model execution capability was disabled for
+             the user account"/>
 </enum>
 
 <enum name="HintCacheStoreEntryType">

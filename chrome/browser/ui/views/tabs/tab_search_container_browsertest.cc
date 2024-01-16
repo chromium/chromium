@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,9 +39,8 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   }
 
   void EnableOptGuide() {
-    signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        "test@example.com", signin::ConsentLevel::kSync);
+    optimization_guide::EnableSigninAndModelExecutionCapability(
+        browser()->profile());
 
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetInteger(
