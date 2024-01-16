@@ -10,8 +10,6 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: WebSQL in non-secure contexts will be available.
   value: true

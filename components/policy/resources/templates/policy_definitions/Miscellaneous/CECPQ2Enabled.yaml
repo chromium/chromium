@@ -13,8 +13,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Enable default CECPQ2 rollout process
   value: true

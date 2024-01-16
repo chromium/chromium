@@ -15,8 +15,6 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow pages to send synchronous XHR requests during page dismissal
   value: true

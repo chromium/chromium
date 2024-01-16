@@ -11,8 +11,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Enables <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph>
     methods to be invoked asynchronously
