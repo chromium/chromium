@@ -1576,6 +1576,14 @@ CookieMonster::InternalInsertPartitionedCookie(
     store_->AddCookie(*cc_ptr);
 
   CookiePartitionKey partition_key(cc->PartitionKey().value());
+
+  size_t n_bytes = NameValueSizeBytes(*cc);
+  num_partitioned_cookies_bytes_ += n_bytes;
+  bytes_per_cookie_partition_[partition_key] += n_bytes;
+  if (partition_key.nonce()) {
+    num_nonced_partitioned_cookie_bytes_ += n_bytes;
+  }
+
   PartitionedCookieMap::iterator partition_it =
       partitioned_cookies_.find(partition_key);
   if (partition_it == partitioned_cookies_.end()) {
@@ -1584,12 +1592,6 @@ CookieMonster::InternalInsertPartitionedCookie(
             .insert(PartitionedCookieMap::value_type(
                 std::move(partition_key), std::make_unique<CookieMap>()))
             .first;
-  }
-
-  size_t n_bytes = NameValueSizeBytes(*cc);
-  num_partitioned_cookies_bytes_ += n_bytes;
-  if (partition_key.nonce()) {
-    num_nonced_partitioned_cookie_bytes_ += n_bytes;
   }
 
   CookieMap::iterator cookie_it = partition_it->second->insert(
@@ -1924,6 +1926,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
 
   size_t n_bytes = NameValueSizeBytes(*cc);
   num_partitioned_cookies_bytes_ -= n_bytes;
+  bytes_per_cookie_partition_[*cc->PartitionKey()] -= n_bytes;
   if (CookiePartitionKey::HasNonce(cc->PartitionKey())) {
     num_nonced_partitioned_cookie_bytes_ -= n_bytes;
   }
@@ -2487,6 +2490,11 @@ bool CookieMonster::DoRecordPeriodicStats() {
         (num_partitioned_cookies_bytes_ -
          num_nonced_partitioned_cookie_bytes_) >>
             10);
+
+    for (const auto& it : bytes_per_cookie_partition_) {
+      base::UmaHistogramCounts100000("Cookie.CookiePartitionSizeKibibytes",
+                                     it.second >> 10);
+    }
   }
 
   return true;

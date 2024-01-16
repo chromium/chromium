@@ -100,6 +100,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.CookiePartitionSizeKibibytes" units="kibibytes"
+    expires_after="2024-07-12">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the sum of the sizes of the name and value of all
+    cookies in a single partition of the partitioned cookie jar. This metric is
+    recorded every 10 minutes and emits one event per partition. This metric is
+    only recorded when partitioned cookies are enabled.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.CookiePrefix" enum="CookiePrefix"
     expires_after="2024-06-30">
   <owner>estark@chromium.org</owner>

@@ -3756,6 +3756,11 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectUniqueSample("Cookie.CookiePartitionSizeKibibytes",
+                                        /*sample=*/0,
+                                        /*count=*/0);
   }
 
   {  // Add unpartitioned cookie.
@@ -3795,6 +3800,11 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectUniqueSample("Cookie.CookiePartitionSizeKibibytes",
+                                        /*sample=*/0,
+                                        /*count=*/0);
   }
 
   {  // Add unnonced partitioned cookie.
@@ -3835,6 +3845,11 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectUniqueSample("Cookie.CookiePartitionSizeKibibytes",
+                                        /*sample=*/2,
+                                        /*count=*/1);
   }
 
   {  // Add nonced partitioned cookie.
@@ -3876,6 +3891,14 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
         /*count=*/1);
+
+    // Partitioned cookie jar size per partition.
+    histogram_tester.ExpectBucketCount("Cookie.CookiePartitionSizeKibibytes",
+                                       /*sample=*/2,
+                                       /*count=*/1);
+    histogram_tester.ExpectBucketCount("Cookie.CookiePartitionSizeKibibytes",
+                                       /*sample=*/3,
+                                       /*count=*/1);
   }
 }
 
