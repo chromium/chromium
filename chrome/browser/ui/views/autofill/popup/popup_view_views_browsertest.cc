@@ -277,6 +277,22 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       NoScrollingForNonExcessiveHeightRootPopup) {
+  controller().set_suggestions(
+      {PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
+       PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+  ShowAndVerifyUi(/*popup_has_parent=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       NoScrollingForNonExcessiveHeightNonRootPopup) {
+  controller().set_suggestions(
+      {PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
+       PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+  ShowAndVerifyUi(/*popup_has_parent=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        ScrollingInRootPopupStickyFooter) {
   // Create many suggestions that don't fit the height and activate scrolling.
   std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);

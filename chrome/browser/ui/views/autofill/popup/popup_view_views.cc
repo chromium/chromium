@@ -793,6 +793,12 @@ void PopupViewViews::CreateChildViews() {
           /*selection_delegate=*/*this, current_line_number)));
     }
   }
+
+  // Adjust the scrollable area height. Make sure this adjustment always goes
+  // after changes that can affect `body_container_`'s size.
+  if (scroll_view_ && body_container_ && IsFooterScrollable()) {
+    scroll_view_->ClipHeightTo(0, body_container_->GetPreferredSize().height());
+  }
 }
 
 int PopupViewViews::AdjustWidth(int width) const {
