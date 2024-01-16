@@ -49,6 +49,10 @@ export class CredentialNoteElement extends CredentialNoteElementBase {
     return !this.note ? this.i18n('emptyNote') : this.note!;
   }
 
+  private noteIsEmpty_(): boolean {
+    return !this.note;
+  }
+
   private isNoteFullyVisible_(): boolean {
     return this.showNoteFully_ ||
         this.$.noteValue.scrollHeight === this.$.noteValue.offsetHeight;
