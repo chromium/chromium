@@ -7,6 +7,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_prefs.h"
@@ -80,6 +81,9 @@ constexpr char kFormZip[] = "form_zip";
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(
+      autofill::features::test::kAutofillServerCommunication);
+
   if ([self isRunningTest:@selector(testFillPasswordFieldsOnForm)] ||
       [self isRunningTest:@selector(testFillFieldOnFormWithSingleUsername)] ||
       [self isRunningTest:@selector(testFillFieldOnFormWithSinglePassword)]) {
@@ -329,8 +333,7 @@ constexpr char kFormZip[] = "form_zip";
 // Tests that tapping on an address related field opens the keyboard
 // accessory with the proper suggestion visible and that tapping on that
 // suggestion properly fills the related fields on the form.
-// TODO(crbug.com/1517915): Reenable after fixing.
-- (void)DISABLED_testFillAddressFieldsOnForm {
+- (void)testFillAddressFieldsOnForm {
   [self loadAddressPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
