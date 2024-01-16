@@ -96,14 +96,12 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
       const TextFragmentPaintInfo& fragment_paint_info,
       const FragmentItem& text_item,
       const PaintInfo& paint_info,
-      const ComputedStyle& style,
       const TextPaintStyle& text_style,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint);
 
   void PaintDecorationsOnlyLineThrough(const FragmentItem& text_item,
                                        const PaintInfo& paint_info,
-                                       const ComputedStyle& style,
                                        const TextPaintStyle& text_style,
                                        TextDecorationInfo& decoration_info);
 

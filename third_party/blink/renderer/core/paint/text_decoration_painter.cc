@@ -129,7 +129,7 @@ void TextDecorationPainter::PaintExceptLineThrough(
     ClipIfNeeded(state_saver);
 
     text_painter_.PaintDecorationsExceptLineThrough(
-        fragment_paint_info, text_item_, paint_info_, style_, text_style_,
+        fragment_paint_info, text_item_, paint_info_, text_style_,
         *decoration_info_, ~TextDecorationLine::kNone);
   }
 
@@ -147,7 +147,7 @@ void TextDecorationPainter::PaintOnlyLineThrough() {
     ClipIfNeeded(state_saver);
 
     text_painter_.PaintDecorationsOnlyLineThrough(
-        text_item_, paint_info_, style_, text_style_, *decoration_info_);
+        text_item_, paint_info_, text_style_, *decoration_info_);
   }
 
   step_ = kBegin;

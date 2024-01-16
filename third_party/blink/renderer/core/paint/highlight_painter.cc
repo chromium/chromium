@@ -739,7 +739,7 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
 
   text_painter_.PaintDecorationsExceptLineThrough(
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
-      fragment_item_, paint_info_, style, text_style, *decoration_info,
+      fragment_item_, paint_info_, text_style, *decoration_info,
       LineFor(marker_type));
 }
 
@@ -1158,8 +1158,8 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
 
     text_painter_.PaintDecorationsExceptLineThrough(
         fragment_paint_info_.Slice(part.range.from, part.range.to),
-        fragment_item_, paint_info_, *decoration_layer.style,
-        decoration_layer.text_style, *decoration_info, lines_to_paint);
+        fragment_item_, paint_info_, decoration_layer.text_style,
+        *decoration_info, lines_to_paint);
   }
 }
 
@@ -1221,9 +1221,9 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
       }
     }
 
-    text_painter_.PaintDecorationsOnlyLineThrough(
-        fragment_item_, paint_info_, *decoration_layer.style,
-        decoration_layer.text_style, *decoration_info);
+    text_painter_.PaintDecorationsOnlyLineThrough(fragment_item_, paint_info_,
+                                                  decoration_layer.text_style,
+                                                  *decoration_info);
   }
 }
 
