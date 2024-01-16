@@ -100,7 +100,7 @@
     width: 100%;
   }
 
-  iron-icon[icon='personalization-shared-illo:network_error'] {
+  iron-icon[icon^='personalization-shared-illo:'] {
     --iron-icon-width: 400px;
     --iron-icon-height: 177px;
     top: -24px;
@@ -117,7 +117,7 @@
 <template is="dom-if" if="[[showError_]]" restamp>
   <div class="error-container">
     <!-- TODO(b/319171051): Add other error images when available. -->
-    <iron-icon icon="personalization-shared-illo:network_error"></iron-icon>
+    <iron-icon icon$="[[getErrorIllo_(thumbnailResponseStatusCode_)]]"></iron-icon>
     <p class="error-message">[[getErrorMessage_(thumbnailResponseStatusCode_)]]</p>
   </div>
 </template>

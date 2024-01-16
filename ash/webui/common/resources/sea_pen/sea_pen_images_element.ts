@@ -100,6 +100,16 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     }
   }
 
+  private getErrorIllo_(statusCode: MantaStatusCode|null): string {
+    switch (statusCode) {
+      case MantaStatusCode.kNoInternetConnection:
+        return 'personalization-shared-illo:network_error';
+      default:
+        case MantaStatusCode.kNoInternetConnection:
+        return 'personalization-shared-illo:resource_error';
+    }
+  }
+
   private shouldShowThumbnailPlaceholders_(
       thumbnailsLoading: boolean, thumbnails: SeaPenThumbnail[]|null): boolean {
     // Use placeholders before and during loading thumbnails.
