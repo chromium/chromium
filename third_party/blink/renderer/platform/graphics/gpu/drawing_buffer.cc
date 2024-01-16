@@ -1899,6 +1899,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   GLenum texture_target = GL_TEXTURE_2D;
   GLuint texture_id = 0;
   bool created_mappable_si = false;
+
+  // The SharedImages created here are read to and written from by WebGL.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
