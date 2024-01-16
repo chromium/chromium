@@ -22,6 +22,12 @@ namespace {
 using QueryParams = internal::QueryParams;
 using QueryScheduler = internal::QueryScheduler;
 
+// The minimum delay between QueryOnce() calls for kMemorySummary resources.
+// This can only be updated in unit tests so doesn't need to be thread-safe.
+// Copied from ProcessMetricsDecorator::kMinImmediateRefreshDelay.
+// TODO(crbug.com/1471683): Manage timing centrally in QueryScheduler.
+base::TimeDelta g_min_memory_query_delay = base::Seconds(2);
+
 void AddScopedQueryToScheduler(QueryParams* query_params,
                                QueryScheduler* scheduler) {
   scheduler->AddScopedQuery(query_params);
@@ -40,6 +46,119 @@ void RequestResultsFromScheduler(
 }
 
 }  // namespace
+
+class ScopedResourceUsageQuery::ThrottledTimer {
+ public:
+  ThrottledTimer() = default;
+  ~ThrottledTimer() = default;
+
+  ThrottledTimer(const ThrottledTimer&) = delete;
+  ThrottledTimer& operator=(const ThrottledTimer&) = delete;
+
+  // Starts the timer to repeatedly query `params` after `delay`.
+  // `observer_list` will be notified with the results.
+  void StartTimer(base::TimeDelta delay,
+                  internal::QueryParams* params,
+                  scoped_refptr<ObserverList> observer_list);
+
+  // Sends the scheduler a request for query results for `params`.
+  // `observer_list` will be notified with the results. If `timer_fired` is
+  // true, this is invoked from the timer, otherwise it's invoked from
+  // QueryOnce().
+  void SendRequestToScheduler(internal::QueryParams* params,
+                              scoped_refptr<ObserverList> observer_list,
+                              bool timer_fired);
+
+ private:
+  // Returns true if SendRequestToScheduler should be called for `params`, false
+  // otherwise. This must be called on every request to update state.
+  bool ShouldSendRequest(internal::QueryParams* params, bool timer_fired);
+
+  base::RepeatingTimer timer_;
+  base::TimeTicks last_fire_time_;
+  base::TimeTicks next_fire_time_;
+  base::TimeTicks last_query_once_time_;
+};
+
+void ScopedResourceUsageQuery::ThrottledTimer::StartTimer(
+    base::TimeDelta delay,
+    internal::QueryParams* params,
+    scoped_refptr<ObserverList> observer_list) {
+  CHECK(!timer_.IsRunning());
+  CHECK(delay.is_positive());
+  // Unretained is safe because ScopedResourceUsageQuery owns both `this` and
+  // `params`.
+  timer_.Start(FROM_HERE, delay,
+               base::BindRepeating(&ThrottledTimer::SendRequestToScheduler,
+                                   base::Unretained(this),
+                                   base::Unretained(params), observer_list,
+                                   /*timer_fired=*/true));
+  next_fire_time_ = base::TimeTicks::Now() + delay;
+}
+
+void ScopedResourceUsageQuery::ThrottledTimer::SendRequestToScheduler(
+    internal::QueryParams* params,
+    scoped_refptr<ObserverList> observer_list,
+    bool timer_fired) {
+  if (ShouldSendRequest(params, timer_fired)) {
+    // Unretained is safe because the ScopedResourceUsageQuery destructor passes
+    // `params` to the scheduler sequence to delete.
+    QueryScheduler::CallWithScheduler(base::BindOnce(
+        &RequestResultsFromScheduler, base::Unretained(params),
+        base::BindOnce(&ScopedResourceUsageQuery::NotifyObservers,
+                       observer_list)));
+  }
+}
+
+bool ScopedResourceUsageQuery::ThrottledTimer::ShouldSendRequest(
+    internal::QueryParams* params,
+    bool timer_fired) {
+  if (!params->resource_types.Has(ResourceType::kMemorySummary)) {
+    // Only memory queries are throttled.
+    return true;
+  }
+
+  const auto now = base::TimeTicks::Now();
+  if (timer_fired) {
+    // Repeating queries aren't throttled, but need to save the current time to
+    // throttle QueryOnce().
+    CHECK(timer_.IsRunning());
+    last_fire_time_ = now;
+    next_fire_time_ = now + timer_.GetCurrentDelay();
+    return true;
+  }
+
+  // Check if this QueryOnce() should be throttled.
+  if (!last_query_once_time_.is_null() &&
+      now < last_query_once_time_ + g_min_memory_query_delay) {
+    // QueryOnce() called recently.
+    return false;
+  }
+  if (!last_fire_time_.is_null() &&
+      now < last_fire_time_ + g_min_memory_query_delay) {
+    // Timer fired recently.
+    return false;
+  }
+  if (!next_fire_time_.is_null() &&
+      now > next_fire_time_ - g_min_memory_query_delay) {
+    // Timer is going to fire soon.
+    return false;
+  }
+  last_query_once_time_ = now;
+  return true;
+}
+
+ScopedResourceUsageQuery::ScopedDisableMemoryQueryDelayForTesting::
+    ScopedDisableMemoryQueryDelayForTesting()
+    : previous_delay_(g_min_memory_query_delay) {
+  g_min_memory_query_delay = base::TimeDelta();
+}
+
+ScopedResourceUsageQuery::ScopedDisableMemoryQueryDelayForTesting::
+    ~ScopedDisableMemoryQueryDelayForTesting() {
+  CHECK(g_min_memory_query_delay.is_zero());
+  g_min_memory_query_delay = previous_delay_;
+}
 
 ScopedResourceUsageQuery::~ScopedResourceUsageQuery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,22 +192,13 @@ void ScopedResourceUsageQuery::RemoveObserver(QueryResultObserver* observer) {
 
 void ScopedResourceUsageQuery::Start(base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!timer_->IsRunning());
-  CHECK(delay.is_positive());
-  // The timer callback can't reference `this` because the class is movable.
-  // It's safe to bind the params even if `this` moves because `params_` points
-  // to non-movable memory, and the callback binds a refcounted copy of
-  // `observer_list_`. Unretained is safe because the destructor passes
-  // `params_` to the scheduler sequence to delete.
-  timer_->Start(
-      FROM_HERE, delay,
-      base::BindRepeating(&ScopedResourceUsageQuery::SendRequestToScheduler,
-                          base::Unretained(params_.get()), observer_list_));
+  throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
 }
 
 void ScopedResourceUsageQuery::QueryOnce() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SendRequestToScheduler(params_.get(), observer_list_);
+  throttled_timer_->SendRequestToScheduler(params_.get(), observer_list_,
+                                           /*timer_fired=*/false);
 }
 
 QueryParams* ScopedResourceUsageQuery::GetParamsForTesting() const {
@@ -96,27 +206,20 @@ QueryParams* ScopedResourceUsageQuery::GetParamsForTesting() const {
   return params_.get();
 }
 
+// static
+base::TimeDelta ScopedResourceUsageQuery::GetMinMemoryQueryDelayForTesting() {
+  return g_min_memory_query_delay;
+}
+
 ScopedResourceUsageQuery::ScopedResourceUsageQuery(
     base::PassKey<QueryBuilder>,
     std::unique_ptr<QueryParams> params)
     : params_(std::move(params)),
-      timer_(std::make_unique<base::RepeatingTimer>()) {
+      throttled_timer_(std::make_unique<ThrottledTimer>()) {
   // Unretained is safe because the destructor passes `params_` to the scheduler
   // sequence to delete.
   QueryScheduler::CallWithScheduler(base::BindOnce(
       &AddScopedQueryToScheduler, base::Unretained(params_.get())));
-}
-
-// static
-void ScopedResourceUsageQuery::SendRequestToScheduler(
-    internal::QueryParams* params,
-    scoped_refptr<ObserverList> observer_list) {
-  // Unretained is safe because the ScopedResourceUsageQuery destructor passes
-  // `params` to the scheduler sequence to delete.
-  QueryScheduler::CallWithScheduler(
-      base::BindOnce(&RequestResultsFromScheduler, base::Unretained(params),
-                     base::BindOnce(&ScopedResourceUsageQuery::NotifyObservers,
-                                    observer_list)));
 }
 
 // static

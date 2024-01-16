@@ -20,10 +20,6 @@
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 
-namespace base {
-class RepeatingTimer;
-}
-
 namespace performance_manager::resource_attribution {
 
 namespace internal {
@@ -79,6 +75,21 @@ class ScopedResourceUsageQuery {
   // Gives tests access to validate the implementation.
   internal::QueryParams* GetParamsForTesting() const;
 
+  // Returns the minimum delay between QueryOnce() calls for kMemorySummary
+  // resources.
+  static base::TimeDelta GetMinMemoryQueryDelayForTesting();
+
+  // Instantiate this to set the minimum delay between QueryOnce() calls for
+  // kMemorySummary resources to 0 during a test.
+  class ScopedDisableMemoryQueryDelayForTesting {
+   public:
+    ScopedDisableMemoryQueryDelayForTesting();
+    ~ScopedDisableMemoryQueryDelayForTesting();
+
+   private:
+    base::TimeDelta previous_delay_;
+  };
+
   // Private constructor for QueryBuilder. Use QueryBuilder::CreateScopedQuery()
   // to create a query.
   ScopedResourceUsageQuery(base::PassKey<QueryBuilder>,
@@ -91,9 +102,7 @@ class ScopedResourceUsageQuery {
 
   FRIEND_TEST_ALL_PREFIXES(ResourceAttrQueriesPMTest, ScopedQueryIsMovable);
 
-  // Sends the scheduler a request for query results.
-  static void SendRequestToScheduler(internal::QueryParams* params,
-                                     scoped_refptr<ObserverList> observer_list);
+  class ThrottledTimer;
 
   // Notifies `observer_list` that `results` were received.
   static void NotifyObservers(scoped_refptr<ObserverList> observer_list,
@@ -108,10 +117,12 @@ class ScopedResourceUsageQuery {
   scoped_refptr<ObserverList> observer_list_ =
       base::MakeRefCounted<ObserverList>();
 
-  // Timer used for repeating queries. This is in a pointer because
-  // RepeatingTimer isn't movable.
+  // A base::RepeatingTimer used to schedule repeating queries, and some
+  // tracking data to throttle QueryOnce() calls so they don't interfere. This
+  // is in a pointer because ScopedResourceUsageQuery is movable but
+  // RepeatingTimer isn't.
   // TODO(crbug.com/1471683): Manage timing centrally in QueryScheduler.
-  std::unique_ptr<base::RepeatingTimer> timer_
+  std::unique_ptr<ThrottledTimer> throttled_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
