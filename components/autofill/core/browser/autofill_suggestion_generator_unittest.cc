@@ -792,6 +792,19 @@ class AutofillLabelSuggestionGeneratorTest
     : public AutofillSuggestionGeneratorTest,
       public testing::WithParamInterface<FieldType> {
  public:
+  std::u16string GetFullFormFillingLabel(const AutofillProfile& profile) {
+    // Phone fields are a snow flake, they contain both `NAME_FULL` and
+    // `ADDRESS_HOME_LINE1`.
+    const std::u16string label_applied_to_phone_fields =
+        profile.GetRawInfo(NAME_FULL) + u", " +
+        profile.GetRawInfo(ADDRESS_HOME_LINE1);
+    return GetTriggeringFieldType() == ADDRESS_HOME_STREET_ADDRESS
+               ? profile.GetRawInfo(NAME_FULL)
+           : GetTriggeringFieldType() == PHONE_HOME_WHOLE_NUMBER
+               ? label_applied_to_phone_fields
+               : profile.GetRawInfo(ADDRESS_HOME_LINE1);
+  }
+
   FieldType GetTriggeringFieldType() const { return GetParam(); }
 
  private:
@@ -811,20 +824,10 @@ INSTANTIATE_TEST_SUITE_P(AutofillSuggestionGeneratorTest,
 TEST_P(
     AutofillLabelSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsHaveCorrectLabels) {
-  FieldType trigerring_field_type = GetTriggeringFieldType();
   AutofillProfile profile = test::GetFullProfile();
-
-  // Phone fields are a snow flake, they contain both `NAME_FULL` and
-  // `ADDRESS_HOME_LINE1`.
-  const std::u16string label_applied_to_phone_fields =
-      profile.GetRawInfo(NAME_FULL) + u", " +
-      profile.GetRawInfo(ADDRESS_HOME_LINE1);
+  FieldType trigerring_field_type = GetTriggeringFieldType();
   const std::u16string full_form_filling_label =
-      trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
-          ? profile.GetRawInfo(NAME_FULL)
-      : trigerring_field_type == PHONE_HOME_WHOLE_NUMBER
-          ? label_applied_to_phone_fields
-          : profile.GetRawInfo(ADDRESS_HOME_LINE1);
+      GetFullFormFillingLabel(profile);
 
   EXPECT_THAT(suggestion_generator()->CreateSuggestionsFromProfiles(
                   {&profile},
@@ -840,7 +843,6 @@ TEST_P(
 TEST_P(
     AutofillLabelSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_FullFormFilling_SuggestionsNeedMoreLabelsForDifferentiation) {
-  FieldType trigerring_field_type = GetTriggeringFieldType();
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = test::GetFullProfile();
   profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
@@ -848,17 +850,9 @@ TEST_P(
 
   // The only difference between the two profiles is the email address.
   // That's why the email address is part of the differentating label.
-  // Note that phone fields are a snow flake, they contain both `NAME_FULL` and
-  // `ADDRESS_HOME_LINE1`.
-  const std::u16string label_applied_to_phone_fields =
-      profile1.GetRawInfo(NAME_FULL) + u", " +
-      profile1.GetRawInfo(ADDRESS_HOME_LINE1);
+  FieldType trigerring_field_type = GetTriggeringFieldType();
   const std::u16string full_form_filling_label =
-      (trigerring_field_type == ADDRESS_HOME_STREET_ADDRESS
-           ? profile1.GetRawInfo(NAME_FULL)
-       : trigerring_field_type == PHONE_HOME_WHOLE_NUMBER
-           ? label_applied_to_phone_fields
-           : profile1.GetRawInfo(ADDRESS_HOME_LINE1)) +
+      GetFullFormFillingLabel(profile1) +
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
 
   EXPECT_THAT(
@@ -875,6 +869,39 @@ TEST_P(
               &Suggestion::labels,
               std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
                   full_form_filling_label + u"pham@gmail.com")}}))));
+}
+
+// The logic which adds the country as a differentating label is slightly
+// different than the logic which adds any other differentating label. Since the
+// country is the last candidate for a differentiating label, this test also
+// prevents random label behaviour (such as non-differentiating label being
+// chosen or label not showing at all).
+TEST_P(
+    AutofillLabelSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_FullFormFilling_CountryIsChosenAsDifferentatingLabel) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = profile1;
+  profile2.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CH");
+
+  FieldType trigerring_field_type = GetTriggeringFieldType();
+  const std::u16string full_form_filling_label =
+      GetFullFormFillingLabel(profile1) +
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
+          /*last_targeted_fields=*/absl::nullopt, trigerring_field_type,
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(
+              &Suggestion::labels,
+              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
+                  full_form_filling_label + u"United States")}})),
+          AllOf(testing::Field(
+              &Suggestion::labels,
+              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
+                  full_form_filling_label + u"Switzerland")}}))));
 }
 
 class AutofillChildrenSuggestionGeneratorTest

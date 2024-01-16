@@ -88,18 +88,8 @@ const std::array<FieldType, 7> kStructuredDataTypes = {
 // Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
 // first, middle, and last name field types, and groups phone number types
 // similarly.
-FieldType GetStorableTypeCollapsingGroups(FieldType type) {
+FieldType GetStorableTypeCollapsingGroupsForPartialType(FieldType type) {
   FieldType storable_type = AutofillType(type).GetStorableType();
-  // TODO(crbug.com/1459990): Clean up and update documentation (including where
-  // this is called) when feature is launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable) &&
-      (storable_type == ADDRESS_HOME_LINE1 ||
-       storable_type == ADDRESS_HOME_LINE2 ||
-       storable_type == ADDRESS_HOME_STREET_ADDRESS)) {
-    return ADDRESS_HOME_LINE1;
-  }
-
   if (GroupTypeOfFieldType(storable_type) == FieldTypeGroup::kName) {
     return NAME_FULL;
   }
@@ -109,6 +99,35 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type) {
   }
 
   return storable_type;
+}
+
+// Like `GetStorableTypeCollapsingGroupsForPartialType()`, but also similarly
+// groups types which include address line 1.
+//
+// `GetStorableTypeCollapsingGroups()` serves this purpose:
+// If `ADDRESS_HOME_LINE2` is an excluded field, we also want to exclude
+// `ADDRESS_HOME_STREET_ADDRESS` and `ADDRESS_HOME_LINE1`, because they don't
+// add extra relevant information.
+// Names and phone numbers also behave like this for the same reason. i.e. if
+// `NAME_FIRST` is excluded, we also exclude `NAME_LAST`.
+//
+// `GetStorableTypeCollapsingGroupsForPartialType()` serves the purpose of
+// including `NAME_FULL` in the label candidates, as a last resort, if a partial
+// name field is excluded. Similar for phone numbers. For more details, check
+// the comment where `GetStorableTypeCollapsingGroupsForPartialType()` is used.
+// This does not apply to `ADDRESS_HOME_LINE1`, because if a field is
+// `ADDRESS_HOME_STREET_ADDRESS` and we don't want to accidentally include back
+// `ADDRESS_HOME_LINE1` in the label candidates.
+FieldType GetStorableTypeCollapsingGroups(FieldType type) {
+  FieldType storable_type = AutofillType(type).GetStorableType();
+  if ((storable_type == ADDRESS_HOME_LINE1 ||
+       storable_type == ADDRESS_HOME_LINE2 ||
+       storable_type == ADDRESS_HOME_STREET_ADDRESS) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
+    return ADDRESS_HOME_LINE1;
+  }
+  return GetStorableTypeCollapsingGroupsForPartialType(type);
 }
 
 // Returns a value that represents specificity/privacy of the given type. This
@@ -260,15 +279,17 @@ void GetFieldsForDistinguishingProfiles(
   // `NAME_FULL` or `PHONE_HOME_WHOLE_NUMBER` in the list of distinguishing
   // fields as a last-ditch fallback. This allows us to distinguish between
   // profiles that are identical except for the name or phone number.
+  // TODO(b/320475288): Clean up this special case. It might be possible to just
+  // append `PHONE_HOME_WHOLE_NUMBER` at the end.
   for (FieldType excluded_field : excluded_fields) {
     FieldType effective_excluded_type =
-        GetStorableTypeCollapsingGroups(excluded_field);
+        GetStorableTypeCollapsingGroupsForPartialType(excluded_field);
     if (excluded_field == effective_excluded_type) {
       continue;
     }
     for (const FieldType& it : *suggested_fields) {
-      if (it != excluded_field &&
-          GetStorableTypeCollapsingGroups(it) == effective_excluded_type) {
+      if (it != excluded_field && GetStorableTypeCollapsingGroupsForPartialType(
+                                      it) == effective_excluded_type) {
         distinguishing_fields->push_back(effective_excluded_type);
         break;
       }
