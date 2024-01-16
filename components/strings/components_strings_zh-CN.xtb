@@ -268,12 +268,15 @@
 <translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" />，您需要输入此验证码，才能继续访问 <ph name="TOP_ORIGIN" />。</translation>
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">输入 3 个或更多字词，即可获得写作帮助</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">清洁服务</translation>
 <translation id="1475299637784133125">想要查看浏览器版本？请访问</translation>
 <translation id="1476595624592550506">更改您的密码</translation>
 <translation id="1482879811280872320">骑车</translation>
 <translation id="1483493594462132177">发送</translation>
+<translation id="1484449009683144042">这是一款实验性 AI 写作辅助功能，并非始终准确无误。
+    <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">政策推送：</translation>
 <translation id="14938948731065592">计算机外围设备</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
@@ -419,6 +422,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我们如何使用这些数据<ph name="END_BOLD" />：Chrome 会在您浏览时记录您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您的若干主题（而非您的浏览记录），以便向您展示个性化广告。</translation>
 <translation id="1746113442205726301">图片沿 Y 轴位移</translation>
 <translation id="1746531169546376413">0 度</translation>
+<translation id="1748225549612934682">必须缩短文字，才能获取写作帮助</translation>
 <translation id="1751544761369730824">删除网站 <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">信箱 8</translation>
 <translation id="1753068535428855445">约会与交友</translation>
@@ -872,6 +876,7 @@
 <translation id="2677696497921480781">生日与命名日</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2678468611080193228">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
+<translation id="2686919536310834199">针对“帮我写”功能发送反馈。</translation>
 <translation id="2687555958734450033">最适合</translation>
 <translation id="2688186765492306706">500 x 760 毫米</translation>
 <translation id="2688969097326701645">是的，继续</translation>
@@ -2045,6 +2050,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> 想使用您的摄像头和麦克风</translation>
 <translation id="5035135400558156732">园艺</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">请重新登录，然后返回此标签页以获取写作帮助</translation>
 <translation id="5039762155821394373">字号</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>
@@ -2462,6 +2468,8 @@
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903264686717710770">标题：</translation>
 <translation id="5904360430676679685">家庭与人际关系</translation>
+<translation id="5907669856855422186">您的文字和网页内容会发送给 Google，并可能会用于改进此功能。
+  <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
 <translation id="5910140988253729859">撤消自动填充</translation>
 <translation id="5911020115933784199">活动与演出</translation>

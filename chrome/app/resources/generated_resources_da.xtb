@@ -142,6 +142,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1102790815296970136">Se "<ph name="PERSONALIZED_MEMORY_TITLE" />" og andre minder her</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Del mikrofon</translation>
+<translation id="110850812463801904">Opret manuelt forbindelse til OneDrive</translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1110155001042129815">Vent</translation>
@@ -517,6 +518,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1397594434718759194">Da du er logget ind i Chrome på disse enheder, kan du bruge dem som sikkerhedsnøgler.</translation>
 <translation id="1398853756734560583">Maksimér</translation>
 <translation id="139911022479327130">Lås din telefon op, og bekræft din identitet</translation>
+<translation id="1399261165075500043">Servicevilkårene for Google Play kan ikke indlæses</translation>
 <translation id="1401216725754314428">Få flere oplysninger om relaterede websites på en ny fane</translation>
 <translation id="1401308693935339022">Brug placering. Tillad, at apps og tjenester med placeringstilladelse kan bruge denne enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>
 <translation id="1402426911829176748">Opretter forbindelse til din enhed</translation>
@@ -1267,6 +1269,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1940546824932169984">Tilsluttede enheder</translation>
 <translation id="1941410638996203291">Starttidspunkt: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
+<translation id="1941685451584875710">Din administrator har konfigureret din konto til automatisk at oprette forbindelse til Microsoft OneDrive, men noget gik galt.</translation>
 <translation id="194174710521904357">Du har givet dette website midlertidig tilladelse til at bruge tredjepartscookies, hvilket betyder, at browserbeskyttelsen er mindre, men at der er større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
 <translation id="1941995177877935582">Vis tastaturtilknytning</translation>
 <translation id="1942128823046546853">Læse og redigere alle dine data på alle websites</translation>
@@ -4308,6 +4311,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4291265871880246274">Dialogboks for login</translation>
 <translation id="429234155571566255">disse opskrifter, du har set for nylig</translation>
 <translation id="429312253194641664">Et website afspiller medier</translation>
+<translation id="4294392694389031609"><ph name="FILE_NAME" /> er blevet slettet fra downloadhistorikken, men filerne findes stadig på din enhed</translation>
 <translation id="4295072614469448764">Appen er tilgængelig i din terminal. Der vises muligvis også et ikon på din appliste.</translation>
 <translation id="4295979599050707005">Log ind igen for at bekræfte, at din konto, <ph name="USER_EMAIL" />, kan bruges sammen med websites, apps og udvidelser i Chrome og Google Play. Du kan også fjerne denne konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Installerede og streamede apps via <ph name="APP_NAME" /></translation>
@@ -4551,6 +4555,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4487489714832036847">Chromebooks bruger apps i stedet for traditionel software. Få apps til produktivitet, underholdning og meget mere.</translation>
 <translation id="4488257340342212116">Har tilladelse til at bruge dit kamera</translation>
 <translation id="4490086832405043258">Brug proxyindstillingerne for ChromeOS på denne profil.</translation>
+<translation id="4490798467014431984">Udvidelser er ikke tilladt på dette website</translation>
 <translation id="449126573531210296">Kryptér synkroniserede adgangskoder med din Google-konto</translation>
 <translation id="449232563137139956">Websites viser normalt billeder som illustration, f.eks. billeder til netbutikker eller nyhedsartikler</translation>
 <translation id="4492698018379445570">Find ud af, hvad du har føjet til dine indkøbskurve, og gå til kassen, når du er klar</translation>
@@ -4586,6 +4591,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4513872120116766993">Skriveforslag</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4515872537870654449">Kontakt Dell for at få service. Dockingstationen slukker, hvis blæseren ikke fungerer.</translation>
+<translation id="4516008165284813420">Sørg for, at din <ph name="DEVICE_TYPE" /> har forbindelse til internettet, og prøv igen. Du kan også gå til play.google.com/about/play-terms på en anden enhed.</translation>
 <translation id="4518840066030486079">Stilart for tilstand for Shift-tast</translation>
 <translation id="4519331665958994620">Websites kan anmode om tilladelse til at bruge dit kamera</translation>
 <translation id="4519605771716872386">Filsynkronisering er aktiveret</translation>
@@ -6641,6 +6647,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6153439704237222699">Få flere oplysninger om Do Not Track</translation>
 <translation id="6154240335466762404">Fjern alle porte</translation>
 <translation id="615436196126345398">Protokol</translation>
+<translation id="6154739047827675957">Konfigurationen af OneDrive mislykkedes</translation>
 <translation id="6155141482566063812">En fane i baggrunden deler din skærm</translation>
 <translation id="6156323911414505561">Vis bogmærkelinjen</translation>
 <translation id="6156863943908443225">Scriptcache</translation>
@@ -7629,7 +7636,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="694168622559714949">Din administrator har angivet et standardsprog, der ikke kan ændres.</translation>
 <translation id="6941937518557314510">Log ind på <ph name="TOKEN_NAME" /> for at give <ph name="HOST_NAME" /> autorisation med dit certifikat.</translation>
 <translation id="6943060957016121200">Aktivér Automatisk netdeling</translation>
-<translation id="6943176775188458830">Annuller udskrivning</translation>
 <translation id="6943939122536910181">Forbindelsen til <ph name="DEVICE" /> er afbrudt</translation>
 <translation id="6944708469742828051">Denne adgangsnøgle gemmes kun i Windows Hello</translation>
 <translation id="6944750221184785444">Denne profil kunne ikke installeres. Kontakt dit mobilselskab for at få teknisk support.</translation>
@@ -9893,6 +9899,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8689998525144040851">100</translation>
 <translation id="8690129572193755009">Websites kan anmode om tilladelse til at håndtere protokoller</translation>
 <translation id="869144235543261764">Denne fane afspiller en video i tilstanden med integreret billede</translation>
+<translation id="869167754614449887"><ph name="FILE_NAME" /> er blevet slettet fra downloadhistorikken</translation>
 <translation id="8692107307702113268">Adgangskoden er på mere end 1.000 tegn</translation>
 <translation id="8693639060656817812">Få flere oplysninger om tilgængeligheden af Sporingsbeskyttelse</translation>
 <translation id="8694596275649352090">Lås, når enheden skifter til dvaletilstand, eller låget lukkes</translation>

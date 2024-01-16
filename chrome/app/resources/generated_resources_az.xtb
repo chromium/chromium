@@ -2072,6 +2072,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2540449034743108469">Artırma fəaliyyətlərini dinləmək üçün "Başladın" seçiminə klikləyin</translation>
 <translation id="2540651571961486573">Xəta baş verdi. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Tam ekran yayımı optimallaşdırılsın?</translation>
+<translation id="2541343621592284735">Kamera və mikrofona icazə verilmir</translation>
 <translation id="2541706104884128042">Yeni yuxu vaxtı ayarlandı</translation>
 <translation id="2542050502251273923">Şəbəkə bağlantı meneceri və ff_debug istifadə edən digər xidmətlərin sazlama səviyyəsini ayarlayır.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" icazələri bu tətbiqə də aid ediləcək. <ph name="MANAGE_LINK" />}other{"<ph name="APP_NAME" />" icazələri bu tətbiqə də aid ediləcək. <ph name="MANAGE_LINK" />}}</translation>
@@ -3144,6 +3145,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3406605057700382950">Əlfəcin panelini göstərin</translation>
 <translation id="3407392651057365886">Daha çox səhifə əvvəlcədən yüklənir. Səhifələr başqa saytlar tərəfindən tələb edildikdə Google serverləri vasitəsilə əvvəlcədən yüklənə bilər.</translation>
 <translation id="3407967630066378878">Barmaq izini ayarlamaq üçün uşağınızdan bu <ph name="DEVICE_TYPE" /> cihazının sol tərəfində olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
+<translation id="3408555740610481810">Kamera və mikrofon istifadə edilir</translation>
 <translation id="3409513286451883969">&amp;Seçilən hissəni <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="3409785640040772790">Xəritə</translation>
 <translation id="3412265149091626468">Seçimə Keçin</translation>
@@ -3404,6 +3406,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3617062258679844578">Klikləmək üçün taçpedə basmaq əvəzinə toxunun</translation>
 <translation id="3617891479562106823">Arxa fonlar əlçatan deyil. Sonra yenidən cəhd edin.</translation>
 <translation id="3618286417582819036">Xəta oldu</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> Google Parol Menecerindən istifadə etdikdə istifadəçi adı və parolunuzdan istifadə edə bilər. Giriş üçün <ph name="WEBSITE" /> veb-saytına daxil olmaq lazımdır.</translation>
 <translation id="3619115746895587757">Kappuçino</translation>
 <translation id="3619294456800709762">Saytlar şəkildə şəkil rejiminə avtomatik daxil ola bilər</translation>
 <translation id="3620136223548713675">Coğrafi məkan</translation>
@@ -7605,7 +7608,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="694168622559714949">Administratorunuz dəyişdirilə bilməyən bir defolt dil təyin edib.</translation>
 <translation id="6941937518557314510">Sertifikatlarınızla <ph name="HOST_NAME" /> saytını doğrulamaq üçün <ph name="TOKEN_NAME" /> üzərinə daxil olun.</translation>
 <translation id="6943060957016121200">Cəld modemi aktiv edin</translation>
-<translation id="6943176775188458830">Çapetməni ləğv edin</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> ilə bağlantı kəsildi</translation>
 <translation id="6944708469742828051">Bu giriş açarı yalnız Windows Hello'da yadda saxlanılacaq</translation>
 <translation id="6944750221184785444">Bu profili quraşdırmaq olmur. Texniki dəstək üçün operator ilə əlaqə saxlayın.</translation>
@@ -7908,6 +7910,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7189965711416741966">Barmaq izi əlavə edildi.</translation>
 <translation id="7191063546666816478">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> və digər <ph name="NUMBER_OF_OTHER_APPS" /> tətbiqdə açılacaq.</translation>
 <translation id="7191159667348037">Naməlum Printer (USB)</translation>
+<translation id="7191632649590906354">Ailə üzvləri Google Parol Menecerindən istifadə etdikdə istifadəçi adı və parolunuzdan istifadə edə bilərlər. Giriş üçün <ph name="WEBSITE" /> veb-saytına daxil olmaq lazımdır.</translation>
 <translation id="7193051357671784796">Bu tətbiqi təşkilatınız əlavə edib. Quraşdırmanı tamamlamaq üçün tətbiqi yenidən başladın.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> ünvanında heç bir parol yadda saxlanmadı</translation>
 <translation id="7193663868864659844">Təklif edilən qruplar üçün rəy göndərin</translation>

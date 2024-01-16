@@ -3766,7 +3766,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3877075909000773256">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_NAME" />, quien comparte contenido con la cuenta <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">No se puede copiar desde este sitio</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
-<translation id="3880513902716032002">Algunas de las páginas que visitas están precargadas</translation>
+<translation id="3880513902716032002">Se precargan algunas de las páginas que visitas</translation>
 <translation id="3883482240657453056">Obtener descuentos para <ph name="MERCHANT_NAME_1" /> y <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">El administrador gestiona las actualizaciones</translation>
@@ -7607,7 +7607,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="694168622559714949">Tu administrador configuró un idioma predeterminado, el cual no puede modificarse.</translation>
 <translation id="6941937518557314510">Accede a <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
 <translation id="6943060957016121200">Habilitar la Conexión instantánea mediante dispositivo móvil</translation>
-<translation id="6943176775188458830">Cancelar impresión</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6944708469742828051">Esta llave de acceso solo se guardará en Windows Hello</translation>
 <translation id="6944750221184785444">No se puede instalar este perfil. Para obtener asistencia técnica, comunícate con tu operador.</translation>

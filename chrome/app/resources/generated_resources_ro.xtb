@@ -140,6 +140,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1102790815296970136">Vezi <ph name="PERSONALIZED_MEMORY_TITLE" /> și alte amintiri aici</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Permite accesul la microfon</translation>
+<translation id="110850812463801904">Conectează-te manual la OneDrive</translation>
 <translation id="1108600514891325577">&amp;Oprește</translation>
 <translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1110155001042129815">Așteaptă</translation>
@@ -515,6 +516,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1397594434718759194">Te-ai conectat la Chrome pe aceste dispozitive, prin urmare le poți folosi drept chei de securitate.</translation>
 <translation id="1398853756734560583">Maximizează</translation>
 <translation id="139911022479327130">Deblochează telefonul și confirmă-ți identitatea</translation>
+<translation id="1399261165075500043">Nu pot să încarc Termenii și condițiile Google Play</translation>
 <translation id="1401216725754314428">Află mai multe despre site-urile conexe într-o filă nouă</translation>
 <translation id="1401308693935339022">Folosește locația. Permite aplicațiilor și serviciilor cu permisiune pentru locație să folosească locația acestui dispozitiv. Google poate colecta periodic date despre locație și le poate folosi în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
 <translation id="1402426911829176748">Se conectează la dispozitiv</translation>
@@ -1255,6 +1257,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1940546824932169984">Dispozitive conectate</translation>
 <translation id="1941410638996203291">Ora de începere: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versiune: <ph name="APP_VERSION" /></translation>
+<translation id="1941685451584875710">Administratorul ți-a configurat contul pentru a se conecta automat la Microsoft OneDrive, dar a apărut o eroare.</translation>
 <translation id="194174710521904357">Ai permis temporar acestui site să utilizeze cookie-uri terță parte, ceea ce înseamnă mai puțină protecție la navigare, dar există șanse mai mari ca funcțiile site-ului să ruleze conform așteptărilor.</translation>
 <translation id="1941995177877935582">Afișează maparea tastelor</translation>
 <translation id="1942128823046546853">să citească și să modifice toate datele de pe toate site-urile</translation>
@@ -2074,6 +2077,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2540449034743108469">Apasă „Pornește” ca să asculți activitățile extensiei</translation>
 <translation id="2540651571961486573">A apărut o eroare. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Optimizezi proiectarea pe ecran complet?</translation>
+<translation id="2541343621592284735">Accesul la camera foto și microfon nu este permis</translation>
 <translation id="2541706104884128042">A fost setată o nouă oră de culcare</translation>
 <translation id="2542050502251273923">Setează nivelul de remediere a erorilor al managerului conexiunilor de rețea și al altor servicii folosind ff_debug.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> se vor acorda și pentru această aplicație. <ph name="MANAGE_LINK" />}few{Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> se vor acorda și pentru aceste aplicații. <ph name="MANAGE_LINK" />}other{Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> se vor acorda și pentru aceste aplicații. <ph name="MANAGE_LINK" />}}</translation>
@@ -3146,6 +3150,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3406605057700382950">&amp;Afișați bara de marcaje</translation>
 <translation id="3407392651057365886">Mai multe pagini sunt preîncărcate. Este posibil ca paginile să fie preîncărcate prin serverele Google atunci când alte site-uri solicită acest lucru.</translation>
 <translation id="3407967630066378878">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în partea stângă a acestui <ph name="DEVICE_TYPE" />. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3408555740610481810">Camera foto și microfonul sunt în uz</translation>
 <translation id="3409513286451883969">&amp;Tradu selecția în <ph name="LANGUAGE" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Accesează selecția</translation>
@@ -3406,6 +3411,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3617062258679844578">Pentru a da clic, atinge touchpadul în loc să apeși pe el</translation>
 <translation id="3617891479562106823">Fundalurile nu sunt disponibile. Încearcă din nou mai târziu.</translation>
 <translation id="3618286417582819036">A apărut o eroare</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> îți poate folosi acum numele de utilizator și parola când folosește Managerul de parole Google. Spune-i să acceseze <ph name="WEBSITE" /> pentru a se conecta.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619294456800709762">Site-urile pot intra automat în modul picture-in-picture</translation>
 <translation id="3620136223548713675">Localizarea geografică</translation>
@@ -4293,6 +4299,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4291265871880246274">Caseta de dialog pentru conectare</translation>
 <translation id="429234155571566255">aceste rețete afișate recent</translation>
 <translation id="429312253194641664">Un site redă fișiere media</translation>
+<translation id="4294392694389031609"><ph name="FILE_NAME" /> s-a șters din istoricul descărcărilor, dar este încă pe dispozitivul tău</translation>
 <translation id="4295072614469448764">Aplicația este disponibilă pe terminal. Este posibil ca Lansatorul să conțină și o pictogramă.</translation>
 <translation id="4295979599050707005">Conectează-te din nou pentru a verifica dacă contul tău <ph name="USER_EMAIL" /> poate fi folosit cu site-uri, aplicații și extensii în Chrome și Google Play. Poți și să elimini acest cont. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicații instalate și redate în stream de la <ph name="APP_NAME" /></translation>
@@ -4536,6 +4543,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4487489714832036847">Chromebookurile folosesc aplicații în loc de software tradițional. Descarcă aplicații pentru productivitate, divertisment și altele.</translation>
 <translation id="4488257340342212116">Au permisiunea de a folosi camera foto</translation>
 <translation id="4490086832405043258">Folosește setările proxy din sistemul de operare Chrome pentru acest profil.</translation>
+<translation id="4490798467014431984">Extensiile nu sunt permise pe acest site</translation>
 <translation id="449126573531210296">Criptează parolele sincronizate folosind Contul Google</translation>
 <translation id="449232563137139956">Site-urile afișează de obicei imagini pentru ilustrare, de exemplu, fotografii pentru magazine online sau articole de știri</translation>
 <translation id="4492698018379445570">Vezi ce ai adăugat în coșurile de cumpărături și finalizează achiziția când ești gata</translation>
@@ -4570,6 +4578,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4513872120116766993">Scriere predictivă</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4515872537870654449">Contactează Dell pentru service. Dispozitivul de andocare se va închide dacă ventilatorul nu funcționează.</translation>
+<translation id="4516008165284813420">Verifică dacă <ph name="DEVICE_TYPE" /> este conectat la internet și încearcă din nou În plus, poți accesa play.google.com/about/play-terms de pe alt dispozitiv.</translation>
 <translation id="4518840066030486079">Stilul modului pentru tasta Shift</translation>
 <translation id="4519331665958994620">Site-urile pot solicita permisiunea de a folosi camera</translation>
 <translation id="4519605771716872386">Sincronizarea fișierelor este activată</translation>
@@ -6625,6 +6634,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6153439704237222699">Află mai multe despre Do Not Track</translation>
 <translation id="6154240335466762404">Elimină toate porturile</translation>
 <translation id="615436196126345398">Protocol</translation>
+<translation id="6154739047827675957">Configurarea OneDrive nu a reușit</translation>
 <translation id="6155141482566063812">O filă din fundal permite accesul la ecran</translation>
 <translation id="6156323911414505561">Afișează bara de marcaje</translation>
 <translation id="6156863943908443225">Memorie cache de scripturi</translation>
@@ -7613,7 +7623,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="694168622559714949">Administratorul a setat o limbă prestabilită care nu poate fi schimbată.</translation>
 <translation id="6941937518557314510">Conectează-te pe <ph name="TOKEN_NAME" /> pentru a te autentifica pe <ph name="HOST_NAME" /> cu certificatul.</translation>
 <translation id="6943060957016121200">Activează Tetheringul instantaneu</translation>
-<translation id="6943176775188458830">Anulează printarea</translation>
 <translation id="6943939122536910181">Deconectat de la <ph name="DEVICE" /></translation>
 <translation id="6944708469742828051">Această cheie de acces va fi salvată doar în Windows Hello</translation>
 <translation id="6944750221184785444">Profilul nu se poate instala. Contactează operatorul pentru asistență tehnică.</translation>
@@ -7917,6 +7926,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7189965711416741966">Amprentă adăugată.</translation>
 <translation id="7191063546666816478">Unele linkuri acceptate se vor deschide în continuare în <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> și alte <ph name="NUMBER_OF_OTHER_APPS" /> aplicații.</translation>
 <translation id="7191159667348037">Imprimantă necunoscută (USB)</translation>
+<translation id="7191632649590906354">Membrii familiei pot folosi acum numele de utilizator și parola ta când folosesc Managerul de parole Google. Spune-le să acceseze <ph name="WEBSITE" /> pentru a se conecta.</translation>
 <translation id="7193051357671784796">Aplicația a fost adăugată de organizația ta. Repornește aplicația pentru a finaliza instalarea ei.</translation>
 <translation id="7193374945610105795">Nu s-au salvat parole pentru <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Trimite feedback pentru grupurile sugerate</translation>
@@ -9878,6 +9888,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8689998525144040851">100</translation>
 <translation id="8690129572193755009">Site-urile pot solicita permisiunea de a gestiona protocoale</translation>
 <translation id="869144235543261764">Această filă redă un videoclip în modul picture-in-picture</translation>
+<translation id="869167754614449887"><ph name="FILE_NAME" /> s-a șters din istoricul descărcărilor</translation>
 <translation id="8692107307702113268">Parola are peste 1.000 de caractere</translation>
 <translation id="8693639060656817812">Află mai multe despre disponibilitatea Protecției împotriva urmăririi</translation>
 <translation id="8694596275649352090">Blochează în modul de inactivitate sau când capacul este închis</translation>

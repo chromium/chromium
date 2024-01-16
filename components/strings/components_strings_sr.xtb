@@ -268,12 +268,15 @@
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="EMBEDDED_ORIGIN" /> помоћу ког можете да наставите на сајту <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи више</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Унесите 3 или више речи да бисте добили помоћ при писању</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Услуге чишћења</translation>
 <translation id="1475299637784133125">Тражите верзију прегледача? Посетите</translation>
 <translation id="1476595624592550506">Промените лозинку</translation>
 <translation id="1482879811280872320">Вожња бициклом</translation>
 <translation id="1483493594462132177">Пошаљи</translation>
+<translation id="1484449009683144042">Ово је експериментално средство вештачке интелигенције за помоћ при писању и није увек исправно.
+    <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Слање смерница:</translation>
 <translation id="14938948731065592">Помоћни делови рачунара</translation>
 <translation id="1495677929897281669">Назад на картицу</translation>
@@ -419,6 +422,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Како користимо ове податке:<ph name="END_BOLD" /> Chrome бележи теме које вас занимају док прегледате. Ознаке тема су унапред дефинисане и обухватају, на пример, Уметност и забаву, Куповину и Спорт. Касније, сајт који посетите може да затражи од Chrome-а неколико ваших тема (али не и историју прегледања) ради персонализације огласа које видите.</translation>
 <translation id="1746113442205726301">Померање слике по Y оси</translation>
 <translation id="1746531169546376413">0 степени</translation>
+<translation id="1748225549612934682">Скратите текст да бисте добили помоћ при писању</translation>
 <translation id="1751544761369730824">Избришите сајт <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">8. поштанско сандуче</translation>
 <translation id="1753068535428855445">Познанства</translation>
@@ -872,6 +876,7 @@
 <translation id="2677696497921480781">Рођендани и имендани</translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2678468611080193228">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту, али већу вероватноћу да ће функције сајта радити</translation>
+<translation id="2686919536310834199">Шаљите повратне информације за Помоћ при писању.</translation>
 <translation id="2687555958734450033">Најбоља величина</translation>
 <translation id="2688186765492306706">500×760 mm</translation>
 <translation id="2688969097326701645">Да, настави</translation>
@@ -1410,6 +1415,7 @@
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3744212718085287312">Желите ли додатну заштиту следећи пут помоћу виртуелне картице?</translation>
 <translation id="3744899669254331632">Тренутно не можете да посетите <ph name="SITE" /> јер је веб-сајт послао кодиране акредитиве које Chromium не може да обради. Грешке на мрежи и напади су углавном привремени, па ће страница вероватно прорадити касније.</translation>
+<translation id="3745599309295009257">Ваш текст и садржај и URL странице на којој пишете биће послати Google-у, прегледаће их људи и користиће се за побољшање ове функције. Избегавајте унос личних података (као што су медицински или финансијски подаци) или коришћење ове алатке на сајтовима који садрже приватне или осетљиве информације.</translation>
 <translation id="3748009735914587286">Метал (сјајни)</translation>
 <translation id="3748148204939282805">Нападачи на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могу да вас наведу да урадите нешто опасно, на пример, да инсталирате софтвер или откријете личне податке (попут лозинки, бројева телефона или бројева кредитних картица). <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авиоиндустрија</translation>
@@ -2049,6 +2055,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> жели да користи камеру и микрофон</translation>
 <translation id="5035135400558156732">Баштованство</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">Пријавите се поново, па се вратите на ову картицу да бисте добили помоћ при писању</translation>
 <translation id="5039762155821394373">Величина фонта</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040262127954254034">Приватност</translation>
@@ -2466,6 +2473,8 @@
 <translation id="5901630391730855834">Жута</translation>
 <translation id="5903264686717710770">Наслов:</translation>
 <translation id="5904360430676679685">Породични и други односи</translation>
+<translation id="5907669856855422186">Текст и садржај странице се шаљу Google-у и могу да се користе за побољшање ове функције.
+  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизовано)</translation>
 <translation id="5910140988253729859">Опозови аутоматско попуњавање</translation>
 <translation id="5911020115933784199">Догађаји и распореди</translation>
@@ -2574,6 +2583,7 @@
 <translation id="6105460996796456817">Направите сајт</translation>
 <translation id="6106989379647458772">Веб-страница на адреси <ph name="PAGE" /> можда привремено не функционише или је трајно премештена на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Издато за</translation>
+<translation id="6107924765192360631">Почните са неколико речи или првом радном верзијом да бисте добили предлоге за писање.</translation>
 <translation id="610911394827799129">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">да види текст и слике који су копирани у привремену меморију</translation>
 <translation id="6117833587752089929">Слика (сатен)</translation>
@@ -2783,6 +2793,7 @@
 <translation id="6502626736864595182">Добављачи за форуме и услуге ћаскања</translation>
 <translation id="6502991525169604759">Без ваших промена</translation>
 <translation id="6506959208958864820">Коверта</translation>
+<translation id="6507117483253822672">Пишите са више самопоуздања било где на вебу</translation>
 <translation id="6508722015517270189">Поново покрените Chrome</translation>
 <translation id="6513005815064132016">Може да тражи да прати положај камере</translation>
 <translation id="6517596291481585650">Упозорење: Ове смернице нису обједињене као листа како је наведено у смерницама јер нису листа.</translation>

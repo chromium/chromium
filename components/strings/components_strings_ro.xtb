@@ -230,6 +230,7 @@
 <translation id="1406812885827747674">Permite de această dată</translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1408787208417187241">Capsare triplă în partea de sus</translation>
+<translation id="1410365862999780287">Alte persoane care folosesc acest dispozitiv nu îți vor vedea activitatea, astfel că poți naviga în mod privat. Acest lucru nu va schimba modul în care site-urile pe care le accesezi și serviciile pe care acestea le folosesc, inclusiv Google, colectează datele. Descărcările, marcajele și elementele din lista de lecturi se vor salva.</translation>
 <translation id="1410941016594047814">Plic invitație</translation>
 <translation id="1413407968866574823">Jocuri de acțiune și platformă</translation>
 <translation id="1413809658975081374">Eroare legată de confidențialitate</translation>
@@ -267,12 +268,15 @@
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> este codul tău pentru ca <ph name="EMBEDDED_ORIGIN" /> să continue pe <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Afișați mai multe</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Introdu trei sau mai multe cuvinte pentru a obține ajutor la scriere</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Servicii de curățenie</translation>
 <translation id="1475299637784133125">Cauți versiunea browserului? Accesează</translation>
 <translation id="1476595624592550506">Schimbă parola</translation>
 <translation id="1482879811280872320">Ciclism</translation>
 <translation id="1483493594462132177">Trimite</translation>
+<translation id="1484449009683144042">Acesta este un ajutor experimental de scriere cu ajutorul AI și nu va fi întotdeauna corect.
+    <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Notificări pentru politici:</translation>
 <translation id="14938948731065592">Periferice pentru computere</translation>
 <translation id="1495677929897281669">Înpoi la filă</translation>
@@ -418,6 +422,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> Chrome reține subiectele de interes pe măsură ce navighezi. Etichetele subiectelor sunt predefinite și printre acestea se numără Artă și divertisment, Cumpărături și Sport. Ulterior, un site pe care îl accesezi poate solicita browserului Chrome câteva dintre subiectele tale (dar nu și istoricul de navigare) pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="1746113442205726301">Deplasarea poziției Y a imaginii</translation>
 <translation id="1746531169546376413">0 grade</translation>
+<translation id="1748225549612934682">Scurtează textul pentru a obține ajutor la scriere</translation>
 <translation id="1751544761369730824">Șterge site-ul <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Căsuța de e-mail 8</translation>
 <translation id="1753068535428855445">Servicii și anunțuri matrimoniale</translation>
@@ -688,6 +693,7 @@
 <translation id="2289385804009217824">Decupare</translation>
 <translation id="2292556288342944218">Accesul la internet este blocat</translation>
 <translation id="2293443924986248631">Dacă opțiunea este activată, site-urile nu pot folosi cookie-uri care te urmăresc pe web. Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte.</translation>
+<translation id="2295831393422400053">Activează setarea Îmbunătățește căutările și navigarea pentru a folosi funcția Ajută-mă să scriu</translation>
 <translation id="2300306941146563769">Nu s-a încărcat</translation>
 <translation id="230286397113210245">Butonul Deschide o fereastră incognito, activează pentru a deschide o nouă fereastră incognito ca să navighezi în privat</translation>
 <translation id="2312234273148520048">Condimente și sosuri</translation>
@@ -749,6 +755,12 @@
 <translation id="2436186046335138073">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perforare cvadruplă în dreapta</translation>
 <translation id="2441854154602066476">Metodele de plată disponibile pentru completarea la atingere. Tastatura este ascunsă.</translation>
+<translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />istoricul de navigare,
+            <ph name="LIST_ITEM" />cookie-urile și datele privind site-urile,
+            <ph name="LIST_ITEM" />informațiile introduse în formulare.
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Dispozitivele periferice atașate acestui dispozitiv în timp ce ești conectat(ă)</translation>
 <translation id="2450021089947420533">Parcursuri</translation>
 <translation id="2456755709261364512">Nivelul bateriei trebuie să fie peste <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
@@ -792,6 +804,7 @@
 <translation id="2535585790302968248">Deschide o nouă filă incognito pentru a naviga în privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
 <translation id="2536110899380797252">Adaugă o adresă</translation>
+<translation id="2537931901612099523">Alte persoane care folosesc acest dispozitiv nu îți vor vedea activitatea, astfel că poți naviga în mod privat. Acest lucru nu va schimba modul în care site-urile pe care le accesezi și serviciile pe care acestea le folosesc, inclusiv Google, colectează datele. Descărcările și marcajele se vor salva.</translation>
 <translation id="2539524384386349900">Detectează</translation>
 <translation id="2541219929084442027">Paginile pe care le accesezi în filele incognito nu vor fi înregistrate în istoricul browserului, nu vor stoca cookie-uri și nu vor rămâne în istoricul căutărilor după ce închizi toate filele incognito. Fișierele descărcate și marcajele create vor fi păstrate.</translation>
 <translation id="2542106216580219892">Surfing</translation>
@@ -863,6 +876,7 @@
 <translation id="2677696497921480781">Aniversări și onomastici</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2678468611080193228">Permite temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție, dar mai multe șanse ca funcțiile site-ului să ruleze</translation>
+<translation id="2686919536310834199">Trimite feedback pentru funcția Ajută-mă să scriu.</translation>
 <translation id="2687555958734450033">Potrivire optimă</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Da, continuă</translation>
@@ -1704,6 +1718,7 @@
 <translation id="4333295216031073611">Listă de cumpărături</translation>
 <translation id="4333561522337981382">Gestionează ferestre de pe toate ecranele</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
+<translation id="4336913590841287350">Această politică nu este încă acceptată ca politică privind utilizatorii pe iOS.</translation>
 <translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
 <translation id="4340810192899866471">Importă din JSON</translation>
 <translation id="4340982228985273705">Acest computer nu este detectat ca fiind gestionat de companie, deci politica poate instala automat doar extensiile găzduite în Magazinul web Chrome. Adresa URL pentru actualizare din Magazinul web Chrome este „<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -2039,6 +2054,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> dorește să utilizeze camera foto și microfonul</translation>
 <translation id="5035135400558156732">Grădinărit</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">Conectează-te din nou, apoi revino la această filă pentru a primi ajutor la scriere</translation>
 <translation id="5039762155821394373">Dimensiunea fontului</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5040262127954254034">Confidențialitate</translation>
@@ -2230,6 +2246,12 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Niciun site blocat}=1{Un site blocat}few{# site-uri blocate}other{# de site-uri blocate}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
 <translation id="5430298929874300616">Elimină marcajul</translation>
+<translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />istoricul de navigare,
+            <ph name="LIST_ITEM" />cookie-urile și datele privind site-urile,
+            <ph name="LIST_ITEM" />informațiile introduse în formulare.
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> solicită permisiunea să controleze și să reprogrameze dispozitivele MIDI (SysEx)</translation>
 <translation id="5443468954631487277">În ordine inversă, cu fața în sus</translation>
 <translation id="5447235695608032700">Permite ca <ph name="SITE" /> să folosească informațiile pe care le salvează despre tine</translation>
@@ -2450,6 +2472,8 @@
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5903264686717710770">Titlul:</translation>
 <translation id="5904360430676679685">Familie și relații</translation>
+<translation id="5907669856855422186">Textul și conținutul paginii se trimit la Google și se pot folosi pentru a îmbunătăți această funcție.
+  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizat)</translation>
 <translation id="5910140988253729859">Anulează completarea automată</translation>
 <translation id="5911020115933784199">Evenimente și înregistrări</translation>
@@ -2469,6 +2493,7 @@
 <translation id="5925040402342933574">Disc optic (semilucios)</translation>
 <translation id="5926982310317673627">Săli de gimnastică și cluburi de sănătate</translation>
 <translation id="5928444777041341328">Casă și grădină</translation>
+<translation id="5930147475897662863">Activează această setare pentru a folosi funcția Ajută-mă să scriu</translation>
 <translation id="5932224571077948991">Site-ul afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="5937560539988385583">S-a tradus pagina</translation>
 <translation id="5938153366081463283">Adaugă un card virtual</translation>
@@ -3115,6 +3140,7 @@
 <translation id="7192537357091279678">Unități și stocare pentru computere</translation>
 <translation id="7193661028827781021">Lucrări de referință</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195852673246414183">După ce activezi setarea, revino la această filă pentru a începe să scrii</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Administratorul tău poate să vadă:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a deschide o nouă filă incognito ca să navighezi în privat</translation>
@@ -3693,6 +3719,7 @@ Detalii suplimentare:
 <translation id="8286036467436129157">Conectați-vă</translation>
 <translation id="8286799286781881307">Aplicațiile autorizate de administratorul tău pot captura toate ecranele atașate dispozitivului. Aceste informații pot fi procesate local sau pot fi încărcate pe serverele organizației.</translation>
 <translation id="8287123726498397887">Plic (preprintat)</translation>
+<translation id="8288320283441806607">Pentru a folosi această funcție, activează opțiunea Îmbunătățește căutările și navigarea</translation>
 <translation id="8288807391153049143">Afișează certificatul</translation>
 <translation id="8289355894181816810">Dacă nu știți sigur ce înseamnă aceasta, contactați administratorul de rețea.</translation>
 <translation id="8292520987784410870">Confirmi întotdeauna?</translation>
@@ -4015,6 +4042,7 @@ Detalii suplimentare:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legi și guvernare</translation>
 <translation id="8954252855949068147">Îmbrăcăminte</translation>
+<translation id="8956124158020778855">După ce activezi setarea, revino la această filă pentru a începe să scrii.</translation>
 <translation id="8957210676456822347">Autorizarea prin portalul captiv</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Accesează setările site-ului</translation>

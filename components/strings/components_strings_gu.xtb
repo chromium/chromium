@@ -230,6 +230,7 @@
 <translation id="1406812885827747674">આ વખત માટે મંજૂરી આપો</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1408787208417187241">ઉપરની બાજુએ ત્રણ સ્ટેપલ લગાવો</translation>
+<translation id="1410365862999780287">આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારી પ્રવૃત્તિ જોઈ શકશે નહીં, જેથી તમે વધુ ખાનગી રીતે બ્રાઉઝ કરી શકશો. આનાથી Google સહિત તમે મુલાકાત લેતા હો એ વેબસાઇટ દ્વારા ડેટા એકત્રિત કરવાની રીત તેમજ તે સાઇટ જે સેવાઓનો ઉપયોગ કરતી હોય, તેમાં કોઈ બદલાવ થશે નહીં. જોકે, ડાઉનલોડ, બુકમાર્ક અને વાંચન સૂચિની આઇટમ સાચવવામાં આવશે.</translation>
 <translation id="1410941016594047814">એન્વલપ આમંત્રણ</translation>
 <translation id="1413407968866574823">ઍક્શન અને પ્લૅટફૉર્મ ગેમ</translation>
 <translation id="1413809658975081374">ગોપનીયતા ભૂલ</translation>
@@ -267,12 +268,15 @@
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> પર ચાલુ રાખવા, <ph name="EMBEDDED_ORIGIN" /> માટેનો તમારો કોડ <ph name="ONE_TIME_CODE" /> છે</translation>
 <translation id="1472675084647422956">વધુ બતાવો</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">લેખન સંબંધિત સહાય મેળવવા માટે 3 કે તેથી વધુ શબ્દો દાખલ કરો</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">સફાઈ સેવાઓ</translation>
 <translation id="1475299637784133125">બ્રાઉઝરનું વર્ઝન શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="1476595624592550506">તમારો પાસવર્ડ બદલો</translation>
 <translation id="1482879811280872320">સાઇકલિંગ</translation>
 <translation id="1483493594462132177">મોકલો</translation>
+<translation id="1484449009683144042">આ એક પ્રાયોગિક AI લખાણ માટેની સહાય છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી.
+    <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">પુશ કરેલી પૉલિસી:</translation>
 <translation id="14938948731065592">કમ્પ્યુટરના સહાયક ડિવાઇસ</translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
@@ -418,6 +422,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />આ ડેટાનો ઉપયોગ કરવાની અમારી રીત:<ph name="END_BOLD" /> જેમ-જેમ તમે બ્રાઉઝ કરતા જાઓ, તેમ-તેમ Chrome તમારી રુચિના વિષયો નોંધે છે. વિષયના લેબલ પૂર્વનિર્ધારિત હોય છે અને તેમાં આર્ટ અને મનોરંજન, શૉપિંગ તથા રમતગમત જેવી બાબતો શામેલ હોય છે. પછીથી, તમે મુલાકાત લીધેલી કોઈ સાઇટ તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવવા માટે Chrome પાસે તમારા કેટલાક વિષયોની માહિતી (અને ન કે તમારો બ્રાઉઝિંગ ઇતિહાસ) માગી શકે છે.</translation>
 <translation id="1746113442205726301">છબીને Y અક્ષ પર ખસેડો</translation>
 <translation id="1746531169546376413">0 ડિગ્રી</translation>
+<translation id="1748225549612934682">લેખન સંબંધિત સહાય મેળવવા માટે તમારી ટેક્સ્ટ ટૂંકી કરો</translation>
 <translation id="1751544761369730824"><ph name="SITE_NAME" /> સાઇટ ડિલીટ કરો</translation>
 <translation id="1752021286346845558">મેઇલબૉક્સ 8</translation>
 <translation id="1753068535428855445">ડેટિંગ અને વ્યક્તિગત</translation>
@@ -688,6 +693,7 @@
 <translation id="2289385804009217824">ટ્રિમ કરો</translation>
 <translation id="2292556288342944218">તમારી ઇન્ટરનેટ ઍક્સેસ અવરોધિત છે</translation>
 <translation id="2293443924986248631">જ્યારે આ વિકલ્પ ચાલુ હોય, ત્યારે સાઇટ તમને વેબ પર બધે ટ્રૅક કરતી કુકીનો ઉપયોગ કરી શકશે નહીં. અમુક સાઇટ પરની સુવિધાઓમાં કદાચ ખલેલ પડી શકે છે.</translation>
+<translation id="2295831393422400053">'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરવા માટે, 'શોધ અને બ્રાઉઝિંગ બહેતર બનાવો' સેટિંગ ચાલુ કરો</translation>
 <translation id="2300306941146563769">અપલોડ કર્યો નથી</translation>
 <translation id="230286397113210245">'છૂપી વિન્ડો ખોલો' બટન, ખાનગી રીતે બ્રાઉઝ કરવા નવી છૂપી વિન્ડો ખોલવા માટે સક્રિય કરો</translation>
 <translation id="2312234273148520048">વ્યંજનો અને રાયતું</translation>
@@ -749,6 +755,12 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ને બધી <ph name="PROTOCOL" /> લિંક્સ ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="2438874542388153331">જમણી બાજુએ ચતુષ્કોણ કાણું પાડો</translation>
 <translation id="2441854154602066476">ટચ કરીને ભરવાની ઉપલબ્ધ ચુકવણી પદ્ધતિઓ. કીબોર્ડ છુપાવેલું છે.</translation>
+<translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />આ સાચવશે નહીં<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />તમારો બ્રાઉઝિંગ ઇતિહાસ
+            <ph name="LIST_ITEM" />કુકી અને સાઇટનો ડેટા
+            <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">તમે લૉગ ઇન કર્યું હોય તે દરમિયાન આ ડિવાઇસ સાથે જોડાયેલા પેરિફેરલ</translation>
 <translation id="2450021089947420533">પ્રવાસ</translation>
 <translation id="2456755709261364512">તમારી બૅટરી <ph name="REQUIRED_BATTERY_PRECENT" />%થી વધુ ચાર્જ હોવી આવશ્યક છે</translation>
@@ -792,6 +804,7 @@
 <translation id="2535585790302968248">ખાનગી રીતે બ્રાઉઝ કરવા માટે, નવી છૂપી ટૅબ ખોલો</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{અને અન્ય 1}one{અને વધુ #}other{અને વધુ #}}</translation>
 <translation id="2536110899380797252">સરનામું ઉમેરો</translation>
+<translation id="2537931901612099523">આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારી પ્રવૃત્તિ જોઈ શકશે નહીં, જેથી તમે વધુ ખાનગી રીતે બ્રાઉઝ કરી શકશો. આનાથી Google સહિત તમે મુલાકાત લેતા હો એ વેબસાઇટ દ્વારા ડેટા એકત્રિત કરવાની રીત તેમજ તે સાઇટ જે સેવાઓનો ઉપયોગ કરતી હોય, તેમાં કોઈ બદલાવ થશે નહીં. ડાઉનલોડ અને બુકમાર્ક સાચવવામાં આવશે.</translation>
 <translation id="2539524384386349900">શોધો</translation>
 <translation id="2541219929084442027">તમે છૂપી ટૅબમાં જુઓ છો એ પેજ તમે તમારી બધી છૂપી ટૅબ બંધ કરી દો, એ પછી તમારા બ્રાઉઝરના ઇતિહાસ, કુકી સ્ટોર અથવા શોધ ઇતિહાસમાં રહેશે નહીં. તમે ડાઉનલોડ કરો છો તે કોઈ પણ ફાઇલો અથવા તમે બનાવો છો તે બુકમાર્ક રાખવામાં આવશે.</translation>
 <translation id="2542106216580219892">સર્ફિંગ</translation>
@@ -863,6 +876,7 @@
 <translation id="2677696497921480781">જન્મદિવસ અને સ્મૃતિ દિવસ</translation>
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2678468611080193228">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે ઓછું સંરક્ષણ પરંતુ સાઇટની સુવિધાઓની કાર્ય કરવાની સંભાવના વધુ છે</translation>
+<translation id="2686919536310834199">'લખવામાં મારી સહાય કરો' સુવિધા માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="2687555958734450033">શ્રેષ્ઠ ફિટ</translation>
 <translation id="2688186765492306706">500 x 760 મિમી</translation>
 <translation id="2688969097326701645">હા, ચાલુ રાખો</translation>
@@ -1704,6 +1718,7 @@
 <translation id="4333295216031073611">શૉપિંગની સૂચિ</translation>
 <translation id="4333561522337981382">તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરો</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{આવતીકાલે સમયસીમા સમાપ્ત થાય છે}one{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}other{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}}</translation>
+<translation id="4336913590841287350">iOS પર આ પૉલિસી હજી પણ વપરાશકર્તા પૉલિસી તરીકે સપોર્ટેડ નથી.</translation>
 <translation id="4340575312453649552">આ જાહેરાતે તમારા ડિવાઇસ માટે ઘણાં વધારે સાધનોનો ઉપયોગ કર્યો, આથી Chrome દ્વારા તેને કાઢી નાખવામાં આવી છે.</translation>
 <translation id="4340810192899866471">JSON પરથી આયાત કરો</translation>
 <translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી પૉલિસી માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શન ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
@@ -2039,6 +2054,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="5035135400558156732">બાગકામ</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">ફરીથી સાઇન ઇન કરો, પછી લેખન સંબંધિત સહાય મેળવવા માટે આ ટૅબ પર પાછા આવો</translation>
 <translation id="5039762155821394373">ફૉન્ટનું કદ</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
@@ -2230,6 +2246,12 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{કોઈ સાઇટને બ્લૉક કરી નથી}=1{1 સાઇટને બ્લૉક કરી}one{# સાઇટને બ્લૉક કરી}other{# સાઇટને બ્લૉક કરી}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
 <translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
+<translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />આ સાચવશે નહીં<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />તમારો બ્રાઉઝિંગ ઇતિહાસ
+            <ph name="LIST_ITEM" />કુકી અને સાઇટનો ડેટા
+            <ph name="LIST_ITEM" />ફોર્મમાં દાખલ કરેલી માહિતી
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> તમારા MIDI ડિવાઇસ (SysEx) નિયંત્રિત કરવા અને ફરીથી પ્રોગ્રામ કરવા માગે છે</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવાની તેમને મંજૂરી આપો</translation>
@@ -2450,6 +2472,8 @@
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5903264686717710770">શીર્ષક:</translation>
 <translation id="5904360430676679685">કુટુંબ અને સંબંધો</translation>
+<translation id="5907669856855422186">તમારી ટેક્સ્ટ અને પેજ પરનું કન્ટેન્ટ Googleને મોકલવામાં આવે છે અને તેનો ઉપયોગ આ સુવિધાને બહેતર કરવા માટે થઈ શકે છે.
+  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (સમન્વયિત)</translation>
 <translation id="5910140988253729859">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="5911020115933784199">ઇવેન્ટ અને સૂચિઓ</translation>
@@ -2469,6 +2493,7 @@
 <translation id="5925040402342933574">ઓપ્ટિકલ ડિસ્ક (સેમી-ગ્લોસ)</translation>
 <translation id="5926982310317673627">જિમ અને હેલ્થ ક્લબ</translation>
 <translation id="5928444777041341328">ઘર અને બગીચા માટેની વસ્તુઓ</translation>
+<translation id="5930147475897662863">'લખવામાં મારી સહાય કરો'નો ઉપયોગ કરવા માટે, આ સેટિંગ ચાલુ કરો</translation>
 <translation id="5932224571077948991">સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવે છે</translation>
 <translation id="5937560539988385583">પેજનો અનુવાદ કર્યો</translation>
 <translation id="5938153366081463283">વર્ચ્યુઅલ કાર્ડ ઉમેરો</translation>
@@ -3115,6 +3140,7 @@
 <translation id="7192537357091279678">કમ્પ્યુટર ડ્રાઇવ અને સ્ટોરેજ</translation>
 <translation id="7193661028827781021">સંદર્ભ</translation>
 <translation id="719464814642662924">વિઝા</translation>
+<translation id="7195852673246414183">એકવાર તમે આ સેટિંગ ચાલુ કરો પછી લખવાનું શરૂ કરવા માટે, આ ટૅબ પર પાછા ફરો</translation>
 <translation id="7199278868241956094">ઑફિસ</translation>
 <translation id="7201591969684833065">તમારા વ્યવસ્થાપક જોઈ શકે છે:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છૂપી ટૅબ ખોલવા માટે Tab પછી Enter દબાવો</translation>
@@ -3693,6 +3719,7 @@
 <translation id="8286036467436129157">સાઇન ઇન કરો</translation>
 <translation id="8286799286781881307">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા અધિકૃત ઍપ્લિકેશનો તમારા ડિવાઇસ સાથે જોડાયેલ તમામ સ્ક્રીન કૅપ્ચર કરી શકે છે. આ માહિતી પર સ્થાનિક રીતે પ્રક્રિયા કરી શકાય છે અથવા તેને તમારી સંસ્થાના સર્વર પર અપલોડ કરી શકાય છે.</translation>
 <translation id="8287123726498397887">એન્વલપ (પહેલેથી પ્રિન્ટ કરેલું)</translation>
+<translation id="8288320283441806607">આ સુવિધાનો ઉપયોગ કરવા માટે, 'શોધ અને બ્રાઉઝિંગ બહેતર બનાવો' સેટિંગ ચાલુ કરો</translation>
 <translation id="8288807391153049143">પ્રમાણપત્ર બતાવો</translation>
 <translation id="8289355894181816810">આ શું છે તે ખાતરીપૂર્વક જાણતા ન હો તો તમારા નેટવર્ક વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="8292520987784410870">હંમેશાં ચકાસીએ?</translation>
@@ -4014,6 +4041,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">કાયદો અને સરકાર</translation>
 <translation id="8954252855949068147">વસ્ત્રો</translation>
+<translation id="8956124158020778855">એકવાર તમે આ સેટિંગ ચાલુ કરો પછી લખવાનું શરૂ કરવા માટે, આ ટૅબ પર પાછા ફરો.</translation>
 <translation id="8957210676456822347">કૅપ્ટિવ પોર્ટલ પ્રમાણિત</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>

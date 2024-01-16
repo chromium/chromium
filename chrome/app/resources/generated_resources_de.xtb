@@ -2073,6 +2073,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2540449034743108469">Drücke auf "Start", um den Listener für Erweiterungsaktivitäten zu aktivieren</translation>
 <translation id="2540651571961486573">Ein Problem ist aufgetreten. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Vollbildstreaming optimieren?</translation>
+<translation id="2541343621592284735">Kamera und Mikrofon nicht zulässig</translation>
 <translation id="2541706104884128042">Neue Schlafenszeit festgelegt</translation>
 <translation id="2542050502251273923">Hiermit wird das Fehlerbehebungslevel des Netzwerkverbindungsmanagers und anderer Services mithilfe von ff_debug festgelegt.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf diese App angewendet. <ph name="MANAGE_LINK" />}other{Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf diese Apps angewendet. <ph name="MANAGE_LINK" />}}</translation>
@@ -3145,6 +3146,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3406605057700382950">&amp;Lesezeichenleiste anzeigen</translation>
 <translation id="3407392651057365886">Es werden mehr Seiten vorab geladen. Seiten können über Google-Server vorab geladen werden, wenn dies von anderen Websites angefordert wird.</translation>
 <translation id="3407967630066378878">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor links an diesem <ph name="DEVICE_TYPE" /> zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
+<translation id="3408555740610481810">Kamera und Mikrofon werden verwendet</translation>
 <translation id="3409513286451883969">Auswahl auf <ph name="LANGUAGE" /> übersetzen</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Auswahl anzeigen</translation>
@@ -3405,6 +3407,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3617062258679844578">Tippe zum Klicken auf das Touchpad, statt es zu drücken</translation>
 <translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="3618286417582819036">Ein Fehler ist aufgetreten</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> kann jetzt mithilfe von Google Passwortmanager deinen Nutzernamen und dein Passwort verwenden. Bitte dieses Familienmitglied darum, sich auf <ph name="WEBSITE" /> anzumelden.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619294456800709762">Websites können den Bild-im-Bild-Modus automatisch aktivieren</translation>
 <translation id="3620136223548713675">Standortbestimmung</translation>
@@ -7611,7 +7614,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="694168622559714949">Dein Administrator hat eine Standardsprache festgelegt, die nicht geändert werden kann.</translation>
 <translation id="6941937518557314510">Melde dich in <ph name="TOKEN_NAME" /> an, damit du mit deinem Zertifikat bei <ph name="HOST_NAME" /> authentifiziert werden kannst.</translation>
 <translation id="6943060957016121200">Instant Tethering aktivieren</translation>
-<translation id="6943176775188458830">Druckvorgang abbrechen</translation>
 <translation id="6943939122536910181">Verbindung zu <ph name="DEVICE" /> getrennt</translation>
 <translation id="6944708469742828051">Dieser Passkey wird nur in Windows Hello gespeichert</translation>
 <translation id="6944750221184785444">Dieses Profil konnte nicht installiert werden. Wende dich an deinen Mobilfunkanbieter, um technischen Support zu erhalten.</translation>
@@ -7915,6 +7917,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7189965711416741966">Fingerabdruck hinzugefügt.</translation>
 <translation id="7191063546666816478">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> und <ph name="NUMBER_OF_OTHER_APPS" /> anderen Apps geöffnet.</translation>
 <translation id="7191159667348037">Unbekannter Drucker (USB)</translation>
+<translation id="7191632649590906354">Deine Familienmitglieder können jetzt mithilfe von Google Passwortmanager deinen Nutzernamen und dein Passwort verwenden. Bitte sie darum, sich auf <ph name="WEBSITE" /> anzumelden.</translation>
 <translation id="7193051357671784796">Diese App wurde von deiner Organisation hinzugefügt. Starte die App neu, um die Installation abzuschließen.</translation>
 <translation id="7193374945610105795">Für <ph name="ORIGIN" /> sind keine Passwörter gespeichert</translation>
 <translation id="7193663868864659844">Feedback zu vorgeschlagenen Gruppen senden</translation>

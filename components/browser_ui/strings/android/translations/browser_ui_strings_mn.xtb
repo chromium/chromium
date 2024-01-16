@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">Сайтууд таниулбарын үйлчилгээнүүдийн нэвтрэх сануулгыг харуулах боломжтой.</translation>
 <translation id="2790501146643349491">Асаалттай үед саяхан хаасан сайтууд өгөгдөл илгээх болон хүлээн авахыг дуусгах боломжтой. Унтраалттай үед саяхан хаасан сайтууд өгөгдөл илгээх эсвэл хүлээн авахыг дуусгах боломжгүй.</translation>
 <translation id="2822354292072154809">Та <ph name="CHOSEN_OBJECT_NAME" />-н бүх сайтын зөвшөөрлийг шинэчлэх үү?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">Гар утсан дээр харагдах байдлыг хүсэх</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2874939134665556319">Өмнөх бичлэг</translation>
@@ -347,10 +348,12 @@
 <translation id="6746124502594467657">Доош зөөх</translation>
 <translation id="6749077623962119521">Зөвшөөрлүүдийг шинэчлэх үү?</translation>
 <translation id="6766622839693428701">Хаахын тулд доош шударна уу.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />-с</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" />-н сонголтыг сонгоно уу</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6818926723028410516">Зүйл сонгох</translation>
 <translation id="6864395892908308021">Энэ төхөөрөмж NFC-г унших боломжгүй байна</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" />-с</translation>
 <translation id="6912998170423641340">Сайтыг түр санах ойн текст болон зургийг уншихыг хориглох</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6950072572526089586">Таны зочилсон сайт таны юу хийж байгаа талаарх мэдээллийг хадгалах боломжтой бөгөөд ингэснээр энэ нь таны бодож байсны дагуу ажиллана. Үүнд таныг сайтад нэвтэрсэн хэвээр байлгах эсвэл таны худалдан авалтын сагсан дахь зүйлсийг хадгалах зэрэг багтана. Сайтууд ихэвчлэн энэ мэдээллийг таны төхөөрөмжид түр зуур хадгалдаг.</translation>
@@ -399,6 +402,7 @@
 <translation id="7667547420449112975">Озын Гайхамшигт шидтэн</translation>
 <translation id="7684642910516280563">Сайтад гуравдагч талын күүки ашиглахыг бүү зөвшөөр</translation>
 <translation id="7719367874908701697">Хуудсыг томруулах</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />"-г нуух</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>

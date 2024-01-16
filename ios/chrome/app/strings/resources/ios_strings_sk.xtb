@@ -529,6 +529,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="380329542618494757">Meno</translation>
 <translation id="3803696231112616155">Ponúkať preklad tohto webu</translation>
+<translation id="3808311849069021992">Zobraziť podrobnosti o vyhľadávači</translation>
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="3818045793209708987">Sledovanie tejto zásielky bolo zastavené</translation>
 <translation id="3818293389945649617">Vyhľadať ďalšie</translation>
@@ -802,6 +803,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5235389474593199952">Skryť položku História</translation>
 <translation id="5238301240406177137">Uložiť do účtu</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> môže teraz používať vaše používateľské meno a heslo pri prihlasovaní na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocou Správcu hesiel Google.</translation>
 <translation id="5245322853195994030">Zrušiť synchronizáciu</translation>
 <translation id="5248640482715684545">Tento web sa pokúša otvoriť inú aplikáciu.</translation>
 <translation id="5256661381001734217">Tento web sa pokúša otvoriť aplikáciu.  Opustíte tým režim inkognito.</translation>
@@ -821,6 +823,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5360976571138293719">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekcii <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Tu nájdete svoje sledované weby</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
+<translation id="5395707839134961196">Skryť podrobnosti vyhľadávača</translation>
 <translation id="5396950905475481456">Pozvite členov rodiny</translation>
 <translation id="5407969256130905701">Zahodiť zmeny</translation>
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
@@ -1034,6 +1037,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6447842834002726250">Súbory cookie</translation>
 <translation id="6453018583485750254">Kontrola nebola nikdy spustená.</translation>
 <translation id="6459307836338400162">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekciách <ph name="BEGIN_LINK" />Synchronizácia<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Podrobnosti sú skryté</translation>
 <translation id="646394917185284261">Súbory</translation>
 <translation id="6464071786529933911">Otvoriť na novej karte inkognito</translation>
 <translation id="6464397691496239022">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
@@ -1286,6 +1290,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7812377703891978671">Prístup k celej histórii prehliadania získate výberom možnosti <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Stiahnuté</translation>
 <translation id="7839985698273989086">Offline stránka</translation>
+<translation id="7839994177130598711">Členovia vašej rodiny môžu teraz používať vaše používateľské meno a heslo pri prihlasovaní na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocou Správcu hesiel Google.</translation>
 <translation id="7840771868269352570">Vybrané položky budú odstránené.</translation>
 <translation id="7845466610722898">Zobraziť čitateľský zoznam</translation>
 <translation id="784551991304901159">Ak si chcete zobraziť obsah, vyberte v ponuke Zapnúť</translation>

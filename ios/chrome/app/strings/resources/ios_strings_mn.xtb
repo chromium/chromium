@@ -369,6 +369,7 @@
 <translation id="288655811176831528">Табыг хаах</translation>
 <translation id="288902476966286676">Илгээгч рүү буцаах</translation>
 <translation id="2890171748217283516">Таны дагадаг сайтуудыг Google бүртгэлд тань хадгалдаг. Та тэдгээрийг Discover-н тохиргоонд удирдах боломжтой.</translation>
+<translation id="2895084600668778673">Автоматаар бөглөх бүх өгөгдлийг харах</translation>
 <translation id="2898963176829412617">Шинэ хавтас...</translation>
 <translation id="2902684821701498619">Унших жагсаалтад нэмэх</translation>
 <translation id="2905479111267140204">Танд аюулгүй байдлыг тань эрсдэлд оруулж болох дахин ашигласан <ph name="NUMBER_OF_PASSWORDS" /> нууц үг танд байна.</translation>
@@ -992,7 +993,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6255097610484507482">Зээлийн картыг засварлах</translation>
 <translation id="6266039999629596120">Анхаарал шаардлагатай</translation>
 <translation id="6277426346321820595">Хамгаалалтгүй</translation>
-<translation id="628251768213143684">Та Google Бүртгэлд тань юу хадгалахыг хүссэн үедээ удирдах боломжтой</translation>
+<translation id="628251768213143684">Та Google Бүртгэлд тань юу хадгалахыг үргэлж удирдах боломжтой</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />-г орчуулахыг санал болгох</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />-г дагахаа больсон</translation>
 <translation id="6293101329759844770">Аюулгүй үзэлтийг асаахын тулд <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдийг<ph name="END_LINK" /> нээж, Аюулгүй үзэлт дээр товшино уу.</translation>

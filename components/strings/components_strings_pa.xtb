@@ -267,12 +267,15 @@
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="EMBEDDED_ORIGIN" /> ਵਾਸਤੇ ਤੁਹਾਡਾ ਕੋਡ <ph name="ONE_TIME_CODE" /> ਹੈ</translation>
 <translation id="1472675084647422956">ਹੋਰ ਦਿਖਾਓ</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ 3 ਜਾਂ ਵੱਧ ਸ਼ਬਦ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">ਸਫ਼ਾਈ ਸੇਵਾਵਾਂ</translation>
 <translation id="1475299637784133125">ਕੀ ਬ੍ਰਾਊਜ਼ਰ ਵਰਜਨ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
 <translation id="1476595624592550506">ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="1482879811280872320">ਸਾਈਕਲਿੰਗ</translation>
 <translation id="1483493594462132177">ਭੇਜੋ</translation>
+<translation id="1484449009683144042">ਇਹ AI ਦੀ ਇੱਕ ਪ੍ਰਯੋਗਾਤਮਕ ਲਿਖਤ ਸਹਾਇਤਾ ਹੈ ਅਤੇ ਇਹ ਜ਼ਰੂਰੀ ਨਹੀਂ ਕਿ ਇਹ ਹਮੇਸ਼ਾਂ ਸਹੀ ਹੋਵੇ।
+    <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">ਨੀਤੀਆਂ ਦਾ ਅਮਲੀਕਰਨ:</translation>
 <translation id="14938948731065592">ਕੰਪਿਊਟਰ ਦੀ ਵਸਤੂਆਂ</translation>
 <translation id="1495677929897281669">ਟੈਬ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
@@ -418,6 +421,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />ਅਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ ਕਿਵੇਂ ਵਰਤਦੇ ਹਾਂ:<ph name="END_BOLD" /> ਜਦੋਂ ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਦੇ ਹੋ, ਤਾਂ Chrome ਦਿਲਚਸਪੀ ਦੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਨੋਟ ਕਰਦਾ ਹੈ। ਵਿਸ਼ਿਆਂ ਦੇ ਲੇਬਲ ਕਲਾ ਅਤੇ ਮਨੋਰੰਜਨ, ਖਰੀਦਦਾਰੀ ਅਤੇ ਖੇਡਾਂ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਸਮੇਤ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਪਰਿਭਾਸ਼ਿਤ ਹੁੰਦੇ ਹਨ। ਬਾਅਦ ਵਿੱਚ, ਤੁਸੀਂ ਜਿਹੜੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ ਉਹ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੁਝ ਵਿਸ਼ਿਆਂ (ਪਰ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਬਾਰੇ ਨਹੀਂ) ਬਾਰੇ ਪੁੱਛ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1746113442205726301">ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>
 <translation id="1746531169546376413">0 ਡਿਗਰੀ</translation>
+<translation id="1748225549612934682">ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੀ ਲਿਖਤ ਨੂੰ ਛੋਟਾ ਕਰੋ</translation>
 <translation id="1751544761369730824">ਸਾਈਟ <ph name="SITE_NAME" /> ਮਿਟਾਓ</translation>
 <translation id="1752021286346845558">ਮੇਲਬਾਕਸ 8</translation>
 <translation id="1753068535428855445">ਡੇਟਿੰਗ ਅਤੇ ਵਿਅਕਤੀਗਤ</translation>
@@ -863,6 +867,7 @@
 <translation id="2677696497921480781">ਜਨਮਦਿਨ ਅਤੇ ਨਾਮ ਦਿਨ</translation>
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
 <translation id="2678468611080193228">ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ, ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਸੁਰੱਖਿਆ ਘਟ ਜਾਵੇਗੀ ਪਰ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਕਰਨਗੀਆਂ</translation>
+<translation id="2686919536310834199">'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਲਈ ਵਿਚਾਰ ਭੇਜੋ।</translation>
 <translation id="2687555958734450033">ਪੂਰੀ ਤਰ੍ਹਾਂ ਫਿੱਟ</translation>
 <translation id="2688186765492306706">500 x 760 ਮਿ.ਮੀ.</translation>
 <translation id="2688969097326701645">ਹਾਂ, ਜਾਰੀ ਰੱਖੋ</translation>
@@ -2036,6 +2041,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> ਦੀ ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="5035135400558156732">ਬਾਗਬਾਨੀ</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ, ਫਿਰ ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਇਸ ਟੈਬ 'ਤੇ ਵਾਪਸ ਆਓ</translation>
 <translation id="5039762155821394373">ਫ਼ੌਂਟ ਆਕਾਰ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5040262127954254034">ਪਰਦੇਦਾਰੀ</translation>
@@ -2447,6 +2453,8 @@
 <translation id="5901630391730855834">ਪੀਲਾ</translation>
 <translation id="5903264686717710770">ਸਿਰਲੇਖ:</translation>
 <translation id="5904360430676679685">ਪਰਿਵਾਰ ਅਤੇ ਰਿਸ਼ਤੇ</translation>
+<translation id="5907669856855422186">ਤੁਹਾਡੀ ਲਿਖਤ ਅਤੇ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।
+  <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />।</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ਸਿੰਕ ਕੀਤਾ)</translation>
 <translation id="5910140988253729859">ਆਟੋਫਿਲ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="5911020115933784199">ਇਵੈਂਟ ਅਤੇ ਸੂਚੀਆਂ</translation>

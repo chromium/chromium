@@ -411,7 +411,6 @@ Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser
 Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
 <translation id="1327466551276625742">Prompt voor netwerkconfiguratie tonen als je offline bent</translation>
 <translation id="13356285923490863">Naam van beleid</translation>
-<translation id="1336073690474326987">Functie helemaal uitzetten</translation>
 <translation id="1338603603553894503">Geeft aan of de profielkiezer aanstaat, uitstaat of wordt verplicht bij het opstarten van de browser.
 
       Standaard zie je de profielkiezer niet als de browser in de gast- of incognitomodus start, er een profieldirectory en/of URL's zijn opgegeven via een opdrachtregel, het openen van een app expliciet is aangevraagd, de browser is gestart via een systeemeigen melding, er maar één profiel beschikbaar is of het beleid ForceBrowserSignin is ingesteld op True.
@@ -944,7 +943,6 @@ Ongeacht de waarde kan de gebruiker bij het maken van een zakelijk profiel zelf 
 
 Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behouden niet beschikbaar is. Dit gebeurt als scheiding voor zakelijke profielen strikt worden afgedwongen of als de gegevens afkomstig zijn van een al beheerd profiel.
 </translation>
-<translation id="1795025936135166305">Gebruik van functies toestaan voor organisatie</translation>
 <translation id="1795105105645381965">
       Als je het beleid toepast (True), vraagt <ph name="PRODUCT_NAME" /> om toestemming van beheerde gebruikers voordat het apparaatsignalen deelt op onbeheerde apparaten om toegang te krijgen.
 
@@ -1993,13 +1991,6 @@ Als je dit beleid instelt op False, staat de functie Gerelateerde websitesets ui
 <translation id="26023406105317310">Kerberos-accounts configureren</translation>
 <translation id="2603382859270873566">Ondersteuning aanzetten voor de PPB_VideoDecoder(Dev) API.</translation>
 <translation id="2604182581880595781">Beleid met betrekking tot Network File Shares configureren.</translation>
-<translation id="2604211069017399189">Met dit beleid bepaal je hoe de gegevens van je organisatie worden verwerkt met 'Thema's maken met AI' van <ph name="PRODUCT_NAME" />. Dit beleid heeft voorrang op alle toekomstige algemene beleidsregels.
-
-Als je het beleid instelt op Toegestaan, kunnen functies voor de organisatie worden gebruikt.
-
-Als je het beleid instelt op Toestaan zonder gegevensverzameling, wordt de verzameling van bedrijfsgegevens voor het trainen van modellen uitgezet. Met deze instelling wordt ook het delen van gegevens via het Feedback-dialoogvenster in de functie en het sturen van gegevens voor menselijke evaluatie uitgezet. Als gevolg daarvan gebruikt Google geen content van zakelijke gebruikers (zoals prompts, invoer, uitvoer en bronmateriaal) voor het trainen van modellen. Zo zorg je dat Google geen zakelijke gebruikersgegevens gebruikt om AI-modellen te trainen of te verbeteren. Google slaat geen content van zakelijke gebruikers op, waaronder prompts, bronnen, invoer of uitvoer. Deze kunnen maximaal 24 uur worden bewaard om de situationele context te behouden. Zo zorg je dat Google geen gegevens verzamelt of opslaat die worden ingevoerd in of gemaakt door AI-functies. Hieronder vallen gebruikersinvoer, gegenereerde uitvoer en gebruikersfeedback.
-
-Als je het beleid niet toepast, wordt de functie helemaal uitgezet.</translation>
 <translation id="2608039968712973520">De gebruiker om toestemming vragen voordat verouderde <ph name="FLASH_PLUGIN_NAME" /> wordt uitgevoerd</translation>
 <translation id="2608535066974278204">Periode (minuten) die de duur van het tijdvenster voor herstarten aangeeft.</translation>
 <translation id="2608887839902987727">Voorkomen dat captive portal-verificatie proxyinstellingen negeert</translation>
@@ -2843,13 +2834,6 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" />, omdat daardoor de sandbox waarvan de processen van het weergaveprogramma gebruikmaken, minder wordt. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma moeten worden uitgevoerd.
 
       Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
-<translation id="3338231005114367157">Met dit beleid bepaal je hoe de gegevens van je organisatie worden verwerkt met Tabbladorganisator van <ph name="PRODUCT_NAME" />. Dit beleid heeft voorrang op alle toekomstige algemene beleidsregels.
-
-Als je het beleid instelt op Toegestaan, kunnen functies voor de organisatie worden gebruikt.
-
-Als je het beleid instelt op Toestaan zonder gegevensverzameling, wordt de verzameling van bedrijfsgegevens voor het trainen van modellen uitgezet. Met deze instelling wordt ook het delen van gegevens via het Feedback-dialoogvenster in de functie en het sturen van gegevens voor menselijke evaluatie uitgezet. Als gevolg daarvan gebruikt Google geen content van zakelijke gebruikers (zoals prompts, invoer, uitvoer en bronmateriaal) voor het trainen van modellen. Zo zorg je dat Google geen zakelijke gebruikersgegevens gebruikt om AI-modellen te trainen of te verbeteren. Google slaat geen content van zakelijke gebruikers op, waaronder prompts, bronnen, invoer of uitvoer. Deze kunnen maximaal 24 uur worden bewaard om de situationele context te behouden. Zo zorg je dat Google geen gegevens verzamelt of opslaat die worden ingevoerd in of gemaakt door AI-functies. Hieronder vallen gebruikersinvoer, gegenereerde uitvoer en gebruikersfeedback.
-
-Als je het beleid niet toepast, wordt de functie helemaal uitgezet.</translation>
 <translation id="3338431256935927407">Bepaalt de instellingen met betrekking tot de Cloud Upload-functie.</translation>
 <translation id="3339271789059866414">Configureert de beschikbaarheid van de systeemproxyservice en de proxygegevens voor systeemservices.
       Als het beleid niet is ingesteld, is de systeemproxyservice niet beschikbaar.</translation>
@@ -5013,7 +4997,6 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
 <translation id="5252995168844634755">Als je het beleid instelt op True, wordt 'Geïntegreerde desktop' aangezet, waarmee apps kunnen worden getoond over meerdere schermen. Gebruikers kunnen 'Geïntegreerde desktop' uitzetten voor afzonderlijke schermen.
 
       Als je het beleid instelt op False of niet instelt, wordt 'Geïntegreerde desktop' uitgezet. Gebruikers kunnen deze functie dan niet aanzetten.</translation>
-<translation id="525500830356475308">'Help me met schrijven' toestaan</translation>
 <translation id="5255162913209987122">Kan worden aanbevolen</translation>
 <translation id="525543707238275321">Rapportage van CPU-informatie van apparaat uitzetten</translation>
 <translation id="5255790642269910630">Als je het beleid instelt, wordt elk scherm naar de aangegeven stand gedraaid: elke keer dat er opnieuw wordt opgestart en de eerste keer dat het scherm wordt verbonden nadat de beleidswaarde is gewijzigd. Gebruikers kunnen na inloggen de rotatie van het scherm wijzigen op de pagina met instellingen, maar de rotatie wordt bij de volgende keer opnieuw opstarten weer teruggezet. Dit beleid is van toepassing op primaire en secundaire schermen.
@@ -6946,14 +6929,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6820251681466503297">Met dit beleid bepaal je of de gebruiker afbeeldingen rechtstreeks vanuit het contextmenu kan opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.
 Als je het beleid toepast of niet instelt, kan de gebruiker afbeeldingen vanuit het contextmenu opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />. Als je het beleid niet toepast, zien gebruikers de optie niet in het contextmenu.
 Dit beleid voorkomt niet dat gebruikers afbeeldingen opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> op andere manieren dan het contextmenu.</translation>
-<translation id="6821870597514407499"><ph name="WEBVIEW_TAG_NAME" /> voor Chrome-apps maakt gedrag mogelijk dat op dit moment wordt verwijderd uit <ph name="PRODUCT_NAME" />.
-
-Bij het vorige gedrag is ook de gebeurtenis <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) toegestaan. Hiermee wordt het nieuwe venster in een ander app-venster dan de oorspronkelijke <ph name="WEBVIEW_TAG_NAME" /> gekoppeld aan een <ph name="WEBVIEW_TAG_NAME" />-element. Met het nieuwe gedrag is deze koppeling nog steeds toegestaan, maar wordt de vensterverwijzing die van de <ph name="WINDOW_OPEN_NAME" />-aanroep wordt geretourneerd in de oorspronkelijke <ph name="WEBVIEW_TAG_NAME" /> ongeldig gemaakt.
-
-Als je het beleid toepast, wordt het vorige gedrag gebruikt.
-Als je het beleid niet toepast of niet instelt, wordt de gedragswijziging van kracht als deze is uitgerold via het releaseproces van <ph name="PRODUCT_NAME" />.
-
-Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden vanwege deze wijziging. Dit beleid wordt verwijderd in versie 122.</translation>
 <translation id="6823711520976094072">Als je het beleid instelt op een waarde lager dan 1 MB of als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte van 256 MB voor het cachen van apps en extensies voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
 <translation id="6828729771894228555">Hiermee kun je een lijst met URL-patronen opgeven van oorsprongen op het hoogste niveau (de URL in de adresbalk van het tabblad) die partitionering van opslag door derden blokkeren (partitionering van cross-origin iframe-opslag).
           Als je dit beleid niet instelt of als de oorsprong op het hoogste niveau niet overeenkomt, wordt de waarde van <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> gebruikt.
@@ -7560,7 +7535,6 @@ Als je dit beleid niet toepast of niet instelt, staan de instellingen voor Kerbe
       Als je het beleid instelt op False of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.
 
       Voor <ph name="MAC_OS_NAME" /> heeft dit beleid geen effect als het beleid <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> is ingesteld op False.</translation>
-<translation id="7278164481614262110">Thema's maken met AI</translation>
 <translation id="7278854311116092134">Namen van de hosts voor systeemeigen berichten die moeten worden vrijgesteld van de blokkeringslijst</translation>
 <translation id="7291084543582732020">Als je deze instelling aanzet, mogen gebruikers Smart Lock gebruiken als aan de vereisten voor de functie wordt voldaan.
 
@@ -7943,13 +7917,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als je dit beleid instelt op False of niet instelt, wordt de rapportage uitgezet.
       Regels die zijn gedefinieerd met beperkingen op ALLOW-niveau in DataLeakPreventionRulesList, rapporteren in beide gevallen geen gebeurtenissen.</translation>
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
-<translation id="7650618519247719562">Met dit beleid bepaal je hoe de gegevens van je organisatie worden verwerkt met 'Help me met schrijven' van <ph name="PRODUCT_NAME" />. Dit beleid heeft voorrang op alle toekomstige algemene beleidsregels.
-
-Als je het beleid instelt op Toegestaan, kunnen functies voor de organisatie worden gebruikt.
-
-Als je het beleid instelt op Toestaan zonder gegevensverzameling, wordt de verzameling van bedrijfsgegevens voor het trainen van modellen uitgezet. Met deze instelling wordt ook het delen van gegevens via het Feedback-dialoogvenster in de functie en het sturen van gegevens voor menselijke evaluatie uitgezet. Als gevolg daarvan gebruikt Google geen content van zakelijke gebruikers (zoals prompts, invoer, uitvoer en bronmateriaal) voor het trainen van modellen. Zo zorg je dat Google geen zakelijke gebruikersgegevens gebruikt om AI-modellen te trainen of te verbeteren. Google slaat geen content van zakelijke gebruikers op, waaronder prompts, bronnen, invoer of uitvoer. Deze kunnen maximaal 24 uur worden bewaard om de situationele context te behouden. Zo zorg je dat Google geen gegevens verzamelt of opslaat die worden ingevoerd in of gemaakt door AI-functies. Hieronder vallen gebruikersinvoer, gegenereerde uitvoer en gebruikersfeedback.
-
-Als je het beleid niet toepast, wordt de functie helemaal uitgezet.</translation>
 <translation id="765347139142030086">Als je het beleid toepast, krijgen beleidsregels die zijn gekoppeld aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account voorrang als er een conflict is met <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-beleidsregels.
 
       Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen voorrang krijgen. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Alle andere beleidsregels op gebruikersniveau hebben een standaardvoorrang.
@@ -7994,7 +7961,6 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandl
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de vertraging van de uitschakeling van het scherm (indien ingesteld) en van de inactieve vertraging.</translation>
 <translation id="7680437377926096177">Dialoogvenster voor uitloggen niet tonen als het laatste venster wordt gesloten.</translation>
-<translation id="7683729067082687012">Toestaan zonder gegevensverzameling</translation>
 <translation id="7683777542468165012">Beleid dynamisch vernieuwen</translation>
 <translation id="7687943045976362719">Als dit beleid is ingesteld, worden de opgegeven contenttypen verwerkt door <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -8433,7 +8399,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 
 Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid of door de gebruiker). Gebruik het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> om Safe Browsing gedwongen aan te zetten.</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
-<translation id="8043616595863371483">Tabbladorganisator toestaan</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
 <translation id="804619600634661088">Het gebruik van foutopsporing op afstand toestaan</translation>

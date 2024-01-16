@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="380329542618494757">Անուն</translation>
 <translation id="3803696231112616155">Առաջարկել այս կայքի թագմանությունը</translation>
+<translation id="3808311849069021992">Ցույց տալ որոնողական համակարգի մանրամասները</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
 <translation id="3818045793209708987">Այս առաքանին այլևս չի հետագծվում</translation>
 <translation id="3818293389945649617">Գտնել հաջորդը</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5235389474593199952">Թաքցնել պատմությունը</translation>
 <translation id="5238301240406177137">Պահել հաշվում</translation>
+<translation id="5238596603078743134">Այժմ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> օգտատերը կարող է օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք է գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։</translation>
 <translation id="5245322853195994030">Չեղարկել համաժամացումը</translation>
 <translation id="5248640482715684545">Այս կայքը փորձում է այլ հավելված բացել։</translation>
 <translation id="5256661381001734217">Այս կայքը փորձում է հավելված բացել։  Դուք կվերաուղղորդվեք ինկոգնիտո պատուհան։</translation>
@@ -821,8 +823,9 @@
 <translation id="5360976571138293719">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="5386314158584363703">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
 <translation id="5388358297987318779">Բացել պատկերը</translation>
+<translation id="5395707839134961196">Թաքցնել որոնողական համակարգի մանրամասները</translation>
 <translation id="5396950905475481456">Հրավիրեք նոր անդամների</translation>
-<translation id="5407969256130905701">Չեղարկել փոփոխությունները</translation>
+<translation id="5407969256130905701">Չպահպանել փոփոխությունները</translation>
 <translation id="5414763847370083940">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
 <translation id="5416022985862681400">Վերջին 7 օրը</translation>
 <translation id="5423269318075950257">Հետևեք գներին</translation>
@@ -1034,6 +1037,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6453018583485750254">Ստուգում երբեք չի կատարվել։</translation>
 <translation id="6459307836338400162">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Համաժամացում<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժիններում։</translation>
+<translation id="6459411599807878608">Մանրամասները թաքցվեցին</translation>
 <translation id="646394917185284261">Ֆայլեր</translation>
 <translation id="6464071786529933911">Բացել նոր ինկոգնիտո ներդիրում</translation>
 <translation id="6464397691496239022">Կայքերը կարող են օգտագործել քուքիներ՝ ձեր աշխատանքն ավելի հարմարավետ դարձնելու, օրինակ, ձեր մուտքը հաշիվ հիշելու կամ ձեր ընտրած ապրանքները զամբյուղում պահելու համար։
@@ -1286,6 +1290,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7812377703891978671">Դուք կարող եք դիտել ձեր այցելությունների ամբողջ պատմությունը՝ ընտրելով <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />։</translation>
 <translation id="78146569776629510">Ներբեռնումներ</translation>
 <translation id="7839985698273989086">Անցանց էջ</translation>
+<translation id="7839994177130598711">Այժմ ձեր ընտանիքի անդամները կարող են օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք են գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։</translation>
 <translation id="7840771868269352570">Ընտրված տարրերը կջնջվեն:</translation>
 <translation id="7845466610722898">Ցույց տալ ընթերցանության ցանկը</translation>
 <translation id="784551991304901159">Բովանդակությունը տեսնելու համար ընտրացանկում սեղմեք «Միացնել»</translation>

@@ -598,6 +598,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4307992518367153382">Noções básicas</translation>
+<translation id="4311652497846705514">Abrir o PDF?</translation>
 <translation id="4320177379694898372">Sem ligação à Internet</translation>
 <translation id="433213510553688132">A seguir…</translation>
 <translation id="4335835283689002019">A Navegação segura está desativada.</translation>
@@ -655,6 +656,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4634124774493850572">Usar palavra-passe</translation>
 <translation id="4637420359569396807">Com a medição de anúncios, é possível partilhar tipos de dados limitados entre sites e apps para medir o desempenho dos respetivos anúncios, como a hora do dia em que um anúncio lhe foi mostrado.</translation>
+<translation id="4637754911694490121">Abrir automaticamente os PDFs transferidos de futuro</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 palavra-passe comprometida.}other{# palavras-passe comprometidas.}}</translation>
 <translation id="4645146721047390964">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="4650364565596261010">Predefinição do sistema</translation>
@@ -958,6 +960,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6192907950379606605">Obter descrições de imagens</translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6196315980958524839">As palavras-passe são guardadas no Gestor de Palavras-passe da Google neste dispositivo</translation>
+<translation id="6202514376968366382">O Chrome pode abrir o PDF transferido</translation>
 <translation id="6202812185118613467">Inicie sessão novamente para iniciar a sincronização</translation>
 <translation id="6205314730813004066">Privacidade dos anúncios</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> não é o seu email?</translation>

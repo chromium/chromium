@@ -530,6 +530,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3789841737615482174">Instal</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menerjemahkan situs ini</translation>
+<translation id="3808311849069021992">Tampilkan detail mesin telusur</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3818045793209708987">Berhenti melacak paket ini</translation>
 <translation id="3818293389945649617">Temukan Berikutnya</translation>
@@ -803,6 +804,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5235389474593199952">Sembunyikan Histori</translation>
 <translation id="5238301240406177137">Simpan di Akun</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kini dapat menggunakan nama pengguna dan sandi Anda saat dia menggunakan Pengelola Sandi Google untuk login ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Batalkan Sinkronisasi</translation>
 <translation id="5248640482715684545">Situs ini mencoba membuka aplikasi lain.</translation>
 <translation id="5256661381001734217">Situs ini mencoba membuka aplikasi.  Tindakan ini akan membuat Anda keluar dari mode Samaran.</translation>
@@ -822,6 +824,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5360976571138293719">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Anda akan menemukan situs yang diikuti di sini</translation>
 <translation id="5388358297987318779">Buka Gambar</translation>
+<translation id="5395707839134961196">Sembunyikan detail mesin telusur</translation>
 <translation id="5396950905475481456">Undang Anggota Keluarga</translation>
 <translation id="5407969256130905701">Hapus Perubahan</translation>
 <translation id="5414763847370083940">Anda akan mendapatkan notifikasi jika ada diskon di situs mana pun.</translation>
@@ -1035,6 +1038,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">Pemeriksaan tidak pernah dijalankan.</translation>
 <translation id="6459307836338400162">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Sinkronisasi<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Detail disembunyikan</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Buka di Tab Samaran Baru</translation>
 <translation id="6464397691496239022">Situs dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda.
@@ -1287,6 +1291,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7812377703891978671">Anda dapat mengakses semua histori penjelajahan dengan memilih <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Download</translation>
 <translation id="7839985698273989086">Halaman Offline</translation>
+<translation id="7839994177130598711">Anggota keluarga Anda kini dapat menggunakan nama pengguna dan sandi Anda saat mereka menggunakan Pengelola Sandi Google untuk login ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Item yang Anda pilih akan dihapus.</translation>
 <translation id="7845466610722898">Tampilkan Daftar Bacaan</translation>
 <translation id="784551991304901159">Untuk melihat konten, pilih Aktifkan dari menu</translation>

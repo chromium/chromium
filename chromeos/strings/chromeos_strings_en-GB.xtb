@@ -185,6 +185,7 @@
 <translation id="2189104374785738357">Edit APN details</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
+<translation id="2215920961700443347">No Internet. Connect to the Internet and try again.</translation>
 <translation id="2217935453350629363">Current speed</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
@@ -218,6 +219,7 @@
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">We're at capacity. Please come back in a bit.</translation>
 <translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>

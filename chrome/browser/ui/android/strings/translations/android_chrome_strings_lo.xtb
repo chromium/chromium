@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="4307992518367153382">ພື້ນ​ຖານ</translation>
+<translation id="4311652497846705514">ເປີດ PDF ບໍ?</translation>
 <translation id="4320177379694898372">ບໍ່​ມີການ​ເຊື່ອມ​ຕໍ່​ອິນ​ເຕີ​ເນັດ​</translation>
 <translation id="433213510553688132">ກຳລັງຕິດຕາມ...</translation>
 <translation id="4335835283689002019">Safe Browsing ປິດ</translation>
@@ -655,6 +656,7 @@
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="4634124774493850572">ໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="4637420359569396807">ດ້ວຍການວັດແທກໂຄສະນາ, ຂໍ້ມູນບາງປະເພດສາມາດຖືກແບ່ງປັນກັບເວັບໄຊຕ່າງໆໄດ້ເພື່ອວັດແທກປະສິດທິພາບໂຄສະນາຂອງແອັບຂອງເຂົາເຈົ້າເຊັ່ນ: ເວລາຂອງມື້ທີ່ສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ.</translation>
+<translation id="4637754911694490121">ເປີດ PDF ທີ່ດາວໂຫຼດໄວ້ໂດຍອັດຕະໂນມັດໃນອະນາຄົດ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ # ລາຍການ}}</translation>
 <translation id="4645146721047390964">ເມື່ອຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ເວັບໄຊຈະບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້, ຕົວຢ່າງ: ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ. ຄຸນສົມບັດໃນບາງເວັບໄຊອາດໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="4650364565596261010">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບ</translation>
@@ -958,6 +960,7 @@
 <translation id="6192907950379606605">ຮັບຄຳອະທິບາຍຮູບ</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
 <translation id="6196315980958524839">ລະຫັດຜ່ານແມ່ນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
+<translation id="6202514376968366382">Chrome ສາມາດເປີດ PDF ທີ່ທ່ານດາວໂຫຼດໄວ້ໄດ້</translation>
 <translation id="6202812185118613467">ກັບຄືນເຂົ້າສູ່ລະບົບເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
 <translation id="6205314730813004066">ຄວາມເປັນສ່ວນກ່ຽວກັບຕົວໂຄສະນາ</translation>
 <translation id="6210748933810148297">ບໍ່ແມ່ນ <ph name="EMAIL" /> ບໍ?</translation>

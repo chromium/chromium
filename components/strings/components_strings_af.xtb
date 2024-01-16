@@ -252,6 +252,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1434317006812369578">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai, soos Google Veiligblaai. Veiligblaai <ph name="BEGIN_LINK" />het onlangs wanware op <ph name="SITE" /><ph name="END_LINK" />, gevind, wat ingebed is in die werf wat jy probeer besoek.</translation>
 <translation id="1435940442311036198">Gebruik ’n toegangsleutel op ’n ander toestel</translation>
 <translation id="1436185428532214179">Kan vra om lêers of vouers op jou toestel te wysig</translation>
+<translation id="1441816242347931036">Maak oop om voort te gaan</translation>
 <translation id="1442386063175183758">Uitvoublad regs</translation>
 <translation id="1442987760062738829">Pons</translation>
 <translation id="1446396933673057385">Akkuraatheidkontrole</translation>
@@ -702,6 +703,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2328651992442742497">Toegelaat (verstek)</translation>
 <translation id="2328955282645810595">Konstruksie- en kraggereedskap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2337044517221264923">Skryf van CV</translation>
 <translation id="2337852623177822836">Instelling word deur jou administrateur gekontroleer</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil saambind</translation>
 <translation id="2340549657492527534">Reptiele en amfibieë</translation>
@@ -1187,6 +1189,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="334438173029876234">Skaatsplanktoerusting</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Verander instaanbedienerinstellings …</translation>
+<translation id="335809815767823">Uitgevoer</translation>
 <translation id="3359565626472459400">Huwelik</translation>
 <translation id="3360103848165129075">Betalinghanteerdersigblad</translation>
 <translation id="3360313521703038580">Ekologie en omgewing</translation>
@@ -1341,6 +1344,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3632892046558972264">Skemdeling is onderbreek</translation>
 <translation id="3634530185120165534">Laai 5</translation>
 <translation id="3634567936866541746">Jy het sopas jou wagwoord op 'n bedrieglike werf ingevoer. Chrome beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
+<translation id="3638102297696182302">Hervat Help my skryf. Tab-sleutel en druk Enter om oop te maak</translation>
 <translation id="3642196846309122856">Probeer jou lêers weer aflaai.</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Meet hoe goed ’n advertensie vaar</translation>
@@ -1525,6 +1529,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4014895360827978999">Handelaardienste en betaalstelsels</translation>
 <translation id="4018819349042761761">Publieke sleutel</translation>
 <translation id="4023431997072828269">Ander mense sal jou inligting kan sien omdat hierdie vorm ingedien word oor 'n verbinding wat nie heeltemal veilig is nie.</translation>
+<translation id="4025325634010721551">Beleide is herlaai</translation>
 <translation id="4030383055268325496">Ontdoen voeg by</translation>
 <translation id="4030545038933060179">Indien dit aan is, verskyn ’n lys onderwerpe gegrond op jou onlangse blaaigeskiedenis hier</translation>
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
@@ -1833,6 +1838,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Kontantterugbetaling is gekoppel</translation>
 <translation id="4631881646528206880">Virtuele kaartinskrywing</translation>
+<translation id="4635278307999235413">Stuur tans data na adminkonsole</translation>
 <translation id="4636930964841734540">Inligting</translation>
 <translation id="4638670630777875591">Incognito in Chromium</translation>
 <translation id="464342062220857295">Soekkenmerke</translation>
@@ -3754,6 +3760,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8381674639488873545">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Tipies <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698">Administrateurbeleid blokkeer plak van <ph name="ORIGIN_NAME" /> af na <ph name="VM_NAME" /> toe</translation>
+<translation id="8392783408127179588">Herlaai tans beleide</translation>
 <translation id="8396522675989118466">Dit is die <ph name="NUMBER_OF_DIGITS" />-syferkode op die <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Betaalmetodes wat beskikbaar is om met aanraking in te vul, is teen volle hoogte oopgemaak.</translation>
 <translation id="8398446215576328011">Stel toegepaste beleide terug</translation>
@@ -4174,6 +4181,7 @@ Bykomende besonderhede:
 <translation id="936602727769022409">Jy kan toegang tot jou Google-rekening verloor. Chromium beveel aan dat jy jou wagwoord nou verander. Jy sal gevra word om aan te meld.</translation>
 <translation id="937457230470581909">Dieretuine, akwariums en reservate</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Watter data word gebruik:<ph name="END_BOLD" /> Jou advertensie-onderwerpe word gegrond op jou onlangse blaaigeskiedenis, ’n lys werwe wat jy besoek het terwyl jy Chrome op hierdie toestel gebruik.</translation>
+<translation id="937885410143139026">Data gestuur na adminkonsole</translation>
 <translation id="939736085109172342">Nuwe vouer</translation>
 <translation id="940053046584497293">Reis en vervoer</translation>
 <translation id="944540589955480312">Gebruik wagwoorde en toegangsleutels wat in jou Google-rekening gestoor is</translation>

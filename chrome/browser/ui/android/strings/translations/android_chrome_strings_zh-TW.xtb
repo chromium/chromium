@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4307992518367153382">基本選項</translation>
+<translation id="4311652497846705514">要開啟 PDF 嗎？</translation>
 <translation id="4320177379694898372">沒有網際網路連線</translation>
 <translation id="433213510553688132">正在設為追蹤…</translation>
 <translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
@@ -655,6 +656,7 @@
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4637420359569396807">透過廣告評估，網站和應用程式間可分享特定類型的資料，以評估廣告成效，例如在一天中向使用者放送廣告的時段。</translation>
+<translation id="4637754911694490121">之後自動開啟已下載的 PDF</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
 <translation id="4645146721047390964">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="4650364565596261010">系統預設</translation>
@@ -958,6 +960,7 @@
 <translation id="6192907950379606605">取得圖片說明</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196315980958524839">密碼會儲存至這部裝置上的 Google 密碼管理工具</translation>
+<translation id="6202514376968366382">Chrome 可以開啟已下載的 PDF</translation>
 <translation id="6202812185118613467">重新登入即可開始同步</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>

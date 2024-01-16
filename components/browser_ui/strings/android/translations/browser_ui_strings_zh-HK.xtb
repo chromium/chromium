@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1434873037477293673">價格下降資訊卡</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
 <translation id="1510341833810331442">不允許網站在裝置上儲存資料</translation>
@@ -348,7 +349,7 @@
 <translation id="6746124502594467657">向下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6766622839693428701">向下掃就可以閂咗佢。</translation>
-<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> 來自「<ph name="FROM_DEVICE" />」</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" />來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="6787751205395685251">取用於 <ph name="SITE_NAME" /> 的選項</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>

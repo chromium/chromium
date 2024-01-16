@@ -140,6 +140,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1102790815296970136">Wyświetlaj w tym miejscu album „<ph name="PERSONALIZED_MEMORY_TITLE" />” i inne wspomnienia</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Udostępnij mikrofon</translation>
+<translation id="110850812463801904">Połącz się z OneDrive ręcznie</translation>
 <translation id="1108600514891325577">&amp;Zatrzymaj</translation>
 <translation id="1108938384783527433">Synchronizacja historii</translation>
 <translation id="1110155001042129815">Zaczekaj</translation>
@@ -516,6 +517,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1397594434718759194">Na tych urządzeniach jesteś zalogowany(-a) w Chrome, więc możesz ich używać jako kluczy bezpieczeństwa.</translation>
 <translation id="1398853756734560583">Maksymalizuj</translation>
 <translation id="139911022479327130">Odblokuj telefon i potwierdź, że to Ty</translation>
+<translation id="1399261165075500043">Nie udało się wczytać Warunków korzystania z usługi Google Play</translation>
 <translation id="1401216725754314428">Dowiedz się więcej o powiązanych witrynach w nowej karcie</translation>
 <translation id="1401308693935339022">Używaj lokalizacji. Zezwól na używanie lokalizacji tego urządzenia przez aplikacje i usługi, które mają dostęp do lokalizacji. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, by zwiększyć dokładność lokalizacji oraz usprawnić działanie związanych z nią usług.</translation>
 <translation id="1402426911829176748">Łączę z Twoim urządzeniem</translation>
@@ -1252,6 +1254,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1940546824932169984">Połączone urządzenia</translation>
 <translation id="1941410638996203291">Czas rozpoczęcia: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Wersja <ph name="APP_VERSION" /></translation>
+<translation id="1941685451584875710">Administrator skonfigurował automatyczne łączenie Twojego konta z Microsoft OneDrive, ale coś poszło nie tak.</translation>
 <translation id="194174710521904357">Tymczasowo zezwalasz tej witrynie na używanie plików cookie innych firm. Oznacza to słabszą ochronę przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami.</translation>
 <translation id="1941995177877935582">Pokaż mapowanie klawiszy</translation>
 <translation id="1942128823046546853">Odczytywanie i zmienianie wszystkich Twoich danych we wszystkich witrynach</translation>
@@ -4277,6 +4280,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4291265871880246274">Okno logowania</translation>
 <translation id="429234155571566255">te ostatnio przeglądane przepisy</translation>
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
+<translation id="4294392694389031609">Plik <ph name="FILE_NAME" /> został usunięty z historii pobierania, ale nadal znajduje się na urządzeniu</translation>
 <translation id="4295072614469448764">Aplikacja jest teraz dostępna na terminalu. Może mieć też ikonę w Menu z aplikacjami.</translation>
 <translation id="4295979599050707005">Zaloguj się ponownie, by potwierdzić, że na koncie <ph name="USER_EMAIL" /> chcesz używać stron, aplikacji i rozszerzeń w Chrome i Google Play. Możesz też usunąć to konto. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Zainstalowane i przesyłane strumieniowo aplikacje z usługi <ph name="APP_NAME" /></translation>
@@ -4520,6 +4524,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4487489714832036847">Zamiast tradycyjnego oprogramowania Chromebooki używają aplikacji. Pobierz je, by wydajnie pracować, cieszyć się rozrywką i korzystać z innych funkcji.</translation>
 <translation id="4488257340342212116">Zezwolono na używanie kamery</translation>
 <translation id="4490086832405043258">Używaj ustawień serwera proxy Chrome OS w tym profilu.</translation>
+<translation id="4490798467014431984">Rozszerzenia w tej witrynie są niedozwolone</translation>
 <translation id="449126573531210296">Szyfruj synchronizowane hasła, używając danych konta Google</translation>
 <translation id="449232563137139956">Strony zwykle wyświetlają obrazy w celach ilustracyjnych, na przykład zdjęcia produktów w sklepach czy ilustracje w artykułach w serwisach informacyjnych</translation>
 <translation id="4492698018379445570">Tu znajdziesz produkty dodane do koszyków i zapłacisz za zakupy</translation>
@@ -4554,6 +4559,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4513872120116766993">Przewidywanie tekstu podczas pisania</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4515872537870654449">Skontaktuj się z serwisem firmy Dell. Jeśli wentylator nie działa, stacja dokująca się wyłączy.</translation>
+<translation id="4516008165284813420">Sprawdź, czy urządzenie <ph name="DEVICE_TYPE" /> jest połączone z internetem, i spróbuj ponownie. Możesz też wejść na stronę play.google.com/about/play-terms na innym urządzeniu.</translation>
 <translation id="4518840066030486079">Styl trybu klawisza Shift</translation>
 <translation id="4519331665958994620">Strony mogą prosić o dostęp do kamery</translation>
 <translation id="4519605771716872386">Synchronizacja plików jest włączona</translation>
@@ -6608,6 +6614,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6153439704237222699">Więcej informacji o nagłówku Do Not Track</translation>
 <translation id="6154240335466762404">Usuń wszystkie porty</translation>
 <translation id="615436196126345398">Protokół</translation>
+<translation id="6154739047827675957">Nie udało się skonfigurować OneDrive</translation>
 <translation id="6155141482566063812">Karta w tle udostępnia Twój ekran</translation>
 <translation id="6156323911414505561">Pokaż pasek zakładek</translation>
 <translation id="6156863943908443225">Pamięć podręczna skryptów</translation>
@@ -7598,7 +7605,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="694168622559714949">Administrator ustawił domyślny język, którego nie można zmienić.</translation>
 <translation id="6941937518557314510">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby za pomocą swojego certyfikatu wykonać uwierzytelnianie w witrynie <ph name="HOST_NAME" />.</translation>
 <translation id="6943060957016121200">Włącz błyskawiczne połączenie w tetheringu</translation>
-<translation id="6943176775188458830">Anuluj drukowanie</translation>
 <translation id="6943939122536910181">Rozłączono z: <ph name="DEVICE" /></translation>
 <translation id="6944708469742828051">Ten klucz zostanie zapisany tylko w funkcji Windows Hello</translation>
 <translation id="6944750221184785444">Nie udało się zainstalować tego profilu. Aby uzyskać pomoc techniczną, skontaktuj się ze swoim operatorem.</translation>
@@ -9861,6 +9867,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8689998525144040851">100</translation>
 <translation id="8690129572193755009">Witryny mogą prosić o zgodę na obsługę protokołów</translation>
 <translation id="869144235543261764">Na tej karcie jest odtwarzany film w trybie obrazu w obrazie</translation>
+<translation id="869167754614449887">Plik <ph name="FILE_NAME" /> został usunięty z historii pobierania</translation>
 <translation id="8692107307702113268">Hasło ma ponad 1000 znaków</translation>
 <translation id="8693639060656817812">Więcej informacji o dostępności ochrony przed śledzeniem</translation>
 <translation id="8694596275649352090">Zablokuj po uśpieniu urządzenia lub zamknięciu pokrywy</translation>

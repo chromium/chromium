@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">የchrome_ቅጽበታዊ ገፅ ዕይታ_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4307992518367153382">መሠረታዊ</translation>
+<translation id="4311652497846705514">PDF ይክፈቱ?</translation>
 <translation id="4320177379694898372">ምንም የበይነመረብ ግንኙነት የለም</translation>
 <translation id="433213510553688132">በመከተል ላይ...</translation>
 <translation id="4335835283689002019">ደህንነቱ የተጠበቀ አሰሳ ጠፍቷል</translation>
@@ -655,6 +656,7 @@
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4634124774493850572">የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="4637420359569396807">በማስታወቂያ ልኬት እንደ ማስታወቂያ ለእርስዎ የታየበት ቀን ያሉ የማስታወቂያዎቻቸውን አፈጻጸም ለመለካት የተገደቡ የውሂብ ዓይነቶች በጣቢያዎች እና መተግበሪያዎች መካከል ሊጋሩ ይችላሉ።</translation>
+<translation id="4637754911694490121">ወደ ፊት የወረዱ PDFዎችን በራስ ሰር ይክፈቱ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 የተጠለፈ የይለፍ ቃል}one{# የተጠለፉ የይለፍ ቃላት}other{# የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="4645146721047390964">ማንነት በማያሳውቅ ሁኔታ ላይ ጣቢያዎች የእርስዎን የአሰሳ እንቅስቃሴ በመላው የተለያዩ ጣቢያዎች ለመመልከት ለምሳሌ ማስታወቂያዎችን ግላዊነት የተላበሱ ለማድረግ የእርስዎን ኩኪዎች መጠቀም አይችሉም። በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊበላሹ ይችላሉ።</translation>
 <translation id="4650364565596261010">የሥርዓት ነባሪ</translation>
@@ -958,6 +960,7 @@
 <translation id="6192907950379606605">የምስል መግለጫዎችን ያግኙ</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6196315980958524839">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ባለው የGoogle የይለፍ ቃል አስተዳዳሪ ላይ ነው</translation>
+<translation id="6202514376968366382">Chrome የወረደውን PDFዎን ሊከፍት ይችላል</translation>
 <translation id="6202812185118613467">ስምረትን ለማስጀመር መልሰው በመለያ ይግቡ</translation>
 <translation id="6205314730813004066">የማስታወቂያ ግላዊነት</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> አይደለም?</translation>

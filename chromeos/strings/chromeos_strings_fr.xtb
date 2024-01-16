@@ -185,6 +185,7 @@
 <translation id="2189104374785738357">Modifier les détails de l'APN</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
+<translation id="2215920961700443347">Aucun accès à Internet. Connectez-vous à Internet, puis réessayez.</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de la galerie d'art</translation>
@@ -218,6 +219,7 @@
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2465272316171730950">Nous avons atteint notre capacité maximale. Veuillez réessayer dans quelques instants.</translation>
 <translation id="248546197012830854">L'appareil est hors connexion. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
 <translation id="2491955442992294626">Les touches ne sont pas testées lorsque vous utilisez une autre fenêtre</translation>
 <translation id="2493126929778606526">Vos plus belles photos sélectionnées automatiquement</translation>
@@ -572,6 +574,7 @@
 <translation id="5227902338748591677">Programmation du thème sombre</translation>
 <translation id="5229344016299762883">Quitter le plein écran</translation>
 <translation id="5234764350956374838">Ignorer</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Votre administrateur a configuré l'appli <ph name="APP_NAME" /> pour qu'elle démarre automatiquement chaque fois que vous vous connectez.}=2{Votre administrateur a configuré <ph name="APP_NAME" /> et 1 autre appli pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}one{Votre administrateur a configuré <ph name="APP_NAME" /> et # autres appli pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}other{Votre administrateur a configuré <ph name="APP_NAME" /> et # autres applis pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}}</translation>
 <translation id="5252456968953390977">Itinérance</translation>
 <translation id="5257811368506016604">Activer le mode couleur clair</translation>
 <translation id="5264277876637023664">Lancer le test de CPU</translation>
@@ -943,6 +946,7 @@
 <translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour rejoindre un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# appli a démarré automatiquement}other{# applis ont démarré automatiquement}}</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>

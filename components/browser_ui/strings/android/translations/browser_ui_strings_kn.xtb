@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">ಸೈಟ್‌ಗಳು ಗುರುತಿನ ಸೇವೆಗಳ ಸೈನ್ ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸಬಲ್ಲವು.</translation>
 <translation id="2790501146643349491">ಆನ್ ಆಗಿರುವಾಗ, ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಸೈಟ್‌ಗಳು ಡೇಟಾ ಕಳುಹಿಸುವುದನ್ನು ಮತ್ತು ಸ್ವೀಕರಿಸುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಸೈಟ್‌ಗಳಿಗೆ ಡೇಟಾ ಕಳುಹಿಸುವುದನ್ನು ಅಥವಾ ಸ್ವೀಕರಿಸುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2822354292072154809">ನೀವು <ph name="CHOSEN_OBJECT_NAME" /> ಗಾಗಿ ಎಲ್ಲಾ ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">ಮೊಬೈಲ್ ವೀಕ್ಷಣೆಯನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="2870560284913253234">ಸೈಟ್</translation>
 <translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
@@ -347,10 +348,12 @@
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
 <translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6766622839693428701">ಮುಚ್ಚಲು ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
+<translation id="6785959295338971061"><ph name="FROM_DEVICE" /> ನಿಂದ <ph name="SEPARATOR" /> <ph name="ACCESS_TIME" /></translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ಗಾಗಿ ಒಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6818926723028410516">ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6864395892908308021">ಈ ಸಾಧನವು NFC ಯನ್ನು ಓದಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> ನಿಂದ</translation>
 <translation id="6912998170423641340">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ಓದದಂತೆ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6950072572526089586">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ಸೈಟ್‌ನಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, ಇದರಿಂದ ಅದು ನಿರೀಕ್ಷಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ — ಉದಾಹರಣೆಗೆ, ಸೈಟ್‌ಗೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಆಗಿರಿಸಲು ಅಥವಾ ನಿಮ್ಮ ಶಾಪಿಂಗ್ ಕಾರ್ಟ್‌ನಲ್ಲಿರುವ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲು. ಸಾಮಾನ್ಯವಾಗಿ ಈ ಮಾಹಿತಿಯನ್ನು ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ತಾತ್ಕಾಲಿಕವಾಗಿ ಉಳಿಸುತ್ತವೆ.</translation>
@@ -399,6 +402,7 @@
 <translation id="7667547420449112975">ದಿ ವಂಡರ್ಫುಲ್ ವಿಜಾರ್ಡ್ ಆಫ್ ಓಝ್</translation>
 <translation id="7684642910516280563">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7719367874908701697">ಪುಟ ಝೂಮ್</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>

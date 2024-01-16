@@ -598,6 +598,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
+<translation id="4311652497846705514">Ouvrir le PDF ?</translation>
 <translation id="4320177379694898372">Aucune connexion Internet.</translation>
 <translation id="433213510553688132">Suivre…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
@@ -655,6 +656,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4637420359569396807">Avec la mesure des annonces, seuls quelques types de données peuvent être partagés entre les sites et les applis, comme l'heure à laquelle une annonce vous a été présentée.</translation>
+<translation id="4637754911694490121">Ouvrir automatiquement les PDF téléchargés à l'avenir</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4645146721047390964">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="4650364565596261010">Paramètre par défaut du système</translation>
@@ -958,6 +960,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6192907950379606605">Obtenir descriptions images</translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil</translation>
+<translation id="6202514376968366382">Chrome peut ouvrir le PDF téléchargé</translation>
 <translation id="6202812185118613467">Reconnectez-vous pour lancer la synchronisation</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
@@ -1299,6 +1302,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, un fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran étendue</translation>
+<translation id="7821130663268546430">Vous trouverez tous les onglets ouverts dans le sélecteur d'onglets</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
 <translation id="78270725016672455">L'ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>

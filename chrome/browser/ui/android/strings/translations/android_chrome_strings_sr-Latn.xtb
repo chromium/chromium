@@ -598,6 +598,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Menadžer lozinki</translation>
 <translation id="4307992518367153382">Osnovna</translation>
+<translation id="4311652497846705514">Želite da otvorite PDF?</translation>
 <translation id="4320177379694898372">Nema internet veze</translation>
 <translation id="433213510553688132">Prati se…</translation>
 <translation id="4335835283689002019">Bezbedno pregledanje je isključeno</translation>
@@ -655,6 +656,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4619564267100705184">Potvrdite svoj identitet</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
 <translation id="4637420359569396807">Pomoću funkcije merenja oglasa ograničeni tipovi podataka, kao što je doba dana kada vam je neki oglas prikazan, mogu dele se između sajtova i aplikacija radi merenja učinka njihovih oglasa.</translation>
+<translation id="4637754911694490121">Ubuduće automatski otvaraj preuzete PDF-ove</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka}one{# ugrožena lozinka}few{# ugrožene lozinke}other{# ugroženih lozinki}}</translation>
 <translation id="4645146721047390964">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="4650364565596261010">Podrazumevana sistemska</translation>
@@ -958,6 +960,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6192907950379606605">Preuzimaj opise slika</translation>
 <translation id="6193448654517602979">Izaberite kartice</translation>
 <translation id="6196315980958524839">Lozinke se čuvaju u Google menadžeru lozinki na ovom uređaju</translation>
+<translation id="6202514376968366382">Chrome može da otvori preuzeti PDF</translation>
 <translation id="6202812185118613467">Ponovo se prijavite da biste započeli sinhronizaciju</translation>
 <translation id="6205314730813004066">Privatnost sa oglasima</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>

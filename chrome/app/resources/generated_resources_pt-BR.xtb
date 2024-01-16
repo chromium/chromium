@@ -2089,6 +2089,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2540449034743108469">Pressione "Iniciar" para ouvir as atividades da extensão</translation>
 <translation id="2540651571961486573">Algo deu errado. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Otimizar transmissão em tela cheia?</translation>
+<translation id="2541343621592284735">Câmera e microfone não permitidos</translation>
 <translation id="2541706104884128042">Nova hora de dormir definida</translation>
 <translation id="2542050502251273923">Configura o nível de depuração do gerenciador de conexão de rede e outros serviços usando ff_debug.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para este app. <ph name="MANAGE_LINK" />}one{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para este app. <ph name="MANAGE_LINK" />}other{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para estes apps. <ph name="MANAGE_LINK" />}}</translation>
@@ -3161,6 +3162,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3406605057700382950">&amp;Exibir barra de favoritos</translation>
 <translation id="3407392651057365886">Mais páginas são pré-carregadas. As páginas podem ser pré-carregadas por servidores do Google quando solicitado por outros sites.</translation>
 <translation id="3407967630066378878">Para configurar a impressão digital, peça para a criança tocar no sensor no lado esquerdo deste <ph name="DEVICE_TYPE" />. Os dados de impressão digital dela são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3408555740610481810">Câmera e microfone em uso</translation>
 <translation id="3409513286451883969">&amp;Traduzir seleção para o <ph name="LANGUAGE" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Ir para a seleção</translation>
@@ -3421,6 +3423,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3617062258679844578">Para clicar, toque no touchpad em vez de pressioná-lo</translation>
 <translation id="3617891479562106823">Os planos de fundo estão indisponíveis. Tente novamente mais tarde.</translation>
 <translation id="3618286417582819036">Ocorreu um erro</translation>
+<translation id="3618647122592024084">Agora, <ph name="RECIPIENT_NAME" /> pode usar seu nome de usuário e senha ao usar o Gerenciador de senhas do Google. É necessário acessar <ph name="WEBSITE" /> para fazer login.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619294456800709762">Os sites podem entrar no modo picture-in-picture automaticamente</translation>
 <translation id="3620136223548713675">Geolocalização</translation>
@@ -7630,7 +7633,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="694168622559714949">O administrador definiu um idioma padrão que não pode ser modificado.</translation>
 <translation id="6941937518557314510">Faça login no <ph name="TOKEN_NAME" /> para autenticar seu certificado no <ph name="HOST_NAME" />.</translation>
 <translation id="6943060957016121200">Ativar tethering instantâneo</translation>
-<translation id="6943176775188458830">Cancelar impressão</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6944708469742828051">Esta senha de acesso vai ser salva apenas no Windows Hello.</translation>
 <translation id="6944750221184785444">Não foi possível instalar esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
@@ -7934,6 +7936,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7189965711416741966">Impressão digital registrada.</translation>
 <translation id="7191063546666816478">Alguns links com suporte ainda serão abertos no app <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e em <ph name="NUMBER_OF_OTHER_APPS" /> outros apps.</translation>
 <translation id="7191159667348037">Impressora desconhecida (USB)</translation>
+<translation id="7191632649590906354">Os membros da sua família agora podem usar seu nome de usuário e senha ao usar o Gerenciador de senhas do Google. É necessário acessar <ph name="WEBSITE" /> para fazer login.</translation>
 <translation id="7193051357671784796">Este app foi adicionado pela sua organização. Reinicie o app para concluir a instalação.</translation>
 <translation id="7193374945610105795">Nenhuma senha salva para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Enviar feedback sobre os grupos sugeridos</translation>

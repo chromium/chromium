@@ -268,12 +268,14 @@
 <translation id="1468653229182955856">你的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />，請輸入此驗證碼，以便繼續使用 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">請輸入 3 個以上的字詞，才能取得撰寫協助</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">清潔服務</translation>
 <translation id="1475299637784133125">要查看瀏覽器版本嗎？請前往</translation>
 <translation id="1476595624592550506">變更你的密碼</translation>
 <translation id="1482879811280872320">單車運動</translation>
 <translation id="1483493594462132177">傳送</translation>
+<translation id="1484449009683144042">這項 AI 撰寫輔助功能仍在實驗階段，提供的建議不一定符合需求。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">政策通知推送：</translation>
 <translation id="14938948731065592">電腦周邊設備</translation>
 <translation id="1495677929897281669">返回分頁</translation>
@@ -419,6 +421,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我們使用這些資料的方式：<ph name="END_BOLD" />Chrome 會在你瀏覽內容時記錄感興趣的主題。系統已預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。在此之後，你造訪的網站就可以要求 Chrome 提供一些主題 (而非你的瀏覽記錄)，據此向你放送個人化廣告。</translation>
 <translation id="1746113442205726301">圖片 Y 批次</translation>
 <translation id="1746531169546376413">0 度</translation>
+<translation id="1748225549612934682">請縮短文字，才能取得撰寫協助</translation>
 <translation id="1751544761369730824">刪除網站 <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753068535428855445">約會交友</translation>
@@ -872,6 +875,7 @@
 <translation id="2677696497921480781">生日與命名日</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2678468611080193228">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易運作</translation>
+<translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
 <translation id="2687555958734450033">最適配置</translation>
 <translation id="2688186765492306706">500 x 760 公釐</translation>
 <translation id="2688969097326701645">是，請繼續</translation>
@@ -1409,6 +1413,7 @@
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744212718085287312">下次要使用更加安全的虛擬卡片嗎？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> 傳送的憑證受到干擾，造成 Chromium 無法處理，因此你目前無法造訪該網站。網路錯誤和攻擊通常是暫時性狀態，因此這個網頁可能稍後就會恢復正常運作。</translation>
+<translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google，並由人工進行審查，用來改善這項功能。因此，請勿輸入醫療或財務資料等個人資訊，也不要在含有私密資訊的網站上使用這項工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
 <translation id="3748148204939282805">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 誘使你做一些危險行為，例如安裝軟體或提供個人資訊 (包括密碼、電話號碼或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空產業</translation>
@@ -2048,6 +2053,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> 要求使用攝影機和麥克風</translation>
 <translation id="5035135400558156732">園藝</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">請重新登入並返回這個分頁，才能取得撰寫協助</translation>
 <translation id="5039762155821394373">字型大小</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">隱私權</translation>
@@ -2465,6 +2471,8 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903264686717710770">標題：</translation>
 <translation id="5904360430676679685">家庭與人際關係</translation>
+<translation id="5907669856855422186">你的文字和網頁內容會傳送給 Google，且可能會用於改善這項功能。
+  <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
 <translation id="5910140988253729859">復原自動填入</translation>
 <translation id="5911020115933784199">活動與展演資訊</translation>
@@ -2573,6 +2581,7 @@
 <translation id="6105460996796456817">建立網站</translation>
 <translation id="6106989379647458772">位於 <ph name="PAGE" /> 的網頁可能暫時無法使用，或是已永久移至新的網址。</translation>
 <translation id="6107012941649240045">核發對象</translation>
+<translation id="6107924765192360631">只要輸入幾個字詞或初稿，就能取得撰寫建議。</translation>
 <translation id="610911394827799129">你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="6116338172782435947">讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
@@ -2783,6 +2792,7 @@
 <translation id="6502626736864595182">論壇與聊天室</translation>
 <translation id="6502991525169604759">不包含你所做的變更</translation>
 <translation id="6506959208958864820">信封</translation>
+<translation id="6507117483253822672">隨時隨地提供撰寫線上內容的建議</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
 <translation id="6513005815064132016">可以要求追蹤你的攝影機位置</translation>
 <translation id="6517596291481585650">警告：這項政策並非清單，因此未依照政策中指定的方式合併為清單。</translation>

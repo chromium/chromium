@@ -230,6 +230,7 @@
 <translation id="1406812885827747674">Bu dəfə icazə verin</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="1408787208417187241">Yuxarıdan üçlü ştapel vurun</translation>
+<translation id="1410365862999780287">Bu cihazdan istifadə edən digər şəxslər fəaliyyətinizi görməyəcək. Məxfi nəzər sala bilərsiniz. Daxil olduğunuz veb-saytların topladığı data və istifadə etdiyi xidmətlər (Google daxil olmaqla) dəyişməyəcək. Endirmə, əlfəcin və oxu siyahısı elementləri yadda saxlanacaq.</translation>
 <translation id="1410941016594047814">Zərf Dəvət</translation>
 <translation id="1413407968866574823">Ekşn və platforma oyunları</translation>
 <translation id="1413809658975081374">Məxfilik xətası</translation>
@@ -688,6 +689,7 @@
 <translation id="2289385804009217824">Kəsin</translation>
 <translation id="2292556288342944218">İnternet girişiniz blok edilib</translation>
 <translation id="2293443924986248631">Aktiv edildiyi zaman saytlar vebdə sizi izləyən kukilərdən istifadə edə bilmir. Bəzi saytlardakı funksiyalar dayandırıla bilər.</translation>
+<translation id="2295831393422400053">"Yazmağa kömək et" funksiyasından istifadə üçün Axtarış edin və Daha yaxşı axtarış ayarını aktiv edin</translation>
 <translation id="2300306941146563769">Yüklənməyib</translation>
 <translation id="230286397113210245">"Anonim pəncərə açın" düyməsi, aktivləşdirərək yeni anonim pəncərə açıb, gizli baxın</translation>
 <translation id="2312234273148520048">Ədviyyat və ləzzətləndiricilər</translation>
@@ -749,6 +751,12 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> hostuna bütün <ph name="PROTOCOL" /> linklərini açmaq icazəsi verirsiniz?</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
 <translation id="2441854154602066476">Toxunaraq doldurulmaq üçün əlçatan ödəniş metodları. Gizlədilmiş klaviatura.</translation>
+<translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Brauzer tarixçəsi
+            <ph name="LIST_ITEM" />Kukilər və sayt datası
+            <ph name="LIST_ITEM" />Formalarda daxil edilən məlumatlar
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Daxil olduğunuz zaman bu cihaza əlavə edilmiş köməkçi cihazlar</translation>
 <translation id="2450021089947420533">Baxışlar</translation>
 <translation id="2456755709261364512">Batareya <ph name="REQUIRED_BATTERY_PRECENT" />%-dən çox şarj edilməlidir</translation>
@@ -792,6 +800,7 @@
 <translation id="2535585790302968248">Gizli baxış üçün yeni Anonim tab açın</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{və daha 1}other{and daha #}}</translation>
 <translation id="2536110899380797252">Ünvan Əlavə Edin</translation>
+<translation id="2537931901612099523">Bu cihazdan istifadə edən digər şəxslər fəaliyyətinizi görməyəcək. Məxfi nəzər sala bilərsiniz. Daxil olduğunuz veb-saytların topladığı data və istifadə etdiyi xidmətlər (Google daxil olmaqla) dəyişməyəcək. Endirmə və əlfəcinlər yadda saxlanacaq.</translation>
 <translation id="2539524384386349900">Aşkarlayın</translation>
 <translation id="2541219929084442027">Bütün Anonim tabları bağladıqdan sonra Anonim rejimdə baxdığınız səhifələr brauzerinizin tarixçəsində, kuki yaddaşında və ya axtarış tarixçəsində saxlanılmayacaq. Endirdiyiniz və ya əlfəcin yaratdığınız fayllar isə saxlanılacaq.</translation>
 <translation id="2542106216580219892">Sörf</translation>
@@ -1700,6 +1709,7 @@
 <translation id="4333295216031073611">Alış-veriş siyahısı</translation>
 <translation id="4333561522337981382">Bütün displeylərinizdə pəncərələri idarə edin</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
+<translation id="4336913590841287350">Bu siyasət iOS-da istifadəçi siyasəti kimi dəstəklənmir.</translation>
 <translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
 <translation id="4340810192899866471">JSON-dan import edin</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2226,6 +2236,12 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Heç bir sayt bloklanmayıb}=1{1 sayt bloklanıb}other{# sayt bloklanıb}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
 <translation id="5430298929874300616">Əlfəcini silin</translation>
+<translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Brauzer tarixçəsi
+            <ph name="LIST_ITEM" />Kukilər və sayt datası
+            <ph name="LIST_ITEM" />Formalarda daxil edilən məlumatlar
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> MIDI cihazlarını (SysEx) idarə etmək və yenidən proqramlaşdırmaq istəyir</translation>
 <translation id="5443468954631487277">Tərs sıra ilə üzü yuxarı</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> saytına yadda saxladığı məlumatlarınızdan istifadə icazəsi verin</translation>
@@ -2465,6 +2481,7 @@
 <translation id="5925040402342933574">Optik disk (yarıparlaq)</translation>
 <translation id="5926982310317673627">İdman zalı və sağlamlıq klubları</translation>
 <translation id="5928444777041341328">Ev və bağ</translation>
+<translation id="5930147475897662863">"Yazmağa kömək et" funksiyasından istifadə üçün bu ayarı aktiv edin</translation>
 <translation id="5932224571077948991">Sayt intruziv və ya aldadıcı reklamlar göstərir</translation>
 <translation id="5937560539988385583">Səhifə tərcümə edildi</translation>
 <translation id="5938153366081463283">Virtual kart əlavə edin</translation>
@@ -3111,6 +3128,7 @@
 <translation id="7192537357091279678">Kompüter diskləri və yaddaş</translation>
 <translation id="7193661028827781021">İstinad</translation>
 <translation id="719464814642662924">Viza</translation>
+<translation id="7195852673246414183">Bu ayarı aktiv etdikdən sonra yazmağa başlamaq üçün bu taba qayıdın</translation>
 <translation id="7199278868241956094">Rəsmi</translation>
 <translation id="7201591969684833065">Administrator baxa bilər:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq yeni Anonim tab açın və gizli baxış keçirin</translation>
@@ -3689,6 +3707,7 @@
 <translation id="8286036467436129157">Giriş</translation>
 <translation id="8286799286781881307">Administratorunuz tərəfindən icazə verilən tətbiqlər cihazınıza əlavə edilmiş bütün ekranları çəkə bilər. Bu məlumat lokal olaraq işlənə və ya təşkilatınızın serverlərinə yüklənə bilər.</translation>
 <translation id="8287123726498397887">Zərf (ön çaplı)</translation>
+<translation id="8288320283441806607">Bu funksiyadan istifadə üçün Axtarış edin və Daha yaxşı axtarışı aktiv edin</translation>
 <translation id="8288807391153049143">Sertifikatı göstərin</translation>
 <translation id="8289355894181816810">Bunun mənasını bilmirsinizsə, şəbəkə administratorunuz ilə əlaqə saxlayın.</translation>
 <translation id="8292520987784410870">Həmişə doğrulansın?</translation>
@@ -4010,6 +4029,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Hüquq və hökümət</translation>
 <translation id="8954252855949068147">Geyim</translation>
+<translation id="8956124158020778855">Bu ayarı aktiv etdikdən sonra yazmağa başlamaq üçün bu taba qayıdın.</translation>
 <translation id="8957210676456822347">Kaptiv Portal Doğrulanması</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>

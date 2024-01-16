@@ -251,6 +251,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1434317006812369578">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen skadlig programvara på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.</translation>
 <translation id="1435940442311036198">Använd en nyckel på en annan enhet</translation>
 <translation id="1436185428532214179">Får begära tillstånd att redigera filer eller mappar på enheten</translation>
+<translation id="1441816242347931036">Öppna för att fortsätta</translation>
 <translation id="1442386063175183758">Fönsterfalsning, höger flik</translation>
 <translation id="1442987760062738829">Hålslag</translation>
 <translation id="1446396933673057385">Källkontroll</translation>
@@ -700,6 +701,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2328651992442742497">Tillåts (standard)</translation>
 <translation id="2328955282645810595">Bygg- och elverktyg</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> upphör att gälla den <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2337044517221264923">Återuppta skrivande</translation>
 <translation id="2337852623177822836">Inställningen styrs av administratören</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill kopplas</translation>
 <translation id="2340549657492527534">Reptiler och amfibier</translation>
@@ -1178,6 +1180,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="334438173029876234">Skateboardutrustning</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Ändra proxyinställningar...</translation>
+<translation id="335809815767823">Exporterade</translation>
 <translation id="3359565626472459400">Äktenskap</translation>
 <translation id="3360103848165129075">Arbetsblad för betalningshantering</translation>
 <translation id="3360313521703038580">Ekologi och miljö</translation>
@@ -1332,6 +1335,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3632892046558972264">Skärmdelningen pausades</translation>
 <translation id="3634530185120165534">Fack 5</translation>
 <translation id="3634567936866541746">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chrome nu för att skydda dina konton.</translation>
+<translation id="3638102297696182302">Återuppta Hjälp mig att skriva. Tryck på Tabb och på Retur för att öppna</translation>
 <translation id="3642196846309122856">Testa att ladda ned filerna igen</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Mäta hur bra resultatet är för en annons</translation>
@@ -1516,6 +1520,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4014895360827978999">Handelstjänster och betalningssystem</translation>
 <translation id="4018819349042761761">Offentlig nyckel</translation>
 <translation id="4023431997072828269">Din information blir synlig för andra eftersom anslutningen som används för att skicka formuläret inte är säker.</translation>
+<translation id="4025325634010721551">Policyer har lästs in på nytt</translation>
 <translation id="4030383055268325496">&amp;Ångra Lägg till</translation>
 <translation id="4030545038933060179">När funktionen är aktiverad visas en lista över ämnen utifrån din senaste webbhistorik</translation>
 <translation id="4031179711345676612">Mikrofon är tillåten</translation>
@@ -1823,6 +1828,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4629370161347991046">A4 x 6</translation>
 <translation id="4631649115723685955">Cashback länkad</translation>
 <translation id="4631881646528206880">Registrering av virtuellt kort</translation>
+<translation id="4635278307999235413">Skickar data till administratörskonsolen</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4638670630777875591">Inkognitoläge i Chromium</translation>
 <translation id="464342062220857295">Sökfunktioner</translation>
@@ -3735,6 +3741,7 @@ Mer information.
 <translation id="8381674639488873545">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Brukar kosta <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698">Möjligheten att dela från <ph name="ORIGIN_NAME" /> till <ph name="VM_NAME" /> har blockerats av administratörspolicyn</translation>
+<translation id="8392783408127179588">Läser in policyer på nytt</translation>
 <translation id="8396522675989118466">Det här är den <ph name="NUMBER_OF_DIGITS" />-siffriga koden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">De tillgängliga betalningsmetoderna som kan fyllas i med ett tryck har öppnats över hela skärmen.</translation>
 <translation id="8398446215576328011">Återställ tillämpade policyer</translation>
@@ -4155,6 +4162,7 @@ Mer information:
 <translation id="936602727769022409">Du kan förlora tillgången till Google-kontot. Du rekommenderas att ändra lösenordet nu. Du blir uppmanad att logga in.</translation>
 <translation id="937457230470581909">Djurparker, akvarier och djurreservat</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Vilken data som används:<ph name="END_BOLD" /> Dina annonsämnen baseras på din senaste webbhistorik, en lista över webbplatser du har besökt i Chrome på den här enheten.</translation>
+<translation id="937885410143139026">Data har skickats till administratörskonsolen</translation>
 <translation id="939736085109172342">Ny mapp</translation>
 <translation id="940053046584497293">Resor och transportmedel</translation>
 <translation id="944540589955480312">Använd lösenord och nycklar som har sparats i Google-kontot</translation>

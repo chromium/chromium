@@ -142,6 +142,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1102790815296970136">Se «<ph name="PERSONALIZED_MEMORY_TITLE" />» og andre minner her</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Del mikrofonen</translation>
+<translation id="110850812463801904">Koble til OneDrive manuelt</translation>
 <translation id="1108600514891325577">&amp;Stopp</translation>
 <translation id="1108938384783527433">Loggsynkronisering</translation>
 <translation id="1110155001042129815">Vent</translation>
@@ -516,6 +517,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1397594434718759194">Du er logget på Chrome på disse enhetene, så du kan bruke dem som sikkerhetsnøkler.</translation>
 <translation id="1398853756734560583">Maksimer</translation>
 <translation id="139911022479327130">Lås opp telefonen, og bekreft at det er deg</translation>
+<translation id="1399261165075500043">Kan ikke laste inn vilkårene for bruk av Google Play</translation>
 <translation id="1401216725754314428">Finn ut mer om relaterte nettsteder på en ny fane</translation>
 <translation id="1401308693935339022">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene på en anonym måte til å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre.</translation>
 <translation id="1402426911829176748">Kobler til enheten din</translation>
@@ -1260,6 +1262,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1940546824932169984">Tilkoblede enheter</translation>
 <translation id="1941410638996203291">Starttid: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versjon: <ph name="APP_VERSION" /></translation>
+<translation id="1941685451584875710">Administratoren din har konfigurert kontoen din for automatisk tilkobling til Microsoft OneDrive, men noe gikk galt.</translation>
 <translation id="194174710521904357">Du har midlertidig tillatt dette nettstedet å bruke informasjonskapsler fra tredjeparter, noe som innebærer mindre surfebeskyttelse, men øker sannsynligheten for at funksjonene på nettstedet fungerer som forventet.</translation>
 <translation id="1941995177877935582">Vis tastetilordninger</translation>
 <translation id="1942128823046546853">lese og endre alle dataene dine på alle nettsteder</translation>
@@ -4303,6 +4306,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4291265871880246274">Dialogboks for pålogging</translation>
 <translation id="429234155571566255">disse nylig viste oppskriftene</translation>
 <translation id="429312253194641664">Et nettsted spiller av medier</translation>
+<translation id="4294392694389031609"><ph name="FILE_NAME" /> er slettet fra nedlastingsloggen, men er fortsatt lagret på enheten din</translation>
 <translation id="4295072614469448764">Appen er tilgjengelig i terminalen din. Det kan også være et ikon i appoversikten.</translation>
 <translation id="4295979599050707005">Logg på igjen for å bekrefte at kontoen din (<ph name="USER_EMAIL" />) kan brukes sammen med nettsteder, apper og utvidelser i Chrome og Google Play. Du kan også fjerne denne kontoen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Installerte og strømmede apper fra <ph name="APP_NAME" /></translation>
@@ -4546,6 +4550,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4487489714832036847">Chromebook bruker apper i stedet for tradisjonell programvare. Skaff deg apper for produktivitet, underholdning med mer.</translation>
 <translation id="4488257340342212116">Nettsteder som har lov til å bruke kameraet ditt</translation>
 <translation id="4490086832405043258">Bruk proxy-innstillingene i ChromeOS for denne profilen.</translation>
+<translation id="4490798467014431984">Utvidelser er ikke tillatt på dette nettstedet</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
 <translation id="449232563137139956">Nettsteder viser vanligvis bilder for illustrasjonsformål, som for eksempel bilder i nettbutikker eller nyhetsartikler</translation>
 <translation id="4492698018379445570">Finn det du har lagt til i handlekurver, og betal når du er klar</translation>
@@ -4580,6 +4585,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4513872120116766993">Prediktiv skriving</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
 <translation id="4515872537870654449">Kontakt Dell for service. Dokken slår seg av hvis viften ikke virker.</translation>
+<translation id="4516008165284813420">Sørg for at <ph name="DEVICE_TYPE" /> er koblet til internett, og prøv på nytt. Du kan også gå til play.google.com/about/play-terms på en annen enhet.</translation>
 <translation id="4518840066030486079">Type modus for Shift-tast</translation>
 <translation id="4519331665958994620">Nettsteder kan be om å få bruke kameraet ditt</translation>
 <translation id="4519605771716872386">Filsynkronisering er slått på</translation>
@@ -6634,6 +6640,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6153439704237222699">Finn ut mer om Ikke spor</translation>
 <translation id="6154240335466762404">Fjern alle porter</translation>
 <translation id="615436196126345398">Protokoll</translation>
+<translation id="6154739047827675957">OneDrive-konfigureringen mislyktes</translation>
 <translation id="6155141482566063812">En fane i bakgrunnen deler skjermen din</translation>
 <translation id="6156323911414505561">Vis bokmerkeraden</translation>
 <translation id="6156863943908443225">Skriptbuffer</translation>
@@ -7620,7 +7627,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="694168622559714949">Administratoren har angitt et standardspråk som ikke kan endres.</translation>
 <translation id="6941937518557314510">Logg på <ph name="TOKEN_NAME" /> for å godkjenne <ph name="HOST_NAME" /> med sertifikatet ditt.</translation>
 <translation id="6943060957016121200">Slå på umiddelbar internettdeling</translation>
-<translation id="6943176775188458830">Avbryt utskriften</translation>
 <translation id="6943939122536910181">Koblet fra <ph name="DEVICE" /></translation>
 <translation id="6944708469742828051">Denne tilgangsnøkkelen lagres bare i Windows Hello</translation>
 <translation id="6944750221184785444">Kan ikke installere denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
@@ -9886,6 +9892,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8689998525144040851">100</translation>
 <translation id="8690129572193755009">Nettsteder kan be om å få behandle protokoller</translation>
 <translation id="869144235543261764">Denne fanen spiller av en video i bilde-i-bilde-modus</translation>
+<translation id="869167754614449887"><ph name="FILE_NAME" /> er slettet fra nedlastingsloggen</translation>
 <translation id="8692107307702113268">Passordet er lengre enn 1000 tegn</translation>
 <translation id="8693639060656817812">Finn ut mer om tilgjengeligheten av Sporingsbeskyttelse</translation>
 <translation id="8694596275649352090">Lås når enheten er i hvilemodus eller lokket lukkes</translation>

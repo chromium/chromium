@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
+<translation id="3808311849069021992">Прикажување на деталите на пребарувачот</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3818045793209708987">Следењето на пакетов е сопрено</translation>
 <translation id="3818293389945649617">Најдете следно</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="5235389474593199952">Скриј „Историја“</translation>
 <translation id="5238301240406177137">Зачувајте на сметката</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> сега може да ги користи вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Откажи ја синхронизацијата</translation>
 <translation id="5248640482715684545">Сајтов се обидува да отвори друга апликација.</translation>
 <translation id="5256661381001734217">Сајтов се обидува да отвори апликација.  Ова ќе го сопре режимот „Инкогнито“.</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Сајтовите што ги следите ќе ги најдете тука</translation>
 <translation id="5388358297987318779">Отвори слика</translation>
+<translation id="5395707839134961196">Криење на деталите на пребарувачот</translation>
 <translation id="5396950905475481456">Испратете покани до членовите на семејството</translation>
 <translation id="5407969256130905701">Отфрли ги промените</translation>
 <translation id="5414763847370083940">Ќе добиете известување ако цената се намали на кој било сајт.</translation>
@@ -1034,6 +1037,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6453018583485750254">Никогаш не е извршена проверка.</translation>
 <translation id="6459307836338400162">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Деталите се скриени</translation>
 <translation id="646394917185284261">Датотеки</translation>
 <translation id="6464071786529933911">Отв. во нова инког. карт.</translation>
 <translation id="6464397691496239022">Сајтовите може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да останете најавени или да запомнат ставки во кошничката за купување.
@@ -1286,6 +1290,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7812377703891978671">Може да пристапите до сета ваша историја на прелистувањето со избирање <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Преземања</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>
+<translation id="7839994177130598711">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Ставките ќе се отстранат.</translation>
 <translation id="7845466610722898">Прикажете го списокот за читање</translation>
 <translation id="784551991304901159">За да ги видите содржините, изберете „Вклучи“ од менито</translation>

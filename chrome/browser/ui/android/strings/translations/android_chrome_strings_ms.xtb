@@ -598,6 +598,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4307992518367153382">Asas</translation>
+<translation id="4311652497846705514">Buka PDF?</translation>
 <translation id="4320177379694898372">Tiada sambungan Internet</translation>
 <translation id="433213510553688132">Mengikuti…</translation>
 <translation id="4335835283689002019">Penyemakan Imbas Selamat dimatikan</translation>
@@ -655,6 +656,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
 <translation id="4637420359569396807">Dengan pengukuran iklan, jenis data yang terhad boleh dikongsi antara laman dan apl untuk mengukur prestasi iklan laman dan apl tersebut, seperti masa dalam sehari iklan ditunjukkan kepada anda.</translation>
+<translation id="4637754911694490121">Buka PDF yang dimuat turun secara automatik pada masa hadapan</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas}other{# kata laluan yang terjejas}}</translation>
 <translation id="4645146721047390964">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman yang berlainan, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin rosak.</translation>
 <translation id="4650364565596261010">Lalai sistem</translation>
@@ -958,6 +960,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="6192907950379606605">Dapatkan perihalan imej</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196315980958524839">Kata laluan disimpan pada Google Password Manager pada peranti ini</translation>
+<translation id="6202514376968366382">Chrome boleh membuka PDF anda yang dimuat turun</translation>
 <translation id="6202812185118613467">Log masuk semula untuk memulakan penyegerakan</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>

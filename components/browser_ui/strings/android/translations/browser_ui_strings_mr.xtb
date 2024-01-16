@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">साइट ओळखीच्या सेवांकडून मिळणाऱ्या साइन इन सूचना दाखवू शकतात.</translation>
 <translation id="2790501146643349491">सुरू असताना, अलीकडे बंद केलेल्या साइट डेटा पाठवण्याची आणि मिळवण्याची प्रक्रिया पूर्ण करू शकतात. बंद असताना, अलीकडे बंद केलेल्या साइट डेटा पाठवण्याची आणि मिळवण्याची प्रक्रिया पूर्ण करू शकत नाहीत.</translation>
 <translation id="2822354292072154809">तुम्हाला नक्की <ph name="CHOSEN_OBJECT_NAME" /> साठी सर्व साइट परवानग्या रीसेट करायच्या आहेत का?</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">मोबाइल दृश्याची विनंती करा</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
@@ -347,10 +348,12 @@
 <translation id="6746124502594467657">खाली हलवा</translation>
 <translation id="6749077623962119521">परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="6766622839693428701">बंद करण्यासाठी खाली स्वाइप करा.</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> वरून</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> साठी एखादा पर्याय निवडा</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>
 <translation id="6864395892908308021">हे डिव्हाइस NFC रीड करू शकत नाही</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> वरून</translation>
 <translation id="6912998170423641340">साइटचे क्लिपबोर्डवरील मजकूर आणि इमेज रीड करणे ब्लॉक करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6950072572526089586">तुम्ही भेट दिलेली साइट ही तुम्ही काय करत आहात याबद्दलची माहिती सेव्ह करू शकते, जेणेकरून ती अपेक्षेप्रमाणे काम करेल — उदाहरणार्थ, तुम्हाला साइटवर साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम सेव्ह करण्यासाठी. साइट या बरेचदा तुमच्या डिव्हाइसवर ही माहिती तात्पुरती सेव्ह करतात.</translation>
@@ -399,6 +402,7 @@
 <translation id="7667547420449112975">द वंडरफुल विझर्ड ऑफ ओझ</translation>
 <translation id="7684642910516280563">साइटला तृतीय पक्ष कुकी वापरण्याची अनुमती देऊ नका</translation>
 <translation id="7719367874908701697">पेज झूम करा</translation>
+<translation id="7770832849480336015">"<ph name="TITLE_OF_MODULE" />" लपवा</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="780301667611848630">नाही, नको</translation>

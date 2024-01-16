@@ -530,6 +530,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3789841737615482174">Installeer</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803696231112616155">Bied aan om hierdie werf te vertaal</translation>
+<translation id="3808311849069021992">Wys soekenjinbesonderhede</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="3818045793209708987">Het opgehou om hierdie pakkie na te spoor</translation>
 <translation id="3818293389945649617">Vind volgende</translation>
@@ -803,6 +804,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5235389474593199952">Versteek geskiedenis</translation>
 <translation id="5238301240406177137">Stoor in rekening</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nou jou gebruikersnaam en wagwoord gebruik wanneer hulle Google Wagwoordbestuurder gebruik om by <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> aan te meld.</translation>
 <translation id="5245322853195994030">Kanselleer sinkronisering</translation>
 <translation id="5248640482715684545">Hierdie werf probeer om ’n ander app oop te maak.</translation>
 <translation id="5256661381001734217">Hierdie werf probeer om ’n app oop te maak.  Dit sal jou uit Incognito haal.</translation>
@@ -822,6 +824,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5360976571138293719">Raadpleeg <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling.</translation>
 <translation id="5386314158584363703">Jy sal die werwe wat jy volg, hier vind</translation>
 <translation id="5388358297987318779">Maak prent oop</translation>
+<translation id="5395707839134961196">Versteek soekenjinbesonderhede</translation>
 <translation id="5396950905475481456">Nooi gesinslede</translation>
 <translation id="5407969256130905701">Gooi veranderinge weg</translation>
 <translation id="5414763847370083940">Jy sal ’n opletberig kry as die prys op enige werf daal.</translation>
@@ -1035,6 +1038,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6453018583485750254">Kontrole is nooit uitgevoer nie.</translation>
 <translation id="6459307836338400162">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering<ph name="END_LINK" /> én <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat met privaatheid, sekuriteit en data-insameling verband hou.</translation>
+<translation id="6459411599807878608">Besonderhede is versteek</translation>
 <translation id="646394917185284261">Lêers</translation>
 <translation id="6464071786529933911">Maak in nuwe incognito-oortjie oop</translation>
 <translation id="6464397691496239022">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou.
@@ -1287,6 +1291,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7812377703891978671">Jy kan toegang tot al jou blaaigeskiedenis kry deur <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> te kies.</translation>
 <translation id="78146569776629510">Aflaaie</translation>
 <translation id="7839985698273989086">Vanlyn bladsy</translation>
+<translation id="7839994177130598711">Jou gesinslede kan nou jou gebruikersnaam en wagwoord gebruik wanneer hulle Google Wagwoordbestuurder gebruik om by <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> aan te meld.</translation>
 <translation id="7840771868269352570">Die items wat jy gekies het, sal verwyder word.</translation>
 <translation id="7845466610722898">Wys leeslys</translation>
 <translation id="784551991304901159">Kies Skakel Aan op die kieslys om inhoud te sien</translation>

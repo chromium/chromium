@@ -230,6 +230,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1406812885827747674">Allow this time</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1408787208417187241">Triple staple top</translation>
+<translation id="1410365862999780287">Others who use this device won’t see your activity, so you can browse more privately. This won't change how data is collected by websites that you visit and the services that they use, including Google. Downloads, bookmarks and reading list items will be saved.</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413407968866574823">Action and platform games</translation>
 <translation id="1413809658975081374">Privacy error</translation>
@@ -267,12 +268,15 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> is your code for <ph name="EMBEDDED_ORIGIN" /> to continue on <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Show more</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Enter three or more words to get writing help</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Cleaning Services</translation>
 <translation id="1475299637784133125">Looking for browser version? Visit</translation>
 <translation id="1476595624592550506">Change your password</translation>
 <translation id="1482879811280872320">Cycling</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1484449009683144042">This is an experimental AI writing aid and won't always get it right.
+    <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Policies push:</translation>
 <translation id="14938948731065592">Computer peripherals</translation>
 <translation id="1495677929897281669">Back to tab</translation>
@@ -418,6 +422,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
 <translation id="1746531169546376413">0 degrees</translation>
+<translation id="1748225549612934682">Shorten your text to get writing help</translation>
 <translation id="1751544761369730824">Delete site <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Dating and personals</translation>
@@ -688,6 +693,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2289385804009217824">Trim</translation>
 <translation id="2292556288342944218">Your Internet access is blocked</translation>
 <translation id="2293443924986248631">When on, sites can't use cookies that track you across the web. Features on some sites may break.</translation>
+<translation id="2295831393422400053">Turn on the Make searches and browsing better setting to use Help me write</translation>
 <translation id="2300306941146563769">Not uploaded</translation>
 <translation id="230286397113210245">Open Incognito window button, activate to open a new Incognito window to browse privately</translation>
 <translation id="2312234273148520048">Condiments and Dressings</translation>
@@ -749,6 +755,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2436186046335138073">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links?</translation>
 <translation id="2438874542388153331">Quad punch right</translation>
 <translation id="2441854154602066476">Payment methods available to be filled on touch. Keyboard hidden.</translation>
+<translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Your browsing history
+            <ph name="LIST_ITEM" />Cookies and site data
+            <ph name="LIST_ITEM" />Information entered in forms
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Peripherals attached to this device while you are logged in</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2456755709261364512">Your battery must be charged above <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -792,6 +804,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2536110899380797252">Add Address</translation>
+<translation id="2537931901612099523">Others who use this device won’t see your activity, so you can browse more privately. This won't change how data is collected by websites that you visit and the services that they use, including Google. Downloads and bookmarks will be saved.</translation>
 <translation id="2539524384386349900">Detect</translation>
 <translation id="2541219929084442027">Pages that you view in Incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your Incognito tabs. Any files that you download or bookmarks that you create will be kept.</translation>
 <translation id="2542106216580219892">Surfing</translation>
@@ -863,6 +876,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2677696497921480781">Birthdays and name days</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2678468611080193228">Try temporarily allowing third-party cookies, which means less protection but that site features are more likely to work</translation>
+<translation id="2686919536310834199">Send feedback for Help me write.</translation>
 <translation id="2687555958734450033">Best fit</translation>
 <translation id="2688186765492306706">500 mm x 760 mm</translation>
 <translation id="2688969097326701645">Yes, continue</translation>
@@ -1704,6 +1718,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4333295216031073611">Shopping list</translation>
 <translation id="4333561522337981382">Manage windows on all your displays</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expires tomorrow}other{Expires in # days}}</translation>
+<translation id="4336913590841287350">This policy is not yet supported as a user policy on iOS.</translation>
 <translation id="4340575312453649552">This ad used too many resources for your device, so Chrome removed it.</translation>
 <translation id="4340810192899866471">Import from JSON</translation>
 <translation id="4340982228985273705">This computer is not detected as enterprise managed, so policy can only automatically install extensions hosted on the Chrome Web Store. The Chrome Web Store update URL is '<ph name="CWS_UPDATE_URL" />'.</translation>
@@ -2039,6 +2054,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="503498442187459473"><ph name="HOST" /> wants to use your camera and microphone</translation>
 <translation id="5035135400558156732">Gardening</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">Sign in again, then come back to this tab to get writing help</translation>
 <translation id="5039762155821394373">Font size</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -2230,6 +2246,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
+<translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Your browsing history
+            <ph name="LIST_ITEM" />Cookies and site data
+            <ph name="LIST_ITEM" />Information entered in forms
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> wants to control and reprogramme your MIDI devices (SysEx)</translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
@@ -2450,6 +2472,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903264686717710770">Title:</translation>
 <translation id="5904360430676679685">Family and relationships</translation>
+<translation id="5907669856855422186">Your text and page content are sent to Google and may be used to improve this feature.
+  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
 <translation id="5910140988253729859">Undo autofill</translation>
 <translation id="5911020115933784199">Events and Listings</translation>
@@ -2469,6 +2493,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5925040402342933574">Optical disc (semi-gloss)</translation>
 <translation id="5926982310317673627">Gyms and Health Clubs</translation>
 <translation id="5928444777041341328">Home and garden</translation>
+<translation id="5930147475897662863">Turn on this setting to use Help me write</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
 <translation id="5937560539988385583">Page translated</translation>
 <translation id="5938153366081463283">Add virtual card</translation>
@@ -3115,6 +3140,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7192537357091279678">Computer Drives and Storage</translation>
 <translation id="7193661028827781021">Reference</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195852673246414183">After you turn on this setting, come back to this tab to start writing</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">Your administrator can see:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab, then Enter to open a new incognito tab to browse privately</translation>
@@ -3693,6 +3719,7 @@ Additional details:
 <translation id="8286036467436129157">Sign In</translation>
 <translation id="8286799286781881307">Applications authorised by your administrator can capture all screens attached to your device. This information can be processed locally or uploaded to your organisation’s servers.</translation>
 <translation id="8287123726498397887">Envelope (preprinted)</translation>
+<translation id="8288320283441806607">To use this feature, turn on Make searches and browsing better</translation>
 <translation id="8288807391153049143">Show certificate</translation>
 <translation id="8289355894181816810">Contact your network administrator if you're not sure what this means.</translation>
 <translation id="8292520987784410870">Always verify?</translation>
@@ -4014,6 +4041,7 @@ Additional details:
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Law and government</translation>
 <translation id="8954252855949068147">Apparel</translation>
+<translation id="8956124158020778855">After you turn on this setting, come back to this tab to start writing.</translation>
 <translation id="8957210676456822347">Captive Portal Authorisation</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Go to site settings</translation>

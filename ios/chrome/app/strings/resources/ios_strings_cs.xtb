@@ -530,6 +530,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="380329542618494757">Název</translation>
 <translation id="3803696231112616155">Nabízet překlad tohoto webu</translation>
+<translation id="3808311849069021992">Zobrazit podrobnosti o vyhledávači</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="3818045793209708987">Tuto zásilku jste přestali sledovat</translation>
 <translation id="3818293389945649617">Najít další</translation>
@@ -803,6 +804,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5235389474593199952">Skrýt možnost Historie</translation>
 <translation id="5238301240406177137">Uložit do účtu</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> teď při přihlašování k webu <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocí Správce hesel Google může používat vaše uživatelské jméno a heslo.</translation>
 <translation id="5245322853195994030">Zrušit synchronizaci</translation>
 <translation id="5248640482715684545">Tento web se pokouší otevřít jinou aplikaci.</translation>
 <translation id="5256661381001734217">Tento web se pokouší otevřít aplikaci.  Tím opustíte anonymní režim.</translation>
@@ -822,6 +824,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5360976571138293719">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v části <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Zde najdete weby, které sledujete</translation>
 <translation id="5388358297987318779">Otevřít obrázek</translation>
+<translation id="5395707839134961196">Skrýt podrobnosti o vyhledávači</translation>
 <translation id="5396950905475481456">Pozvěte členy rodiny</translation>
 <translation id="5407969256130905701">Zahodit změny</translation>
 <translation id="5414763847370083940">Pokud cena na některém webu klesne, obdržíte upozornění.</translation>
@@ -1035,6 +1038,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6447842834002726250">Soubory cookie</translation>
 <translation id="6453018583485750254">Kontrola neproběhla.</translation>
 <translation id="6459307836338400162">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v částech <ph name="BEGIN_LINK" />Synchronizace<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Podrobnosti jsou skryty</translation>
 <translation id="646394917185284261">Soubory</translation>
 <translation id="6464071786529933911">Otevřít v nové anonymní kartě</translation>
 <translation id="6464397691496239022">Weby mohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich mohou pamatovat vaše přihlášení a položky v nákupním košíku.
@@ -1287,6 +1291,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7812377703891978671">Výběrem možnosti <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> získáte přístup k celé své historii prohlížení.</translation>
 <translation id="78146569776629510">Stahování</translation>
 <translation id="7839985698273989086">Stránka offline</translation>
+<translation id="7839994177130598711">Členové vaší rodiny teď při přihlašování k webu <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocí Správce hesel Google mohou používat vaše uživatelské jméno a heslo.</translation>
 <translation id="7840771868269352570">Vybrané položky budou odstraněny.</translation>
 <translation id="7845466610722898">Zobrazit seznam četby</translation>
 <translation id="784551991304901159">Pokud chcete zobrazit obsah, v nabídce vyberte Zapnout</translation>

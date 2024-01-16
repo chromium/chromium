@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1173075331199604451">Menu suara</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1246424317317450637">Tebal</translation>
 <translation id="1921351128855867012">Maju cepat <ph name="NUMBER_OF_SECONDS" /> detik</translation>
@@ -8,16 +9,19 @@
 <translation id="3023502830214299618">Sayangnya, pemutaran tidak tersedia untuk halaman ini saat ini. Coba lagi nanti.</translation>
 <translation id="3807208219231826020">Gesek Pemutaran</translation>
 <translation id="385051799172605136">Kembali</translation>
+<translation id="3936324432406465283">Kecepatan Pemutaran</translation>
 <translation id="4020327272915390518">Menu opsi</translation>
 <translation id="4431240646217225907">Tandai teks &amp; scroll otomatis</translation>
 <translation id="4872475766448853257">Mundur <ph name="NUMBER_OF_SECONDS" /> detik</translation>
 <translation id="5234971936051226002">Pemutar “Dengarkan halaman ini” diperkecil.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
+<translation id="5694491020339060116">Menu kecepatan pemutaran</translation>
 <translation id="6315170314923504164">Suara</translation>
 <translation id="6550675742724504774">Opsi</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6846298663435243399">Memuat...</translation>
+<translation id="6889157801232138307">Pemutar “Dengarkan halaman ini”</translation>
 <translation id="7282547042039404307">Halus</translation>
 <translation id="7587250070160020374">Chrome sedang memutar audio</translation>
 <translation id="8136852699834914183">Pemutaran tidak tersedia untuk halaman ini.</translation>

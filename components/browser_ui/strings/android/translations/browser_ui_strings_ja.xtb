@@ -108,6 +108,7 @@
 <translation id="2750481671343847896">サイトで ID サービスからのログイン メッセージを表示できるようにします。</translation>
 <translation id="2790501146643349491">オンにすると、最近閉じたサイトのデータの送受信を完了できます。オフにすると、最近閉じたサイトのデータの送受信を完了できません。</translation>
 <translation id="2822354292072154809">「<ph name="CHOSEN_OBJECT_NAME" />」に関するすべてのサイト権限をリセットしてもよろしいですか？</translation>
+<translation id="2836978798613876756"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="2850913818900871965">モバイルビューをリクエストする</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2874939134665556319">前のトラック</translation>
@@ -347,10 +348,12 @@
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
 <translation id="6766622839693428701">閉じるには下にスワイプします。</translation>
+<translation id="6785959295338971061"><ph name="ACCESS_TIME" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" /> から</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> に対する設定を選択してください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
+<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> から</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
@@ -399,6 +402,7 @@
 <translation id="7667547420449112975">オズの魔法使い</translation>
 <translation id="7684642910516280563">サイトにサードパーティ Cookie の使用を許可しない</translation>
 <translation id="7719367874908701697">ページのズーム</translation>
+<translation id="7770832849480336015">「<ph name="TITLE_OF_MODULE" />」を非表示にします</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">同意しない</translation>

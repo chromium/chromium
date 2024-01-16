@@ -230,6 +230,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1406812885827747674">Permitir desta vez</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408787208417187241">Três grampos na parte superior</translation>
+<translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os downloads, favoritos e itens da Lista de leitura ainda serão salvos.</translation>
 <translation id="1410941016594047814">Envelope de convite</translation>
 <translation id="1413407968866574823">Jogos de ação e plataforma</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
@@ -688,6 +689,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">O seu acesso à Internet está bloqueado</translation>
 <translation id="2293443924986248631">Com esse recurso ativado, os sites não podem usar cookies que rastreiem você pela Internet. Algumas funções dos sites podem não funcionar.</translation>
+<translation id="2295831393422400053">Ativar a configuração "Melhorar as pesquisas e a navegação" para usar o recurso Quero ajuda para escrever</translation>
 <translation id="2300306941146563769">Não enviado</translation>
 <translation id="230286397113210245">Botão "Abrir janela anônima". Ative para abrir uma nova janela anônima e navegar com privacidade</translation>
 <translation id="2312234273148520048">Condimentos e molhos</translation>
@@ -749,6 +751,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perfuração quádrupla no lado direito</translation>
 <translation id="2441854154602066476">Formas de pagamento disponíveis para preenchimento com um toque. Teclado oculto.</translation>
+<translation id="2442865686365739754">O Chrome <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Seu histórico de navegação
+            <ph name="LIST_ITEM" />Cookies e dados de sites
+            <ph name="LIST_ITEM" />Informações inseridas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Periféricos vinculados a este dispositivo enquanto sua conta está conectada</translation>
 <translation id="2450021089947420533">Jornadas</translation>
 <translation id="2456755709261364512">O nível da bateria precisa estar acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -792,6 +800,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2535585790302968248">Abra uma nova guia anônima para navegar com privacidade</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar Endereço</translation>
+<translation id="2537931901612099523">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Downloads e favoritos serão salvos.</translation>
 <translation id="2539524384386349900">Detectar</translation>
 <translation id="2541219929084442027">As páginas que você acessa em guias anônimas não permanecem no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisa depois que as guias são fechadas. Os downloads de arquivos ou favoritos criados são mantidos.</translation>
 <translation id="2542106216580219892">Surfe</translation>
@@ -1704,6 +1713,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4333295216031073611">Lista de compras</translation>
 <translation id="4333561522337981382">Gerenciar janelas em todas as telas</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
+<translation id="4336913590841287350">Esta política ainda não está disponível como uma política do usuário no iOS.</translation>
 <translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4340810192899866471">Importar do JSON</translation>
 <translation id="4340982228985273705">Este computador não foi detectado como gerenciado por empresa, portanto, a política só pode instalar automaticamente as extensões hospedadas na Chrome Web Store. O URL de atualização da Chrome Web Store é o seguinte: <ph name="CWS_UPDATE_URL" />.</translation>
@@ -2230,6 +2240,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nenhum site bloqueado}=1{1 site bloqueado}one{# site bloqueado}other{# sites bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
+<translation id="5434798570900738152">O Chromium <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" />:
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />Seu histórico de navegação
+            <ph name="LIST_ITEM" />Cookies e dados de sites
+            <ph name="LIST_ITEM" />Informações inseridas em formulários
+          <ph name="END_LIST" /></translation>
 <translation id="54430913453805768"><ph name="URL" /> quer controlar e reprogramar seus dispositivos MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Ordem reversa virada para cima</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use as informações salvas sobre você</translation>
@@ -2469,6 +2485,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5925040402342933574">Disco óptico (semibrilho)</translation>
 <translation id="5926982310317673627">Academias</translation>
 <translation id="5928444777041341328">Casa e jardim</translation>
+<translation id="5930147475897662863">Ative essa configuração para usar o recurso Quero ajuda para escrever</translation>
 <translation id="5932224571077948991">No site, há exibição de anúncios invasivos ou enganosos</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicionar cartão virtual</translation>
@@ -3115,6 +3132,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7192537357091279678">Unidades de armazenamento para computadores</translation>
 <translation id="7193661028827781021">Referência</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195852673246414183">Depois de ativar essa configuração, volte a esta guia para começar a escrever</translation>
 <translation id="7199278868241956094">Ofício</translation>
 <translation id="7201591969684833065">O administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />: pressione "Tab" e depois "Enter" para abrir uma nova guia anônima e navegar com privacidade</translation>
@@ -3693,6 +3711,7 @@ Mais detalhes:
 <translation id="8286036467436129157">Fazer login</translation>
 <translation id="8286799286781881307">Os apps autorizados pelo administrador podem capturar todas as telas conectadas ao dispositivo. Essas informações podem ser processadas localmente ou enviadas aos servidores da sua organização.</translation>
 <translation id="8287123726498397887">Envelope (pré-impresso)</translation>
+<translation id="8288320283441806607">Para usar este recurso, ative a opção "Melhorar as pesquisas e a navegação"</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
 <translation id="8289355894181816810">Entre em contato com seu administrador de rede se não souber o que isso significa.</translation>
 <translation id="8292520987784410870">Sempre verificar?</translation>
@@ -4015,6 +4034,7 @@ Mais detalhes:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Leis e governo</translation>
 <translation id="8954252855949068147">Vestuário</translation>
+<translation id="8956124158020778855">Depois de ativar essa configuração, volte a esta guia para começar a gravar.</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Acessar configurações do site</translation>

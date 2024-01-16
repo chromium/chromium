@@ -251,6 +251,7 @@
 <translation id="1434317006812369578">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како што е „Безбедно прелистување со Google“. „Безбедното прелистување“ <ph name="BEGIN_LINK" />неодамна најде злонамерен софтвер на <ph name="SITE" /><ph name="END_LINK" />, што е вметнат во сајтот што се обидувате да го отворите.</translation>
 <translation id="1435940442311036198">Користете криптографски клуч на друг уред</translation>
 <translation id="1436185428532214179">Може да прашува за да изменува датотеки и папки на уредот</translation>
+<translation id="1441816242347931036">Отворете за да продолжите</translation>
 <translation id="1442386063175183758">Десно превиткување како брошура</translation>
 <translation id="1442987760062738829">Дупки</translation>
 <translation id="1446396933673057385">Проверка на точноста</translation>
@@ -700,6 +701,7 @@
 <translation id="2328651992442742497">Дозволено (стандардно)</translation>
 <translation id="2328955282645810595">Алати за градежништво и електрични алати</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="2337044517221264923">Продолжете со пишување</translation>
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
 <translation id="2340549657492527534">Рептили и водоземци</translation>
@@ -1178,6 +1180,7 @@
 <translation id="334438173029876234">Опрема за возење скејтборд</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Промени прокси-поставки...</translation>
+<translation id="335809815767823">Извезено</translation>
 <translation id="3359565626472459400">Брак</translation>
 <translation id="3360103848165129075">Лист на ракувачот со плаќања</translation>
 <translation id="3360313521703038580">Екологија и животна средина</translation>
@@ -1332,6 +1335,7 @@
 <translation id="3632892046558972264">Споделувањето екран е паузирано</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
+<translation id="3638102297696182302">Продолжете „Помогни ми да напишам“ (Help me write). Допрете и притиснете Enter за отворање</translation>
 <translation id="3642196846309122856">Обидете се да ги преземете датотеките повторно</translation>
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3646643500201740985">Мерење на изведбата на реклама</translation>
@@ -1516,6 +1520,7 @@
 <translation id="4014895360827978999">Трговски услуги и системи за плаќање</translation>
 <translation id="4018819349042761761">Јавен клуч</translation>
 <translation id="4023431997072828269">Бидејќи формуларов се испраќа преку врска што не е безбедна, вашите податоци ќе бидат видливи за другите.</translation>
+<translation id="4025325634010721551">Правилата се вчитани повторно</translation>
 <translation id="4030383055268325496">&amp;Врати додавање</translation>
 <translation id="4030545038933060179">Кога е вклучено, список со теми се појавува овде според вашата неодамнешна историја на прелистувањето</translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
@@ -1823,6 +1828,7 @@
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Со поврат на готовина</translation>
 <translation id="4631881646528206880">Регистрација за виртуелна картичка</translation>
+<translation id="4635278307999235413">Се испраќаат податоци до администраторската конзола</translation>
 <translation id="4636930964841734540">Информации</translation>
 <translation id="4638670630777875591">„Инкогнито“ во Chromium</translation>
 <translation id="464342062220857295">Функции за пребарување</translation>
@@ -3735,6 +3741,7 @@
 <translation id="8381674639488873545">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="8389532092404711541">Стандардно: <ph name="LOW_PRICE" /></translation>
 <translation id="8390725133630534698">Споделувањето од <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME" /> е блокирано со правило на администраторот</translation>
+<translation id="8392783408127179588">Правилата се вчитуваат повторно</translation>
 <translation id="8396522675989118466">Ова е <ph name="NUMBER_OF_DIGITS" />-цифрен код на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Достапни начини на плаќање што се пополнуваат со допир отворени на цел екран.</translation>
 <translation id="8398446215576328011">Врати ги применетите правила</translation>
@@ -4154,6 +4161,7 @@
 <translation id="936602727769022409">Може да го изгубите пристапот до сметката на Google. Chromium препорачува да ја промените лозинката сега. Ќе се побара од вас да се најавите.</translation>
 <translation id="937457230470581909">Зоолошки, акваруми и резервати</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Кои податоци се користат:<ph name="END_BOLD" /> темите за реклами се базираат на вашата неодамнешна историја на прелистувањето, списокот со сајтовите што сте ги посетиле со Chrome на уредов.</translation>
+<translation id="937885410143139026">Податоците се испратени до администраторската конзола</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940053046584497293">Патување и транспорт</translation>
 <translation id="944540589955480312">Користете ги лозинките и криптографските клучеви што се зачувани во вашата сметка на Google</translation>

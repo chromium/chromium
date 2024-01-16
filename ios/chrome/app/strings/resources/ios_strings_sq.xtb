@@ -529,6 +529,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="380329542618494757">Emri</translation>
 <translation id="3803696231112616155">Ofro përkthimin për këtë sajt</translation>
+<translation id="3808311849069021992">Shfaq detajet e motorit të kërkimit</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3818045793209708987">Gjurmimi për këtë pako ka ndaluar</translation>
 <translation id="3818293389945649617">Gjej tjetrin</translation>
@@ -802,6 +803,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5235389474593199952">Fshih "Historikun"</translation>
 <translation id="5238301240406177137">Ruaje te llogaria</translation>
+<translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> mund të përdorë tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdor "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5245322853195994030">Anulo sinkronizimin</translation>
 <translation id="5248640482715684545">Ky sajt po përpiqet të hapë një aplikacion tjetër.</translation>
 <translation id="5256661381001734217">Ky sajt po përpiqet të hapë një aplikacion.  Kjo do të të largojë nga modaliteti "I fshehtë".</translation>
@@ -821,6 +823,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5360976571138293719">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Këtu do të gjesh sajtet që ndjek</translation>
 <translation id="5388358297987318779">Hape imazhin</translation>
+<translation id="5395707839134961196">Fshih detajet e motorit të kërkimit</translation>
 <translation id="5396950905475481456">Fto anëtarët e familjes</translation>
 <translation id="5407969256130905701">Hiq ndryshimet</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
@@ -1034,6 +1037,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6453018583485750254">Kontrolli nuk është ekzekutuar asnjëherë.</translation>
 <translation id="6459307836338400162">Për cilësime të tjera në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shiko <ph name="BEGIN_LINK" />Sinkronizimin<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Detajet u fshehën</translation>
 <translation id="646394917185284261">Skedarët</translation>
 <translation id="6464071786529933911">Hape në një skedë të re "të fshehtë"</translation>
 <translation id="6464397691496239022">Sajtet mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
@@ -1286,6 +1290,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7812377703891978671">Mund të kesh qasje tek i gjithë historiku i shfletimit duke zgjedhur "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Shkarkimet</translation>
 <translation id="7839985698273989086">Faqe offline</translation>
+<translation id="7839994177130598711">Anëtarët e familjes mund të përdorin tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdorin "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Artikujt që zgjodhe do të hiqen.</translation>
 <translation id="7845466610722898">Shfaq listën e leximit</translation>
 <translation id="784551991304901159">Për të parë përmbajtjen, zgjidh "Aktivizo" nga menyja</translation>

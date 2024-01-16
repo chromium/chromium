@@ -268,12 +268,15 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="EMBEDDED_ORIGIN" /> para makapagpatuloy sa <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Magpakita ng higit pa</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Maglagay ng 3 o higit pang salita para makatanggap ng tulong sa pagsusulat</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Mga Serbisyo sa Paglilinis</translation>
 <translation id="1475299637784133125">Hinahanap ang bersyon ng browser? Bisitahin ang</translation>
 <translation id="1476595624592550506">Palitan ang iyong password</translation>
 <translation id="1482879811280872320">Pagbibisikleta</translation>
 <translation id="1483493594462132177">Ipadala</translation>
+<translation id="1484449009683144042">Isa itong pang-eksperimentong gabay sa pagsusulat na pinapagana ng AI at hindi ito palaging tama.
+    <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Pag-push ng mga patakaran:</translation>
 <translation id="14938948731065592">Mga computer peripheral</translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
@@ -419,6 +422,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Nagtatala ang Chrome ng mga paksa kung saan ka interesado habang nagba-browse ka. Naka-predefine ang mga label ng paksa at kasama sa mga ito ang mga bagay tulad ng Sining at Entertainment, Shopping, at Sports. Sa ibang pagkakataon, puwedeng humingi sa Chrome ang site na binibisita mo ng ilan sa iyong mga paksa (pero hindi ang history ng pag-browse mo) para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="1746113442205726301">Pag-shift ng larawan Y</translation>
 <translation id="1746531169546376413">0 degrees</translation>
+<translation id="1748225549612934682">Paikliin ang iyong text para makatanggap ng tulong sa pagsusulat</translation>
 <translation id="1751544761369730824">I-delete ang site na <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Pakikipag-date at mga personal na bagay</translation>
@@ -872,6 +876,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2677696497921480781">Mga kaarawan at pangalan ng araw</translation>
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2678468611080193228">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugan na mas mahina ang proteksyon pero mas malamang na gumana ang mga feature ng site</translation>
+<translation id="2686919536310834199">Magpadala ng feedback para sa Tulungan akong magsulat.</translation>
 <translation id="2687555958734450033">Pinakakasya</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Oo, magpatuloy</translation>
@@ -2049,6 +2054,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="503498442187459473">Gustong gamitin ng <ph name="HOST" /> ang iyong camera at mikropono</translation>
 <translation id="5035135400558156732">Gardening</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">Mag-sign in ulit, pagkatapos ay bumalik sa tab na ito para makatanggap ng tulong sa pagsusulat</translation>
 <translation id="5039762155821394373">Laki ng Font</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -2466,6 +2472,8 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5903264686717710770">Pamagat:</translation>
 <translation id="5904360430676679685">Pamilya at mga ugnayan</translation>
+<translation id="5907669856855422186">Ipinapadala sa Google ang iyong text at content ng page at posibleng gamitin ang mga ito para mapahusay ang feature na ito.
+  <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (naka-sync)</translation>
 <translation id="5910140988253729859">I-undo ang autofill</translation>
 <translation id="5911020115933784199">Mga Event at Listing</translation>

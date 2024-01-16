@@ -268,12 +268,15 @@
 <translation id="1468653229182955856"><ph name="EMBEDDED_ORIGIN" /> በ<ph name="TOP_ORIGIN" /> ላይ ለመቀጠል <ph name="ONE_TIME_CODE" /> የእርስዎ ኮድ ነው</translation>
 <translation id="1472675084647422956">ተጨማሪ አሳይ</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">የጽሑፍ እርዳታ ለማግኘት 3 ወይም ከዚያ በላይ ቃላትን ያስገቡ</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">የጽዳት አገልግሎቶች</translation>
 <translation id="1475299637784133125">የአሳሽ ስሪት እየፈለጉ ነው? ይጎብኙ</translation>
 <translation id="1476595624592550506">የይለፍ ቃልዎን ይቀይሩ</translation>
 <translation id="1482879811280872320">ቢስክሌት መጋለብ</translation>
 <translation id="1483493594462132177">ላክ</translation>
+<translation id="1484449009683144042">ይህ የሙከራ AI የመጻፍ እርዳታ ነው እና ሁልጊዜ ትክክል አይሆንም።
+    <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">የመመሪያዎች ግፊት፦</translation>
 <translation id="14938948731065592">የኮምፒውተር መለዋወጫዎች</translation>
 <translation id="1495677929897281669">ወደ ትር ተመለስ</translation>
@@ -419,6 +422,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />ይህን ውሂብ እንዴት ጥቅም ላይ እንደምናውል፦<ph name="END_BOLD" /> Chrome እርስዎ እያሰሱ ሳለ የዝንባሌ ርዕሶችን ማስታወሻ ይይዛል። የርዕስ መሰየሚያዎች አስቀድመው የተገለጹ እና እንደ ስነ ጥበባት እና መዝናኛ፣ ሽመታ እና ስፖርት ያሉ ነገሮችን ያካትታል። በኋላ ላይ የሚጎበኙት ጣቢያ እርስዎ የሚያዩዋቸውን ማስታወቂያዎች ግላዊነት ለማላበስ Chromeን ከእርስዎ ርዕሶች (ነገር ግን የአሰሳ ታሪክዎን ሳይሆን) ውስጥ ጥቂቶቹን ይጠይቃል።</translation>
 <translation id="1746113442205726301">የምስል Y ፈረቃ</translation>
 <translation id="1746531169546376413">0 ዲግሪ</translation>
+<translation id="1748225549612934682">የጽሑፍ እርዳታ ለማግኘት ጽሑፎን ያሳጥሩ</translation>
 <translation id="1751544761369730824">ጣቢያ <ph name="SITE_NAME" /> ሰርዝ</translation>
 <translation id="1752021286346845558">የመልዕክት ሳጥን 8</translation>
 <translation id="1753068535428855445">ለፍቅር መገናኘት እና ራስን ማስተዋወቅ</translation>
@@ -872,6 +876,7 @@
 <translation id="2677696497921480781">የልደት ቀናት እና የስም ቀናት</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2678468611080193228">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ያነሰ ጥበቃ ነው ማለት ነው ነገር ግን የጣቢያ ባህሪያት የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
+<translation id="2686919536310834199">ለእንድጽፍ እርዳኝ ግብረመልስ ይላኩ።</translation>
 <translation id="2687555958734450033">ምርጥ መገጣጠም</translation>
 <translation id="2688186765492306706">500 x 760 ሚሜ</translation>
 <translation id="2688969097326701645">አዎ፣ ቀጥል</translation>
@@ -1409,6 +1414,7 @@
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3744212718085287312">በቀጣይ ጊዜ በምናባዊ ካርድ ደህንነቱ ይበልጥ የተጠበቀ ይሁን?</translation>
 <translation id="3744899669254331632">የድር ጣቢያው Chromium ሊያስኬዳቸው የማይችሉ የተዘበራረቁ ምስክርነቶችን ስለላከ አሁን ላይ <ph name="SITE" />ን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች ብዙውን ጊዜ ጊዜያዊ ናቸው፣ ስለዚህ ይህ ገፅ በኋላ ላይ ምናልባት ሊሰራ ይችል ይሆናል።</translation>
+<translation id="3745599309295009257">የእርስዎ ጽሑፍ እና እርስዎ የሚጽፉበት ገጽ ይዘት እና ዩአርኤል ወደ Google ይላካሉ፣ በሰዎች ይገመገማሉ እና ይህንን ባህሪ ለማሻሻል ያገለግላሉ። የግል መረጃን (ለምሳሌ የሕክምና ወይም የፋይናንስ ዝርዝሮችን) ከማስገባት እንዲሁም የግል ወይም ልዩ ጥንቃቄ የሚያስፈልገው መረጃን በሚያካትቱ ጣቢያዎች ላይ ይህን መሣሪያ ከመጠቀም ተቆጠቡ።</translation>
 <translation id="3748009735914587286">ብረት (ከፍተኛ ማንጸባረቅ)</translation>
 <translation id="3748148204939282805">በ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ላይ ያሉ አጥቂዎች ልክ እንደ ሶፍትዌርን መጫን ወይም የግል መረጃዎችን (ለምሳሌ፦ የይለፍ ቃላትን፣ የስልክ ቁጥሮችን ወይም የክሬዲት ካርዶችን የመሳሰሉ) አጋልጦ መስጠት እንዲያደርጉ ሊያታልለዎት ይችላል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">የአየር በረራ ኢንዱስትሪ</translation>
@@ -2048,6 +2054,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> ካሜራዎን እና ማይክሮፎንዎን መጠቀም ይፈልጋል</translation>
 <translation id="5035135400558156732">የጓሮ አትክልት</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">እንደገና ይግቡ፣ ከዚያም የጽሑፍ እርዳታ ለማግኘት ወደዚህ ትር ይመለሱ</translation>
 <translation id="5039762155821394373">የቅርጸ-ቁምፊ መጠን</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5040262127954254034">ግላዊነት</translation>
@@ -2465,6 +2472,8 @@
 <translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5903264686717710770">ርዕስ፡-</translation>
 <translation id="5904360430676679685">ቤተሰብ እና ግንኙነቶች</translation>
+<translation id="5907669856855422186">የእርስዎ ጽሑፍ እና የገጽ ይዘት ወደ Google ይላካሉ እና ይህንን ባህሪ ለማሻሻል ጥቅም ላይ ሊውሉ ይችላሉ
+  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" />።</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ሰምሯል)</translation>
 <translation id="5910140988253729859">ራስ-ሙላን ቀልብስ</translation>
 <translation id="5911020115933784199">ክስተቶች እና ዝርዝሮች</translation>
@@ -2573,6 +2582,7 @@
 <translation id="6105460996796456817">ጣቢያን ፍጠር</translation>
 <translation id="6106989379647458772">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገፅ ለጊዜው ተበላሽቶ ሊሆን ይችላል ወይም በቋሚነት ወደ አዲስ የድር አድራሻ ተንቀሳቅሶ ሊሆን ይችላል።</translation>
 <translation id="6107012941649240045">ለእዚህ ቀርቧል</translation>
+<translation id="6107924765192360631">የጽሑፍ ጥቆማዎችን ለማግኘት በጥቂት ቃላት ወይም በመጀመሪያ ረቂቅ ይጀምሩ።</translation>
 <translation id="610911394827799129">የእርስዎ Google መለያ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="6116338172782435947">ወደ ቅንጥብ ሰሌዳው የተቀዱ ጽሁፍ እና ምስሎችን ይመልከቱ</translation>
 <translation id="6117833587752089929">ፎቶ (ሳትን)</translation>
@@ -2783,6 +2793,7 @@
 <translation id="6502626736864595182">የመድረክ እና የውይይት አቅራቢዎች</translation>
 <translation id="6502991525169604759">ያለ የእርስዎ ለውጦች</translation>
 <translation id="6506959208958864820">ፖስታ</translation>
+<translation id="6507117483253822672">በድር ላይ በማንኛውም ቦታ በበለጠ በራስ መተማመን ይጻፉ</translation>
 <translation id="6508722015517270189">Chromeን ዳግም ያስጀምሩት</translation>
 <translation id="6513005815064132016">የካሜራዎን አቀማመጥ ለመከታተል መጠየቅ ይችላል</translation>
 <translation id="6517596291481585650">ማስጠንቀቂያ፦ ይህ መመሪያ ዝርዝር ስላልሆነ በመመሪያ በተገለጸው መሠረት እንደ ዝርዝር አልተዋሃደም።</translation>

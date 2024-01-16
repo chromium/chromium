@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1173075331199604451">Ahotsaren menua</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1246424317317450637">Lodia</translation>
 <translation id="1921351128855867012">Aurreratu <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
@@ -8,16 +9,19 @@
 <translation id="3023502830214299618">Tamalez, une honetan ezin da erreproduzitu orri hau. Saiatu berriro geroago.</translation>
 <translation id="3807208219231826020">Arakatu erreprodukzioa</translation>
 <translation id="385051799172605136">Atzera</translation>
+<translation id="3936324432406465283">Erreprodukzio-abiadura</translation>
 <translation id="4020327272915390518">Aukeren menua</translation>
 <translation id="4431240646217225907">Nabarmendu testua eta egin gora eta behera automatikoki</translation>
 <translation id="4872475766448853257">Egin atzera <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
 <translation id="5234971936051226002">"Entzun orri honetan dagoena" erreproduzigailua minimizatuta dago.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
+<translation id="5694491020339060116">Erreprodukzio-abiaduraren menua</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6846298663435243399">Kargatzen…</translation>
+<translation id="6889157801232138307">"Entzun orri honetan dagoena" erreproduzigailua</translation>
 <translation id="7282547042039404307">Leuna</translation>
 <translation id="7587250070160020374">Chrome orain erreproduzitzen ari da</translation>
 <translation id="8136852699834914183">Erreprodukzioa ez dago erabilgarri orrialde honetan.</translation>

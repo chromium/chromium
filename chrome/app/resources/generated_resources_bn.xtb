@@ -2089,6 +2089,7 @@
 <translation id="2540449034743108469">এক্সটেনশন অ্যাক্টিভিটির উপর লক্ষ্য রাখতে "শুরু করুন" টিপুন</translation>
 <translation id="2540651571961486573">কোনও সমস্যা হয়েছে। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2541002089857695151">ফুল-স্ক্রিন কাস্টিং অপ্টিমাইজ করবেন?</translation>
+<translation id="2541343621592284735">ক্যামেরা ও মাইক্রোফোন ব্যবহারের অনুমতি নেই</translation>
 <translation id="2541706104884128042">ঘুমানোর নতুন সময় সেট করা হয়েছে</translation>
 <translation id="2542050502251273923">এটি নেটওয়ার্ক কানেকশন ম্যানেজার এবং ff_debug ব্যবহার করে এমন অন্যান্য পরিষেবার ডিবাগিং লেভেল সেট করে।</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" />-এর জন্য আপনি যেসব অনুমতি দেন সেই অনুমতিগুলি এই অ্যাপও পেয়ে যাবে। <ph name="MANAGE_LINK" />}one{<ph name="APP_NAME" />-এর জন্য আপনি যেসব অনুমতি দেন সেই অনুমতিগুলি এইসব অ্যাপও পেয়ে যাবে। <ph name="MANAGE_LINK" />}other{<ph name="APP_NAME" />-এর জন্য আপনি যেসব অনুমতি দেন সেই অনুমতিগুলি এইসব অ্যাপও পেয়ে যাবে। <ph name="MANAGE_LINK" />}}</translation>
@@ -3161,6 +3162,7 @@
 <translation id="3406605057700382950">ও বুকমার্ক বার দেখান</translation>
 <translation id="3407392651057365886">আরও পৃষ্ঠা প্রিলোড করা হয়। অন্য সাইট অনুরোধ করলে Google সার্ভারের মাধ্যমে পৃষ্ঠা প্রিলোড করা হতে পারে।</translation>
 <translation id="3407967630066378878">ফিঙ্গারপ্রিন্ট সেট-আপ করতে, আপনার সন্তানকে <ph name="DEVICE_TYPE" />-এর বাঁদিকে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
+<translation id="3408555740610481810">ক্যামেরা ও মাইক্রোফোন ব্যবহার করা হচ্ছে</translation>
 <translation id="3409513286451883969">&amp;বেছে নেওয়া টেক্সট <ph name="LANGUAGE" />-এ অনুবাদ করুন</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">নির্বাচনে যান</translation>
@@ -3421,6 +3423,7 @@
 <translation id="3617062258679844578">ক্লিক করার জন্য, আপনার টাচপ্যাডে প্রেস না করে ট্যাপ করুন</translation>
 <translation id="3617891479562106823">ব্যাকগ্রাউন্ডগুলি উপলভ্য নয়। পরে আবার চেষ্টা করুন।</translation>
 <translation id="3618286417582819036">একটি সমস্যা হয়েছে</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> Google Password Manager ব্যবহার করার সময় এখন ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন। সাইন-ইন করতে তাকে <ph name="WEBSITE" />-এ যেতে বলুন।</translation>
 <translation id="3619115746895587757">ক্যাপুচিনো</translation>
 <translation id="3619294456800709762">সাইট অটোমেটিক 'ছবির-মধ্যে-ছবি' মোডে প্রবেশ করতে পারে</translation>
 <translation id="3620136223548713675">ভৌগোলিক অবস্থান</translation>
@@ -7632,7 +7635,6 @@
 <translation id="694168622559714949">আপনার অ্যাডমিনিস্ট্রেটর ডিফল্ট হিসেবে একটি ভাষা সেট করেছেন, যেটি পরিবর্তন করা যাবে না।</translation>
 <translation id="6941937518557314510">আপনার সার্টিফিকেট দিয়ে <ph name="HOST_NAME" />-এ প্রমাণীকরণ করতে <ph name="TOKEN_NAME" />-এ সাইন-ইন করুন৷</translation>
 <translation id="6943060957016121200">ইনস্ট্যান্ট টিথারিং চালু করুন</translation>
-<translation id="6943176775188458830">প্রিন্ট বাতিল করুন</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> থেকে ডিসকানেক্ট করা আছে</translation>
 <translation id="6944708469742828051">এই 'পাসকী' শুধু Windows Hello-এ সেভ করা হবে</translation>
 <translation id="6944750221184785444">এই প্রোফাইল ইনস্টল করা যাচ্ছে না। প্রযুক্তিগত সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -7936,6 +7938,7 @@
 <translation id="7189965711416741966">আঙ্গুলের ছাপ যোগ করা হয়েছে।</translation>
 <translation id="7191063546666816478">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> এবং অন্য <ph name="NUMBER_OF_OTHER_APPS" />টি অ্যাপে এখনও খুলবে।</translation>
 <translation id="7191159667348037">অজানা প্রিন্টার (USB)</translation>
+<translation id="7191632649590906354">আপনার পরিবারের সদস্যরা Google Password Manager ব্যবহার করার সময় এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন। সাইন-ইন করতে তাদের <ph name="WEBSITE" />-এ যেতে বলুন।</translation>
 <translation id="7193051357671784796">আপনার সংস্থা এই অ্যাপ যোগ করেছে। ইনস্টল করা সম্পূর্ণ করতে অ্যাপটি আবার চালু করুন।</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> এর জন্য কোনও পাসওয়ার্ড সেভ করা হয়নি</translation>
 <translation id="7193663868864659844">সাজেস্ট করা গ্রুপের জন্য মতামত পাঠান</translation>

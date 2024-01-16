@@ -529,6 +529,7 @@
 <translation id="3789841737615482174">Установить</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803696231112616155">Предлагать переводить этот сайт</translation>
+<translation id="3808311849069021992">Показать сведения о поисковой системе</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3818045793209708987">Эта посылка больше не отслеживается</translation>
 <translation id="3818293389945649617">Найти следующую</translation>
@@ -802,6 +803,7 @@
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="5235389474593199952">Скрыть историю</translation>
 <translation id="5238301240406177137">Сохранить в аккаунте</translation>
+<translation id="5238596603078743134">Теперь <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> может использовать ваши имя пользователя и пароль при входе в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей.</translation>
 <translation id="5245322853195994030">Отключить</translation>
 <translation id="5248640482715684545">Этот сайт пытается открыть другое приложение.</translation>
 <translation id="5256661381001734217">Этот сайт пытается открыть приложение.  Это приведет к выходу из режима инкогнито.</translation>
@@ -821,6 +823,7 @@
 <translation id="5360976571138293719">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделе <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Ваши подписки появятся здесь</translation>
 <translation id="5388358297987318779">Открыть изображение</translation>
+<translation id="5395707839134961196">Скрыть сведения о поисковой системе</translation>
 <translation id="5396950905475481456">Пригласите пользователей в семейную группу</translation>
 <translation id="5407969256130905701">Сбросить изменения</translation>
 <translation id="5414763847370083940">Если на одном из сайтов появится скидка, вы получите оповещение.</translation>
@@ -1034,6 +1037,7 @@
 <translation id="6447842834002726250">Файлы сookie</translation>
 <translation id="6453018583485750254">Пароли не проверялись.</translation>
 <translation id="6459307836338400162">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK" />Синхронизация<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
+<translation id="6459411599807878608">Сведения скрыты</translation>
 <translation id="646394917185284261">Файлы</translation>
 <translation id="6464071786529933911">Откр. в режиме инкогнито</translation>
 <translation id="6464397691496239022">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
@@ -1286,6 +1290,7 @@
 <translation id="7812377703891978671">Чтобы открыть историю браузера, выберите "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Скачанные файлы</translation>
 <translation id="7839985698273989086">Офлайн-версия страницы</translation>
+<translation id="7839994177130598711">Теперь участники вашей семейной группы могут использовать ваши имя пользователя и пароль при входе в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей.</translation>
 <translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7845466610722898">Показать список для чтения</translation>
 <translation id="784551991304901159">Чтобы посмотреть контент, в меню выберите "Включить"</translation>

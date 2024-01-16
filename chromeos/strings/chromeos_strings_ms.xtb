@@ -574,6 +574,7 @@
 <translation id="5227902338748591677">Jadual tema gelap</translation>
 <translation id="5229344016299762883">Keluar daripada skrin penuh</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Pentadbir anda telah menyediakan "<ph name="APP_NAME" />" untuk dimulakan secara automatik setiap kali anda log masuk.}=2{Pentadbir anda telah menyediakan "<ph name="APP_NAME" />" dan 1 lagi apl untuk dimulakan secara automatik setiap kali anda log masuk.}other{Pentadbir anda telah menyediakan "<ph name="APP_NAME" />" dan # lagi apl untuk dimulakan secara automatik setiap kali anda log masuk.}}</translation>
 <translation id="5252456968953390977">Perayauan</translation>
 <translation id="5257811368506016604">Dayakan mod warna cerah</translation>
 <translation id="5264277876637023664">Jalankan Ujian CPU</translation>
@@ -945,6 +946,7 @@
 <translation id="7971535376154084247">Kawalan umum</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" telah dimulakan secara automatik}other{# apl dimulakan secara automatik}}</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8017679124341497925">Pintasan diedit</translation>

@@ -574,6 +574,7 @@
 <translation id="5227902338748591677">የጠቆር ያለ ገጽታ መርሐግብር</translation>
 <translation id="5229344016299762883">ከሙሉ ማያ ገጽ ውጣ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{አስተዳዳሪዎ «<ph name="APP_NAME" />»ን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምር አዘጋጅቷል።}=2{አስተዳዳሪዎ «<ph name="APP_NAME" />» እና 1 ሌላ መተግበሪያን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምሩ አዘጋጅቷል።}one{አስተዳዳሪዎ «<ph name="APP_NAME" />» እና # ሌላ መተግበሪያን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምሩ አዘጋጅቷል።}other{አስተዳዳሪዎ «<ph name="APP_NAME" />» እና # ሌሎች መተግበሪያዎችን በእያንዳንዱ ጊዜ ሲገቡ በራስ-ሰር እንዲጀምሩ አዘጋጅቷል።}}</translation>
 <translation id="5252456968953390977">ውሂብን በማዛወር ላይ</translation>
 <translation id="5257811368506016604">የብርሃን ቀለም ሁነታን አንቃ</translation>
 <translation id="5264277876637023664">የሲፒዩ ሙከራን አሂድ</translation>
@@ -945,6 +946,7 @@
 <translation id="7971535376154084247">አጠቃላይ መቆጣጠሪያዎች</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> አውታረ መረብን ለመቀላቀል ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="7978412674231730200">የግል ቁልፍ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» በራስ-ሰር ተጀምሯል}one{# መተግበሪያ በራስ-ሰር ተጀምሯል}other{# መተግበሪያዎች በራስ-ሰር ተጀምረዋል}}</translation>
 <translation id="7994702968232966508">የEAP ስልት</translation>
 <translation id="8004582292198964060">አሳሽ</translation>
 <translation id="8017679124341497925">አቋራጭ አርትዖት ተደርጎበታል</translation>
