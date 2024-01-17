@@ -26,7 +26,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/public/features.h"
@@ -231,11 +230,11 @@ void PageResourceMonitor::OnPageResourceUsageResult(
       ukm.SetTotalRecentCPUUsageAllPages(kCPUUsageFactor * total_cpu_usage);
     }
     // Add memory summary, if this page included it.
-    const base::optional_ref<const MemorySummaryResult> memory_result =
-        resource_attribution::AsResult<MemorySummaryResult>(result);
-    if (memory_result.has_value()) {
-      ukm.SetResidentSetSizeEstimate(memory_result->resident_set_size_kb);
-      ukm.SetPrivateFootprintEstimate(memory_result->private_footprint_kb);
+    if (result.memory_summary_result.has_value()) {
+      ukm.SetResidentSetSizeEstimate(
+          result.memory_summary_result->resident_set_size_kb);
+      ukm.SetPrivateFootprintEstimate(
+          result.memory_summary_result->private_footprint_kb);
     }
     ukm.Record(ukm::UkmRecorder::Get());
   }

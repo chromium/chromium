@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -74,11 +73,6 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   uint32_t GetQueryCountForTesting(ResourceType resource_type) const;
 
  private:
-  // A map from a ResourceContext to a query result for a single ResourceType.
-  // The public interface uses QueryResultMap, from ResourceContext to a list of
-  // results for several ResourceTypes.
-  using SingleQueryResultMap = std::map<ResourceContext, QueryResult>;
-
   // Increases the CPU query count. `cpu_monitor_` will start monitoring CPU
   // usage when the count > 0.
   void AddCPUQuery();
@@ -93,12 +87,13 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   // Decreases the memory query count.
   void RemoveMemoryQuery();
 
-  // Invoked from RequestResults when all results are received. `results` will
-  // contain a separate result map for each ResourceType that was requested.
+  // Invoked from RequestResults when all results are received. `all_results`
+  // will contain a separate result map for each ResourceType that was
+  // requested.
   void OnResultsReceived(
       const ContextCollection& contexts,
       base::OnceCallback<void(const QueryResultMap&)> callback,
-      const std::vector<SingleQueryResultMap>& results);
+      std::vector<QueryResultMap> all_results);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

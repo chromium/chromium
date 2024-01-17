@@ -62,9 +62,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes, and
-  // all pages containing them. Each QueryResult variant will contain a
+  // all pages containing them. Each QueryResults object will contain a
   // CPUTimeResult.
-  std::map<ResourceContext, QueryResult> UpdateAndGetCPUMeasurements();
+  QueryResultMap UpdateAndGetCPUMeasurements();
 
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;

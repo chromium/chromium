@@ -187,18 +187,17 @@ bool CPUMeasurementMonitor::IsMonitoring() const {
   return graph_;
 }
 
-std::map<ResourceContext, QueryResult>
-CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
+QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateAllCPUMeasurements();
-  std::map<ResourceContext, QueryResult> results;
+  QueryResultMap results;
   for (const auto& [context, result] : measurement_results_) {
     ValidateCPUTimeResult(result);
     if (IsEmptyCPUTimeResult(result)) {
       // Don't include empty measurements in the public results.
       continue;
     }
-    results.emplace(context, QueryResult(result));
+    results.emplace(context, QueryResults{.cpu_time_result = result});
   }
 
   // After a node is deleted its measurements should only be kept until used

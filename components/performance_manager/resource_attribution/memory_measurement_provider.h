@@ -35,10 +35,9 @@ class MemoryMeasurementProvider {
   void SetDelegateFactoryForTesting(
       MemoryMeasurementDelegate::Factory* factory);
 
-  // Results of a memory summary query. Each QueryResult variant will contain a
+  // Results of a memory summary query. Each QueryResults object will contain a
   // MemorySummaryResult.
-  using ResultCallback =
-      base::OnceCallback<void(std::map<ResourceContext, QueryResult>)>;
+  using ResultCallback = base::OnceCallback<void(QueryResultMap)>;
 
   // Requests memory summaries for all processes. `callback` will be invoked
   // with the results.

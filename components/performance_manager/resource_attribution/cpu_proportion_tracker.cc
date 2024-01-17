@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/types/optional_ref.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -45,13 +44,11 @@ std::map<ResourceContext, double> CPUProportionTracker::StartNextInterval(
       std::exchange(cached_cpu_measurements_, results);
 
   std::map<ResourceContext, double> cpu_usage_map;
-  for (const auto& [context, query_result] : cached_cpu_measurements_) {
+  for (const auto& [context, result] : cached_cpu_measurements_) {
     if (!context_filter_.is_null() && !context_filter_.Run(context)) {
       continue;
     }
-    base::optional_ref<const CPUTimeResult> result =
-        AsResult<CPUTimeResult>(query_result);
-    if (!result.has_value()) {
+    if (!result.cpu_time_result.has_value()) {
       continue;
     }
 
@@ -129,24 +126,21 @@ std::map<ResourceContext, double> CPUProportionTracker::StartNextInterval(
     // |----| |--------------|
     // | X% | |      0%      |
     // `result.start_time` <= `result.metadata.measurement_time` <= A
-    if (result->metadata.measurement_time < interval_start) {
+    if (result.cpu_time_result->metadata.measurement_time < interval_start) {
       // Case 5.
       continue;
     }
-    base::TimeDelta current_cpu = result->cumulative_cpu;
-    if (result->start_time < interval_start) {
+    base::TimeDelta current_cpu = result.cpu_time_result->cumulative_cpu;
+    if (result.cpu_time_result->start_time < interval_start) {
       // Case 2 or 3.
       const auto it = previous_measurements.find(context);
-      base::optional_ref<const CPUTimeResult> previous_result =
-          it == previous_measurements.end()
-              ? std::nullopt
-              : AsResult<CPUTimeResult>(it->second);
-      if (!previous_result.has_value()) {
+      if (it == previous_measurements.end() ||
+          !it->second.cpu_time_result.has_value()) {
         // No baseline to know how much of the context's CPU came before the
         // interval. Skip it.
         continue;
       }
-      current_cpu -= previous_result->cumulative_cpu;
+      current_cpu -= it->second.cpu_time_result->cumulative_cpu;
     }
     CHECK(!current_cpu.is_negative());
     cpu_usage_map.emplace(context, current_cpu / measurement_interval);

@@ -7,13 +7,9 @@
 
 #include <optional>
 #include <ostream>
-#include <string_view>
 
-#include "base/strings/strcat.h"
-#include "base/types/optional_ref.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "components/performance_manager/public/resource_attribution/type_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,38 +17,43 @@ namespace performance_manager::resource_attribution {
 
 namespace internal {
 
-// AsResult<T> wrapper that returns an optional, since gMock doesn't have a
-// matcher for optional_ref.
-template <typename T>
-std::optional<T> AsResultToOptional(const QueryResults& results) {
-  return AsResult<T>(results).CopyAsOptional();
-}
-
-// Returns the name of a QueryResult type at compile-time, for better error
-// messages.
-template <typename T>
-constexpr std::string_view TypeNameString();
+// Returns a reference to the QueryResults member holding a ResultType.
+template <typename ResultType>
+constexpr const std::optional<ResultType>& QueryResultsMember(
+    const QueryResults& results);
 
 template <>
-constexpr std::string_view TypeNameString<CPUTimeResult>() {
+constexpr const std::optional<CPUTimeResult>& QueryResultsMember(
+    const QueryResults& results) {
+  return results.cpu_time_result;
+}
+
+template <>
+constexpr const std::optional<MemorySummaryResult>& QueryResultsMember(
+    const QueryResults& results) {
+  return results.memory_summary_result;
+}
+
+// Returns the name of a type at compile-time, for better error messages.
+template <typename T>
+constexpr const char* TypeNameString();
+
+template <>
+constexpr const char* TypeNameString<CPUTimeResult>() {
   return "CPUTimeResult";
 }
 
 template <>
-constexpr std::string_view TypeNameString<MemorySummaryResult>() {
+constexpr const char* TypeNameString<MemorySummaryResult>() {
   return "MemorySummaryResult";
 }
 
 }  // namespace internal
 
 // gMock matcher expecting that a given ResultType object (which can be any
-// alternative in the QueryResult variant) has a ResultMetadata member whose
-// fields match `measurement_time_matcher` and `algorithm_matcher`.
-template <
-    typename ResultType,
-    typename Matcher1,
-    typename Matcher2,
-    internal::EnableIfIsVariantAlternative<ResultType, QueryResult> = true>
+// object with a ResultMetadata field) has a ResultMetadata member whose fields
+// match `measurement_time_matcher` and `algorithm_matcher`.
+template <typename ResultType, typename Matcher1, typename Matcher2>
 auto ResultMetadataMatches(Matcher1 measurement_time_matcher,
                            Matcher2 algorithm_matcher) {
   return ::testing::Field(
@@ -78,9 +79,9 @@ auto ResultMetadataMatches(Matcher1 measurement_time_matcher,
 template <typename ResultType, typename Matcher>
 auto QueryResultsMatch(Matcher matcher) {
   return ::testing::ResultOf(
-      // Format the function name "AsResult<ResultType>" in error messages.
-      base::StrCat({"AsResult<", internal::TypeNameString<ResultType>(), ">"}),
-      internal::AsResultToOptional<ResultType>, ::testing::Optional(matcher));
+      // Error messages will be formatted "whose ResultType value..."
+      internal::TypeNameString<ResultType>(),
+      &internal::QueryResultsMember<ResultType>, ::testing::Optional(matcher));
 }
 
 // As QueryResultsMatch() but expects that the QueryResults object contains
