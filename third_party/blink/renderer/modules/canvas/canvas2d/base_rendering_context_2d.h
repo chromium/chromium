@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -291,6 +292,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return const_cast<BaseRenderingContext2D*>(this)->GetPaintCanvas();
   }
   virtual cc::PaintCanvas* GetPaintCanvas() = 0;
+
+  // Returns the paint ops recorder this context uses. Can be `nullptr` if no
+  // recorder is available.
+  virtual MemoryManagedPaintRecorder* Recorder() = 0;
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
   // been called and returned a non-null value.
@@ -565,8 +570,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual bool IsPaint2D() const { return false; }
   void WillOverwriteCanvas(OverdrawOp);
-  virtual void SkipQueuedDrawCommands() = 0;
-  virtual void RestartRecording() = 0;
 
   void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
     if (color_scheme == color_scheme_) {

@@ -38,6 +38,10 @@ void PaintRenderingContext2D::InitializeForRecording(
   RestoreMatrixClipStack(canvas);
 }
 
+void PaintRenderingContext2D::RecordingCleared() {
+  previous_frame_ = absl::nullopt;
+}
+
 int PaintRenderingContext2D::Width() const {
   return container_size_.width();
 }
@@ -102,19 +106,6 @@ PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
   return PredefinedColorSpace::kSRGB;
 }
 
-void PaintRenderingContext2D::SkipQueuedDrawCommands() {
-  previous_frame_ = absl::nullopt;
-  if (paint_recorder_.HasRecordedDrawOps()) {
-    // Discard previous draw commands
-    paint_recorder_.finishRecordingAsPicture();
-  }
-}
-
-void PaintRenderingContext2D::RestartRecording() {
-  previous_frame_ = absl::nullopt;
-  // Discard previous draw commands
-  paint_recorder_.finishRecordingAsPicture();
-}
 
 DOMMatrix* PaintRenderingContext2D::getTransform() {
   const AffineTransform& t = GetState().GetTransform();

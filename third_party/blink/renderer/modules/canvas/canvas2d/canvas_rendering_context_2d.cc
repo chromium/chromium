@@ -263,20 +263,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                                          row_bytes, x, y);
 }
 
-void CanvasRenderingContext2D::SkipQueuedDrawCommands() {
-  if (CanvasResourceProvider* provider = ResourceProvider();
-      LIKELY(provider != nullptr)) {
-    provider->SkipQueuedDrawCommands();
-  }
-}
-
-void CanvasRenderingContext2D::RestartRecording() {
-  if (CanvasResourceProvider* provider = ResourceProvider();
-      LIKELY(provider != nullptr)) {
-    provider->RestartRecording();
-  }
-}
-
 void CanvasRenderingContext2D::Reset() {
   // This is a multiple inheritance bootstrap
   BaseRenderingContext2D::ResetInternal();
@@ -402,6 +388,14 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() {
     return nullptr;
   }
   return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
+}
+
+MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
+  CanvasResourceProvider* provider = ResourceProvider();
+  if (UNLIKELY(provider == nullptr)) {
+    return nullptr;
+  }
+  return &provider->Recorder();
 }
 
 void CanvasRenderingContext2D::WillDraw(

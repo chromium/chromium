@@ -1323,8 +1323,8 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (UNLIKELY(TotalOpBytesUsed() > max_recorded_op_bytes_) ||
-      UNLIKELY(TotalImageBytesUsed() > max_pinned_image_bytes_)) {
+  if (UNLIKELY(recorder_.OpBytesUsed() > max_recorded_op_bytes_) ||
+      UNLIKELY(recorder_.ImageBytesUsed() > max_pinned_image_bytes_)) {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }
@@ -1390,6 +1390,15 @@ void CanvasResourceProvider::InitializeForRecording(
   if (resource_host_) {
     resource_host_->InitializeForRecording(canvas);
   }
+}
+
+void CanvasResourceProvider::RecordingCleared() {
+  // Since the recording has been cleared, it contains no draw commands and it
+  // is now safe to update `mode_` to discard the old copy of canvas content.
+  mode_ = SkSurface::kDiscard_ContentChangeMode;
+  clear_frame_ = true;
+  last_flush_reason_ = FlushReason::kNone;
+  printing_fallback_reason_ = FlushReason::kNone;
 }
 
 cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
@@ -1494,7 +1503,7 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
 
 absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason) {
-  if (!HasRecordedDrawOps()) {
+  if (!recorder_.HasRecordedDrawOps()) {
     return absl::nullopt;
   }
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
@@ -1584,7 +1593,7 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
 
   DCHECK(IsValid());
-  DCHECK(!HasRecordedDrawOps());
+  DCHECK(!recorder_.HasRecordedDrawOps());
 
   EnsureSkiaCanvas();
 
@@ -1716,38 +1725,6 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()
   return canvas_resources_.back();
 }
 
-void CanvasResourceProvider::SkipQueuedDrawCommands() {
-  // Notify the provider that the recording has been cleared.
-  RecordingCleared();
-
-  // If no draw calls have been recorded, we have nothing to skip. The recoding
-  // could still contain layers or matrix clip stack levels. As an optimization,
-  // we can early abort as there is no need to discard the layer matrix clip
-  // stack just to rebuild it again.
-  if (!HasRecordedDrawOps()) {
-    return;
-  }
-
-  // Discards the whole recording and rebuilds the layer and matrix clip stack.
-  recorder_.finishRecordingAsPicture();
-}
-
-void CanvasResourceProvider::RestartRecording() {
-  // Notify the provider that the recording has been cleared.
-  RecordingCleared();
-  // Discard the whole recording and re-initialize it.
-  recorder_.finishRecordingAsPicture();
-}
-
-void CanvasResourceProvider::RecordingCleared() {
-  // The recording was cleared from any draw command it might have had.
-  // It's now safe to update `mode_` to discard the old copy of canvas content.
-  mode_ = SkSurface::kDiscard_ContentChangeMode;
-  clear_frame_ = true;
-  last_flush_reason_ = FlushReason::kNone;
-  printing_fallback_reason_ = FlushReason::kNone;
-}
-
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
@@ -1759,10 +1736,6 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   // PaintImage::GetSwSkImage above
   sk_image->peekPixels(&map);
   WritePixels(map.info(), map.addr(), map.rowBytes(), /*x=*/0, /*y=*/0);
-}
-
-bool CanvasResourceProvider::HasRecordedDrawOps() const {
-  return recorder_.HasRecordedDrawOps();
 }
 
 void CanvasResourceProvider::TearDownSkSurface() {

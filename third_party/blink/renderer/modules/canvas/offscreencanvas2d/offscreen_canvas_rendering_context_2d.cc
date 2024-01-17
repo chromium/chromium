@@ -139,7 +139,8 @@ void OffscreenCanvasRenderingContext2D::commit() {
 
 void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
   CanvasResourceProvider* provider = GetCanvasResourceProvider();
-  if (UNLIKELY(provider == nullptr) || !provider->HasRecordedDrawOps()) {
+  if (UNLIKELY(provider == nullptr) ||
+      !provider->Recorder().HasRecordedDrawOps()) {
     return;
   }
 
@@ -322,6 +323,14 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
   return provider->Canvas();
 }
 
+MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder() {
+  CanvasResourceProvider* provider = GetCanvasResourceProvider();
+  if (UNLIKELY(provider == nullptr)) {
+    return nullptr;
+  }
+  return &provider->Recorder();
+}
+
 void OffscreenCanvasRenderingContext2D::WillDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
@@ -373,20 +382,6 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
 
   return offscreenCanvasForBinding()->ResourceProvider()->WritePixels(
       orig_info, pixels, row_bytes, x, y);
-}
-
-void OffscreenCanvasRenderingContext2D::SkipQueuedDrawCommands() {
-  if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
-      provider != nullptr) {
-    provider->SkipQueuedDrawCommands();
-  }
-}
-
-void OffscreenCanvasRenderingContext2D::RestartRecording() {
-  if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
-      provider != nullptr) {
-    provider->RestartRecording();
-  }
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {

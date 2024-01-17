@@ -260,7 +260,7 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
                                     provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
-  ASSERT_FALSE(provider->HasRecordedDrawOps());
+  ASSERT_FALSE(provider->Recorder().HasRecordedDrawOps());
 }
 
 TEST(VideoFrameImageUtilTest, SoftwareCreateResourceProviderForVideoFrame) {

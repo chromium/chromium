@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -444,7 +445,9 @@ void BaseRenderingContext2D::ResetInternal() {
   layer_count_ = 0;
   SetIsTransformInvertible(true);
   CanvasPath::Clear();
-  RestartRecording();
+  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
+    recorder->RestartRecording();
+  }
 
   // Clear the frame in case a flush previously drew to the canvas surface.
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
@@ -2687,7 +2690,9 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
     }
   }
 
-  SkipQueuedDrawCommands();
+  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
+    recorder->SkipQueuedDrawCommands();
+  }
 }
 
 void BaseRenderingContext2D::WillUseCurrentFont() const {

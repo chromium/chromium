@@ -55,4 +55,25 @@ cc::PaintRecord MemoryManagedPaintRecorder::finishRecordingAsPicture() {
   return record;
 }
 
+void MemoryManagedPaintRecorder::SkipQueuedDrawCommands() {
+  CHECK(is_recording_);
+
+  // If no draw calls have been recorded, we have nothing to skip. The recoding
+  // could still contain layers or matrix clip stack levels. As an optimization,
+  // we can keep the recording untouched as there is no need to discard the
+  // layer matrix clip stack just to rebuild it again.
+  if (HasRecordedDrawOps()) {
+    finishRecordingAsPicture();
+  }
+
+  client_->RecordingCleared();
+}
+
+void MemoryManagedPaintRecorder::RestartRecording() {
+  CHECK(is_recording_);
+  // Discard the whole recording and re-initialize it.
+  finishRecordingAsPicture();
+  client_->RecordingCleared();
+}
+
 }  // namespace blink

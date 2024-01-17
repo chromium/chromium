@@ -136,9 +136,6 @@ class TestRenderingContext2D final
     return PredefinedColorSpace::kSRGB;
   }
 
-  void SkipQueuedDrawCommands() override { RestartRecording(); }
-  void RestartRecording() override { recorder_.finishRecordingAsPicture(); }
-
   HTMLCanvasElement* HostAsHTMLCanvasElement() const override {
     return host_canvas_element_;
   }
@@ -149,10 +146,13 @@ class TestRenderingContext2D final
       RestoreMatrixClipStack(canvas);
     }
   }
+  void RecordingCleared() override {}
 
   absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
     return recorder_.finishRecordingAsPicture();
   }
+
+  MemoryManagedPaintRecorder* Recorder() override { return &recorder_; }
 
   bool ResolveFont(const String& new_font) override {
     if (host_canvas_element_ == nullptr) {
