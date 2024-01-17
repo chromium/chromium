@@ -57,6 +57,7 @@ AppListMainView::AppListMainView(AppListViewDelegate* delegate,
   // grid fits in the display.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  SetUseDefaultFillLayout(true);
 }
 
 AppListMainView::~AppListMainView() = default;
@@ -103,13 +104,6 @@ PaginationModel* AppListMainView::GetAppsPaginationModel() {
   return contents_view_->apps_container_view()
       ->apps_grid_view()
       ->pagination_model();
-}
-
-void AppListMainView::Layout() {
-  gfx::Rect rect = GetContentsBounds();
-  if (!rect.IsEmpty()) {
-    contents_view_->SetBoundsRect(rect);
-  }
 }
 
 void AppListMainView::QueryChanged(const std::u16string& trimmed_query,

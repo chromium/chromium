@@ -52,9 +52,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   ContentsView* contents_view() const { return contents_view_; }
   AppListViewDelegate* view_delegate() { return delegate_; }
 
-  // Overridden from views::View:
-  void Layout() override;
-
  private:
   // Adds the ContentsView.
   void AddContentsViews();
