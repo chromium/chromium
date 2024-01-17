@@ -279,11 +279,7 @@ Manifest::Manifest(ManifestLocation location,
 
 Manifest::~Manifest() = default;
 
-bool Manifest::ValidateManifest(
-    std::string* error,
-    std::vector<InstallWarning>* warnings) const {
-  *error = "";
-
+void Manifest::ValidateManifest(std::vector<InstallWarning>* warnings) const {
   // Check every feature to see if it's in the manifest. Note that this means
   // we will ignore keys that are not features; we do this for forward
   // compatibility.
@@ -315,7 +311,6 @@ bool Manifest::ValidateManifest(
     warnings->emplace_back(manifest_errors::kHasDifferentialFingerprint,
                            manifest_keys::kDifferentialFingerprint);
   }
-  return true;
 }
 
 const base::Value* Manifest::FindKey(std::string_view key) const {

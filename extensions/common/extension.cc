@@ -266,9 +266,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   }
 
   std::vector<InstallWarning> install_warnings;
-  if (!manifest->ValidateManifest(utf8_error, &install_warnings)) {
-    return nullptr;
-  }
+  manifest->ValidateManifest(&install_warnings);
 
   scoped_refptr<Extension> extension = new Extension(path, std::move(manifest));
   extension->install_warnings_.swap(install_warnings);

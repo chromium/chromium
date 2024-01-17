@@ -105,10 +105,8 @@ TEST_F(ManifestUnitTest, Extension) {
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(manifest_value),
                    crx_file::id_util::GenerateId("extid")));
-  std::string error;
   std::vector<InstallWarning> warnings;
-  EXPECT_TRUE(manifest->ValidateManifest(&error, &warnings));
-  EXPECT_TRUE(error.empty());
+  manifest->ValidateManifest(&warnings);
   ASSERT_EQ(1u, warnings.size());
   AssertType(manifest.get(), Manifest::TYPE_EXTENSION);
 
@@ -143,10 +141,8 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(value),
                    crx_file::id_util::GenerateId("extid")));
-  std::string error;
   std::vector<InstallWarning> warnings;
-  EXPECT_TRUE(manifest->ValidateManifest(&error, &warnings));
-  EXPECT_TRUE(error.empty());
+  manifest->ValidateManifest(&warnings);
   EXPECT_TRUE(warnings.empty());
 
   // By default, the type is Extension.
@@ -203,10 +199,8 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
                                  crx_file::id_util::GenerateId("extid"));
-  std::string error;
   std::vector<InstallWarning> warnings;
-  EXPECT_TRUE(manifest->ValidateManifest(&error, &warnings));
-  EXPECT_TRUE(error.empty());
+  manifest->ValidateManifest(&warnings);
   EXPECT_TRUE(warnings.empty());
 
   // "host_permissions" requires manifest version 3.
@@ -232,10 +226,8 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
                                  crx_file::id_util::GenerateId("extid"));
-  std::string error;
   std::vector<InstallWarning> warnings;
-  EXPECT_TRUE(manifest->ValidateManifest(&error, &warnings));
-  EXPECT_TRUE(error.empty());
+  manifest->ValidateManifest(&warnings);
   EXPECT_TRUE(warnings.empty());
   AssertType(manifest.get(), Manifest::TYPE_EXTENSION);
 
