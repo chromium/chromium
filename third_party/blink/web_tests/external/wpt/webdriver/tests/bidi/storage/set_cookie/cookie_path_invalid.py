@@ -1,13 +1,9 @@
 import pytest
-from webdriver.bidi.modules.network import NetworkStringValue
-from webdriver.bidi.modules.storage import PartialCookie, BrowsingContextPartitionDescriptor
-from .. import assert_cookie_is_set
+from .. import create_cookie
+from webdriver.bidi.modules.storage import BrowsingContextPartitionDescriptor
 import webdriver.bidi.error as error
 
 pytestmark = pytest.mark.asyncio
-
-COOKIE_NAME = 'SOME_COOKIE_NAME'
-COOKIE_VALUE = 'SOME_COOKIE_VALUE'
 
 
 @pytest.mark.parametrize(
@@ -25,11 +21,5 @@ async def test_path_invalid_values(bidi_session, top_context, test_page, origin,
 
     with pytest.raises(error.UnableToSetCookieException):
         await bidi_session.storage.set_cookie(
-            cookie=PartialCookie(
-                name=COOKIE_NAME,
-                value=NetworkStringValue(COOKIE_VALUE),
-                domain=domain_value(),
-                path=path,
-                secure=True
-            ),
+            cookie=create_cookie(domain=domain_value(), path=path),
             partition=partition)

@@ -1,0 +1,48 @@
+This is a wdspec test.
+[FAIL] test_params_descriptor_invalid_type[False]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[SOME_STRING]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[42]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[descriptor3]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[descriptor4]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[descriptor5]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[None]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_type[descriptor7]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_descriptor_invalid_value[descriptor0]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_type[False]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_type[42]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_type[state2]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_type[state3]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_type[None]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_type[state5]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_value[UNKOWN]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_state_invalid_value[Granted]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_origin_invalid_type[False]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_origin_invalid_type[42]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_origin_invalid_type[origin2]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_origin_invalid_type[origin3]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_origin_invalid_type[None]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_params_origin_invalid_type[origin5]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+Harness: the test ran to completion.

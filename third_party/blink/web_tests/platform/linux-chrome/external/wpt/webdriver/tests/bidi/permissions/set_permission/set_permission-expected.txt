@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_set_permission
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_set_permission_insecure_context
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_set_permission_new_context
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_set_permission_origin_unknown[UNKNOWN]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+[FAIL] test_set_permission_origin_unknown[]
+  AttributeError: 'BidiSession' object has no attribute 'permissions'
+Harness: the test ran to completion.

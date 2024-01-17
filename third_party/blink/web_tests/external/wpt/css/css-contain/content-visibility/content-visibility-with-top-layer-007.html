@@ -1,9 +1,9 @@
 <!doctype html>
 <meta charset="utf8">
-<title>CSS Content Visibility: offscreen c-v auto content is relevant when in top layer</title>
-<link rel="author" title="Martin Robinson" href="mailto:mrobinson@igalia.com">
+<title>CSS Content Visibility: onscreen c-v auto content is relevant when in top layer</title>
+<link rel="author" title="Cathie Chen" href="mailto:cathiechen@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
-<meta name="assert" content="offscreen c-v auto content is relevant when in top layer">
+<meta name="assert" content="onscreen c-v auto content is relevant when in top layer">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -17,10 +17,10 @@
 </style>
 
 <dialog id="dialog">
-    <div id="spacer" style="height: 100000px;"></div>
     <div id="inner">
         <div style="height: 200px; width: 200px;">content</div>
     </div>
+    <div id="spacer" style="height: 100000px;"></div>
 </dialog>
 
 <script>
@@ -28,18 +28,14 @@ promise_test(async () => {
     dialog.show();
     // It takes at least one frame to determine the proximity to the viewport.
     await waitForAtLeastOneFrame();
-    assert_equals(inner.getBoundingClientRect().height, 100);
+    assert_equals(inner.getBoundingClientRect().height, 200);
 
     dialog.close();
     dialog.showModal();
 
-    // Even though the element with `content-visibility: auto` has an ancestor
-    // in the top layer, this element is not in the top layer list (although
-    // it's in the top layer stacking context). This means it should not be
-    // relevant to the user, because it is nevertheless not onscreen.
     // It takes at least one frame to determine the proximity to the viewport.
     await waitForAtLeastOneFrame();
-    assert_equals(inner.getBoundingClientRect().height, 100);
+    assert_equals(inner.getBoundingClientRect().height, 200);
     dialog.close();
 });
 </script>
