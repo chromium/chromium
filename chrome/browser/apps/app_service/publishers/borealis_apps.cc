@@ -89,9 +89,6 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy) : GuestOSApps(proxy) {
   pref_registrar_.Add(borealis::prefs::kBorealisInstalledOnDevice,
                       base::BindRepeating(&BorealisApps::RefreshSpecialApps,
                                           weak_factory_.GetWeakPtr()));
-  pref_registrar_.Add(borealis::prefs::kBorealisVmTokenHash,
-                      base::BindRepeating(&BorealisApps::RefreshSpecialApps,
-                                          weak_factory_.GetWeakPtr()));
 
   // TODO(b/170264723): When uninstalling borealis is completed, ensure that we
   // remove the apps from the apps service.

@@ -49,7 +49,7 @@ std::unique_ptr<dbus::Response> AllowStatusToResponse(
   return response;
 }
 
-void OnTokenChecked(Profile* profile,
+void OnAllowChecked(Profile* profile,
                     dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender,
                     bool launch,
@@ -131,9 +131,11 @@ void VmLaunchServiceProvider::ProvideVmToken(
     return;
   }
 
-  borealis::BorealisService::GetForProfile(profile)->Features().SetVmToken(
-      token, base::BindOnce(&OnTokenChecked, profile, method_call,
-                            std::move(response_sender), launch));
+  // TODO(b/317157600): Tokens are no longer required so we have the option to
+  // remove this dbus method entirely.
+  borealis::BorealisService::GetForProfile(profile)->Features().IsAllowed(
+      base::BindOnce(&OnAllowChecked, profile, method_call,
+                     std::move(response_sender), launch));
 }
 
 void VmLaunchServiceProvider::EnsureVmLaunched(
