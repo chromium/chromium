@@ -98,7 +98,7 @@ id<GREYMatcher> GetSyncSettings() {
                     grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
-// Dismisses the remaining screens in FRE after the search engine choice screen.
+// Dismisses the remaining screens in FRE after the default browser screen.
 void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
@@ -1181,7 +1181,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
 }
 
@@ -1270,7 +1270,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
 }
 
@@ -1310,7 +1310,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
 }
 
@@ -1370,7 +1370,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
@@ -1409,7 +1409,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that the search engine choice screen is shown.
+  // Verify that the default browser screen is shown.
   [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
