@@ -7,11 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/connection_handler_impl.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -97,6 +99,8 @@ void ConnectionFactoryImpl::Initialize(
 
   network_connection_tracker_->AddNetworkConnectionObserver(this);
   auto type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  // TODO(b/314617075): check what happens when GetConnectionType() returns
+  // synchronously (i.e. OnConnectionChanged() is not called).
   network_connection_tracker_->GetConnectionType(
       &type, base::BindOnce(&ConnectionFactoryImpl::OnConnectionChanged,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -223,8 +227,12 @@ void ConnectionFactoryImpl::SignalConnectionReset(
   CloseSocket();
   DCHECK(!IsEndpointReachable());
 
-  // TODO(zea): if the network is offline, don't attempt to connect.
-  // See crbug.com/396687
+  if (waiting_for_network_online_ &&
+      base::FeatureList::IsEnabled(
+          gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable)) {
+    // Do nothing when there is no network connection.
+    return;
+  }
 
   // Network changes get special treatment as they can trigger a one-off canary
   // request that bypasses backoff (but does nothing if a connection is in
@@ -280,8 +288,7 @@ void ConnectionFactoryImpl::OnConnectionChanged(
     DVLOG(1) << "Network lost, resettion connection.";
     waiting_for_network_online_ = true;
 
-    // Will do nothing due to |waiting_for_network_online_ == true|.
-    // TODO(zea): make the above statement actually true. See crbug.com/396687
+    // Will only close the socket due to no network connection.
     SignalConnectionReset(NETWORK_CHANGE);
     return;
   }

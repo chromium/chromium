@@ -13,8 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/fake_connection_handler.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
@@ -356,7 +358,8 @@ ConnectionFactoryImplTest::ConnectionFactoryImplTest()
                         ConnectionHandler::ProtoReceivedCallback(),
                         ConnectionHandler::ProtoSentCallback());
 }
-ConnectionFactoryImplTest::~ConnectionFactoryImplTest() {}
+
+ConnectionFactoryImplTest::~ConnectionFactoryImplTest() = default;
 
 void ConnectionFactoryImplTest::WaitForConnections() {
   run_loop_->Run();
@@ -604,7 +607,11 @@ TEST_F(ConnectionFactoryImplTest, SignalResetRestoresBackoff) {
 // When the network is disconnected, close the socket and suppress further
 // connection attempts until the network returns.
 // Disabled while crbug.com/396687 is being investigated.
-TEST_F(ConnectionFactoryImplTest, DISABLED_SuppressConnectWhenNoNetwork) {
+TEST_F(ConnectionFactoryImplTest, SuppressConnectWhenNoNetwork) {
+  base::test::ScopedFeatureList feature_override;
+  feature_override.InitAndEnableFeature(
+      gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable);
+
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
   EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
