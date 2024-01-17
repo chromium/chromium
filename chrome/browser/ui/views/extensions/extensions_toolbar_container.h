@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
@@ -131,11 +130,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // Get the request access button for the toolbar.
   ExtensionsRequestAccessButton* GetRequestAccessButton() const {
     return request_access_button_;
-  }
-
-  // Gets the extensions toolbar controls.
-  ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
-    return extensions_controls_.get();
   }
 
   // Get the view corresponding to the extension |id|, if any.
@@ -332,9 +326,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
   raw_ptr<ExtensionsRequestAccessButton> request_access_button_ = nullptr;
-
-  // TODO(crbug.com/1511762): Remove controls.
-  std::unique_ptr<ExtensionsToolbarControls> extensions_controls_ = nullptr;
 
   DisplayMode display_mode_;
 

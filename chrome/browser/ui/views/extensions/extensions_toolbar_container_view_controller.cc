@@ -76,11 +76,8 @@ void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
 
   // Request access button confirmation is tab-specific. Therefore, we need to
   // reset if the active tab changes.
-  ExtensionsToolbarControls* extensions_controls =
-      extensions_container_->GetExtensionsToolbarControls();
-  if (extensions_controls && extensions_controls->IsShowingConfirmation()) {
-    extensions_controls->ResetConfirmation();
-    extensions_container_->UpdateControlsVisibility();
+  if (extensions_container_->GetRequestAccessButton()) {
+    extensions_container_->CollapseConfirmation();
   }
 
   MaybeShowIPH();
@@ -105,13 +102,12 @@ void ExtensionsToolbarContainerViewController::TabChangedAt(
   // same tab and we have navigated to another origin.
   // Note: When we switch tabs, `OnTabStripModelChanged` is called before
   // `TabChangedAt` and takes care of resetting the confirmation if shown.
-  ExtensionsToolbarControls* extensions_controls =
-      extensions_container_->GetExtensionsToolbarControls();
-  if (extensions_controls && extensions_controls->IsShowingConfirmation() &&
-      !extensions_controls->IsShowingConfirmationFor(
+  ExtensionsRequestAccessButton* request_access_button =
+      extensions_container_->GetRequestAccessButton();
+  if (request_access_button && request_access_button->IsShowingConfirmation() &&
+      !request_access_button->IsShowingConfirmationFor(
           contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    extensions_controls->ResetConfirmation();
-    extensions_container_->UpdateControlsVisibility();
+    extensions_container_->CollapseConfirmation();
   }
 
   MaybeShowIPH();

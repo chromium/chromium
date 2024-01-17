@@ -142,12 +142,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
           extensions_features::kExtensionsMenuAccessControl)) {
     auto request_access_button =
         std::make_unique<ExtensionsRequestAccessButton>(browser_, this);
+    request_access_button->SetVisible(false);
     request_access_button_ = AddChildView(std::move(request_access_button));
-
-    // TODO(crbug.com/1511762): Remove extensions controls, since it's no longer
-    // a view, and move functionality to the extensions container.
-    extensions_controls_ = std::make_unique<ExtensionsToolbarControls>(
-        extensions_button_.get(), request_access_button_);
   }
 
   // Create close side panel button.
@@ -1030,8 +1026,10 @@ void ExtensionsToolbarContainer::DragDropCleanup(
 }
 
 void ExtensionsToolbarContainer::UpdateControlsVisibility() {
-  if (!extensions_controls_)
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
     return;
+  }
 
   content::WebContents* web_contents = GetCurrentWebContents();
   if (!web_contents)
@@ -1059,11 +1057,11 @@ void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
 }
 
 void ExtensionsToolbarContainer::CollapseConfirmation() {
-  if (!extensions_controls_->IsShowingConfirmation()) {
+  if (!request_access_button_->IsShowingConfirmation()) {
     return;
   }
 
-  extensions_controls_->ResetConfirmation();
+  request_access_button_->ResetConfirmation();
   UpdateControlsVisibility();
 }
 

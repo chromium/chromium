@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
-
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -31,6 +29,8 @@ base::TimeDelta kConfirmationDisplayDuration = base::Seconds(4);
 
 }  // namespace
 
+// TODO(crbug.com/1416603): Move tests to extension toolbar container unit test
+// class, since controls were removed.
 class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
  public:
   ExtensionsToolbarControlsUnitTest();
