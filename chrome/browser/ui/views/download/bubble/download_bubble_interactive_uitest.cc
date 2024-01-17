@@ -24,6 +24,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/test/feature_promo_test_util.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -320,15 +321,19 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        DownloadBubbleEsbShownAfterDownload_IPHShown) {
-  RunTestSequence(Do(DownloadDangerousTestFile()),
-                  WaitForShow(kToolbarDownloadButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-                  // Hide the partial view, if enabled. The IPH should be shown.
-                  Do(ChangeBubbleVisibility(false)),
-                  Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(
-                      IsPartialViewEnabled(),
-                      feature_engagement::kIPHDownloadEsbPromoFeature)));
+  RunTestSequence(
+      Do(DownloadDangerousTestFile()),
+      WaitForShow(kToolbarDownloadButtonElementId),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+      // Hide the partial view, if enabled. The IPH should be shown.
+      Do(ChangeBubbleVisibility(false)),
+      Check(DownloadBubbleIsShowingDetails(false)),
+      If([&]() { return IsPartialViewEnabled(); },
+         Steps(InAnyContext(WaitForShow(user_education::HelpBubbleView::
+                                            kHelpBubbleElementIdForTesting)),
+               Check(DownloadBubblePromoIsActive(
+                   IsPartialViewEnabled(),
+                   feature_engagement::kIPHDownloadEsbPromoFeature)))));
 }
 
 IN_PROC_BROWSER_TEST_F(
