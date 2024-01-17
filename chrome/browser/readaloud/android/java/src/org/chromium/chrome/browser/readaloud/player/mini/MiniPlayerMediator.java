@@ -208,8 +208,11 @@ public class MiniPlayerMediator {
     }
 
     private void shrinkBottomControls() {
+        // Hack: Bottom controls animation doesn't work if the new height is 0. Shrink
+        // to 1 pixel instead in this case.
+        // TODO(b/320750931): fix the underlying issue in browser controls code
         setBottomControlsHeight(
-                Math.max(mBrowserControlsSizer.getBottomControlsHeight() - mLayoutHeightPx, 0), 0);
+                Math.max(mBrowserControlsSizer.getBottomControlsHeight() - mLayoutHeightPx, 1), 0);
     }
 
     private void setBottomControlsHeight(int height, int minHeight) {
