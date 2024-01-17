@@ -75,6 +75,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         RestoreStatus.RESTORE_AFTER_FIRST_RUN,
         RestoreStatus.BROWSER_STARTUP_FAILED,
         RestoreStatus.NOT_SIGNED_IN,
+        RestoreStatus.SIGNIN_TIMED_OUT,
         RestoreStatus.RESTORE_STATUS_RECORDED
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -85,12 +86,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         int RESTORE_AFTER_FIRST_RUN = 2;
         int BROWSER_STARTUP_FAILED = 3;
         int NOT_SIGNED_IN = 4;
+        int SIGNIN_TIMED_OUT = 5;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
 
         // Set RESTORE_STATUS_RECORDED when the histogram has been recorded; so that it is only
         // recorded once.
-        int RESTORE_STATUS_RECORDED = 5;
+        int RESTORE_STATUS_RECORDED = 6;
     }
 
     private static final String RESTORE_STATUS = "android_restore_status";
@@ -464,16 +466,16 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             editor.putString(
                     ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, restoredSyncUserEmail);
             editor.apply();
+
+            // The silent first run will change things, so there is no point in trying to prevent
+            // additional backups at this stage. Don't write anything to |newState|.
+            setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
         } else {
             editor.apply();
             assert signedInAccountInfo != null;
             // Start asynchronous sign-in.
             signInAndWaitForResult(signedInAccountInfo);
         }
-
-        // The silent first run will change things, so there is no point in trying to prevent
-        // additional backups at this stage. Don't write anything to |newState|.
-        setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
         Log.i(TAG, "Restore complete");
     }
 
@@ -553,9 +555,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             // cancelled one the restore ends. Timeout can be ignored as Chrome will simply remain
             // signed-out otherwise, and the user is still able to sign-in manually after opening
             // Chrome.
-            latch.await(SIGNIN_TIMEOUT_SECS, TimeUnit.SECONDS);
+            boolean success = latch.await(SIGNIN_TIMEOUT_SECS, TimeUnit.SECONDS);
+            int status = success ? RestoreStatus.RESTORE_COMPLETED : RestoreStatus.SIGNIN_TIMED_OUT;
+            setRestoreStatus(status);
         } catch (InterruptedException e) {
             // Exception can be ignored as explained above.
+            setRestoreStatus(RestoreStatus.SIGNIN_TIMED_OUT);
         }
     }
 
