@@ -1375,11 +1375,11 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RestorePersistentStorage) {
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
+  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCountV2.All", 0);
   for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectTotalCount(
-        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
-                           holding_space_util::ToString(type).c_str()),
+        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
+                      holding_space_util::ToString(type)}),
         0);
   }
 
@@ -1488,12 +1488,12 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   // Verify expected histograms after "waiting" for metrics debounce.
   task_environment()->FastForwardBy(base::Seconds(30));
   histogram_tester.ExpectBucketCount(
-      "HoldingSpace.Item.TotalCount.All",
+      "HoldingSpace.Item.TotalCountV2.All",
       secondary_holding_space_model->items().size(), 1);
   for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectBucketCount(
-        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
-                           holding_space_util::ToString(type).c_str()),
+        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
+                      holding_space_util::ToString(type)}),
         /*sample=*/1,
         /*expected_count=*/ShouldRestoreFromPersistence(type) ? 1 : 0);
   }
@@ -2773,11 +2773,11 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
+  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCountV2.All", 0);
   for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectTotalCount(
-        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
-                           holding_space_util::ToString(type).c_str()),
+        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
+                      holding_space_util::ToString(type)}),
         0);
   }
 
@@ -2833,11 +2833,13 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   // Verify expected histograms after "waiting" for metrics debounce.
   task_environment()->FastForwardBy(base::Seconds(30));
-  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCount.All", 1, 1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCountV2.All",
+                                     /*sample=*/1,
+                                     /*expected_count=*/1);
   for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectBucketCount(
-        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
-                           holding_space_util::ToString(type).c_str()),
+        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
+                      holding_space_util::ToString(type)}),
         /*sample=*/type == GetType() ? 1 : 0, /*expected_count=*/1);
   }
 
@@ -2864,11 +2866,13 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   // Verify expected histograms after "waiting" for metrics debounce.
   task_environment()->FastForwardBy(base::Seconds(30));
-  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCount.All", 0, 1);
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCountV2.All",
+                                     /*sample=*/0,
+                                     /*expected_count=*/1);
   for (const auto type : holding_space_util::GetAllItemTypes()) {
     histogram_tester.ExpectBucketCount(
-        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
-                           holding_space_util::ToString(type).c_str()),
+        base::StrCat({"HoldingSpace.Item.TotalCountV2.",
+                      holding_space_util::ToString(type)}),
         /*sample=*/0, /*expected_count=*/type == GetType() ? 1 : 2);
   }
 }

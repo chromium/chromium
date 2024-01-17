@@ -99,10 +99,6 @@ ASH_PUBLIC_EXPORT void RecordItemAction(
     const std::vector<const HoldingSpaceItem*>& items,
     ItemAction action);
 
-// Records counts for the specified holding space `items`.
-ASH_PUBLIC_EXPORT void RecordItemCounts(
-    const std::vector<const HoldingSpaceItem*>& items);
-
 // Records an attempt to launch a holding space item of the specified `type`
 // backed by the empty file at the specified `file_path`.
 ASH_PUBLIC_EXPORT void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
@@ -167,6 +163,10 @@ ASH_PUBLIC_EXPORT void RecordBubbleResizeAnimationSmoothness(int smoothness);
 // `smoothness` is expected to be between 0 and 100 (inclusively) with 100
 // representing ideal smoothness of >= 60 frames per second.
 ASH_PUBLIC_EXPORT void RecordPodResizeAnimationSmoothness(int smoothness);
+
+// Records total counts for the specified holding space `items`.
+ASH_PUBLIC_EXPORT void RecordTotalItemCounts(
+    const std::vector<const HoldingSpaceItem*>& items);
 
 // Representation of a user's preferences.
 struct ASH_PUBLIC_EXPORT UserPreferences {

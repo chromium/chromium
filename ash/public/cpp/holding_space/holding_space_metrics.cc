@@ -102,23 +102,26 @@ size_t FilePathToExtension(const base::FilePath& file_path) {
   return kFirstKnownExtension + std::distance(kKnownExtensions.begin(), it);
 }
 
-// Records either the total or visible counts of `items` as appropriate..
-void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items,
-                      bool visible) {
-  constexpr char kTotalCount[] = "HoldingSpace.Item.TotalCount";
-  constexpr char kVisibleCount[] = "HoldingSpace.Item.Count";
-  const char* prefix = visible ? kVisibleCount : kTotalCount;
+// Records the counts of the specified holding space `items` to the item count
+// histograms associated with the specified `prefix`.
+void RecordItemCounts(const std::string& prefix,
+                      const std::vector<const HoldingSpaceItem*>& items) {
+  // It is discouraged to use exact linear histograms with greater than 101
+  // buckets. Though it's possible for holding space users to have item counts
+  // in excess of 101, that is exceedingly rare and we can lump them together.
+  constexpr size_t kExclusiveMax = 101;
 
-  base::UmaHistogramCounts1000(base::StrCat({prefix, ".All"}), items.size());
+  base::UmaHistogramExactLinear(base::StrCat({prefix, ".All"}), items.size(),
+                                kExclusiveMax);
 
   std::map<HoldingSpaceItem::Type, int> counts_by_type;
   for (const HoldingSpaceItem* item : items)
     ++counts_by_type[item->type()];
 
   for (const auto type : holding_space_util::GetAllItemTypes()) {
-    base::UmaHistogramCounts1000(
+    base::UmaHistogramExactLinear(
         base::StrCat({prefix, ".", holding_space_util::ToString(type)}),
-        counts_by_type[type]);
+        counts_by_type[type], kExclusiveMax);
   }
 }
 
@@ -172,10 +175,6 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
             {"HoldingSpace.Item.Action.", action_string, ".FileSystemType"}),
         item->file().file_system_type);
   }
-}
-
-void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
-  RecordItemCounts(items, /*visible=*/false);
 }
 
 void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
@@ -242,6 +241,10 @@ void RecordPodResizeAnimationSmoothness(int smoothness) {
                                smoothness);
 }
 
+void RecordTotalItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
+  RecordItemCounts("HoldingSpace.Item.TotalCountV2", items);
+}
+
 void RecordUserPreferences(UserPreferences preferences) {
   base::UmaHistogramBoolean("HoldingSpace.UserPreferences.PreviewsEnabled",
                             preferences.previews_enabled);
@@ -251,7 +254,7 @@ void RecordUserPreferences(UserPreferences preferences) {
 
 void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items) {
-  RecordItemCounts(items, /*visible=*/true);
+  RecordItemCounts("HoldingSpace.Item.VisibleCount", items);
 }
 
 }  // namespace ash::holding_space_metrics
