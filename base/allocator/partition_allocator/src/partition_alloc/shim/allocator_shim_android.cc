@@ -1,19 +1,19 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "partition_alloc/shim/allocator_shim.h"
 
+#include <unistd.h>
+
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
-
-#include <unistd.h>
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
-// No calls to malloc / new in this file. They would would cause re-entrancy of
+// No calls to malloc / new in this file. They would cause re-entrancy of
 // the shim, which is hard to deal with. Keep this code as simple as possible
 // and don't use any external C++ object here, not even //base ones. Even if
 // they are safe to use today, in future they might be refactored.
@@ -32,25 +32,9 @@
 // allocator_shim::internal::PartitionMallocUnchecked through the shim layer.
 #include "partition_alloc/shim/allocator_shim_override_cpp_symbols.h"
 
-#include "partition_alloc/shim/allocator_shim_override_libc_symbols.h"
-
-// Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)
-// incorrectly call __libc_memalign() to allocate memory (see elf/dl-tls.c in
-// glibc 2.23 for instance), and free() to free it. This causes issues for us,
-// as we are then asked to free memory we didn't allocate.
-//
-// This only happened in glibc to allocate TLS storage metadata, and there are
-// no other callers of __libc_memalign() there as of September 2020. To work
-// around this issue, intercept this internal libc symbol to make sure that both
-// the allocation and the free() are caught by the shim.
-//
-// This seems fragile, and is, but there is ample precedent for it, making it
-// quite likely to keep working in the future. For instance, LLVM for LSAN uses
-// this mechanism.
-
-#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "partition_alloc/shim/allocator_shim_override_glibc_weak_symbols.h"
-#endif
+// Android does not support symbol interposition. The way malloc symbols are
+// intercepted on Android is by using link-time -wrap flags.
+#include "partition_alloc/shim/allocator_shim_override_linker_wrapped_symbols.h"
 
 // Cross-checks.
 

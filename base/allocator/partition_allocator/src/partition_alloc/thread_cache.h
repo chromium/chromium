@@ -624,8 +624,15 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
                                               0xbadbad00, 0xbadbad00};
 
+#if !(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD))
   void* slot_start_tagged = std::assume_aligned<internal::kAlignment>(
       internal::SlotStartAddr2Ptr(slot_start));
+#else
+  // TODO(crbug.com/1429450): std::assume_aligned introuces an additional
+  // dependency: _libcpp_verbose_abort(const char*, ...).  It will cause
+  // "undefined symbol" error when linking allocator_shim.dll.
+  void* slot_start_tagged = internal::SlotStartAddr2Ptr(slot_start);
+#endif
 
   uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {

@@ -25,6 +25,7 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
+#include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 #include "partition_alloc/shim/nonscannable_allocator.h"
 

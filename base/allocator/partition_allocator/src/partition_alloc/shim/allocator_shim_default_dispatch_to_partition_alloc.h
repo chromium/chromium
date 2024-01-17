@@ -14,6 +14,8 @@
 
 namespace allocator_shim {
 
+struct AllocatorDispatch;
+
 namespace internal {
 
 class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {

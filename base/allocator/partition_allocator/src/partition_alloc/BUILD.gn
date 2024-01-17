@@ -802,6 +802,9 @@ if (is_clang_or_gcc) {
     shim_headers += [
       "shim/allocator_shim.h",
       "shim/allocator_shim_internals.h",
+      "shim/shim_alloc_functions.h",
+      "shim/allocator_shim_functions.h",
+      "shim/allocator_dispatch.h",
     ]
     if (use_partition_alloc) {
       shim_sources += [
@@ -818,6 +821,8 @@ if (is_clang_or_gcc) {
         "shim/allocator_shim_override_cpp_symbols.h",
         "shim/allocator_shim_override_linker_wrapped_symbols.h",
       ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
+      shim_sources += [ "shim/allocator_shim_android.cc" ]
       if (use_allocator_shim) {
         all_dependent_configs += [ ":wrap_malloc_symbols" ]
       }
@@ -830,8 +835,10 @@ if (is_clang_or_gcc) {
         "shim/allocator_interception_apple.h",
         "shim/malloc_zone_functions_apple.h",
       ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
       shim_sources += [
         "shim/allocator_interception_apple.mm",
+        "shim/allocator_shim_apple.cc",
         "shim/malloc_zone_functions_apple.cc",
       ]
       frameworks += [ "CoreFoundation.framework" ]
@@ -856,7 +863,24 @@ if (is_clang_or_gcc) {
         "shim/allocator_shim_override_ucrt_symbols_win.h",
         "shim/winheap_stubs_win.h",
       ]
+      shim_sources -= [ "shim/allocator_shim.cc" ]
       shim_sources += [ "shim/winheap_stubs_win.cc" ]
+
+      if (!is_component_build) {
+        shim_sources += [
+          "shim/allocator_shim_win_static.cc",
+          "shim/checked_multiply_win.h",
+        ]
+      } else {
+        shim_sources += [
+          "shim/allocator_shim_functions_win_component.cc",
+          "shim/allocator_shim_win_component.cc",
+        ]
+
+        # allocator_shim cannot depend on libc++ objects because they use malloc()
+        # internally.
+        no_default_deps = true
+      }
     }
 
     if (!use_partition_alloc_as_malloc) {

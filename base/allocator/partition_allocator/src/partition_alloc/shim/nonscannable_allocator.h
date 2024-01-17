@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
@@ -31,7 +32,7 @@ namespace internal {
 // PCScan. An example would be strings or socket/IPC/file buffers. Use with
 // caution.
 template <bool quarantinable>
-class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) NonScannableAllocatorImpl final {
+class NonScannableAllocatorImpl final {
  public:
   static NonScannableAllocatorImpl& Instance();
 
@@ -72,8 +73,10 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) NonScannableAllocatorImpl final {
 #endif  // BUILDFLAG(USE_STARSCAN)
 };
 
-extern template class NonScannableAllocatorImpl<true>;
-extern template class NonScannableAllocatorImpl<false>;
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)) NonScannableAllocatorImpl<true>;
+extern template class PA_EXPORT_TEMPLATE_DECLARE(
+    PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)) NonScannableAllocatorImpl<false>;
 
 }  // namespace internal
 

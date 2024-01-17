@@ -78,8 +78,10 @@ void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
 #endif  // BUILDFLAG(USE_STARSCAN)
 }
 
-template class NonScannableAllocatorImpl<true>;
-template class NonScannableAllocatorImpl<false>;
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
+    NonScannableAllocatorImpl<true>;
+template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(ALLOCATOR_SHIM))
+    NonScannableAllocatorImpl<false>;
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
