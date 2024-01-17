@@ -1434,13 +1434,14 @@ export class FileManager {
     }
 
     // Check directory change.
-    tracker.stop();
     if (!tracker.hasChanged) {
       // Finish setup current directory.
       await this.finishSetupCurrentDirectory_(
           (nextCurrentDirEntry as DirectoryEntry), selectionEntry,
           this.launchParams_.targetName);
     }
+    // Only stop the tracker after finishing the directory change.
+    tracker.stop();
   }
 
   /**
