@@ -140,6 +140,22 @@ const uint8_t kTestPublicKey[] = {
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
 };
 
+// Returns kTestPublicKey as a JSON response to be returned by kBAndAKeyPath.
+std::string JSONSerializedKeys() {
+  base::Value::Dict key;
+  key.Set("key", base::Base64Encode(kTestPublicKey));
+  key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
+  base::Value::List keys;
+  keys.Append(std::move(key));
+  base::Value::Dict outer;
+  outer.Set("keys", std::move(keys));
+
+  std::string json_output;
+  JSONStringValueSerializer serializer(&json_output);
+  serializer.Serialize(outer);
+  return json_output;
+}
+
 // Returns a basic bidder script that sends reports to
 // kOriginStringA/report_bidder.
 std::string BasicBiddingReportScript() {
@@ -10092,19 +10108,17 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
   }
 
   void ProvideKeys() {
-    base::Value::Dict key;
-    key.Set("key", base::Base64Encode(kTestPublicKey));
-    key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
-    base::Value::List keys;
-    keys.Append(std::move(key));
-    base::Value::Dict outer;
-    outer.Set("keys", std::move(keys));
+    network_responder_->RegisterUpdateResponse(kBAndAKeyPath,
+                                               JSONSerializedKeys());
+  }
 
-    std::string json_output;
-    JSONStringValueSerializer serializer(&json_output);
-    serializer.Serialize(outer);
+  void RegisterDeferredKeys() {
+    network_responder_->RegisterDeferredUpdateResponse(kBAndAKeyPath);
+  }
 
-    network_responder_->RegisterUpdateResponse(kBAndAKeyPath, json_output);
+  void ProvideDeferredKeys() {
+    network_responder_->DoDeferredUpdateResponse(kBAndAKeyPath,
+                                                 JSONSerializedKeys());
   }
 
   struct AdAuctionDataAndId {
@@ -12688,6 +12702,259 @@ function reportResult(auctionConfig, browserSignals) {
                         0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.AuctionWithWinnerTime",
                         0);
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, GetInterestGroupAdAuctionDataNoKeys) {
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+
+  std::optional<AdAuctionDataAndId> output =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+
+  EXPECT_TRUE(output.has_value());
+  EXPECT_TRUE(output->request.empty());
+  EXPECT_FALSE(output->error_message.empty());
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
+       GetInterestGroupAdAuctionDataNoKeysAndNoInterestGroups) {
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+
+  std::optional<AdAuctionDataAndId> output =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+
+  EXPECT_TRUE(output.has_value());
+  EXPECT_TRUE(output->request.empty());
+  EXPECT_FALSE(output->error_message.empty());
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
+       GetInterestGroupAdAuctionDataKeysAndNoInterestGroups) {
+  ProvideKeys();
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+
+  std::optional<AdAuctionDataAndId> output =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+
+  EXPECT_TRUE(output.has_value());
+  EXPECT_TRUE(output->request.empty());
+  EXPECT_TRUE(output->error_message.empty());
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
+       GetInterestGroupAdAuctionData_KeysLoadBeforeIGs) {
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  // If we register the response, it will be returned right away, before the
+  // interest groups get a chance to load.
+  ProvideKeys();
+
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+
+  std::optional<AdAuctionDataAndId> output =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+
+  EXPECT_TRUE(output.has_value());
+  EXPECT_FALSE(output->request.empty());
+  EXPECT_TRUE(output->error_message.empty());
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
+       GetInterestGroupAdAuctionData_IGsLoadBeforeKeys) {
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  RegisterDeferredKeys();
+
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  url::Origin coordinator =
+      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  std::optional<AdAuctionDataAndId> output;
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output = data;
+        run_loop.Quit();
+      }));
+  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(network_responder_->HasPendingResponse(kBAndAKeyPath));
+  ProvideDeferredKeys();
+  interest_service.FlushForTesting();
+  run_loop.Run();
+
+  EXPECT_TRUE(output.has_value());
+  EXPECT_FALSE(output->request.empty());
+  EXPECT_TRUE(output->error_message.empty());
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
+       HandlesMultipleGetInterestGroupAdAuctionDataInARow) {
+  ProvideKeys();
+
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad1.html"), /*metadata=*/absl::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "boats")
+          .SetAds(
+              {{{GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  url::Origin coordinator =
+      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  std::optional<AdAuctionDataAndId> output1;
+  std::optional<AdAuctionDataAndId> output2;
+  std::optional<AdAuctionDataAndId> output3;
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output1 = data;
+      }));
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output2 = data;
+      }));
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output3 = data;
+        run_loop.Quit();
+      }));
+  interest_service.FlushForTesting();
+  run_loop.Run();
+
+  EXPECT_TRUE(output1.has_value());
+  EXPECT_TRUE(output2.has_value());
+  EXPECT_TRUE(output3.has_value());
+  EXPECT_TRUE(output1->error_message.empty());
+  EXPECT_TRUE(output2->error_message.empty());
+  EXPECT_TRUE(output3->error_message.empty());
+  EXPECT_FALSE(output1->request.empty());
+  EXPECT_FALSE(output2->request.empty());
+  EXPECT_FALSE(output3->request.empty());
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
+       HandlesMultipleEmptyGetInterestGroupAdAuctionDataInARow) {
+  ProvideKeys();
+
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+  url::Origin coordinator =
+      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  std::optional<AdAuctionDataAndId> output1;
+  std::optional<AdAuctionDataAndId> output2;
+  std::optional<AdAuctionDataAndId> output3;
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output1 = data;
+      }));
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output2 = data;
+      }));
+  interest_service->GetInterestGroupAdAuctionData(
+      test_origin, coordinator,
+      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                     const std::optional<base::Uuid>& id,
+                                     const std::string& error_message) {
+        AdAuctionDataAndId data;
+        data.request =
+            std::string(reinterpret_cast<char*>(result.data()), result.size());
+        data.request_id = id;
+        data.error_message = error_message;
+        output3 = data;
+        run_loop.Quit();
+      }));
+  interest_service.FlushForTesting();
+  run_loop.Run();
+
+  EXPECT_TRUE(output1.has_value());
+  EXPECT_TRUE(output2.has_value());
+  EXPECT_TRUE(output3.has_value());
+  EXPECT_TRUE(output1->error_message.empty());
+  EXPECT_TRUE(output2->error_message.empty());
+  EXPECT_TRUE(output3->error_message.empty());
+  EXPECT_TRUE(output1->request.empty());
+  EXPECT_TRUE(output2->request.empty());
+  EXPECT_TRUE(output3->request.empty());
 }
 
 class AdAuctionServiceImplFacilitatedTestingTest

@@ -17381,6 +17381,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
                        TestEmpty) {
   GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
   url::Origin test_origin = url::Origin::Create(test_url);
+  ProvideKeys();
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   base::HistogramTester histogram_tester;
@@ -17506,6 +17507,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       ")"
       ")");
   url::Origin test_origin = url::Origin::Create(test_url);
+  ProvideKeys();
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
@@ -17902,6 +17904,7 @@ IN_PROC_BROWSER_TEST_F(
       ")"
       ")");
   url::Origin test_origin = url::Origin::Create(test_url);
+  ProvideKeys();
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
