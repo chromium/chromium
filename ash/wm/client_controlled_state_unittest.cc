@@ -466,8 +466,6 @@ TEST_F(ClientControlledStateTest, CenterWindow) {
 
 TEST_F(ClientControlledStateTest, CycleSnapWindow) {
   // Snap disabled.
-  display::Screen* screen = display::Screen::GetScreen();
-  gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();
   ASSERT_FALSE(window_state()->CanResize());
   ASSERT_FALSE(window_state()->CanSnap());
 
@@ -488,29 +486,38 @@ TEST_F(ClientControlledStateTest, CycleSnapWindow) {
   ASSERT_TRUE(window_state()->CanSnap());
 
   window_state()->OnWMEvent(&snap_left_event);
-  EXPECT_NEAR(work_area.CenterPoint().x(),
-              delegate()->requested_bounds().right(), 1);
-  EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
-  EXPECT_TRUE(delegate()->requested_bounds().origin().IsOrigin());
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
+  EXPECT_NE(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(kInitialBounds, window()->GetTargetBounds());
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 
   delegate()->Reset();
 
   window_state()->OnWMEvent(&snap_right_event);
-  EXPECT_NEAR(work_area.CenterPoint().x(), delegate()->requested_bounds().x(),
-              1);
-  EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
-  EXPECT_EQ(work_area.bottom_right(),
-            delegate()->requested_bounds().bottom_right());
-  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
+  EXPECT_NE(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, SnapWindow) {
   // Snap disabled.
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   ASSERT_FALSE(window_state()->CanResize());
   ASSERT_FALSE(window_state()->CanSnap());
 
@@ -532,68 +539,99 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapWindow) {
 
   // Snap to primary.
   window_state()->OnWMEvent(&snap_primary_event);
-  EXPECT_NEAR(work_area.CenterPoint().x() +
-                  (InTabletMode() ? -kSplitviewDividerShortSideLength / 2 : 0),
-              delegate()->requested_bounds().right(), 1);
-  EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
-  EXPECT_TRUE(delegate()->requested_bounds().origin().IsOrigin());
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
+  EXPECT_NE(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(kInitialBounds, window()->GetTargetBounds());
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 
   delegate()->Reset();
 
   // Snap to secondary.
   window_state()->OnWMEvent(&snap_secondary_event);
-  EXPECT_NEAR(work_area.CenterPoint().x() +
-                  (InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0),
-              delegate()->requested_bounds().x(), 1);
-  EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
-  EXPECT_EQ(work_area.bottom_right(),
-            delegate()->requested_bounds().bottom_right());
-  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
+  EXPECT_NE(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 }
 
 TEST_F(ClientControlledStateTest, PartialSnap) {
   // Snap enabled.
   widget_delegate()->EnableSnap();
 
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-
   // Test that snap from half to partial works.
   const WindowSnapWMEvent snap_left_half(WM_EVENT_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_half);
-  gfx::Rect expected_bounds(work_area.x(), work_area.y(),
-                            work_area.width() * chromeos::kDefaultSnapRatio,
-                            work_area.height());
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
+  EXPECT_NE(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(kInitialBounds, window()->GetTargetBounds());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
-  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 
   const WindowSnapWMEvent snap_left_partial(WM_EVENT_SNAP_PRIMARY,
                                             chromeos::kTwoThirdSnapRatio);
   window_state()->OnWMEvent(&snap_left_partial);
-  expected_bounds.set_width(work_area.width() * chromeos::kTwoThirdSnapRatio);
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
-  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 
   // Test that snap from primary to secondary works.
   const WindowSnapWMEvent snap_right_half(WM_EVENT_SNAP_SECONDARY);
   window_state()->OnWMEvent(&snap_right_half);
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
+  EXPECT_NE(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
-  expected_bounds.set_x(work_area.width() * chromeos::kDefaultSnapRatio);
-  expected_bounds.set_width(work_area.width() * chromeos::kDefaultSnapRatio);
-  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+  VerifySnappedBounds(window(), chromeos::kTwoThirdSnapRatio);
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 
   const WindowSnapWMEvent snap_right_partial(WM_EVENT_SNAP_SECONDARY,
                                              chromeos::kOneThirdSnapRatio);
   window_state()->OnWMEvent(&snap_right_partial);
+  // No actual state/bounds should be changed until the client applies the
+  // changes.
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
-  expected_bounds.set_x(
-      std::round(work_area.width() * chromeos::kTwoThirdSnapRatio));
-  expected_bounds.set_width(
-      std::round(work_area.width() * chromeos::kOneThirdSnapRatio));
-  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+
+  // Apply pending requests.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kOneThirdSnapRatio);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 }
 
 TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
@@ -633,26 +671,37 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
 
   const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
+
+  // Apply pending requests.
   state()->EnterNextState(window_state(), delegate()->new_state());
-  EXPECT_EQ(gfx::Rect(0, 0, 400, 600 - ShelfConfig::Get()->shelf_size()),
-            delegate()->requested_bounds());
+  ApplyPendingRequestedBounds();
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
 
   const gfx::Rect resized_bounds(0, 0, 300,
                                  600 - ShelfConfig::Get()->shelf_size());
   const SetBoundsWMEvent set_bounds_event(resized_bounds,
                                           delegate()->display_id());
   window_state()->OnWMEvent(&set_bounds_event);
-  state()->set_bounds_locally(true);
-  window()->SetBounds(resized_bounds);
-  state()->set_bounds_locally(false);
+  const float expected_snap_ratio =
+      static_cast<float>(resized_bounds.width()) / 800;
+
+  // Apply pending requests.
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), expected_snap_ratio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(resized_bounds, delegate()->requested_bounds());
 
   widget()->Minimize();
   state()->EnterNextState(window_state(), delegate()->new_state());
 
   ::wm::Unminimize(widget()->GetNativeWindow());
+
+  // Apply pending requests.
   state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), expected_snap_ratio);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
   EXPECT_EQ(resized_bounds, delegate()->requested_bounds());
 }
@@ -1064,15 +1113,17 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
     generator->set_current_screen_location(
         window()->GetBoundsInScreen().right_center());
   }
-  generator->DragMouseTo(gfx::Point(1200 / 3, 0));
-  EXPECT_NEAR(delegate()->requested_bounds().width(), 1200 / 3,
-              InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0);
+  const float target_width = 400;
+  generator->DragMouseTo(gfx::Point(target_width, 0));
   ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), target_width / 1200);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 
   // Changing display size should keep the current snap ratio.
   UpdateDisplay("900x600");
-  EXPECT_NEAR(delegate()->requested_bounds().width(), 900 / 3,
-              InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0);
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), target_width / 1200);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 }
 
 TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
@@ -1361,6 +1412,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
   // Accept the snap request.
   state()->EnterNextState(window_state(), delegate()->new_state());
   ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_TRUE(window_state()->IsSnapped());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
   EXPECT_EQ(split_view_controller->state(),
@@ -1417,6 +1470,14 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
   state()->EnterNextState(window_state(), delegate()->new_state());
   ApplyPendingRequestedBounds();
   EXPECT_TRUE(window_state()->IsSnapped());
+
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(
+      WindowStateType::kPrimarySnapped,
+      WindowState::Get(non_client_controlled_window.get())->GetStateType());
 
   if (InTabletMode()) {
     // In tablet mode, we should keep splitview while overview should end.
@@ -1482,9 +1543,6 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, SnapFloatedWindow) {
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-
   // The AppType must be set to any except `AppType::NON_APP` (default value) to
   // make it floatable.
   window()->SetProperty(aura::client::kAppType,
@@ -1513,13 +1571,11 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapFloatedWindow) {
   widget()->OnSizeConstraintsChanged();
 
   // The requested bounds should be the snapped one (not floated bounds).
-  gfx::Rect expected_bounds(
-      work_area.x(), work_area.y(),
-      work_area.width() * chromeos::kDefaultSnapRatio -
-          (InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0),
-      work_area.height());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
-  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
 }
 
 }  // namespace ash
