@@ -179,7 +179,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.ai !== false &&
       loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
     r.AI = r.BASIC.createSection(
-        '/ai', 'ai', loadTimeData.getString('experimentalAdvancedPageTitle'));
+        '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
   }
 
   // <if expr="not chromeos_ash">

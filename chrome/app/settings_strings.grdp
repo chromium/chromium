@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Settings-specific strings (included from generated_resources.grd). -->
 <grit-part>
-  <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required."></message>
+  <message name="IDS_SETTINGS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
 
   <!-- Shared across multiple pages -->
   <message name="IDS_SETTINGS_CONTINUE" desc="Label for 'Continue' buttons.">
@@ -4363,13 +4363,13 @@
   </message>
 
   <!-- Experimental settings strings -->
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental AI settings" translateable="false">
+  <message name="IDS_SETTINGS_AI_PAGE_TITLE" desc="Title of page holding experimental AI settings">
     Experimental AI
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_LABEL" desc="Toggle primary description" translateable="false">
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_LABEL" desc="Toggle primary description">
     Try out experimental AI features
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_SUBLABEL" desc="Toggle secondary description" translateable="false">
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL" desc="Toggle secondary description">
     These features use AI, are in early development, and won’t always get it right.
   </message>
   <message name="IDS_SETTINGS_AI_COMPOSE_LABEL" desc="The primary description for the 'Help me write' feature.">
