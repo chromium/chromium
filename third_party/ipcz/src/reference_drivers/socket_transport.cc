@@ -249,7 +249,6 @@ absl::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
       // Unrecoverable error.
       const char* error = strerror(errno);
       LOG(FATAL) << "sendmsg: " << error;
-      return absl::nullopt;
     }
 
     return static_cast<size_t>(result);

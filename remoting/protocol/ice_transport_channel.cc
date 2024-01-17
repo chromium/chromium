@@ -39,7 +39,6 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
     return TransportRoute::RELAY;
   } else {
     LOG(FATAL) << "Unknown candidate type: " << candidate_type;
-    return TransportRoute::DIRECT;
   }
 }
 

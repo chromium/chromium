@@ -449,7 +449,6 @@ VideoCaptureImpl::CreateVideoFrameInitData(
             break;
           default:
             LOG(FATAL) << "Unsupported pixel format";
-            return absl::nullopt;
         }
         // The GpuMemoryBuffer is allocated and owned by the video capture
         // buffer pool from the video capture service process, so we don't need

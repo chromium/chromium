@@ -2005,7 +2005,6 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
     update.nodes = {*doc_node_};
     if (!tree_.Unserialize(update)) {
       LOG(FATAL) << tree_.error();
-      return;
     }
 
     if (ocr_service_->AreAllPagesOcred()) {

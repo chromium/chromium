@@ -362,9 +362,6 @@ std::string FindScriptPath() {
   execve(login_shell.c_str(), const_cast<char* const*>(arg_ptrs.data()),
          const_cast<char* const*>(env_ptrs.data()));
   PLOG(FATAL) << "Failed to exec login shell " << login_shell;
-  // The FATAL log should have terminated the program already, but this makes
-  // the compiler happy.
-  std::exit(EXIT_FAILURE);
 }
 
 // Either |user| must be set when running as root, xor the real user ID must be

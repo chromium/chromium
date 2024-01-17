@@ -104,7 +104,6 @@ std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromString(
   std::optional<base::Value> dict = base::JSONReader::Read(config_contents);
   if (!dict || !dict->is_dict()) {
     LOG(FATAL) << "Couldn't parse Gaia config file";
-    return nullptr;
   }
 
   return std::make_unique<GaiaConfig>(std::move(dict->GetDict()));
@@ -121,7 +120,6 @@ std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromDisk(
   std::string config_contents;
   if (!base::ReadFileToString(config_path, &config_contents)) {
     LOG(FATAL) << "Couldn't read Gaia config file " << config_path;
-    return nullptr;
   }
   return ReadConfigFromString(config_contents);
 }
@@ -134,7 +132,6 @@ std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromCommandLineSwitches(
     LOG(FATAL) << "Either a Gaia config file path or a config file contents "
                   "can be provided; "
                << "not both";
-    return nullptr;
   }
 
   if (command_line->HasSwitch(switches::kGaiaConfigContents)) {

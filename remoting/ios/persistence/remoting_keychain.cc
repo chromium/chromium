@@ -124,7 +124,6 @@ std::string RemotingKeychain::GetData(Key key,
   }
   if (status != errSecSuccess) {
     LOG(FATAL) << "Failed to query keychain data. Status: " << status;
-    return "";
   }
   const char* data_pointer =
       reinterpret_cast<const char*>(CFDataGetBytePtr(cf_result.get()));

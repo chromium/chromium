@@ -27,7 +27,12 @@
 #define QUICHE_CHROMIUM_LOG_INFO VLOG(1)
 #define QUICHE_CHROMIUM_LOG_WARNING DLOG(WARNING)
 #define QUICHE_CHROMIUM_LOG_ERROR DLOG(ERROR)
-#define QUICHE_CHROMIUM_LOG_FATAL LOG(FATAL)
+// TODO(pbos): Make QUICHE_LOG(FATAL) [[noreturn]] when quiche can build with
+// -Wunreachable-code-aggressive if LOG(FATAL) is [[noreturn]] which will need
+// to be resolved upstream
+#define QUICHE_CHROMIUM_LOG_FATAL \
+  LAZY_STREAM(LOG_STREAM(FATAL),  \
+              ::logging::ShouldCreateLogMessage(::logging::LOGGING_FATAL))
 #define QUICHE_CHROMIUM_LOG_DFATAL LOG(DFATAL)
 
 #define QUICHE_CHROMIUM_DLOG_INFO DVLOG(1)

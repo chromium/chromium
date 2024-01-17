@@ -49,7 +49,6 @@ MojoResult NotImplemented(const char* name) {
       << "Mojo has not been initialized in this process. You must call "
       << "either mojo::core::Init() as an embedder, or |MojoInitialize()| if "
       << "using the mojo_core shared library.";
-  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 }  // namespace

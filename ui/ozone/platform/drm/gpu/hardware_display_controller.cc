@@ -525,7 +525,6 @@ void HardwareDisplayController::AllocateCursorBuffers() {
     // their small sizes).
     if (!cursor_buffers_[i]->Initialize(info)) {
       LOG(FATAL) << "Failed to initialize cursor buffer";
-      return;
     }
   }
 }

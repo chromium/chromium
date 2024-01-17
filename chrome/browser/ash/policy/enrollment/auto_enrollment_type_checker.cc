@@ -285,7 +285,6 @@ bool AutoEnrollmentTypeChecker::IsFREEnabled() {
 
   LOG(FATAL) << "Unknown Forced Re-Enrollment mode: " << command_line_mode
              << ".";
-  return false;
 }
 
 // static
@@ -310,7 +309,6 @@ bool AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled() {
     return false;
 
   LOG(FATAL) << "Unknown Initial Enrollment mode: " << command_line_mode << ".";
-  return false;
 }
 
 // static

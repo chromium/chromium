@@ -43,7 +43,6 @@ int GetOzonePlatformId() {
   }
 
   LOG(FATAL) << "Invalid ozone platform: " << platform_name;
-  return -1;  // not reached
 }
 
 const char* GetOzonePlatformName() {

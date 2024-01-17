@@ -733,7 +733,6 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
     if (!AwaitQuiescence()) {
       LOG(FATAL) << "AwaitQuiescence() failed.";
-      return false;
     }
   }
 

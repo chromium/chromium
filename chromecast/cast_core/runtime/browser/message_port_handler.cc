@@ -95,9 +95,6 @@ cast_receiver::Status MessagePortHandler::HandleMessage(
     case cast::web::Message::kResponse: {
       if (!is_awaiting_response_) {
         LOG(FATAL) << "Received response while not expecting one.";
-        return cast_receiver::Status(
-            cast_receiver::StatusCode::kUnknown,
-            "Received response while not expecting one");
       }
       message_timeout_callback_.Cancel();
       is_awaiting_response_ = false;

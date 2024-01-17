@@ -261,7 +261,6 @@ bool VulkanSwapChain::InitializeSwapImages(
   result = vkGetSwapchainImagesKHR(device, swap_chain_, &image_count, nullptr);
   if (UNLIKELY(VK_SUCCESS != result)) {
     LOG(FATAL) << "vkGetSwapchainImagesKHR(nullptr) failed: " << result;
-    return false;
   }
 
   std::vector<VkImage> images(image_count);
@@ -269,7 +268,6 @@ bool VulkanSwapChain::InitializeSwapImages(
       vkGetSwapchainImagesKHR(device, swap_chain_, &image_count, images.data());
   if (UNLIKELY(VK_SUCCESS != result)) {
     LOG(FATAL) << "vkGetSwapchainImagesKHR(images) failed: " << result;
-    return false;
   }
 
   images_.resize(image_count);

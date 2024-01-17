@@ -421,10 +421,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 // As special cases, we can assume that LOG_IS_ON(FATAL) always holds. Also,
 // LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
 // always fire if they fail.
-// TODO(crbug.com/1409729): Make sure LOG(FATAL) is understood as [[noreturn]]
-// by making sure the compiler knowns that it's unconditionally ON.
-#define LOG_IS_ON(severity) \
-  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
+// FATAL is always enabled and required to be resolved in compile time for
+// LOG(FATAL) to be properly understood as [[noreturn]].
+#define LOG_IS_ON(severity)                                     \
+  (::logging::LOGGING_##severity == ::logging::LOGGING_FATAL || \
+   ::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
 
 // Define a default ENABLED_VLOG_LEVEL if it is not defined. The macros allows
 // code to enable vlog level at build time without the need of --vmodule
@@ -534,7 +535,13 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 
 #if DCHECK_IS_ON()
 
-#define DLOG_IS_ON(severity) LOG_IS_ON(severity)
+// This inlines ShouldCreateLogMessage instead of using LOG_IS_ON as DLOG(FATAL)
+// can't be [[noreturn]].
+// TODO(pbos): Is there a better way for us to avoid DLOG(FATAL) being
+// [[noreturn]]?
+#define DLOG_IS_ON(severity) \
+  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
+
 #define DLOG_IF(severity, condition) LOG_IF(severity, condition)
 #define DLOG_ASSERT(condition) LOG_ASSERT(condition)
 #define DPLOG_IF(severity, condition) PLOG_IF(severity, condition)

@@ -63,7 +63,6 @@ SerializedTrackImplSubtype SerializeTrackImplSubtype(
       dispatcher.DowncastTo<MediaStreamTrack>()->GetWrapperTypeInfo();
   LOG(FATAL) << "SerializeTrackImplSubtype is missing a case for "
              << wrapper_type_info->interface_name;
-  return SerializedTrackImplSubtype::kTrackImplSubtypeBase;
 }
 
 WebMediaStreamTrack::ContentHintType DeserializeContentHint(

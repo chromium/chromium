@@ -884,7 +884,6 @@ void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
     default:
       LOG(FATAL) << "Unsupported ReAuthProofTokenStatus: "
                  << static_cast<int>(next_reauth_status_);
-      break;
   }
 }
 

@@ -560,7 +560,6 @@ FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
 #if defined(USE_REAL_DBUS_CLIENTS)
   if (use_stubs) {
     LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
-    return;
   }
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
   if (!use_stubs) {
@@ -578,7 +577,6 @@ void FlossClientBundle::ResetAdapterClients() {
 #if defined(USE_REAL_DBUS_CLIENTS)
   if (use_stubs_) {
     LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
-    return;
   }
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
   if (!use_stubs_) {

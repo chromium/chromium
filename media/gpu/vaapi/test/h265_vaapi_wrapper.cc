@@ -600,9 +600,8 @@ VAProfile H265VaapiWrapper::GetProfile(const H265SPS* sps) {
     case H265ProfileTierLevel::H265ProfileIdc::
         kProfileIdcHighThroughputScreenContentCoding:
     default:
-      LOG_ASSERT(false) << "Invalid IDC profile "
-                        << sps->profile_tier_level.general_profile_idc;
-      return VAProfileNone;
+      LOG(FATAL) << "Invalid IDC profile "
+                 << sps->profile_tier_level.general_profile_idc;
   }
 }
 

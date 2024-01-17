@@ -220,8 +220,6 @@ const std::string& P224EncryptedKeyExchange::GetNextMessage() {
 
   LOG(FATAL) << "P224EncryptedKeyExchange::GetNextMessage called in"
                 " bad state " << state_;
-  next_message_ = "";
-  return next_message_;
 }
 
 P224EncryptedKeyExchange::Result P224EncryptedKeyExchange::ProcessMessage(
@@ -245,8 +243,6 @@ P224EncryptedKeyExchange::Result P224EncryptedKeyExchange::ProcessMessage(
   if (state_ != kStateRecvDH) {
     LOG(FATAL) << "P224EncryptedKeyExchange::ProcessMessage called in"
                   " bad state " << state_;
-    error_ = "internal error";
-    return kResultFailed;
   }
 
   const EC_GROUP* p224 = EC_group_p224();

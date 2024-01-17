@@ -75,7 +75,7 @@ void H264DPB::DeleteByPOC(int poc) {
       return;
     }
   }
-  LOG_ASSERT(false) << "Missing POC: " << poc;
+  LOG(FATAL) << "Missing POC: " << poc;
 }
 
 void H264DPB::DeleteUnused() {

@@ -348,18 +348,16 @@ bool CheckCredentialsViaAuthFactor(const FakeAuthFactor& factor,
             return password.password == secret;
           },
           [&](const PinFactor& pin) { return pin.pin == secret; },
-          [&](const RecoveryFactor& recovery) {
+          [&](const RecoveryFactor& recovery) -> bool {
             LOG(FATAL) << "Checking recovery key is not allowed";
-            return false;
           },
           [&](const KioskFactor& kiosk) {
             // Kiosk key secrets are derived from app ids and don't leave
             // cryptohome, so there's nothing to check.
             return true;
           },
-          [&](const SmartCardFactor& smart_card) {
+          [&](const SmartCardFactor& smart_card) -> bool {
             LOG(FATAL) << "Checking smart card key is not implemented yet";
-            return false;
           }),
       factor);
 }

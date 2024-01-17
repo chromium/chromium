@@ -361,7 +361,6 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
 
   LOG(FATAL) << "HasConfigInfo() should be called only for H264/HEVC stream: "
              << GetProfileName(profile);
-  return false;
 }
 
 struct AlignedDataHelper::VideoFrameData {

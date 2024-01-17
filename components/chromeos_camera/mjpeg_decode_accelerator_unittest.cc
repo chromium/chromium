@@ -1352,8 +1352,7 @@ int main(int argc, char** argv) {
       continue;
     if (it->first == "h" || it->first == "help")
       continue;
-    LOG_ASSERT(false) << "Unexpected switch: " << it->first << ":"
-                      << it->second;
+    LOG(FATAL) << "Unexpected switch: " << it->first << ":" << it->second;
   }
 #if BUILDFLAG(USE_VAAPI)
   media::VaapiWrapper::PreSandboxInitialization();

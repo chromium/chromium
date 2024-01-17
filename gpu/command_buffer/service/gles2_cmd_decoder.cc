@@ -3003,7 +3003,6 @@ GLES2Decoder* GLES2Decoder::Create(
   return new GLES2DecoderImpl(client, command_buffer_service, outputter, group);
 #else
   LOG(FATAL) << "Validating command decoder is not supported.";
-  return nullptr;
 #endif
 }
 

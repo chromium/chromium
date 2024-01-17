@@ -683,8 +683,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       // Fuchsia uses ANGLE for GL which requires Vulkan, so don't fall
       // back to GL if Vulkan init fails.
       LOG(FATAL) << "Vulkan initialization failed";
-#endif
+#else
       gpu_preferences_.gr_context_type = GrContextType::kGL;
+#endif
     }
   } else {
     // TODO(https://crbug.com/1095744): It would be better to cleanly tear

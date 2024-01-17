@@ -4145,6 +4145,7 @@ if (enable_nocompile_tests) {
       "functional/callback_nocompile.nc",
       "functional/function_ref_nocompile.nc",
       "functional/overloaded_nocompile.nc",
+      "logging_nocompile.nc",
       "memory/ref_counted_nocompile.nc",
       "memory/weak_ptr_nocompile.nc",
       "metrics/field_trial_params_nocompile.nc",

@@ -117,10 +117,8 @@ AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
   switch (type) {
     case user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED:
       LOG(FATAL) << "Unknown factor type should be handled separately";
-      return AuthFactorType::kUnknownLegacy;
     case user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT:
       LOG(FATAL) << "Fingerprint factor type should never be returned";
-      return AuthFactorType::kUnknownLegacy;
     case user_data_auth::AUTH_FACTOR_TYPE_PASSWORD:
       return AuthFactorType::kPassword;
     case user_data_auth::AUTH_FACTOR_TYPE_PIN:
@@ -134,7 +132,6 @@ AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
     default:
       // Use `--ignore-unknown-auth-factors` to avoid this.
       LOG(FATAL) << "Unknown auth factor type " << static_cast<int>(type);
-      return AuthFactorType::kUnknownLegacy;
   }
 }
 
@@ -209,10 +206,8 @@ void SerializeAuthFactor(const AuthFactor& factor,
       break;
     case AuthFactorType::kLegacyFingerprint:
       LOG(FATAL) << "Legacy fingerprint factor type should never be serialized";
-      break;
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";
-      break;
     default:
       NOTIMPLEMENTED() << "Auth factor "
                        << static_cast<int>(factor.ref().type())
@@ -270,7 +265,6 @@ void SerializeAuthInput(const AuthFactorRef& ref,
       break;
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";
-      break;
     default:
       NOTIMPLEMENTED() << "Auth factor "
                        << static_cast<int>(auth_input.GetType())

@@ -241,7 +241,6 @@ class InstallAttributesClientTest : public testing::Test {
           expected_blocking_install_attributes_get_status_reply_);
     } else {
       LOG(FATAL) << "Unrecognized member: " << method_call->GetMember();
-      return nullptr;
     }
     return base::ok(std::move(response));
   }

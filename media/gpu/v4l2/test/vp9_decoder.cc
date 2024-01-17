@@ -329,8 +329,6 @@ void Vp9Decoder::SetupFrameParams(
       break;
     default:
       LOG(FATAL) << "Invalid reset frame context value!";
-      v4l2_frame_params->reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
-      break;
   }
   v4l2_frame_params->frame_context_idx =
       frame_hdr.frame_context_idx_to_save_probs;
@@ -424,8 +422,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   switch (parser_res) {
     case Vp9Parser::kInvalidStream:
-      LOG_ASSERT(false) << "Failed to parse frame.";
-      return Vp9Decoder::kError;
+      LOG(FATAL) << "Failed to parse frame.";
     case Vp9Parser::kEOStream:
       return Vp9Decoder::kEOStream;
     case Vp9Parser::kOk:

@@ -168,7 +168,6 @@ bool MockFailingReplaceFile(const base::FilePath&,
 bool MockCrashingIndexRuleset(UnindexedRulesetStreamGenerator*,
                               RulesetIndexer*) {
   LOG(FATAL) << "Synthetic crash.";
-  return false;
 }
 #else
 bool MockFailingIndexRuleset(UnindexedRulesetStreamGenerator*,

@@ -325,7 +325,6 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
   if (enrollment_step_ != STEP_REGISTRATION || !client_->is_registered()) {
     LOG(FATAL) << "Registration state changed to " << client_->is_registered()
                << " in step " << enrollment_step_ << ".";
-    return;
   }
 
   device_mode_ = client_->device_mode();
