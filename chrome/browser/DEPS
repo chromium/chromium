@@ -581,6 +581,9 @@ specific_include_rules = {
     # For GetVirtualKeyboardController.
     "+ash/keyboard/ui/keyboard_ui_controller.h",
   ],
+  "chrome_back_forward_cache_browsertest.cc": [
+    "+pdf/pdf_features.h",
+  ],
   "chrome_browsing_data_remover_delegate_unittest.cc": [
     "+services/network/network_context.h",
     "+services/network/network_service.h",
