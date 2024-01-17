@@ -6,10 +6,13 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
+#import "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -106,6 +109,7 @@ void OrderChildWindow(NSWindow* child_window,
 - (long long)_resizeDirectionForMouseLocation:(CGPoint)location;
 - (BOOL)_isConsideredOpenForPersistentState;
 - (void)_zoomToScreenEdge:(NSUInteger)edge;
+- (void)_removeFromGroups:(NSWindow*)window;
 @end
 
 // Private API as of at least macOS 13.
@@ -549,7 +553,13 @@ void OrderChildWindow(NSWindow* child_window,
 
 - (void)orderOut:(id)sender {
   _miniaturizationInProgress = NO;
+  [self maybeRemoveTreeFromOrderingGroups];
   [super orderOut:sender];
+}
+
+- (void)close {
+  [self maybeRemoveTreeFromOrderingGroups];
+  [super close];
 }
 
 // NSResponder implementation.
@@ -740,6 +750,85 @@ void OrderChildWindow(NSWindow* child_window,
     return static_cast<NSWindow<CommandDispatchingWindow>*>(parent);
   }
   return nil;
+}
+
+// During window ordering AppKit rebuilds its internal ordering group for the
+// window tree. A window tree in Chrome's case is the browser window and all of
+// its descendants, which can include Chrome and AppKit created windows. It does
+// this by removing and re-adding each window in the window tree from the
+// ordering group. If a window is re-added to the group while in a non-active
+// space, a space switch can occur. The space switch will only happen if the
+// current window tree has existing windows that are still a part of the
+// ordering group. When there are two levels in the window tree, each window
+// will be removed from the group before windows are re-added to the group. If
+// three or more window levels exist in the tree not all windows will be removed
+// from the group before windows are re-added to the group, causing a space
+// switch to occur. It seems this is an unintentional side effect of AppKit's
+// recursive window tree group rebuilding.
+//
+// To work around this behavior, preemptively remove the window tree from
+// ordering groups. This workaround should be considered low risk, while we are
+// calling an undocumented NSWindow method, removing the window tree from
+// ordering groups is ubiquitous throughout AppKit. Additionally, this
+// preemptive removal is only called before an -orderOut: or -close. AppKit will
+// be doing an ordering group rebuild during those calls. We are also taking
+// care to only apply this workaround when necessary.
+//
+// TODO(http://crbug.com/1454606): Remove this workaround once FB13529873 is
+// fixed in AppKit.
+- (void)maybeRemoveTreeFromOrderingGroups {
+  // This workaround only needed for macOS 13 and greater.
+  if (@available(macOS 13.0, *)) {
+  } else {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          remote_cocoa::features::kImmersiveFullscreenSpaceSwitchMitigation)) {
+    return;
+  }
+
+  // Only remove from groups if this window is not on the active space.
+  if (self.isOnActiveSpace) {
+    return;
+  }
+
+  // Find the root window.
+  NSWindow* root = self;
+  while (root.parentWindow) {
+    root = root.parentWindow;
+  }
+
+  // Only remove from groups if the browser is in immersive fullscreen.
+  NativeWidgetMacNSWindow* rootWidgetWindow =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(root);
+  if (!rootWidgetWindow ||
+      !(rootWidgetWindow.styleMask & NSWindowStyleMaskFullScreen) ||
+      !rootWidgetWindow.bridge ||
+      !rootWidgetWindow.bridge->ImmersiveFullscreenEnabled()) {
+    return;
+  }
+
+  // Since _removeFromGroups: is not documented it could go away in newer
+  // versions of macOS. If the selector does not exist, DumpWithoutCrashing() so
+  // we hear about the change.
+  if (![NSWindow instancesRespondToSelector:@selector(_removeFromGroups:)]) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  // Iterate instead of recurse. There are other NSWindow types in the tree
+  // besides NativeWidgetMacNSWindow that would not implement our recursion.
+  NSMutableArray* nextWindows = [NSMutableArray array];
+  [nextWindows addObject:root];
+  while (nextWindows.count) {
+    NSWindow* currentWindow = nextWindows.lastObject;
+    [nextWindows removeLastObject];
+    for (NSWindow* child in currentWindow.childWindows) {
+      [nextWindows addObject:child];
+      [currentWindow _removeFromGroups:child];
+    }
+  }
 }
 
 @end
