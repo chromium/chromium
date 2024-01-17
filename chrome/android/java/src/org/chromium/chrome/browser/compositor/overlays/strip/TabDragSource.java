@@ -184,7 +184,11 @@ public class TabDragSource implements View.OnDragListener {
                     mBrowserControlStateProvider,
                     mTabContentManagerSupplier,
                     mLayerTitleCacheSupplier,
-                    () -> showDragShadow(true));
+                    () -> {
+                        TabDragShadowBuilder builder =
+                                (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
+                        showDragShadow(builder.mShowDragShadow);
+                    });
         }
         mShadowView.setTab(tabBeingDragged);
     }
