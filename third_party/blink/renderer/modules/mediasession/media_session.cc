@@ -241,15 +241,6 @@ void MediaSession::setActionHandler(const String& action,
     UseCounter::Count(window, WebFeature::kMediaSessionSkipAd);
   }
 
-  if (!RuntimeEnabledFeatures::MediaSessionSlidesEnabled()) {
-    if ("previousslide" == action || "nextslide" == action) {
-      exception_state.ThrowTypeError("The provided value '" + action +
-                                     "' is not a valid enum "
-                                     "value of type MediaSessionAction.");
-      return;
-    }
-  }
-
   if (!RuntimeEnabledFeatures::MediaSessionEnterPictureInPictureEnabled()) {
     if ("enterpictureinpicture" == action) {
       exception_state.ThrowTypeError(

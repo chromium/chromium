@@ -1656,7 +1656,7 @@ class MediaSessionVideoPictureInPictureWindowControllerBrowserTest
     VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
         command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaSession,SkipAd,MediaSessionSlides");
+                                    "MediaSession,SkipAd");
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService}, {});
   }

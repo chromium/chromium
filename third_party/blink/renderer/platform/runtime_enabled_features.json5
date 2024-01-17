@@ -2415,11 +2415,6 @@
       status: "stable",
     },
     {
-      name: "MediaSessionSlides",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "MediaSourceExperimental",
       status: "experimental",
       base_feature: "none",
