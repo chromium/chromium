@@ -224,20 +224,6 @@ typedef struct UpdaterSystemClass UpdaterSystemClass;
 #endif 	/* __UpdaterSystemClass_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterUser_FWD_DEFINED__
-#define __IUpdaterUser_FWD_DEFINED__
-typedef interface IUpdaterUser IUpdaterUser;
-
-#endif 	/* __IUpdaterUser_FWD_DEFINED__ */
-
-
-#ifndef __IUpdaterSystem_FWD_DEFINED__
-#define __IUpdaterSystem_FWD_DEFINED__
-typedef interface IUpdaterSystem IUpdaterSystem;
-
-#endif 	/* __IUpdaterSystem_FWD_DEFINED__ */
-
-
 #ifndef __IUpdateStateUser_FWD_DEFINED__
 #define __IUpdateStateUser_FWD_DEFINED__
 typedef interface IUpdateStateUser IUpdateStateUser;
@@ -327,6 +313,20 @@ typedef interface IUpdaterAppStatesCallbackUser IUpdaterAppStatesCallbackUser;
 typedef interface IUpdaterAppStatesCallbackSystem IUpdaterAppStatesCallbackSystem;
 
 #endif 	/* __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterUser_FWD_DEFINED__
+#define __IUpdaterUser_FWD_DEFINED__
+typedef interface IUpdaterUser IUpdaterUser;
+
+#endif 	/* __IUpdaterUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterSystem_FWD_DEFINED__
+#define __IUpdaterSystem_FWD_DEFINED__
+typedef interface IUpdaterSystem IUpdaterSystem;
+
+#endif 	/* __IUpdaterSystem_FWD_DEFINED__ */
 
 
 /* header files for imported files */

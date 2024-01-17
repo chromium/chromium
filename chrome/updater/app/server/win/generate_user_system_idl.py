@@ -9,6 +9,15 @@ system identities for interfaces that are decorated with `BEGIN_INTERFACE` and
 identities, as well as any other items that need to be distinct for `user` and
 `system` respectively.
 
+`addToLibrary` specifies the interfaces that should be listed in the `library`
+section of the generated IDL. For instance:
+* `"addToLibrary": ["user", "system"]` will add the `IInterfaceUser` and
+the `IInterfaceSystem` to the `library` section.
+* `"addToLibrary": ["", "user", "system"]` will add `IInterface`,
+`IInterfaceUser` and `IInterfaceSystem` to the `library` section.
+* `"addToLibrary": ["user"]` will add only `IInterfaceUser` to the
+`library` section.
+
 Here is an example:
 
 ```
@@ -18,7 +27,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
       "system":"PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07"
     },
-    "tokensToSuffix": ["ICompleteStatus"]
+    "tokensToSuffix": ["ICompleteStatus"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -31,6 +41,13 @@ interface ICompleteStatus : IUnknown {
   [propget] HRESULT statusMessage([out, retval] BSTR*);
 };
 END_INTERFACE
+
+[
+...
+]
+library UpdaterLib {
+  INTERFACES_IN_LIBRARY;
+};
 ```
 
 The example input above will produce the following output in the IDL:
@@ -63,6 +80,15 @@ interface ICompleteStatusSystem : IUnknown {
   [propget] HRESULT statusCode([out, retval] LONG*);
   [propget] HRESULT statusMessage([out, retval] BSTR*);
 };
+
+[
+...
+]
+library UpdaterLib {
+  interface ICompleteStatus;
+  interface ICompleteStatusUser;
+  interface ICompleteStatusSystem;
+};
 ```
 
 Usage:
@@ -88,12 +114,18 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename):
 
         # Copy anything before the first 'BEGIN_INTERFACE' to output.
         idl_output = [matches[0]]
+        interfaces_in_library = []
 
         for i in range(1, len(matches), 3):
             replacement_dict = json.loads(matches[i])
             interface_text = matches[i + 1]
             trailer = matches[i + 2]
-
+            interface_base_name = re.search(r'interface (\w+) :',
+                                            interface_text).group(1)
+            interfaces_in_library.extend([
+                "interface " + interface_base_name + flavor.title()
+                for flavor in replacement_dict['addToLibrary']
+            ])
             idl_output.append(interface_text)
             for user_or_system in ['user', 'system']:
                 interface_gen = re.sub(
@@ -107,6 +139,8 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename):
                 idl_output.append(interface_gen)
 
             if trailer.strip():
+                trailer = re.sub(r'INTERFACES_IN_LIBRARY',
+                                 ';\n  '.join(interfaces_in_library), trailer)
                 idl_output.append(trailer)
 
         with open(idl_output_filename, 'w') as f_out:

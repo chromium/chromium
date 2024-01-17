@@ -15,7 +15,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-C3485D9F-C684-4C43-B85B-E339EA395C29",
       "system":"PLACEHOLDER-GUID-EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5"
     },
-    "tokensToSuffix": ["IUpdateState"]
+    "tokensToSuffix": ["IUpdateState"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -46,7 +47,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
       "system":"PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07"
     },
-    "tokensToSuffix": ["ICompleteStatus"]
+    "tokensToSuffix": ["ICompleteStatus"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -68,7 +70,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-B54493A0-65B7-408C-B650-06265D2182AC",
       "system":"PLACEHOLDER-GUID-057B500A-4BA2-496A-B1CD-C5DED3CCC61B"
     },
-    "tokensToSuffix": ["IUpdaterObserver", "IUpdateState", "ICompleteStatus"]
+    "tokensToSuffix": ["IUpdaterObserver", "IUpdateState", "ICompleteStatus"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -90,7 +93,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-34ADC89D-552B-4102-8AE5-D613A691335B",
       "system":"PLACEHOLDER-GUID-F0D6763A-0182-4136-B1FA-508E334CFFC1"
     },
-    "tokensToSuffix": ["IUpdaterCallback"]
+    "tokensToSuffix": ["IUpdaterCallback"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -111,7 +115,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-028FEB84-44BC-4A73-A0CD-603678155CC3",
       "system":"PLACEHOLDER-GUID-92631531-8044-46F4-B645-CDFBCCC7FA3B"
     },
-    "tokensToSuffix": ["IUpdaterAppState"]
+    "tokensToSuffix": ["IUpdaterAppState"],
+    "addToLibrary": ["", "user", "system"]
   }
 )
 [
@@ -137,7 +142,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-BCFCF95C-DE48-4F42-B0E9-D50DB407DB53",
       "system":"PLACEHOLDER-GUID-2CB8867E-495E-459F-B1B6-2DD7FFDBD462"
     },
-    "tokensToSuffix": ["IUpdaterAppStatesCallback"]
+    "tokensToSuffix": ["IUpdaterAppStatesCallback"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -159,7 +165,8 @@ BEGIN_INTERFACE(
       "system":"PLACEHOLDER-GUID-FCE335F3-A55C-496E-814F-85971C9FA6F1"
     },
     "tokensToSuffix": ["IUpdater", "IUpdaterCallback",
-                       "IUpdaterAppStatesCallback", "IUpdaterObserver"]
+                       "IUpdaterAppStatesCallback", "IUpdaterObserver"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -238,25 +245,5 @@ library UpdaterLib {
     [default] interface IUnknown;
   }
 
-  interface IUpdaterUser;
-  interface IUpdaterSystem;
-
-  interface IUpdateStateUser;
-  interface IUpdateStateSystem;
-
-  interface ICompleteStatusUser;
-  interface ICompleteStatusSystem;
-
-  interface IUpdaterObserverUser;
-  interface IUpdaterObserverSystem;
-
-  interface IUpdaterCallbackUser;
-  interface IUpdaterCallbackSystem;
-
-  interface IUpdaterAppState;
-  interface IUpdaterAppStateUser;
-  interface IUpdaterAppStateSystem;
-
-  interface IUpdaterAppStatesCallbackUser;
-  interface IUpdaterAppStatesCallbackSystem;
+  INTERFACES_IN_LIBRARY;
 };

@@ -16,7 +16,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-618D9B82-9F51-4490-AF24-BB80489E1537",
       "system":"PLACEHOLDER-GUID-7E806C73-B2A4-4BC5-BDAD-2249D87F67FC"
     },
-    "tokensToSuffix": ["IUpdaterInternalCallback"]
+    "tokensToSuffix": ["IUpdaterInternalCallback"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -37,7 +38,8 @@ BEGIN_INTERFACE(
       "user":"PLACEHOLDER-GUID-C82AFDA3-CA76-46EE-96E9-474717BFA7BA",
       "system":"PLACEHOLDER-GUID-E690EB97-6E46-4361-AF8F-90A4F5496475"
     },
-    "tokensToSuffix": ["IUpdaterInternal", "IUpdaterInternalCallback"]
+    "tokensToSuffix": ["IUpdaterInternal", "IUpdaterInternalCallback"],
+    "addToLibrary": ["user", "system"]
   }
 )
 [
@@ -79,9 +81,5 @@ library UpdaterInternalLib {
     [default] interface IUnknown;
   }
 
-  interface IUpdaterInternalUser;
-  interface IUpdaterInternalSystem;
-
-  interface IUpdaterInternalCallbackUser;
-  interface IUpdaterInternalCallbackSystem;
+  INTERFACES_IN_LIBRARY;
 };
