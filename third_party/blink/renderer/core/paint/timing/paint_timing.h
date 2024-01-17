@@ -123,6 +123,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     soft_navigation_pending_paint_details_ = PaintDetails();
     first_paints_reset_ = true;
     soft_navigation_detected_ = false;
+    soft_navigation_fp_reported_ = false;
+    soft_navigation_fcp_reported_ = false;
   }
 
   // FirstImagePaint returns the first time that image content was painted.
@@ -263,6 +265,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_eligible_to_paint_;
   bool first_paints_reset_ = false;
   bool soft_navigation_detected_ = false;
+  bool soft_navigation_fp_reported_ = false;
+  bool soft_navigation_fcp_reported_ = false;
 
   base::TimeTicks last_portal_activated_presentation_;
 

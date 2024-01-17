@@ -120,7 +120,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   };
 
   void ReportSoftNavigationToMetrics(LocalFrame* frame) const;
-  void CheckSoftNavigationConditions(const PerInteractionData& data);
+  void CheckSoftNavigationConditions(const PerInteractionData& data,
+                                     ScriptState* script_state);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
   absl::optional<scheduler::TaskAttributionId>
@@ -157,6 +158,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   uint64_t viewport_area_ = 0;
   scheduler::TaskAttributionId last_interaction_task_id_;
   bool soft_navigation_conditions_met_ = false;
+  bool paint_conditions_met_ = false;
   bool initial_interaction_encountered_ = false;
   struct EventParameters {
     explicit EventParameters() = default;

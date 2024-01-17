@@ -132,6 +132,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   did_commit_previous_paints_ = false;
   soft_navigation_conditions_met_ = false;
   pending_interaction_timestamp_ = base::TimeTicks();
+  paint_conditions_met_ = false;
   softnav_painted_area_ = 0;
 }
 
@@ -236,7 +237,7 @@ SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(ScriptState* script_state,
     return absl::nullopt;
   }
   data->flag_set.Put(type);
-  CheckSoftNavigationConditions(*data);
+  CheckSoftNavigationConditions(*data, script_state);
   return result;
 }
 
@@ -262,7 +263,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   // This is overriding the URL, which is required to support history
   // modifications inside a popstate event.
   data->url = url;
-  CheckSoftNavigationConditions(*data);
+  CheckSoftNavigationConditions(*data, script_state);
   TRACE_EVENT1("scheduler",
                "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
                "url", url);
@@ -278,7 +279,8 @@ bool SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
 }
 
 void SoftNavigationHeuristics::CheckSoftNavigationConditions(
-    const SoftNavigationHeuristics::PerInteractionData& data) {
+    const SoftNavigationHeuristics::PerInteractionData& data,
+    ScriptState* script_state) {
   if (data.flag_set != FlagTypeSet::All()) {
     return;
   }
@@ -292,6 +294,18 @@ void SoftNavigationHeuristics::CheckSoftNavigationConditions(
   soft_navigation_conditions_met_ = true;
 
   soft_navigation_interaction_data_ = &data;
+
+  if (data.user_interaction_timestamp.is_null()) {
+    return;
+  }
+
+  if (paint_conditions_met_) {
+    v8::HandleScope handle_scope(script_state->GetIsolate());
+    LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
+    if (frame && frame->IsOutermostMainFrame()) {
+      EmitSoftNavigationEntry(frame);
+    }
+  }
 }
 
 void SoftNavigationHeuristics::EmitSoftNavigationEntry(LocalFrame* frame) {
@@ -366,9 +380,14 @@ void SoftNavigationHeuristics::RecordPaint(
                         soft_navigation_interaction_data_->url,
                         "is_above_threshold", is_above_threshold);
 
-    if (soft_navigation_conditions_met_ &&
-        ((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
-      EmitSoftNavigationEntry(frame);
+    if (((softnav_painted_area_ * HUNDRED_PERCENT) > paint_threshold)) {
+      paint_conditions_met_ = true;
+      if (soft_navigation_conditions_met_ &&
+          soft_navigation_interaction_data_ &&
+          !soft_navigation_interaction_data_->user_interaction_timestamp
+               .is_null()) {
+        EmitSoftNavigationEntry(frame);
+      }
     }
   } else if (!initial_interaction_encountered_) {
     initial_painted_area_ += painted_area;
@@ -418,6 +437,17 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
     // Don't set the timestamp if it was already set (e.g. in the case of a
     // nested event scope).
     data->user_interaction_timestamp = base::TimeTicks::Now();
+  }
+  if (soft_navigation_conditions_met_ && paint_conditions_met_) {
+    // This can happen in a case where the paint conditions were met by a
+    // previous interaction. That's a correctness tradeoff we made when
+    // supporting multiple interactions.
+    LocalDOMWindow* window = GetSupplementable();
+    LocalFrame* frame =
+        window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
+    if (frame && frame->IsOutermostMainFrame()) {
+      EmitSoftNavigationEntry(frame);
+    }
   }
 }
 

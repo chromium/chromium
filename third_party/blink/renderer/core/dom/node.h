@@ -1007,7 +1007,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   void Trace(Visitor*) const override;
 
-  bool IsModifiedBySoftNavigation() {
+  bool IsModifiedBySoftNavigation() const {
     return GetFlag(kModifiedBySoftNavigation);
   }
   void SetIsModifiedBySoftNavigation() { SetFlag(kModifiedBySoftNavigation); }
