@@ -11,14 +11,6 @@ BASE_FEATURE(kAppStoreRating,
              "AppStoreRating",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAppStoreRatingLoosenedTriggers,
-             "AppStoreRatingLoosenedTriggers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);
-}
-
-bool IsAppStoreRatingLoosenedTriggersEnabled() {
-  return base::FeatureList::IsEnabled(kAppStoreRatingLoosenedTriggers);
 }

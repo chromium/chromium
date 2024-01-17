@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 
 #import "base/json/values_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
-#import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -136,93 +134,6 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
 #pragma mark - Tests
 
-// Tests that promo display is not requested when the user has
-// used Chrome for less than 3 days in the past week, but meets
-// the other requirements to be considered engaged.
-TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotUsed3DaysInPastWeek) {
-  // With loosened triggers, this test would fail.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAppStoreRatingLoosenedTriggers);
-
-  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
-      .Times(0);
-
-  SetActiveDaysInPastWeek(1);
-  SetTotalDaysOnChrome(16);
-  EnableCPE();
-  SetTrueChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(366);
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
-// Tests that promo display is not requested when the user has
-// used Chrome for less than 15 days overall, but meets
-// the other requirements to be considered engaged.
-TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotUsed15Days) {
-  // With loosened triggers, this test would fail.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAppStoreRatingLoosenedTriggers);
-
-  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
-      .Times(0);
-
-  SetActiveDaysInPastWeek(3);
-  SetTotalDaysOnChrome(10);
-  EnableCPE();
-  SetTrueChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(366);
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
-// Tests that promo display is not requested when the user has not
-// enabled CPE, but meets the other requirements to be considered engaged.
-TEST_F(AppStoreRatingSceneAgentTest, TestCPENotEnabled) {
-  // With loosened triggers, this test would fail.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAppStoreRatingLoosenedTriggers);
-
-  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
-      .Times(0);
-
-  SetActiveDaysInPastWeek(4);
-  SetTotalDaysOnChrome(17);
-  DisableCPE();
-  SetTrueChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(366);
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
-// Tests that promo display is not requested when the user has not set
-// Chrome as their default browser, but meets the other requirements to be
-// considered engaged.
-TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotDefaultBrowser) {
-  // With loosened triggers, this test would fail.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAppStoreRatingLoosenedTriggers);
-
-  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
-      .Times(0);
-
-  SetActiveDaysInPastWeek(7);
-  SetTotalDaysOnChrome(15);
-  EnableCPE();
-  SetFalseChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(366);
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
 // Tests that promo display is not requested when the App Store Rating policy is
 // disabled.
 TEST_F(AppStoreRatingSceneAgentTest, TestPolicyDisabled) {
@@ -280,13 +191,9 @@ TEST_F(AppStoreRatingSceneAgentTest, TestPromoCorrectlyRequested) {
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 }
 
-// Tests that promo display is requested WITH the loosened trigger requirements
-// when CPE is enabled.
+// Tests that promo display is requested when CPE is enabled.
 TEST_F(AppStoreRatingSceneAgentTest,
        TestPromoRequestedLoosenedTriggersCPEEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAppStoreRatingLoosenedTriggers);
-
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
@@ -299,13 +206,10 @@ TEST_F(AppStoreRatingSceneAgentTest,
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 }
 
-// Tests that promo display is requested WITH the loosened trigger requirements
-// when Chrome is set as the default browser.
+// Tests that promo display is requested when Chrome is set as the default
+// browser.
 TEST_F(AppStoreRatingSceneAgentTest,
        TestPromoRequestedLoosenedTriggersDefaultBrowserSet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAppStoreRatingLoosenedTriggers);
-
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
@@ -318,12 +222,9 @@ TEST_F(AppStoreRatingSceneAgentTest,
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 }
 
-// Tests that promo display is requested WITH the loosened trigger requirements
-// when both CPE is enabled AND Chrome is set as the default browser.
+// Tests that promo display is requested when both CPE is enabled and Chrome is
+// set as the default browser.
 TEST_F(AppStoreRatingSceneAgentTest, TestPromoRequestedLoosenedTriggersAllMet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAppStoreRatingLoosenedTriggers);
-
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
@@ -337,19 +238,13 @@ TEST_F(AppStoreRatingSceneAgentTest, TestPromoRequestedLoosenedTriggersAllMet) {
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 }
 
-// Tests that promo display is NOT requested WITH the loosened trigger
-// requirements even when Chrome is used for more than 15 days.
+// Tests that promo display is NOT requested when Chrome isn't set as the
+// default browser and CPE is not enabled.
 TEST_F(AppStoreRatingSceneAgentTest, TestPromoNotRequestedLoosenedTriggers) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAppStoreRatingLoosenedTriggers);
-
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
       .Times(0);
-
-  SetActiveDaysInPastWeek(3);
-  SetTotalDaysOnChrome(15);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_

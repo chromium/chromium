@@ -16,12 +16,6 @@ const char kAppStoreRatingDescription[] =
     "When enabled, App Store Rating promo will be presented to eligible "
     "users.";
 
-const char kAppStoreRatingLoosenedTriggersName[] =
-    "Enable the App Store Rating promo's loosened triggers.";
-const char kAppStoreRatingLoosenedTriggersDescription[] =
-    "When enabled, App Store Rating promo will have loosened trigger "
-    "requirements.";
-
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

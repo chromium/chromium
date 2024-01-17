@@ -10,7 +10,6 @@
 #import "base/values.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
-#import "components/version_info/channel.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
@@ -22,22 +21,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
-#import "ios/chrome/common/channel_info.h"
 
 @interface AppStoreRatingSceneAgent ()
-
-// Determines whether the user has used Chrome for at least 3
-// different days within the past 7 days for stable channel.
-// In Canary and Dev channels, the requirement is at least 1 day
-// in the past 7 days.
-@property(nonatomic, assign, readonly, getter=isDaysInPastWeekRequirementMet)
-    BOOL daysInPastWeekRequirementMet;
-
-// Determines whether the user has used Chrome for at least 15
-// different days overall for stable channel. In Canary and Dev channels,
-// the requirement is at least 1 day.
-@property(nonatomic, assign, readonly, getter=isTotalDaysRequirementMet)
-    BOOL totalDaysRequirementMet;
 
 // Determines whether the user has enabled the Credentials
 // Provider Extension.
@@ -58,11 +43,7 @@
 }
 
 - (BOOL)isUserEngaged {
-  if (IsAppStoreRatingLoosenedTriggersEnabled()) {
-    return IsChromeLikelyDefaultBrowser() || self.CPEEnabled;
-  }
-  return IsChromeLikelyDefaultBrowser() && self.daysInPastWeekRequirementMet &&
-         self.totalDaysRequirementMet && self.CPEEnabled;
+  return IsChromeLikelyDefaultBrowser() || self.CPEEnabled;
 }
 
 #pragma mark - SceneStateObserver
@@ -81,30 +62,6 @@
 }
 
 #pragma mark - Getters
-
-- (BOOL)isDaysInPastWeekRequirementMet {
-  PrefService* prefService = GetApplicationContext()->GetLocalState();
-  const int activeDaysInPastWeek =
-      prefService->GetList(kAppStoreRatingActiveDaysInPastWeekKey).size();
-  const int appStoreRatingTotalDaysOnChromeRequirement =
-      (GetChannel() == version_info::Channel::DEV ||
-       GetChannel() == version_info::Channel::CANARY)
-          ? 1
-          : 3;
-  return activeDaysInPastWeek >= appStoreRatingTotalDaysOnChromeRequirement;
-}
-
-- (BOOL)isTotalDaysRequirementMet {
-  const int appStoreRatingDaysOnChromeInPastWeekRequirement =
-      (GetChannel() == version_info::Channel::DEV ||
-       GetChannel() == version_info::Channel::CANARY)
-          ? 1
-          : 15;
-
-  return GetApplicationContext()->GetLocalState()->GetInteger(
-             kAppStoreRatingTotalDaysOnChromeKey) >=
-         appStoreRatingDaysOnChromeInPastWeekRequirement;
-}
 
 - (BOOL)isCPEEnabled {
   DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser);
