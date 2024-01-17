@@ -15603,10 +15603,9 @@
             ]
         }
     ],
-    "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck": [
+    "SafeBrowsingNewGmsApiForLocalDatabaseCheck": [
         {
             "platforms": [
-                "android",
                 "android_webview"
             ],
             "experiments": [
@@ -15617,17 +15616,16 @@
                     ]
                 }
             ]
-        }
-    ],
-    "SafeBrowsingNewGmsApiForSubresourceFilterCheck": [
+        },
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithSubresourceFilter",
                     "enable_features": [
+                        "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
                         "SafeBrowsingNewGmsApiForSubresourceFilterCheck"
                     ]
                 }
