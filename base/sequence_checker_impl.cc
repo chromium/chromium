@@ -57,6 +57,7 @@ SequenceCheckerImpl& SequenceCheckerImpl::operator=(
 
   TS_UNCHECKED_READ(bound_at_) = std::move(TS_UNCHECKED_READ(other.bound_at_));
   TS_UNCHECKED_READ(sequence_token_) = TS_UNCHECKED_READ(other.sequence_token_);
+  TS_UNCHECKED_READ(thread_ref_) = TS_UNCHECKED_READ(other.thread_ref_);
 
   // `other.bound_at_` was moved from so it's null.
   TS_UNCHECKED_READ(other.sequence_token_) = internal::SequenceToken();
@@ -70,6 +71,8 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
   AutoLock auto_lock(lock_);
   // If we're detached, bind to current state.
   EnsureAssigned();
+
+  CHECK(!thread_ref_.is_null());
 
   // Return true if called from the bound sequence.
   if (sequence_token_ == internal::SequenceToken::GetForCurrentThread()) {

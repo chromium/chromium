@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/sequence_checker_impl.h"
 #include "base/sequence_token.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -283,26 +284,38 @@ TEST(SequenceCheckerMacroTest, Macros) {
 // in ~SequenceCheckerOwner.
 class SequenceCheckerOwner {
  public:
-  SequenceCheckerOwner() = default;
+  explicit SequenceCheckerOwner(SequenceCheckerImpl* other_checker)
+      : other_checker_(other_checker) {}
   SequenceCheckerOwner(const SequenceCheckerOwner&) = delete;
   SequenceCheckerOwner& operator=(const SequenceCheckerOwner&) = delete;
-  ~SequenceCheckerOwner() { EXPECT_TRUE(checker_.CalledOnValidSequence()); }
+  ~SequenceCheckerOwner() {
+    // Check passes on TLS destruction.
+    EXPECT_TRUE(checker_.CalledOnValidSequence());
+
+    // Check also passes on TLS destruction after move assignment.
+    *other_checker_ = std::move(checker_);
+    EXPECT_TRUE(other_checker_->CalledOnValidSequence());
+  }
 
  private:
   SequenceCheckerImpl checker_;
+  raw_ptr<SequenceCheckerImpl> other_checker_;
 };
 
 // Verifies SequenceCheckerImpl::CalledOnValidSequence() returns true if called
 // during thread destruction.
 TEST(SequenceCheckerTest, FromThreadDestruction) {
   SequenceChecker::EnableStackLogging();
+
+  SequenceCheckerImpl other_checker;
   ThreadLocalOwnedPointer<SequenceCheckerOwner> thread_local_owner;
   {
     test::TaskEnvironment task_environment;
     auto task_runner = ThreadPool::CreateSequencedTaskRunner({});
     task_runner->PostTask(
         FROM_HERE, BindLambdaForTesting([&]() {
-          thread_local_owner.Set(std::make_unique<SequenceCheckerOwner>());
+          thread_local_owner.Set(
+              std::make_unique<SequenceCheckerOwner>(&other_checker));
         }));
     task_runner = nullptr;
     task_environment.RunUntilIdle();
