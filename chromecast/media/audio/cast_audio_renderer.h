@@ -138,6 +138,9 @@ class CastAudioRenderer
   // Updates buffer state and notifies the |client_| if necessary.
   void SetBufferState(::media::BufferingState buffer_state);
 
+  void OnNewBuffersRead(
+      ::media::DemuxerStream::Status status,
+      ::media::DemuxerStream::DecoderBufferVector buffers_queue);
   void OnNewBuffer(::media::DemuxerStream::Status read_status,
                    scoped_refptr<::media::DecoderBuffer> buffer);
   void OnError(::media::PipelineStatus pipeline_status);

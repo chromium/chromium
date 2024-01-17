@@ -427,8 +427,17 @@ void CastAudioRenderer::FetchNextBuffer() {
 
   DCHECK(!is_pending_demuxer_read_);
   is_pending_demuxer_read_ = true;
-  demuxer_stream_->Read(base::BindOnce(&CastAudioRenderer::OnNewBuffer,
-                                       weak_factory_.GetWeakPtr()));
+  demuxer_stream_->Read(1, base::BindOnce(&CastAudioRenderer::OnNewBuffersRead,
+                                          weak_factory_.GetWeakPtr()));
+}
+
+void CastAudioRenderer::OnNewBuffersRead(
+    ::media::DemuxerStream::Status status,
+    ::media::DemuxerStream::DecoderBufferVector buffers_queue) {
+  CHECK_LE(buffers_queue.size(), 1u)
+      << "CastAudioRenderer only reads a single-buffer.";
+  OnNewBuffer(status,
+              buffers_queue.empty() ? nullptr : std::move(buffers_queue[0]));
 }
 
 void CastAudioRenderer::OnNewBuffer(

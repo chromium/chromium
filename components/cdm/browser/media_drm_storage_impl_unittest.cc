@@ -220,6 +220,8 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
   MediaDrmOriginId origin_id_;
 };
 
+// ClearMatchingLicenses is only available on Android
+#if BUILDFLAG(IS_ANDROID)
 // MediaDrmStorageImpl should write origin ID to persistent storage when
 // Initialize is called. Later call to Initialize should return the same origin
 // ID. The second MediaDrmStorage won't call Initialize until the first one is
@@ -248,6 +250,7 @@ TEST_F(MediaDrmStorageImplTest, Initialize_OriginIdNotChanged) {
   // Origin id should be regenerated to a new value.
   EXPECT_NE(new_origin_id, original_origin_id);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Two MediaDrmStorage call Initialize concurrently. The second MediaDrmStorage
 // will NOT wait for the first one to be initialized. Both instances should get
@@ -455,6 +458,8 @@ TEST_F(MediaDrmStorageImplTest, DisallowEmptyOriginId) {
   EXPECT_FALSE(origin_id);
 }
 
+// ClearMatchingLicenses is only available on Android
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(MediaDrmStorageImplTest, TestClearLicensesMatchingDuration) {
   OnProvisioned();
   base::RunLoop().RunUntilIdle();
@@ -515,5 +520,6 @@ TEST_F(MediaDrmStorageImplTest, TestClearLicensesMatchingFilter) {
   loop_two.Run();
   EXPECT_FALSE(MediaDrmStorageContains(kTestOrigin));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace cdm
