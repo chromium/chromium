@@ -58,6 +58,8 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -1213,6 +1215,36 @@ class AppListControllerWithAssistantTest : public AppListControllerImplTest {
 INSTANTIATE_TEST_SUITE_P(All,
                          AppListControllerWithAssistantTest,
                          testing::Bool());
+
+// Verifies the assistant can open and close with the Search-A shortcut.
+TEST_P(AppListControllerWithAssistantTest, HotkeySearchA) {
+  // Press once to open the assistant.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(assistant_test_api_->IsVisible());
+  EXPECT_EQ(GetAssistantVisibility(), AssistantVisibility::kVisible);
+  EXPECT_TRUE(Shell::Get()->app_list_controller()->IsVisible());
+
+  // Press again to close the assistant.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(assistant_test_api_->IsVisible());
+  EXPECT_EQ(GetAssistantVisibility(), AssistantVisibility::kClosed);
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
+
+// Verifies the assistant can open and close with the assistant keyboard key.
+TEST_P(AppListControllerWithAssistantTest, HotkeyAssistant) {
+  // Press once to open the assistant.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ASSISTANT);
+  EXPECT_TRUE(assistant_test_api_->IsVisible());
+  EXPECT_EQ(GetAssistantVisibility(), AssistantVisibility::kVisible);
+  EXPECT_TRUE(Shell::Get()->app_list_controller()->IsVisible());
+
+  // Press again to close the assistant.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ASSISTANT);
+  EXPECT_FALSE(assistant_test_api_->IsVisible());
+  EXPECT_EQ(GetAssistantVisibility(), AssistantVisibility::kClosed);
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
 
 // Verifies the scenario that the Assistant shortcut is triggered when the app
 // list close animation is running.
