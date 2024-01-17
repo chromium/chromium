@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_alloc_support.h"
 
+#include <base/ranges/algorithm.h>
 #include <array>
 #include <cinttypes>
 #include <cstdint>
@@ -398,36 +399,30 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
       stacktrace, "\r\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
   // We are looking for the callers of the function releasing the raw_ptr and
-  // freeing memory:
-  const StringPiece callees[] = {
-      // Common signatures
-      "internal::PartitionFree",
-      "base::(anonymous namespace)::FreeFn",
+  // freeing memory. This lists potential matching patterns. A pattern is a list
+  // of substrings that are all required to match.
+  const std::vector<StringPiece> callee_patterns[] = {
+      // Common signature patters:
+      {"internal::PartitionFree"},
+      {"base::", "::FreeFn"},
+      {"internal::RawPtrBackupRefImpl", "::ReleaseInternal"},
 
-      // Linux signatures
-      "internal::RawPtrBackupRefImpl<>::ReleaseInternal()",
-      "base::RefCountedThreadSafe<>::Release()",
+      // Linux specific:
+      {"base::RefCountedThreadSafe<>::Release"},
 
-      // Windows signatures
-      "internal::RawPtrBackupRefImpl<0,0>::ReleaseInternal",
-      "internal::RawPtrBackupRefImpl<0,1>::ReleaseInternal",
-      "_free_base",
-
-      // Mac signatures
-      "internal::RawPtrBackupRefImpl<false, false>::ReleaseInternal",
-      "internal::RawPtrBackupRefImpl<false, true>::ReleaseInternal",
-
-      // ChromeOS signatures
-      "base::allocator::dispatcher::internal::DispatcherImpl<>::FreeFn()",
+      // Windows specific:
+      {"_free_base"},
 
       // Task traces are prefixed with "Task trace:" in
       // |TaskTrace::OutputToStream|
-      "Task trace:",
+      {"Task trace:"},
   };
   size_t caller_index = 0;
   for (size_t i = 0; i < lines.size(); ++i) {
-    for (const auto& callee : callees) {
-      if (lines[i].find(callee) != StringPiece::npos) {
+    for (const auto& patterns : callee_patterns) {
+      if (ranges::all_of(patterns, [&](const StringPiece& pattern) {
+            return lines[i].find(pattern) != StringPiece::npos;
+          })) {
         caller_index = i + 1;
       }
     }
