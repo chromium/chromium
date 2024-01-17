@@ -1016,11 +1016,6 @@
       status: "stable",
     },
     {
-      name: "CSSPictureInPicture",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
       base_feature: "none",

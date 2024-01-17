@@ -624,11 +624,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoPictureInPicture &&
-      !RuntimeEnabledFeatures::CSSPictureInPictureEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoPlaying &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
     return CSSSelector::kPseudoUnknown;
