@@ -582,7 +582,7 @@ class DriveIntegrationServiceFactory : public ProfileKeyedServiceFactory {
   ~DriveIntegrationServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   // This is static so it can be set without instantiating the factory. This

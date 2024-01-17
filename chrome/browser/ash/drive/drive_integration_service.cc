@@ -1798,19 +1798,17 @@ DriveIntegrationServiceFactory::DriveIntegrationServiceFactory()
 
 DriveIntegrationServiceFactory::~DriveIntegrationServiceFactory() = default;
 
-KeyedService* DriveIntegrationServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DriveIntegrationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  DriveIntegrationService* service = nullptr;
   if (!factory_for_test_) {
-    service =
-        new DriveIntegrationService(profile, std::string(), base::FilePath());
+    return std::make_unique<DriveIntegrationService>(profile, std::string(),
+                                                     base::FilePath());
   } else {
-    service = factory_for_test_->Run(profile);
+    return base::WrapUnique(factory_for_test_->Run(profile));
   }
-
-  return service;
 }
 
 DriveIntegrationService::Observer::~Observer() {
