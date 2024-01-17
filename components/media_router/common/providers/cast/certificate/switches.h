@@ -9,6 +9,7 @@ namespace cast_certificate {
 namespace switches {
 
 extern const char kCastDeveloperCertificatePath[];
+extern const char kCastLogDeviceCertChain[];
 
 }  // namespace switches
 }  // namespace cast_certificate

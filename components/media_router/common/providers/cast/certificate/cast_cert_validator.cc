@@ -19,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_printer.h"
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
@@ -360,6 +361,12 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
     bssl::TrustStore* trust_store) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kCastLogDeviceCertChain)) {
+    VLOG(3) << "Cast Cert Chain for validation:\n"
+            << CastCertificateChainAsPEM(certs);
+  }
+
   if (!trust_store)
     return VerifyDeviceCert(certs, time, context, policy, crl, fallback_crl,
                             crl_policy);

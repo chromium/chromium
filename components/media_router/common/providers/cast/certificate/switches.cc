@@ -12,5 +12,9 @@ namespace switches {
 // store instead of the root Google-signed cert.
 const char kCastDeveloperCertificatePath[] = "cast-developer-certificate-path";
 
+// When enabled, prints a PEM-encoded the device certificate chain at VLOG
+// level 3.
+const char kCastLogDeviceCertChain[] = "cast-log-device-cert-chain";
+
 }  // namespace switches
 }  // namespace cast_certificate
