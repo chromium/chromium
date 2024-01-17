@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -85,7 +86,22 @@ public class HubToolbarView extends LinearLayout {
     void setColorScheme(@HubColorScheme int colorScheme) {
         Context context = getContext();
         setBackgroundColor(HubColors.getBackgroundColor(context, colorScheme));
-        // TODO(https://crbug.com/1507839): Icon color, tab layout highlight.
+        @ColorInt int iconColor = HubColors.getIconColor(context, colorScheme);
+        @ColorInt int selectedIconColor = HubColors.getSelectedIconColor(context, colorScheme);
+        tintCompoundDrawable(mActionButton, iconColor);
+        mPaneSwitcher.setTabIconTint(HubColors.getSelectableIconList(selectedIconColor, iconColor));
+        mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
+
+        // TODO(https://crbug.com/1507839): Updating the app menu color here is more correct and
+        // should be done for code health.
+    }
+
+    private void tintCompoundDrawable(Button button, @ColorInt int color) {
+        for (Drawable drawable : button.getCompoundDrawables()) {
+            if (drawable != null) {
+                drawable.setTint(color);
+            }
+        }
     }
 
     private OnTabSelectedListener makeTabSelectedListener(

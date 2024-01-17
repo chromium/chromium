@@ -44,7 +44,7 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     private Activity mActivity;
@@ -109,12 +109,14 @@ public class HubToolbarViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPaneSwitcher() throws Exception {
+        FullButtonData actionButtonData = makeButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
         paneSwitcherButtonData.add(makeButtonData(R.drawable.new_tab_icon));
         paneSwitcherButtonData.add(makeButtonData(R.drawable.incognito_small));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
                     mPropertyModel.set(
                             HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
