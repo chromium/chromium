@@ -3571,9 +3571,6 @@ const AXObject* AXObject::AriaHiddenRoot() const {
 
 const AXObject* AXObject::InertRoot() const {
   const AXObject* object = this;
-  if (!RuntimeEnabledFeatures::InertAttributeEnabled())
-    return nullptr;
-
   while (object && !object->IsAXNodeObject())
     object = object->ParentObject();
 

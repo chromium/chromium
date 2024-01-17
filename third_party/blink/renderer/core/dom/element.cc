@@ -9247,8 +9247,7 @@ void Element::RebuildTransitionPseudoLayoutTree(
 }
 
 bool Element::IsInertRoot() {
-  return RuntimeEnabledFeatures::InertAttributeEnabled() &&
-         FastHasAttribute(html_names::kInertAttr) && IsHTMLElement();
+  return FastHasAttribute(html_names::kInertAttr) && IsHTMLElement();
 }
 
 FocusgroupFlags Element::GetFocusgroupFlags() const {

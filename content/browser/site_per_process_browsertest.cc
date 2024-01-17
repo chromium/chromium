@@ -8091,8 +8091,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Tests that IsInert frame flag is correctly updated and propagated.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        CrossProcessIsInertPropagation) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "InertAttribute");
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

@@ -2106,11 +2106,6 @@
       name: "IncomingCallNotifications",
     },
     {
-      name: "InertAttribute",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "InertDisplayTransition",
       status: "stable",
     },

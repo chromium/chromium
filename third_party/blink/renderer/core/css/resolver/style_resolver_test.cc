@@ -1946,7 +1946,6 @@ TEST_P(ParameterizedStyleResolverTest, BodyPropagationLayoutImageContain) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, IsInertWithAttributeAndDialog) {
-  ScopedInertAttributeForTest enabled_scope(true);
   Document& document = GetDocument();
   NonThrowableExceptionState exception_state;
 

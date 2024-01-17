@@ -1322,7 +1322,6 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
 }
 
 TEST_F(AccessibilityTest, ComputeIsInertReason) {
-  ScopedInertAttributeForTest enabled_scope(true);
   NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <div id="div1" inert>inert</div>
@@ -1471,7 +1470,6 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
 }
 
 TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
-  ScopedInertAttributeForTest enabled_scope(true);
   SetBodyInnerHTML(R"HTML(
     <main inert>
       main
@@ -1522,7 +1520,6 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
 }
 
 TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
-  ScopedInertAttributeForTest enabled_scope(true);
   SetBodyInnerHTML(R"HTML(
     <canvas>
       <section>

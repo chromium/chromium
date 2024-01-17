@@ -33,7 +33,7 @@
     [CEReactions] attribute (boolean or unrestricted double or DOMString)? hidden;
 
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
-    [CEReactions, RuntimeEnabled=InertAttribute, Reflect] attribute boolean inert;
+    [CEReactions, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
     [CEReactions] attribute boolean draggable;
     [CEReactions] attribute boolean spellcheck;
