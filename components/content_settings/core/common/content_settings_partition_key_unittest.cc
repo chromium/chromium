@@ -29,6 +29,7 @@ TEST(PartitionKey, SerializeAndDeserialize) {
     EXPECT_EQ(deserialized, std::make_optional(key));
   };
 
+  serialize_and_deserialize(PartitionKey::GetDefaultForTesting());
   serialize_and_deserialize(PartitionKey::CreateForTesting(
       /*domain=*/"foo", /*name=*/"bar", /*in_memory=*/false));
   serialize_and_deserialize(PartitionKey::CreateForTesting(
@@ -43,6 +44,9 @@ TEST(PartitionKey, SerializeAndDeserialize) {
   EXPECT_EQ(PartitionKey::Deserialize("[\"hello\",\"world\"]"), std::nullopt);
   EXPECT_EQ(PartitionKey::Deserialize("[]"), std::nullopt);
   EXPECT_EQ(PartitionKey::Deserialize("[1]"), std::nullopt);
+  EXPECT_EQ(PartitionKey::Deserialize("[\"hello\",\"world\", true]"),
+            std::nullopt)
+      << "non-canonical serialized keys are rejected";
 }
 
 }  // namespace content_settings
