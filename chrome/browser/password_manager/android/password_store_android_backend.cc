@@ -277,6 +277,7 @@ bool IsAuthenticationError(AndroidBackendAPIErrorCode api_error_code) {
     case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
     case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
     case AndroidBackendAPIErrorCode::kPassphraseRequired:
+    case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
     case AndroidBackendAPIErrorCode::kAccessDenied:
     case AndroidBackendAPIErrorCode::kBadRequest:
     case AndroidBackendAPIErrorCode::kBackendGeneric:
@@ -408,12 +409,17 @@ bool IsUnrecoverableBackendError(
 }
 
 PasswordStoreBackendErrorType APIErrorCodeToErrorType(
-    AndroidBackendAPIErrorCode api_error_code) {
+    AndroidBackendAPIErrorCode api_error_code,
+    PasswordStoreAndroidBackendBridgeHelper* bridge_helper) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
       return PasswordStoreBackendErrorType::kAuthErrorResolvable;
     case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
       return PasswordStoreBackendErrorType::kAuthErrorUnresolvable;
+    case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
+      return bridge_helper->CanRemoveUnenrollment()
+                 ? PasswordStoreBackendErrorType::kKeyRetrievalRequired
+                 : PasswordStoreBackendErrorType::kUncategorized;
     case AndroidBackendAPIErrorCode::kNetworkError:
     case AndroidBackendAPIErrorCode::kInternalError:
     case AndroidBackendAPIErrorCode::kDeveloperError:
@@ -472,7 +478,7 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
   AndroidBackendAPIErrorCode api_error_code =
       static_cast<AndroidBackendAPIErrorCode>(error.api_error_code.value());
   PasswordStoreBackendErrorType error_type =
-      APIErrorCodeToErrorType(api_error_code);
+      APIErrorCodeToErrorType(api_error_code, bridge_helper);
 
   if (password_manager_upm_eviction::ShouldRetryOnApiError(
           error.api_error_code.value())) {
