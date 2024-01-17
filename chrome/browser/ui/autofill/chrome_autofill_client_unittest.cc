@@ -37,14 +37,19 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #else
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #endif
 
 namespace autofill {
 namespace {
 
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::InSequence;
+using ::testing::Ref;
+using ::testing::Return;
 
 #if BUILDFLAG(IS_ANDROID)
 class MockAutofillSaveCardBottomSheetBridge
@@ -214,6 +219,27 @@ TEST_F(ChromeAutofillClientTest,
       web_contents()->GetBrowserContext());
   EXPECT_EQ(client()->GetPlusAddressService(), nullptr);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Test that the hats service is called with the expected params.
+// Note that Surveys are only launched on Desktop.
+TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  SurveyBitsData expected_bits = {{"granular filling available", false}};
+  const SurveyStringData field_filling_stats_data;
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerAutofillAddressUserPerception, _, _,
+                  expected_bits, Ref(field_filling_stats_data), _, _, _, _));
+
+  client()->TriggerUserPerceptionOfAutofillSurvey(field_filling_stats_data);
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 class ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature

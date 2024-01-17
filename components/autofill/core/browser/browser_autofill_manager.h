@@ -499,6 +499,18 @@ class BrowserAutofillManager : public AutofillManager {
   // or personal data.
   std::unique_ptr<FormStructure> ValidateSubmittedForm(const FormData& form);
 
+  // Method called after the values present on submitted fields were associated
+  // with Autofill field types. It is used to route calls to
+  // `UploadVotesAndLogQuality()` and
+  // `AutofillClient::TriggerUserPerceptionOfAutofillSurvey()`, since both
+  // depend on the field types being determined.
+  void OnSubmissionFieldTypesDetermined(
+      std::unique_ptr<FormStructure> submitted_form,
+      base::TimeTicks interaction_time,
+      base::TimeTicks submission_time,
+      bool observed_submission,
+      ukm::SourceId source_id);
+
   // Returns suggestions for the `form`, if suggestions were triggered using
   // the `trigger_source` on the `field`. The field's type is `field_type`.
   // The `trigger_source` controls which fields are considered for filling and

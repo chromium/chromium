@@ -443,6 +443,10 @@ class MockAutofillClient : public TestAutofillClient {
                bool is_refill),
               (override));
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
+  MOCK_METHOD(void,
+              TriggerUserPerceptionOfAutofillSurvey,
+              ((const std::map<std::string, std::string>&)),
+              (override));
   MOCK_METHOD(plus_addresses::PlusAddressService*,
               GetPlusAddressService,
               (),
@@ -5655,6 +5659,42 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   // cannot be used.
   ASSERT_EQ(personal_data().GetProfiles().size(), 1u);
   EXPECT_TRUE(personal_data().GetProfiles()[0]->Compare(filled_profile));
+}
+
+// Test that the user perception of autofill survey is triggered after a form
+// submission.
+TEST_F(BrowserAutofillManagerTest,
+       TriggerUserPerceptionOfAutofillSurveyOnAddressSubmission) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillAddressUserPerceptionSurvey);
+  TestAutofillClock clock(AutofillClock::Now());
+  // Set up a form with only one field and fill it.
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FIRST,
+                                     .autocomplete_attribute = "given-name"}}});
+  FormsSeen({form});
+  // Fill the form.
+  FormData response_data =
+      FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
+  const std::map<std::string, std::string> expected_field_filling_stats_data = {
+      {"Accepted fields", "1"},
+      {"Corrected to same type", "0"},
+      {"Corrected to a different type", "0"},
+      {"Corrected to an unknown type", "0"},
+      {"Corrected to empty", "0"},
+      {"Manually filled to same type", "0"},
+      {"Manually filled to a different type", "0"},
+      {"Manually filled to an unknown type", "0"},
+      {"Total corrected", "0"},
+      {"Total filled", "1"},
+      {"Total unfilled", "0"},
+      {"Total manually filled", "0"},
+      {"Total number of fields", "1"}};
+  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey(
+                                    expected_field_filling_stats_data));
+
+  // Simulate form submission.
+  FormSubmitted(response_data);
 }
 
 // Test the field log events at the form submission.

@@ -180,6 +180,36 @@ std::string_view GetSkipFieldFillLogMessage(
   }
 }
 
+// Converts `filling_stats` to a key-value representation, where the key
+// is the "stats category" and the value is the number of fields that match
+// such category. This is used to show users a survey that will measure the
+// perception of Autofill.
+std::map<std::string, std::string> AddressFormFillingStatsToSurveyStringData(
+    autofill_metrics::FormGroupFillingStats& filling_stats) {
+  return {
+      {"Accepted fields", base::NumberToString(filling_stats.num_accepted)},
+      {"Corrected to same type",
+       base::NumberToString(filling_stats.num_corrected_to_same_type)},
+      {"Corrected to a different type",
+       base::NumberToString(filling_stats.num_corrected_to_different_type)},
+      {"Corrected to an unknown type",
+       base::NumberToString(filling_stats.num_corrected_to_unknown_type)},
+      {"Corrected to empty",
+       base::NumberToString(filling_stats.num_corrected_to_empty)},
+      {"Manually filled to same type",
+       base::NumberToString(filling_stats.num_manually_filled_to_same_type)},
+      {"Manually filled to a different type",
+       base::NumberToString(filling_stats.num_manually_filled_to_differt_type)},
+      {"Manually filled to an unknown type",
+       base::NumberToString(filling_stats.num_manually_filled_to_unknown_type)},
+      {"Total corrected", base::NumberToString(filling_stats.TotalCorrected())},
+      {"Total filled", base::NumberToString(filling_stats.TotalFilled())},
+      {"Total unfilled", base::NumberToString(filling_stats.TotalUnfilled())},
+      {"Total manually filled",
+       base::NumberToString(filling_stats.TotalManuallyFilled())},
+      {"Total number of fields", base::NumberToString(filling_stats.Total())}};
+}
+
 // Returns whether the |field| is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
   return field.Type().group() == FieldTypeGroup::kName ||
@@ -973,11 +1003,11 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   PreProcessStateMatchingTypes(copied_profiles, form_structure.get());
 
   // Ownership of |form_structure| is passed to the
-  // BrowserAutofillManager::UploadVotesAndLogQuality() call.
+  // BrowserAutofillManager::OnSubmissionFieldTypesDetermined() call.
   FormStructure* raw_form = form_structure.get();
 
   base::OnceClosure call_after_determine_field_types =
-      base::BindOnce(&BrowserAutofillManager::UploadVotesAndLogQuality,
+      base::BindOnce(&BrowserAutofillManager::OnSubmissionFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
                      initial_interaction_timestamp_, base::TimeTicks::Now(),
                      observed_submission, client().GetUkmSourceId());
@@ -2057,6 +2087,26 @@ const gfx::Image& BrowserAutofillManager::GetCardImage(
              ? *card_art_image
              : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
                    CreditCard::IconResourceId(credit_card.network()));
+}
+
+void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
+    std::unique_ptr<FormStructure> submitted_form,
+    base::TimeTicks interaction_time,
+    base::TimeTicks submission_time,
+    bool observed_submission,
+    ukm::SourceId source_id) {
+  if (submitted_form->GetFormTypes().contains(FormType::kAddressForm) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAddressUserPerceptionSurvey)) {
+    autofill_metrics::FormGroupFillingStats filling_stats =
+        autofill_metrics::GetAddressFormFillingStats(*submitted_form);
+    if (filling_stats.TotalFilled() != 0) {
+      client().TriggerUserPerceptionOfAutofillSurvey(
+          AddressFormFillingStatsToSurveyStringData(filling_stats));
+    }
+  }
+  UploadVotesAndLogQuality(std::move(submitted_form), interaction_time,
+                           submission_time, observed_submission, source_id);
 }
 
 void BrowserAutofillManager::Reset() {
