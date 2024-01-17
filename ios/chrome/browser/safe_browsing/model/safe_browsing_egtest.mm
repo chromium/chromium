@@ -875,13 +875,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that a page identified as unsafe by real-time Safe Browsing is blocked
 // when loaded as part of session restoration.
-// TODO(crbug.com/1516583):  Test is flaky on device. Re-enable the test. 
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testRestoreRealTimeWarning FLAKY_testRestoreRealTimeWarning
-#else
-#define MAYBE_testRestoreRealTimeWarning testRestoreRealTimeWarning
-#endif
-- (void)MAYBE_testRestoreRealTimeWarning {
+// TODO(crbug.com/1516583):  Test is flaky. Re-enable the test.
+- (void)DISABLED_testRestoreRealTimeWarning {
   // Opt-in to real-time checks.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
 
