@@ -2735,7 +2735,7 @@ RenderFrameHostImpl::GetRemoteAssociatedInterfaces() {
         remote_interfaces;
     if (GetAgentSchedulingGroup().GetChannel()) {
       GetAgentSchedulingGroup().GetRemoteRouteProvider()->GetRoute(
-          GetRoutingID(), remote_interfaces.BindNewEndpointAndPassReceiver());
+          GetFrameToken(), remote_interfaces.BindNewEndpointAndPassReceiver());
     } else {
       LOG(WARNING) << "Creating unbound remote associated interface provider";
       // The channel may not be initialized in some tests environments. In this

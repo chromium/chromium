@@ -1931,7 +1931,12 @@ RenderFrameImpl::~RenderFrameImpl() {
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(
       process_label_id_);
   g_routing_id_frame_map.Get().erase(routing_id_);
-  agent_scheduling_group_->RemoveFrameRoute(routing_id_);
+  agent_scheduling_group_->RemoveFrameRoute(frame_token_
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+                                            ,
+                                            routing_id_
+#endif
+  );
 }
 
 void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
@@ -1970,8 +1975,11 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
       std::move(pending_frame_receiver_),
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
   agent_scheduling_group_->AddFrameRoute(
-      routing_id_, this,
-      GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
+      frame_token_,
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+      routing_id_,
+#endif
+      this, GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 }
 
 void RenderFrameImpl::GetInterface(
