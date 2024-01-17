@@ -721,7 +721,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected boolean shouldShowMenuUpdateBadge() {
+    protected boolean canShowMenuUpdateBadge() {
         return true;
     }
 

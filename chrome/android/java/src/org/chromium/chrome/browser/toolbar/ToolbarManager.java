@@ -286,6 +286,7 @@ public class ToolbarManager
     private boolean mInitializedWithNative;
     private Runnable mOnInitializedRunnable;
     private Runnable mMenuStateObserver;
+    private UpdateMenuItemHelper mUpdateMenuItemHelper;
     private Runnable mStartSurfaceMenuStateObserver;
 
     private boolean mShouldUpdateToolbarPrimaryColor = true;
@@ -465,16 +466,19 @@ public class ToolbarManager
      * @param shareDelegateSupplier Supplier for ShareDelegate.
      * @param identityDiscController The controller that coordinates the state of the identity disc
      * @param buttonDataProviders The list of button data providers for the optional toolbar button
-     *         in the browsing mode toolbar, given in precedence order.
+     *     in the browsing mode toolbar, given in precedence order.
      * @param tabProvider The {@link ActivityTabProvider} for accessing current activity tab.
      * @param scrimCoordinator A means of showing the scrim.
-     * @param toolbarActionModeCallback Callback that communicates changes in the conceptual mode
-     *                                  of toolbar interaction.
+     * @param toolbarActionModeCallback Callback that communicates changes in the conceptual mode of
+     *     toolbar interaction.
      * @param findToolbarManager The manager for the find in page function.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
-     * TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
+     *     TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
+     * @param canAnimateNativeBrowserControls
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
+     * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
+     * @param canShowUpdateBadge Whether the update Chrome badge can be shown on the app menu.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
@@ -492,11 +496,13 @@ public class ToolbarManager
      * @param tabCreatorManager Manages the creation of tabs.
      * @param snackbarManager Manages the display of snackbars.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
-     *         MerchantTrustSignalsCoordinator}.
+     *     MerchantTrustSignalsCoordinator}.
      * @param tabReparentingControllerSupplier Supplier of {@link TabReparentingController}.
+     * @param omniboxActionDelegate
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
+     * @param openHistoryClustersDelegate
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -519,7 +525,7 @@ public class ToolbarManager
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
-            boolean shouldShowUpdateBadge,
+            boolean canShowUpdateBadge,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
@@ -679,9 +685,15 @@ public class ToolbarManager
                 mIsCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
 
         Supplier<MenuButtonState> menuButtonStateSupplier =
-                () -> UpdateMenuItemHelper.getInstance().getUiState().buttonState;
+                () -> {
+                    if (mUpdateMenuItemHelper == null) return null;
+                    return mUpdateMenuItemHelper.getUiState().buttonState;
+                };
         Runnable onMenuButtonClicked =
-                () -> UpdateMenuItemHelper.getInstance().onMenuButtonClicked();
+                () -> {
+                    if (mUpdateMenuItemHelper == null) return;
+                    mUpdateMenuItemHelper.onMenuButtonClicked();
+                };
 
         mMenuButtonCoordinator =
                 new MenuButtonCoordinator(
@@ -690,13 +702,13 @@ public class ToolbarManager
                         mWindowAndroid,
                         this::setUrlBarFocus,
                         requestFocusRunnable,
-                        shouldShowUpdateBadge,
+                        canShowUpdateBadge,
                         isInOverviewModeSupplier,
                         menuButtonThemeColorProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.menu_button_wrapper);
-        if (shouldShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
+        if (canShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
 
         mOverviewModeMenuButtonCoordinator =
                 new MenuButtonCoordinator(
@@ -705,14 +717,14 @@ public class ToolbarManager
                         mWindowAndroid,
                         this::setUrlBarFocus,
                         requestFocusRunnable,
-                        shouldShowUpdateBadge,
+                        canShowUpdateBadge,
                         isInOverviewModeSupplier,
                         overviewModeThemeColorProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.none);
 
-        if (mIsStartSurfaceEnabled && shouldShowUpdateBadge) {
+        if (mIsStartSurfaceEnabled && canShowUpdateBadge) {
             mStartSurfaceMenuStateObserver = mOverviewModeMenuButtonCoordinator.getStateObserver();
         }
 
@@ -1733,12 +1745,15 @@ public class ToolbarManager
                 };
         mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
 
+        Profile profile = mTabModelSelector.getModel(false).getProfile();
+        assert profile != null;
+        mUpdateMenuItemHelper = UpdateMenuItemHelper.getInstance(profile);
         if (mMenuStateObserver != null) {
-            UpdateMenuItemHelper.getInstance().registerObserver(mMenuStateObserver);
+            mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);
         }
 
         if (mStartSurfaceMenuStateObserver != null) {
-            UpdateMenuItemHelper.getInstance().registerObserver(mStartSurfaceMenuStateObserver);
+            mUpdateMenuItemHelper.registerObserver(mStartSurfaceMenuStateObserver);
         }
 
         mInitializedWithNative = true;
@@ -1923,23 +1938,26 @@ public class ToolbarManager
         }
 
         if (mMenuButtonCoordinator != null) {
-            if (mMenuStateObserver != null) {
-                UpdateMenuItemHelper.getInstance().unregisterObserver(mMenuStateObserver);
-                mMenuStateObserver = null;
+            if (mMenuStateObserver != null && mUpdateMenuItemHelper != null) {
+                mUpdateMenuItemHelper.unregisterObserver(mMenuStateObserver);
             }
+            mMenuStateObserver = null;
+
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
         }
 
         if (mOverviewModeMenuButtonCoordinator != null) {
-            if (mStartSurfaceMenuStateObserver != null) {
-                UpdateMenuItemHelper.getInstance()
-                        .unregisterObserver(mStartSurfaceMenuStateObserver);
-                mStartSurfaceMenuStateObserver = null;
+            if (mStartSurfaceMenuStateObserver != null && mUpdateMenuItemHelper != null) {
+                mUpdateMenuItemHelper.unregisterObserver(mStartSurfaceMenuStateObserver);
             }
+            mStartSurfaceMenuStateObserver = null;
+
             mOverviewModeMenuButtonCoordinator.destroy();
             mOverviewModeMenuButtonCoordinator = null;
         }
+
+        mUpdateMenuItemHelper = null;
 
         if (mToggleTabStackButtonCoordinator != null) {
             mToggleTabStackButtonCoordinator.destroy();

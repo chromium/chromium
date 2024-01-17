@@ -2621,7 +2621,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.update_menu_id) {
-            UpdateMenuItemHelper.getInstance().onMenuItemClicked(this);
+            UpdateMenuItemHelper.getInstance(
+                            getProfileProviderSupplier().get().getOriginalProfile())
+                    .onMenuItemClicked(this);
             return true;
         }
 

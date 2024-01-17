@@ -279,7 +279,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @Override
     public @Nullable List<CustomViewBinder> getCustomViewBinders() {
         List<CustomViewBinder> customViewBinders = new ArrayList<>();
-        customViewBinders.add(new UpdateMenuItemViewBinder());
+        customViewBinders.add(
+                new UpdateMenuItemViewBinder(mTabModelSelector.getModel(false).getProfile()));
         customViewBinders.add(new IncognitoMenuItemViewBinder());
         customViewBinders.add(new DividerLineMenuItemViewBinder());
         return customViewBinders;
@@ -486,7 +487,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         menu.findItem(R.id.update_menu_id).setVisible(mUpdateMenuItemVisible);
         if (mUpdateMenuItemVisible) {
             mAppMenuInvalidator = () -> handler.invalidateAppMenu();
-            UpdateMenuItemHelper.getInstance().registerObserver(mAppMenuInvalidator);
+            UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
+                    .registerObserver(mAppMenuInvalidator);
         }
 
         menu.findItem(R.id.new_window_menu_id).setVisible(shouldShowNewWindow());
@@ -741,7 +743,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the update Chrome menu item should be displayed.
      */
     protected boolean shouldShowUpdateMenuItem() {
-        return UpdateMenuItemHelper.getInstance().getUiState().itemState != null;
+        return UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
+                        .getUiState()
+                        .itemState
+                != null;
     }
 
     /**
@@ -990,8 +995,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public void onMenuDismissed() {
         mReloadPropertyModel = null;
         if (mUpdateMenuItemVisible) {
-            UpdateMenuItemHelper.getInstance().onMenuDismissed();
-            UpdateMenuItemHelper.getInstance().unregisterObserver(mAppMenuInvalidator);
+            UpdateMenuItemHelper updateHelper =
+                    UpdateMenuItemHelper.getInstance(
+                            mTabModelSelector.getModel(false).getProfile());
+            updateHelper.onMenuDismissed();
+            updateHelper.unregisterObserver(mAppMenuInvalidator);
             mUpdateMenuItemVisible = false;
             mAppMenuInvalidator = null;
         }

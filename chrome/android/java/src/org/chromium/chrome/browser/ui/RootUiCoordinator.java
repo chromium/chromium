@@ -1470,7 +1470,7 @@ public class RootUiCoordinator
                             mCanAnimateBrowserControls,
                             mLayoutStateProviderOneShotSupplier,
                             mAppMenuSupplier,
-                            shouldShowMenuUpdateBadge(),
+                            canShowMenuUpdateBadge(),
                             mTabModelSelectorSupplier,
                             mStartSurfaceSupplier,
                             mOmniboxFocusStateSupplier,
@@ -1701,10 +1701,10 @@ public class RootUiCoordinator
     protected void onFindToolbarHidden() {}
 
     /**
-     * @return Whether the "update available" badge should be displayed on menu button(s) in the
-     * context of this coordinator's UI.
-     **/
-    protected boolean shouldShowMenuUpdateBadge() {
+     * @return Whether the "update available" badge can be displayed on menu button(s) in the
+     *     context of this coordinator's UI.
+     */
+    protected boolean canShowMenuUpdateBadge() {
         return false;
     }
 

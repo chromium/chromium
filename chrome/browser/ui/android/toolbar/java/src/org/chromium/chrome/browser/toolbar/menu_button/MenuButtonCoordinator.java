@@ -59,8 +59,8 @@ public class MenuButtonCoordinator {
      * @param setUrlBarFocusFunction Function that allows setting focus on the url bar.
      * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
      *     containing the app menu button.
-     * @param shouldShowAppUpdateBadge Whether the app menu update badge should be shown if there is
-     *     a pending update.
+     * @param canShowAppUpdateBadge Whether the app menu update badge can be shown if there is a
+     *     pending update.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
      * @param themeColorProvider Provider of theme color changes.
      * @param menuButtonStateSupplier Supplier of the menu button state.
@@ -73,7 +73,7 @@ public class MenuButtonCoordinator {
             WindowAndroid windowAndroid,
             SetFocusFunction setUrlBarFocusFunction,
             Runnable requestRenderRunnable,
-            boolean shouldShowAppUpdateBadge,
+            boolean canShowAppUpdateBadge,
             Supplier<Boolean> isInOverviewModeSupplier,
             ThemeColorProvider themeColorProvider,
             Supplier<MenuButtonState> menuButtonStateSupplier,
@@ -97,7 +97,7 @@ public class MenuButtonCoordinator {
         mMediator =
                 new MenuButtonMediator(
                         mPropertyModel,
-                        shouldShowAppUpdateBadge,
+                        canShowAppUpdateBadge,
                         () -> mActivity.isFinishing() || mActivity.isDestroyed(),
                         requestRenderRunnable,
                         themeColorProvider,
