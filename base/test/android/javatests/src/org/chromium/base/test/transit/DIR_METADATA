@@ -1,4 +1,6 @@
-monorail {
+monorail: {
   component: "Test>Android"
 }
-
+buganizer_public: {
+  component_id: 1456111
+}
