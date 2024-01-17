@@ -103,6 +103,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                            StartStorageMonitorCallback callback) override;
   void StopStorageMonitor() override;
   void OpenStorageManagement() override;
+  void OpenWifiDialog(camera_app::mojom::WifiConfigPtr wifi_config) override;
 
  private:
   void CheckExternalScreenState();

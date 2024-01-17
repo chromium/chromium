@@ -18,6 +18,7 @@ import {
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
+  WifiConfig,
 } from './mojo/type.js';
 import {MimeType} from './type.js';
 import {expandPath} from './util.js';
@@ -153,6 +154,10 @@ export class ChromeHelperFake extends ChromeHelper {
   }
 
   override openStorageManagement(): void {
+    /* Do nothing. */
+  }
+
+  override openWifiDialog(_config: WifiConfig): void {
     /* Do nothing. */
   }
   /* eslint-enable @typescript-eslint/require-await */

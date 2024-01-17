@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -55,6 +56,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using SecurityType = chromeos::network_config::mojom::SecurityType;
 
 std::string DeviceTypeToString(chromeos::DeviceType device_type) {
   switch (device_type) {
@@ -529,3 +532,44 @@ ChromeCameraAppUIDelegate::GetMediaDeviceSaltService(
   return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
       context);
 }
+
+void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
+  auto config = chromeos::network_config::mojom::WiFiConfigProperties::New();
+  config->ssid = wifi_config.ssid;
+  if (wifi_config.security.empty()) {
+    config->security = SecurityType::kNone;
+  } else if (wifi_config.security == onc::wifi::kWPA_PSK) {
+    config->security = SecurityType::kWpaPsk;
+  } else if (wifi_config.security == onc::wifi::kWEP_PSK) {
+    config->security = SecurityType::kWepPsk;
+  } else if (wifi_config.security == onc::wifi::kWPA_EAP) {
+    config->security = SecurityType::kWpaEap;
+  } else {
+    NOTREACHED() << "Unexpected network security type: "
+                 << wifi_config.security;
+  }
+  config->passphrase = wifi_config.password;
+  if (config->security == SecurityType::kWpaEap) {
+    auto eap_config =
+        chromeos::network_config::mojom::EAPConfigProperties::New();
+    eap_config->outer = wifi_config.eap_method;
+    eap_config->inner = wifi_config.eap_phase2_method;
+    eap_config->identity = wifi_config.eap_identity;
+    eap_config->anonymous_identity = wifi_config.eap_anonymous_identity;
+    eap_config->password = wifi_config.password;
+    config->eap = std::move(eap_config);
+  }
+  ash::InternetConfigDialog::ShowDialogForNetworkWithWifiConfig(
+      std::move(config));
+}
+
+ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;
+
+ash::CameraAppUIDelegate::WifiConfig::WifiConfig(
+    const ash::CameraAppUIDelegate::WifiConfig&) = default;
+
+ash::CameraAppUIDelegate::WifiConfig&
+ash::CameraAppUIDelegate::WifiConfig::operator=(
+    const ash::CameraAppUIDelegate::WifiConfig&) = default;
+
+ash::CameraAppUIDelegate::WifiConfig::~WifiConfig() = default;

@@ -20,9 +20,50 @@ interface TabletModeMonitor {
 // Screen backlight state.
 // Reference from ash/public/cpp/screen_backlight_type.h
 enum ScreenState {
-    ON,
-    OFF,
-    OFF_AUTO,
+  ON,
+  OFF,
+  OFF_AUTO,
+};
+
+// Wi-Fi security type.
+enum WifiSecurityType {
+  None,
+  EAP,
+  WEP,
+  WPA,
+};
+
+// EAP methods.
+enum WifiEapMethod {
+  EAP_TLS,
+  EAP_TTLS,
+  LEAP,
+  PEAP,
+};
+
+// EAP phase2 methods.
+enum WifiEapPhase2Method {
+  Automatic,
+  CHAP,
+  GTC,
+  MD5,
+  MSCHAP,
+  MSCHAPv2,
+  PAP,
+};
+
+// Configurations which can be provided by Wi-Fi QR Code.
+struct WifiConfig {
+  // Required fields.
+  string ssid;
+  WifiSecurityType security;
+
+  // Optional fields.
+  string? password;
+  WifiEapMethod? eap_method;
+  WifiEapPhase2Method? eap_phase2_method;
+  string? eap_identity;
+  string? eap_anonymous_identity;
 };
 
 // Interface for monitoring screen state of device. The state is detected from
@@ -260,4 +301,10 @@ interface CameraAppHelper {
   // Open "Storage management" page directly. This page is inside Settings app,
   // under "Device" section.
   OpenStorageManagement();
+
+  // Opens the Wi-Fi connection dialog and fills the dialog with provided
+  // `config` extracted from QR code. Since the call won't invoke the network
+  // connection directly, no error message will be returned when the config is
+  // incorrect.
+  OpenWifiDialog(WifiConfig config);
 };

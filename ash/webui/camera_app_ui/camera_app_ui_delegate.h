@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 #define ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -54,6 +55,21 @@ class CameraAppUIDelegate {
 
     // Monitoring get errors.
     ERROR = 4,
+  };
+
+  struct WifiConfig {
+    WifiConfig();
+    WifiConfig(const WifiConfig&);
+    WifiConfig& operator=(const WifiConfig&);
+    ~WifiConfig();
+
+    std::string ssid;
+    std::string security;
+    std::optional<std::string> password;
+    std::optional<std::string> eap_method;
+    std::optional<std::string> eap_phase2_method;
+    std::optional<std::string> eap_identity;
+    std::optional<std::string> eap_anonymous_identity;
   };
 
   virtual ~CameraAppUIDelegate() = default;
@@ -111,6 +127,9 @@ class CameraAppUIDelegate {
   // device IDs. Can be null if the embedder does not support persistent salts.
   virtual media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) = 0;
+
+  // Opens a Wi-Fi connection dialog based on the given information.
+  virtual void OpenWifiDialog(WifiConfig wifi_config) = 0;
 };
 
 }  // namespace ash

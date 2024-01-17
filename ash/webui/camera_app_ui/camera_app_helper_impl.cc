@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "chromeos/utils/pdf_conversion.h"
+#include "components/onc/onc_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/aura/window.h"
@@ -69,6 +70,81 @@ camera_app::mojom::StorageMonitorStatus ToMojoStorageMonitorStatus(
     case CameraAppUIDelegate::StorageMonitorStatus::ERROR:
       return camera_app::mojom::StorageMonitorStatus::ERROR;
   }
+}
+
+std::string FromMojoSecurityType(
+    camera_app::mojom::WifiSecurityType security_type) {
+  switch (security_type) {
+    case camera_app::mojom::WifiSecurityType::None:
+      return "";
+    case camera_app::mojom::WifiSecurityType::EAP:
+      return onc::wifi::kWPA_EAP;
+    case camera_app::mojom::WifiSecurityType::WEP:
+      return onc::wifi::kWEP_PSK;
+    case camera_app::mojom::WifiSecurityType::WPA:
+      return onc::wifi::kWPA_PSK;
+    default:
+      NOTREACHED() << "Unexpected security type: "
+                   << static_cast<int>(security_type);
+  }
+}
+
+std::string FromMojoEapMethod(camera_app::mojom::WifiEapMethod eap_method) {
+  switch (eap_method) {
+    case camera_app::mojom::WifiEapMethod::EAP_TLS:
+      return onc::eap::kEAP_TLS;
+    case camera_app::mojom::WifiEapMethod::EAP_TTLS:
+      return onc::eap::kEAP_TTLS;
+    case camera_app::mojom::WifiEapMethod::LEAP:
+      return onc::eap::kLEAP;
+    case camera_app::mojom::WifiEapMethod::PEAP:
+      return onc::eap::kPEAP;
+    default:
+      NOTREACHED() << "Unexpected EAP method: " << static_cast<int>(eap_method);
+  }
+}
+
+std::string FromMojoEapPhase2Method(
+    camera_app::mojom::WifiEapPhase2Method eap_phase2_method) {
+  switch (eap_phase2_method) {
+    case camera_app::mojom::WifiEapPhase2Method::Automatic:
+      return onc::eap::kAutomatic;
+    case camera_app::mojom::WifiEapPhase2Method::CHAP:
+      return onc::eap::kCHAP;
+    case camera_app::mojom::WifiEapPhase2Method::GTC:
+      return onc::eap::kGTC;
+    case camera_app::mojom::WifiEapPhase2Method::MD5:
+      return onc::eap::kMD5;
+    case camera_app::mojom::WifiEapPhase2Method::MSCHAP:
+      return onc::eap::kMSCHAP;
+    case camera_app::mojom::WifiEapPhase2Method::MSCHAPv2:
+      return onc::eap::kMSCHAPv2;
+    case camera_app::mojom::WifiEapPhase2Method::PAP:
+      return onc::eap::kPAP;
+    default:
+      NOTREACHED() << "Unexpected EAP Phase2 method: "
+                   << static_cast<int>(eap_phase2_method);
+  }
+}
+
+CameraAppUIDelegate::WifiConfig FromMojoWifiConfig(
+    camera_app::mojom::WifiConfigPtr mojo_wifi_config) {
+  CameraAppUIDelegate::WifiConfig config;
+  config.ssid = mojo_wifi_config->ssid;
+  config.security = FromMojoSecurityType(mojo_wifi_config->security);
+  config.password = mojo_wifi_config->password;
+  config.eap_method = mojo_wifi_config->eap_method.has_value()
+                          ? std::make_optional<std::string>(FromMojoEapMethod(
+                                mojo_wifi_config->eap_method.value()))
+                          : std::nullopt;
+  config.eap_phase2_method =
+      mojo_wifi_config->eap_phase2_method.has_value()
+          ? std::make_optional<std::string>(FromMojoEapPhase2Method(
+                mojo_wifi_config->eap_phase2_method.value()))
+          : std::nullopt;
+  config.eap_identity = mojo_wifi_config->eap_identity;
+  config.eap_anonymous_identity = mojo_wifi_config->eap_anonymous_identity;
+  return config;
 }
 
 bool HasExternalScreen() {
@@ -203,12 +279,14 @@ void CameraAppHelperImpl::SetExternalScreenMonitor(
 }
 
 void CameraAppHelperImpl::CheckExternalScreenState() {
-  if (has_external_screen_ == HasExternalScreen())
+  if (has_external_screen_ == HasExternalScreen()) {
     return;
+  }
   has_external_screen_ = !has_external_screen_;
 
-  if (external_screen_monitor_.is_bound())
+  if (external_screen_monitor_.is_bound()) {
     external_screen_monitor_->Update(has_external_screen_);
+  }
 }
 
 void CameraAppHelperImpl::OnScannedDocumentCorners(
@@ -467,8 +545,9 @@ void CameraAppHelperImpl::OnDisplayTabletStateChanged(
 
 void CameraAppHelperImpl::OnScreenBacklightStateChanged(
     ScreenBacklightState screen_backlight_state) {
-  if (screen_state_monitor_.is_bound())
+  if (screen_state_monitor_.is_bound()) {
     screen_state_monitor_->Update(ToMojoScreenState(screen_backlight_state));
+  }
 }
 
 void CameraAppHelperImpl::OnDisplayAdded(const display::Display& new_display) {
@@ -493,6 +572,12 @@ void CameraAppHelperImpl::OnStorageStatusUpdated(
 
 void CameraAppHelperImpl::OpenStorageManagement() {
   camera_app_ui_->delegate()->OpenStorageManagement();
+}
+
+void CameraAppHelperImpl::OpenWifiDialog(
+    camera_app::mojom::WifiConfigPtr wifi_config) {
+  camera_app_ui_->delegate()->OpenWifiDialog(
+      FromMojoWifiConfig(std::move(wifi_config)));
 }
 
 }  // namespace ash

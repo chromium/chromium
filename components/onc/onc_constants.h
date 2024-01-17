@@ -354,6 +354,7 @@ COMPONENT_EXPORT(ONC) extern const char kStretch[];
 namespace eap {
 COMPONENT_EXPORT(ONC) extern const char kAnonymousIdentity[];
 COMPONENT_EXPORT(ONC) extern const char kAutomatic[];
+COMPONENT_EXPORT(ONC) extern const char kCHAP[];
 COMPONENT_EXPORT(ONC) extern const char kDomainSuffixMatch[];
 COMPONENT_EXPORT(ONC) extern const char kEAP_AKA[];
 COMPONENT_EXPORT(ONC) extern const char kEAP_FAST[];

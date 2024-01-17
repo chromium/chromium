@@ -27,6 +27,7 @@ import {
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
   ToteMetricFormat,
+  WifiConfig,
 } from './type.js';
 import {wrapEndpoint} from './util.js';
 
@@ -224,6 +225,8 @@ export abstract class ChromeHelper {
   abstract stopMonitorStorage(): void;
 
   abstract openStorageManagement(): void;
+
+  abstract openWifiDialog(config: WifiConfig): void;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -460,5 +463,9 @@ class ChromeHelperImpl extends ChromeHelper {
 
   override openStorageManagement(): void {
     this.remote.openStorageManagement();
+  }
+
+  override openWifiDialog(config: WifiConfig): void {
+    this.remote.openWifiDialog(config);
   }
 }
