@@ -273,6 +273,27 @@
       <message name="IDS_READALOUD_TONE_RELAXED" desc="Word to show that a voice has a relaxed tone, included in the voice description.">
         Relaxed
       </message>
+      <message name="IDS_READALOUD_TONE_WARM" desc="Word to show that a voice has a warm tone, included in the voice description.">
+        Warm
+      </message>
+      <message name="IDS_READALOUD_TONE_SERENE" desc="Word to show that a voice has a serene tone, included in the voice description.">
+        Serene
+      </message>
+      <message name="IDS_READALOUD_TONE_GENTLE" desc="Word to show that a voice has a gentle tone, included in the voice description.">
+        Gentle
+      </message>
+      <message name="IDS_READALOUD_TONE_BRIGHT" desc="Word to show that a voice has a bright tone, included in the voice description.">
+        Bright
+      </message>
+      <message name="IDS_READALOUD_TONE_BREEZY" desc="Word to show that a voice has a breezy tone, included in the voice description.">
+        Breezy
+      </message>
+      <message name="IDS_READALOUD_TONE_SOOTHING" desc="Word to show that a voice has a soothing tone, included in the voice description.">
+        Soothing
+      </message>
+      <message name="IDS_READALOUD_TONE_PEACEFUL" desc="Word to show that a voice has a peaceful tone, included in the voice description.">
+        Peaceful
+      </message>
       <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
         <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
       </message>

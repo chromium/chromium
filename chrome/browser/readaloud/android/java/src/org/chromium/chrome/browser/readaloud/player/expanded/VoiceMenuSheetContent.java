@@ -169,6 +169,13 @@ class VoiceMenuSheetContent extends MenuSheetContent {
                     case PlaybackVoice.Tone.STEADY -> R.string.readaloud_tone_steady;
                     case PlaybackVoice.Tone.SMOOTH -> R.string.readaloud_tone_smooth;
                     case PlaybackVoice.Tone.RELAXED -> R.string.readaloud_tone_relaxed;
+                    case PlaybackVoice.Tone.WARM -> R.string.readaloud_tone_warm;
+                    case PlaybackVoice.Tone.SERENE -> R.string.readaloud_tone_serene;
+                    case PlaybackVoice.Tone.GENTLE -> R.string.readaloud_tone_gentle;
+                    case PlaybackVoice.Tone.BRIGHT -> R.string.readaloud_tone_bright;
+                    case PlaybackVoice.Tone.BREEZY -> R.string.readaloud_tone_breezy;
+                    case PlaybackVoice.Tone.SOOTHING -> R.string.readaloud_tone_soothing;
+                    case PlaybackVoice.Tone.PEACEFUL -> R.string.readaloud_tone_peaceful;
                     default -> 0;
                 });
     }
