@@ -242,14 +242,6 @@ void DeskButton::SetActivation(bool is_activated) {
   UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_activation_,
                               !is_activated_);
 
-  if (!force_expanded_state_) {
-    if (!is_activated_ && (GetHovered() || is_focused_)) {
-      desk_button_widget_->SetExpanded(true);
-    } else {
-      desk_button_widget_->SetExpanded(false);
-    }
-  }
-
   SetBackground(views::CreateThemedRoundedRectBackground(
       is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                     : cros_tokens::kCrosSysSystemOnBaseOpaque,
