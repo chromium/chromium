@@ -59,6 +59,30 @@ AnchorElementMetricsSender* AnchorElementMetricsSender::From(
 }
 
 // static
+AnchorElementMetricsSender* AnchorElementMetricsSender::GetForFrame(
+    LocalFrame* frame) {
+  if (!frame) {
+    return nullptr;
+  }
+
+  if (frame->IsCrossOriginToOutermostMainFrame()) {
+    return nullptr;
+  }
+
+  LocalFrame* local_main_frame = DynamicTo<LocalFrame>(frame->Tree().Top());
+  if (!local_main_frame) {
+    return nullptr;
+  }
+
+  Document* main_document = local_main_frame->GetDocument();
+  if (!main_document) {
+    return nullptr;
+  }
+
+  return From(*main_document);
+}
+
+// static
 bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
     Document& document) {
   bool is_feature_enabled =
@@ -88,8 +112,9 @@ void AnchorElementMetricsSender::
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
     const HTMLAnchorElement& anchor_element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  if (!anchor_element.Href().ProtocolIsInHTTPFamily() ||
-      !GetRootDocument(anchor_element)->Url().ProtocolIsInHTTPFamily() ||
+  Document* top_document = GetTopDocument(anchor_element);
+  if (!anchor_element.Href().ProtocolIsInHTTPFamily() || !top_document ||
+      !top_document->Url().ProtocolIsInHTTPFamily() ||
       !anchor_element.GetDocument().BaseURL().ProtocolIsInHTTPFamily()) {
     return;
   }
@@ -230,12 +255,14 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
 
 base::TimeTicks AnchorElementMetricsSender::NavigationStart(
     const HTMLAnchorElement& element) {
-  return mock_navigation_start_for_testing_.has_value()
-             ? mock_navigation_start_for_testing_.value()
-             : GetRootDocument(element)
-                   ->Loader()
-                   ->GetTiming()
-                   .NavigationStart();
+  if (mock_navigation_start_for_testing_.has_value()) {
+    return mock_navigation_start_for_testing_.value();
+  }
+
+  Document* top_document = GetTopDocument(element);
+  DCHECK(top_document);
+
+  return top_document->Loader()->GetTiming().NavigationStart();
 }
 
 void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
@@ -386,7 +413,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
 
     // If the anchor doesn't have a valid frame/root document, skip it.
     if (!anchor_element.GetDocument().GetFrame() ||
-        !GetRootDocument(anchor_element)) {
+        !GetTopDocument(anchor_element)) {
       continue;
     }
 

@@ -124,6 +124,9 @@ class NavigationPredictor
       GURL url,
       PreloadingModelKeyedService::Result result);
 
+  bool IsTargetURLTheSameAsDocument(
+      const blink::mojom::AnchorElementMetricsPtr& anchor);
+
   base::TimeTicks NowTicks() const { return clock_->NowTicks(); }
 
   // A count of clicks to prevent reporting more than 10 clicks to UKM.

@@ -27,6 +27,10 @@ class PointerEvent;
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
 // the browser process for a given document.
 //
+// AnchorElementMetricsSenders are created for documents in main frames. Any
+// same-origin iframes reuse the AnchorElementMetricsSender of their main frame.
+// Cross-origin iframes do not use any AnchorElementMetricsSender.
+//
 // The high level approach is:
 // 1) When HTMLAnchorElements are inserted into the DOM,
 //    AnchorElementMetricsSender::AddAnchorElement is called and a reference to
@@ -70,6 +74,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Constructs and returns a new one if it does not exist, or returns nullptr
   // if the given `document` may not have a AnchorElementMetricsSender.
   static AnchorElementMetricsSender* From(Document& document);
+
+  // Returns the AnchorElementMetricsSender for `frame`'s main frame's document,
+  // according to `From`. Returns nullptr if `frame` is a cross-origin subframe.
+  static AnchorElementMetricsSender* GetForFrame(LocalFrame* frame);
 
   // Report the link click to the browser process, so long as the anchor
   // is an HTTP(S) link.

@@ -1,0 +1,11 @@
+<html>
+  <body>
+    <a href="2.html">Link to 2</a>
+    <script>
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://a.test:' + window.location.port +
+                       '/iframe_simple_page_with_anchors.html';
+      document.body.appendChild(iframe);
+    </script>
+  </body>
+</html>

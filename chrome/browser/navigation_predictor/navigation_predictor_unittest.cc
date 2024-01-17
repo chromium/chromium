@@ -20,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -49,7 +50,6 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     }
     auto metrics = blink::mojom::AnchorElementMetrics::New();
     metrics->anchor_id = next_id_++;
-    metrics->source_url = GURL("https://example.com");
     metrics->target_url = GURL("https://google.com");
     metrics->ratio_area = 0.1;
     return metrics;
@@ -77,6 +77,10 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     SetupFieldTrial();
 
     ChromeRenderViewHostTestHarness::SetUp();
+
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com"));
+
     NavigationPredictor::Create(
         main_rfh(), predictor_service_.BindNewPipeAndPassReceiver());
   }

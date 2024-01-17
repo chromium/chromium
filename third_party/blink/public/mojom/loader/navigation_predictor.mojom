@@ -68,10 +68,9 @@ struct AnchorElementMetrics {
   // The font weight of the anchor element according to its computed style.
   uint32 font_weight;
 
-  // The source URL of the root document and the target URL (href) specified by
-  // the anchor element. URLs sent from a renderer process are not trusted,
-  // however it is intended here since it is only used for metrics calculation.
-  url.mojom.Url source_url;
+  // The target URL (href) specified by the anchor element. URLs sent from a
+  // renderer process are not trusted, however it is intended here since it
+  // is only used for metrics calculation.
   url.mojom.Url target_url;
 
   // The size of the viewport at the time the anchor element was created.
