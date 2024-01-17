@@ -2419,12 +2419,22 @@ class ExitMessageLoopOnMousePress : public ui::test::TestEventHandler {
 
   ~ExitMessageLoopOnMousePress() override {}
 
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+
  protected:
   void OnMouseEvent(ui::MouseEvent* event) override {
     ui::test::TestEventHandler::OnMouseEvent(event);
-    if (event->type() == ui::ET_MOUSE_PRESSED)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (event->type() == ui::ET_MOUSE_PRESSED) {
+      if (!quit_closure_.is_null()) {
+        std::move(quit_closure_).Run();
+      }
+    }
   }
+
+ private:
+  base::OnceClosure quit_closure_;
 };
 
 class WindowEventDispatcherTestWithMessageLoop
@@ -2439,12 +2449,13 @@ class WindowEventDispatcherTestWithMessageLoop
 
   ~WindowEventDispatcherTestWithMessageLoop() override {}
 
-  void RunTest() {
+  void RunTest(base::OnceClosure outer_loop_quit) {
     // Reset any event the window may have received when bringing up the window
     // (e.g. mouse-move events if the mouse cursor is over the window).
     handler_.Reset();
 
     base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
+    handler_.set_quit_closure(std::move(outer_loop_quit));
 
     // Start a nested message-loop, post an event to be dispatched, and then
     // terminate the message-loop. When the message-loop unwinds and gets back,
@@ -2495,11 +2506,12 @@ TEST_F(WindowEventDispatcherTestWithMessageLoop, EventRepostedInNonNestedLoop) {
   ASSERT_FALSE(base::RunLoop::IsRunningOnCurrentThread());
   // Perform the test in a callback, so that it runs after the message-loop
   // starts.
+  base::RunLoop loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WindowEventDispatcherTestWithMessageLoop::RunTest,
-                     base::Unretained(this)));
-  base::RunLoop().Run();
+                     base::Unretained(this), loop.QuitWhenIdleClosure()));
+  loop.Run();
 }
 
 class WindowEventDispatcherTestInHighDPI : public WindowEventDispatcherTest {
