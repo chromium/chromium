@@ -23916,6 +23916,7 @@ from previous Chrome versions.
   <int value="-16824589" label="ash-shelf-color"/>
   <int value="-16732224"
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:enabled"/>
+  <int value="-16592826" label="SystemNudgeMigration:disabled"/>
   <int value="-16413037" label="ReduceUserAgent:enabled"/>
   <int value="-16086999" label="TrimOnFreeze:enabled"/>
   <int value="-15879016"
@@ -25502,6 +25503,7 @@ from previous Chrome versions.
   <int value="726764779" label="WebXRGamepadSupport:enabled"/>
   <int value="726958205" label="ToolbarMicIphAndroid:enabled"/>
   <int value="727134828" label="SidePanelJourneysQueryless:disabled"/>
+  <int value="727266401" label="SystemNudgeMigration:enabled"/>
   <int value="727270087" label="PromosOnLocalNtp:enabled"/>
   <int value="727571565" label="PasswordForceSaving"/>
   <int value="728064595" label="RevampedContextMenu:disabled"/>

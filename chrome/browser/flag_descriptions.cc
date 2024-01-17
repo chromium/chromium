@@ -6326,6 +6326,10 @@ const char kEnableNotifierCollisionDescription[] =
     "and toasts to not overlap when displayed in the right corner of the "
     "screen";
 
+const char kEnableSystemNudgeMigrationName[] = "Enable system nudge migration";
+const char kEnableSystemNudgeMigrationDescription[] =
+    "Replaces uses of the `SystemNudge` class with the new component.";
+
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =

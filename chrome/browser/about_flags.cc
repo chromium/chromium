@@ -4685,6 +4685,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsLinux | kOsWin,
      FEATURE_VALUE_TYPE(features::kSystemNotifications)},
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-system-nudge-migration",
+     flag_descriptions::kEnableSystemNudgeMigrationName,
+     flag_descriptions::kEnableSystemNudgeMigrationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSystemNudgeMigration)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
     {"adaptive-button-in-top-toolbar-translate",
      flag_descriptions::kAdaptiveButtonInTopToolbarTranslateName,
