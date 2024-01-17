@@ -234,7 +234,7 @@ class OnDeviceInternalsAppElement extends PolymerElement {
       return;
     }
     this.session_.execute(
-        {text: this.text_, ignoreContext: false, tsInterval: 10},
+        {text: this.text_, ignoreContext: false},
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
         this.responseRouter_.onResponse.addListener((chunk: ResponseChunk) => {
