@@ -234,8 +234,8 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent_FailedDirectoryNotShared) {
             result_state = callback_result.state;
           }));
 
-  ASSERT_EQ(result_state.value_or(apps::State::SUCCESS),
-            apps::State::FAILED_DIRECTORY_NOT_SHARED);
+  ASSERT_EQ(result_state.value_or(apps::State::kSuccess),
+            apps::State::kFailedDirectoryNotShared);
 }
 
 }  // namespace apps

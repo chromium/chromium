@@ -118,7 +118,7 @@ class FakePublisherForProxyTest : public AppPublisher {
     params->window_info_ = std::move(window_info);
     launch_requests_[app_id].push_back(std::move(params));
     if (!callback.is_null()) {
-      std::move(callback).Run(LaunchResult(State::SUCCESS));
+      std::move(callback).Run(LaunchResult(State::kSuccess));
     }
   }
 
@@ -130,7 +130,7 @@ class FakePublisherForProxyTest : public AppPublisher {
     launch_params->params_ = std::move(params);
     launch_requests_[app_id].push_back(std::move(launch_params));
     if (!callback.is_null()) {
-      std::move(callback).Run(LaunchResult(State::SUCCESS));
+      std::move(callback).Run(LaunchResult(State::kSuccess));
     }
   }
 

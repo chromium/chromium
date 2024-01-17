@@ -551,7 +551,7 @@ TEST_F(ArcAppsPublisherTest,
             result = callback_result.state;
           }));
 
-  ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
+  ASSERT_EQ(apps::State::kSuccess, result.value_or(apps::State::kFailed));
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -584,7 +584,7 @@ TEST_F(ArcAppsPublisherTest,
             result = callback_result.state;
           }));
 
-  ASSERT_EQ(apps::State::FAILED, result.value_or(apps::State::SUCCESS));
+  ASSERT_EQ(apps::State::kFailed, result.value_or(apps::State::kSuccess));
 }
 
 TEST_F(
@@ -622,7 +622,7 @@ TEST_F(
             result = callback_result.state;
           }));
 
-  ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
+  ASSERT_EQ(apps::State::kSuccess, result.value_or(apps::State::kFailed));
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -661,7 +661,7 @@ TEST_F(ArcAppsPublisherTest,
             result = callback_result.state;
           }));
 
-  ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
+  ASSERT_EQ(apps::State::kSuccess, result.value_or(apps::State::kFailed));
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];

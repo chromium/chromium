@@ -174,7 +174,7 @@ class WebFileHandlersFileLaunchBrowserTest
         base::BindOnce(
             &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
             base::Unretained(this), run_loop.QuitClosure(),
-            apps::LaunchResult::State::SUCCESS));
+            apps::LaunchResult::State::kSuccess));
 
     extensions::ResultCatcher catcher;
     auto* widget = waiter.WaitIfNeededAndGet();
@@ -197,7 +197,7 @@ class WebFileHandlersFileLaunchBrowserTest
         base::BindOnce(
             &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
             base::Unretained(this), run_loop.QuitClosure(),
-            apps::LaunchResult::State::FAILED));
+            apps::LaunchResult::State::kFailed));
 
     auto* widget = waiter.WaitIfNeededAndGet();
     widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
@@ -218,7 +218,7 @@ class WebFileHandlersFileLaunchBrowserTest
         base::BindOnce(
             &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
             base::Unretained(this), run_loop.QuitClosure(),
-            apps::LaunchResult::State::FAILED));
+            apps::LaunchResult::State::kFailed));
 
     auto* widget = waiter.WaitIfNeededAndGet();
 
@@ -248,7 +248,7 @@ class WebFileHandlersFileLaunchBrowserTest
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::SUCCESS));
+              apps::LaunchResult::State::kSuccess));
 
       // Open the window.
       extensions::ResultCatcher catcher;
@@ -272,7 +272,7 @@ class WebFileHandlersFileLaunchBrowserTest
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::SUCCESS));
+              apps::LaunchResult::State::kSuccess));
 
       ASSERT_TRUE(second_catcher.GetNextResult());
       run_loop.Run();
@@ -301,7 +301,7 @@ class WebFileHandlersFileLaunchBrowserTest
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::FAILED));
+              apps::LaunchResult::State::kFailed));
 
       auto* widget = waiter.WaitIfNeededAndGet();
 
@@ -325,7 +325,7 @@ class WebFileHandlersFileLaunchBrowserTest
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::FAILED));
+              apps::LaunchResult::State::kFailed));
       run_loop.Run();
     }
   }
@@ -352,7 +352,7 @@ class WebFileHandlersFileLaunchBrowserTest
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::FAILED));
+              apps::LaunchResult::State::kFailed));
 
       // Don't open the file.
       auto* widget = waiter.WaitIfNeededAndGet();
@@ -379,7 +379,7 @@ class WebFileHandlersFileLaunchBrowserTest
           base::BindOnce(
               &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
               base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::FAILED));
+              apps::LaunchResult::State::kFailed));
 
       // A widget should be available, indicating that close isn't remembered.
       auto* second_widget = second_waiter.WaitIfNeededAndGet();
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
             base::BindOnce(
                 &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
                 base::Unretained(this), run_loop.QuitClosure(),
-                apps::LaunchResult::State::SUCCESS));
+                apps::LaunchResult::State::kSuccess));
 
         auto* widget = waiter.WaitIfNeededAndGet();
         extensions::ResultCatcher catcher;

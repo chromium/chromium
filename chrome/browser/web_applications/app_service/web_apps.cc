@@ -140,9 +140,9 @@ void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
       base::BindOnce(
           [](apps::LaunchCallback callback,
              content::WebContents* web_contents) {
-            apps::LaunchResult::State result = web_contents
-                                                   ? apps::LaunchResult::SUCCESS
-                                                   : apps::LaunchResult::FAILED;
+            apps::LaunchResult::State result =
+                web_contents ? apps::LaunchResult::State::kSuccess
+                             : apps::LaunchResult::State::kFailed;
             std::move(callback).Run(apps::LaunchResult(result));
           },
           std::move(callback)));

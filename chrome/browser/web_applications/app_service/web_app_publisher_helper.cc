@@ -1011,7 +1011,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
   CHECK(intent);
 
   if (IsShuttingDown()) {
-    std::move(callback).Run(apps::LaunchResult(apps::State::FAILED));
+    std::move(callback).Run(apps::LaunchResult(apps::State::kFailed));
     return;
   }
 

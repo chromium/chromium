@@ -17,21 +17,21 @@ LaunchResult::State ConvertMojomLaunchResultStateToLaunchResultState(
     crosapi::mojom::LaunchResultState state) {
   switch (state) {
     case crosapi::mojom::LaunchResultState::kFailed:
-      return LaunchResult::State::FAILED;
+      return LaunchResult::State::kFailed;
     case crosapi::mojom::LaunchResultState::kFailedDirectoryNotShared:
-      return LaunchResult::State::FAILED_DIRECTORY_NOT_SHARED;
+      return LaunchResult::State::kFailedDirectoryNotShared;
     case crosapi::mojom::LaunchResultState::kSuccess:
-      return LaunchResult::State::SUCCESS;
+      return LaunchResult::State::kSuccess;
   }
 }
 crosapi::mojom::LaunchResultState
 ConvertLaunchResultStateToMojomLaunchResultState(LaunchResult::State state) {
   switch (state) {
-    case LaunchResult::State::FAILED:
+    case LaunchResult::State::kFailed:
       return crosapi::mojom::LaunchResultState::kFailed;
-    case LaunchResult::State::FAILED_DIRECTORY_NOT_SHARED:
+    case LaunchResult::State::kFailedDirectoryNotShared:
       return crosapi::mojom::LaunchResultState::kFailedDirectoryNotShared;
-    case LaunchResult::State::SUCCESS:
+    case LaunchResult::State::kSuccess:
       return crosapi::mojom::LaunchResultState::kSuccess;
   }
 }
@@ -115,11 +115,11 @@ LaunchCallback MojomLaunchResultToLaunchResultCallback(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 LaunchResult ConvertBoolToLaunchResult(bool success) {
-  return success ? LaunchResult(State::SUCCESS) : LaunchResult(State::FAILED);
+  return success ? LaunchResult(State::kSuccess) : LaunchResult(State::kFailed);
 }
 
 bool ConvertLaunchResultToBool(const LaunchResult& result) {
-  return result.state == State::SUCCESS ? true : false;
+  return result.state == State::kSuccess ? true : false;
 }
 
 }  // namespace apps

@@ -1179,7 +1179,7 @@ void AppServiceProxyAsh::LaunchAppWithIntentIfAllowed(
     LaunchCallback callback,
     bool is_allowed) {
   if (!is_allowed) {
-    std::move(callback).Run(LaunchResult(State::FAILED));
+    std::move(callback).Run(LaunchResult(State::kFailed));
     return;
   }
   AppServiceProxyBase::LaunchAppWithIntent(

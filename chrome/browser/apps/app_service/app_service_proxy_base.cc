@@ -181,7 +181,7 @@ void AppServiceProxyBase::OnPublisherNotReadyForLaunch(
     const std::string& app_id,
     std::unique_ptr<LaunchParams> launch_request) {
   if (launch_request && !launch_request->call_back_.is_null()) {
-    std::move(launch_request->call_back_).Run(LaunchResult(State::FAILED));
+    std::move(launch_request->call_back_).Run(LaunchResult(State::kFailed));
   }
   return;
 }
@@ -360,7 +360,7 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
     }
 
     if (MaybeShowLaunchPreventionDialog(update)) {
-      std::move(callback).Run(LaunchResult(State::FAILED));
+      std::move(callback).Run(LaunchResult(State::kFailed));
       return;
     }
 

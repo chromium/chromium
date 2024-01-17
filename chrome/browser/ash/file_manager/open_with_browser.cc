@@ -126,7 +126,7 @@ bool OpenHostedFileInNewTabOrApp(Profile* profile,
 
   auto chained_callback =
       base::BindOnce([](apps::LaunchResult&& result) {
-        LOG_IF(ERROR, result.state != apps::LaunchResult::SUCCESS)
+        LOG_IF(ERROR, result.state != apps::LaunchResult::State::kSuccess)
             << "Failed to launch hosted file via app despite "
                "it being ready";
         return result.state;
