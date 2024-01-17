@@ -16,6 +16,9 @@
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier = kHistorySyncViewAccessibilityIdentifier;
   self.shouldHideBanner = YES;
+  self.scrollToEndMandatory = YES;
+  self.readMoreString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.headerImageType = PromoStyleImageType::kAvatar;
   self.headerBackgroundImage =
       [UIImage imageNamed:@"history_sync_opt_in_background"];
