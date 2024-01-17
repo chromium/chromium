@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -125,9 +125,13 @@ public class TabSwitcherDrawable extends TintedDrawable {
         return mTint.getColorForState(getState(), 0);
     }
 
-    @Override
-    public void setTint(ColorStateList tint) {
-        super.setTint(tint);
+    private void updatePaint() {
         if (mTextPaint != null) mTextPaint.setColor(getColorForState());
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter colorFilter) {
+        super.setColorFilter(colorFilter);
+        updatePaint();
     }
 }
