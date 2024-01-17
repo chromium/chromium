@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
 #import "ios/web/public/web_state.h"
 
-@interface PageInfoCoordinator ()
+@interface PageInfoCoordinator () <PageInfoPresentationCommands>
 
 @property(nonatomic, strong) UINavigationController* navigationController;
 @property(nonatomic, strong) CommandDispatcher* dispatcher;
@@ -42,6 +42,8 @@
 
   self.viewController = [[PageInfoViewController alloc]
       initWithSiteSecurityDescription:siteSecurityDescription];
+
+  self.viewController.pageInfoPresentationHandler = self;
 
   self.navigationController =
       [[TableViewNavigationController alloc] initWithTable:self.viewController];
@@ -72,6 +74,12 @@
   [self.dispatcher stopDispatchingToTarget:self];
   self.navigationController = nil;
   self.viewController = nil;
+}
+
+#pragma mark - PageInfoPresentationCommands
+
+- (void)showSecurityPage {
+  // TODO(crbug.com/1512580): Call future security coordinator.
 }
 
 @end

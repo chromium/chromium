@@ -10,6 +10,10 @@
 // Accessibility identifier for the page info view.
 extern NSString* const kPageInfoViewAccessibilityIdentifier;
 
+// Accessibility identifier for the footer of the security section of the page
+// info view.
+extern NSString* const kPageInfoSecurityFooterAccessibilityIdentifier;
+
 // Accessibility identifier for the navigation bar of page info view.
 extern NSString* const kPageInfoViewNavigationBarAccessibilityIdentifier;
 

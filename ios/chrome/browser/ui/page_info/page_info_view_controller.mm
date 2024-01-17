@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -104,7 +103,9 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   self.navigationItem.rightBarButtonItem = dismissButton;
   self.tableView.separatorInset =
       UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
-  self.tableView.allowsSelection = NO;
+  if (!IsRevampPageInfoIosEnabled()) {
+    self.tableView.allowsSelection = NO;
+  }
 
   if (self.pageInfoSecurityDescription.isEmpty) {
     [self addEmptyTableViewWithMessage:self.pageInfoSecurityDescription.message
@@ -140,10 +141,6 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
       self.tableView);
 
-  if (IsRevampPageInfoIosEnabled()) {
-    // TODO(crbug.com/1512580): Start implementation for Page Info's revamp.
-  }
-
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
@@ -158,6 +155,22 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 }
 
 #pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  DCHECK(self.pageInfoPresentationHandler);
+  ItemIdentifier itemType = static_cast<ItemIdentifier>(
+      [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
+  switch (itemType) {
+    case ItemIdentifierSecurityHeader:
+      if (IsRevampPageInfoIosEnabled()) {
+        [self.pageInfoPresentationHandler showSecurityPage];
+      }
+      break;
+    default:
+      break;
+  }
+}
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
@@ -191,6 +204,11 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
     case SectionIdentifierSecurityContent: {
+      if (IsRevampPageInfoIosEnabled()) {
+        // Don't show the security footer in the revamp UI.
+        return nil;
+      }
+
       TableViewLinkHeaderFooterView* footer =
           DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
               self.tableView);
@@ -199,6 +217,8 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       [footer setText:self.pageInfoSecurityDescription.message
             withColor:[UIColor colorNamed:kTextSecondaryColor]];
       footer.delegate = self;
+      footer.accessibilityIdentifier =
+          kPageInfoSecurityFooterAccessibilityIdentifier;
       return footer;
     }
     case SectionIdentifierPermissions: {
@@ -252,13 +272,19 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
     case ItemIdentifierSecurityHeader: {
       TableViewDetailIconCell* cell =
           DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-      cell.textLabel.text =
-          l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_SECURITY);
+      cell.textLabel.text = l10n_util::GetNSString(
+          IsRevampPageInfoIosEnabled() ? IDS_IOS_PAGE_INFO_CONNECTION
+                                       : IDS_IOS_PAGE_INFO_SITE_SECURITY);
       cell.detailText = self.pageInfoSecurityDescription.status;
       [cell setIconImage:self.pageInfoSecurityDescription.iconImage
                 tintColor:UIColor.whiteColor
           backgroundColor:self.pageInfoSecurityDescription.iconBackgroundColor
              cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+
+      if (IsRevampPageInfoIosEnabled()) {
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      }
+
       return cell;
     }
     case ItemIdentifierPermissionsCamera: {

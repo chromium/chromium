@@ -4,6 +4,7 @@
 
 source_set("page_info") {
   sources = [
+    "page_info_presentation_commands.h",
     "page_info_site_security_description.h",
     "page_info_site_security_description.mm",
     "page_info_view_controller.h",
@@ -67,6 +68,7 @@ source_set("coordinator") {
     "page_info_site_security_mediator.mm",
   ]
   deps = [
+    ":features",
     ":page_info",
     "//base",
     "//components/content_settings/core/browser",
@@ -125,6 +127,7 @@ source_set("eg2_tests") {
   sources = [ "page_info_egtest.mm" ]
   deps = [
     ":constants",
+    ":features",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays/model/public/web_content_area:constants",

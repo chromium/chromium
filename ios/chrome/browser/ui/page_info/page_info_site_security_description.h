@@ -12,6 +12,7 @@
 
 @property(nonatomic, copy) NSString* siteURL;
 @property(nonatomic, copy) NSString* status;
+@property(nonatomic, copy) NSString* statusTitle;
 @property(nonatomic, copy) NSString* message;
 @property(nonatomic, strong) UIImage* iconImage;
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
