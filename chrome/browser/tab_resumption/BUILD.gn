@@ -6,8 +6,10 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionBundle.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionEntry.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediator.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleProperties.java",
@@ -22,9 +24,14 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/recent_tabs:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
+    "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java_resources",
@@ -51,6 +58,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.tab_resumption"
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",
@@ -62,8 +70,13 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/recent_tabs:java",
+    "//chrome/browser/signin/services/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
+    "//components/sync/android:sync_java",
+    "//components/sync_device_info:sync_device_info_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
