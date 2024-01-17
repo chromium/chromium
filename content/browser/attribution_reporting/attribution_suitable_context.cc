@@ -15,6 +15,8 @@
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -83,6 +85,9 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
   auto* manager = AttributionManager::FromWebContents(web_contents);
   CHECK(manager);
 
+  auto* attribution_host = AttributionHost::FromWebContents(web_contents);
+  CHECK(attribution_host);
+
   AttributionDataHostManager* data_host_manager = manager->GetDataHostManager();
   CHECK(data_host_manager);
 
@@ -90,7 +95,7 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       /*context_origin=*/std::move(initiator_root_frame_origin.value()),
       initiator_frame->IsNestedWithinFencedFrame(),
       initiator_root_frame->GetGlobalId(), initiator_frame->navigation_id(),
-      data_host_manager);
+      attribution_host->GetMostRecentNavigationInputEvent(), data_host_manager);
 }
 
 AttributionSuitableContext::AttributionSuitableContext(
@@ -98,11 +103,13 @@ AttributionSuitableContext::AttributionSuitableContext(
     bool is_nested_within_fenced_frame,
     GlobalRenderFrameHostId root_render_frame_id,
     int64_t last_navigation_id,
+    AttributionInputEvent last_input_event,
     AttributionDataHostManager* attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
       is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
       root_render_frame_id_(root_render_frame_id),
       last_navigation_id_(last_navigation_id),
+      last_input_event_(std::move(last_input_event)),
       attribution_data_host_manager_(
           attribution_data_host_manager->AsWeakPtr()) {}
 

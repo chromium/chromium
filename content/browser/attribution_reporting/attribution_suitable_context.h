@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -47,6 +48,10 @@ class CONTENT_EXPORT AttributionSuitableContext {
     return root_render_frame_id_;
   }
   int64_t last_navigation_id() const { return last_navigation_id_; }
+  const AttributionInputEvent& last_input_event() const {
+    return last_input_event_;
+  }
+
   AttributionDataHostManager* data_host_manager() const {
     return attribution_data_host_manager_.get();
   }
@@ -57,12 +62,14 @@ class CONTENT_EXPORT AttributionSuitableContext {
       bool is_nested_within_fenced_frame,
       GlobalRenderFrameHostId root_render_frame_id,
       int64_t last_navigation_id,
+      AttributionInputEvent last_input_event,
       AttributionDataHostManager*);
 
   attribution_reporting::SuitableOrigin context_origin_;
   bool is_nested_within_fenced_frame_;
   GlobalRenderFrameHostId root_render_frame_id_;
   int64_t last_navigation_id_;
+  AttributionInputEvent last_input_event_;
 
   base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager_;
 };

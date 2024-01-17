@@ -54,6 +54,8 @@ class CONTENT_EXPORT AttributionHost
       mojo::PendingAssociatedReceiver<blink::mojom::AttributionHost> receiver,
       RenderFrameHost* rfh);
 
+  AttributionInputEvent GetMostRecentNavigationInputEvent() const;
+
 #if BUILDFLAG(IS_ANDROID)
   AttributionInputEventTrackerAndroid* input_event_tracker() {
     return input_event_tracker_android_.get();
@@ -101,9 +103,6 @@ class CONTENT_EXPORT AttributionHost
 
   void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle,
                                         bool is_final_response);
-
-
-  AttributionInputEvent GetMostRecentNavigationInputEvent() const;
 
   // Keeps track of navigations for which we can register sources (i.e. All
   // conditions were met in `DidStartNavigation` and

@@ -173,7 +173,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = static_cast<NavigationRequest*>(navigation_handle);
 
   suitable_context->data_host_manager()->NotifyNavigationRegistrationStarted(
-      impression->attribution_src_token, GetMostRecentNavigationInputEvent(),
+      impression->attribution_src_token, suitable_context->last_input_event(),
       suitable_context->context_origin(),
       suitable_context->is_nested_within_fenced_frame(),
       suitable_context->root_render_frame_id(),
@@ -356,15 +356,12 @@ bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     return false;
   }
 
-  AttributionInputEvent input_event;
-  if (navigation_id.has_value()) {
-    input_event = GetMostRecentNavigationInputEvent();
-  }
-
   suitable_context->data_host_manager()
       ->NotifyFencedFrameReportingBeaconStarted(
           beacon_id, navigation_id, suitable_context->context_origin(),
-          suitable_context->is_nested_within_fenced_frame(), input_event,
+          suitable_context->is_nested_within_fenced_frame(),
+          navigation_id.has_value() ? suitable_context->last_input_event()
+                                    : AttributionInputEvent(),
           suitable_context->root_render_frame_id(),
           std::move(devtools_request_id));
   return true;
