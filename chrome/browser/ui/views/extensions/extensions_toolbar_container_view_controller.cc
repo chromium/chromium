@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "extensions/common/extension_features.h"
@@ -40,11 +41,10 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
   CHECK(browser_->window());
 
   // Display IPH, with priority order.
-  ExtensionsToolbarControls* extensions_controls =
-      extensions_container_->GetExtensionsToolbarControls();
-  if (extensions_controls->request_access_button()->GetVisible()) {
-    const int extensions_size =
-        extensions_controls->request_access_button()->GetExtensionsCount();
+  ExtensionsRequestAccessButton* request_access_button =
+      extensions_container_->GetRequestAccessButton();
+  if (request_access_button->GetVisible()) {
+    const int extensions_size = request_access_button->GetExtensionsCount();
     user_education::FeaturePromoParams params(
         feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
     params.body_params = extensions_size;
@@ -52,7 +52,7 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
     browser_->window()->MaybeShowFeaturePromo(std::move(params));
   }
 
-  if (extensions_controls->extensions_button()->state() ==
+  if (extensions_container_->GetExtensionsButton()->state() ==
       ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHExtensionsMenuFeature);

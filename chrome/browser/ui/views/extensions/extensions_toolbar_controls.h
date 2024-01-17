@@ -29,14 +29,6 @@ class ExtensionsToolbarControls {
       delete;
   ~ExtensionsToolbarControls();
 
-  ExtensionsToolbarButton* extensions_button() const {
-    return extensions_button_;
-  }
-
-  ExtensionsRequestAccessButton* request_access_button() const {
-    return request_access_button_;
-  }
-
   // Update the controls given whether `is_restricted_url`, the `actions` and
   // the user `site_setting` in the `current_web_contents`.
   void UpdateControls(

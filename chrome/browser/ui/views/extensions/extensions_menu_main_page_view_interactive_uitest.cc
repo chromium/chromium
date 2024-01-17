@@ -106,8 +106,7 @@ std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageViewInteractiveUITest::
     GetExtensionsInRequestAccessButton() {
   return GetExtensionsToolbarContainer()
-      ->GetExtensionsToolbarControls()
-      ->request_access_button()
+      ->GetRequestAccessButton()
       ->GetExtensionIdsForTesting();
 }
 

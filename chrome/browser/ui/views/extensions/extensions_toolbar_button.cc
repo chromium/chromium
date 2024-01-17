@@ -154,9 +154,7 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    if (extensions_container_->GetExtensionsToolbarControls()
-            ->request_access_button()
-            ->GetVisible()) {
+    if (extensions_container_->GetRequestAccessButton()->GetVisible()) {
       base::RecordAction(base::UserMetricsAction(
           "Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess"));
     }

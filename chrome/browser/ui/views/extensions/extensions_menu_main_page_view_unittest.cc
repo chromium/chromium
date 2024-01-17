@@ -136,8 +136,7 @@ ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessSection() {
 std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessButton() {
   return extensions_container()
-      ->GetExtensionsToolbarControls()
-      ->request_access_button()
+      ->GetRequestAccessButton()
       ->GetExtensionIdsForTesting();
 }
 

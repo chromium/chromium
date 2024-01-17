@@ -121,6 +121,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     return extensions_button_;
   }
 
+  // Get the request access button for the toolbar.
+  ExtensionsRequestAccessButton* GetRequestAccessButton() const {
+    return request_access_button_;
+  }
+
   // Gets the extensions toolbar controls.
   ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
     return extensions_controls_.get();

@@ -71,9 +71,7 @@ void ExtensionsToolbarControlsUnitTest::NavigateAndCommit(const GURL& url) {
 
 ExtensionsRequestAccessButton*
 ExtensionsToolbarControlsUnitTest::request_access_button() {
-  return extensions_container()
-      ->GetExtensionsToolbarControls()
-      ->request_access_button();
+  return extensions_container()->GetRequestAccessButton();
 }
 
 ExtensionsToolbarButton*
