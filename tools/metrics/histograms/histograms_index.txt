@@ -117,7 +117,6 @@ tools/metrics/histograms/metadata/memory/enums.xml
 tools/metrics/histograms/metadata/memory/histograms.xml
 tools/metrics/histograms/metadata/mobile/enums.xml
 tools/metrics/histograms/metadata/mobile/histograms.xml
-tools/metrics/histograms/metadata/na_cl/enums.xml
 tools/metrics/histograms/metadata/na_cl/histograms.xml
 tools/metrics/histograms/metadata/navigation/enums.xml
 tools/metrics/histograms/metadata/navigation/histograms.xml
@@ -129,12 +128,10 @@ tools/metrics/histograms/metadata/network/enums.xml
 tools/metrics/histograms/metadata/network/histograms.xml
 tools/metrics/histograms/metadata/new_tab_page/enums.xml
 tools/metrics/histograms/metadata/new_tab_page/histograms.xml
-tools/metrics/histograms/metadata/notifications/enums.xml
 tools/metrics/histograms/metadata/notifications/histograms.xml
 tools/metrics/histograms/metadata/offline/histograms.xml
 tools/metrics/histograms/metadata/omnibox/enums.xml
 tools/metrics/histograms/metadata/omnibox/histograms.xml
-tools/metrics/histograms/metadata/oobe/enums.xml
 tools/metrics/histograms/metadata/oobe/histograms.xml
 tools/metrics/histograms/metadata/optimization/enums.xml
 tools/metrics/histograms/metadata/optimization/histograms.xml
@@ -146,7 +143,6 @@ tools/metrics/histograms/metadata/password/histograms.xml
 tools/metrics/histograms/metadata/payment/histograms.xml
 tools/metrics/histograms/metadata/pcscan/histograms.xml
 tools/metrics/histograms/metadata/pdf/histograms.xml
-tools/metrics/histograms/metadata/performance_controls/enums.xml
 tools/metrics/histograms/metadata/performance_controls/histograms.xml
 tools/metrics/histograms/metadata/performance_manager/enums.xml
 tools/metrics/histograms/metadata/performance_manager/histograms.xml
@@ -190,9 +186,7 @@ tools/metrics/histograms/metadata/search/histograms.xml
 tools/metrics/histograms/metadata/security/enums.xml
 tools/metrics/histograms/metadata/security/histograms.xml
 tools/metrics/histograms/metadata/segmentation_platform/histograms.xml
-tools/metrics/histograms/metadata/service/enums.xml
 tools/metrics/histograms/metadata/service/histograms.xml
-tools/metrics/histograms/metadata/session/enums.xml
 tools/metrics/histograms/metadata/session/histograms.xml
 tools/metrics/histograms/metadata/settings/enums.xml
 tools/metrics/histograms/metadata/settings/histograms.xml
@@ -204,7 +198,6 @@ tools/metrics/histograms/metadata/simple/histograms.xml
 tools/metrics/histograms/metadata/stability/enums.xml
 tools/metrics/histograms/metadata/stability/histograms.xml
 tools/metrics/histograms/metadata/start_surface/histograms.xml
-tools/metrics/histograms/metadata/startup/enums.xml
 tools/metrics/histograms/metadata/startup/histograms.xml
 tools/metrics/histograms/metadata/storage/enums.xml
 tools/metrics/histograms/metadata/storage/histograms.xml
