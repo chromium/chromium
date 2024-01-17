@@ -1613,7 +1613,7 @@
       name: "FedCmDisconnect",
       depends_on: ["FedCm"],
       base_feature: "none",
-      status: "test",
+      status: "stable",
       public: true,
     },
     {
