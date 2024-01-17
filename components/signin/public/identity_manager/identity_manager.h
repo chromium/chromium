@@ -421,11 +421,11 @@ class IdentityManager : public KeyedService,
   // Provide the reference on the java IdentityMutator.
   base::android::ScopedJavaLocalRef<jobject> GetIdentityMutatorJavaObject();
 
-  // This method refreshes the all accounts with refresh tokens if the existing
-  // account info is stale. Otherwise it's a no-op.
+  // This method refreshes the AccountInfo associated with |account_id| when
+  // the existing account info is stale. Otherwise it's a no-op.
   // This method triggers an OnExtendedAccountInfoUpdated() callback if the
   // info was successfully fetched.
-  void RefreshAccountInfoIfStale();
+  void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
 
   // Overloads for calls from java:
   bool HasPrimaryAccount(JNIEnv* env) const;
@@ -445,9 +445,13 @@ class IdentityManager : public KeyedService,
   base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
       JNIEnv* env) const;
 
-  // Refreshes all accounts with refresh tokens. See
-  // RefreshAccountInfoIfStale().
-  void RefreshAccountInfoIfStale(JNIEnv* env);
+  // Refreshes account associated with |j_core_account_id| if it's not null.
+  // Else refreshes all accounts with refresh tokens if they are stale. See
+  // RefreshAccountInfoIfStale(const CoreAccountId&).
+  // TODO(crbug.com/1491005): Remove |j_core_account_id| from parameters.
+  void RefreshAccountInfoIfStale(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_core_account_id);
 
   // Returns true if the browser allows the primary account to be cleared.
   jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;

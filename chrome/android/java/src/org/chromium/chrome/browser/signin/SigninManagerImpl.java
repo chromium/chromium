@@ -730,7 +730,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         }
         mIdentityMutator.seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 mAccountManagerFacade.getCoreAccountInfos().getResult(), primaryAccountId);
-        mIdentityManager.refreshAccountInfoIfStale();
+        mIdentityManager.refreshAccountInfoIfStale(
+                mAccountManagerFacade.getCoreAccountInfos().getResult());
     }
 
     /**
