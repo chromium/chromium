@@ -1,15 +1,8 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.fullscreen;
-
-import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
-import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-import static android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -28,7 +21,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -54,28 +46,25 @@ import org.chromium.ui.base.ViewUtils;
 import java.lang.ref.WeakReference;
 
 /** Handles updating the UI based on requests to the HTML Fullscreen API. */
-public class FullscreenHtmlApiHandler
+public abstract class FullscreenHtmlApiHandlerBase
         implements ActivityStateListener,
                 WindowFocusChangedListener,
-                View.OnSystemUiVisibilityChangeListener,
                 FullscreenManager {
-    // TAG length is limited to 20 characters, so we cannot use full class name:
-    private static final String TAG = "FullscreenHtmlApi";
     private static final boolean DEBUG_LOGS = false;
 
-    private static final int MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS = 1;
-    private static final int MSG_ID_UNSET_FULLSCREEN_LAYOUT = 2;
+    protected static final int MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS = 1;
+    protected  static final int MSG_ID_UNSET_FULLSCREEN_LAYOUT = 2;
 
     // The time we allow the Android notification bar to be shown when it is requested temporarily
     // by the Android system (this value is additive on top of the show duration imposed by
     // Android).
-    private static final long ANDROID_CONTROLS_SHOW_DURATION_MS = 200;
+    protected static final long ANDROID_CONTROLS_SHOW_DURATION_MS = 200;
     // Delay to allow a frame to render between getting the fullscreen layout update and clearing
     // the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag.
     private static final long CLEAR_LAYOUT_FULLSCREEN_DELAY_MS = 20;
 
     private final Activity mActivity;
-    private final Handler mHandler;
+    protected final Handler mHandler;
     private final ObservableSupplierImpl<Boolean> mPersistentModeSupplier;
     private final ObservableSupplier<Boolean> mAreControlsHidden;
     private final boolean mExitFullscreenOnStop;
@@ -86,7 +75,7 @@ public class FullscreenHtmlApiHandler
     // content view, i.e., if you navigate to a native page.
     @Nullable private WebContents mWebContentsInFullscreen;
     @Nullable private View mContentViewInFullscreen;
-    @Nullable private Tab mTabInFullscreen;
+    @Nullable protected Tab mTabInFullscreen;
     @Nullable private FullscreenOptions mFullscreenOptions;
 
     private FullscreenToast mToast;
@@ -105,46 +94,60 @@ public class FullscreenHtmlApiHandler
     // in the current Tab.
     private ContentView mContentView;
 
+    protected ContentView getContentView() {
+        return mContentView;
+    }
+
+    /**
+     * Update the current content view that can be shown in fullscreen mode, e.g. when the active
+     * tab is switched or when web contents are swapped in the current Tab.
+     * @param contentView The new content view.
+     */
+    protected void setContentView(ContentView contentView) {
+        mContentView = contentView;
+    }
+
     // This static inner class holds a WeakReference to the outer object, to avoid triggering the
     // lint HandlerLeak warning.
     private static class FullscreenHandler extends Handler {
-        private final WeakReference<FullscreenHtmlApiHandler> mFullscreenHtmlApiHandler;
+        private final WeakReference<FullscreenHtmlApiHandlerBase> mFullscreenHtmlApiHandler;
 
-        public FullscreenHandler(FullscreenHtmlApiHandler fullscreenHtmlApiHandler) {
+        public FullscreenHandler(FullscreenHtmlApiHandlerBase fullscreenHtmlApiHandlerBase) {
             mFullscreenHtmlApiHandler =
-                    new WeakReference<FullscreenHtmlApiHandler>(fullscreenHtmlApiHandler);
+                    new WeakReference<FullscreenHtmlApiHandlerBase>(fullscreenHtmlApiHandlerBase);
         }
 
         @Override
         public void handleMessage(Message msg) {
             if (msg == null) return;
-            FullscreenHtmlApiHandler fullscreenHtmlApiHandler = mFullscreenHtmlApiHandler.get();
-            if (fullscreenHtmlApiHandler == null) return;
+            FullscreenHtmlApiHandlerBase fullscreenHtmlApiHandlerBase =
+                    mFullscreenHtmlApiHandler.get();
+            if (fullscreenHtmlApiHandlerBase == null) return;
 
-            final WebContents webContents = fullscreenHtmlApiHandler.mWebContentsInFullscreen;
+            final WebContents webContents = fullscreenHtmlApiHandlerBase.mWebContentsInFullscreen;
             if (webContents == null) return;
 
-            final View contentView = fullscreenHtmlApiHandler.mContentViewInFullscreen;
+            final View contentView = fullscreenHtmlApiHandlerBase.mContentViewInFullscreen;
             if (contentView == null) return;
 
             switch (msg.what) {
                 case MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS:
                     {
-                        assert fullscreenHtmlApiHandler.getPersistentFullscreenMode()
+                        assert fullscreenHtmlApiHandlerBase.getPersistentFullscreenMode()
                                 : "Calling after we exited fullscreen";
-                        assert fullscreenHtmlApiHandler.mFullscreenOptions != null;
+                        assert fullscreenHtmlApiHandlerBase.mFullscreenOptions != null;
 
-                        if (!fullscreenHtmlApiHandler.hasDesiredStateForSystemBars(
-                                contentView, fullscreenHtmlApiHandler.mFullscreenOptions)) {
-                            fullscreenHtmlApiHandler.hideSystemBars(
-                                    contentView, fullscreenHtmlApiHandler.mFullscreenOptions);
+                        if (!fullscreenHtmlApiHandlerBase.hasDesiredStateForSystemBars(
+                                contentView, fullscreenHtmlApiHandlerBase.mFullscreenOptions)) {
+                            fullscreenHtmlApiHandlerBase.hideSystemBars(
+                                    contentView, fullscreenHtmlApiHandlerBase.mFullscreenOptions);
                             if (DEBUG_LOGS) {
-                                fullscreenHtmlApiHandler.logHandleMessageHideSystemBars(
+                                fullscreenHtmlApiHandlerBase.logHandleMessageHideSystemBars(
                                         contentView);
                             }
                         }
 
-                        if (!fullscreenHtmlApiHandler.isLayoutFullscreen(contentView)) return;
+                        if (!fullscreenHtmlApiHandlerBase.isLayoutFullscreen(contentView)) return;
 
                         // Trigger a update to clear the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag
                         // once the view has been laid out after this system UI update.  Without
@@ -182,12 +185,13 @@ public class FullscreenHtmlApiHandler
                         // https://crbug/365638
                         // TODO(aberent): Fix bug assert getPersistentFullscreenMode() : "Calling
                         // after we exited fullscreen";
-                        if (!fullscreenHtmlApiHandler.getPersistentFullscreenMode()) return;
-                        fullscreenHtmlApiHandler.unsetLayoutFullscreen(contentView);
+                        if (!fullscreenHtmlApiHandlerBase.getPersistentFullscreenMode()) return;
+                        fullscreenHtmlApiHandlerBase.unsetLayoutFullscreen(contentView);
                         if (DEBUG_LOGS) {
-                            fullscreenHtmlApiHandler.logHandlerUnsetFullscreenLayout(contentView);
+                            fullscreenHtmlApiHandlerBase.logHandlerUnsetFullscreenLayout(
+                                    contentView);
                         }
-                        fullscreenHtmlApiHandler.unsetTranslucentStatusBar();
+                        fullscreenHtmlApiHandlerBase.unsetTranslucentStatusBar();
                         break;
                     }
                 default:
@@ -205,7 +209,7 @@ public class FullscreenHtmlApiHandler
      * @param exitFullscreenOnStop Whether fullscreen mode should exit on stop - should be true for
      *     Activities that are not always fullscreen.
      */
-    public FullscreenHtmlApiHandler(
+    public FullscreenHtmlApiHandlerBase(
             Activity activity,
             ObservableSupplier<Boolean> areControlsHidden,
             boolean exitFullscreenOnStop) {
@@ -520,11 +524,11 @@ public class FullscreenHtmlApiHandler
      *
      * @param tab The tab that is entering fullscreen.
      */
-    public void enterFullscreen(final Tab tab, FullscreenOptions options) {
+    private void enterFullscreen(final Tab tab, FullscreenOptions options) {
         assert !(options.showNavigationBar && options.showStatusBar)
                 : "Cannot enter fullscreen with both status and navigation bars visible!";
 
-        if (DEBUG_LOGS) Log.i(TAG, "enterFullscreen, options=" + options.toString());
+        if (DEBUG_LOGS) logEnterFullscreenOptions(options);
         WebContents webContents = tab.getWebContents();
         if (webContents == null) return;
         mFullscreenOptions = options;
@@ -534,6 +538,7 @@ public class FullscreenHtmlApiHandler
             // We are already in fullscreen mode and the fullscreen options match what is
             // needed; nothing to do.
             if (hasDesiredStateForSystemBars(contentView, mFullscreenOptions)) return;
+
             resetEnterFullscreenLayoutChangeListener(contentView);
             adjustSystemBarsInFullscreenMode(contentView, mFullscreenOptions);
         } else if (isLayoutFullscreen(contentView) || isLayoutHidingNavigation(contentView)) {
@@ -646,91 +651,11 @@ public class FullscreenHtmlApiHandler
     }
 
     /*
-     * Hide the system bars to enable fullscreen mode based on the current options.
-     */
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void hideSystemBars(View contentView, FullscreenOptions fullscreenOptions) {
-        setSystemUiVisibility(
-                contentView,
-                applyEnterFullscreenUIFlags(
-                        contentView.getSystemUiVisibility(), fullscreenOptions));
-    }
-
-    /*
-     * Returns system ui flags to enable fullscreen mode based on the current options.
-     * @return fullscreen flags to be applied to system UI visibility.
-     */
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private int applyEnterFullscreenUIFlags(
-            int systemUiVisibility, FullscreenOptions fullscreenOptions) {
-        boolean showNavigationBar =
-                fullscreenOptions != null && fullscreenOptions.showNavigationBar;
-        boolean showStatusBar = fullscreenOptions != null && fullscreenOptions.showStatusBar;
-
-        int flags = SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        if (!showStatusBar && !showNavigationBar) {
-            flags |= SYSTEM_UI_FLAG_LOW_PROFILE;
-        }
-
-        if (!showNavigationBar) {
-            flags |= SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            flags |= SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-        }
-
-        if (!showStatusBar) {
-            flags |= SYSTEM_UI_FLAG_FULLSCREEN;
-            flags |= SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-        }
-
-        return flags | systemUiVisibility;
-    }
-
-    /*
-     * Shows the system bars and exits fullscreen mode.
-     */
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void showSystemBars(View contentView) {
-        setSystemUiVisibility(
-                contentView, applyExitFullscreenUIFlags(contentView.getSystemUiVisibility()));
-    }
-
-    /*
-     * Returns system ui flags with any flags that might have been set during
-     * applyEnterFullscreenUIFlags masked off.
-     * @return fullscreen flags to be applied to system UI visibility.
-     */
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private static int applyExitFullscreenUIFlags(int systemUiVisibility) {
-        int maskOffFlags =
-                SYSTEM_UI_FLAG_LOW_PROFILE
-                        | SYSTEM_UI_FLAG_FULLSCREEN
-                        | SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-        return systemUiVisibility & ~maskOffFlags;
-    }
-
-    /*
-     * Adjusts the visibility of system bars when already in fullscreen mode.
-     */
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void adjustSystemBarsInFullscreenMode(
-            View contentView, FullscreenOptions fullscreenOptions) {
-        setSystemUiVisibility(
-                contentView,
-                applyEnterFullscreenUIFlags(
-                        applyExitFullscreenUIFlags(contentView.getSystemUiVisibility()),
-                        fullscreenOptions));
-    }
-
-    /*
      * Clears the current window attributes to not contain windowFlags. This
      * is slightly different that Window.clearFlags which then sets a
      * forced window attribute on the Window object that cannot be cleared.
      */
-    private void clearWindowFlags(int windowFlags) {
+    protected void clearWindowFlags(int windowFlags) {
         Window window = mActivity.getWindow();
         final WindowManager.LayoutParams attrs = window.getAttributes();
         if ((attrs.flags & windowFlags) != 0) {
@@ -744,7 +669,7 @@ public class FullscreenHtmlApiHandler
      * is slightly different that Window.setFlags which then sets a
      * forced window attribute on the Window object that cannot be cleared.
      */
-    private void setWindowFlags(int windowFlags) {
+    protected void setWindowFlags(int windowFlags) {
         Window window = mActivity.getWindow();
         final WindowManager.LayoutParams attrs = window.getAttributes();
         attrs.flags |= windowFlags;
@@ -776,113 +701,107 @@ public class FullscreenHtmlApiHandler
         return getToast().isVisible();
     }
 
-    // View.OnSystemUiVisibilityChangeListener
+    /**
+     * Hide the system bars (to enter fullscreen mode) based on the fullscreen options.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     * @param fullscreenOptions The fullscreen options to guide what UI is shown or hidden.
+     */
+    abstract void hideSystemBars(View contentView, FullscreenOptions fullscreenOptions);
 
-    @Override
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    public void onSystemUiVisibilityChange(int visibility) {
-        if (mTabInFullscreen == null || !getPersistentFullscreenMode()) return;
-        mHandler.sendEmptyMessageDelayed(
-                MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS, ANDROID_CONTROLS_SHOW_DURATION_MS);
-    }
+    /**
+     * Show the system bars (to exit fullscreen mode).
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void showSystemBars(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void setContentView(ContentView contentView) {
-        if (contentView == mContentView) return;
-        if (mContentView != null) {
-            mContentView.removeOnSystemUiVisibilityChangeListener(this);
-        }
-        mContentView = contentView;
-        if (mContentView != null) {
-            mContentView.addOnSystemUiVisibilityChangeListener(this);
-        }
-    }
+    /**
+     * Adjust the visibility of system bars while already in fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     * @param fullscreenOptions The fullscreen options to guide what UI is shown or hidden.
+     */
+    abstract void adjustSystemBarsInFullscreenMode(
+            View contentView, FullscreenOptions fullscreenOptions);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private static void setSystemUiVisibility(View contentView, int systemUiVisibility) {
-        if (!BuildInfo.getInstance().isAutomotive) {
-            contentView.setSystemUiVisibility(systemUiVisibility);
-        }
-    }
+    /**
+     * Whether the status bar is hidden.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract boolean isStatusBarHidden(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private boolean isStatusBarHidden(View contentView) {
-        return (contentView.getSystemUiVisibility() & SYSTEM_UI_FLAG_FULLSCREEN)
-                == SYSTEM_UI_FLAG_FULLSCREEN;
-    }
+    /**
+     * Whether the navigation bar is hidden.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract boolean isNavigationBarHidden(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private boolean isNavigationBarHidden(View contentView) {
-        return (contentView.getSystemUiVisibility() & SYSTEM_UI_FLAG_HIDE_NAVIGATION)
-                == SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-    }
+    /**
+     * Whether the view layout is laid out as if in fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract boolean isLayoutFullscreen(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private boolean isLayoutFullscreen(View contentView) {
-        return (contentView.getSystemUiVisibility() & SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-                == SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-    }
+    /**
+     * Whether the view layout is laid out as if to hide the navigation bar.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract boolean isLayoutHidingNavigation(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private boolean isLayoutHidingNavigation(View contentView) {
-        return (contentView.getSystemUiVisibility() & SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-                == SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-    }
+    /**
+     * Hide the navigation bar to give more space to display the view.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void hideNavigationBar(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void hideNavigationBar(View contentView) {
-        setSystemUiVisibility(
-                contentView,
-                contentView.getSystemUiVisibility() | SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-    }
+    /**
+     * Request that the view's layout display itself in fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void setLayoutFullscreen(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void setLayoutFullscreen(View contentView) {
-        setSystemUiVisibility(
-                contentView,
-                contentView.getSystemUiVisibility() | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
+    /**
+     * Remove the request to the view's layout to display itself in fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void unsetLayoutFullscreen(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void unsetLayoutFullscreen(View contentView) {
-        setSystemUiVisibility(
-                contentView,
-                contentView.getSystemUiVisibility() & ~SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
+    /**
+     * Set a translucent status for the status bar.
+     */
+    abstract void setTranslucentStatusBar();
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void setTranslucentStatusBar() {
-        setWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    }
+    /**
+     * Unset the status bar's translucent status.
+     */
+    abstract void unsetTranslucentStatusBar();
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void unsetTranslucentStatusBar() {
-        clearWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    }
+    /**
+     * Logs when a view enters fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void logEnterFullscreen(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void logEnterFullscreen(View contentView) {
-        Log.i(TAG, "enterFullscreen, systemUiVisibility=" + contentView.getSystemUiVisibility());
-    }
+    /**
+     * Logs the fullscreen options when a view requests to enter fullscreen mode.
+     * @param fullscreenOptions The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void logEnterFullscreenOptions(FullscreenOptions fullscreenOptions);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void logExitFullscreen(View contentView) {
-        Log.i(TAG, "exitFullscreen, systemUiVisibility=" + contentView.getSystemUiVisibility());
-    }
+    /**
+     * Logs when a view exits fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void logExitFullscreen(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void logHandlerUnsetFullscreenLayout(View contentView) {
-        Log.i(
-                TAG,
-                "handleMessage clear fullscreen flag, systemUiVisibility="
-                        + contentView.getSystemUiVisibility());
-    }
+    /**
+     * Logs when the handler processes a message to unset the view's layout being shown as if in
+     * fullscreen mode.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void logHandlerUnsetFullscreenLayout(View contentView);
 
-    // TODO (crbug.com/1449311) - Move deprecated logic to legacy subclass
-    private void logHandleMessageHideSystemBars(View contentView) {
-        Log.i(
-                TAG,
-                "handleMessage set flags, systemUiVisibility="
-                        + contentView.getSystemUiVisibility());
-    }
+    /**
+     * Logs when the handler processes a message to hide the system bars.
+     * @param contentView The content view being shown or to be shown in fullscreen mode.
+     */
+    abstract void logHandleMessageHideSystemBars(View contentView);
 }
