@@ -73,7 +73,7 @@ views::Widget* NotificationCenterBubble::GetBubbleWidget() {
 
 NotificationCenterView* NotificationCenterBubble::GetNotificationCenterView() {
   return features::IsNotificationCenterControllerEnabled()
-             ? notification_center_controller_->GetNotificationCenterView()
+             ? notification_center_controller_->notification_center_view()
              : notification_center_view_.get();
 }
 

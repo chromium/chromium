@@ -191,7 +191,21 @@ class NotificationListViewTest
         new message_center::NotificationDelegate());
     notification->set_pinned(pinned);
     MessageCenter::Get()->AddNotification(std::move(notification));
+    // Manually trigger observer functions since `NotificationCenterController`
+    // is not created in this test.
+    if (IsNotificationCenterControllerEnabled() && notification_list_view_) {
+      notification_list_view_->OnNotificationAdded(id);
+    }
     return id;
+  }
+
+  void RemoveNotification(const std::string& id, bool by_user = true) {
+    MessageCenter::Get()->RemoveNotification(id, by_user);
+    // Manually trigger observer functions since `NotificationCenterController`
+    // is not created in this test.
+    if (IsNotificationCenterControllerEnabled() && notification_list_view_) {
+      notification_list_view_->OnNotificationRemoved(id, by_user);
+    }
   }
 
   void OffsetNotificationTimestamp(const std::string& id,
@@ -365,7 +379,7 @@ TEST_P(NotificationListViewTest, RemoveNotification) {
   EXPECT_EQ(inner_corner_radius, GetMessageViewAt(0)->bottom_radius());
 
   gfx::Rect previous_bounds = GetMessageViewBounds(0);
-  MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+  RemoveNotification(id0);
   FinishSlideOutAnimation();
   AnimateUntilIdle();
   EXPECT_EQ(1u, message_list_view()->children().size());
@@ -376,7 +390,7 @@ TEST_P(NotificationListViewTest, RemoveNotification) {
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->bottom_radius());
 
-  MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
+  RemoveNotification(id1);
   FinishSlideOutAnimation();
   AnimateUntilIdle();
   EXPECT_EQ(0u, message_list_view()->children().size());
@@ -421,7 +435,7 @@ TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   gfx::Rect bounds1 = GetMessageViewBounds(1);
   gfx::Rect bounds2 = GetMessageViewBounds(2);
 
-  MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
+  RemoveNotification(id1);
   FinishSlideOutAnimation();
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
@@ -430,7 +444,7 @@ TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
   EXPECT_EQ(bounds1, GetMessageViewBounds(1));
 
-  MessageCenter::Get()->RemoveNotification(id2, true /* by_user */);
+  RemoveNotification(id2);
   FinishSlideOutAnimation();
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
@@ -440,7 +454,7 @@ TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   EXPECT_EQ(bounds2.size(), GetMessageViewBounds(0).size());
   EXPECT_EQ(bounds0.origin(), GetMessageViewBounds(0).origin());
 
-  MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+  RemoveNotification(id0);
   FinishSlideOutAnimation();
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
@@ -455,7 +469,7 @@ TEST_P(NotificationListViewTest, DISABLED_ResetAnimation) {
   auto id1 = AddNotification();
   CreateMessageListView();
 
-  MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+  RemoveNotification(id0);
   FinishSlideOutAnimation();
   EXPECT_TRUE(IsAnimating());
   AnimateToMiddle();
@@ -669,7 +683,7 @@ TEST_P(NotificationListViewTest, DISABLED_UserSwipesAwayNotification) {
 
   // Swiping away the notification should remove it both in the MessageCenter
   // and the MessageListView.
-  MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
+  RemoveNotification(id1);
   FinishSlideOutAnimation();
   EXPECT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
   EXPECT_EQ(1u, message_list_view()->children().size());
@@ -899,7 +913,7 @@ TEST_P(NotificationListViewTest, RemoveNotificationDuringCollapse) {
 
   // Remove the notification for `message_view`. The view should snap to
   // collapsed bounds, then slide out.
-  MessageCenter::Get()->RemoveNotification(id1, /*by_user=*/true);
+  RemoveNotification(id1);
 
   EXPECT_LE(notification_container->GetPreferredSize().height(),
             middle_of_collapsed_size.height());
@@ -922,7 +936,7 @@ TEST_P(NotificationListViewTest,
   auto* notification_container = message_list_view()->children()[0].get();
   const gfx::Size pre_remove_size = notification_container->GetPreferredSize();
   // Remove the notification, this should activate the "slide out" animation.
-  MessageCenter::Get()->RemoveNotification(id1, /*by_user=*/true);
+  RemoveNotification(id1);
   EXPECT_EQ(notification_container->GetPreferredSize(), pre_remove_size);
   // Removing the notification does not trigger an animation at the level of
   // NotificationListView
@@ -966,8 +980,7 @@ TEST_P(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
 
   // Delete the first notification. This should begin the slide out animation.
   // Let that finish, then State::MOVE_DOWN should begin.
-  MessageCenter::Get()->RemoveNotification(to_be_removed_notification,
-                                           /*by_user=*/true);
+  RemoveNotification(to_be_removed_notification);
   FinishSlideOutAnimation();
   EXPECT_TRUE(message_list_view()->IsAnimating());
   EXPECT_FALSE(message_list_view()->IsAnimatingExpandOrCollapseContainer(
@@ -1006,8 +1019,7 @@ TEST_P(NotificationListViewTest, MoveDuringCollapseNoAnimation) {
   EXPECT_TRUE(message_list_view()->IsAnimatingExpandOrCollapseContainer(
       to_be_collapsed_message_view_container));
   EXPECT_TRUE(message_list_view()->IsAnimating());
-  MessageCenter::Get()->RemoveNotification(to_be_removed_notification,
-                                           /*by_user=*/true);
+  RemoveNotification(to_be_removed_notification);
 
   EXPECT_FALSE(message_list_view()->IsAnimatingExpandOrCollapseContainer(
       to_be_collapsed_message_view_container));
@@ -1058,7 +1070,7 @@ TEST_P(NotificationListViewTest, SlideNotification) {
 
   // Slide out notification 2, the 3 notifications left should have no rounded
   // corner after slide out done.
-  MessageCenter::Get()->RemoveNotification(id2, /*by_user=*/true);
+  RemoveNotification(id2);
   FinishSlideOutAnimation();
   AnimateUntilIdle();
 

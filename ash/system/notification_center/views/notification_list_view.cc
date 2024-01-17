@@ -6,14 +6,15 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/notification_center/metrics_utils.h"
-#include "ash/system/notification_center/views/notification_swipe_control_view.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_swipe_control_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
@@ -388,7 +389,9 @@ NotificationListView::NotificationListView(
       message_center_view_(message_center_view),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
       message_view_width_(kTrayMenuWidth - (2 * kMessageCenterPadding)) {
-  message_center_observation_.Observe(MessageCenter::Get());
+  if (!features::IsNotificationCenterControllerEnabled()) {
+    message_center_observation_.Observe(MessageCenter::Get());
+  }
   animation_->SetCurrentValue(1.0);
 }
 

@@ -64,6 +64,11 @@ class ASH_EXPORT NotificationCenterView : public views::View,
   // the user and the slide animation is finished.
   void OnNotificationSlidOut();
 
+  // Called from `NotificationCenterController` which observes `MessageCenter`.
+  void OnNotificationAdded(const std::string& id);
+  void OnNotificationRemoved(const std::string& id, bool by_user);
+  void OnNotificationUpdated(const std::string& id);
+
   // Configures `MessageView` to forward scroll events. Called from
   // `NotificationListView`.
   void ConfigureMessageView(message_center::MessageView* message_view);
