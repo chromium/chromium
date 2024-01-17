@@ -122,6 +122,8 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "search_engine_choice_egtest.mm" ]
   deps = [
+    ":constants",
+    ":earl_grey_ui_test_util",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",

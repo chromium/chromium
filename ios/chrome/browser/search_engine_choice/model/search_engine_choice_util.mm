@@ -15,6 +15,28 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
+namespace {
+// Whether the choice screen might be displayed. The choice screen is by default
+// disabled for tests or for non-branded builds. This method eliminates those
+// cases.
+bool IsChoiceEnabled() {
+  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
+    // This branch is only selected in tests that are related to choice screen.
+    return true;
+  }
+  if (tests_hook::DisableDefaultSearchEngineChoice()) {
+    // This branch is taken in every other test.
+    return false;
+  }
+  if (ios::provider::DisableDefaultSearchEngineChoice()) {
+    // Outside of tests, this view should be disabled upstream.
+    return false;
+  }
+  return search_engines::IsChoiceScreenFlagEnabled(
+      search_engines::ChoicePromo::kDialog);
+}
+}  // namespace
+
 bool ShouldDisplaySearchEngineChoiceScreen(Browser* browser) {
   if (!IsChoiceEnabled()) {
     return false;
@@ -31,21 +53,4 @@ bool ShouldDisplaySearchEngineChoiceScreen(Browser* browser) {
       *policy_connector->GetPolicyService(),
       /*is_regular_profile=*/true,
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state));
-}
-
-bool IsChoiceEnabled() {
-  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
-    // This branch is only selected in tests that are related to choice screen.
-    return true;
-  }
-  if (tests_hook::DisableDefaultSearchEngineChoice()) {
-    // This branch is taken in every other test.
-    return false;
-  }
-  if (ios::provider::DisableDefaultSearchEngineChoice()) {
-    // Outside of tests, this view should be disabled upstream.
-    return false;
-  }
-  return search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog);
 }
