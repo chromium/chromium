@@ -3325,10 +3325,6 @@
       base_feature: "none",
     },
     {
-      name: "ScriptingMediaFeature",
-      status: "stable",
-    },
-    {
       name: "ScrollbarColor",
       status: "stable",
     },

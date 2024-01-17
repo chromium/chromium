@@ -104,8 +104,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            (feature == media_feature_names::kInvertedColorsMediaFeature &&
             RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
            CSSVariableParser::IsValidVariableName(feature) ||
-           (feature == media_feature_names::kScriptingMediaFeature &&
-            RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled()) ||
+           feature == media_feature_names::kScriptingMediaFeature ||
            (RuntimeEnabledFeatures::
                 DesktopPWAsAdditionalWindowingControlsEnabled() &&
             feature == media_feature_names::kDisplayStateMediaFeature) ||

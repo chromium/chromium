@@ -194,8 +194,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
-  if (RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled() &&
-      media_feature == media_feature_names::kScriptingMediaFeature) {
+  if (media_feature == media_feature_names::kScriptingMediaFeature) {
     return ident == CSSValueID::kEnabled || ident == CSSValueID::kInitialOnly ||
            ident == CSSValueID::kNone;
   }
