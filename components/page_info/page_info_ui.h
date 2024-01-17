@@ -106,6 +106,12 @@ class PageInfoUI {
     // The status of whether third-party cookies are blocked.
     CookieControlsStatus status = CookieControlsStatus::kUninitialized;
 
+    // Whether protections are enabled for the given site.
+    bool protections_on = true;
+
+    // Whether tracking protection controls should be shown.
+    bool controls_visible = true;
+
     // The type of third-party cookie blocking in 3PCD.
     CookieBlocking3pcdStatus blocking_status =
         CookieBlocking3pcdStatus::kNotIn3pcd;

@@ -542,7 +542,8 @@ class PageInfo : private content_settings::CookieControlsObserver {
                           content_settings::CookieControlsObserver>
       observation_{this};
 
-  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  bool protections_on_ = true;
+  bool controls_visible_ = true;
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;

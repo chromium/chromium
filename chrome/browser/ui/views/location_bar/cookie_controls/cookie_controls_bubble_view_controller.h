@@ -33,6 +33,8 @@ class CookieControlsBubbleViewController
       content_settings::CookieControlsController* controller);
 
   // CookieControlsObserver:
+  // TODO(b/317975095): Remove `status` in favor of `controls_visible` and
+  // `protections_on`.
   void OnStatusChanged(CookieControlsStatus status,
                        bool controls_visible,
                        bool protections_on,

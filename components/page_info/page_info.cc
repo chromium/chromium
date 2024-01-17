@@ -332,10 +332,12 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
                                CookieControlsEnforcement enforcement,
                                CookieBlocking3pcdStatus blocking_status,
                                base::Time expiration) {
-  if (status != status_ || enforcement != enforcement_ ||
+  if (controls_visible_ != controls_visible ||
+      protections_on_ != protections_on || enforcement != enforcement_ ||
       blocking_status != blocking_status_ ||
       expiration != cookie_exception_expiration_) {
-    status_ = status;
+    controls_visible_ = controls_visible;
+    protections_on_ = protections_on;
     enforcement_ = enforcement;
     blocking_status_ = blocking_status;
     cookie_exception_expiration_ = expiration;
@@ -362,8 +364,7 @@ void PageInfo::OnBreakageConfidenceLevelChanged(
 }
 
 void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
-  DCHECK(status_ != CookieControlsStatus::kDisabled);
-  DCHECK(status_ != CookieControlsStatus::kUninitialized);
+  DCHECK(controls_visible_);
   RecordPageInfoAction(block_third_party_cookies
                            ? PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
                            : PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
@@ -1498,7 +1499,8 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   }
 #endif
 
-  cookies_info.status = status_;
+  cookies_info.controls_visible = controls_visible_;
+  cookies_info.protections_on = protections_on_;
   cookies_info.enforcement = enforcement_;
   cookies_info.blocking_status = blocking_status_;
   cookies_info.expiration = cookie_exception_expiration_;

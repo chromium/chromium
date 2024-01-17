@@ -754,7 +754,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     cookie_info.allowed_third_party_sites_count = 5;
     cookie_info.blocked_third_party_sites_count = 8;
     cookie_info.enforcement = enforcement_;
-    cookie_info.status = status_;
+    cookie_info.protections_on = protections_on_;
+    cookie_info.controls_visible = controls_visible_;
     cookie_info.blocking_status = blocking_status_;
     // TODO(crbug.com/1346305): Add fps enforcement info when finished
     // implementing it.
@@ -804,7 +805,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
   }
 
  protected:
-  CookieControlsStatus status_ = CookieControlsStatus::kEnabled;
+  bool protections_on_ = true;
+  bool controls_visible_ = true;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
   CookieBlocking3pcdStatus blocking_status_ =
@@ -825,7 +827,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesAllowedByTpcdGrant_3pcdLimited) {
   blocking_status_ = CookieBlocking3pcdStatus::kLimited;
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
+  controls_visible_ = false;
   enforcement_ = CookieControlsEnforcement::kEnforcedByTpcdGrant;
   ShowAndVerifyUi();
 }
@@ -852,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesAllowedByCookieSetting) {
   blocking_status_ = GetParam();
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
@@ -861,7 +864,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_TemporaryException) {
   is_temporary_exception_ = true;
   blocking_status_ = GetParam();
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   ShowAndVerifyUi();
 }
 
