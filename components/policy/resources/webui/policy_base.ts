@@ -85,8 +85,7 @@ export class Page {
         getRequiredElement('reload-policies') as HTMLButtonElement;
     reloadPoliciesButton.onclick = () => {
       reloadPoliciesButton!.disabled = true;
-      getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('reloadingPolicies');
+      this.createToast(loadTimeData.getString('reloadingPolicies'));
       sendWithPromise('reloadPolicies');
     };
 
@@ -126,20 +125,17 @@ export class Page {
     uploadReportButton.style.display = 'none';
     uploadReportButton.onclick = () => {
       uploadReportButton.disabled = true;
-      getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('reportUploading');
+      this.createToast(loadTimeData.getString('reportUploading'));
       sendWithPromise('uploadReport').then(() => {
         uploadReportButton.disabled = false;
-        getRequiredElement('screen-reader-message').textContent =
-            loadTimeData.getString('reportUploaded');
+        this.createToast(loadTimeData.getString('reportUploaded'));
       });
     };
     // </if>
 
     getRequiredElement('copy-policies').onclick = () => {
       sendWithPromise('copyPoliciesJSON');
-      getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('copyPoliciesDone');
+      this.createToast(loadTimeData.getString('copyPoliciesDone'));
     };
 
     getRequiredElement('show-unset').onchange = () => {
@@ -212,6 +208,23 @@ export class Page {
     this.reloadPoliciesDone();
   }
 
+  /**
+   * Creates a toast notification with 2 second timeout at bottom of the page.
+   * The notification is also announced to screen readers.
+   */
+  createToast(content: string): void {
+    const toast = document.createElement('div');
+    toast.textContent = content;
+    toast.classList.add('toast');
+    toast.setAttribute('role', 'alert');
+    const container = getRequiredElement('toast-container');
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      container.removeChild(toast);
+    }, 2000);
+  }
+
   // Triggers the download of the policies as a JSON file.
   downloadJson(json: string) {
     const jsonObject = JSON.parse(json);
@@ -236,8 +249,7 @@ export class Page {
         'click', {bubbles: true, cancelable: true, view: window}));
 
     document.body.removeChild(link);
-    getRequiredElement('screen-reader-message').textContent =
-        loadTimeData.getString('exportPoliciesDone');
+    this.createToast(loadTimeData.getString('exportPoliciesDone'));
   }
 
   createOrUpdatePolicyTable(dataModel: PolicyTableModel) {
@@ -287,8 +299,7 @@ export class Page {
         getRequiredElement('reload-policies') as HTMLButtonElement;
     if (reloadButton!.disabled) {
       reloadButton!.disabled = false;
-      getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('reloadPoliciesDone');
+      this.createToast(loadTimeData.getString('reloadPoliciesDone'));
     }
   }
 
