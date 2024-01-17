@@ -91,20 +91,15 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
       (double, double, int, int, base::OnceCallback<void(bool, const String&)>),
       (override));
 
-  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
-                        callback) override;
+  MOCK_METHOD(void,
+              GetZoomLevel,
+              (base::OnceCallback<void(absl::optional<int>, const String&)>),
+              (override));
 
-  void SetGetZoomLevelResult(absl::optional<int> zoom_level, String error) {
-    get_zoom_level_result_ = GetZoomLevelResult(zoom_level, error);
-  }
-
-  void SetZoomLevel(
-      int zoom_level,
-      base::OnceCallback<void(bool, const String&)> callback) override;
-
-  void SetSetZoomLevelResult(bool success, String error) {
-    set_zoom_level_result_ = SetZoomLevelResult(success, error);
-  }
+  MOCK_METHOD(void,
+              SetZoomLevel,
+              (int, base::OnceCallback<void(bool, const String&)>),
+              (override));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   void EnableStopForRestart() { can_stop_for_restart_ = true; }
@@ -138,25 +133,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   void RestartSourceImpl(const media::VideoCaptureFormat& new_format) override;
 
  private:
-#if !BUILDFLAG(IS_ANDROID)
-  struct GetZoomLevelResult {
-    GetZoomLevelResult(absl::optional<int> zoom_level, String error)
-        : zoom_level(zoom_level), error(std::move(error)) {}
-    absl::optional<int> zoom_level;
-    String error;
-  };
-
-  struct SetZoomLevelResult {
-    SetZoomLevelResult(bool success, String error)
-        : success(success), error(std::move(error)) {}
-    bool success;
-    String error;
-  };
-
-  absl::optional<GetZoomLevelResult> get_zoom_level_result_;
-  absl::optional<SetZoomLevelResult> set_zoom_level_result_;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   media::VideoCaptureFormat format_;
   bool respond_to_request_refresh_frame_;
   bool attempted_to_start_;
