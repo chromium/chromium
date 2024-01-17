@@ -244,7 +244,8 @@ void MockRenderViewContextMenu::AddPdfOcrMenuItem() {
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
-content::RenderViewHost* MockRenderViewContextMenu::GetRenderViewHost() const {
+content::RenderFrameHost* MockRenderViewContextMenu::GetRenderFrameHost()
+    const {
   return nullptr;
 }
 

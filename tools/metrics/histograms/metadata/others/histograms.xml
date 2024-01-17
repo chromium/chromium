@@ -8839,7 +8839,12 @@ chromium-metrics-reviews@google.com.
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    Count of renderer view context menu items (Only commands now) used.
+    Count of renderer view context menu items (Only commands now) used. Note
+    that this counts cases where the context menu item is used, but the item has
+    no effect (eg. autofill commands have no effect if the RenderFrameHost is
+    null). Update: as of M122, setting text direction via the context menu may
+    also have no effect if the RFH is null, though we will continue to count in
+    this case.
 
     The user action RenderViewContextMenu.Used.IDC_CONTENT_CONTEXT_SEARCHWEBFOR
     is also logged in case that IDC_CONTENT_CONTEXT_SEARCHWEBFOR is logged to

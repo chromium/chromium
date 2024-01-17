@@ -298,12 +298,20 @@ void RenderViewContextMenuViews::ExecuteCommand(int command_id,
 
     case IDC_WRITING_DIRECTION_RTL:
     case IDC_WRITING_DIRECTION_LTR: {
-      content::RenderViewHost* view_host = GetRenderViewHost();
-      view_host->GetWidget()->UpdateTextDirection(
-          (command_id == IDC_WRITING_DIRECTION_RTL)
-              ? base::i18n::RIGHT_TO_LEFT
-              : base::i18n::LEFT_TO_RIGHT);
-      view_host->GetWidget()->NotifyTextDirection();
+      // Note: we get the local render frame host so that the writing mode
+      // settings changes apply to the correct frame. See crbug.com/1129073
+      // for a description of what happens if we use the outermost frame.
+      content::RenderFrameHost* rfh = GetRenderFrameHost();
+      // It's possible that the frame drops out from under us while the context
+      // menu is open. In this case, we'll not perform the action, but still
+      // record metrics.
+      if (rfh) {
+        rfh->GetRenderWidgetHost()->UpdateTextDirection(
+            (command_id == IDC_WRITING_DIRECTION_RTL)
+                ? base::i18n::RIGHT_TO_LEFT
+                : base::i18n::LEFT_TO_RIGHT);
+        rfh->GetRenderWidgetHost()->NotifyTextDirection();
+      }
       RenderViewContextMenu::RecordUsedItem(command_id);
       break;
     }
