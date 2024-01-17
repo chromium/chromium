@@ -26,13 +26,16 @@ class MicCoordinator {
  public:
   MicCoordinator(views::View& parent_view,
                  bool needs_borders,
-                 const std::vector<std::string>& eligible_mic_ids);
+                 const std::vector<std::string>& eligible_mic_ids,
+                 PrefService& prefs);
   MicCoordinator(const MicCoordinator&) = delete;
   MicCoordinator& operator=(const MicCoordinator&) = delete;
   ~MicCoordinator();
 
   // Invoked from the ViewController when a combobox selection has been made.
   void OnAudioSourceChanged(std::optional<size_t> selected_index);
+
+  void UpdateDevicePreferenceRanking();
 
   const ui::SimpleComboboxModel& GetComboboxModelForTest() const {
     return combobox_model_;
@@ -59,6 +62,7 @@ class MicCoordinator {
   // This list must be kept in sync with the `combobox_model_` so that indices
   // align.
   std::vector<media::AudioDeviceDescription> eligible_device_infos_;
+  raw_ptr<PrefService> prefs_;
   std::optional<MicViewController> mic_view_controller_;
   std::optional<AudioStreamCoordinator> audio_stream_coordinator_;
 };

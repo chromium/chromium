@@ -8,12 +8,16 @@
 #include <vector>
 
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/views/view.h"
 
 namespace {
+
+constexpr char kMutableCoordinatorId[] = "changeable";
 
 using EligibleDevices = MediaCoordinator::EligibleDevices;
 
@@ -54,6 +58,20 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
 
 ActiveDevicesMediaCoordinator::~ActiveDevicesMediaCoordinator() {
   MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
+}
+
+void ActiveDevicesMediaCoordinator::UpdateDevicePreferenceRanking() {
+  // A mutable coordinator will only be present in the case that there is a
+  // single coordinator, so return early if that isn't the case.
+  if (media_coordinators_.size() != 1) {
+    return;
+  }
+
+  if (auto mutable_coordinator =
+          media_coordinators_.find(kMutableCoordinatorId);
+      mutable_coordinator != media_coordinators_.end()) {
+    mutable_coordinator->second->UpdateDevicePreferenceRanking();
+  }
 }
 
 void ActiveDevicesMediaCoordinator::UpdateMediaCoordinatorList() {
@@ -99,12 +117,13 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
     eligible_devices.mics = active_device_id_vector;
   }
 
-  auto coordinator_key = active_device_id.value_or("changeable");
-  media_coordinators_.emplace(coordinator_key,
-                              std::make_unique<MediaCoordinator>(
-                                  view_type_, *container_,
-                                  /*index=*/std::nullopt,
-                                  /*is_subsection=*/true, eligible_devices));
+  auto coordinator_key = active_device_id.value_or(kMutableCoordinatorId);
+  auto* prefs = user_prefs::UserPrefs::Get(web_contents_->GetBrowserContext());
+  media_coordinators_.emplace(
+      coordinator_key, std::make_unique<MediaCoordinator>(
+                           view_type_, *container_,
+                           /*index=*/std::nullopt,
+                           /*is_subsection=*/true, eligible_devices, *prefs));
 }
 
 void ActiveDevicesMediaCoordinator::OnRequestUpdate(

@@ -12,6 +12,7 @@
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
+#include "components/prefs/pref_service.h"
 
 namespace views {
 class View;
@@ -39,10 +40,13 @@ class MediaCoordinator {
                    views::View& parent_view,
                    std::optional<size_t> index,
                    bool is_subsection,
-                   EligibleDevices eligible_devices);
+                   EligibleDevices eligible_devices,
+                   PrefService& prefs);
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
   ~MediaCoordinator();
+
+  void UpdateDevicePreferenceRanking();
 
  private:
   raw_ptr<views::View> media_view_ = nullptr;

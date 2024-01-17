@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/system/system_monitor.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -19,7 +20,8 @@ class CameraMediator : public base::SystemMonitor::DevicesChangedObserver {
   using DevicesChangedCallback = base::RepeatingCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos)>;
 
-  explicit CameraMediator(DevicesChangedCallback devices_changed_callback);
+  explicit CameraMediator(PrefService& prefs,
+                          DevicesChangedCallback devices_changed_callback);
   CameraMediator(const CameraMediator&) = delete;
   CameraMediator& operator=(const CameraMediator&) = delete;
   ~CameraMediator() override;
@@ -46,6 +48,7 @@ class CameraMediator : public base::SystemMonitor::DevicesChangedObserver {
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
 
+  raw_ptr<PrefService> prefs_;
   DevicesChangedCallback devices_changed_callback_;
 };
 

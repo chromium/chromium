@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
@@ -16,12 +17,15 @@
 
 MicCoordinator::MicCoordinator(views::View& parent_view,
                                bool needs_borders,
-                               const std::vector<std::string>& eligible_mic_ids)
+                               const std::vector<std::string>& eligible_mic_ids,
+                               PrefService& prefs)
     : mic_mediator_(
+          prefs,
           base::BindRepeating(&MicCoordinator::OnAudioSourceInfosReceived,
                               base::Unretained(this))),
       combobox_model_({}),
-      eligible_mic_ids_(eligible_mic_ids) {
+      eligible_mic_ids_(eligible_mic_ids),
+      prefs_(&prefs) {
   auto* mic_view = parent_view.AddChildView(std::make_unique<MediaView>());
   mic_view_tracker_.SetView(mic_view);
   // Safe to use base::Unretained() because `this` owns / outlives
@@ -98,6 +102,25 @@ void MicCoordinator::ConnectAudioStream(
                                                device_id,
                                                device_params->sample_rate());
   }
+}
+
+void MicCoordinator::UpdateDevicePreferenceRanking() {
+  if (active_device_id_.empty()) {
+    return;
+  }
+
+  auto active_device_iter =
+      std::find_if(eligible_device_infos_.begin(), eligible_device_infos_.end(),
+                   [&active_device_id = std::as_const(active_device_id_)](
+                       const media::AudioDeviceDescription info) {
+                     return info.unique_id == active_device_id;
+                   });
+  // The machinery that sets `active_device_id_` and `eligible_device_infos_`
+  // ensures that this condition is true.
+  CHECK(active_device_iter != eligible_device_infos_.end());
+
+  media_prefs::UpdateAudioDevicePreferenceRanking(*prefs_, active_device_iter,
+                                                  eligible_device_infos_);
 }
 
 void MicCoordinator::ResetViewController() {

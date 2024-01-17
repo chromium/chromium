@@ -25,6 +25,8 @@ class ActiveDevicesMediaCoordinator
       const ActiveDevicesMediaCoordinator&) = delete;
   ~ActiveDevicesMediaCoordinator() override;
 
+  void UpdateDevicePreferenceRanking();
+
  private:
   void UpdateMediaCoordinatorList();
 

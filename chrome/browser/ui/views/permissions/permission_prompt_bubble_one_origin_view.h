@@ -39,7 +39,11 @@ class PermissionPromptBubbleOneOriginView
       const PermissionPromptBubbleOneOriginView&) = delete;
   ~PermissionPromptBubbleOneOriginView() override;
 
+  // PermissionPromptBubbleBaseView:
+  void RunButtonCallback(int button_id) override;
+
  private:
+  // PermissionPromptBubbleBaseView:
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // Add a line for the |request| at |index| of the view.

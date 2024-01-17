@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_audio_service.h"
@@ -23,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
+using testing::ElementsAre;
 
 namespace {
 
@@ -61,7 +63,6 @@ class MicCoordinatorTest : public TestWithBrowserView {
         on_input_stream_id_future_.GetRepeatingCallback());
     fake_audio_service_.SetBindStreamFactoryCallback(
         on_bind_stream_factory_future_.GetRepeatingCallback());
-
     fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
         replied_with_device_descriptions_future_.GetCallback());
 
@@ -77,8 +78,8 @@ class MicCoordinatorTest : public TestWithBrowserView {
 
   void InitializeCoordinator(std::vector<std::string> eligible_mic_ids) {
     coordinator_.emplace(*parent_view_,
-                         /*needs_borders=*/true,
-                         /*eligible_mic_ids=*/eligible_mic_ids);
+                         /*needs_borders=*/true, eligible_mic_ids,
+                         *profile()->GetPrefs());
   }
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {
@@ -246,4 +247,38 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
             std::u16string{});
   EXPECT_EQ(GetComboboxModel().GetDropDownSecondaryTextAt(/*index=*/1),
             l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC));
+}
+
+TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {
+  VerifyEmptyCombobox();
+  const media::AudioDeviceDescription kDevice1{kDeviceName, kDeviceId,
+                                               kGroupId};
+  const media::AudioDeviceDescription kDevice2{kDeviceName2, kDeviceId2,
+                                               kGroupId2};
+
+  // Add first mic, and connect to it.
+  ASSERT_TRUE(AddFakeInputDevice(kDevice1));
+  ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
+  EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
+
+  // Add second mic and connection to the first is not affected.
+  ASSERT_TRUE(AddFakeInputDevice(kDevice2));
+  on_input_stream_id_future_.Clear();
+
+  //  Connect to the mic 2.
+  coordinator_->OnAudioSourceChanged(/*selected_index=*/1);
+  ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
+  EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId2);
+
+  // Preference ranking defaults to noop.
+  std::vector device_infos{kDevice1, kDevice2};
+  media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
+                                              device_infos);
+  EXPECT_THAT(device_infos, ElementsAre(kDevice1, kDevice2));
+
+  // Ranking is updated to make the currently selected device most preferred.
+  coordinator_->UpdateDevicePreferenceRanking();
+  media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
+                                              device_infos);
+  EXPECT_THAT(device_infos, ElementsAre(kDevice2, kDevice1));
 }

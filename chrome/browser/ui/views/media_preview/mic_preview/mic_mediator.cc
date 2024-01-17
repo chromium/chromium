@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "content/public/browser/audio_service.h"
 
-MicMediator::MicMediator(DevicesChangedCallback devices_changed_callback)
-    : devices_changed_callback_(std::move(devices_changed_callback)) {
+MicMediator::MicMediator(PrefService& prefs,
+                         DevicesChangedCallback devices_changed_callback)
+    : prefs_(&prefs),
+      devices_changed_callback_(std::move(devices_changed_callback)) {
   if (auto* monitor = base::SystemMonitor::Get(); monitor) {
     monitor->AddDevicesChangedObserver(this);
   }
@@ -41,7 +44,8 @@ void MicMediator::OnDevicesChanged(
 }
 
 void MicMediator::OnAudioSourceInfosReceived(
-    const std::vector<media::AudioDeviceDescription> device_infos) {
+    std::vector<media::AudioDeviceDescription> device_infos) {
+  media_prefs::PreferenceRankAudioDeviceInfos(*prefs_, device_infos);
   devices_changed_callback_.Run(device_infos);
 }
 

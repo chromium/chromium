@@ -25,7 +25,8 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
                                    views::View& parent_view,
                                    std::optional<size_t> index,
                                    bool is_subsection,
-                                   EligibleDevices eligible_devices) {
+                                   EligibleDevices eligible_devices,
+                                   PrefService& prefs) {
   media_view_ =
       parent_view.AddChildViewAt(std::make_unique<MediaView>(is_subsection),
                                  index.value_or(parent_view.children().size()));
@@ -45,12 +46,12 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
 
   if (view_type != ViewType::kMicOnly) {
     camera_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                                eligible_devices.cameras);
+                                eligible_devices.cameras, prefs);
   }
 
   if (view_type != ViewType::kCameraOnly) {
     mic_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                             eligible_devices.mics);
+                             eligible_devices.mics, prefs);
   }
 }
 
@@ -61,5 +62,14 @@ MediaCoordinator::~MediaCoordinator() {
   if (media_view_ && media_view_->parent()) {
     media_view_->parent()->RemoveChildViewT(
         std::exchange(media_view_, nullptr));
+  }
+}
+
+void MediaCoordinator::UpdateDevicePreferenceRanking() {
+  if (camera_coordinator_) {
+    camera_coordinator_->UpdateDevicePreferenceRanking();
+  }
+  if (mic_coordinator_) {
+    mic_coordinator_->UpdateDevicePreferenceRanking();
   }
 }

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/system/system_monitor.h"
+#include "components/prefs/pref_service.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
@@ -20,7 +21,8 @@ class MicMediator : public base::SystemMonitor::DevicesChangedObserver {
   using DevicesChangedCallback = base::RepeatingCallback<void(
       const std::vector<media::AudioDeviceDescription>& device_infos)>;
 
-  explicit MicMediator(DevicesChangedCallback devices_changed_callback);
+  explicit MicMediator(PrefService& prefs,
+                       DevicesChangedCallback devices_changed_callback);
   MicMediator(const MicMediator&) = delete;
   MicMediator& operator=(const MicMediator&) = delete;
   ~MicMediator() override;
@@ -45,6 +47,7 @@ class MicMediator : public base::SystemMonitor::DevicesChangedObserver {
 
   mojo::Remote<audio::mojom::SystemInfo> system_info_;
 
+  raw_ptr<PrefService> prefs_;
   DevicesChangedCallback devices_changed_callback_;
 };
 

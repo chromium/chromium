@@ -199,6 +199,19 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
 PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
     default;
 
+void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  auto button = GetPermissionDialogButton(button_id);
+  if (button == PermissionDialogButton::kAccept ||
+      button == PermissionDialogButton::kAcceptOnce) {
+    if (media_preview_coordinator_.has_value()) {
+      media_preview_coordinator_->UpdateDevicePreferenceRanking();
+    }
+  }
+#endif
+  PermissionPromptBubbleBaseView::RunButtonCallback(button_id);
+}
+
 void PermissionPromptBubbleOneOriginView::ChildPreferredSizeChanged(
     views::View* child) {
   if (GetBubbleFrameView()) {
@@ -262,6 +275,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
       /*is_subsection=*/false,
       MediaCoordinator::EligibleDevices{
           /*cameras=*/requested_video_capture_device_ids,
-          /*mics=*/requested_audio_capture_device_ids});
+          /*mics=*/requested_audio_capture_device_ids},
+      *browser_->profile()->GetPrefs());
 #endif
 }
