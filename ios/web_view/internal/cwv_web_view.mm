@@ -1085,6 +1085,11 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
       _webState &&
       _webState->GetWebViewProxy().allowsBackForwardNavigationGestures;
 
+  // CWVWebView does not support unrealized WebState, so ignore the
+  // over-realization check (this simply reset the recent realization
+  // counter, so do it each time a WebState is created).
+  web::IgnoreOverRealizationCheck();
+
   _webState = [_serializationHelper createWebStateWithCoder:coder];
   DCHECK(_webState);
 
