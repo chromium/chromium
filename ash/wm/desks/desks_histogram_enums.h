@@ -114,6 +114,9 @@ constexpr char kOverviewDeskBarRenameDeskHistogramName[] =
 constexpr char kOverviewDeskBarReorderDeskHistogramName[] =
     "Ash.Desks.Overview.BarAction.ReorderDesk";
 
+constexpr char kDeskSwitchScreenshotResultHistogramName[] =
+    "Ash.Desks.DesksSwitchScreenshotResult";
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_HISTOGRAM_ENUMS_H_

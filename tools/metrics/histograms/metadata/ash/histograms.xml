@@ -2321,6 +2321,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.DesksSwitchScreenshotResult" enum="BooleanSuccess"
+    expires_after="2025-01-11">
+  <owner>andp@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
+  <summary>
+    Emitted when a starting or ending screenshot succeeded or failed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.MoveWindowFromActiveDesk"
     enum="DesksMoveWindowFromActiveDeskSource" expires_after="2024-02-25">
   <owner>afakhry@chromium.org</owner>

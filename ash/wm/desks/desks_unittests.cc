@@ -11617,6 +11617,25 @@ TEST_P(DeskButtonTest, ContextMenuLongTap) {
   EXPECT_TRUE(GetPrimaryShelf()->GetShelfViewForTesting()->IsShowingMenu());
 }
 
+// Tests that metrics are being recorded when a desk animation screenshot is
+// taken.
+TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
+  NewDesk();
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDeskSwitchScreenshotResultHistogramName,
+                                    0);
+
+  // Switching desks should result in 2 successful screenshots: one for the
+  // starting desk and one for the ending desk.
+  DeskSwitchAnimationWaiter waiter;
+  SendAccelerator(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN);
+  waiter.Wait();
+  histogram_tester.ExpectTotalCount(kDeskSwitchScreenshotResultHistogramName,
+                                    2);
+  histogram_tester.ExpectBucketCount(kDeskSwitchScreenshotResultHistogramName,
+                                     true, 2);
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
