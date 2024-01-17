@@ -81,7 +81,7 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
 // TODO(crbug.com/1490372): Cleanup when launched.
 BASE_FEATURE(kAutofillContentEditables,
              "AutofillContentEditables",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
 // PHONE_HOME_WHOLE_NUMBER. With this feature, local heuristics do the same.
