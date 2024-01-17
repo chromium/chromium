@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 
@@ -152,6 +153,7 @@ void EditorPanelManager::LogEditorMode(
       delegate_->GetEditorOpportunityMode();
   EditorMetricsRecorder* logger = delegate_->GetMetricsRecorder();
   logger->SetMode(opportunity_mode);
+  logger->SetTone(EditorTone::kUnset);
   if (opportunity_mode == EditorOpportunityMode::kRewrite ||
       opportunity_mode == EditorOpportunityMode::kWrite) {
     logger->LogEditorState(EditorStates::kNativeUIShowOpportunity);

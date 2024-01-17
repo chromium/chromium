@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_METRICS_RECORDER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_METRICS_RECORDER_H_
 
+#include <optional>
+#include <string_view>
+
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 
@@ -15,6 +18,9 @@ class EditorMetricsRecorder {
   explicit EditorMetricsRecorder(EditorOpportunityMode mode);
 
   void SetMode(EditorOpportunityMode mode);
+  void SetTone(std::optional<std::string_view> preset_query_id,
+               std::optional<std::string_view> freeform_text);
+  void SetTone(EditorTone tone);
   void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
 
   void LogEditorState(EditorStates state);
@@ -23,6 +29,7 @@ class EditorMetricsRecorder {
 
  private:
   EditorOpportunityMode mode_;
+  EditorTone tone_ = EditorTone::kUnset;
 };
 
 }  // namespace ash::input_method

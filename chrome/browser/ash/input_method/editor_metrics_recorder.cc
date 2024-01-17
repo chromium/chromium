@@ -5,16 +5,77 @@
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 
 namespace ash::input_method {
+
+namespace {
+std::string GetToneStringFromEnum(EditorTone tone) {
+  switch (tone) {
+    case EditorTone::kRephrase:
+      return "Rephrase";
+    case EditorTone::kEmojify:
+      return "Emojify";
+    case EditorTone::kShorten:
+      return "Shorten";
+    case EditorTone::kElaborate:
+      return "Elaborate";
+    case EditorTone::kFormalize:
+      return "Formalize";
+    case EditorTone::kFreeformRewrite:
+      return "FreeformRewrite";
+    case EditorTone::kUnset:
+      return "Unset";
+    case EditorTone::kUnknown:
+      return "Unknown";
+  }
+}
+
+EditorTone GetEditorToneFromString(std::string_view tone) {
+  if (tone == "REPHRASE") {
+    return EditorTone::kRephrase;
+  }
+  if (tone == "EMOJIFY") {
+    return EditorTone::kEmojify;
+  }
+  if (tone == "SHORTEN") {
+    return EditorTone::kShorten;
+  }
+  if (tone == "ELABORATE") {
+    return EditorTone::kElaborate;
+  }
+  if (tone == "FORMALIZE") {
+    return EditorTone::kFormalize;
+  }
+  return EditorTone::kUnknown;
+}
+}  // namespace
 
 EditorMetricsRecorder::EditorMetricsRecorder(EditorOpportunityMode mode)
     : mode_(mode) {}
 
 void EditorMetricsRecorder::SetMode(EditorOpportunityMode mode) {
   mode_ = mode;
+}
+
+void EditorMetricsRecorder::SetTone(
+    std::optional<std::string_view> preset_query_id,
+    std::optional<std::string_view> freeform_text) {
+  if (freeform_text.has_value() && !freeform_text->empty()) {
+    tone_ = EditorTone::kFreeformRewrite;
+    return;
+  }
+  if (!preset_query_id.has_value()) {
+    return;
+  }
+
+  tone_ = GetEditorToneFromString(*preset_query_id);
+}
+
+void EditorMetricsRecorder::SetTone(EditorTone tone) {
+  tone_ = tone;
 }
 
 void EditorMetricsRecorder::LogEditorState(EditorStates state) {
@@ -31,6 +92,13 @@ void EditorMetricsRecorder::LogEditorState(EditorStates state) {
   }
 
   base::UmaHistogramEnumeration(histogram_name, state);
+  if (mode_ != EditorOpportunityMode::kRewrite) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(base::StrCat({"InputMethod.Manta.Orca.States.",
+                                              GetToneStringFromEnum(tone_)}),
+                                state);
 }
 
 void EditorMetricsRecorder::LogNumberOfCharactersInserted(
@@ -46,7 +114,15 @@ void EditorMetricsRecorder::LogNumberOfCharactersInserted(
     case EditorOpportunityMode::kNone:
       return;
   }
+
   base::UmaHistogramCounts100000(histogram_name, number_of_characters);
+  if (mode_ != EditorOpportunityMode::kRewrite) {
+    return;
+  }
+
+  base::UmaHistogramCounts100000("InputMethod.Manta.Orca.CharactersInserted." +
+                                     GetToneStringFromEnum(tone_),
+                                 number_of_characters);
 }
 
 void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
@@ -64,7 +140,16 @@ void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
     case EditorOpportunityMode::kNone:
       return;
   }
+
   base::UmaHistogramCounts100000(histogram_name, number_of_characters);
+  if (mode_ != EditorOpportunityMode::kRewrite) {
+    return;
+  }
+
+  base::UmaHistogramCounts100000(
+      "InputMethod.Manta.Orca.CharactersSelectedForInsert." +
+          GetToneStringFromEnum(tone_),
+      number_of_characters);
 }
 
 }  // namespace ash::input_method

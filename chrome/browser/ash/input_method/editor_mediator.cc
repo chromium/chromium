@@ -178,6 +178,7 @@ void EditorMediator::OnPromoCardDeclined() {
 void EditorMediator::HandleTrigger(
     std::optional<std::string_view> preset_query_id,
     std::optional<std::string_view> freeform_text) {
+  metrics_recorder_->SetTone(preset_query_id, freeform_text);
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
