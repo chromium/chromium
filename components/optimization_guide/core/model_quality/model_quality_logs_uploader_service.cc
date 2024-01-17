@@ -37,7 +37,7 @@ void RecordUploadStatusHistogram(proto::ModelExecutionFeature feature,
                                  ModelQualityLogsUploadStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
-          {"OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.",
+          {"OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.",
            GetStringNameForModelExecutionFeature(feature)}),
       status);
 }
