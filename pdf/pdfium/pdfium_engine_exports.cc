@@ -228,14 +228,12 @@ PDFiumEngineExports::PDFiumEngineExports() = default;
 PDFiumEngineExports::~PDFiumEngineExports() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
-std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
+std::optional<FlattenPdfResult> PDFiumEngineExports::CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(input_buffer);
-  if (!doc)
-    return std::vector<uint8_t>();
-  return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
+  return doc ? PDFiumPrint::CreateFlattenedPdf(std::move(doc)) : std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

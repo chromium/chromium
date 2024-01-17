@@ -257,8 +257,8 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
 void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
     std::unique_ptr<PrintSettings> settings,
     PrintCallback callback,
-    std::unique_ptr<MetafileSkia> flattened_pdf) {
-  if (!flattened_pdf) {
+    std::unique_ptr<FlattenPdfResult> flatten_pdf_result) {
+  if (!flatten_pdf_result) {
     std::move(callback).Run(blink::mojom::WebPrintResult::NewError(
         blink::mojom::WebPrintError::kDocumentMalformed));
     return;
@@ -271,7 +271,8 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
 
   // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
   print_job_controller_->CreatePrintJob(
-      std::move(flattened_pdf), std::move(settings),
+      std::move(flatten_pdf_result->flattened_pdf), std::move(settings),
+      flatten_pdf_result->page_count,
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
       /*source_id=*/"",
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintJobCreated,

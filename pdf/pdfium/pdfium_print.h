@@ -5,6 +5,7 @@
 #ifndef PDF_PDFIUM_PDFIUM_PRINT_H_
 #define PDF_PDFIUM_PDFIUM_PRINT_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -24,6 +25,7 @@ class Size;
 namespace chrome_pdf {
 
 class PDFiumEngine;
+struct FlattenPdfResult;
 
 class PDFiumPrint {
  public:
@@ -34,9 +36,11 @@ class PDFiumPrint {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Flattens the `doc`.
-  // On success, returns the flattened version of `doc` as a vector.
-  // On failure, returns an empty vector.
-  static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
+  // On success, returns the flattened version of `doc` as a vector and the
+  // number of pages inside FlattenPdfResult.
+  // On failure, returns std::nullopt.
+  static std::optional<FlattenPdfResult> CreateFlattenedPdf(
+      ScopedFPDFDocument doc);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Performs N-up PDF generation for `doc` based on `pages_per_sheet`,

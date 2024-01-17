@@ -5,11 +5,16 @@
 #ifndef PDF_PDF_H_
 #define PDF_PDF_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "pdf/flatten_pdf_result.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -29,7 +34,8 @@ void SetUseSkiaRendererPolicy(bool use_skia);
 // Create a flattened PDF document from an existing PDF document.
 // `input_buffer` is the buffer that contains the entire PDF document to be
 // flattened.
-std::vector<uint8_t> CreateFlattenedPdf(base::span<const uint8_t> input_buffer);
+std::optional<FlattenPdfResult> CreateFlattenedPdf(
+    base::span<const uint8_t> input_buffer);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

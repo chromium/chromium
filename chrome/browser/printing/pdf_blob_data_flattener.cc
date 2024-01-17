@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
@@ -25,6 +26,16 @@ namespace printing {
 namespace {
 bool g_disable_pdf_flattening_for_testing = false;
 }  // namespace
+
+FlattenPdfResult::FlattenPdfResult(
+    std::unique_ptr<MetafileSkia> flattened_pdf_in,
+    uint32_t page_count)
+    : flattened_pdf(std::move(flattened_pdf_in)), page_count(page_count) {
+  CHECK_GT(page_count, 0U);
+  CHECK(flattened_pdf);
+}
+
+FlattenPdfResult::~FlattenPdfResult() = default;
 
 PdfBlobDataFlattener::PdfBlobDataFlattener(Profile* profile)
     : profile_(*profile) {}
@@ -49,21 +60,23 @@ void PdfBlobDataFlattener::OnPdfRead(ReadAndFlattenPdfCallback callback,
                                      std::unique_ptr<std::string> data,
                                      int64_t /*blob_total_size*/) {
   if (!data || !LooksLikePdf(*data)) {
-    std::move(callback).Run(/*flattened_pdf=*/nullptr);
+    std::move(callback).Run(/*result=*/nullptr);
     return;
   }
 
   base::MappedReadOnlyRegion memory =
       base::ReadOnlySharedMemoryRegion::Create(data->size());
   if (!memory.IsValid()) {
-    std::move(callback).Run(/*flattened_pdf=*/nullptr);
+    std::move(callback).Run(/*result=*/nullptr);
     return;
   }
   memcpy(memory.mapping.memory(), data->data(), data->size());
 
   if (g_disable_pdf_flattening_for_testing) {
     CHECK_IS_TEST();
-    OnPdfFlattened(std::move(callback), std::move(memory.region));
+    OnPdfFlattened(std::move(callback),
+                   mojom::FlattenPdfResult::New(std::move(memory.region),
+                                                /*page_count=*/1));
     return;
   }
 
@@ -81,23 +94,26 @@ void PdfBlobDataFlattener::OnPdfRead(ReadAndFlattenPdfCallback callback,
   auto flatten_callback =
       base::BindOnce(&PdfBlobDataFlattener::OnPdfFlattened,
                      weak_factory_.GetWeakPtr(), std::move(callback));
-  flattener_->FlattenPdf(
-      std::move(memory.region),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(flatten_callback), base::ReadOnlySharedMemoryRegion()));
+  flattener_->FlattenPdf(std::move(memory.region),
+                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                             std::move(flatten_callback), nullptr));
 }
 
-void PdfBlobDataFlattener::OnPdfFlattened(
-    ReadAndFlattenPdfCallback callback,
-    base::ReadOnlySharedMemoryRegion flattened_pdf) {
-  auto mapping = flattened_pdf.Map();
+void PdfBlobDataFlattener::OnPdfFlattened(ReadAndFlattenPdfCallback callback,
+                                          mojom::FlattenPdfResultPtr result) {
+  if (!result) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  auto mapping = result->flattened_pdf_region.Map();
   if (!mapping.IsValid()) {
-    std::move(callback).Run(/*flattened_pdf=*/nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
   auto metafile = std::make_unique<MetafileSkia>();
   CHECK(metafile->InitFromData(mapping.GetMemoryAsSpan<const uint8_t>()));
-  std::move(callback).Run(std::move(metafile));
+  std::move(callback).Run(std::make_unique<FlattenPdfResult>(
+      std::move(metafile), result->page_count));
 }
 
 }  // namespace printing

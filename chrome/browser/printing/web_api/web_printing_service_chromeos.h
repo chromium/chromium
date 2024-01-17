@@ -29,10 +29,10 @@ class RenderFrameHost;
 
 namespace printing {
 
-class MetafileSkia;
 class PdfBlobDataFlattener;
 class PrintJobController;
 class PrintSettings;
+struct FlattenPdfResult;
 struct PrinterSemanticCapsAndDefaults;
 struct PrintJobCreatedInfo;
 
@@ -77,9 +77,10 @@ class WebPrintingServiceChromeOS
       const std::string& printer_id,
       std::optional<PrinterSemanticCapsAndDefaults> printer_attributes);
 
-  void OnPdfReadAndFlattened(std::unique_ptr<PrintSettings> settings,
-                             PrintCallback callback,
-                             std::unique_ptr<MetafileSkia> flattened_pdf);
+  void OnPdfReadAndFlattened(
+      std::unique_ptr<PrintSettings> settings,
+      PrintCallback callback,
+      std::unique_ptr<FlattenPdfResult> flatten_pdf_result);
 
   void OnPrintJobCreated(
       mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,

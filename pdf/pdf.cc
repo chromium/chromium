@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "pdf/pdf_engine.h"
@@ -51,7 +51,7 @@ void SetUseSkiaRendererPolicy(bool use_skia) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-std::vector<uint8_t> CreateFlattenedPdf(
+std::optional<FlattenPdfResult> CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);
   return PDFEngineExports::Get()->CreateFlattenedPdf(input_buffer);

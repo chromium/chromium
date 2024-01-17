@@ -81,9 +81,8 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
       CreatePreviewDocumentCallback callback,
       base::ReadOnlySharedMemoryRegion preview_document_region);
 
-  void OnPdfFlattened(
-      int request_id,
-      base::ReadOnlySharedMemoryRegion flattened_document_region);
+  void OnPdfFlattened(int request_id,
+                      printing::mojom::FlattenPdfResultPtr result);
 
   void OnPdfFlattenerDisconnected();
 

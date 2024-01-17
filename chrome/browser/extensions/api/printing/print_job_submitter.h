@@ -33,11 +33,11 @@ class NativeWindowTracker;
 }  // namespace views
 
 namespace printing {
-class MetafileSkia;
 class PdfBlobDataFlattener;
 class PrintedDocument;
 class PrintJobController;
 class PrintSettings;
+struct FlattenPdfResult;
 struct PrintJobCreatedInfo;
 }  // namespace printing
 
@@ -94,7 +94,7 @@ class PrintJobSubmitter {
                           int64_t total_blob_length);
 
   void OnPdfReadAndFlattened(
-      std::unique_ptr<printing::MetafileSkia> flattened_pdf);
+      std::unique_ptr<printing::FlattenPdfResult> result);
 
   void ShowPrintJobConfirmationDialog(const gfx::Image& extension_icon);
 
@@ -124,7 +124,7 @@ class PrintJobSubmitter {
   std::unique_ptr<printing::PrintSettings> settings_;
   std::u16string printer_name_;
 
-  std::unique_ptr<printing::MetafileSkia> flattened_pdf_;
+  std::unique_ptr<printing::FlattenPdfResult> flatten_pdf_result_;
 
   const raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
   SubmitJobCallback callback_;

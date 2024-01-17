@@ -22,6 +22,18 @@ namespace printing {
 
 class MetafileSkia;
 
+struct FlattenPdfResult {
+  FlattenPdfResult(std::unique_ptr<MetafileSkia> flattened_pdf_in,
+                   uint32_t page_count);
+  ~FlattenPdfResult();
+
+  // `flattened_pdf` is never null.
+  std::unique_ptr<MetafileSkia> flattened_pdf;
+
+  // `page_count` is always strictly greater than zero.
+  uint32_t page_count;
+};
+
 // PdfBlobDataFlattener is responsible for reading and flattening PDF files from
 // Blob objects into instances of MetafileSkia. This class is only built on
 // ChromeOS; however, there are no technical limitations in expanding it to
@@ -29,7 +41,7 @@ class MetafileSkia;
 class PdfBlobDataFlattener {
  public:
   using ReadAndFlattenPdfCallback =
-      base::OnceCallback<void(std::unique_ptr<MetafileSkia> flattened_pdf)>;
+      base::OnceCallback<void(std::unique_ptr<FlattenPdfResult> result)>;
 
   explicit PdfBlobDataFlattener(Profile* profile);
   ~PdfBlobDataFlattener();
@@ -50,7 +62,7 @@ class PdfBlobDataFlattener {
                  std::unique_ptr<std::string> data,
                  int64_t blob_total_size);
   void OnPdfFlattened(ReadAndFlattenPdfCallback callback,
-                      base::ReadOnlySharedMemoryRegion flattened_pdf);
+                      mojom::FlattenPdfResultPtr result);
 
   const raw_ref<Profile> profile_;
   mojo::Remote<mojom::PdfFlattener> flattener_;

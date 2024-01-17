@@ -42,14 +42,18 @@ class PrintJobController {
   PrintJobController& operator=(const PrintJobController&) = delete;
   virtual ~PrintJobController();
 
-  // Creates a print job for the given `pdf` file with provided `settings`.
-  // Invokes `callback` with job info once the job is acknowledged by the
-  // printing system. If the job fails to start for some reason, invokes
-  // `callback` with std::nullopt.
+  // Creates a print job for the given `pdf` file with provided `settings` and
+  // `page_count`; `page_count` should be equal to the number of pages in the
+  // `pdf`.
+  // Invokes `callback` with job info once the job is acknowledged
+  // by the printing system.
+  // If the job fails to start for some reason, invokes `callback` with
+  // std::nullopt.
   // `this` indirectly owns `callback`.
   // Virtual for testing.
   virtual void CreatePrintJob(std::unique_ptr<MetafileSkia> pdf,
                               std::unique_ptr<PrintSettings> settings,
+                              uint32_t page_count,
                               crosapi::mojom::PrintJob::Source source,
                               const std::string& source_id,
                               PrintJobCreatedCallback callback);

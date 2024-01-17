@@ -31,6 +31,10 @@
 #include <windows.h>
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "pdf/flatten_pdf_result.h"
+#endif
+
 class SkBitmap;
 
 namespace blink {
@@ -514,7 +518,7 @@ class PDFEngineExports {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // See the definition of CreateFlattenedPdf in pdf.cc for details.
-  virtual std::vector<uint8_t> CreateFlattenedPdf(
+  virtual std::optional<FlattenPdfResult> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
