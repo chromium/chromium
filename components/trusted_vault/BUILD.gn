@@ -24,6 +24,8 @@ static_library("trusted_vault") {
       "download_keys_response_handler.h",
       "features.cc",
       "features.h",
+      "frontend_trusted_vault_connection.cc",
+      "frontend_trusted_vault_connection.h",
       "proto_string_bytes_conversion.cc",
       "proto_string_bytes_conversion.h",
       "proto_time_conversion.cc",
