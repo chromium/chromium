@@ -325,7 +325,7 @@ void IosModuleRanker::ExecuteModelWithInput(
                              safety_check_weights[2] * safety_check_freshness;
 
   // Tab Resumption score calculation.
-  float tab_resumption_weights[3] = {1.5, -0.5, 0.0};
+  float tab_resumption_weights[3] = {1.5, -0.5, 1.0};
   float tab_resumption_engagement = inputs[24];
   float tab_resumption_impression = inputs[25];
   float tab_resumption_freshness = TransformFreshness(inputs[33], 1.0);
