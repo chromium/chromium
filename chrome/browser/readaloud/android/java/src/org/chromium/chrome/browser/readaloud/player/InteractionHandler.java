@@ -65,6 +65,9 @@ public interface InteractionHandler {
     /** Called when the user taps somewhere on the mini player to expand it. */
     void onMiniPlayerExpandClick();
 
-    /** Called when the expanded player closes. */
-    void onExpandedPlayerClose();
+    /** Called when the mini player should be hidden, for example when a bottom sheet opens. */
+    void onShouldHideMiniPlayer();
+
+    /** Called when the mini player should be restored. */
+    void onShouldRestoreMiniPlayer();
 }

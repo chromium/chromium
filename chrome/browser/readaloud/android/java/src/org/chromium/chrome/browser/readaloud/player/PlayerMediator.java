@@ -278,7 +278,12 @@ class PlayerMediator implements InteractionHandler {
     }
 
     @Override
-    public void onExpandedPlayerClose() {
+    public void onShouldHideMiniPlayer() {
+        mCoordinator.hideMiniPlayer();
+    }
+
+    @Override
+    public void onShouldRestoreMiniPlayer() {
         mCoordinator.restoreMiniPlayer();
     }
 

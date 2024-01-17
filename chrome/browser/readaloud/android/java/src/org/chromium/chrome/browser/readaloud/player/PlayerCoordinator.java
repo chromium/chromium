@@ -103,8 +103,7 @@ public class PlayerCoordinator implements Player {
     public void playTabRequested() {
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
-        if (mExpandedPlayer.getVisibility() != VisibilityState.SHOWING
-                && mExpandedPlayer.getVisibility() != VisibilityState.VISIBLE) {
+        if (!mExpandedPlayer.anySheetShowing()) {
             mMiniPlayer.show(true);
         }
     }
@@ -151,10 +150,13 @@ public class PlayerCoordinator implements Player {
     }
 
     @Override
-    public void hidePlayers() {
+    public void hideMiniPlayer() {
+        int miniPlayerVisibility = mMiniPlayer.getVisibility();
+        if (miniPlayerVisibility == VisibilityState.SHOWING
+                || miniPlayerVisibility == VisibilityState.VISIBLE) {
         mMiniPlayer.dismiss(true);
-        mExpandedPlayer.dismiss();
         mMediator.setHiddenAndPlaying(true);
+        }
     }
 
     /** To be called when the close button is clicked. */

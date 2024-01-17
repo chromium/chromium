@@ -134,7 +134,7 @@ public class PlayerCoordinatorUnitTest {
 
     @Test
     public void testPlayTabRequested_withExpandedPlayerVisible() {
-        doReturn(VisibilityState.VISIBLE).when(mExpandedPlayer).getVisibility();
+        doReturn(true).when(mExpandedPlayer).anySheetShowing();
         mPlayerCoordinator.playTabRequested();
 
         // Mini player is not shown.
@@ -202,17 +202,35 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testHidePlayers() {
+    public void testHideMiniPlayer_visible() {
+        doReturn(VisibilityState.VISIBLE).when(mMiniPlayer).getVisibility();
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
 
         verify(mMediator).setPlayback(eq(mPlayback));
         verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
 
-        mPlayerCoordinator.hidePlayers();
+        mPlayerCoordinator.hideMiniPlayer();
+        verify(mMiniPlayer).getVisibility();
         verify(mMediator).setPlayback(eq(mPlayback));
         verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
         verify(mMiniPlayer).dismiss(eq(true));
         verify(mMediator).setHiddenAndPlaying(eq(true));
+    }
+
+    @Test
+    public void testHideMiniPlayer_noopWhenHidden() {
+        doReturn(VisibilityState.HIDING).when(mMiniPlayer).getVisibility();
+        mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
+
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+        reset(mMediator);
+        mPlayerCoordinator.hideMiniPlayer();
+        verify(mMiniPlayer).getVisibility();
+        verify(mMediator, never()).setPlayback(eq(mPlayback));
+        verify(mMediator, never()).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+        verify(mMiniPlayer, never()).dismiss(eq(true));
+        verify(mMediator, never()).setHiddenAndPlaying(eq(true));
     }
 
     @Test

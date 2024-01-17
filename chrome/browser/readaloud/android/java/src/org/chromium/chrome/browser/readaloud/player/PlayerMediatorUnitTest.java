@@ -542,7 +542,7 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testCloseExpandedPlayer() {
-        mMediator.onExpandedPlayerClose();
+        mMediator.onShouldRestoreMiniPlayer();
         verify(mPlayerCoordinator).restoreMiniPlayer();
     }
 

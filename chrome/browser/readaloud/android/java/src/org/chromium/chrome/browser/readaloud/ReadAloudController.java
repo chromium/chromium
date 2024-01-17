@@ -834,7 +834,7 @@ public class ReadAloudController
      */
     public void maybeHidePlayer() {
         if (mPlayback != null) {
-            mPlayerCoordinator.hidePlayers();
+            mPlayerCoordinator.hideMiniPlayer();
         }
     }
 

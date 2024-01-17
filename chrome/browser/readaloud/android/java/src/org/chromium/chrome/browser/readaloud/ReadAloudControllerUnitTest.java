@@ -1415,16 +1415,16 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testMaybeHidePlayer() {
+    public void testMaybeHideMiniPlayer() {
         // no playback, request is a no op
         mController.maybeHidePlayer();
 
-        verify(mPlayerCoordinator, never()).hidePlayers();
+        verify(mPlayerCoordinator, never()).hideMiniPlayer();
 
         requestAndStartPlayback();
         mController.maybeHidePlayer();
 
-        verify(mPlayerCoordinator).hidePlayers();
+        verify(mPlayerCoordinator).hideMiniPlayer();
     }
 
     private void requestAndStartPlayback() {
