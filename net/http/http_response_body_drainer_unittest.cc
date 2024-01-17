@@ -55,7 +55,7 @@ class CloseResultWaiter {
     CHECK(!waiting_for_result_);
     while (!have_result_) {
       waiting_for_result_ = true;
-      base::RunLoop().Run();
+      loop_.Run();
       waiting_for_result_ = false;
     }
     return result_;
@@ -64,14 +64,16 @@ class CloseResultWaiter {
   void set_result(bool result) {
     result_ = result;
     have_result_ = true;
-    if (waiting_for_result_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (waiting_for_result_) {
+      loop_.Quit();
+    }
   }
 
  private:
   int result_ = false;
   bool have_result_ = false;
   bool waiting_for_result_ = false;
+  base::RunLoop loop_;
 };
 
 class MockHttpStream : public HttpStream {

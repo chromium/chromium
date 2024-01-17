@@ -179,8 +179,7 @@ class TestTransactionConsumer {
   std::string content_;
   scoped_refptr<IOBuffer> read_buf_;
   int error_ = OK;
-
-  static int quit_counter_;
+  base::OnceClosure quit_closure_;
 };
 
 //-----------------------------------------------------------------------------
