@@ -2437,13 +2437,17 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("searchNoResultsHelp", help_text);
 }
 
-void AddSearchStrings(content::WebUIDataSource* html_source) {
+void AddSearchStrings(content::WebUIDataSource* html_source
+#if BUILDFLAG(IS_CHROMEOS)
+                      ,
+                      bool for_primary_profile
+#endif  // BUILDFLAG(IS_CHROMEOS)
+) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"searchEnginesManage", IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES},
       {"searchEnginesManageSiteSearch",
        IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH},
       {"searchPageTitle", IDS_SETTINGS_SEARCH},
-      {"searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION},
       {"searchExplanationLearnMoreA11yLabel",
        IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL},
       {"searchEngineChoiceEntryPointSubtitle",
@@ -2457,6 +2461,19 @@ void AddSearchStrings(content::WebUIDataSource* html_source) {
       {"searchEnginesCancelButton", IDS_CANCEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (for_primary_profile) {
+    html_source->AddLocalizedString(
+        "searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION_PRIMARY_PROFILE);
+  } else {
+    html_source->AddLocalizedString("searchExplanation",
+                                    IDS_SETTINGS_SEARCH_EXPLANATION);
+  }
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  html_source->AddLocalizedString("searchExplanation",
+                                  IDS_SETTINGS_SEARCH_EXPLANATION);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
@@ -3690,7 +3707,16 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddResetStrings(html_source, profile);
   AddSearchEnginesStrings(html_source);
   AddSearchInSettingsStrings(html_source);
+#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool for_primary_profile = profile->IsMainProfile();
+#else   // !BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool for_primary_profile = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  AddSearchStrings(html_source, for_primary_profile);
+#else   // !BUILDFLAG(IS_CHROMEOS)
   AddSearchStrings(html_source);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   AddSiteSettingsStrings(html_source, profile);
   AddSiteDataPageStrings(html_source, profile);
   AddStorageAccessStrings(html_source);
