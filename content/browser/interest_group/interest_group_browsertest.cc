@@ -711,8 +711,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_ = &embedded_https_test_server();
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&HandleWellKnownRequest));
@@ -1737,7 +1736,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   }
 
  protected:
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  raw_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AllowlistedOriginContentBrowserClient>
       content_browser_client_;
