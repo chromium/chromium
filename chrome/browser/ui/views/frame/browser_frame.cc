@@ -395,6 +395,11 @@ void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
     return;
   }
 
+  // Don't show a menu if a tab drag is active. https://crbug.com/1517709
+  if (tab_drag_kind_ != TabDragKind::kNone) {
+    return;
+  }
+
   // Only show context menu if point is in unobscured parts of browser, i.e.
   // if NonClientHitTest returns :
   // - HTCAPTION: in title bar or unobscured part of tabstrip
