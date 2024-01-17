@@ -151,17 +151,19 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
                        InvalidCookieStatusClosesBubble) {
   ShowBubble();
-  view_controller()->OnStatusChanged(CookieControlsStatus::kDisabled,
-                                     CookieControlsEnforcement::kNoEnforcement,
-                                     CookieBlocking3pcdStatus::kNotIn3pcd,
-                                     base::Time());
+  view_controller()->OnStatusChanged(
+      CookieControlsStatus::kDisabled,
+      /*controls_visible=*/false,
+      /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
   WaitForBubbleClose();
 
   ShowBubble();
-  view_controller()->OnStatusChanged(CookieControlsStatus::kUninitialized,
-                                     CookieControlsEnforcement::kNoEnforcement,
-                                     CookieBlocking3pcdStatus::kNotIn3pcd,
-                                     base::Time());
+  view_controller()->OnStatusChanged(
+      CookieControlsStatus::kUninitialized,
+      /*controls_visible=*/false,
+      /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
   WaitForBubbleClose();
 }
 

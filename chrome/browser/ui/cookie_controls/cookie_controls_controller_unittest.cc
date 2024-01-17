@@ -49,6 +49,8 @@ class MockCookieControlsObserver
   MOCK_METHOD(void,
               OnStatusChanged,
               (CookieControlsStatus,
+               /*controls_visible*/ bool,
+               /*protections_on*/ bool,
                CookieControlsEnforcement,
                CookieBlocking3pcdStatus,
                base::Time));
@@ -253,6 +255,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -285,6 +288,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
@@ -307,6 +311,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 1));
@@ -338,6 +343,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(2, 1));
@@ -356,6 +362,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -368,6 +375,7 @@ TEST_P(CookieControlsUserBypassTest, NewTabPage) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabled,
+                      /*controls_visible=*/false, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -382,6 +390,7 @@ TEST_P(CookieControlsUserBypassTest, PreferenceDisabled) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -394,6 +403,7 @@ TEST_P(CookieControlsUserBypassTest, PreferenceDisabled) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabled,
+                      /*controls_visible=*/false, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -412,6 +422,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -424,6 +435,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -435,6 +447,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
   // Disable cookie blocking for example.com.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -455,6 +468,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -466,6 +480,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   // Disabling cookie blocking for example.com should update the ui.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -479,6 +494,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -491,6 +507,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -503,6 +520,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -517,6 +535,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -549,6 +568,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
   EXPECT_CALL(
       incognito_mock_,
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(incognito_mock_, OnSitesCountChanged(0, 0));
@@ -563,6 +583,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
   // through regular mode.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -571,6 +592,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
   EXPECT_CALL(
       incognito_mock_,
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(incognito_mock_, OnSitesCountChanged(0, 0));
@@ -583,17 +605,19 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
 
   // This should be enforced regardless of the default cookie setting in the
   // default profile.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(CookieControlsStatus::kDisabled,
-                              CookieControlsEnforcement::kNoEnforcement,
-                              CookieBlocking3pcdStatus::kNotIn3pcd,
-                              // Although there is an allow exception with an
-                              // expiration, because the default allow never
-                              // expires, zero_expiration is correct.
-                              zero_expiration()));
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           CookieControlsStatus::kDisabled,
+                           /*controls_visible=*/false, /*protections_on=*/false,
+                           CookieControlsEnforcement::kNoEnforcement,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           // Although there is an allow exception with an
+                           // expiration, because the default allow never
+                           // expires, zero_expiration is correct.
+                           zero_expiration()));
   EXPECT_CALL(
       incognito_mock_,
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   profile()->GetPrefs()->SetInteger(
@@ -615,6 +639,7 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -627,6 +652,7 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -644,6 +670,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -718,6 +745,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -764,6 +792,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
@@ -791,6 +820,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -838,6 +868,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
@@ -876,6 +907,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -908,6 +940,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -960,6 +993,7 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -982,6 +1016,7 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   // Enabling third-party cookies records metrics.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
@@ -1011,6 +1046,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1024,6 +1060,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1044,6 +1081,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1058,6 +1096,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1078,6 +1117,7 @@ TEST_P(CookieControlsUserBypassTest,
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1092,6 +1132,7 @@ TEST_P(CookieControlsUserBypassTest,
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1111,6 +1152,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1125,6 +1167,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
@@ -1233,6 +1276,7 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 1));
@@ -1244,6 +1288,7 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   // Enable third-party cookies.
   EXPECT_CALL(*mock(), OnStatusChanged(
                            CookieControlsStatus::kDisabledForSite,
+                           /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 1));
@@ -1272,6 +1317,7 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 1));
@@ -1291,6 +1337,7 @@ TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 1));
@@ -1311,6 +1358,7 @@ TEST_P(CookieControlsUserBypassTest, MediumConfidenceStatefulBounce) {
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsStatus::kEnabled,
+                      /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));

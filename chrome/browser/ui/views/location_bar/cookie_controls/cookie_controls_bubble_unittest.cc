@@ -195,8 +195,9 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
     auto expiration = days_to_expiration
                           ? base::Time::Now() + base::Days(days_to_expiration)
                           : base::Time();
-    view_controller()->OnStatusChanged(status_, enforcement_, blocking_status_,
-                                       expiration);
+    view_controller()->OnStatusChanged(status_, controls_visible_,
+                                       protections_on_, enforcement_,
+                                       blocking_status_, expiration);
   }
 
  protected:
@@ -216,6 +217,8 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
   std::unique_ptr<MockCookieControlsBubbleView> mock_bubble_view_;
   std::unique_ptr<views::View> empty_reloading_view_;
   std::unique_ptr<CookieControlsBubbleViewController> view_controller_;
+  bool controls_visible_ = true;
+  bool protections_on_ = true;
   CookieControlsStatus status_ = CookieControlsStatus::kEnabled;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;

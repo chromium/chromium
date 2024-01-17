@@ -1578,7 +1578,9 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
   }
 
   page_info()->OnStatusChanged(
-      CookieControlsStatus::kEnabled, CookieControlsEnforcement::kNoEnforcement,
+      CookieControlsStatus::kEnabled,
+      /*controls_visible=*/true, /*protections_on=*/true,
+      CookieControlsEnforcement::kNoEnforcement,
       CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
@@ -1601,10 +1603,11 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
     EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
   }
 
-  page_info()->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
-                               CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
-                               base::Time());
+  page_info()->OnStatusChanged(
+      CookieControlsStatus::kDisabledForSite,
+      /*controls_visible=*/true, /*protections_on=*/false,
+      CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/true);

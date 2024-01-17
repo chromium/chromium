@@ -152,6 +152,7 @@ TEST_P(CookieControlsIconViewUnitTest, DefaultNotVisible) {
 
 TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -173,6 +174,7 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   // Medium confidence to avoid triggering "Site not working"
@@ -193,6 +195,7 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
 TEST_P(CookieControlsIconViewUnitTest,
        LowConfidenceDoesNotRetriggerA11yReadOut) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -225,6 +228,7 @@ TEST_P(CookieControlsIconViewUnitTest,
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -245,6 +249,7 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
 
 TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -270,6 +275,7 @@ TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
 
 TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
+                         /*controls_visible=*/false, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -291,6 +297,7 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
+                         /*controls_visible=*/false, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -311,6 +318,7 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
 
 TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
+                         /*controls_visible=*/false, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -333,6 +341,7 @@ TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
 
 TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -352,6 +361,7 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
 
 TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
@@ -371,6 +381,7 @@ TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
 
 TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                         /*controls_visible=*/true, /*protections_on=*/true,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
                          GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(

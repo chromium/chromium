@@ -23,7 +23,14 @@ class CookieControlsObserver : public base::CheckedObserver {
   virtual void OnStatusChanged(
       // 3PC blocking status: whether 3PC allowed by default, blocked by default
       // or allowed for the site only.
+      // TODO(b/317975095): Remove usage of `status`.
       CookieControlsStatus status,
+      // Whether Tracking Protection controls should be shown.
+      bool controls_visible,
+      // Whether protections (3PC blocking, and ACT features) are on for the
+      // current site. NOTE: for the 3PC toggle this is true when the toggle is
+      // off/3PC are blocked.
+      bool protections_on,
       // Represents if cookie settings are enforced (ex. by policy).
       CookieControlsEnforcement enforcement,
       // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
