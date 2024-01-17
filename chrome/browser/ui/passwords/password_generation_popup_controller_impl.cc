@@ -252,6 +252,12 @@ void PasswordGenerationPopupControllerImpl::SelectElement(
     return;
   }
 
+  if (element == PasswordGenerationPopupElement::kNone) {
+    driver_->ClearPreviewedForm();
+  } else {
+    driver_->PreviewGenerationSuggestion(current_generated_password_);
+  }
+
   selected_element_ = element;
   view_->PasswordSelectionUpdated();
   view_->EditPasswordSelectionUpdated();
@@ -397,15 +403,10 @@ void PasswordGenerationPopupControllerImpl::ViewDestroyed() {
 
 void PasswordGenerationPopupControllerImpl::SelectionCleared() {
   SelectElement(PasswordGenerationPopupElement::kNone);
-  driver_->ClearPreviewedForm();
 }
 
 void PasswordGenerationPopupControllerImpl::SetSelected() {
-  if (!IsSelectable()) {
-    return;
-  }
   SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
-  driver_->PreviewGenerationSuggestion(current_generated_password_);
 }
 
 void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
@@ -417,11 +418,6 @@ void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
 void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
   SelectElement(hovered ? PasswordGenerationPopupElement::kEditPassword
                         : PasswordGenerationPopupElement::kNone);
-  if (hovered) {
-    driver_->PreviewGenerationSuggestion(current_generated_password_);
-  } else {
-    driver_->ClearPreviewedForm();
-  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
