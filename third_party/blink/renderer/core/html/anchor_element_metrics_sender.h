@@ -114,10 +114,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   static constexpr auto kUpdateMetricsTimeGap = base::Milliseconds(200);
 
  private:
-  // Returns true if `document` should have an associated
-  // AnchorElementMetricsSender.
-  static bool HasAnchorElementMetricsSender(Document& document);
-
   // Associates |metrics_host_| with the IPC interface if not already, so it can
   // be used to send messages. Returns true if associated, false otherwise.
   bool AssociateInterface();

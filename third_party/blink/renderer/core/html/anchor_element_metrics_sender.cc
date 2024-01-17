@@ -32,7 +32,19 @@
 
 namespace blink {
 namespace {
-static float INTERSECTION_RATIO_THRESHOLD = 0.5f;
+constexpr float kIntersectionRatioThreshold = 0.5f;
+
+// Returns true if `document` should have an associated
+// AnchorElementMetricsSender.
+bool ShouldHaveAnchorElementMetricsSender(Document& document) {
+  bool is_feature_enabled =
+      base::FeatureList::IsEnabled(features::kNavigationPredictor);
+  const KURL& url = document.BaseURL();
+  return is_feature_enabled && document.IsInOutermostMainFrame() &&
+         url.IsValid() && url.ProtocolIsInHTTPFamily() &&
+         document.GetExecutionContext() &&
+         document.GetExecutionContext()->IsSecureContext();
+}
 
 }  // namespace
 
@@ -45,13 +57,14 @@ AnchorElementMetricsSender::~AnchorElementMetricsSender() = default;
 // static
 AnchorElementMetricsSender* AnchorElementMetricsSender::From(
     Document& document) {
-  if (!HasAnchorElementMetricsSender(document)) {
-    return nullptr;
-  }
+  // Note that this method is on a hot path. If `sender` already exists, we
+  // avoid a call to `ShouldHaveAnchorElementMetricsSender`. If we instead had
+  // `ShouldHaveAnchorElementMetricsSender` as a guard clause here, that would
+  // cause a measurable performance regression.
 
   AnchorElementMetricsSender* sender =
       Supplement<Document>::From<AnchorElementMetricsSender>(document);
-  if (!sender) {
+  if (!sender && ShouldHaveAnchorElementMetricsSender(document)) {
     sender = MakeGarbageCollected<AnchorElementMetricsSender>(document);
     ProvideTo(document, sender);
   }
@@ -80,18 +93,6 @@ AnchorElementMetricsSender* AnchorElementMetricsSender::GetForFrame(
   }
 
   return From(*main_document);
-}
-
-// static
-bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
-    Document& document) {
-  bool is_feature_enabled =
-      base::FeatureList::IsEnabled(features::kNavigationPredictor);
-  const KURL& url = document.BaseURL();
-  return is_feature_enabled && document.IsInOutermostMainFrame() &&
-         url.IsValid() && url.ProtocolIsInHTTPFamily() &&
-         document.GetExecutionContext() &&
-         document.GetExecutionContext()->IsSecureContext();
 }
 
 void AnchorElementMetricsSender::
@@ -186,7 +187,7 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
   intersection_observer_ = IntersectionObserver::Create(
       /* (root) margin */ Vector<Length>(),
       /* scroll_margin */ Vector<Length>(),
-      /* thresholds */ {INTERSECTION_RATIO_THRESHOLD},
+      /* thresholds */ {kIntersectionRatioThreshold},
       /* document */ &document,
       /* callback */
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
