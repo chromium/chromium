@@ -447,12 +447,14 @@ class PartitionAllocTest
     if (allocator.root()->brp_enabled()) {
       ref_count_size = kPartitionRefCountSizeAdjustment;
       ref_count_size = AlignUpRefCountSizeForMac(ref_count_size);
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      // Note the brp_enabled() check above.
+      // TODO(bartekn): Don't increase ref-count size in the "same slot" mode.
       if (allocator.root()->IsMemoryTaggingEnabled()) {
         ref_count_size = partition_alloc::internal::base::bits::AlignUp(
             ref_count_size, kMemTagGranuleSize);
       }
-#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#endif  // PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
     }
     return kExtraAllocSizeWithoutRefCount + ref_count_size;
   }
@@ -2519,7 +2521,7 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 // thinking the memory isn't freed and still referenced, thus making it
 // quarantine it and return early, before PA_CHECK(slot_start != freelist_head)
 // is reached.
-// TODO(bartekn): Enable in the BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) case.
+// TODO(bartekn): Enable in the "previous slot" mode.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     (BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 

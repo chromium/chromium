@@ -171,17 +171,14 @@ static_assert(sizeof(void*) == 8);
 // ref_count_size is increased to the MTE granule size and is excluded from MTE
 // tagging.
 //
-// Note, this takes effect only when IsMemoryTaggingEnabled() is true, which is
-// for very few devices (10s or 100s), so this won't bias any BRP experiment.
-#if BUILDFLAG(HAS_MEMORY_TAGGING) &&            \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
-    BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-#define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 1
+// The settings has MAYBE_ in the name, because the final decision to enable is
+// based on whether both MTE and BRP are enabled, and also on BRP mode.
+#if BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#define PA_CONFIG_MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE() 1
 #else
-#define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 0
+#define PA_CONFIG_MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE() 0
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 // Specifies whether allocation extras need to be added.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -330,8 +327,8 @@ constexpr bool kUseLazyCommit = false;
 // The bug has been fixed in macOS 12. Here we can only check the platform, and
 // the version is checked dynamically later.
 //
-// The settings has MAYBE in the name, because the final decision to enable is
-// based on the operarting version check done at run-time.
+// The settings has MAYBE_ in the name, because the final decision to enable is
+// based on the operarting system version check done at run-time.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(IS_MAC)
 #define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 1
 #else

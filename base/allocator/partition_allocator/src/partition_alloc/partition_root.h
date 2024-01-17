@@ -581,9 +581,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   AllocationCapacityFromRequestedSize(size_t size) const;
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  PA_ALWAYS_INLINE static internal::PartitionRefCount*
+  RefCountPointerFromSlotStartAndSize(uintptr_t slot_start, size_t slot_size);
   PA_ALWAYS_INLINE internal::PartitionRefCount*
   RefCountPointerFromObjectForTesting(void* object) const;
-#endif
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
   PA_ALWAYS_INLINE TagViolationReportingMode
@@ -893,7 +895,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Returns size that should be tagged. Avoiding the previous slot ref count if
   // it exists to avoid a race (crbug.com/1445816).
   PA_ALWAYS_INLINE size_t TagSizeForSlot(size_t slot_size) {
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     if (brp_enabled()) {
       PA_DCHECK(settings.ref_count_size > 0);
@@ -902,12 +904,19 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_DCHECK(settings.ref_count_size == 0);
     }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+    // TODO(bartekn): Don't subtract ref-count size in the "same slot" mode.
     return slot_size - settings.ref_count_size;
-#else  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#else  // PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
     return slot_size;
 #endif
   }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+
+  static void SetBrpRefCountInSameSlot(bool ref_count_in_same_slot) {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    ref_count_in_same_slot_ = ref_count_in_same_slot;
+#endif
+  }
 
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
@@ -915,6 +924,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
           StraightenLargerSlotSpanFreeListsMode::kOnlyWhenUnprovisioning;
   static inline bool sort_smaller_slot_span_free_lists_ = true;
   static inline bool sort_active_slot_spans_ = false;
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  static inline bool ref_count_in_same_slot_ = false;
+#endif
 
   // Common path of Free() and FreeInUnknownRoot(). Returns
   // true if the caller should return immediately.
@@ -1204,7 +1216,8 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
   // supports reference counts.
   PA_DCHECK(root->brp_enabled());
-  PA_DCHECK(!PartitionRefCountPointer(slot_start, slot_span->bucket->slot_size)
+  PA_DCHECK(!PartitionRoot::RefCountPointerFromSlotStartAndSize(
+                 slot_start, slot_span->bucket->slot_size)
                  ->IsAlive());
 
   // Iterating over the entire slot can be really expensive.
@@ -1581,7 +1594,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled| will
   // be false only for the aligned partition.
   if (brp_enabled()) {
-    auto* ref_count = internal::PartitionRefCountPointer(
+    auto* ref_count = RefCountPointerFromSlotStartAndSize(
         slot_start, slot_span->bucket->slot_size);
     // If there are no more references to the allocation, it can be freed
     // immediately. Otherwise, defer the operation and zap the memory to turn
@@ -1960,7 +1973,8 @@ PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
                       root->settings.mac11_malloc_size_hack_usable_size_)) {
     auto [slot_start, slot_size] =
         internal::PartitionAllocGetSlotStartAndSizeInBRPPool(UntagPtr(ptr));
-    auto* ref_count = internal::PartitionRefCountPointer(slot_start, slot_size);
+    auto* ref_count =
+        RefCountPointerFromSlotStartAndSize(slot_start, slot_size);
     if (ref_count->NeedsMac11MallocSizeHack()) {
       return internal::kMac11MallocSizeHackRequestedSize;
     }
@@ -2010,11 +2024,18 @@ PartitionRoot::AllocationCapacityFromSlotStart(uintptr_t slot_start) const {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 PA_ALWAYS_INLINE internal::PartitionRefCount*
+PartitionRoot::RefCountPointerFromSlotStartAndSize(uintptr_t slot_start,
+                                                   size_t slot_size) {
+  return internal::PartitionRefCountPointer(slot_start, slot_size,
+                                            ref_count_in_same_slot_);
+}
+
+PA_ALWAYS_INLINE internal::PartitionRefCount*
 PartitionRoot::RefCountPointerFromObjectForTesting(void* object) const {
   uintptr_t slot_start = ObjectToSlotStart(object);
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
-  return internal::PartitionRefCountPointer(slot_start,
-                                            slot_span->bucket->slot_size);
+  return RefCountPointerFromSlotStartAndSize(slot_start,
+                                             slot_span->bucket->slot_size);
 }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
@@ -2226,10 +2247,11 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   //   ENABLE_BACKUP_REF_PTR_SUPPORT and brp_enabled().
   // - If slot_start is not SystemPageSize()-aligned (possible only for small
   //   allocations), ref-count is stored either at the end of the current slot
-  //   or the previous slot, depending on the PUT_REF_COUNT_IN_PREVIOUS_SLOT
-  //   setting. Otherwise it is stored in the ref-count table placed after the
-  //   super page metadata. For simplicity, the space for ref-count is still
-  //   reserved at the end of the slot, even though redundant.
+  //   or the previous slot, depending on the
+  //   PartitionRoot::ref_count_in_same_slot_ setting. Otherwise it is stored in
+  //   the ref-count table placed after the super page metadata. For simplicity,
+  //   the space for ref-count is still reserved at the end of the slot, even
+  //   though redundant.
 
   void* object = SlotStartToObject(slot_start);
 
@@ -2267,7 +2289,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
     }
 #endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     auto* ref_count =
-        new (internal::PartitionRefCountPointer(slot_start, slot_size))
+        new (RefCountPointerFromSlotStartAndSize(slot_start, slot_size))
             internal::PartitionRefCount(needs_mac11_malloc_size_hack);
 #if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
     ref_count->SetRequestedSize(requested_size);
@@ -2558,7 +2580,8 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
 #undef EXPORT_TEMPLATE
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-// Usage in `raw_ptr.cc` is notable enough to merit a non-internal alias.
+// Usage in `raw_ptr_backup_ref_impl.cc` is notable enough to merit a
+// non-internal alias.
 using ::partition_alloc::internal::PartitionAllocGetSlotStartAndSizeInBRPPool;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 

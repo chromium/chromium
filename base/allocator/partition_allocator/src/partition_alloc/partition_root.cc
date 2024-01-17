@@ -1036,12 +1036,14 @@ void PartitionRoot::Init(PartitionOptions opts) {
     if (brp_enabled()) {
       size_t ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       ref_count_size = internal::AlignUpRefCountSizeForMac(ref_count_size);
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      // Note the brp_enabled() check above.
+      // TODO(bartekn): Don't increase ref-count size in the "same slot" mode.
       if (IsMemoryTaggingEnabled()) {
         ref_count_size = internal::base::bits::AlignUp(
             ref_count_size, internal::kMemTagGranuleSize);
       }
-#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#endif  // PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
       settings.ref_count_size = ref_count_size;
       PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
       settings.extras_size += ref_count_size;
@@ -1308,7 +1310,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
     internal::PartitionRefCount* old_ref_count = nullptr;
     if (brp_enabled()) {
-      old_ref_count = internal::PartitionRefCountPointer(
+      old_ref_count = RefCountPointerFromSlotStartAndSize(
           slot_start, slot_span->bucket->slot_size);
     }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
@@ -1318,8 +1320,8 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
     if (brp_enabled()) {
       internal::PartitionRefCount* new_ref_count =
-          internal::PartitionRefCountPointer(slot_start,
-                                             slot_span->bucket->slot_size);
+          RefCountPointerFromSlotStartAndSize(slot_start,
+                                              slot_span->bucket->slot_size);
       PA_DCHECK(new_ref_count == old_ref_count);
     }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
