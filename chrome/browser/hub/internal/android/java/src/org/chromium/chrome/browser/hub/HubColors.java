@@ -48,7 +48,7 @@ public final class HubColors {
             case HubColorScheme.DEFAULT:
                 return SemanticColorUtils.getDefaultIconColor(context);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.white_alpha_70);
+                return ContextCompat.getColor(context, R.color.default_icon_color_light);
             default:
                 assert false;
                 return Color.TRANSPARENT;
