@@ -6466,6 +6466,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="MediaDeviceNotification.UdevRequestSuccess"
+    enum="BooleanSuccess" expires_after="M124">
+  <owner>thestig@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    Whenever a new removable mass storage media device is attached to the
+    system, send a request to udevadm to query the device properties. True if
+    the udev request to get the removable device details was successful.
+  </summary>
+</histogram>
+
 <histogram name="MediaLauncherActivity.LaunchResult" enum="BooleanSuccess"
     expires_after="2021-06-19">
   <owner>steimel@chromium.org</owner>

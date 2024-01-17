@@ -2002,6 +2002,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.KillHistoryDatabaseResult" enum="BooleanSuccess"
+    expires_after="2024-05-19">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Whether killing the database because it was corrupted beyond repair
+    succeeded.
+  </summary>
+</histogram>
+
 <histogram name="History.MigrateFailureFromVersion" units="units"
     expires_after="2024-06-30">
   <owner>sky@chromium.org</owner>
@@ -2040,6 +2051,12 @@ chromium-metrics-reviews@google.com.
     30 days. Metrics are logged on initialization of the History DB on 0.3% of
     starts.
   </summary>
+</histogram>
+
+<histogram name="History.QueryHistory" units="ms" expires_after="M124">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>Time used by the HistoryBackend::QueryHistory() call.</summary>
 </histogram>
 
 <histogram name="History.QueryMostRepeatedQueriesTimeV2" units="ms"

@@ -6142,6 +6142,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gamepad.ReadContentionCount" units="Contentions"
+    expires_after="2024-05-12">
+  <owner>mattreynolds@google.com</owner>
+  <owner>reillyg@google.com</owner>
+  <summary>
+    Counts the number of read contentions on the gamepad SeqLock. This is
+    sampled at 60Hz when the gamepad API is active for the page. It is capped at
+    a maximum of 10, after which the read fails.
+  </summary>
+</histogram>
+
 <histogram name="Gamepad.UnknownGamepadConnected" enum="GamepadSource"
     expires_after="2024-05-12">
   <owner>mattreynolds@chromium.org</owner>
@@ -6150,6 +6161,15 @@ chromium-metrics-reviews@google.com.
     Records an enumeration value identifying the active data fetcher when a
     fetcher enumerates a device that is not on the list of known gamepads, but
     is recognized as a gamepad by the fetcher.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.ValidSharedMemoryHandle" enum="HandleValidity"
+    expires_after="2024-05-12">
+  <owner>mattreynolds@google.com</owner>
+  <owner>reillyg@google.com</owner>
+  <summary>
+    Whether the browser sent a valid shared memory handle to the renderer.
   </summary>
 </histogram>
 
@@ -7192,6 +7212,25 @@ chromium-metrics-reviews@google.com.
     Mouse.Sensitivity.Started metric. Only reported on Chrome OS.
 
     Expired from 2022-12-04 to M113. May be missing some data.
+  </summary>
+</histogram>
+
+<histogram name="Mouse.PrimaryButtonRight.Changed" enum="PrimaryButtonRight"
+    expires_after="2024-03-10">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@chromium.org</owner>
+  <summary>
+    Tracks mouse PrimaryButtonRight setting. Only reported on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Mouse.PrimaryButtonRight.Started" enum="PrimaryButtonRight"
+    expires_after="2024-03-10">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@chromium.org</owner>
+  <summary>
+    Tracks mouse PrimaryButtonRight setting on startup. Only reported on Chrome
+    OS.
   </summary>
 </histogram>
 

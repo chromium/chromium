@@ -15820,6 +15820,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Rejected, can't extract form data"/>
 </enum>
 
+<enum name="HandleValidity">
+  <int value="0" label="Invalid Handle"/>
+  <int value="1" label="Valid Handle"/>
+</enum>
+
 <enum name="HappinessTrackingSurveyDesktopBubbleUsage">
   <int value="0" label="Accepted"/>
   <int value="1" label="No Thanks"/>
@@ -35887,6 +35892,11 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Product is Untracked"/>
 </enum>
 
+<enum name="PrimaryButtonRight">
+  <int value="0" label="Right-handed"/>
+  <int value="1" label="Left-handed"/>
+</enum>
+
 <enum name="PrintPreviewFailureType">
 <!-- This must be kept current with PrintPreviewErrorBuckets in
      components/printing/renderer/print_render_frame_helper.h. -->
@@ -39772,6 +39782,11 @@ would be helpful to identify which type is being sent.
   <int value="0" label="Any blocked third-party site data accesses"/>
   <int value="1" label="Any allowed third-party site data accesses"/>
   <int value="2" label="No third-party site data accesses"/>
+</enum>
+
+<enum name="ThrottlingResult">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Rejected"/>
 </enum>
 
 <enum name="TimeZoneRequestEvent">

@@ -5714,6 +5714,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Throttling.RequestThrottled" enum="ThrottlingResult"
+    expires_after="M124">
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    Counts requests rejected and not rejected by anti-DDoS throttling.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
