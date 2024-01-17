@@ -20753,24 +20753,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20231201",
-                    "params": {
-                        "disable_by_gl_renderer": "*llvmpipe*|*SwiftShader*"
-                    },
-                    "enable_features": [
-                        "DefaultANGLEVulkan",
-                        "Vulkan",
-                        "VulkanFromANGLE"
-                    ]
-                }
-            ]
         }
     ],
     "VulkanV2": [
