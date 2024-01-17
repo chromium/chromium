@@ -1208,6 +1208,12 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     return false;
   }
 
+  // Always show the suggestion group if there's no associated group header (and
+  // thus no user-visible control for toggling the visiblity of the group).
+  if (GetHeaderForSuggestionGroup(suggestion_group_id).empty()) {
+    return false;
+  }
+
   omnibox::SuggestionGroupVisibility user_preference =
       omnibox::GetUserPreferenceForSuggestionGroupVisibility(
           prefs, suggestion_group_id);
