@@ -124,6 +124,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
   // Whether automation support for views is enabled.
   bool enabled_ = false;
 
+  std::unique_ptr<views::AXAuraObjCache> cache_;
+
   // Holds the active views-based accessibility tree. A tree currently consists
   // of all views descendant to a |Widget| (see |AXTreeSourceViews|).
   // A tree becomes active when an event is fired on a descendant view.
@@ -150,8 +152,6 @@ class AutomationManagerAura : public ui::AXActionHandler,
       automation_event_router_interface_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
-
-  std::unique_ptr<views::AXAuraObjCache> cache_;
 
   ax::mojom::Action currently_performing_action_ = ax::mojom::Action::kNone;
 

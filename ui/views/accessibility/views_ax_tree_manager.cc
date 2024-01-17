@@ -25,7 +25,7 @@ namespace views {
 ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
     : ui::AXTreeManager(std::make_unique<ui::AXTree>()),
       widget_(widget),
-      tree_source_(cache_.GetOrCreate(widget),
+      tree_source_(cache_.GetOrCreate(widget)->GetUniqueId(),
                    ui::AXTreeID::CreateNewAXTreeID(),
                    &cache_),
       tree_serializer_(&tree_source_) {

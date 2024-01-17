@@ -20,11 +20,10 @@
 
 namespace views {
 
-AXTreeSourceViews::AXTreeSourceViews(AXAuraObjWrapper* root,
+AXTreeSourceViews::AXTreeSourceViews(ui::AXNodeID root_id,
                                      const ui::AXTreeID& tree_id,
                                      views::AXAuraObjCache* cache)
-    : root_(root), tree_id_(tree_id), cache_(cache) {
-  DCHECK(root_);
+    : root_id_(root_id), tree_id_(tree_id), cache_(cache) {
   DCHECK_NE(tree_id_, ui::AXTreeIDUnknown());
 }
 
@@ -56,7 +55,7 @@ bool AXTreeSourceViews::GetTreeData(ui::AXTreeData* tree_data) const {
 }
 
 AXAuraObjWrapper* AXTreeSourceViews::GetRoot() const {
-  return root_;
+  return cache_->Get(root_id_);
 }
 
 AXAuraObjWrapper* AXTreeSourceViews::GetFromId(int32_t id) const {

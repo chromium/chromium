@@ -101,7 +101,6 @@ void AutomationManagerAura::Enable() {
 
 void AutomationManagerAura::Disable() {
   enabled_ = false;
-  cache_ = std::make_unique<views::AXAuraObjCache>();
   if (tree_) {
     if (automation_event_router_interface_)
       automation_event_router_interface_->DispatchTreeDestroyedEvent(
@@ -109,6 +108,7 @@ void AutomationManagerAura::Disable() {
     tree_.reset();
   }
   tree_serializer_.reset();
+  cache_ = std::make_unique<views::AXAuraObjCache>();
   alert_window_.reset();
 
   if (automation_event_router_observer_.IsObserving())
@@ -243,7 +243,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
   if (!tree_) {
     auto desktop_root = std::make_unique<AXRootObjWrapper>(this, cache_.get());
     tree_ = std::make_unique<views::AXTreeSourceViews>(
-        desktop_root.get(), ax_tree_id(), cache_.get());
+        desktop_root->GetUniqueId(), ax_tree_id(), cache_.get());
     cache_->CreateOrReplace(std::move(desktop_root));
   }
   if (reset_serializer) {
