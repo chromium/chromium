@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 
-@class SceneState;
+class Browser;
 
 // Utilities for the search engine choice screen.
 
 // Whether or not the choice screen should be displayed for existing users.
-bool ShouldDisplaySearchEngineChoiceScreen(SceneState* scene_state);
+bool ShouldDisplaySearchEngineChoiceScreen(Browser* browser);
 
 // Whether the choice screen might be displayed. The choice screen is by default
 // disabled for tests or for non-branded builds. This method eliminates those

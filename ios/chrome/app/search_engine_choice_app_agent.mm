@@ -25,6 +25,8 @@
   SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
   // UI blocker used by the search engine selection screen.
   std::unique_ptr<ScopedUIBlocker> _searchEngineChoiceUIBlocker;
+  // Scene state ID where the search engine choice dialog is displayed.
+  NSString* _searchEngineChoiceSceneStateID;
 }
 
 #pragma mark - SceneObservingAppAgent
@@ -35,14 +37,26 @@
   if (self.appState.initStage > InitStageFirstRun) {
     switch (level) {
       case SceneActivationLevelForegroundInactive:
+      case SceneActivationLevelBackground:
         break;
       case SceneActivationLevelForegroundActive:
         [self maybeShowChoiceScreen:sceneState];
         break;
-      case SceneActivationLevelBackground:
       case SceneActivationLevelDisconnected:
       case SceneActivationLevelUnattached:
-        [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
+        if (_searchEngineChoiceCoordinator &&
+            [_searchEngineChoiceSceneStateID
+                isEqual:sceneState.sceneSessionID]) {
+          [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
+          // If the scene state where the search engine choice dialog is
+          // removed, is disconned, the search engine choice dialog needs to be
+          // added to the next foreground active scene (if one exists).
+          SceneState* nextActiveSceneState =
+              self.appState.foregroundActiveScene;
+          if (nextActiveSceneState) {
+            [self maybeShowChoiceScreen:nextActiveSceneState];
+          }
+        }
         break;
     }
   }
@@ -72,7 +86,9 @@
 - (void)choiceScreenWillBeDismissed:
     (SearchEngineChoiceCoordinator*)coordinator {
   DCHECK_EQ(_searchEngineChoiceCoordinator, coordinator);
+  DCHECK(_searchEngineChoiceSceneStateID);
   _searchEngineChoiceUIBlocker.reset();
+  _searchEngineChoiceSceneStateID = nil;
   [_searchEngineChoiceCoordinator stop];
   _searchEngineChoiceCoordinator = nil;
 }
@@ -86,10 +102,14 @@
   if (_searchEngineChoiceCoordinator) {
     return;
   }
-  if (ShouldDisplaySearchEngineChoiceScreen(sceneState)) {
+  Browser* browser =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  if (ShouldDisplaySearchEngineChoiceScreen(browser)) {
     DCHECK(!_searchEngineChoiceUIBlocker);
+    DCHECK(!_searchEngineChoiceSceneStateID);
     _searchEngineChoiceUIBlocker =
         std::make_unique<ScopedUIBlocker>(sceneState);
+    _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
     _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
         initWithBaseViewController:sceneState.browserProviderInterface
                                        .currentBrowserProvider.viewController

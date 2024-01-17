@@ -8,21 +8,16 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
-bool ShouldDisplaySearchEngineChoiceScreen(SceneState* scene_state) {
+bool ShouldDisplaySearchEngineChoiceScreen(Browser* browser) {
   if (!IsChoiceEnabled()) {
     return false;
   }
-  ChromeBrowserState* browser_state =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
+  ChromeBrowserState* browser_state = browser->GetBrowserState();
   if (!browser_state) {
     return false;
   }
