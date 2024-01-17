@@ -164,7 +164,6 @@ template("generate_chromeos_sdk_deps") {
       # Needed for various SDK components used below.
       "//build/cros_cache/chrome-sdk/misc/",
       "//build/cros_cache/chrome-sdk/symlinks/",
-      "//build/cros_cache/cipd/",
       "//chrome/VERSION",
 
       # The LKGM file controls what version of the VM image to download. Add it
