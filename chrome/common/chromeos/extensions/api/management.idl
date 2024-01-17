@@ -11,14 +11,14 @@ namespace os.management {
 
   dictionary SetAudioGainArguments {
       // Node id of the audio device to be configured.
-      long nodeId;
+      double nodeId;
       // Target gain percent in [0, 100]. Sets to 0 or 100 if outside.
       long gain;
   };
 
   dictionary SetAudioVolumeArguments {
       // Node id of the audio device to be configured.
-      long nodeId;
+      double nodeId;
       // Target volume percent in [0, 100]. Sets to 0 or 100 if outside.
       long volume;
       // Whether to mute the device.
