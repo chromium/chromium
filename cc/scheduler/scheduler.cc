@@ -32,6 +32,22 @@ namespace {
 // This is a fudge factor we subtract from the deadline to account
 // for message latency and kernel scheduling variability.
 const base::TimeDelta kDeadlineFudgeFactor = base::Microseconds(1000);
+
+// This adjustment is applied by multiplying with the previous, begin-main-frame
+// to activate threshold. For example, if we want to consider a page fast if it
+// it takes half the threshold, we would return 0.5. Naturally, this function
+// will return values in the range [0, 1].
+double FastMainThreadThresholdAdjustment() {
+  if (base::FeatureList::IsEnabled(features::kAdjustFastMainThreadThreshold)) {
+    double result = base::GetFieldTrialParamByFeatureAsDouble(
+        features::kAdjustFastMainThreadThreshold, "Scalar", -1.0);
+    if (result >= 0.0 && result <= 1.0) {
+      return result;
+    }
+  }
+  return 1.0;
+}
+
 }  // namespace
 
 Scheduler::Scheduler(
@@ -518,8 +534,10 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
   base::TimeDelta bmf_to_activate_estimate_critical =
       compositor_timing_history_
           ->BeginMainFrameQueueToActivateCriticalEstimate();
+  base::TimeDelta fast_main_thread_threshold =
+      bmf_to_activate_threshold * FastMainThreadThresholdAdjustment();
   state_machine_.SetCriticalBeginMainFrameToActivateIsFast(
-      bmf_to_activate_estimate_critical < bmf_to_activate_threshold);
+      bmf_to_activate_estimate_critical < fast_main_thread_threshold);
 
   // Update the BeginMainFrame args now that we know whether the main
   // thread will be on the critical path or not.
