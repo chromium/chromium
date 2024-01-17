@@ -550,7 +550,7 @@ gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
   // non-resizable if their min and max height are the same. To achieve this,
   // we set the max size to the View's preferred size.
   int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH);
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
