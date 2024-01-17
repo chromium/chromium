@@ -91,7 +91,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
 
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
-    uint32_t updated_fields) {
+    const HoldingSpaceItemUpdatedFields& updated_fields) {
   if (is_restoring_persistence())
     return;
 

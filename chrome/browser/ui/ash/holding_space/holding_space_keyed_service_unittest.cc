@@ -240,8 +240,9 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
 
  private:
   // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
-                                 uint32_t updated_fields) override {
+  void OnHoldingSpaceItemUpdated(
+      const HoldingSpaceItem* item,
+      const HoldingSpaceItemUpdatedFields& updated_fields) override {
     if (!wait_loop_) {
       // `wait_loop_` is nullptr, if wait has not yet been called.
       if (item == wait_item_) {

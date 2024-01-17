@@ -348,7 +348,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
-    uint32_t updated_fields) {
+    const HoldingSpaceItemUpdatedFields& updated_fields) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // In-progress items are not subject to validity checks.

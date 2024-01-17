@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_item_updated_fields.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
@@ -2833,12 +2834,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // space model.
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
+      .WillOnce([&](const HoldingSpaceItem* item,
+                    const HoldingSpaceItemUpdatedFields& updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(
-            updated_fields &
-            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
+        EXPECT_TRUE(updated_fields.previous_in_progress_commands);
         run_loop.Quit();
       });
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -2918,12 +2918,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // updated in the holding space model.
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnHoldingSpaceItemUpdated)
-      .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
+      .WillOnce([&](const HoldingSpaceItem* item,
+                    const HoldingSpaceItemUpdatedFields& updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(
-            updated_fields &
-            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
+        EXPECT_TRUE(updated_fields.previous_in_progress_commands);
         run_loop.Quit();
       });
   test::Click(secondary_action_container);
