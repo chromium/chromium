@@ -920,6 +920,14 @@
     "expiry_milestone": 132
   },
   {
+    "name": "borealis-enable-unsupported-hardware",
+    "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
+    // This flag does not expire because it is an escape hatch for running
+    // borealis on certain hardware. That hardware will never be "supported"
+    // so those users will always need to acknowledge via the flag.
+    "expiry_milestone": -1
+  },
+  {
     "name": "borealis-enabled",
     "owners": [ "hollingum@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 132

@@ -59,6 +59,14 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
       return;
     }
 
+    // If the user has opted in to running on unsupported hardware then we don't
+    // need to actually check it.
+    if (base::FeatureList::IsEnabled(
+            ash::features::kBorealisEnableUnsupportedHardware)) {
+      std::move(callback).Run(Success(AllowStatus::kAllowed));
+      return;
+    }
+
     TokenHardwareChecker::GetData(
         profile_->GetPrefs()->GetString(prefs::kBorealisVmTokenHash),
         base::BindOnce(

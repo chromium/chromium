@@ -2993,6 +2993,8 @@ constexpr char kGlanceablesV2CalendarViewInternalName[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDGPUInternalName[] = "borealis-dgpu";
+constexpr char kBorealisEnableUnsupportedHardwareInternalName[] =
+    "borealis-enable-unsupported-hardware";
 constexpr char kBorealisForceBetaClientInternalName[] =
     "borealis-force-beta-client";
 constexpr char kBorealisForceDoubleScaleInternalName[] =
@@ -9128,6 +9130,10 @@ const FeatureEntry kFeatureEntries[] = {
     {kBorealisDGPUInternalName, flag_descriptions::kBorealisDGPUName,
      flag_descriptions::kBorealisDGPUDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisDGPU)},
+    {kBorealisEnableUnsupportedHardwareInternalName,
+     flag_descriptions::kBorealisEnableUnsupportedHardwareName,
+     flag_descriptions::kBorealisEnableUnsupportedHardwareDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisEnableUnsupportedHardware)},
     {kBorealisForceBetaClientInternalName,
      flag_descriptions::kBorealisForceBetaClientName,
      flag_descriptions::kBorealisForceBetaClientDescription, kOsCrOS,
@@ -11257,43 +11263,18 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // Only show Borealis flags on enabled devices.
-  if (!strcmp(kBorealisBigGlInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisDGPUInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisForceBetaClientInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisForceDoubleScaleInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisLinuxModeInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisPermittedInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisProvisionInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisScaleClientByDPIInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisWebUIInstallerInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
-
-  if (!strcmp(kBorealisZinkGlDriverInternalName, entry.internal_name)) {
+  if (!strcmp(kBorealisBigGlInternalName, entry.internal_name) ||
+      !strcmp(kBorealisDGPUInternalName, entry.internal_name) ||
+      !strcmp(kBorealisEnableUnsupportedHardwareInternalName,
+              entry.internal_name) ||
+      !strcmp(kBorealisForceBetaClientInternalName, entry.internal_name) ||
+      !strcmp(kBorealisForceDoubleScaleInternalName, entry.internal_name) ||
+      !strcmp(kBorealisLinuxModeInternalName, entry.internal_name) ||
+      !strcmp(kBorealisPermittedInternalName, entry.internal_name) ||
+      !strcmp(kBorealisProvisionInternalName, entry.internal_name) ||
+      !strcmp(kBorealisScaleClientByDPIInternalName, entry.internal_name) ||
+      !strcmp(kBorealisWebUIInstallerInternalName, entry.internal_name) ||
+      !strcmp(kBorealisZinkGlDriverInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 

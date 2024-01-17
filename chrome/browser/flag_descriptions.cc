@@ -688,6 +688,12 @@ const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 const char kBorealisDGPUName[] = "Borealis dGPU";
 const char kBorealisDGPUDescription[] = "Enable dGPU when running Borealis.";
 
+const char kBorealisEnableUnsupportedHardwareName[] =
+    "Borealis Enable Unsupported Hardware";
+const char kBorealisEnableUnsupportedHardwareDescription[] =
+    "Allow Borealis to run on hardware that does not meet the minimum spec "
+    "requirements. Be aware: Games may crash, or perform below expectations.";
+
 const char kBorealisForceBetaClientName[] = "Borealis Force Beta Client";
 const char kBorealisForceBetaClientDescription[] =
     "Force the client to run its beta version.";

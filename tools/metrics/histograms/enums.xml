@@ -20817,6 +20817,7 @@ from previous Chrome versions.
   <int value="-1460462432" label="disable-media-source"/>
   <int value="-1459907288" label="DesksTemplates:enabled"/>
   <int value="-1459246132" label="kWebSQLAccess:disabled"/>
+  <int value="-1458229207" label="BorealisEnableUnsupportedHardware:disabled"/>
   <int value="-1457775295" label="PasswordSearchMobile:disabled"/>
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
   <int value="-1456627355" label="EnableEmojiContextMenu:disabled"/>
@@ -21898,6 +21899,7 @@ from previous Chrome versions.
   <int value="-968675274" label="Rar2Fs:enabled"/>
   <int value="-968010468" label="SharedArrayBuffer:disabled"/>
   <int value="-967825290" label="WebViewConnectionlessSafeBrowsing:disabled"/>
+  <int value="-967743769" label="BorealisEnableUnsupportedHardware:enabled"/>
   <int value="-966661415" label="ElasticOverscroll:disabled"/>
   <int value="-966290456" label="WebAuthenticationCtap2:enabled"/>
   <int value="-965842218" label="MultiDeviceApi:disabled"/>

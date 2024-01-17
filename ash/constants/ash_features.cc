@@ -309,11 +309,10 @@ BASE_FEATURE(kBorealisBigGl, "BorealisBigGl", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable dGPU when using Borealis.
 BASE_FEATURE(kBorealisDGPU, "BorealisDGPU", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable borealis on this device. This won't necessarily allow it, since you
-// might fail subsequent checks.
-BASE_FEATURE(kBorealisPermitted,
-             "BorealisPermitted",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Bypass some hardware checks when deciding whether to block/allow borealis.
+BASE_FEATURE(kBorealisEnableUnsupportedHardware,
+             "BorealisEnableUnsupportedHardware",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Force the steam client to be on its beta version. If not set, the client will
 // be on its stable version.
@@ -332,6 +331,12 @@ BASE_FEATURE(kBorealisForceDoubleScale,
 BASE_FEATURE(kBorealisLinuxMode,
              "BorealisLinuxMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable borealis on this device. This won't necessarily allow it, since you
+// might fail subsequent checks.
+BASE_FEATURE(kBorealisPermitted,
+             "BorealisPermitted",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the "provision" flag when mounting Borealis' stateful disk.
 // TODO(b/288361720): This is temporary while we test the 'provision'
