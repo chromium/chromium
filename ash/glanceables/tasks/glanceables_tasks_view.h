@@ -67,10 +67,6 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   void OnViewFocused(views::View* view) override;
 
  private:
-  // Handles press behavior for the header icon in `tasks_header_view_` and the
-  // "See all" button in `list_footer_view_`.
-  void ActionButtonPressed(TasksLaunchSource source);
-
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
 

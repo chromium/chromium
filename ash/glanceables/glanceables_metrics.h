@@ -20,7 +20,8 @@ enum class TasksLaunchSource {
   kHeaderButton = 0,
   kAddNewTaskButton = 1,
   kFooterButton = 2,
-  kMaxValue = kFooterButton,
+  kEditInGoogleTasksButton = 3,
+  kMaxValue = kEditInGoogleTasksButton,
 };
 
 void RecordActiveTaskListChanged();

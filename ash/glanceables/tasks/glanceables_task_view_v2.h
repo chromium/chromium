@@ -14,9 +14,15 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/wm/public/activation_change_observer.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace views {
 class ImageButton;
+class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -40,7 +46,8 @@ struct Task;
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
-class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
+class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
+                                         public wm::ActivationChangeObserver {
  public:
   METADATA_HEADER(GlanceablesTaskViewV2);
 
@@ -53,14 +60,23 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
       api::TasksClient::OnTaskSavedCallback callback)>;
 
   // Modes of `tasks_title_view_` (simple label or text field).
-  enum class TaskTitleViewState { kView, kEdit };
+  enum class TaskTitleViewState { kNotInitialized, kView, kEdit };
 
   GlanceablesTaskViewV2(const api::Task* task,
                         MarkAsCompletedCallback mark_as_completed_callback,
-                        SaveCallback save_callback);
+                        SaveCallback save_callback,
+                        base::RepeatingClosure edit_in_browser_callback);
   GlanceablesTaskViewV2(const GlanceablesTaskViewV2&) = delete;
   GlanceablesTaskViewV2& operator=(const GlanceablesTaskViewV2&) = delete;
   ~GlanceablesTaskViewV2() override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivating(wm::ActivationChangeObserver::ActivationReason reason,
+                          aura::Window* gaining_active,
+                          aura::Window* losing_active) override;
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   const views::ImageButton* GetCheckButtonForTest() const;
   bool GetCompletedForTest() const;
@@ -92,6 +108,12 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
   raw_ptr<views::FlexLayoutView> tasks_title_view_ = nullptr;
   raw_ptr<TaskTitleButton> task_title_button_ = nullptr;
   raw_ptr<views::FlexLayoutView> tasks_details_view_ = nullptr;
+  raw_ptr<views::LabelButton> edit_in_browser_button_ = nullptr;
+
+  // The state of the task title view. Should be switching between view state
+  // and edit state except its initial value.
+  TaskTitleViewState task_title_view_state_ =
+      TaskTitleViewState::kNotInitialized;
 
   // ID for the task represented by this view.
   std::string task_id_;
@@ -104,6 +126,9 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
 
   // Saves the task (either creates or updates the existing one).
   const SaveCallback save_callback_;
+
+  // `edit_in_browser_button_` callback that opens the Tasks in browser.
+  const base::RepeatingClosure edit_in_browser_callback_;
 
   base::WeakPtrFactory<GlanceablesTaskViewV2> weak_ptr_factory_{this};
 };

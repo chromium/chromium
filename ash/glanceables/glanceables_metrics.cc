@@ -57,6 +57,10 @@ void RecordTasksLaunchSource(TasksLaunchSource source) {
       base::RecordAction(base::UserMetricsAction(
           "Glanceables_Tasks_LaunchTasksApp_FooterButton"));
       break;
+    case TasksLaunchSource::kEditInGoogleTasksButton:
+      base::RecordAction(base::UserMetricsAction(
+          "Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton"));
+      break;
   }
 }
 

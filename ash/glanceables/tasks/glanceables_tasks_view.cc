@@ -93,6 +93,16 @@ class AddNewTaskButton : public views::LabelButton {
 BEGIN_METADATA(AddNewTaskButton)
 END_METADATA
 
+// Handles press behavior for icons that are used to open Google Tasks in the
+// browser.
+void ActionButtonPressed(TasksLaunchSource source) {
+  RecordTasksLaunchSource(source);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kTasksManagementPage),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 }  // namespace
 
 GlanceablesTasksViewBase::GlanceablesTasksViewBase()
@@ -168,8 +178,7 @@ GlanceablesTasksView::GlanceablesTasksView(
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
-                              base::Unretained(this),
+          base::BindRepeating(&ActionButtonPressed,
                               TasksLaunchSource::kHeaderButton),
           IconButton::Type::kSmall, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
@@ -199,8 +208,7 @@ GlanceablesTasksView::GlanceablesTasksView(
       list_view->AddChildView(std::make_unique<GlanceablesListFooterView>(
           l10n_util::GetStringUTF16(
               IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
-          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
-                              base::Unretained(this),
+          base::BindRepeating(&ActionButtonPressed,
                               TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
@@ -226,14 +234,6 @@ void GlanceablesTasksView::OnViewFocused(views::View* view) {
   AnnounceListStateOnComboBoxAccessibility();
 }
 
-void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
-  RecordTasksLaunchSource(source);
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kTasksManagementPage),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
   const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
@@ -254,7 +254,9 @@ std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
       base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id),
       base::BindRepeating(&GlanceablesTasksView::SaveTask,
-                          base::Unretained(this), task_list_id));
+                          base::Unretained(this), task_list_id),
+      base::BindRepeating(&ActionButtonPressed,
+                          TasksLaunchSource::kEditInGoogleTasksButton));
 }
 
 void GlanceablesTasksView::SelectedTasksListChanged() {

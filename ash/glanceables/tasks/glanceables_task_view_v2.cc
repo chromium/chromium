@@ -46,6 +46,7 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/focus_controller.h"
 
 namespace ash {
 namespace {
@@ -64,6 +65,7 @@ constexpr auto kDoubleRowTextMargins = gfx::Insets::TLBR(0, 6, 4, 8);
 constexpr auto kTitleAndDetailMarginsInViewState =
     gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kTitleMarginsInEditState = gfx::Insets();
+constexpr auto kEditInBrowserMargins = gfx::Insets::TLBR(4, 2, 0, 0);
 
 views::Label* SetupLabel(views::View* parent) {
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
@@ -178,6 +180,25 @@ class TaskViewTextField : public SystemTextfield,
 BEGIN_METADATA(TaskViewTextField)
 END_METADATA
 
+class EditInBrowserButton : public views::LabelButton {
+  METADATA_HEADER(EditInBrowserButton, views::LabelButton)
+ public:
+  explicit EditInBrowserButton(PressedCallback callback)
+      : views::LabelButton(std::move(callback),
+                           l10n_util::GetStringUTF16(
+                               IDS_GLANCEABLES_TASKS_EDIT_IN_TASKS_LABEL)) {
+    SetID(base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+    SetProperty(views::kMarginsKey, kEditInBrowserMargins);
+    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosButton2));
+    label()->SetLineHeight(22);
+  }
+};
+
+BEGIN_METADATA(EditInBrowserButton, views::LabelButton)
+END_METADATA
+
 }  // namespace
 
 class GlanceablesTaskViewV2::CheckButton : public views::ImageButton {
@@ -263,11 +284,13 @@ END_METADATA
 GlanceablesTaskViewV2::GlanceablesTaskViewV2(
     const api::Task* task,
     MarkAsCompletedCallback mark_as_completed_callback,
-    SaveCallback save_callback)
+    SaveCallback save_callback,
+    base::RepeatingClosure edit_in_browser_callback)
     : task_id_(task ? task->id : ""),
       task_title_(task ? base::UTF8ToUTF16(task->title) : u""),
       mark_as_completed_callback_(std::move(mark_as_completed_callback)),
-      save_callback_(std::move(save_callback)) {
+      save_callback_(std::move(save_callback)),
+      edit_in_browser_callback_(std::move(edit_in_browser_callback)) {
   CHECK(features::IsGlanceablesTimeManagementTasksViewEnabled());
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
@@ -359,9 +382,29 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
   }
   button_->SetAccessibleDescription(a11y_description);
   button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+
+  Shell::Get()->focus_controller()->AddObserver(this);
 }
 
-GlanceablesTaskViewV2::~GlanceablesTaskViewV2() = default;
+GlanceablesTaskViewV2::~GlanceablesTaskViewV2() {
+  Shell::Get()->focus_controller()->RemoveObserver(this);
+}
+
+void GlanceablesTaskViewV2::OnWindowActivating(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gaining_active,
+    aura::Window* losing_active) {
+  if (losing_active == GetWidget()->GetNativeWindow()) {
+    // Resets the title to view state and clears up the textfield to prevent the
+    // focus manager storing the deleted focused textfield.
+    UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+  }
+}
+
+void GlanceablesTaskViewV2::OnWindowActivated(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {}
 
 const views::ImageButton* GlanceablesTaskViewV2::GetCheckButtonForTest() const {
   return button_;
@@ -373,11 +416,22 @@ bool GlanceablesTaskViewV2::GetCompletedForTest() const {
 
 void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
     TaskTitleViewState state) {
+  if (task_title_view_state_ == state) {
+    return;
+  }
+
+  task_title_view_state_ = state;
   task_title_button_ = nullptr;
   tasks_title_view_->RemoveAllChildViews();
 
   switch (state) {
+    case TaskTitleViewState::kNotInitialized:
+      NOTREACHED_NORETURN();
     case TaskTitleViewState::kView:
+      if (contents_view_ && edit_in_browser_button_) {
+        contents_view_->RemoveChildViewT(
+            std::exchange(edit_in_browser_button_, nullptr));
+      }
       task_title_button_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskTitleButton>(
               task_title_, base::BindRepeating(
@@ -396,6 +450,9 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
       text_field->SetProperty(views::kMarginsKey, kTitleMarginsInEditState);
       GetWidget()->widget_delegate()->SetCanActivate(true);
       text_field->RequestFocus();
+
+      edit_in_browser_button_ = contents_view_->AddChildView(
+          std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
       break;
   }
 }

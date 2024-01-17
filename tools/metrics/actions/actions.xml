@@ -10920,15 +10920,24 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User clicked on the add new task button on the tasks glanceable.
   </description>
 </action>
 
+<action name="Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton">
+  <owner>wcwang@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the Edit In Google Tasks label button in the task view of
+    the tasks glanceable.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_LaunchTasksApp_FooterButton">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User clicked on the see all button in the footer of the tasks glanceable.
@@ -10936,7 +10945,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glanceables_Tasks_LaunchTasksApp_HeaderButton">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User clicked on the tasks icon in the header of the tasks glanceable.

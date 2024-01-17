@@ -80,7 +80,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, FormatsDueDate) {
                                 /*updated=*/due);
     const auto view = GlanceablesTaskViewV2(
         &task, /*mark_as_completed_callback=*/base::DoNothing(),
-        /*save_callback=*/base::DoNothing());
+        /*save_callback=*/base::DoNothing(),
+        /*edit_in_browser_callback=*/base::DoNothing());
 
     const auto* const due_label =
         views::AsViewClass<views::Label>(view.GetViewByID(
@@ -103,7 +104,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
   const auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
-          /*save_callback=*/base::DoNothing()));
+          /*save_callback=*/base::DoNothing(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
   ASSERT_TRUE(view);
 
   const auto* const checkbox = view->GetCheckButtonForTest();
@@ -140,7 +142,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
   const auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
           &task, /*mark_as_completed_callback=*/future.GetRepeatingCallback(),
-          /*save_callback=*/base::DoNothing()));
+          /*save_callback=*/base::DoNothing(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
   ASSERT_TRUE(view);
 
   EXPECT_FALSE(view->GetCompletedForTest());
@@ -178,7 +181,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
   const auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
-          /*save_callback=*/base::DoNothing()));
+          /*save_callback=*/base::DoNothing(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
 
   {
     const auto* const title_label =
@@ -240,7 +244,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
   auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
           /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
-          /*save_callback=*/future.GetRepeatingCallback()));
+          /*save_callback=*/future.GetRepeatingCallback(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
   ASSERT_TRUE(view);
 
   view->UpdateTaskTitleViewForState(
@@ -271,7 +276,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
   auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
-          /*save_callback=*/future.GetRepeatingCallback()));
+          /*save_callback=*/future.GetRepeatingCallback(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
   ASSERT_TRUE(view);
 
   view->UpdateTaskTitleViewForState(
@@ -298,7 +304,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
   auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
           /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
-          /*save_callback=*/future.GetRepeatingCallback()));
+          /*save_callback=*/future.GetRepeatingCallback(),
+          /*edit_in_browser_callback=*/base::DoNothing()));
   ASSERT_TRUE(view);
 
   {
