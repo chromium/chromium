@@ -43,6 +43,7 @@ namespace {
 
 using bluetooth_config::mojom::BluetoothSystemState;
 
+constexpr char kFakeEmail[] = "testemail@gmail.com";
 constexpr char kWifiNetworkName[] = "wifi-test-network";
 constexpr char kWelcomeScreen[] = "welcomeScreen";
 constexpr char kQuickStartEntryPoint[] = "quickStartWelcomeEntryPoint";
@@ -262,6 +263,12 @@ class QuickStartBrowserTest : public OobeBaseTest {
       connection->SendWifiCredentials(ash::quick_start::mojom::WifiCredentials(
           "fake-wifi", security, /*is_hidden=*/false, "secret"));
     }
+  }
+
+  void SimulateAccountInfoTransfer(bool send_empty_account_info = false) {
+    auto* connection = connection_broker()->GetFakeConnection();
+    connection->SendAccountInfo(
+        send_empty_account_info ? "" : std::string{kFakeEmail});
   }
 
   void EnsureFlowActive() { EnsureFlowState(true); }
@@ -777,6 +784,27 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
                               kCancelButtonGaiaTransferDialog)
       ->Wait();
   test::OobeJS().ClickOnPath(kCancelButtonGaiaTransferDialog);
+
+  // Returns to the Gaia screen
+  OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+}
+
+// Test the correct behavior when there are no accounts on the phone.
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, HandleEmptyAccounts) {
+  SetupAndWaitForGaiaScreen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  EnsureFlowActive();
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+
+  // Receiving an empty email from the phone will abort the flow.
+  SimulateAccountInfoTransfer(/*send_empty_account_info=*/true);
 
   // Returns to the Gaia screen
   OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();

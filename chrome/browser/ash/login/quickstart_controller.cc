@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -234,10 +235,9 @@ void QuickStartController::OnStatusChanged(
     const TargetDeviceBootstrapController::Status& status) {
   using Step = TargetDeviceBootstrapController::Step;
   using ErrorCode = TargetDeviceBootstrapController::ErrorCode;
-  using Pin = TargetDeviceBootstrapController::Pin;
 
-  // TODO(b/298042953): Emit ScreenOpened metrics when automatically resuming
-  // after an update.
+  // TODO(b/298042953): Emit ScreenOpened metrics when automatically
+  // resuming after an update.
   switch (status.step) {
     case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
@@ -251,8 +251,8 @@ void QuickStartController::OnStatusChanged(
       UpdateUiState(UiState::CONNECTING_TO_PHONE);
       return;
     case Step::PIN_VERIFICATION:
-      CHECK(absl::holds_alternative<Pin>(status.payload));
-      pin_ = absl::get<Pin>(status.payload);
+      CHECK(absl::holds_alternative<PinString>(status.payload));
+      pin_ = *absl::get<PinString>(status.payload);
       CHECK(pin_.value().length() == 4);
       UpdateUiState(UiState::SHOWING_PIN);
       QuickStartMetrics::RecordScreenOpened(
@@ -281,6 +281,16 @@ void QuickStartController::OnStatusChanged(
     case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
       return;
     case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      CHECK(absl::holds_alternative<EmailString>(status.payload));
+      // If there aren't any accounts on the phone, the flow is aborted.
+      if (absl::get<EmailString>(status.payload)->empty()) {
+        QS_LOG(ERROR) << "No account on Android phone. No email received.";
+        AbortFlow(AbortFlowReason::ERROR);
+        return;
+      }
+
+      // Populate the 'UserInfo' that is shown on the UI and start the transfer.
+      user_info_.email = *absl::get<EmailString>(status.payload);
       UpdateUiState(UiState::SIGNING_IN);
       bootstrap_controller_->AttemptGoogleAccountTransfer();
       return;
@@ -347,10 +357,7 @@ void QuickStartController::OnOAuthTokenReceived(
     TargetDeviceBootstrapController::GaiaCredentials gaia_creds) {
   gaia_creds_ = gaia_creds;
 
-  // Show the user's email on the UI.
-  user_info_.email = gaia_creds_.email;
-  UpdateUiState(UiState::SIGNING_IN);
-
+  // TODO(b/319631013) - Track BootstrapConfiguration email mismatch via UMA.
   QS_LOG(INFO) << "About to exchange authorization code for tokens.";
   gaia_client_->GetTokensFromAuthCode(GetClientInfo(), gaia_creds_.auth_code,
                                       kMaxRetryAttempts, this);

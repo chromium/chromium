@@ -146,7 +146,7 @@ void TargetDeviceBootstrapController::OnPinVerificationRequested(
                                      Step::ADVERTISING_WITH_QR_CODE};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
-  UpdateStatus(/*step=*/Step::PIN_VERIFICATION, /*payload=*/pin);
+  UpdateStatus(/*step=*/Step::PIN_VERIFICATION, /*payload=*/PinString(pin));
 }
 
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
@@ -309,7 +309,7 @@ void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
 void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived(
     std::string account_email) {
   UpdateStatus(/*step=*/Step::GOOGLE_ACCOUNT_INFO_RECEIVED,
-               /*payload=*/account_email);
+               /*payload=*/EmailString(account_email));
 }
 
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {

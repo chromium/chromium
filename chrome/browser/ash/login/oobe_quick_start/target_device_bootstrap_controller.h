@@ -77,12 +77,12 @@ class TargetDeviceBootstrapController
 
   using ConnectionClosedReason =
       TargetDeviceConnectionBroker::ConnectionClosedReason;
-  using Pin = std::string;
 
   using Payload = absl::variant<absl::monostate,
                                 ErrorCode,
                                 QRCode::PixelData,
-                                Pin,
+                                PinString,
+                                EmailString,
                                 mojom::WifiCredentials,
                                 GaiaCredentials>;
 

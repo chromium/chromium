@@ -321,11 +321,10 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::PIN_VERIFICATION);
-  EXPECT_TRUE(absl::holds_alternative<TargetDeviceBootstrapController::Pin>(
-      fake_observer_->last_status.payload));
-  EXPECT_TRUE(absl::get<TargetDeviceBootstrapController::Pin>(
-                  fake_observer_->last_status.payload)
-                  .length() == 4);
+  EXPECT_TRUE(
+      absl::holds_alternative<PinString>(fake_observer_->last_status.payload));
+  EXPECT_TRUE(
+      absl::get<PinString>(fake_observer_->last_status.payload)->length() == 4);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
@@ -572,7 +571,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::GOOGLE_ACCOUNT_INFO_RECEIVED);
-  EXPECT_EQ(absl::get<std::string>(fake_observer_->last_status.payload), email);
+  EXPECT_EQ(*absl::get<EmailString>(fake_observer_->last_status.payload),
+            email);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
