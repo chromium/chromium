@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/proxy_resolver_apple.h"
+#include "net/proxy_resolution/proxy_resolver_mac.h"
 
 #include <CFNetwork/CFProxySupport.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -20,7 +20,7 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
-#include "net/proxy_resolution/proxy_chain_util_apple.h"
+#include "net/proxy_resolution/proxy_chain_util_mac.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolver.h"
@@ -42,7 +42,7 @@ class NetworkAnonymizationKey;
 
 namespace {
 
-// A lock shared by all ProxyResolverApple instances. It is used to synchronize
+// A lock shared by all ProxyResolverMac instances. It is used to synchronize
 // the events of multiple CFNetworkExecuteProxyAutoConfigurationURL run loop
 // sources. These events are:
 // 1. Adding the source to the run loop.
@@ -180,11 +180,11 @@ void RunLoopObserverCallBackFunc(CFRunLoopObserverRef observer,
   observerInstance->RunLoopObserverCallBack(observer, activity);
 }
 
-#pragma mark - ProxyResolverApple
-class ProxyResolverApple : public ProxyResolver {
+#pragma mark - ProxyResolverMac
+class ProxyResolverMac : public ProxyResolver {
  public:
-  explicit ProxyResolverApple(const scoped_refptr<PacFileData>& script_data);
-  ~ProxyResolverApple() override;
+  explicit ProxyResolverMac(const scoped_refptr<PacFileData>& script_data);
+  ~ProxyResolverMac() override;
 
   // ProxyResolver methods:
   int GetProxyForURL(const GURL& url,
@@ -198,15 +198,15 @@ class ProxyResolverApple : public ProxyResolver {
   const scoped_refptr<PacFileData> script_data_;
 };
 
-ProxyResolverApple::ProxyResolverApple(
+ProxyResolverMac::ProxyResolverMac(
     const scoped_refptr<PacFileData>& script_data)
     : script_data_(script_data) {}
 
-ProxyResolverApple::~ProxyResolverApple() = default;
+ProxyResolverMac::~ProxyResolverMac() = default;
 
 // Gets the proxy information for a query URL from a PAC. Implementation
 // inspired by http://developer.apple.com/samplecode/CFProxySupportTool/
-int ProxyResolverApple::GetProxyForURL(
+int ProxyResolverMac::GetProxyForURL(
     const GURL& query_url,
     const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
@@ -266,7 +266,7 @@ int ProxyResolverApple::GetProxyForURL(
     return ERR_FAILED;
 
   const CFStringRef private_runloop_mode =
-      CFSTR("org.chromium.ProxyResolverApple");
+      CFSTR("org.chromium.ProxyResolverMac");
 
   // Add the run loop observer to synchronize events of
   // CFNetworkExecuteProxyAutoConfigurationURL sources. See the definition of
@@ -348,16 +348,16 @@ int ProxyResolverApple::GetProxyForURL(
 
 }  // namespace
 
-ProxyResolverFactoryApple::ProxyResolverFactoryApple()
+ProxyResolverFactoryMac::ProxyResolverFactoryMac()
     : ProxyResolverFactory(false /*expects_pac_bytes*/) {
 }
 
-int ProxyResolverFactoryApple::CreateProxyResolver(
+int ProxyResolverFactoryMac::CreateProxyResolver(
     const scoped_refptr<PacFileData>& pac_script,
     std::unique_ptr<ProxyResolver>* resolver,
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request) {
-  *resolver = std::make_unique<ProxyResolverApple>(pac_script);
+  *resolver = std::make_unique<ProxyResolverMac>(pac_script);
   return OK;
 }
 

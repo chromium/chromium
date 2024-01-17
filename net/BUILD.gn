@@ -1204,10 +1204,10 @@ component("net") {
       "base/platform_mime_util_mac.mm",
       "cert/x509_util_apple.cc",
       "cert/x509_util_apple.h",
-      "proxy_resolution/proxy_chain_util_apple.cc",
-      "proxy_resolution/proxy_chain_util_apple.h",
-      "proxy_resolution/proxy_resolver_apple.cc",
-      "proxy_resolution/proxy_resolver_apple.h",
+      "proxy_resolution/proxy_chain_util_mac.cc",
+      "proxy_resolution/proxy_chain_util_mac.h",
+      "proxy_resolution/proxy_resolver_mac.cc",
+      "proxy_resolution/proxy_resolver_mac.h",
     ]
   }
 
@@ -2803,7 +2803,7 @@ test("net_unittests") {
   if (is_apple) {
     sources += [
       "cert/x509_util_apple_unittest.cc",
-      "proxy_resolution/proxy_chain_util_apple_unittest.cc",
+      "proxy_resolution/proxy_chain_util_mac_unittest.cc",
     ]
   }
 

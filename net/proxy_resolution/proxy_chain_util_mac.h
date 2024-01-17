@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_PROXY_RESOLUTION_PROXY_CHAIN_UTIL_APPLE_H_
-#define NET_PROXY_RESOLUTION_PROXY_CHAIN_UTIL_APPLE_H_
+#ifndef NET_PROXY_RESOLUTION_PROXY_CHAIN_UTIL_MAC_H_
+#define NET_PROXY_RESOLUTION_PROXY_CHAIN_UTIL_MAC_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -23,4 +23,4 @@ NET_EXPORT ProxyChain ProxyDictionaryToProxyChain(CFStringRef proxy_type,
 
 }  // namespace net
 
-#endif  // NET_PROXY_RESOLUTION_PROXY_CHAIN_UTIL_APPLE_H_
+#endif  // NET_PROXY_RESOLUTION_PROXY_CHAIN_UTIL_MAC_H_
