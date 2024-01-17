@@ -9,6 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -99,6 +101,9 @@ class CalculatorProviderTest : public testing::Test,
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<FakeSearchProvider> search_provider_;
   scoped_refptr<CalculatorProvider> calculator_provider_;
+  // Used to simulate time passing.
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(CalculatorProviderTest, SkipSyncInputs) {
@@ -159,9 +164,17 @@ TEST_F(CalculatorProviderTest, CachePreviousCalcSuggestions) {
   StartAutocompletion(true, {{u"0+2=2"}}, {});
   EXPECT_THAT(GetCalcMatches(), testing::ElementsAre(u"0+1=1", u"0+2=2"));
 
-  // Search doesn't have a calc suggestion. THe old 2 should be shown.
+  // Search doesn't have a calc suggestion. The old 2 should be shown.
   StartAutocompletion(true, {{u"search", false}}, {});
   EXPECT_THAT(GetCalcMatches(), testing::ElementsAre(u"0+1=1", u"0+2=2"));
+
+  // Calc suggestions should expire after 1 hour.
+  task_environment_.FastForwardBy(base::Minutes(59));
+  StartAutocompletion(true, {{u"search", false}}, {});
+  EXPECT_THAT(GetCalcMatches(), testing::ElementsAre(u"0+1=1", u"0+2=2"));
+  task_environment_.FastForwardBy(base::Minutes(60));
+  StartAutocompletion(true, {{u"search", false}}, {});
+  EXPECT_THAT(GetCalcMatches(), testing::ElementsAre());
 }
 
 TEST_F(CalculatorProviderTest, MaxCacheSize) {

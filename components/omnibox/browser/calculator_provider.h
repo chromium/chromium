@@ -7,12 +7,15 @@
 
 #include <limits>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/provider_state_service.h"
 
 class SearchProvider;
 class AutocompleteInput;
@@ -69,7 +72,7 @@ class CalculatorProvider : public AutocompleteProvider,
   bool Show();
 
   // The recent search calc suggestions.
-  std::vector<AutocompleteMatch>& Cache();
+  std::vector<ProviderStateService::CachedAutocompleteMatch>& Cache();
 
   // The current input.
   std::u16string input_;
