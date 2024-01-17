@@ -2979,10 +2979,8 @@ constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
-constexpr char kTimeOfDayWallpaperInternalName[] = "time-of-day-wallpaper";
 constexpr char kTimeOfDayWallpaperForcedAutoScheduleInternalName[] =
     "time-of-day-wallpaper-forced-auto-schedule";
-constexpr char kTimeOfDayScreenSaverInternalName[] = "time-of-day-screen-saver";
 constexpr char kTimeOfDayDlcInternalName[] = "time-of-day-dlc";
 constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
 constexpr char kGlanceablesV2KeyName[] = "glanceables-v2-key";
@@ -4380,14 +4378,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen)},
-    {kTimeOfDayScreenSaverInternalName,
-     flag_descriptions::kTimeOfDayScreenSaverName,
-     flag_descriptions::kTimeOfDayScreenSaverDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTimeOfDayScreenSaver)},
-    {kTimeOfDayWallpaperInternalName,
-     flag_descriptions::kTimeOfDayWallpaperName,
-     flag_descriptions::kTimeOfDayWallpaperDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kTimeOfDayWallpaper)},
     {kTimeOfDayWallpaperForcedAutoScheduleInternalName,
      flag_descriptions::kTimeOfDayWallpaperForcedAutoScheduleName,
      flag_descriptions::kTimeOfDayWallpaperForcedAutoScheduleDescription,
@@ -11329,22 +11319,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
                floss::features::kFlossIsAvailable.name,
                base::FeatureList::OVERRIDE_DISABLE_FEATURE);
-  }
-
-  // Only show Time of Day wallpaper flag if channel is one of
-  // Dev/Canary/Unknown.
-  if (!strcmp(kTimeOfDayWallpaperInternalName, entry.internal_name)) {
-    return (channel != version_info::Channel::DEV &&
-            channel != version_info::Channel::CANARY &&
-            channel != version_info::Channel::UNKNOWN);
-  }
-
-  // Only show Time of Day Screen Saver flag if channel is one of
-  // Dev/Canary/Unknown.
-  if (!strcmp(kTimeOfDayScreenSaverInternalName, entry.internal_name)) {
-    return (channel != version_info::Channel::DEV &&
-            channel != version_info::Channel::CANARY &&
-            channel != version_info::Channel::UNKNOWN);
   }
 
   // Only show glanceables flag if channel is one of Beta/Dev/Canary/Unknown.

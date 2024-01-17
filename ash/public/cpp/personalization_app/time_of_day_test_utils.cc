@@ -12,8 +12,7 @@ namespace ash::personalization_app {
 namespace {
 
 std::vector<base::test::FeatureRef> GetTimeOfDayFeatures() {
-  return {features::kTimeOfDayWallpaper, features::kTimeOfDayScreenSaver,
-          features::kFeatureManagementTimeOfDayWallpaper,
+  return {features::kFeatureManagementTimeOfDayWallpaper,
           features::kFeatureManagementTimeOfDayScreenSaver};
 }
 

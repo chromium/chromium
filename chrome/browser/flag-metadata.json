@@ -7933,16 +7933,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "time-of-day-screen-saver",
-    "owners": [ "esum@chromium.org", "jasontt@chromium.org", "assistive-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "time-of-day-wallpaper",
-    "owners": [ "esum@chromium.org", "jasontt@chromium.org", "assistive-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "time-of-day-wallpaper-forced-auto-schedule",
     "owners": [ "esum@chromium.org", "jasontt@chromium.org", "assistive-eng@google.com" ],
     "expiry_milestone": 124
