@@ -16,6 +16,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import java.util.Set;
 /** A Java class implementing midi::MidiManagerAndroid functionality. */
 @JNINamespace("midi")
 class MidiManagerAndroid {
+    private static final String TAG = "MidiManagerAndroid";
+
     /** Set true when this instance is successfully initialized. */
     private boolean mIsInitialized;
 
@@ -82,6 +85,22 @@ class MidiManagerAndroid {
         mNativeManagerPointer = nativeManagerPointer;
     }
 
+    void postOnInitializationFailed() {
+        mHandler.post(
+            new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (MidiManagerAndroid.this) {
+                        if (mStopped) {
+                            return;
+                        }
+                        MidiManagerAndroidJni.get()
+                                .onInitializationFailed(mNativeManagerPointer);
+                    }
+                }
+            });
+    }
+
     /**
      * Initializes this object.
      * This function must be called right after creation.
@@ -89,22 +108,11 @@ class MidiManagerAndroid {
     @CalledByNative
     void initialize() {
         if (mManager == null) {
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            synchronized (MidiManagerAndroid.this) {
-                                if (mStopped) {
-                                    return;
-                                }
-                                MidiManagerAndroidJni.get()
-                                        .onInitializationFailed(mNativeManagerPointer);
-                            }
-                        }
-                    });
+            postOnInitializationFailed();
             return;
         }
-        mManager.registerDeviceCallback(
+        try {
+            mManager.registerDeviceCallback(
                 new MidiManager.DeviceCallback() {
                     @Override
                     public void onDeviceAdded(MidiDeviceInfo device) {
@@ -117,6 +125,14 @@ class MidiManagerAndroid {
                     }
                 },
                 mHandler);
+        } catch (Throwable t) {
+            // android.media.midi.MidiManager.registerDeviceCallback
+            // may throw RemoteException caused by
+            // SecurityException("too many MIDI listeners ... ")
+            Log.e(TAG, "registerDeviceCallback error", t);
+            postOnInitializationFailed();
+            return;
+        }
         MidiDeviceInfo[] infos = mManager.getDevices();
 
         for (final MidiDeviceInfo info : infos) {
