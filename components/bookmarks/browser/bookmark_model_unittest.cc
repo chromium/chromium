@@ -507,6 +507,7 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
 
     auto client = std::make_unique<TestBookmarkClient>();
     BookmarkPermanentNode* managed_node = client->EnableManagedNode();
+    client->AllowFoldersForAccountStorage();
 
     model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
     model_->AddObserver(this);
@@ -1948,6 +1949,45 @@ TEST_F(BookmarkModelTest, GetNodeByUuid) {
                          NodeTypeForUuidLookup::kLocalOrSyncableNodes));
 }
 
+TEST_F(BookmarkModelTest, GetAccountNodeByUuid) {
+  model_->CreateAccountPermanentFolders();
+  const BookmarkNode* account_bookmark_bar_node =
+      model_->account_bookmark_bar_node();
+  ASSERT_NE(nullptr, account_bookmark_bar_node);
+  ASSERT_EQ(account_bookmark_bar_node,
+            model_->GetNodeByUuid(account_bookmark_bar_node->uuid(),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+  ASSERT_NE(
+      account_bookmark_bar_node,
+      model_->GetNodeByUuid(account_bookmark_bar_node->uuid(),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+
+  // Create two nodes (URL and folder) without specifying a UUID, which means
+  // a random one is used.
+  const BookmarkNode* url_node_with_implicit_uuid = model_->AddURL(
+      account_bookmark_bar_node, 0, u"title", GURL("http://foo.com"));
+  const BookmarkNode* folder_node_with_implicit_uuid =
+      model_->AddFolder(account_bookmark_bar_node, 0, u"title");
+
+  ASSERT_TRUE(url_node_with_implicit_uuid);
+  ASSERT_TRUE(folder_node_with_implicit_uuid);
+
+  EXPECT_EQ(url_node_with_implicit_uuid,
+            model_->GetNodeByUuid(url_node_with_implicit_uuid->uuid(),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(folder_node_with_implicit_uuid,
+            model_->GetNodeByUuid(folder_node_with_implicit_uuid->uuid(),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+
+  // Verify that lookups using kLocalOrSyncableNodes return nullptr.
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         url_node_with_implicit_uuid->uuid(),
+                         NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         folder_node_with_implicit_uuid->uuid(),
+                         NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+}
+
 TEST_F(BookmarkModelTest, GetPermanentNodeByUuid) {
   // Permanent nodes should be returned by UUID.
   EXPECT_EQ(
@@ -1976,6 +2016,98 @@ TEST_F(BookmarkModelTest, GetPermanentNodeByUuid) {
   EXPECT_EQ(managed_node, model_->GetNodeByUuid(
                               base::Uuid::ParseLowercase(kManagedNodeUuid),
                               NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+}
+
+TEST_F(BookmarkModelTest, GetAccountPermanentNodeByUuid) {
+  BookmarkPermanentNode* managed_node = ReloadModelWithManagedNode();
+  ASSERT_NE(nullptr, managed_node);
+
+  ASSERT_EQ(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_EQ(nullptr, model_->account_mobile_node());
+  ASSERT_EQ(nullptr, model_->account_other_node());
+
+  // Before account nodes are created, the lookups should return null.
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(base::Uuid::ParseLowercase(kRootNodeUuid),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+                         NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+                         NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+                         NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(base::Uuid::ParseLowercase(kManagedNodeUuid),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+
+  model_->CreateAccountPermanentFolders();
+  ASSERT_NE(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_NE(nullptr, model_->account_mobile_node());
+  ASSERT_NE(nullptr, model_->account_other_node());
+
+  // The root node's UUID should still return null.
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(base::Uuid::ParseLowercase(kRootNodeUuid),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+
+  // Account permanent nodes should be returned by UUID.
+  EXPECT_EQ(
+      model_->account_bookmark_bar_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+                            NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(model_->account_mobile_node(),
+            model_->GetNodeByUuid(
+                base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+                NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(
+      model_->account_other_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+                            NodeTypeForUuidLookup::kAccountNodes));
+
+  // Managed bookmarks are not considered account nodes.
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(base::Uuid::ParseLowercase(kManagedNodeUuid),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+
+  // Verify that having created account bookmarks doesn't influence
+  // local-or-syncable lookups.
+  ASSERT_NE(model_->bookmark_bar_node(), model_->account_bookmark_bar_node());
+  ASSERT_NE(model_->mobile_node(), model_->account_mobile_node());
+  ASSERT_NE(model_->other_node(), model_->account_other_node());
+  EXPECT_EQ(
+      model_->root_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kRootNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(
+      model_->bookmark_bar_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(model_->mobile_node(),
+            model_->GetNodeByUuid(
+                base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+                NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(
+      model_->other_node(),
+      model_->GetNodeByUuid(base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+                            NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+
+  // Removing account nodes should make lookups fail again.
+  model_->RemoveAccountPermanentFolders();
+  ASSERT_EQ(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_EQ(nullptr, model_->account_mobile_node());
+  ASSERT_EQ(nullptr, model_->account_other_node());
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+                         NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+                         NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(nullptr, model_->GetNodeByUuid(
+                         base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+                         NodeTypeForUuidLookup::kAccountNodes));
 }
 
 TEST_F(BookmarkModelTest, GetNodeByUuidAfterRemove) {
@@ -2156,9 +2288,6 @@ TEST_F(BookmarkModelTest, CreateAccountPermanentFolders) {
   EXPECT_EQ(BookmarkNode::MOBILE, model_->account_mobile_node()->type());
 
   AssertObserverCount(3, 0, 0, 0, 0, 0, 0, 0, 0);
-
-  // TODO(crbug.com/1494120): Add expectations about UUIDs when the index allows
-  // it.
 }
 
 TEST_F(BookmarkModelTest, RemoveAccountPermanentFolders) {
@@ -2176,9 +2305,6 @@ TEST_F(BookmarkModelTest, RemoveAccountPermanentFolders) {
   EXPECT_EQ(nullptr, model_->account_mobile_node());
 
   AssertObserverCount(0, 0, 3, 0, 0, 3, 0, 0, 0);
-
-  // TODO(crbug.com/1494120): Add expectations about UUIDs when the index allows
-  // it.
 }
 
 }  // namespace

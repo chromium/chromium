@@ -237,22 +237,17 @@ class BookmarkPermanentNode : public BookmarkNode {
   friend class BookmarkModel;
 
   // Permanent nodes are well-known, it's not allowed to create arbitrary ones.
-  // |is_account_bookmark_folder| allows account permanent folders to use a
-  // random UUID rather than a well-known UUID.
-  // TODO(crbug.com/1494120): Remove |is_account_bookmark_folder| and always use
-  // the same UUIDs for permanent folders (including account bookmarks).
+  // Note that the same UUID is used for local-or-syncable instances and
+  // account permanent folders (as exposed by BookmarkModel APIs).
   static std::unique_ptr<BookmarkPermanentNode> CreateBookmarkBar(
       int64_t id,
-      bool visible_when_empty,
-      bool is_account_bookmark_folder = false);
+      bool visible_when_empty);
   static std::unique_ptr<BookmarkPermanentNode> CreateOtherBookmarks(
       int64_t id,
-      bool visible_when_empty,
-      bool is_account_bookmark_folder = false);
+      bool visible_when_empty);
   static std::unique_ptr<BookmarkPermanentNode> CreateMobileBookmarks(
       int64_t id,
-      bool visible_when_empty,
-      bool is_account_bookmark_folder = false);
+      bool visible_when_empty);
 
   // Constructor is private to disallow the construction of permanent nodes
   // other than the well-known ones, see factory methods.

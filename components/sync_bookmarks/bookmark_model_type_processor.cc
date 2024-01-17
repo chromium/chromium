@@ -217,11 +217,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
       /*is_initial_sync=*/!bookmark_tracker_, updates.size());
 
   // Clients before M94 did not populate the parent UUID in specifics.
-  // TODO(crbug.com/1494120): Reintroduce this logic unconditionally once
-  // proper UUIDs are adopted for account bookmarks.
-  if (bookmark_model_->HasWellKnownPermanentNodeUuids()) {
-    PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
-  }
+  PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
 
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(model_type_state, std::move(updates));

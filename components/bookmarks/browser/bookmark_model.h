@@ -260,7 +260,31 @@ class BookmarkModel final : public BookmarkUndoProvider,
   [[nodiscard]] std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
   GetNodesByURL(const GURL& url) const;
 
-  // TODO(crbug.com/1494120): Add support for account bookmarks.
+  // Enum determining a subset of bookmark nodes within a BookmarkModel for the
+  // purpose of issuing UUID-based lookups. It is needed because, in some
+  // advanced scenarios, the same UUID may be used by two BookmarkNode-s, in
+  // particular if a bookmark duplicate exists as a result of Sync having left
+  // behind a copy of the data.
+  //
+  // Below some guidance about the use of this enum:
+  // 1. For callers that don't particularly mind the nature of the bookmark
+  //    node, a sensible default is to issue two lookups, starting with
+  //    `kAccountNodes` and (if the first returns null) following up with
+  //    `kLocalOrSyncableNodes`.
+  //
+  // 2. For callers that specifically need to identify bookmarks that are saved
+  //    (sync-ed) to the user's server-side account, it might be required to
+  //    only conditionally issue the second lookup (`kLocalOrSyncableNodes`),
+  //    based on whether user-facing Sync is on (exposed outside
+  //    components/bookmarks, namely in SyncService).
+  //
+  // 3. For callers that specifically need the opposite, that is, identify
+  //    bookmarks that are local-only, a lookup using `kLocalOrSyncableNodes`
+  //    is sufficient, but it should also be done conditionally to the
+  //    user-facing Sync being off (exposed outside components/bookmarks, namely
+  //    in SyncService).
+  //
+  // In doubt, please reach out to components/bookmarks owners for guidance.
   enum class NodeTypeForUuidLookup {
     // Local or syncable nodes include all bookmark nodes that are not
     // descendants of account permanent folders (e.g. as returned by
@@ -268,9 +292,20 @@ class BookmarkModel final : public BookmarkUndoProvider,
     // BookmarkClient::AreFoldersForAccountStorageAllowed() returns false, which
     // most notably includes iOS, this includes all bookmark nodes.
     kLocalOrSyncableNodes,
+    // Account nodes include all bookmarks that are descendants of account
+    // permanent folders (e.g. as returned by account_bookmark_bar_node()). On
+    // platforms where BookmarkClient::AreFoldersForAccountStorageAllowed()
+    // returns false, which most notably includes iOS, these bookmarks don't
+    // exist.
+    kAccountNodes,
   };
 
-  // Returns the node with the given UUID or null if no node exists with this
+  // Returns the node with the given `uuid` among the subset of nodes determined
+  // by `type`. Returns null if no node exists matching `uuid`.
+  //
+  // WARNING: UUID-based lookups are subtle and should be done with care, please
+  // see details above in `NodeTypeForUuidLookup` and in doubt please reach out
+  // to components/bookmarks owners for guidance.
   const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid,
                                     NodeTypeForUuidLookup type) const;
 
@@ -464,7 +499,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
   BookmarkNode* AddNode(BookmarkNode* parent,
                         size_t index,
                         std::unique_ptr<BookmarkNode> node,
-                        bool added_by_user = false);
+                        bool added_by_user,
+                        NodeTypeForUuidLookup type_for_uuid_lookup);
 
   // Adds `node` to all lookups indices and recursively invokes this for all
   // children.
