@@ -410,6 +410,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   // calls that were requested and queued before the isolation key was ready.
   void OnGetIsolationKey(const std::string& isolation_key);
 
+  bool use_blocklist() const;
+
   scoped_refptr<SharedContextState> shared_context_state_;
 
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -1087,22 +1089,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   if (gpu_preferences.enable_unsafe_webgpu) {
     safety_level_ = webgpu::SafetyLevel::kUnsafe;
   }
-
-  dawn::native::BackendValidationLevel validation_level =
-      dawn::native::BackendValidationLevel::Disabled;
-  switch (gpu_preferences.enable_dawn_backend_validation) {
-    case DawnBackendValidationLevel::kDisabled:
-      break;
-    case DawnBackendValidationLevel::kPartial:
-      validation_level = dawn::native::BackendValidationLevel::Partial;
-      break;
-    case DawnBackendValidationLevel::kFull:
-      validation_level = dawn::native::BackendValidationLevel::Full;
-      break;
-  }
-
   dawn_instance_ = DawnInstance::Create(dawn_platform_.get(), gpu_preferences,
-                                        safety_level_, validation_level);
+                                        safety_level_);
 
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
@@ -1181,6 +1169,7 @@ ContextResult WebGPUDecoderImpl::Initialize(
     force_fallback_adapter_ = true;
   }
 
+  dawn_instance_->EnableAdapterBlocklist(use_blocklist());
   // Create a Chrome-side EGL context. This isn't actually used by Dawn,
   // but it prevents rendering artifacts in Chrome. This workaround should
   // be revisited once EGL context creation is reworked. See crbug.com/1465911
@@ -1225,7 +1214,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
         return true;
       }
 
-      auto* info = dawn::native::GetFeatureInfo(feature);
+      auto* info =
+          dawn_instance_->GetFeatureInfo(static_cast<WGPUFeatureName>(feature));
       if (info == nullptr) {
         return false;
       }
@@ -1545,6 +1535,13 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
       base::Unretained(this), adapter, std::move(desc), callback, userdata);
 }
 
+bool WebGPUDecoderImpl::use_blocklist() const {
+  // Enable the blocklist unless --enable-unsafe-webgpu or
+  // --disable-dawn-features=adapter_blocklist
+  return !(safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+           base::Contains(require_disabled_toggles_, "adapter_blocklist"));
+}
+
 wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     wgpu::PowerPreference power_preference,
     bool force_fallback,
@@ -1685,8 +1682,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     WGPUAdapterProperties adapter_properties = {};
     adapter.GetProperties(&adapter_properties);
 
-    if (safety_level_ != webgpu::SafetyLevel::kUnsafe &&
-        IsWebGPUAdapterBlocklisted(adapter_properties)) {
+    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter_properties)) {
       return false;
     }
 

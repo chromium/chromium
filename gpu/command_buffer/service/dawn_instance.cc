@@ -25,8 +25,7 @@ namespace gpu::webgpu {
 std::unique_ptr<DawnInstance> DawnInstance::Create(
     dawn::platform::Platform* platform,
     const GpuPreferences& gpu_preferences,
-    SafetyLevel safety,
-    dawn::native::BackendValidationLevel validation_level) {
+    SafetyLevel safety) {
   // Populate the WGSL blocklist based on the Finch feature.
   std::vector<std::string> wgsl_unsafe_features_owned;
   std::vector<const char*> wgsl_unsafe_features;
@@ -58,21 +57,13 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
     require_instance_enabled_toggles.push_back("allow_unsafe_apis");
   }
 
-  for (const std::string& toggle : gpu_preferences.enabled_dawn_features_list) {
-    require_instance_enabled_toggles.push_back(toggle.c_str());
+  for (const std::string& toggles :
+       gpu_preferences.enabled_dawn_features_list) {
+    require_instance_enabled_toggles.push_back(toggles.c_str());
   }
-
-  // Tests need to disable the blocklist so they can run with whatever driver is
-  // on the bots.
-  bool adapter_blocklist_disabled_for_testing = false;
-  for (const std::string& toggle :
+  for (const std::string& toggles :
        gpu_preferences.disabled_dawn_features_list) {
-    if (toggle == "adapter_blocklist_for_testing") {
-      adapter_blocklist_disabled_for_testing = true;
-      continue;
-    }
-
-    require_instance_disabled_toggles.push_back(toggle.c_str());
+    require_instance_disabled_toggles.push_back(toggles.c_str());
   }
 
   wgpu::DawnTogglesDescriptor dawn_toggle_desc;
@@ -113,16 +104,28 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
   dawn_instance_desc.platform = platform;
-  dawn_instance_desc.enableAdapterBlocklist =
-      (safety != SafetyLevel::kUnsafe) &&
-      !adapter_blocklist_disabled_for_testing;
-  dawn_instance_desc.backendValidationLevel = validation_level;
 
   // Create the instance with all the previous descriptors chained.
   wgpu::InstanceDescriptor instance_desc;
   instance_desc.nextInChain = &dawn_instance_desc;
-  return std::make_unique<DawnInstance>(
+
+  auto instance = std::make_unique<DawnInstance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
+
+  switch (gpu_preferences.enable_dawn_backend_validation) {
+    case DawnBackendValidationLevel::kDisabled:
+      break;
+    case DawnBackendValidationLevel::kPartial:
+      instance->SetBackendValidationLevel(
+          dawn::native::BackendValidationLevel::Partial);
+      break;
+    case DawnBackendValidationLevel::kFull:
+      instance->SetBackendValidationLevel(
+          dawn::native::BackendValidationLevel::Full);
+      break;
+  }
+
+  return instance;
 }
 
 }  // namespace gpu::webgpu

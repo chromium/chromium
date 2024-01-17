@@ -231,23 +231,10 @@ bool DawnContextProvider::Initialize(
   platform_ = std::make_unique<Platform>(std::move(caching_interface),
                                          /*uma_prefix=*/"GPU.GraphiteDawn.");
 
-  // ANGLE always tries creating D3D11 device with debug layer when dcheck is
-  // on, so tries creating dawn device with backend validation as well.
-  constexpr bool kANGLEHasBackendValidationEnabled =
-      DCHECK_IS_ON() && BUILDFLAG(IS_WIN);
-
-  dawn::native::BackendValidationLevel validation_level =
-      dawn::native::BackendValidationLevel::Disabled;
-  if (kANGLEHasBackendValidationEnabled ||
-      features::kSkiaGraphiteDawnBackendValidation.Get()) {
-    validation_level = dawn::native::BackendValidationLevel::Full;
-  }
-
   // Make Dawn experimental API and WGSL features available since access to this
   // instance doesn't exit the GPU process.
   instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences,
-                                           webgpu::SafetyLevel::kUnsafe,
-                                           validation_level);
+                                           webgpu::SafetyLevel::kUnsafe);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
@@ -390,7 +377,33 @@ bool DawnContextProvider::Initialize(
   deviceCreationLimits.limits = supportedLimits.limits;
   descriptor.requiredLimits = &deviceCreationLimits;
 
-  wgpu::Device device = adapter.CreateDevice(&descriptor);
+  // ANGLE always tries creating D3D11 device with debug layer when dcheck is
+  // on, so tries creating dawn device with backend validation as well.
+  constexpr bool enable_backend_validation =
+      DCHECK_IS_ON() && BUILDFLAG(IS_WIN);
+
+  std::vector<dawn::native::BackendValidationLevel> backend_validation_levels =
+      {dawn::native::BackendValidationLevel::Disabled};
+  if (features::kSkiaGraphiteDawnBackendValidation.Get() ||
+      enable_backend_validation) {
+    backend_validation_levels.push_back(
+        dawn::native::BackendValidationLevel::Partial);
+    backend_validation_levels.push_back(
+        dawn::native::BackendValidationLevel::Full);
+  }
+
+  wgpu::Device device;
+  // Try create device with backend validation level.
+  for (auto it = backend_validation_levels.rbegin();
+       it != backend_validation_levels.rend(); ++it) {
+    auto level = *it;
+    instance_->SetBackendValidationLevel(level);
+    device = adapter.CreateDevice(&descriptor);
+    if (device) {
+      break;
+    }
+  }
+
   if (!device) {
     LOG(ERROR) << "Failed to create device.";
     return false;

@@ -37,8 +37,7 @@ class DawnInstance : public dawn::native::Instance {
   static std::unique_ptr<DawnInstance> Create(
       dawn::platform::Platform* platform,
       const GpuPreferences& gpu_preferences,
-      SafetyLevel safety,
-      dawn::native::BackendValidationLevel validation_level);
+      SafetyLevel safety);
 
  private:
   using dawn::native::Instance::Instance;
