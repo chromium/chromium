@@ -571,13 +571,6 @@ class CORE_EXPORT FragmentItem final {
       const InlineCursor& cursor,
       InlinePaintContext* inline_context) const;
 
-  // Compute the inline position from text offset, in logical coordinate
-  // relative to this fragment.
-  LayoutUnit InlinePositionForOffset(StringView text,
-                                     unsigned offset,
-                                     LayoutUnit (*round_function)(float),
-                                     AdjustMidCluster) const;
-
   AffineTransform BuildSvgTransformForTextPath(
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;

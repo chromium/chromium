@@ -939,13 +939,8 @@ void FragmentItem::SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const {
   delta_to_next_for_same_layout_object_ = delta;
 }
 
-// Compute the inline position from text offset, in logical coordinate relative
-// to this fragment.
-LayoutUnit FragmentItem::InlinePositionForOffset(
-    StringView text,
-    unsigned offset,
-    LayoutUnit (*round_function)(float),
-    AdjustMidCluster adjust_mid_cluster) const {
+LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
+                                                      unsigned offset) const {
   DCHECK_GE(offset, StartOffset());
   DCHECK_LE(offset, EndOffset());
   DCHECK_EQ(text.length(), TextLength());
@@ -955,9 +950,9 @@ LayoutUnit FragmentItem::InlinePositionForOffset(
     // TODO(layout-dev): Move caret position out of ShapeResult and into a
     // separate support class that can take a ShapeResult or ShapeResultView.
     // Allows for better code separation and avoids the extra copy below.
-    return round_function(
+    return LayoutUnit::FromFloatRound(
         TextShapeResult()->CreateShapeResult()->CaretPositionForOffset(
-            offset, text, adjust_mid_cluster));
+            offset, text, AdjustMidCluster::kToEnd));
   }
 
   // This fragment is a flow control because otherwise ShapeResult exists.
@@ -972,25 +967,57 @@ LayoutUnit FragmentItem::InlinePositionForOffset(
   return IsHorizontal() ? Size().width : Size().height;
 }
 
-LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
-                                                      unsigned offset) const {
-  return InlinePositionForOffset(text, offset, LayoutUnit::FromFloatRound,
-                                 AdjustMidCluster::kToEnd);
-}
-
 std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
     StringView text,
     unsigned start_offset,
     unsigned end_offset) const {
   DCHECK_LE(start_offset, EndOffset());
   DCHECK_GE(start_offset, StartOffset());
+  DCHECK_GE(end_offset, StartOffset());
   DCHECK_LE(end_offset, EndOffset());
+  DCHECK_EQ(text.length(), TextLength());
 
-  const LayoutUnit start_position =
-      InlinePositionForOffset(text, start_offset, LayoutUnit::FromFloatFloor,
-                              AdjustMidCluster::kToStart);
-  const LayoutUnit end_position = InlinePositionForOffset(
-      text, end_offset, LayoutUnit::FromFloatCeil, AdjustMidCluster::kToEnd);
+  start_offset -= StartOffset();
+  end_offset -= StartOffset();
+
+  LayoutUnit start_position;
+  LayoutUnit end_position;
+  if (TextShapeResult()) {
+    // TODO(layout-dev): Move caret position out of ShapeResult and into a
+    // separate support class that can take a ShapeResult or ShapeResultView.
+    // Allows for better code separation and avoids the extra copy below.
+    scoped_refptr<ShapeResult> shape_result =
+        TextShapeResult()->CreateShapeResult();
+    start_position =
+        LayoutUnit::FromFloatFloor(shape_result->CaretPositionForOffset(
+            start_offset, text, AdjustMidCluster::kToStart));
+    end_position =
+        LayoutUnit::FromFloatCeil(shape_result->CaretPositionForOffset(
+            end_offset, text, AdjustMidCluster::kToEnd));
+  } else {
+    // This fragment is a flow control because otherwise ShapeResult exists.
+    DCHECK(IsFlowControl());
+    DCHECK_EQ(1u, text.length());
+    if (!start_offset || UNLIKELY(IsRtl(Style().Direction()))) {
+      start_position = LayoutUnit();
+    } else if (IsSvgText()) {
+      start_position =
+          LayoutUnit(IsHorizontal() ? GetSvgFragmentData()->rect.width()
+                                    : GetSvgFragmentData()->rect.height());
+    } else {
+      start_position = IsHorizontal() ? Size().width : Size().height;
+    }
+
+    if (!end_offset || UNLIKELY(IsRtl(Style().Direction()))) {
+      end_position = LayoutUnit();
+    } else if (IsSvgText()) {
+      end_position =
+          LayoutUnit(IsHorizontal() ? GetSvgFragmentData()->rect.width()
+                                    : GetSvgFragmentData()->rect.height());
+    } else {
+      end_position = IsHorizontal() ? Size().width : Size().height;
+    }
+  }
 
   // Swap positions if RTL.
   return (UNLIKELY(start_position > end_position))
