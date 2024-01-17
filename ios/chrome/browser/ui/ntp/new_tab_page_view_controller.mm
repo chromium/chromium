@@ -1594,7 +1594,7 @@ const CGFloat kModuleMinMargin = 16;
     [elements addObject:viewController.view];
   }
   [elements addObject:self.collectionView];
-  self.accessibilityElements = elements;
+  self.view.accessibilityElements = elements;
 }
 
 // Calculate the scroll position that should be saved in the NTP state and
