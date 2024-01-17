@@ -1031,4 +1031,20 @@ TEST_F(ConnectionTest, CloseFromCompleteDoesNotNotifyPhoneWhenUnauthenticated) {
   EXPECT_FALSE(read_result.has_value());
 }
 
+TEST_F(ConnectionTest, NoResponseAfterClose) {
+  // Close the connection while waiting for a response and ensure the response
+  // callback is not invoked.
+
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
+  SendBytesAndReadResponse(std::vector<uint8_t>(kTestBytes),
+                           future.GetCallback(), kResponseTimeout);
+  EXPECT_EQ(connection_->GetState(), Connection::State::kOpen);
+  EXPECT_FALSE(future.IsReady());
+
+  connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+  EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
+  EXPECT_FALSE(future.IsReady());
+}
+
 }  // namespace ash::quick_start

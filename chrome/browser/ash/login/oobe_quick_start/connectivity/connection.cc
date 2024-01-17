@@ -532,7 +532,14 @@ void Connection::OnResponseReceived(
             response_type),
         /*succeeded=*/true, std::nullopt);
   }
-  std::move(callback).Run(std::move(response_bytes));
+
+  // NearbyConnection will invoke its read callback if there is one pending when
+  // it is destroyed. In these instances we didn't actually receive a response
+  // so we need to ensure the connection is still open before invoking
+  // |callback| here.
+  if (connection_state_ == Connection::State::kOpen) {
+    std::move(callback).Run(std::move(response_bytes));
+  }
 }
 
 }  // namespace ash::quick_start
