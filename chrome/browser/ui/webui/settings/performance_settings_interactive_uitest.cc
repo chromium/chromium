@@ -81,6 +81,14 @@ const WebContentsInteractionTestUtil::DeepQuery kExceptionDialogAddButton = {
     "tab-discard-exception-tabbed-add-dialog",
     "cr-button#actionButton"};
 
+const WebContentsInteractionTestUtil::DeepQuery kMemorySaverFeedbackButton = {
+    "settings-ui", "settings-main", "settings-basic-page",
+    "settings-section#performanceSettingsSection", "cr-icon-button#feedback"};
+
+const WebContentsInteractionTestUtil::DeepQuery kBatterySaverFeedbackButton = {
+    "settings-ui", "settings-main", "settings-basic-page",
+    "settings-section#batterySettingsSection", "cr-icon-button#feedback"};
+
 }  // namespace
 
 class MemorySettingsInteractiveTest
@@ -188,20 +196,42 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// TODO(http://b/281528238): reenable the test.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
-                       DISABLED_MemorySaverSendFeedbackDialogOpens) {
-  const DeepQuery memory_saver_feedback = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-section#performanceSettingsSection", "cr-icon-button#feedback"};
-
+                       MemorySaverSendFeedbackDialogOpens) {
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(kPerformanceSettingsPage,
                           GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      ClickElement(kPerformanceSettingsPage, memory_saver_feedback),
+      ClickElement(kPerformanceSettingsPage, kMemorySaverFeedbackButton),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
+
+#elif BUILDFLAG(IS_CHROMEOS)
+class MemorySettingsCrosInteractiveTest
+    : public WebUiInteractiveTestMixin<InteractiveAshTest> {};
+
+IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
+                       MemorySaverSendFeedbackDialogOpens) {
+  SetupContextWidget();
+  InstallSystemApps();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackDialogElementId);
+  CreateBrowserWindow(GURL(chrome::kChromeUIPerformanceSettingsURL));
+  Browser* const browser = chrome::FindLastActive();
+  ASSERT_NE(browser, nullptr);
+
+  RunTestSequence(
+      InContext(browser->window()->GetElementContext(),
+                InstrumentTab(kPerformanceSettingsPage)),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kMemorySaverFeedbackButton),
+      InstrumentNextTab(kOsFeedbackDialogElementId, AnyBrowser()),
+      ClickElement(kPerformanceSettingsPage, kMemorySaverFeedbackButton),
+      WaitForShow(kOsFeedbackDialogElementId));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class MemorySaverSettingsMultiStateModeInteractiveTest
@@ -490,18 +520,13 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
-                       DISABLED_BatterySaverSendFeedbackDialogOpens) {
-  const DeepQuery battery_saver_feedback = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-section#batterySettingsSection", "cr-icon-button#feedback"};
-
+                       BatterySaverSendFeedbackDialogOpens) {
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(kPerformanceSettingsPage,
                           GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      ClickElement(kPerformanceSettingsPage, battery_saver_feedback),
+      ClickElement(kPerformanceSettingsPage, kBatterySaverFeedbackButton),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -548,6 +573,28 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
       WaitForWebContentsReady(kOsSettingsElementId,
                               GURL("chrome://os-settings/power")));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
+                       BatterySaverSendFeedbackDialogOpens) {
+  SetupContextWidget();
+  InstallSystemApps();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackDialogElementId);
+  CreateBrowserWindow(GURL(chrome::kChromeUIPerformanceSettingsURL));
+  Browser* const browser = chrome::FindLastActive();
+  ASSERT_NE(browser, nullptr);
+
+  RunTestSequence(
+      InContext(browser->window()->GetElementContext(),
+                InstrumentTab(kPerformanceSettingsPage)),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             kBatterySaverFeedbackButton),
+      InstrumentNextTab(kOsFeedbackDialogElementId, AnyBrowser()),
+      ClickElement(kPerformanceSettingsPage, kBatterySaverFeedbackButton),
+      WaitForShow(kOsFeedbackDialogElementId));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TabDiscardExceptionsSettingsInteractiveTest
