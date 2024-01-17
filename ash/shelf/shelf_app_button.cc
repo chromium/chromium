@@ -969,11 +969,17 @@ bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {
   return true;
 }
 
+bool ShelfAppButton::ImageModelHasPlaceholderIcon() const {
+  bool use_fallback_icon =
+      force_fallback_icon_ || !fallback_icon_image_model_.IsEmpty();
+  return use_fallback_icon ? fallback_icon_image_model_.IsVectorIcon()
+                           : icon_image_model_.IsVectorIcon();
+}
+
 float ShelfAppButton::GetIconDimensionByAppState() const {
   if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
-    // Placeholder icons do not change size between states.
-    if (icon_image_model_.IsVectorIcon()) {
-      return kPlaceholderIconDimension;
+    if (ImageModelHasPlaceholderIcon()) {
+      return kPromiseIconDimensionPending;
     }
 
     switch (app_status_) {
@@ -996,7 +1002,10 @@ float ShelfAppButton::GetIconDimensionByAppState() const {
 gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
                                             float icon_scale,
                                             bool ignore_shadow_insets) const {
-  const float icon_size = GetIconDimensionByAppState() * icon_scale;
+  const float icon_size =
+      (ImageModelHasPlaceholderIcon() ? kPlaceholderIconDimension
+                                      : GetIconDimensionByAppState()) *
+      icon_scale;
   const float icon_padding = (shelf_view_->GetButtonSize() - icon_size) / 2;
 
   const Shelf* shelf = shelf_view_->shelf();
@@ -1288,6 +1297,12 @@ gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
 gfx::Size ShelfAppButton::GetPreferredIconSize(
     const ui::ImageModel& image_model,
     float icon_scale) const {
+  // Placeholder icons do not change base size between states.
+  if (image_model.IsVectorIcon() && !has_host_badge_) {
+    return gfx::Size(kPlaceholderIconDimension * icon_scale,
+                     kPlaceholderIconDimension * icon_scale);
+  }
+
   const int icon_size = has_host_badge_
                             ? shelf_view_->GetShortcutIconSize() * icon_scale
                             : GetIconDimensionByAppState() * icon_scale;
@@ -1463,8 +1478,21 @@ void ShelfAppButton::UpdateProgressRingBounds() {
   gfx::Rect progress_indicator_bounds = views::View::ConvertRectToTarget(
       icon_view_, this, icon_view_->GetImageBounds());
 
+  const int promise_icon_preferred_dimension = GetIconDimensionByAppState();
+
+  // If the icon is smaller than the expected icon size (e,g for placeholder
+  // icons), add padding to ensure the overall size of the promise icon is
+  // correct regardless of the image icon size.
+  progress_indicator_bounds.Outset(
+      gfx::Outsets::VH(std::max(0, (promise_icon_preferred_dimension -
+                                    progress_indicator_bounds.width()) /
+                                       2),
+                       std::max(0, (promise_icon_preferred_dimension -
+                                    progress_indicator_bounds.height()) /
+                                       2)));
+
   const gfx::Insets progress_ring_padding =
-      icon_image_model_.IsVectorIcon() || app_status() == AppStatus::kPending
+      ImageModelHasPlaceholderIcon() || app_status() == AppStatus::kPending
           ? kProgressRingMarginPending
           : kProgressRingMarginInstalling;
 

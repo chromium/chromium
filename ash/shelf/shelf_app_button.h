@@ -216,6 +216,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void OnRippleTimer();
 
   // Calculates the preferred size of the icon for the provided `icon_scale`.
+  // This is the actual size of the main app icon that is painted in the grid.
+  // with the adjusted scale.
   gfx::Size GetPreferredIconSize(const ui::ImageModel& image_model,
                                  float icon_scale) const;
 
@@ -223,7 +225,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // normal size.
   void ScaleAppIcon(bool scale_up);
 
-  // Calculates the icon bounds for an icon scaled by |icon_scale|.
+  // Calculates the expected icon bounds for an icon view scaled by
+  // |icon_scale|.
   gfx::Rect GetIconViewBounds(const gfx::Rect& button_bounds,
                               float icon_scale,
                               bool ignore_shadow_insets) const;
@@ -254,8 +257,17 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Sets the host badge image to display for this entry
   void SetHostBadgeImage(const gfx::ImageSkia& host_badge_image);
 
+  // Whether the image view has a placeholder icon in place. The placeholder
+  // icon is represented as a VectorIcon in the ImageModel. Depending on the
+  // case, the icon may use the `icon_image_model` or the
+  // `fallback_icon_image_model` (ie, when an animation in for the promise app
+  // is happening) for this calceulation.
+  bool ImageModelHasPlaceholderIcon() const;
+
   // Returns the preferred icon size for promise icons depending on this
-  // button's `app_state_`.
+  // button's `app_state_`. Different from `GetPreferredIconSize()` since
+  // `GetIconDimensionByAppState()` is used to adjust padding for the promise
+  // ring.
   float GetIconDimensionByAppState() const;
 
   // Called when the app button completes animating in from a promise app state.

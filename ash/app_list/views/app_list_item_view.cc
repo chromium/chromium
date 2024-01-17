@@ -704,7 +704,7 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
   }
 
   if (update_item_icon) {
-    if (HasPromiseIconPlaceholder()) {
+    if (ItemHasPlaceholderIcon()) {
       icon_image_model_ = ui::ImageModel(ui::ImageModel::FromVectorIcon(
           ash::kPlaceholderAppIcon, cros_tokens::kCrosSysPrimary));
     } else {
@@ -800,9 +800,7 @@ gfx::Size AppListItemView::GetIconSize() const {
   }
   if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
     // Placeholder icons do not change size between states.
-    if (icon_image_model_.IsVectorIcon() ||
-        (ShouldUseFallbackIconImageModel() &&
-         fallback_icon_image_model_.IsVectorIcon())) {
+    if (ImageModelHasPlaceholderIcon()) {
       return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
     }
     return GetPreferredIconSizeForProgressRing();
@@ -811,7 +809,7 @@ gfx::Size AppListItemView::GetIconSize() const {
   return app_list_config_->grid_icon_size();
 }
 
-bool AppListItemView::HasPromiseIconPlaceholder() {
+bool AppListItemView::ItemHasPlaceholderIcon() {
   return is_promise_app_ && item_weak_ &&
          item_weak_->GetMetadata()->is_placeholder_icon;
 }
@@ -892,6 +890,11 @@ void AppListItemView::UpdateDraggedItem(const AppListItem* dragged_item) {
 gfx::Size AppListItemView::GetPreferredIconSizeForProgressRing() const {
   DCHECK(is_promise_app_ || ShouldUseFallbackIconImageModel());
   CHECK(item_weak_);
+
+  if (ImageModelHasPlaceholderIcon()) {
+    return gfx::Size(app_list_config_->promise_icon_dimension_pending(),
+                     app_list_config_->promise_icon_dimension_pending());
+  }
 
   switch (item_weak_->app_status()) {
     case AppStatus::kPending:
@@ -2159,6 +2162,12 @@ void AppListItemView::ItemAppStatusUpdated() {
   UpdateProgressIndicatorState();
 }
 
+bool AppListItemView::ImageModelHasPlaceholderIcon() const {
+  return ShouldUseFallbackIconImageModel()
+             ? fallback_icon_image_model_.IsVectorIcon()
+             : icon_image_model_.IsVectorIcon();
+}
+
 void AppListItemView::UpdateProgressIndicatorState() {
   if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
       !features::ArePromiseIconsEnabled()) {
@@ -2225,19 +2234,19 @@ void AppListItemView::UpdateProgressRingBounds() {
   // If the icon is smaller than the expected icon size (i,e for placeholder
   // icons), add padding to ensure the overall size of the promise icon is
   // correct regardless of the image icon size.
-  progress_bounds.Inset(gfx::Insets::VH(
+  progress_bounds.Outset(gfx::Outsets::VH(
       std::max(
           0,
-          (progress_bounds.width() - promise_icon_preferred_size.width()) / 2),
+          (promise_icon_preferred_size.width() - progress_bounds.width()) / 2),
       std::max(
-          0, (progress_bounds.height() - promise_icon_preferred_size.height()) /
+          0, (promise_icon_preferred_size.height() - progress_bounds.height()) /
                  2)));
 
   const gfx::Insets progress_ring_padding =
-      icon_image_model_.IsVectorIcon() ||
-              item()->app_status() != AppStatus::kPending
-          ? kProgressRingMarginInstalling
-          : kProgressRingMarginPending;
+      ImageModelHasPlaceholderIcon() ||
+              item()->app_status() == AppStatus::kPending
+          ? kProgressRingMarginPending
+          : kProgressRingMarginInstalling;
 
   progress_bounds.Inset(progress_ring_padding);
 

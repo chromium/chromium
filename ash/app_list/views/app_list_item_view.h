@@ -172,11 +172,13 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Sets the icon of this image.
   void SetIcon(const gfx::ImageSkia& icon);
 
-  // Returns the main app icon size for the associated item.
+  // Returns the main app icon size for the associated item. This is the actual
+  // size of the main app icon that is painted in the grid.
   gfx::Size GetIconSize() const;
 
-  // Whether the icon use on this item is a placeholder icon for a promise app.
-  bool HasPromiseIconPlaceholder();
+  // Whether the icon used on this item is a placeholder icon for a promise app.
+  // This is obtained from the value in the item's metadata.
+  bool ItemHasPlaceholderIcon();
 
   void SetItemName(const std::u16string& display_name,
                    const std::u16string& full_name);
@@ -453,6 +455,13 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // app icon has not been loaded yet.
   bool ShouldUseFallbackIconImageModel() const;
 
+  // Whether the image view has a placeholder icon in place. The placeholder
+  // icon is represented as a VectorIcon in the ImageModel. Depending on the
+  // case, the icon may use the `icon_image_model` or the
+  // `fallback_icon_image_model` (ie, when an animation in for the promise app
+  // is happening) for this calceulation.
+  bool ImageModelHasPlaceholderIcon() const;
+
   // Calculates the transform between the icon scaled by |icon_scale| and the
   // normal size icon.
   gfx::Transform GetScaleTransform(float icon_scale);
@@ -483,8 +492,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // active.
   void UpdateProgressRingBounds();
 
-  // Returns the preferred icon size for promise apps depending on the current
-  // app_state.
+  // Returns the preferred inner icon size for a promise app depending on the
+  // current app_state. Different from `GetIconSize()` since
+  // `GetPreferredIconSizeForProgressRing()` is used to adjust padding for the
+  // promise ring.
   gfx::Size GetPreferredIconSizeForProgressRing() const;
 
   // The app list config used to layout this view. The initial values is set
