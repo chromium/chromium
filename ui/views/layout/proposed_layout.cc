@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace views {
@@ -36,6 +37,20 @@ bool ChildLayout::operator==(const ChildLayout& other) const {
   // be set.
   return child_view == other.child_view && visible == other.visible &&
          (!visible || bounds == other.bounds);
+}
+
+ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) {
+  // Defer to the const implementation and then cast back.
+  return const_cast<ChildLayout*>(
+      const_cast<const ProposedLayout*>(this)->GetLayoutFor(child_view));
+}
+
+const ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) const {
+  const auto found = base::ranges::find_if(
+      child_layouts, [child_view](const auto& child_layout) {
+        return child_view == child_layout.child_view;
+      });
+  return found == child_layouts.end() ? nullptr : &*found;
 }
 
 std::string ChildLayout::ToString() const {

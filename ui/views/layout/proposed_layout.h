@@ -45,6 +45,11 @@ struct VIEWS_EXPORT ProposedLayout {
 
   bool operator==(const ProposedLayout& other) const = default;
 
+  // Convenience methods to get the child layout for the specified `view`;
+  // return the layout or null if not found.
+  ChildLayout* GetLayoutFor(const View* child_view);
+  const ChildLayout* GetLayoutFor(const View* child_view) const;
+
   std::string ToString() const;
 
   // The size of the host view given the size bounds for this layout. If both
