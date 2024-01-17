@@ -355,6 +355,8 @@ struct VideoFrameMetadata {
 
   bool hw_protected;
 
+  bool needs_detiling;
+
   bool is_webgpu_compatible;
 
   mojo_base.mojom.UnguessableToken? overlay_plane_id;

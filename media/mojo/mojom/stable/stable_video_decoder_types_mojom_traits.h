@@ -1262,6 +1262,8 @@ struct StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
 
   static bool hw_protected(const media::VideoFrameMetadata& input);
 
+  static bool needs_detiling(const media::VideoFrameMetadata& input);
+
   static bool Read(media::stable::mojom::VideoFrameMetadataDataView input,
                    media::VideoFrameMetadata* output);
 };

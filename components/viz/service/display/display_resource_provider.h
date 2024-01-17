@@ -95,6 +95,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   SharedImageFormat GetSharedImageFormat(ResourceId id);
   // Returns the color space of the resource.
   const gfx::ColorSpace& GetColorSpace(ResourceId id);
+  // Returns true if the resource needs a detiling pass before scanout.
+  bool GetNeedsDetiling(ResourceId id);
 
   const gfx::HDRMetadata& GetHDRMetadata(ResourceId id);
 

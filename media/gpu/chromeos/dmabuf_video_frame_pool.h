@@ -38,6 +38,7 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
           const gfx::Size&,
           bool,
           bool,
+          bool,
           base::TimeDelta)>;
 
   DmabufVideoFramePool();

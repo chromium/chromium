@@ -340,6 +340,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   if (resource_id != kInvalidResourceId) {
     candidate.format = resource_provider_->GetBufferFormat(resource_id);
     candidate.color_space = resource_provider_->GetColorSpace(resource_id);
+    candidate.needs_detiling =
+        resource_provider_->GetNeedsDetiling(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
 
     if (!context_.is_delegated_context &&

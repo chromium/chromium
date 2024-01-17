@@ -120,6 +120,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // If we need nearest neighbor filter for displaying this overlay.
   bool nearest_neighbor_filter : 1 = false;
 
+  // If true, we need to run a detiling image processor on the quad before we
+  // can scan it out.
+  bool needs_detiling : 1 = false;
+
   // Rect in content space that, when combined with |transform|, is the bounds
   // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
   // this is the bounds of the quad rect with its transform applied, so that

@@ -28,6 +28,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
     const gfx::Size& natural_size,
     bool use_protected,
     bool use_linear_buffers,
+    bool needs_detiling,
     base::TimeDelta timestamp) {
   if (use_protected && use_linear_buffers) {
     VLOGF(1) << "Linear buffers are unsupported when |use_protected| is true.";
@@ -48,6 +49,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
   frame->metadata().allow_overlay = true;
   frame->metadata().protected_video = use_protected;
   frame->metadata().hw_protected = use_protected;
+  frame->metadata().needs_detiling = needs_detiling;
   return frame;
 }
 
@@ -116,7 +118,8 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
     CHECK(use_linear_buffers_.has_value());
     CroStatus::Or<scoped_refptr<VideoFrame>> new_frame = create_frame_cb_.Run(
         format, coded_size, gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
-        coded_size, use_protected_, *use_linear_buffers_, base::TimeDelta());
+        coded_size, use_protected_, *use_linear_buffers_,
+        frame_layout_->fourcc() == Fourcc(Fourcc::MM21), base::TimeDelta());
     if (!new_frame.has_value()) {
       // TODO(crbug.com/c/1103510) Push the error up instead of dropping it.
       return nullptr;
@@ -200,9 +203,10 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
     free_frames_.clear();
-    auto maybe_frame = create_frame_cb_.Run(
-        format, coded_size, visible_rect, natural_size, use_protected,
-        *use_linear_buffers_, base::TimeDelta());
+    auto maybe_frame =
+        create_frame_cb_.Run(format, coded_size, visible_rect, natural_size,
+                             use_protected, *use_linear_buffers_,
+                             fourcc == Fourcc(Fourcc::MM21), base::TimeDelta());
     if (!maybe_frame.has_value())
       return std::move(maybe_frame).error();
     auto frame = std::move(maybe_frame).value();

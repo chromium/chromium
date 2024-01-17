@@ -35,6 +35,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> CreateGpuMemoryBufferVideoFrame(
     const gfx::Size& natural_size,
     bool use_protected,
     bool use_linear_buffers,
+    bool needs_detiling,
     base::TimeDelta timestamp) {
   absl::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
@@ -54,6 +55,7 @@ CreateChromeOSCompressedGpuMemoryBufferVideoFrame(uint64_t modifier,
                                                   const gfx::Size& natural_size,
                                                   bool use_protected,
                                                   bool use_linear_buffers,
+                                                  bool needs_detiling,
                                                   base::TimeDelta timestamp) {
   absl::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
@@ -328,7 +330,7 @@ TEST_P(PlatformVideoFramePoolTest, InitializeFail) {
   SetCreateFrameCB(base::BindRepeating(
       [](VideoPixelFormat format, const gfx::Size& coded_size,
          const gfx::Rect& visible_rect, const gfx::Size& natural_size,
-         bool use_protected, bool use_linear_buffers,
+         bool use_protected, bool use_linear_buffers, bool needs_detiling,
          base::TimeDelta timestamp) {
         return CroStatus::Or<scoped_refptr<VideoFrame>>(
             CroStatus::Codes::kFailedToCreateVideoFrame);

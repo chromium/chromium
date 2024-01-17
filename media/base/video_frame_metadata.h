@@ -145,6 +145,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // PROTECTED_VIDEO is also set to true.
   bool hw_protected = false;
 
+  // If true, we need to run a detiling image processor on the video before we
+  // can scan it out.
+  bool needs_detiling = false;
+
   // This video frame's shared image backing can support zero-copy WebGPU
   // import.
   bool is_webgpu_compatible = false;

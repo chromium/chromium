@@ -51,6 +51,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_VALUE_FIELD(dcomp_surface, metadata_source);
   MERGE_VALUE_FIELD(protected_video, metadata_source);
   MERGE_VALUE_FIELD(hw_protected, metadata_source);
+  MERGE_VALUE_FIELD(needs_detiling, metadata_source);
   MERGE_VALUE_FIELD(is_webgpu_compatible, metadata_source);
 #if BUILDFLAG(USE_VAAPI)
   MERGE_OPTIONAL_FIELD(hw_va_protected_session_id, metadata_source);
