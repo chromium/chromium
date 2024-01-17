@@ -1303,18 +1303,18 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 bool BrowserAutofillManager::ShouldFetchCreditCard(
     const FormData& form,
     const FormFieldData& field,
+    const FormStructure& form_structure,
+    const AutofillField& autofill_field,
     const CreditCard& credit_card) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
-    return false;
-  }
-  if (WillFillCreditCardNumber(form.fields, form_structure->fields(),
-                               *autofill_field)) {
+  if (WillFillCreditCardNumber(form.fields, form_structure.fields(),
+                               autofill_field)) {
     return true;
   }
+  // This happens for web sites which cache all credit card details except for
+  // the cvc, which is different every time the virtual credit card is being
+  // used.
   return credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
-         autofill_field->Type().GetStorableType() ==
+         autofill_field.Type().GetStorableType() ==
              CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
 
@@ -1332,7 +1332,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   credit_card_ = credit_card;
   bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
   bool should_fetch_card =
-      !is_preview && ShouldFetchCreditCard(form, field, credit_card_);
+      !is_preview && ShouldFetchCreditCard(form, field, *form_structure,
+                                           *autofill_field, credit_card_);
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
