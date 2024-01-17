@@ -42,9 +42,6 @@ InProcessFuzzer::GetChromiumCommandLineArguments() {
 
 void InProcessFuzzer::SetUp() {
   std::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
-  if (options_.run_loop_timeout) {
-    scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
-  }
 
   switch (options_.run_loop_timeout_behavior) {
     case RunLoopTimeoutBehavior::kContinue:
@@ -55,6 +52,10 @@ void InProcessFuzzer::SetUp() {
       break;
     case RunLoopTimeoutBehavior::kDefault:
       break;
+  }
+
+  if (options_.run_loop_timeout) {
+    scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
   }
 
   // Note that browser tests are being launched by the `SetUp` method.
