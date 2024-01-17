@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -18,6 +19,8 @@ public class HubPaneHostViewBinder {
             view.setRootView(model.get(PANE_ROOT_VIEW));
         } else if (key == ACTION_BUTTON_DATA) {
             view.setActionButtonData(model.get(ACTION_BUTTON_DATA));
+        } else if (key == COLOR_SCHEME) {
+            view.setColorScheme(model.get(COLOR_SCHEME));
         }
     }
 }

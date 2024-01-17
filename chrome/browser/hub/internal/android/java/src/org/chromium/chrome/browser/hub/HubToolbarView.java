@@ -88,20 +88,12 @@ public class HubToolbarView extends LinearLayout {
         setBackgroundColor(HubColors.getBackgroundColor(context, colorScheme));
         @ColorInt int iconColor = HubColors.getIconColor(context, colorScheme);
         @ColorInt int selectedIconColor = HubColors.getSelectedIconColor(context, colorScheme);
-        tintCompoundDrawable(mActionButton, iconColor);
+        HubColors.tintCompoundDrawable(mActionButton, iconColor);
         mPaneSwitcher.setTabIconTint(HubColors.getSelectableIconList(selectedIconColor, iconColor));
         mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
 
         // TODO(https://crbug.com/1507839): Updating the app menu color here is more correct and
         // should be done for code health.
-    }
-
-    private void tintCompoundDrawable(Button button, @ColorInt int color) {
-        for (Drawable drawable : button.getCompoundDrawables()) {
-            if (drawable != null) {
-                drawable.setTint(color);
-            }
-        }
     }
 
     private OnTabSelectedListener makeTabSelectedListener(

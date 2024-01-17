@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for holding properties of hub pane host views. */
@@ -22,5 +23,8 @@ class HubPaneHostProperties {
     public static final WritableObjectPropertyKey<FullButtonData> ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = {PANE_ROOT_VIEW, ACTION_BUTTON_DATA};
+    // Hold a value from @HubColorScheme.
+    public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+
+    static final PropertyKey[] ALL_KEYS = {PANE_ROOT_VIEW, ACTION_BUTTON_DATA, COLOR_SCHEME};
 }

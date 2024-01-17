@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.view.View;
@@ -53,6 +54,7 @@ public class HubPaneHostMediator {
     }
 
     private void onPaneChange(@Nullable Pane pane) {
+        mPropertyModel.set(COLOR_SCHEME, HubColors.getColorSchemeSafe(pane));
         View view = pane == null ? null : pane.getRootView();
         mPropertyModel.set(PANE_ROOT_VIEW, view);
     }

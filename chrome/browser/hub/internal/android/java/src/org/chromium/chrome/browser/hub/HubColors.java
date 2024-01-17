@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.widget.Button;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -67,10 +71,47 @@ public final class HubColors {
         }
     }
 
+    /** Returns the color of secondary contains like the floating action button. */
+    public static @ColorInt int getSecondaryContainerColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getChipBgSelectedColor(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.baseline_secondary_30);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
+
+    /** Returns the color most text should use for the given color scheme. */
+    public static @StyleRes int getTextAppearanceMedium(@HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return R.style.TextAppearance_TextMedium_Primary;
+            case HubColorScheme.INCOGNITO:
+                return R.style.TextAppearance_TextMedium_Primary_Baseline_Light;
+            default:
+                assert false;
+                return Resources.ID_NULL;
+        }
+    }
+
     /** Convenience method to make a selectable {@link ColorStateList} from two input colors. */
     public static ColorStateList getSelectableIconList(
             @ColorInt int selectedColor, @ColorInt int normalColor) {
         int[] colors = new int[] {selectedColor, normalColor};
         return new ColorStateList(SELECTED_AND_NORMAL_STATES, colors);
+    }
+
+    /** Convenience method to tint the drawable(s) of a button. */
+    public static void tintCompoundDrawable(Button button, @ColorInt int color) {
+        for (Drawable drawable : button.getCompoundDrawables()) {
+            if (drawable != null) {
+                drawable.mutate();
+                drawable.setTint(color);
+            }
+        }
     }
 }
