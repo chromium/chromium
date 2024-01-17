@@ -109,6 +109,8 @@ class Server : public display::DisplayManagerObserver {
   // destruction.
   bool IsClientDestroyed(wl_client* client) const;
 
+  SerialTracker* serial_tracker_for_test() { return serial_tracker_.get(); }
+
  protected:
   friend class UiControls;
   friend class WestonTest;

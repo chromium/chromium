@@ -5,7 +5,6 @@
 #include "components/exo/wayland/test/wayland_server_test_base.h"
 
 #include <stdlib.h>
-
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -18,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +73,8 @@ void WaylandServerTestBase::SetUp() {
   setenv("XDG_RUNTIME_DIR", xdg_temp_dir_.GetPath().MaybeAsASCII().c_str(),
          1 /* overwrite */);
   TestBase::SetUp();
-  display_ = std::make_unique<Display>();
+  display_ =
+      std::make_unique<Display>(std::make_unique<TestDataExchangeDelegate>());
 }
 
 void WaylandServerTestBase::TearDown() {

@@ -22,12 +22,18 @@ class SerialTracker {
   enum EventType {
     POINTER_ENTER,
     POINTER_LEAVE,
-    POINTER_BUTTON_DOWN,
-    POINTER_BUTTON_UP,
-
+    POINTER_LEFT_BUTTON_DOWN,
+    POINTER_LEFT_BUTTON_UP,
+    POINTER_MIDDLE_BUTTON_DOWN,
+    POINTER_MIDDLE_BUTTON_UP,
+    POINTER_RIGHT_BUTTON_DOWN,
+    POINTER_RIGHT_BUTTON_UP,
+    POINTER_FORWARD_BUTTON_DOWN,
+    POINTER_FORWARD_BUTTON_UP,
+    POINTER_BACK_BUTTON_DOWN,
+    POINTER_BACK_BUTTON_UP,
     TOUCH_DOWN,
     TOUCH_UP,
-
     OTHER_EVENT,
   };
 
@@ -42,15 +48,6 @@ class SerialTracker {
   void Shutdown();
 
   uint32_t GetNextSerial(EventType type);
-
-  // Get the serial number of the last {pointer,touch} pressed event, or nullopt
-  // if the press has since been released.
-  absl::optional<uint32_t> GetPointerDownSerial();
-  absl::optional<uint32_t> GetTouchDownSerial();
-
-  // Needed because wl_touch::cancel doesn't send a serial number, so we can't
-  // test for it in GetNextSerial.
-  void ResetTouchDownSerial();
 
   // If there exists a serial for key already, returns it. Or, it creates
   // a new serial, and returns it.
@@ -79,8 +76,6 @@ class SerialTracker {
   uint32_t min_event_ = 1;
   uint32_t max_event_ = 1;
 
-  absl::optional<uint32_t> pointer_down_serial_;
-  absl::optional<uint32_t> touch_down_serial_;
   absl::optional<uint32_t> key_serial_;
 };
 

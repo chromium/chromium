@@ -58,7 +58,6 @@ struct Globals {
   Object<wl_shell> shell;
   Object<wl_seat> seat;
   Object<wl_subcompositor> subcompositor;
-  Object<wl_touch> touch;
   Object<zaura_shell> aura_shell;
   std::vector<Object<zaura_output>> aura_outputs;
   Object<zaura_output_manager> aura_output_manager;
@@ -75,6 +74,7 @@ struct Globals {
   Object<wp_single_pixel_buffer_manager_v1> wp_single_pixel_buffer_manager_v1;
   Object<wp_viewporter> wp_viewporter;
   Object<wp_fractional_scale_manager_v1> wp_fractional_scale_manager_v1;
+  Object<wl_data_device_manager> data_device_manager;
 
   base::flat_map<std::string, uint32_t> requested_versions;
 };
