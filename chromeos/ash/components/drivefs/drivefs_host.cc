@@ -107,6 +107,8 @@ class DriveFsHost::MountState : public DriveFsSession {
         base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)
             ? mojom::CSESupport::kListing
             : mojom::CSESupport::kNone,
+        ash::features::IsLauncherContinueSectionWithRecentsEnabled(),
+        ash::features::IsShowSharingUserInLauncherContinueSectionEnabled(),
     };
     return DriveFsConnection::Create(delegate->CreateMojoListener(),
                                      std::move(config));

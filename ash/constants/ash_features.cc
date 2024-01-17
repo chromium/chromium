@@ -1721,6 +1721,12 @@ BASE_FEATURE(kLanguagePacksInSettings,
              "LanguagePacksInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, launcher continue section will suggest drive files based on
+// recency, instead of fetching them using drive's ItemSuggest API.
+BASE_FEATURE(kLauncherContinueSectionWithRecents,
+             "LauncherContinueSectionWithRecents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval,
              "LauncherNudgeShortInterval",
@@ -2576,6 +2582,12 @@ BASE_FEATURE(kShowLiveCaptionInVideoConferenceTray,
 BASE_FEATURE(kShowPlayInDemoMode,
              "ShowPlayInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether sharing user name should be shown in the continue section for drive
+// files shown because they have been recently shared with the user.
+BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
+             "ShowSharingUserInLauncherContinueSection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Suppresses the first end of life warning shown 180 days before the AUE date.
 BASE_FEATURE(kSuppressFirstEolWarning,
@@ -3784,6 +3796,10 @@ bool IsLanguagePacksInOobeEnabled() {
   return base::FeatureList::IsEnabled(kLanguagePacksInOobe);
 }
 
+bool IsLauncherContinueSectionWithRecentsEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents);
+}
+
 bool IsLauncherNudgeShortIntervalEnabled() {
   return base::FeatureList::IsEnabled(kLauncherNudgeShortInterval);
 }
@@ -4317,6 +4333,11 @@ bool IsShimlessRMA3pDiagnosticsEnabled() {
 
 bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMA3pDiagnosticsDevMode);
+}
+
+bool IsShowSharingUserInLauncherContinueSectionEnabled() {
+  return base::FeatureList::IsEnabled(
+      kShowSharingUserInLauncherContinueSection);
 }
 
 bool IsSmdsSupportEnabled() {

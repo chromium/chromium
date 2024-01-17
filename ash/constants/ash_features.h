@@ -549,6 +549,8 @@ BASE_DECLARE_FEATURE(kLanguagePacksInOobe);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksInSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kLauncherContinueSectionWithRecents);
 BASE_DECLARE_FEATURE(kLauncherNudgeShortInterval);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeSessionReset);
@@ -798,6 +800,8 @@ BASE_DECLARE_FEATURE(kShowBluetoothDebugLogToggle);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowLiveCaptionInVideoConferenceTray);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kShowPlayInDemoMode);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kShowSharingUserInLauncherContinueSection);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1109,6 +1113,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksInOobeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsLauncherContinueSectionWithRecentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherSearchControlEnabled();
@@ -1258,6 +1264,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAOsUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsDevModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStandaloneWindowMigrationUxEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsShowSharingUserInLauncherContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSmartReaderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSmdsSupportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();

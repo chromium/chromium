@@ -285,7 +285,7 @@ enum CSESupport {
   kListing,
 };
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 struct DriveFsConfiguration {
   string user_email;
 
@@ -317,6 +317,15 @@ struct DriveFsConfiguration {
   // See more: https://support.google.com/a/answer/10741897
   [MinVersion=7]
   CSESupport cse_support = kNone;
+
+  // Whether the "last modifying user" file metadata should be fetched by
+  // default.
+  [MinVersion=8]
+  bool fetch_modifying_user_metadata = false;
+
+  // Whether the "sharing user" file metadata should be fetched by default.
+  [MinVersion=8]
+  bool fetch_sharing_user_metadata = false;
 };
 
 // The OAuth token in string form along with the time the token expires.
@@ -426,7 +435,12 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 9
+struct UserInfo {
+  // The user name to display in the UI.
+  string display_name;
+};
+
+// Next MinVersion: 10
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -501,6 +515,27 @@ struct FileMetadata {
 
   // Whether the item is in the trash bin.
   [MinVersion=8] bool trashed = false;
+
+  // The time the file was last modified by the user.
+  // Note: This piece of metadata will not be present for files whose
+  // metadata was last fetched with Drive FS configured using
+  // false fetch_modifying_user_metadata value.
+  [MinVersion=9] mojo_base.mojom.Time? modified_by_me_time;
+
+  // Information about the last user that modified the file.
+  // Note: This piece of metadata will not be present for files whose
+  // metadata was last fetched with Drive FS configured using
+  // false fetch_modifying_user_metadata value.
+  [MinVersion=9] UserInfo? last_modifying_user;
+
+  // The time the file was shared with the user.
+  [MinVersion=9] mojo_base.mojom.Time? shared_with_me_time;
+
+  // Information about the user that shared the file with the user.
+  // Note: This piece of metadata will not be present for files whose
+  // metadata was last fetched with Drive FS configured using
+  // false fetch_sharing_user_metadata value.
+  [MinVersion=9] UserInfo? sharing_user;
 };
 
 // Details relating to the target item that a shortcut refers to.
@@ -655,7 +690,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
-// Next MinVersion: 6
+// Next MinVersion: 7
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -740,6 +775,18 @@ struct QueryParameters {
 
   // The stable ID of the parent directory to search for.
   [MinVersion=5] int64 parent_stable_id = 0;
+
+  // The operator applied to the viewed_time field. Used only if the
+  // viewed_time field is not empty. If the document's  viewed_time is T,
+  // we check if
+  //    T viewed_time_operator viewed_time
+  [MinVersion=6] DateComparisonOperator viewed_time_operator;
+
+  // Only show results that, if their viewed time is T, it holds true that
+  // T viewed_time_operator viewed_time.
+  // For example, if the viewed_time_operator is kGreaterThan we only show
+  // files with viewed time T greater than the one specified in this field.
+  [MinVersion=6] mojo_base.mojom.Time? viewed_time;
 };
 
 // TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
