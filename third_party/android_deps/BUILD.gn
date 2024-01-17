@@ -756,7 +756,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt(
       "com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java") {
-    aar_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.0.0.aar"
+    aar_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.1.0.aar"
     info_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/com_google_android_accessibility_test_framework.info"
     enable_bytecode_checks = false
     testonly = true
@@ -768,6 +768,9 @@ if (!limit_android_deps) {
       "//third_party/android_deps:material_design_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+      "//third_party/androidx:androidx_test_rules_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_test_services_storage_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
