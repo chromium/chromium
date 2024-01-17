@@ -40,8 +40,6 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _minimumStageForNotifications = InitStageFinal;
-    _notifyOfPastEventsWhenMinimumStageReached = YES;
     // The app starts with no connected scenes, so the first event should be
     // foreground.
     _notifiedBackground = YES;
@@ -69,8 +67,7 @@
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == self.minimumStageForNotifications &&
-      self.notifyOfPastEventsWhenMinimumStageReached) {
+  if (appState.initStage == InitStageFinal) {
     [self notifyOfConvenienceEventsIfNecessary];
   }
 }
@@ -79,7 +76,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage < self.minimumStageForNotifications) {
+  if (self.appState.initStage < InitStageFinal) {
     return;
   }
 
