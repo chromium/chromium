@@ -601,7 +601,8 @@ bool IsIOSHideFeedWithSearchChoiceEnabled() {
 }
 
 bool IsKeyboardAccessoryUpgradeEnabled() {
-  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade);
+  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade) &&
+         ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 // Feature disabled by default.
