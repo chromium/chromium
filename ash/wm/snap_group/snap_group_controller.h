@@ -54,12 +54,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // created and owned by Shell.
   static SnapGroupController* Get();
 
-  // Called by `WindowState::OnWMEvent()` after a window snap event. This will
-  // decide whether to start `SplitViewOverviewSession` or snap `window` to
-  // complete the window layout.
-  void OnWindowSnapped(aura::Window* window,
-                       WindowSnapActionSource snap_action_source);
-
   // Returns true if `window1` and `window2` are in the same snap group.
   bool AreWindowsInSnapGroup(aura::Window* window1,
                              aura::Window* window2) const;

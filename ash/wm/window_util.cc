@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -30,6 +31,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -723,6 +725,31 @@ bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell() {
 
 void MaybeStartSplitViewOverview(aura::Window* window,
                                  WindowSnapActionSource snap_action_source) {
+  if (!IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    return;
+  }
+
+  if (features::IsFasterSplitScreenSetupEnabled()) {
+    switch (snap_action_source) {
+      case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+      case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+      case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+      case WindowSnapActionSource::kTest:
+        // We only start partial overview for the above snap sources.
+        break;
+      default:
+        return;
+    }
+  }
+
+  if (auto* snap_group_controller = SnapGroupController::Get();
+      snap_group_controller &&
+      snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+    // `SnapGroupController` needs to check if the window belongs to a snap
+    // group first.
+    return;
+  }
+
   auto* root_window_controller = RootWindowController::ForWindow(window);
   if (root_window_controller->split_view_overview_session()) {
     // If split view overview is already active, which may be the case if this

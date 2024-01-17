@@ -125,10 +125,10 @@ gfx::Rect GetOverviewGridBounds() {
   return overview_session->grid_list()[0]->bounds_for_testing();
 }
 
-void SnapOneTestWindow(aura::Window* window,
-                       chromeos::WindowStateType state_type,
-                       WindowSnapActionSource snap_action_source =
-                           WindowSnapActionSource::kNotSpecified) {
+void SnapOneTestWindow(
+    aura::Window* window,
+    chromeos::WindowStateType state_type,
+    WindowSnapActionSource snap_action_source = WindowSnapActionSource::kTest) {
   WindowState* window_state = WindowState::Get(window);
   const WindowSnapWMEvent snap_event(
       state_type == chromeos::WindowStateType::kPrimarySnapped
@@ -320,21 +320,13 @@ TEST_F(FasterSplitScreenTest, CycleSnap) {
   // Cycle snap to the left.
   const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state->OnWMEvent(&cycle_snap_primary);
-  VerifySplitViewOverviewSession(w1.get());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
 
   // Cycle snap to the right.
   const WindowSnapWMEvent cycle_snap_secondary(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state->OnWMEvent(&cycle_snap_secondary);
-  VerifySplitViewOverviewSession(w1.get());
-
-  // Cycle snap to the right again. Test it ends overview.
-  window_state->OnWMEvent(&cycle_snap_secondary);
-  EXPECT_FALSE(window_state->IsSnapped());
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
-
-  // Cycle snap to the right again.
-  window_state->OnWMEvent(&cycle_snap_secondary);
-  VerifySplitViewOverviewSession(w1.get());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
 }
 
 TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
@@ -912,61 +904,6 @@ TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_WindowSizeButton) {
         /*expected_count=*/1);
     MaximizeToClearTheSession(w1.get());
   }
-}
-
-// Integration test of the `SplitViewOverviewSession` exit point with the
-// accelerator as the snap action source. Verify that the end-to-end metric is
-// recorded correctly.
-TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_AcceleratorToSnap) {
-  UpdateDisplay("800x600");
-
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-
-  const auto kSplitViewOverviewSessionExitPoint =
-      BuildSplitViewOverviewExitPointHistogramName(
-          WindowSnapActionSource::kKeyboardShortcutToSnap);
-  histogram_tester_.ExpectBucketCount(
-      kSplitViewOverviewSessionExitPoint,
-      SplitViewOverviewSessionExitPoint::kCompleteByActivating,
-      /*expected_count=*/0);
-
-  // `w1` is the mru window, use the keyboard shortcut to snap `w1` and verify
-  // the metrics.
-  AcceleratorController::Get()->PerformActionIfEnabled(
-      AcceleratorAction::kWindowCycleSnapLeft, {});
-  SplitViewOverviewSession* split_view_overview_session =
-      VerifySplitViewOverviewSession(w1.get());
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
-            WindowSnapActionSource::kKeyboardShortcutToSnap);
-
-  auto* event_generator = GetEventGenerator();
-  auto* item2 = GetOverviewItemForWindow(w2.get());
-  event_generator->MoveMouseTo(
-      gfx::ToRoundedPoint(item2->target_bounds().CenterPoint()));
-  event_generator->ClickLeftButton();
-  histogram_tester_.ExpectBucketCount(
-      kSplitViewOverviewSessionExitPoint,
-      SplitViewOverviewSessionExitPoint::kCompleteByActivating,
-      /*expected_count=*/1);
-
-  // Now `w2` becomes the mru window, use the keyboard shortcut to snap `w2` and
-  // verify the metrics.
-  AcceleratorController::Get()->PerformActionIfEnabled(
-      AcceleratorAction::kWindowCycleSnapLeft, {});
-  split_view_overview_session = VerifySplitViewOverviewSession(w2.get());
-  EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
-            WindowSnapActionSource::kKeyboardShortcutToSnap);
-
-  auto* item1 = GetOverviewItemForWindow(w1.get());
-  gfx::Point outside_point =
-      gfx::ToRoundedPoint(item1->target_bounds().bottom_right());
-  outside_point.Offset(/*delta_x=*/5, /*delta_y=*/5);
-  event_generator->MoveMouseTo(outside_point);
-  event_generator->ClickLeftButton();
-  histogram_tester_.ExpectBucketCount(kSplitViewOverviewSessionExitPoint,
-                                      SplitViewOverviewSessionExitPoint::kSkip,
-                                      /*expected_count=*/1);
 }
 
 // Tests that the `OverviewStartAction` will be recorded correctly in uma for
