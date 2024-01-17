@@ -24,10 +24,13 @@ class WebNNContextProviderImplTest : public testing::Test {
       delete;
 
  protected:
-  WebNNContextProviderImplTest() = default;
+  WebNNContextProviderImplTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
   ~WebNNContextProviderImplTest() override = default;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -42,10 +45,6 @@ class WebNNContextProviderImplTest : public testing::Test {
 #if !BUILDFLAG(IS_WIN)
 
 TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
-
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
   WebNNContextProviderImpl::Create(

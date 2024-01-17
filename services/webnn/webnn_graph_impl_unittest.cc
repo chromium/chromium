@@ -157,19 +157,23 @@ class WebNNGraphImplTest : public testing::Test {
   WebNNGraphImplTest& operator=(const WebNNGraphImplTest&) = delete;
 
   void SetUp() override {
-    WebNNContextProviderImpl::SetBackendForTesting(&backend_for_testing);
+    WebNNContextProviderImpl::SetBackendForTesting(&backend_for_testing_);
   }
   void TearDown() override {
     WebNNContextProviderImpl::SetBackendForTesting(nullptr);
   }
 
  protected:
-  WebNNGraphImplTest() = default;
+  WebNNGraphImplTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
   ~WebNNGraphImplTest() override = default;
 
  private:
-  FakeWebNNBackend backend_for_testing;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+
+  FakeWebNNBackend backend_for_testing_;
 };
 
 struct OperandInfo {
@@ -5270,10 +5274,6 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
 }
 
 TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
-
   const std::vector<uint32_t> dimensions = {3, 5};
   // Build the graph with mojo type.
   GraphInfoBuilder builder;
