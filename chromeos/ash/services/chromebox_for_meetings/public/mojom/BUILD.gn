@@ -19,7 +19,6 @@ mojom("mojom") {
   if (is_cfm) {
     sources += [
       "cfm_browser.mojom",
-      "cfm_network_settings.mojom",
       "external_display_brightness.mojom",
       "meet_devices_diagnostics.mojom",
       "meet_devices_info.mojom",

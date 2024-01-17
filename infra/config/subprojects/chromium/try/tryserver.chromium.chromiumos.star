@@ -634,9 +634,6 @@ try_.builder(
             "chromeos/ash/components/dbus/chromebox_for_meetings/.+",
             "chromeos/ash/services/chromebox_for_meetings/.+",
             "chrome/browser/ash/chromebox_for_meetings/.+",
-            "chrome/browser/resources/chromeos/chromebox_for_meetings/.+",
-            "chrome/browser/ui/webui/ash/chromebox_for_meetings/.+",
-            "chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
         ],
     ),
 )

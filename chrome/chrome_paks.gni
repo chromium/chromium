@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
-import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
@@ -443,12 +442,6 @@ template("chrome_extra_paks") {
     if (enable_webui_tab_strip) {
       sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
       deps += [ "//chrome/browser/resources/tab_strip:resources" ]
-    }
-    if (is_cfm) {
-      sources += [ "$root_gen_dir/chrome/cfm_network_settings_resources.pak" ]
-      deps += [
-        "//chrome/browser/resources/chromeos/chromebox_for_meetings:resources",
-      ]
     }
 
     if (headless_enable_commands && !is_android) {

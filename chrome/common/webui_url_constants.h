@@ -14,7 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/url_constants.h"
@@ -508,11 +507,6 @@ extern const char kChromeUITabSearchURL[];
 #endif
 
 extern const char kChromeUIWebRtcLogsHost[];
-
-#if BUILDFLAG(PLATFORM_CFM)
-extern const char kCfmNetworkSettingsHost[];
-extern const char kCfmNetworkSettingsURL[];
-#endif  // BUILDFLAG(PLATFORM_CFM)
 
 // Settings sub-pages.
 extern const char kAccessibilitySubPage[];

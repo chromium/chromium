@@ -5,7 +5,6 @@
 import("//build/cipd/cipd.gni")
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
@@ -3332,10 +3331,6 @@ if (!is_android && !is_fuchsia) {
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
-    }
-
-    if (is_cfm) {
-      sources += [ "../browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog_browsertest.cc" ]
     }
 
     if (!is_chromeos_ash) {

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/buildflags_paint_preview.gni")
-import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
@@ -3943,13 +3942,6 @@ static_library("ui") {
 
   if (use_cras) {
     defines += [ "USE_CRAS" ]
-  }
-
-  if (is_cfm) {
-    sources += [
-      "webui/ash/chromebox_for_meetings/network_settings_dialog.cc",
-      "webui/ash/chromebox_for_meetings/network_settings_dialog.h",
-    ]
   }
 
   if (is_chromeos) {

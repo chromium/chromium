@@ -4392,8 +4392,6 @@ source_set("ash") {
       "chromebox_for_meetings/logger/cfm_logger_service.h",
       "chromebox_for_meetings/logger/reporting_pipeline.cc",
       "chromebox_for_meetings/logger/reporting_pipeline.h",
-      "chromebox_for_meetings/network_settings/network_settings_service.cc",
-      "chromebox_for_meetings/network_settings/network_settings_service.h",
       "chromebox_for_meetings/service_adaptor.cc",
       "chromebox_for_meetings/service_adaptor.h",
       "chromebox_for_meetings/xu_camera/xu_camera_service.cc",
