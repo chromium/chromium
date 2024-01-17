@@ -260,6 +260,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   EXPECT_THAT(params.ssl_config().alpn_protos,
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(params.ssl_config().application_settings, application_settings_);
+  EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
+  EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre(kProtoHTTP11));
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -293,6 +296,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobForHttp11) {
   EXPECT_THAT(params.ssl_config().alpn_protos,
               testing::ElementsAre(kProtoHTTP11));
   EXPECT_EQ(params.ssl_config().application_settings, application_settings_);
+  EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
+  EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre(kProtoHTTP11));
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -323,6 +329,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {
   EXPECT_EQ(0, params.ssl_config().GetCertVerifyFlags());
   EXPECT_THAT(params.ssl_config().alpn_protos, testing::ElementsAre());
   EXPECT_TRUE(params.ssl_config().application_settings.empty());
+  EXPECT_EQ(params.ssl_config().renego_allowed_default, false);
+  EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -408,6 +417,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   EXPECT_THAT(params.ssl_config().alpn_protos,
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(params.ssl_config().application_settings, application_settings_);
+  EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
+  EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre(kProtoHTTP11));
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
   const HttpProxySocketParams& proxy_params =
@@ -449,6 +461,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttpsWithoutScheme) {
   EXPECT_EQ(proxy_params.endpoint(), kEndpoint);
   EXPECT_THAT(params.ssl_config().alpn_protos, testing::ElementsAre());
   EXPECT_TRUE(params.ssl_config().application_settings.empty());
+  EXPECT_EQ(params.ssl_config().renego_allowed_default, false);
+  EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_TRUE(proxy_params.transport_params());
   const TransportSocketParams& transport_params =
@@ -491,6 +506,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(ssl_params.ssl_config().application_settings,
             application_settings_);
+  // Renegotiation is never allowed for proxies.
+  EXPECT_EQ(ssl_params.ssl_config().renego_allowed_default, false);
+  EXPECT_THAT(ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -533,6 +552,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(ssl_params.ssl_config().application_settings,
             application_settings_);
+  // Renegotiation is never allowed for proxies.
+  EXPECT_EQ(ssl_params.ssl_config().renego_allowed_default, false);
+  EXPECT_THAT(ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -579,6 +602,10 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server2_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server2_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   const HttpProxySocketParams& proxy_server1_http_params =
       *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
@@ -596,6 +623,10 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server1_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server1_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);
@@ -651,6 +682,10 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobWithoutScheme) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server2_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server2_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_TRUE(proxy_server1_http_params.ssl_params());
   const SSLSocketParams& proxy_server1_ssl_params =
@@ -661,6 +696,10 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobWithoutScheme) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server1_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server1_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);
@@ -703,6 +742,9 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(endpoint_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(endpoint_ssl_params.ssl_config().renego_allowed_default, true);
+  EXPECT_THAT(endpoint_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre(kProtoHTTP11));
 
   // The SSLSocketParams for the destination should be configured to go through
   // the chain of proxies, with the corresponding HttpProxySocketParams and
@@ -722,6 +764,10 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server2_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server2_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   const HttpProxySocketParams& proxy_server1_http_params =
       *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
@@ -739,6 +785,10 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server1_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server1_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);
@@ -784,6 +834,9 @@ TEST_F(ConnectJobFactoryTest,
   EXPECT_THAT(endpoint_ssl_params.ssl_config().alpn_protos,
               testing::ElementsAre());
   EXPECT_TRUE(endpoint_ssl_params.ssl_config().application_settings.empty());
+  EXPECT_EQ(endpoint_ssl_params.ssl_config().renego_allowed_default, false);
+  EXPECT_THAT(endpoint_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   // The SSLSocketParams for the destination should be configured to go through
   // the chain of proxies, with the corresponding HttpProxySocketParams and
@@ -809,6 +862,10 @@ TEST_F(ConnectJobFactoryTest,
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server2_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server2_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_TRUE(proxy_server1_http_params.ssl_params());
   const SSLSocketParams& proxy_server1_ssl_params =
@@ -819,6 +876,10 @@ TEST_F(ConnectJobFactoryTest,
               testing::ElementsAreArray(alpn_protos_));
   EXPECT_EQ(proxy_server1_ssl_params.ssl_config().application_settings,
             application_settings_);
+  EXPECT_EQ(proxy_server1_ssl_params.ssl_config().renego_allowed_default,
+            false);
+  EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
+              testing::ElementsAre());
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);

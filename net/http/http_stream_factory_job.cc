@@ -788,20 +788,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
   server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
 
-  if (using_ssl_) {
-    // Prior to HTTP/2 and SPDY, some servers use TLS renegotiation to request
-    // TLS client authentication after the HTTP request was sent. Allow
-    // renegotiation for only those connections.
-    //
-    // Note that this does NOT implement the provision in
-    // https://http2.github.io/http2-spec/#rfc.section.9.2.1 which allows the
-    // server to request a renegotiation immediately before sending the
-    // connection preface as waiting for the preface would cost the round trip
-    // that False Start otherwise saves.
-    server_ssl_config.renego_allowed_default = true;
-    server_ssl_config.renego_allowed_for_protos.push_back(kProtoHTTP11);
-  }
-
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
   server_ssl_config.early_data_enabled = session_->params().enable_early_data;
 

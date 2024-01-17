@@ -85,34 +85,67 @@ base::flat_set<std::string> SupportedProtocolsFromSSLConfig(
                                         NextProtoToString);
 }
 
-// Populates `ssl_config.alpn_protos` and `ssl_config.application_settings`,
-// copying them from `common_connect_job_params`. If HTTP/1.1 is required, sets
-// `alpn_protos` to only allow HTTP/1.1 negotiation.
+// Populates `ssl_config's` ALPN-related fields. Namely, `alpn_protos`,
+// `application_settings`, `renego_allowed_default`, and
+// `renego_allowed_for_protos`.
+//
+// In the case of AlpnMode::kDisabled, clears all of the fields.
+//
+// In the case of AlpnMode::kHttp11Only sets `alpn_protos` to only allow
+// HTTP/1.1 negotiation.
+//
+// In the case of AlpnMode::kHttpAll, copying `alpn_protos` from
+// `common_connect_job_params`, and gives HttpServerProperties a chance to force
+// use of HTTP/1.1 only.
+//
+// If `alpn_mode` is not AlpnMode::kDisabled, then `server` must be a
+// SchemeHostPort, as it makes no sense to negotiate ALPN when the scheme isn't
+// known.
 void ConfigureAlpn(
-    const url::SchemeHostPort& server,
+    const ConnectJobFactory::Endpoint& endpoint,
     ConnectJobFactory::AlpnMode alpn_mode,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const CommonConnectJobParams& common_connect_job_params,
-    SSLConfig& ssl_config) {
-  switch (alpn_mode) {
-    case ConnectJobFactory::AlpnMode::kDisabled:
-      ssl_config.alpn_protos = {};
-      ssl_config.application_settings = {};
-      break;
-    case ConnectJobFactory::AlpnMode::kHttp11Only:
-      ssl_config.alpn_protos = {kProtoHTTP11};
-      ssl_config.application_settings =
-          *common_connect_job_params.application_settings;
-      break;
-    case ConnectJobFactory::AlpnMode::kHttpAll:
-      ssl_config.alpn_protos = *common_connect_job_params.alpn_protos;
-      ssl_config.application_settings =
-          *common_connect_job_params.application_settings;
-      if (common_connect_job_params.http_server_properties) {
-        common_connect_job_params.http_server_properties->MaybeForceHTTP11(
-            server, network_anonymization_key, &ssl_config);
-      }
-      break;
+    SSLConfig& ssl_config,
+    bool renego_allowed) {
+  if (alpn_mode == ConnectJobFactory::AlpnMode::kDisabled) {
+    ssl_config.alpn_protos = {};
+    ssl_config.application_settings = {};
+    ssl_config.renego_allowed_default = false;
+    return;
+  }
+
+  DCHECK(absl::holds_alternative<url::SchemeHostPort>(endpoint));
+
+  if (alpn_mode == ConnectJobFactory::AlpnMode::kHttp11Only) {
+    ssl_config.alpn_protos = {kProtoHTTP11};
+    ssl_config.application_settings =
+        *common_connect_job_params.application_settings;
+  } else {
+    DCHECK_EQ(alpn_mode, ConnectJobFactory::AlpnMode::kHttpAll);
+    DCHECK(absl::holds_alternative<url::SchemeHostPort>(endpoint));
+    ssl_config.alpn_protos = *common_connect_job_params.alpn_protos;
+    ssl_config.application_settings =
+        *common_connect_job_params.application_settings;
+    if (common_connect_job_params.http_server_properties) {
+      common_connect_job_params.http_server_properties->MaybeForceHTTP11(
+          absl::get<url::SchemeHostPort>(endpoint), network_anonymization_key,
+          &ssl_config);
+    }
+  }
+
+  // Prior to HTTP/2 and SPDY, some servers used TLS renegotiation to request
+  // TLS client authentication after the HTTP request was sent. Allow
+  // renegotiation for only those connections.
+  //
+  // Note that this does NOT implement the provision in
+  // https://http2.github.io/http2-spec/#rfc.section.9.2.1 which allows the
+  // server to request a renegotiation immediately before sending the
+  // connection preface as waiting for the preface would cost the round trip
+  // that False Start otherwise saves.
+  ssl_config.renego_allowed_default = renego_allowed;
+  if (renego_allowed) {
+    ssl_config.renego_allowed_for_protos = {kProtoHTTP11};
   }
 }
 
@@ -233,7 +266,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
                       // Always enable ALPN for proxies.
                       ConnectJobFactory::AlpnMode::kHttpAll,
                       network_anonymization_key, *common_connect_job_params,
-                      proxy_server_ssl_config);
+                      proxy_server_ssl_config, /*renego_allowed=*/false);
       }
 
       scoped_refptr<TransportSocketParams> proxy_tcp_params;
@@ -317,16 +350,10 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     scoped_refptr<TransportSocketParams> ssl_tcp_params;
 
     SSLConfig ssl_config = *ssl_config_for_origin;
-    if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
-      ConfigureAlpn(absl::get<url::SchemeHostPort>(endpoint), alpn_mode,
-                    network_anonymization_key, *common_connect_job_params,
-                    ssl_config);
-    } else {
-      // If ALPN is enabled, the scheme should be known.
-      DCHECK_EQ(alpn_mode, ConnectJobFactory::AlpnMode::kDisabled);
-      ssl_config.alpn_protos = {};
-      ssl_config.application_settings = {};
-    }
+
+    ConfigureAlpn(endpoint, alpn_mode, network_anonymization_key,
+                  *common_connect_job_params, ssl_config,
+                  /*renego_allowed=*/true);
 
     if (proxy_chain.is_direct()) {
       ssl_tcp_params = base::MakeRefCounted<TransportSocketParams>(
