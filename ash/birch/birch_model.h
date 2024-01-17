@@ -6,11 +6,10 @@
 #define ASH_BIRCH_BIRCH_MODEL_H_
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_item.h"
 #include "base/observer_list.h"
 
 namespace ash {
-
-struct BirchFileItem;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers.
@@ -36,6 +35,10 @@ class ASH_EXPORT BirchModel {
   void RemoveObserver(Observer* observer);
 
   void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
+
+  const std::vector<BirchFileItem>& GetFileSuggestItemsForTest() const {
+    return file_suggest_items_;
+  }
 
  private:
   // A type-specific list of items for all file suggestion items.

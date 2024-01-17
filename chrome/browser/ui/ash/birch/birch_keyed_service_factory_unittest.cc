@@ -23,13 +23,13 @@ namespace ash {
 class BirchKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
     switches::SetIgnoreBirchSecretKeyForTest(true);
+    BrowserWithTestWindowTest::SetUp();
   }
 
   void TearDown() override {
-    switches::SetIgnoreBirchSecretKeyForTest(false);
     BrowserWithTestWindowTest::TearDown();
+    switches::SetIgnoreBirchSecretKeyForTest(false);
   }
 
  protected:

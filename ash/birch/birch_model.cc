@@ -4,8 +4,6 @@
 
 #include "ash/birch/birch_model.h"
 
-#include "ash/birch/birch_item.h"
-
 namespace ash {
 
 BirchModel::BirchModel() = default;
