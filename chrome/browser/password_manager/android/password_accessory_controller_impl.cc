@@ -219,11 +219,6 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
         autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL);
   }
 
-  std::u16string manage_passwords_title = l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK);
-  footer_commands_to_add.emplace_back(
-      manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
-
   if (password_manager::PasswordManagerDriver* driver =
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
@@ -245,6 +240,15 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
       }
     }
   }
+
+  auto manage_passwords_message_id =
+      passkeys_to_add.empty()
+          ? IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK
+          : IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_AND_PASSKEYS_LINK;
+  std::u16string manage_passwords_title =
+      l10n_util::GetStringUTF16(manage_passwords_message_id);
+  footer_commands_to_add.emplace_back(
+      manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
 
   bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
   AccessorySheetData data = autofill::CreateAccessorySheetData(
