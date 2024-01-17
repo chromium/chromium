@@ -2316,8 +2316,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Client">
     <variant name="Attestation"/>
+    <variant name="BootLockBox"/>
     <variant name="Chaps"/>
     <variant name="Cryptohome"/>
+    <variant name="DeviceManagement"/>
     <variant name="TpmManager"/>
     <variant name="TrunksSend"/>
     <variant name="U2f"/>
@@ -2336,8 +2338,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Client">
     <variant name="Attestation"/>
+    <variant name="BootLockBox"/>
     <variant name="Chaps"/>
     <variant name="Cryptohome"/>
+    <variant name="DeviceManagement"/>
     <variant name="TpmManager"/>
     <variant name="TrunksSend"/>
     <variant name="U2f"/>
