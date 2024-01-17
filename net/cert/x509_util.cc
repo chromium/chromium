@@ -169,8 +169,21 @@ bool AddName(CBB* cbb, std::string_view name) {
   return true;
 }
 
-bssl::ParsedCertificateList ParseAllCerts(
-    const net::CertificateList x509_certs) {
+NET_EXPORT net::CertificateList ConvertToX509CertificatesIgnoreErrors(
+    const std::vector<std::vector<uint8_t>>& certs_bytes) {
+  net::CertificateList x509_certs;
+  for (const auto& cert_uint8 : certs_bytes) {
+    scoped_refptr<net::X509Certificate> x509_cert =
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_uint8));
+    if (x509_cert) {
+      x509_certs.push_back(std::move(x509_cert));
+    }
+  }
+  return x509_certs;
+}
+
+bssl::ParsedCertificateList ParseAllValidCerts(
+    const CertificateList& x509_certs) {
   bssl::ParsedCertificateList parsed_certs;
   for (const auto& x509_cert : x509_certs) {
     std::shared_ptr<const bssl::ParsedCertificate> cert =

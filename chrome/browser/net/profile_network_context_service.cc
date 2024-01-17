@@ -95,6 +95,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "net/cert/x509_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -158,9 +159,23 @@ cert_verifier::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
     const base::FilePath& storage_partition_path) {
   auto additional_certificates =
       cert_verifier::mojom::AdditionalCertificates::New();
+  net::CertificateList all_certificates;
+  net::CertificateList trust_anchors;
   policy_cert_service->GetPolicyCertificatesForStoragePartition(
-      storage_partition_path, &(additional_certificates->all_certificates),
-      &(additional_certificates->trust_anchors));
+      storage_partition_path, &all_certificates, &trust_anchors);
+
+  for (const auto& cert : all_certificates) {
+    base::span<const uint8_t> cert_bytes =
+        net::x509_util::CryptoBufferAsSpan(cert->cert_buffer());
+    additional_certificates->all_certificates.push_back(
+        std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end()));
+  }
+  for (const auto& cert : trust_anchors) {
+    base::span<const uint8_t> cert_bytes =
+        net::x509_util::CryptoBufferAsSpan(cert->cert_buffer());
+    additional_certificates->trust_anchors.push_back(
+        std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end()));
+  }
   return additional_certificates;
 }
 #endif  // defined (OS_CHROMEOS)
@@ -530,8 +545,8 @@ void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 cert_verifier::mojom::AdditionalCertificatesPtr
 ProfileNetworkContextService::GetCertificatePolicy() {
-  net::CertificateList additional_untrusted_certificates;
-  net::CertificateList additional_trust_anchors;
+  std::vector<std::vector<uint8_t>> additional_untrusted_certificates;
+  std::vector<std::vector<uint8_t>> additional_trust_anchors;
   std::vector<std::vector<uint8_t>>
       additional_trust_anchors_enforced_constraints;
   std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
@@ -539,17 +554,11 @@ ProfileNetworkContextService::GetCertificatePolicy() {
 
   for (const base::Value& cert_b64 :
        prefs->GetList(prefs::kCAHintCertificates)) {
-    std::string decoded;
-    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
-      continue;
-    }
+    absl::optional<std::vector<uint8_t>> decoded_opt =
+        base::Base64Decode(cert_b64.GetString());
 
-    scoped_refptr<net::X509Certificate> x509_cert =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(decoded)));
-
-    if (x509_cert) {
-      additional_untrusted_certificates.push_back(std::move(x509_cert));
+    if (decoded_opt.has_value()) {
+      additional_untrusted_certificates.push_back(std::move(*decoded_opt));
     }
   }
 

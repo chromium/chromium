@@ -204,9 +204,9 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     CertificateList additional_untrusted_authorities) {
   CertVerifyProc::InstanceParams instance_params;
   instance_params.additional_trust_anchors =
-      net::x509_util::ParseAllCerts(additional_trust_anchors);
+      net::x509_util::ParseAllValidCerts(additional_trust_anchors);
   instance_params.additional_untrusted_authorities =
-      net::x509_util::ParseAllCerts(additional_untrusted_authorities);
+      net::x509_util::ParseAllValidCerts(additional_untrusted_authorities);
   switch (type) {
 #if BUILDFLAG(IS_ANDROID)
     case CERT_VERIFY_PROC_ANDROID:

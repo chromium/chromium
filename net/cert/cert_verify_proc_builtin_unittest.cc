@@ -209,9 +209,9 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
       const CertificateList& additional_distrusted_certificates = {}) {
     CertVerifyProc::InstanceParams instance_params;
     instance_params.additional_trust_anchors =
-        net::x509_util::ParseAllCerts(additional_trust_anchors);
+        net::x509_util::ParseAllValidCerts(additional_trust_anchors);
     instance_params.additional_trust_anchors_with_enforced_constraints =
-        net::x509_util::ParseAllCerts(
+        net::x509_util::ParseAllValidCerts(
             additional_trust_anchors_with_enforced_constraints);
     std::vector<std::vector<uint8_t>> distrusted_spkis;
     for (const auto& x509_cert : additional_distrusted_certificates) {

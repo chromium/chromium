@@ -28,6 +28,7 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_builder.h"
@@ -1191,10 +1192,17 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
   // `intermediate1` as an untrusted cert.
   cv_creation_params->initial_additional_certificates =
       mojom::AdditionalCertificates::New();
+  base::span<const uint8_t> root1_bytes = net::x509_util::CryptoBufferAsSpan(
+      root1->GetX509Certificate()->cert_buffer());
   cv_creation_params->initial_additional_certificates->trust_anchors.push_back(
-      root1->GetX509Certificate());
+      std::vector(root1_bytes.begin(), root1_bytes.end()));
+
+  base::span<const uint8_t> intermediate1_bytes =
+      net::x509_util::CryptoBufferAsSpan(
+          intermediate1->GetX509Certificate()->cert_buffer());
   cv_creation_params->initial_additional_certificates->all_certificates
-      .push_back(intermediate1->GetX509Certificate());
+      .push_back(
+          std::vector(intermediate1_bytes.begin(), intermediate1_bytes.end()));
 
   // Create the cert verifier. It should start with the additional trust
   // anchors from the creation params already trusted.
@@ -1220,10 +1228,16 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
 
   // Supply a new set of additional certificates with `root2` trusted this time.
   auto new_additional_certificates = mojom::AdditionalCertificates::New();
+  base::span<const uint8_t> root2_bytes = net::x509_util::CryptoBufferAsSpan(
+      root2->GetX509Certificate()->cert_buffer());
   new_additional_certificates->trust_anchors.push_back(
-      root2->GetX509Certificate());
-  new_additional_certificates->all_certificates.push_back(
-      intermediate2->GetX509Certificate());
+      std::vector<uint8_t>(root2_bytes.begin(), root2_bytes.end()));
+
+  base::span<const uint8_t> intermediate2_bytes =
+      net::x509_util::CryptoBufferAsSpan(
+          intermediate2->GetX509Certificate()->cert_buffer());
+  new_additional_certificates->all_certificates.push_back(std::vector<uint8_t>(
+      intermediate2_bytes.begin(), intermediate2_bytes.end()));
   cv_service_updater_remote->UpdateAdditionalCertificates(
       std::move(new_additional_certificates));
 

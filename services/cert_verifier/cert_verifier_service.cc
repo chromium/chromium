@@ -134,25 +134,23 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
 void CertVerifierServiceImpl::UpdateAdditionalCertificates(
     mojom::AdditionalCertificatesPtr additional_certificates) {
   instance_params_.additional_trust_anchors =
-      net::x509_util::ParseAllCerts(additional_certificates->trust_anchors);
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->trust_anchors));
+
   instance_params_.additional_untrusted_authorities =
-      net::x509_util::ParseAllCerts(additional_certificates->all_certificates);
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->all_certificates));
+
+  instance_params_.additional_trust_anchors_with_enforced_constraints =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates
+                  ->trust_anchors_with_enforced_constraints));
+
   instance_params_.additional_distrusted_spkis =
       additional_certificates->distrusted_spkis;
-
-  {
-    net::CertificateList anchors_with_constraints;
-    for (const auto& cert_uint8 :
-         additional_certificates->trust_anchors_with_enforced_constraints) {
-      scoped_refptr<net::X509Certificate> x509_root =
-          net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_uint8));
-      if (x509_root) {
-        anchors_with_constraints.push_back(x509_root);
-      }
-    }
-    instance_params_.additional_trust_anchors_with_enforced_constraints =
-        net::x509_util::ParseAllCerts(anchors_with_constraints);
-  }
 
   verifier_->UpdateVerifyProcData(cert_net_fetcher_,
                                   service_factory_impl_->get_impl_params(),

@@ -31,10 +31,18 @@ namespace net {
 
 namespace x509_util {
 
+// Convert a vector of bytes into X509Certificate objects.
+// This will silently drop all input that does not parse, so be careful using
+// this.
+NET_EXPORT net::CertificateList ConvertToX509CertificatesIgnoreErrors(
+    const std::vector<std::vector<uint8_t>>& certs_bytes);
+
 // Parse all certificiates with default parsing options. Return those that
 // parse.
-NET_EXPORT bssl::ParsedCertificateList ParseAllCerts(
-    net::CertificateList x509_certs);
+// This will silently drop all certs with parsing errors, so be careful using
+// this.
+NET_EXPORT bssl::ParsedCertificateList ParseAllValidCerts(
+    const CertificateList& x509_certs);
 
 // Supported digest algorithms for signing certificates.
 enum DigestAlgorithm { DIGEST_SHA256 };
