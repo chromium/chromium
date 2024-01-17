@@ -20,9 +20,39 @@
         The Name of the Monitor.
       </summary>
     </metric>
-    <metric name="ProductCode" type="raw-string">
+    <metric name="ManufacturerId" type="raw-string">
       <summary>
-        An identifier for the display ManufacturerId and ProductId
+        ID of the monitor's manufacturer.
+      </summary>
+    </metric>
+    <metric name="ProductId" type="int">
+      <summary>
+        Monitor's Product ID.
+      </summary>
+    </metric>
+    <metric name="NativeModeSize" type="raw-string">
+      <summary>
+        The Monitor's Native Mode Size.
+      </summary>
+    </metric>
+    <metric name="NativeModeRefreshRate" type="double">
+      <summary>
+        The Monitor's Native Mode Refresh Rate.
+      </summary>
+    </metric>
+    <metric name="PhysicalSize" type="raw-string">
+      <summary>
+        The Physical Size of the Monitor in inches.
+      </summary>
+    </metric>
+    <metric name="ConnectionType" type="raw-string">
+      <summary>
+        The Connection type used to connect the display into the chromebook.
+      </summary>
+    </metric>
+    <metric name="IsVrrCapable" type="int">
+      <summary>
+        The Monitor's Ability to support Variable Refresh Rate.
       </summary>
     </metric>
   </event>

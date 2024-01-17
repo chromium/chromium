@@ -178,6 +178,14 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   }
   Display::TouchSupport touch_support() const { return touch_support_; }
 
+  void set_connection_type(DisplayConnectionType type) {
+    connection_type_ = type;
+  }
+  DisplayConnectionType connection_type() const { return connection_type_; }
+
+  void set_physical_size(const gfx::Size& size) { physical_size_ = size; }
+  const gfx::Size& physical_size() const { return physical_size_; }
+
   // Gets/Sets the device scale factor of the display.
   // TODO(oshima): Rename this to |default_device_scale_factor|.
   float device_scale_factor() const { return device_scale_factor_; }
@@ -396,6 +404,8 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   std::map<Display::RotationSource, Display::Rotation> rotations_;
   Display::RotationSource active_rotation_source_;
   Display::TouchSupport touch_support_;
+  DisplayConnectionType connection_type_ = DISPLAY_CONNECTION_TYPE_UNKNOWN;
+  gfx::Size physical_size_;
 
   // This specifies the device's pixel density. (For example, a display whose
   // DPI is higher than the threshold is considered to have device_scale_factor

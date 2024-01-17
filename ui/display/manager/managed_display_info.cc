@@ -431,6 +431,8 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 
   active_rotation_source_ = native_info.active_rotation_source_;
   touch_support_ = native_info.touch_support_;
+  connection_type_ = native_info.connection_type_;
+  physical_size_ = native_info.physical_size_;
   device_scale_factor_ = native_info.device_scale_factor_;
   DCHECK(!native_info.bounds_in_native_.IsEmpty());
   bounds_in_native_ = native_info.bounds_in_native_;
