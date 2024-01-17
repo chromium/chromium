@@ -103,11 +103,6 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void GetTokenInfo(Kcer::GetTokenInfoCallback callback) override;
   void GetKeyInfo(PrivateKeyHandle key,
                   Kcer::GetKeyInfoCallback callback) override;
-  void GetKeyPermissions(PrivateKeyHandle key,
-                         Kcer::GetKeyPermissionsCallback callback) override;
-  void GetCertProvisioningProfileId(
-      PrivateKeyHandle key,
-      Kcer::GetCertProvisioningProfileIdCallback callback) override;
   void SetKeyNickname(PrivateKeyHandle key,
                       std::string nickname,
                       Kcer::StatusCallback callback) override;
