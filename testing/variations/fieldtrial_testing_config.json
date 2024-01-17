@@ -1368,6 +1368,23 @@
             ]
         }
     ],
+    "AutofillEnableFpanRiskBasedAuthentication": [
+        {
+            "platforms": [
+                "android",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableFpanRiskBasedAuthentication"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableLabelPrecedenceForTurkishAddresses": [
         {
             "platforms": [
