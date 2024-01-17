@@ -74,8 +74,52 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ChromeColors) {
   RunTest("side_panel/customize_chrome/chrome_colors_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, WallpaperSearch) {
+using CustomizeChromeWallpaperSearchTest = SidePanelCustomizeChromeTest;
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Misc) {
   RunTest(
       "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
-      "mocha.run()");
+      "runMochaSuite('WallpaperSearchTest Misc')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Descriptors) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest Descriptors')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Search) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest Search')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, History) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest History')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Error) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest Error')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Feedback) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest Feedback')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Metrics) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest Metrics')");
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Inspiration) {
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "runMochaSuite('WallpaperSearchTest Inspiration')");
 }

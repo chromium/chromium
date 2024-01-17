@@ -213,6 +213,9 @@ suite('WallpaperSearchTest', () => {
       assertEquals(0, checkedMarkedColors.length);
 
       // Verify submitting does not send a color.
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
       await flushTasks();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -244,6 +247,9 @@ suite('WallpaperSearchTest', () => {
               .length);
 
       // Verify submitting does not send a hue.
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
       await flushTasks();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -257,6 +263,9 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -265,7 +274,8 @@ suite('WallpaperSearchTest', () => {
     test('sends selected descriptor values to backend', async () => {
       handler.setResultFor(
           'getWallpaperSearchResults',
-          Promise.resolve({results: ['123', '456']}));
+          Promise.resolve(
+              {status: WallpaperSearchStatus.kOk, results: ['123', '456']}));
       createWallpaperSearchElement({
         descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
         descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
@@ -297,7 +307,8 @@ suite('WallpaperSearchTest', () => {
     test('sends hue to backend', async () => {
       handler.setResultFor(
           'getWallpaperSearchResults',
-          Promise.resolve({results: ['123', '456']}));
+          Promise.resolve(
+              {status: WallpaperSearchStatus.kOk, results: ['123', '456']}));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
@@ -317,9 +328,10 @@ suite('WallpaperSearchTest', () => {
 
     test(
         'selects random descriptor a if user does not select one', async () => {
-          handler.setResultFor(
-              'getWallpaperSearchResults',
-              Promise.resolve({results: ['123', '456']}));
+          handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+            status: WallpaperSearchStatus.kOk,
+            results: ['123', '456'],
+          }));
           createWallpaperSearchElementWithDescriptors();
           await flushTasks();
           assertEquals(
@@ -337,7 +349,8 @@ suite('WallpaperSearchTest', () => {
 
     test('sends one descriptor value to the backend', async () => {
       handler.setResultFor(
-          'getWallpaperSearchResults', Promise.resolve({results: []}));
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       createWallpaperSearchElement({
         descriptorA: [{category: 'foo', labels: ['bar']}],
         descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
@@ -361,7 +374,8 @@ suite('WallpaperSearchTest', () => {
 
     test('empty result shows no tiles', async () => {
       handler.setResultFor(
-          'getWallpaperSearchResults', Promise.resolve({results: []}));
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
@@ -373,6 +387,7 @@ suite('WallpaperSearchTest', () => {
 
     test('shows mix of filled and empty containers', async () => {
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
         results: [
           {image: '123', id: {high: 10, low: 1}},
           {image: '456', id: {high: 8, low: 2}},
@@ -405,9 +420,10 @@ suite('WallpaperSearchTest', () => {
 
     test('handle result click', async () => {
       windowProxy.setResultFor('now', 321);
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
@@ -476,9 +492,10 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('sizes loading tiles', async () => {
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
@@ -517,6 +534,7 @@ suite('WallpaperSearchTest', () => {
 
     test('current theme is checked', async () => {
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
         results: [
           {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
           {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
@@ -569,6 +587,7 @@ suite('WallpaperSearchTest', () => {
         'wallpaperSearchResultLabelBC': 'Image $1 of $2, $3, $4',
       });
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
         results: [
           {image: '123', id: {high: 10, low: 1}},
           {image: '123', id: {high: 10, low: 1}},
@@ -912,9 +931,6 @@ suite('WallpaperSearchTest', () => {
         createWallpaperSearchElement(/*descriptors=*/ null);
         await flushTasks();
 
-        wallpaperSearchElement.$.submitButton.click();
-        await waitAfterNextRender(wallpaperSearchElement);
-
         assertNotStyle(
             $$(wallpaperSearchElement, '#error')!, 'display', 'none');
         assertStyle(
@@ -1200,9 +1216,10 @@ suite('WallpaperSearchTest', () => {
 
   suite('Feedback', () => {
     test('shows feedback buttons and submits', async () => {
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
       assertFalse(isVisible(wallpaperSearchElement.$.feedbackButtons));
@@ -1229,9 +1246,10 @@ suite('WallpaperSearchTest', () => {
 
     test('resets on new results', async () => {
       // First result.
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
       wallpaperSearchElement.$.submitButton.click();
@@ -1242,9 +1260,10 @@ suite('WallpaperSearchTest', () => {
       handler.resetResolver('setUserFeedback');
 
       // New results.
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '321', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '321', id: {high: 10, low: 1}}],
+      }));
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
 
@@ -1261,6 +1280,9 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(
@@ -1274,9 +1296,10 @@ suite('WallpaperSearchTest', () => {
 
     test('clicking result tile sets metric', async () => {
       windowProxy.setResultFor('now', 321);
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
@@ -1319,9 +1342,10 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('clicking feedback buttons sets metric', async () => {
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      }));
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
 
