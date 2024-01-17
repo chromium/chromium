@@ -8945,6 +8945,21 @@
             ]
         }
     ],
+    "IOSEnableViewportIntents": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableViewportIntents"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExpKitCalendarTextClassifier": [
         {
             "platforms": [

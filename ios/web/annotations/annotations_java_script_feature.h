@@ -32,7 +32,8 @@ class AnnotationsJavaScriptFeature : public JavaScriptFeature {
   // `OnDecorated` on `AnnotationsTextManager` when done. Decorations will also
   // call `OnClick` on `AnnotationsTextManager` when tapped on.
   virtual void DecorateAnnotations(WebState* web_state,
-                                   base::Value& annotations);
+                                   base::Value& annotations,
+                                   int seq_id);
   // Triggers the JS decoration removal code.
   virtual void RemoveDecorations(WebState* web_state);
   // Triggers the JS decoration removal code for a single type.

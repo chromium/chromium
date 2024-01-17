@@ -6,8 +6,6 @@
  * @fileoverview DOM related utilities.
  */
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
-
 // Semantically extends `HTMLElement` to allow using `Symbol` as property index.
 class HTMLElementWithSymbolIndex extends HTMLElement {
   [key: symbol|string]: any
@@ -46,12 +44,6 @@ const IGNORE_NODE_NAMES = new Set([
   'MAP',      'OPTGROUP', 'OPTION',   'PROGRESS', 'SELECT',
   'VIDEO',    'A',        'APP',
 ]);
-
-// Sends `data` as a string to native code, for debugging only.
-function log(data: any): void {
-  sendWebKitMessage(
-      'annotations', {command: 'annotations.log', text: '' + data});
-}
 
 // Gets the content of a meta tag by httpEquiv for `httpEquiv`. The function is
 // case insensitive.
@@ -161,7 +153,6 @@ export {
   NodeWithSymbolIndex,
   TextWithSymbolIndex,
   Rect,
-  log,
   getMetaContentByHttpEquiv,
   hasNoIntentDetection,
   rectFromElement,

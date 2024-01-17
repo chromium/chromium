@@ -1,0 +1,14 @@
+{
+  "extends": "../../../../tools/typescript/tsconfig_base.json",
+  "compilerOptions": {
+    "rootDir": "../../../..",
+    "paths": {
+      "/tools/typescript/definitions/*": [
+        "./../../../../tools/typescript/definitions/*"
+      ],
+      "//*": [
+        "./../../../../*"
+      ]
+    }
+  }
+}

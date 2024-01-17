@@ -42,7 +42,11 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
                        const std::string& text,
                        int seq_id,
                        const base::Value::Dict& metadata);
-  void OnDecorated(WebState* web_state, int successes, int annotations);
+  void OnDecorated(WebState* web_state,
+                   int annotations,
+                   int successes,
+                   int failures,
+                   const base::Value::List& cancelled);
   void OnClick(WebState* web_state,
                const std::string& text,
                CGRect rect,
@@ -65,6 +69,9 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   // Id passed on to some callbacks and checked on followup calls to make
   // sure it matches with current manager's state.
   int seq_id_;
+
+  // Is true when kEnableViewportIntents feature is enabled.
+  bool is_viewport_extraction_;
 
   // Must be last member to ensure it is destroyed last.
   base::WeakPtrFactory<AnnotationsTextManagerImpl> weak_factory_{this};

@@ -71,10 +71,13 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   }
 
   void OnDecorated(WebState* web_state,
+                   int annotations,
                    int successes,
-                   int annotations) override {
-    successes_ = successes;
+                   int failures,
+                   const base::Value::List& cancelled) override {
     annotations_ = annotations;
+    successes_ = successes;
+    failures_ = failures;
   }
 
   void OnClick(WebState* web_state,
@@ -87,6 +90,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
 
   const std::string& extracted_text() const { return extracted_text_; }
   int successes() const { return successes_; }
+  int failures() const { return failures_; }
   int annotations() const { return annotations_; }
   int clicks() const { return clicks_; }
   int seq_id() const { return seq_id_; }
@@ -96,7 +100,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
 
  private:
   std::string extracted_text_, click_data_;
-  int successes_, annotations_, clicks_, seq_id_;
+  int successes_, failures_, annotations_, clicks_, seq_id_;
   base::Value::Dict metadata_;
 };
 

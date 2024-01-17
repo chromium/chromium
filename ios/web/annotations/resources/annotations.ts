@@ -7,10 +7,9 @@
  * and pass it on to the annotations manager.
  */
 
+import {MS_DELAY_BEFORE_TRIGGER, NO_DECORATION_NODE_NAMES, NON_TEXT_NODE_NAMES} from '//ios/web/annotations/resources/annotations_constants.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
-import {MS_DELAY_BEFORE_TRIGGER, NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES}
-    from '//ios/web/annotations/resources/annotations_constants.js';
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Mark: Private properties
 
@@ -153,8 +152,8 @@ function getMetaContentByHttpEquiv(httpEquiv: string) {
   return '';
 }
 
-const highlightTextColor = "#000";
-const highlightBackgroundColor = "rgba(20,111,225,0.25)";
+const highlightTextColor = '#000';
+const highlightBackgroundColor = 'rgba(20,111,225,0.25)';
 const decorationStyles = 'border-bottom-width: 1px; ' +
     'border-bottom-style: dotted; ' +
     'background-color: transparent';
@@ -303,7 +302,9 @@ function decorateAnnotations(annotations: Annotation[]): void {
   sendWebKitMessage('annotations', {
     command: 'annotations.decoratingComplete',
     successes: annotations.length - failures,
-    annotations: annotations.length
+    failures: failures,
+    annotations: annotations.length,
+    cancelled: []
   });
 }
 
@@ -329,7 +330,7 @@ function removeDecorations(): void {
  * @param type - the type of annotations to remove.
  */
 function removeDecorationsWithType(type: string): void {
-  var remainingDecorations : Decoration[] = [];
+  var remainingDecorations: Decoration[] = [];
   for (let decoration of decorations) {
     const replacements = decoration.replacements;
     const parentNode = replacements[0]!.parentNode;
@@ -379,7 +380,7 @@ function removeDecorationsWithType(type: string): void {
         newReplacements.push(replacement);
         continue;
       }
-      let text = document.createTextNode(element.textContent ?? "");
+      let text = document.createTextNode(element.textContent ?? '');
       parentNode.replaceChild(text, element);
       newReplacements.push(text);
     }
@@ -398,8 +399,8 @@ function removeHighlight(): void {
       if (!(replacement instanceof HTMLElement)) {
         continue;
       }
-      replacement.style.color = "";
-      replacement.style.background = "";
+      replacement.style.color = '';
+      replacement.style.background = '';
     }
   }
 }
@@ -449,8 +450,8 @@ function enumerateTextNodes(
       }
       const style = window.getComputedStyle(node as Element);
       // Only proceed if the element is visible or if invisibles are to be kept.
-      if (filterInvisibles && (style.display === 'none' ||
-          style.visibility === 'hidden')) {
+      if (filterInvisibles &&
+          (style.display === 'none' || style.visibility === 'hidden')) {
         continue;
       }
       // No need to add a line break before `body` as it is the first element.
@@ -564,7 +565,7 @@ function handleTopTap(event: Event): void {
   }
 }
 
-// Sends click to Bling and cancel observer.
+// Sends click to browser side and cancel observer.
 function onClickAnnotation(annotation: HTMLElement, cancel: boolean): void {
   sendWebKitMessage('annotations', {
     command: 'annotations.onClick',

@@ -34,12 +34,20 @@ class AnnotationsTextObserver : public base::CheckedObserver {
                                const base::Value::Dict& metadata) {}
 
   // Called when decorations have been applied. `successes` is the number of
-  // annotations that were successfully stylized in the page. `annotations` is
-  // the number of annotations that were sent for decorating. There is no
-  // guarantee this will be called.
+  // annotations that were successfully stylized in the page, reversely
+  // `failures` is the number of annotation that failed to decorate.
+  // `annotations` is the number of annotations that were sent for decorating.
+  // `cancelled` is the list of ids (`data`) of annotations that fully
+  // failed to decorate. There no guarantee that
+  //   failures + successes == annotations
+  //   failures == cancelled.length
+  // because an annotation can be partially decorated due to some changes in the
+  // web page. There is also no guarantee this will be called.
   virtual void OnDecorated(WebState* web_state,
+                           int annotations,
                            int successes,
-                           int annotations) {}
+                           int failures,
+                           const base::Value::List& cancelled) {}
 
   // Called when user taps an annotation. `text` is the original annotation
   // text, `rect` is the position in the web page where the annotation is and
