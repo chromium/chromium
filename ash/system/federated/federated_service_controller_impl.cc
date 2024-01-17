@@ -27,6 +27,7 @@ namespace {
 // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
 const auto kClientFeatureMap =
     base::MakeFixedFlatMap<std::string_view, const base::Feature*>({
+        {"input_autocorrect_phh", &features::kAutocorrectFederatedPhh},
         {"launcher_query_analytics_v1",
          &features::kFederatedLauncherQueryAnalyticsTask},
         {"launcher_query_analytics_v2",
