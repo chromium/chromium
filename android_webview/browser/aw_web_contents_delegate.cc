@@ -338,6 +338,14 @@ void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
     intercept_navigation_delegate->OnResourceRequestWithGesture();
 }
 
+content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
+    content::WebContents& web_contents) {
+  if (base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+    return content::PreloadingEligibility::kEligible;
+  }
+  return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
 scoped_refptr<content::FileSelectListener>
 AwWebContentsDelegate::TakeFileSelectListener() {
   return std::move(file_select_listener_);
