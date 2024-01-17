@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StateResult} from './shimless_rma.mojom-webui.js';
+import {RmadErrorCode, StateResult} from './shimless_rma.mojom-webui.js';
 
 export const DISABLE_NEXT_BUTTON = 'disable-next-button';
 export type DisableNextButtonEvent = CustomEvent<boolean>;
@@ -35,6 +35,12 @@ export type OnSelectedChangedEvent = CustomEvent<{value: string}>;
 export const CLICK_CALIBRATION_COMPONENT_BUTTON =
     'click-calibration-component-button';
 export type ClickCalibrationComponentEvent = CustomEvent<number>;
+
+export const FATAL_HARDWARE_ERROR = 'fatal-hardware-error';
+export type FatalHardwareEvent = CustomEvent<{
+  rmadErrorCode: RmadErrorCode,
+  fatalErrorCode: number,
+}>;
 
 type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
 

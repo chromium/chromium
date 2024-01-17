@@ -10,13 +10,22 @@ import './shimless_rma_shared.css.js';
 import './base_page.js';
 import './icons.html.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {createCustomEvent, FATAL_HARDWARE_ERROR, FatalHardwareEvent} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_provisioning_page.html.js';
-import {ProvisioningError, ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
-import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
+import {ProvisioningError, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode, ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
+
+declare global {
+  interface HTMLElementEventMap {
+    [FATAL_HARDWARE_ERROR]: FatalHardwareEvent;
+  }
+}
 
 /**
  * @fileoverview
@@ -26,22 +35,14 @@ import {disableNextButton, enableNextButton, executeThenTransitionState, focusPa
 
 /**
  * The prefix for a `ProvisioningError` displayed on the Hardware Error page.
- * @type {number}
  */
 export const PROVISIONING_ERROR_CODE_PREFIX = 1000;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ReimagingProvisioningPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ReimagingProvisioningPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   static get is() {
-    return 'reimaging-provisioning-page';
+    return 'reimaging-provisioning-page' as const;
   }
 
   static get template() {
@@ -51,17 +52,14 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
 
-      /** @protected {!ProvisioningStatus} */
       status: {
         type: Object,
       },
 
-      /** @protected {boolean} */
       shouldShowSpinner: {
         type: Boolean,
         value: true,
@@ -69,23 +67,21 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
     };
   }
 
+  allButtonsDisabled: boolean;
+  protected status: ProvisioningStatus;
+  protected shouldShowSpinner: boolean;
+  private shimlessRmaService: ShimlessRmaServiceInterface =
+      getShimlessRmaService();
+  provisioningObserverReceiver: ProvisioningObserverReceiver =
+      new ProvisioningObserverReceiver(this);
+
   constructor() {
     super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-    /** @private {ProvisioningObserverReceiver} */
-    this.provisioningObserverReceiver = new ProvisioningObserverReceiver(
-        /**
-         * @type {!ProvisioningObserverInterface}
-         */
-        (this));
-
     this.shimlessRmaService.observeProvisioningProgress(
         this.provisioningObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
@@ -93,24 +89,18 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
 
   /**
    * Implements ProvisioningObserver.onProvisioningUpdated()
-   * @param {!ProvisioningStatus} status
-   * @param {number} progress
-   * @param {!ProvisioningError} error
-   * @protected
    */
-  onProvisioningUpdated(status, progress, error) {
+  onProvisioningUpdated(
+      status: ProvisioningStatus, _progress: number,
+      error: ProvisioningError): void {
     const isErrorStatus = status === ProvisioningStatus.kFailedBlocking ||
         status === ProvisioningStatus.kFailedNonBlocking;
     const isWpError = isErrorStatus && error === ProvisioningError.kWpEnabled;
 
     if (isErrorStatus && !isWpError) {
-      this.dispatchEvent(new CustomEvent('fatal-hardware-error', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          rmadErrorCode: RmadErrorCode.kProvisioningFailed,
-          fatalErrorCode: (PROVISIONING_ERROR_CODE_PREFIX + error),
-        },
+      this.dispatchEvent(createCustomEvent(FATAL_HARDWARE_ERROR, {
+        rmadErrorCode: RmadErrorCode.kProvisioningFailed,
+        fatalErrorCode: (PROVISIONING_ERROR_CODE_PREFIX + error),
       }));
     }
 
@@ -128,20 +118,27 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
         isWpError || this.status === ProvisioningStatus.kInProgress;
 
     if (isWpError) {
-      const dialog = /** @type {!CrDialogElement} */ (
-          this.shadowRoot.querySelector('#wpEnabledDialog'));
+      const dialog: CrDialogElement|null =
+          this.shadowRoot!.querySelector('#wpEnabledDialog');
+      assert(dialog);
       dialog.showModal();
     }
   }
 
-  /** @protected */
-  onTryAgainButtonClick() {
-    const dialog = /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#wpEnabledDialog'));
+  protected onTryAgainButtonClick(): void {
+    const dialog: CrDialogElement|null =
+        this.shadowRoot!.querySelector('#wpEnabledDialog');
+    assert(dialog);
     dialog.close();
 
     executeThenTransitionState(
         this, () => this.shimlessRmaService.retryProvisioning());
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ReimagingProvisioningPage.is]: ReimagingProvisioningPage;
   }
 }
 
