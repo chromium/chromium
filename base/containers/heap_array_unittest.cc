@@ -202,6 +202,18 @@ TEST(HeapArray, Uninit) {
 #endif
 }
 
+TEST(HeapArray, CopiedFrom) {
+  base::span<uint32_t> empty_span;
+  auto empty_vec = base::HeapArray<uint32_t>::CopiedFrom(empty_span);
+  EXPECT_EQ(0u, empty_vec.size());
+
+  const uint32_t kData[] = {1000u, 1001u};
+  auto vec = base::HeapArray<uint32_t>::CopiedFrom(kData);
+  ASSERT_EQ(2u, vec.size());
+  EXPECT_EQ(1000u, vec[0]);
+  EXPECT_EQ(1001u, vec[1]);
+}
+
 TEST(HeapArray, RunsDestructor) {
   size_t count = 0;
   {

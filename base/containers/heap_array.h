@@ -59,6 +59,12 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return HeapArray(std::unique_ptr<T[]>(new T[size]), size);
   }
 
+  static HeapArray CopiedFrom(base::span<const T> that) {
+    auto result = HeapArray::Uninit(that.size());
+    result.copy_from(that);
+    return result;
+  }
+
   // Constructs an empty array and does not allocate any memory.
   HeapArray()
     requires(std::constructible_from<T>)

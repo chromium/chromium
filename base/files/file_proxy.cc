@@ -7,12 +7,15 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -170,25 +173,37 @@ class ReadHelper : public FileHelper {
  public:
   ReadHelper(base::WeakPtr<FileProxy> proxy, File file, int bytes_to_read)
       : FileHelper(std::move(proxy), std::move(file)),
-        buffer_(new char[static_cast<size_t>(bytes_to_read)]),
-        bytes_to_read_(bytes_to_read) {}
+        // SAFETY - References to `buffer_` are provided as a span only after
+        // successfully reading some bytes.
+        buffer_(base::HeapArray<uint8_t>::Uninit(
+            static_cast<size_t>(bytes_to_read))) {}
+
   ReadHelper(const ReadHelper&) = delete;
   ReadHelper& operator=(const ReadHelper&) = delete;
 
   void RunWork(int64_t offset) {
-    bytes_read_ = file_.Read(offset, buffer_.get(), bytes_to_read_);
-    error_ = (bytes_read_ < 0) ? File::FILE_ERROR_FAILED : File::FILE_OK;
+    absl::optional<size_t> result = file_.Read(offset, buffer_);
+    if (!result.has_value()) {
+      bytes_read_ = -1;
+      error_ = File::FILE_ERROR_FAILED;
+      return;
+    }
+    bytes_read_ = checked_cast<int>(result.value());
+    error_ = File::FILE_OK;
   }
 
   void Reply(FileProxy::ReadCallback callback) {
     PassFile();
     DCHECK(!callback.is_null());
-    std::move(callback).Run(error_, buffer_.get(), bytes_read_);
+    base::span<uint8_t> read_span;
+    if (error_ == File::FILE_OK) {
+      read_span = buffer_.first(checked_cast<size_t>(bytes_read_));
+    }
+    std::move(callback).Run(error_, base::as_chars(read_span));
   }
 
  private:
-  std::unique_ptr<char[]> buffer_;
-  int bytes_to_read_;
+  base::HeapArray<uint8_t> buffer_;
   int bytes_read_ = 0;
 };
 
@@ -196,19 +211,22 @@ class WriteHelper : public FileHelper {
  public:
   WriteHelper(base::WeakPtr<FileProxy> proxy,
               File file,
-              const char* buffer,
-              int bytes_to_write)
+              base::span<const uint8_t> data)
       : FileHelper(std::move(proxy), std::move(file)),
-        buffer_(new char[static_cast<size_t>(bytes_to_write)]),
-        bytes_to_write_(bytes_to_write) {
-    memcpy(buffer_.get(), buffer, static_cast<size_t>(bytes_to_write));
-  }
+        buffer_(base::HeapArray<uint8_t>::CopiedFrom(data)) {}
+
   WriteHelper(const WriteHelper&) = delete;
   WriteHelper& operator=(const WriteHelper&) = delete;
 
   void RunWork(int64_t offset) {
-    bytes_written_ = file_.Write(offset, buffer_.get(), bytes_to_write_);
-    error_ = (bytes_written_ < 0) ? File::FILE_ERROR_FAILED : File::FILE_OK;
+    absl::optional<size_t> result = file_.Write(offset, buffer_);
+    if (!result.has_value()) {
+      bytes_written_ = -1;
+      error_ = File::FILE_ERROR_FAILED;
+      return;
+    }
+    bytes_written_ = checked_cast<int>(result.value());
+    error_ = File::FILE_OK;
   }
 
   void Reply(FileProxy::WriteCallback callback) {
@@ -218,15 +236,13 @@ class WriteHelper : public FileHelper {
   }
 
  private:
-  std::unique_ptr<char[]> buffer_;
-  int bytes_to_write_;
+  base::HeapArray<uint8_t> buffer_;
   int bytes_written_ = 0;
 };
 
 }  // namespace
 
-FileProxy::FileProxy(TaskRunner* task_runner) : task_runner_(task_runner) {
-}
+FileProxy::FileProxy(TaskRunner* task_runner) : task_runner_(task_runner) {}
 
 FileProxy::~FileProxy() {
   if (file_.IsValid())
@@ -311,15 +327,15 @@ bool FileProxy::Read(int64_t offset, int bytes_to_read, ReadCallback callback) {
 }
 
 bool FileProxy::Write(int64_t offset,
-                      const char* buffer,
-                      int bytes_to_write,
+                      base::span<const uint8_t> data,
                       WriteCallback callback) {
   DCHECK(file_.IsValid());
-  if (bytes_to_write <= 0 || buffer == nullptr)
+  if (data.empty()) {
     return false;
+  }
+  WriteHelper* helper =
+      new WriteHelper(weak_ptr_factory_.GetWeakPtr(), std::move(file_), data);
 
-  WriteHelper* helper = new WriteHelper(
-      weak_ptr_factory_.GetWeakPtr(), std::move(file_), buffer, bytes_to_write);
   return task_runner_->PostTaskAndReply(
       FROM_HERE, BindOnce(&WriteHelper::RunWork, Unretained(helper), offset),
       BindOnce(&WriteHelper::Reply, Owned(helper), std::move(callback)));
