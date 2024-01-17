@@ -1,8 +1,4 @@
 <style include="cr-shared-style settings-shared">
-  .settings-box {
-    border-top: none;
-  }
-
   .list-item {
     display: flex;
   }
@@ -42,7 +38,7 @@
     opacity: var(--cros-disabled-opacity);
   }
 </style>
-<div id="featureLabel" class="settings-box">
+<div class="settings-box first">
   <localized-link class="secondary"
       localized-string="$i18n{osSyncFeatureLabel}"
       on-link-clicked="onBrowserSyncSettingsClicked_">
