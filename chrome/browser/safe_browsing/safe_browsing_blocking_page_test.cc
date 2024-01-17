@@ -533,6 +533,7 @@ class TestSafeBrowsingBlockingPageFactory
 
     BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options(
         BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
+        BaseBlockingPage::IsSubresource(unsafe_resources),
         is_extended_reporting_opt_in_allowed,
         web_contents->GetBrowserContext()->IsOffTheRecord(),
         IsExtendedReportingEnabled(*prefs),
@@ -2782,16 +2783,9 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW)));
-    if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
-      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
-                base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                    IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW)));
-    } else {
-      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
-                base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
-                    IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                    u"127.0.0.1")));
-    }
+    ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW)));
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW)));
@@ -2799,16 +2793,9 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW)));
-    if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
-                base::UTF16ToUTF8(l10n_util::GetStringUTF16(
-                    IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW)));
-    } else {
-      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
-                base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
-                    IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                    u"127.0.0.1")));
-    }
+    ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW)));
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW)));

@@ -107,6 +107,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
           IsMainPageLoadPending(unsafe_resources),
+          IsSubresource(unsafe_resources),
           safe_browsing::IsExtendedReportingOptInAllowed(*pref_service),
           browser_context->IsOffTheRecord(),
           safe_browsing::IsExtendedReportingEnabled(*pref_service),

@@ -159,8 +159,8 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
       user_made_decision_ = true;
       // Don't record the user action here because there are other ways of
       // triggering DontProceed, like clicking the back button.
-      if (is_main_frame_load_blocked()) {
-        // If the load is blocked, we want to close the interstitial and discard
+      if (is_main_frame_load_pending()) {
+        // If the load is pending, we want to close the interstitial and discard
         // the pending entry.
         controller()->GoBack();
       } else {
@@ -276,12 +276,12 @@ void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
         l10n_util::GetStringUTF16(IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW));
     load_time_data.Set(
         "explanationParagraph",
-        is_main_frame_load_blocked()
-            ? l10n_util::GetStringUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW)
-            : l10n_util::GetStringFUTF16(
+        is_subresource()
+            ? l10n_util::GetStringFUTF16(
                   IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                  common_string_util::GetFormattedHostName(request_url())));
+                  common_string_util::GetFormattedHostName(request_url()))
+            : l10n_util::GetStringUTF16(
+                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW));
   } else {
     load_time_data.Set(
         "primaryParagraph",
@@ -290,13 +290,13 @@ void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
             common_string_util::GetFormattedHostName(request_url())));
     load_time_data.Set(
         "explanationParagraph",
-        is_main_frame_load_blocked()
+        is_subresource()
             ? l10n_util::GetStringFUTF16(
-                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH,
-                  common_string_util::GetFormattedHostName(request_url()))
-            : l10n_util::GetStringFUTF16(
                   IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
                   base::UTF8ToUTF16(main_frame_url().host()),
+                  common_string_util::GetFormattedHostName(request_url()))
+            : l10n_util::GetStringFUTF16(
+                  IDS_MALWARE_V3_EXPLANATION_PARAGRAPH,
                   common_string_util::GetFormattedHostName(request_url())));
   }
   load_time_data.Set(
@@ -322,12 +322,12 @@ void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
         l10n_util::GetStringUTF16(IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW));
     load_time_data.Set(
         "explanationParagraph",
-        is_main_frame_load_blocked()
-            ? l10n_util::GetStringUTF16(
-                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW)
-            : l10n_util::GetStringFUTF16(
+        is_subresource()
+            ? l10n_util::GetStringFUTF16(
                   IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                  common_string_util::GetFormattedHostName(request_url())));
+                  common_string_util::GetFormattedHostName(request_url()))
+            : l10n_util::GetStringUTF16(
+                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW));
   } else {
     load_time_data.Set(
         "primaryParagraph",
@@ -363,12 +363,12 @@ void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
         l10n_util::GetStringUTF16(IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW));
     load_time_data.Set(
         "explanationParagraph",
-        is_main_frame_load_blocked()
-            ? l10n_util::GetStringUTF16(
-                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW)
-            : l10n_util::GetStringFUTF16(
+        is_subresource()
+            ? l10n_util::GetStringFUTF16(
                   IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
-                  common_string_util::GetFormattedHostName(request_url())));
+                  common_string_util::GetFormattedHostName(request_url()))
+            : l10n_util::GetStringUTF16(
+                  IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW));
   } else {
     load_time_data.Set(
         "primaryParagraph",

@@ -78,7 +78,7 @@ const security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
 BaseBlockingPage::CreateDefaultDisplayOptions(
     const UnsafeResourceList& unsafe_resources) {
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      IsMainPageLoadPending(unsafe_resources),
+      IsMainPageLoadPending(unsafe_resources), IsSubresource(unsafe_resources),
       false,                 // kSafeBrowsingExtendedReportingOptInAllowed
       false,                 // is_off_the_record
       false,                 // is_extended_reporting
@@ -99,6 +99,19 @@ bool BaseBlockingPage::IsMainPageLoadPending(
   // pending. Otherwise, check if the one resource is.
   return unsafe_resources.size() == 1 &&
          AsyncCheckTracker::IsMainPageLoadPending(unsafe_resources[0]);
+}
+
+// static
+bool BaseBlockingPage::IsSubresource(
+    const UnsafeResourceList& unsafe_resources) {
+  // As long as there is one resource that is from subresource, the page is
+  // considered unsafe due to a subresource.
+  for (auto unsafe_resource : unsafe_resources) {
+    if (unsafe_resource.is_subresource) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void BaseBlockingPage::SetThreatDetailsProceedDelayForTesting(int64_t delay) {
