@@ -5522,6 +5522,8 @@ static_library("browser") {
       "lacros/chrome_browser_main_extra_parts_lacros.h",
       "lacros/clipboard_history_lacros.cc",
       "lacros/clipboard_history_lacros.h",
+      "lacros/debug_interface_lacros.cc",
+      "lacros/debug_interface_lacros.h",
       "lacros/desk_profiles_lacros.cc",
       "lacros/desk_profiles_lacros.h",
       "lacros/desk_template_client_lacros.cc",

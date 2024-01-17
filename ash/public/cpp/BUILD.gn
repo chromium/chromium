@@ -116,6 +116,7 @@ component("cpp") {
     "clipboard_image_model_factory.h",
     "connectivity_services.cc",
     "connectivity_services.h",
+    "debug_delegate.h",
     "default_user_image.cc",
     "default_user_image.h",
     "desk_profiles_delegate.cc",

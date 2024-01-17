@@ -22,6 +22,7 @@
 #include "ash/ime/ime_switch_type.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/debug_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -566,6 +567,11 @@ bool AcceleratorControllerImpl::IsReserved(
   return action_ptr && base::Contains(reserved_actions_, *action_ptr);
 }
 
+void AcceleratorControllerImpl::SetDebugDelegate(DebugDelegate* delegate) {
+  DCHECK(!delegate || !debug_delegate_);
+  debug_delegate_ = delegate;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratorControllerImpl, ui::AcceleratorTarget implementation:
 
@@ -1017,6 +1023,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
     case AcceleratorAction::kDebugSystemUiStyleViewer:
       debug::PerformDebugActionIfEnabled(action);
+      PerformDebugActionOnDelegateIfEnabled(action);
       break;
     case AcceleratorAction::kDebugToggleShowDebugBorders:
       debug::ToggleShowDebugBorders();
@@ -1580,6 +1587,22 @@ bool AcceleratorControllerImpl::ShouldPreventProcessingAccelerators() const {
 
 void AcceleratorControllerImpl::RecordVolumeSource() {
   accelerators::RecordVolumeSource();
+}
+
+void AcceleratorControllerImpl::PerformDebugActionOnDelegateIfEnabled(
+    AcceleratorAction action) {
+  if (!debug_delegate_) {
+    return;
+  }
+
+  switch (action) {
+    case AcceleratorAction::kDebugPrintLayerHierarchy:
+      debug_delegate_->PrintLayerHierarchy();
+      break;
+    // TODO(ythjkt): Add PrintWindowHierarchy and PrintViewHierarchy.
+    default:
+      break;
+  }
 }
 
 }  // namespace ash

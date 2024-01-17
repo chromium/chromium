@@ -24,6 +24,7 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
+#include "chrome/browser/lacros/debug_interface_lacros.h"
 #include "chrome/browser/lacros/desk_profiles_lacros.h"
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
@@ -180,6 +181,7 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
+  debug_interface_ = std::make_unique<crosapi::DebugInterfaceLacros>();
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
   if (chromeos::features::IsDeskProfilesEnabled()) {
     desk_profiles_lacros_ = CreateDeskProfilesLacros();
