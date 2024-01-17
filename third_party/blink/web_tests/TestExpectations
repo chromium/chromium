@@ -5188,6 +5188,10 @@ crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentativ
 crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.window.html [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open-existing.tentative.window.html [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/iframe.tentative.https.window.html?include=grandparent [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
 
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Failure Skip ]
