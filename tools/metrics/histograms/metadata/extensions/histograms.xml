@@ -1895,6 +1895,18 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.ForceInstalledPreInstalledDeprecatedAppOpenUrl"
+    enum="ExtensionForceInstalledPreInstalledDeprecatedSite"
+    expires_after="2025-01-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Called once each time the user clicks the accept button on the
+    force-installed, pre-installed deprecated apps dialog. This results in the
+    browser opening a new tab with a URL to one of 6 pre-defined sites.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
     expires_after="2024-12-01">
   <owner>vkovalova@google.com</owner>

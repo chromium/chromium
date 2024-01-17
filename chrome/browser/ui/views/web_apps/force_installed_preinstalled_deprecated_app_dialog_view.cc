@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
@@ -58,24 +59,36 @@ GetChromeAppConfigs() {
       g_chrome_app_configs(
           {{extension_misc::kGmailAppId,
             {.link = GURL("https://mail.google.com/mail/?usp=chrome_app"),
-             .link_text = u"mail.google.com"}},
+             .link_text = u"mail.google.com",
+             .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+                 kGmail}},
            {extension_misc::kGoogleDocsAppId,
             {.link = GURL("https://docs.google.com/document/?usp=chrome_app"),
-             .link_text = u"docs.google.com"}},
+             .link_text = u"docs.google.com",
+             .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+                 kDocs}},
            {extension_misc::kGoogleDriveAppId,
             {.link = GURL("https://drive.google.com/?lfhs=2"),
-             .link_text = u"drive.google.com"}},
+             .link_text = u"drive.google.com",
+             .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+                 kDrive}},
            {extension_misc::kGoogleSheetsAppId,
             {.link =
                  GURL("https://docs.google.com/spreadsheets/?usp=chrome_app"),
-             .link_text = u"sheets.google.com"}},
+             .link_text = u"sheets.google.com",
+             .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+                 kSheets}},
            {extension_misc::kGoogleSlidesAppId,
             {.link =
                  GURL("https://docs.google.com/presentation/?usp=chrome_app"),
-             .link_text = u"slides.google.com"}},
+             .link_text = u"slides.google.com",
+             .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+                 kSlides}},
            {extension_misc::kYoutubeAppId,
             {.link = GURL("https://www.youtube.com/?feature=ytca"),
-             .link_text = u"www.youtube.com"}}});
+             .link_text = u"www.youtube.com",
+             .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+                 kYoutube}}});
   return *g_chrome_app_configs;
 }
 
@@ -111,12 +124,15 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
       l10n_util::GetStringUTF16(
           IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_GO_TO_SITE_BUTTON));
   delegate->SetAcceptCallback(base::BindOnce(
-      [](base::WeakPtr<content::WebContents> web_contents, GURL url) {
+      [](base::WeakPtr<content::WebContents> web_contents, GURL url,
+         Site site) {
+        base::UmaHistogramEnumeration(
+            "Extensions.ForceInstalledPreInstalledDeprecatedAppOpenUrl", site);
         web_contents->OpenURL(content::OpenURLParams(
             url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
             ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
       },
-      web_contents->GetWeakPtr(), link_config.link));
+      web_contents->GetWeakPtr(), link_config.link, link_config.site));
   delegate->SetContentsView(
       base::WrapUnique<ForceInstalledPreinstalledDeprecatedAppDialogView>(
           new ForceInstalledPreinstalledDeprecatedAppDialogView(

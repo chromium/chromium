@@ -119,7 +119,11 @@ IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
   auto link_config_reset = ForceInstalledPreinstalledDeprecatedAppDialogView::
       SetOverrideLinkConfigForTesting(
           {.link = GURL(embedded_test_server()->GetURL("/")),
-           .link_text = u"www.example.com"});
+           .link_text = u"www.example.com",
+           // We use a filler value here. This is only used as input to
+           // histograms.
+           .site = ForceInstalledPreinstalledDeprecatedAppDialogView::Site::
+               kGmail});
 
   auto handler = CreateLauncherHandler();
 
