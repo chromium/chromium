@@ -193,7 +193,10 @@ PopupRowView::PopupRowView(
       line_number_(line_number),
       should_ignore_mouse_observed_outside_item_bounds_check_(
           controller &&
-          controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()) {
+          controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()),
+      suggestion_is_acceptable_(
+          controller && line_number < controller->GetLineCount() &&
+          controller->GetSuggestionAt(line_number).is_acceptable) {
   CHECK(content_view);
   CHECK(controller_);
   CHECK_LT(line_number_, controller_->GetLineCount());
@@ -438,9 +441,12 @@ void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
 void PopupRowView::UpdateBackground() {
   // The whole row is highlighted when:
   // * The subpopup is open, or
-  // * The expanding control view is being hovered.
+  // * The expanding control view is being hovered, or
+  // * The suggestion is not acceptable and either the control or content part
+  //   is being hovered.
   ui::ColorId kBackgroundColorId =
-      child_suggestions_displayed_ || (selected_cell_ == CellType::kControl)
+      child_suggestions_displayed_ || (selected_cell_ == CellType::kControl) ||
+              (!suggestion_is_acceptable_ && selected_cell_)
           ? ui::kColorDropdownBackgroundSelected
           : ui::kColorDropdownBackground;
   SetBackground(views::CreateThemedRoundedRectBackground(

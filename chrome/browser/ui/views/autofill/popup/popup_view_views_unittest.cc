@@ -1149,6 +1149,19 @@ TEST_F(PopupViewViewsTest, SubPopupOpensWithAutoselectByRightKey) {
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
 }
 
+TEST_F(PopupViewViewsTest, SubPopupOpensForNonSelectableContentSelection) {
+  Suggestion suggestion = CreateSuggestionWithChildren({Suggestion(u"Child")});
+  suggestion.is_acceptable = false;
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(), OpenSubPopup);
+
+  view().SetSelectedCell(CellIndex{0, CellType::kContent},
+                         PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+}
+
 // TODO(crbug.com/1489673): Enable once the view shows itself properly.
 #if !BUILDFLAG(IS_MAC)
 // Tests that `GetPopupScreenLocation` returns the bounds and arrow position of

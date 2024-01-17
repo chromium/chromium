@@ -242,6 +242,11 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // Whether the row's child suggestions (see `Suggestion::children`) are
   // displayed in a sub-popup.
   bool child_suggestions_displayed_ = false;
+
+  // Has the same value as `Suggestion::is_acceptable` of the underlying
+  // suggestion. If `false` the content part is not highlighted separately,
+  // but the whole row is highlighted instead as for the control view.
+  const bool suggestion_is_acceptable_;
 };
 
 }  // namespace autofill
