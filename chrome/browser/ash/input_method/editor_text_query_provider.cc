@@ -65,6 +65,7 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
     case manta::MantaStatusCode::kInvalidInput:
       return orca::mojom::TextQueryErrorCode::kInvalidArgument;
     case manta::MantaStatusCode::kResourceExhausted:
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
       return orca::mojom::TextQueryErrorCode::kResourceExhausted;
     case manta::MantaStatusCode::kBackendFailure:
       return orca::mojom::TextQueryErrorCode::kBackendFailure;

@@ -502,7 +502,8 @@ enum MantaStatusCode {
   kBlockedOutputs = 8,
   kRestrictedCountry = 9,
   kNoIdentityManager = 10,
-  kMax = kNoIdentityManager,
+  kPerUserQuotaExceeded = 11,
+  kMax = kPerUserQuotaExceeded,
 };
 
 // Provides APIs to perform wallpaper searches. Uses APIs in

@@ -34,6 +34,7 @@ absl::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
           {"UNSUPPORTED_LANGUAGE", MantaStatusCode::kUnsupportedLanguage},
           {"RESTRICTED_COUNTRY", MantaStatusCode::kRestrictedCountry},
           {"RESOURCE_EXHAUSTED", MantaStatusCode::kResourceExhausted},
+          {"PER_USER_QUOTA_EXCEEDED", MantaStatusCode::kPerUserQuotaExceeded},
       });
   const auto* iter = reason_map.find(reason);
 
