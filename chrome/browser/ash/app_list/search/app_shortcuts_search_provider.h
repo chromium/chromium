@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/profiles/profile.h"
 
+class AppListControllerDelegate;
+
 namespace apps {
 class ShortcutView;
 }
@@ -25,7 +27,8 @@ class AppShortcutSearchResult;
 // A new app shortcuts search provider.
 class AppShortcutsSearchProvider : public SearchProvider {
  public:
-  explicit AppShortcutsSearchProvider(Profile* profile);
+  AppShortcutsSearchProvider(Profile* profile,
+                             AppListControllerDelegate* app_list_controller);
 
   AppShortcutsSearchProvider(const AppShortcutsSearchProvider&) = delete;
   AppShortcutsSearchProvider& operator=(const AppShortcutsSearchProvider&) =
@@ -47,6 +50,7 @@ class AppShortcutsSearchProvider : public SearchProvider {
   base::TimeTicks query_start_time_;
   std::u16string last_query_;
   const raw_ptr<Profile> profile_;
+  const raw_ptr<AppListControllerDelegate> app_list_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

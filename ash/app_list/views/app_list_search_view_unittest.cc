@@ -164,7 +164,8 @@ class AppListSearchViewTest : public AshTestBase {
   SearchResultListView::SearchResultListType GetListType(
       SearchResultContainerView* result_container_view) {
     return static_cast<SearchResultListView*>(result_container_view)
-        ->list_type_for_test();
+        ->list_type_for_test()
+        .value();
   }
 
   std::u16string GetListLabel(

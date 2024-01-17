@@ -100,8 +100,8 @@ std::unique_ptr<SearchController> CreateSearchController(
           std::make_unique<LocalImageSearchProvider>(profile));
     }
     if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      controller->AddProvider(
-          std::make_unique<AppShortcutsSearchProvider>(profile));
+      controller->AddProvider(std::make_unique<AppShortcutsSearchProvider>(
+          profile, list_controller));
     }
   }
 
