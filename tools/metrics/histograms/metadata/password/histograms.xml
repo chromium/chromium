@@ -3168,7 +3168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SharedPasswordsNotificationBubble.UserAction"
     enum="PasswordManager.SharedPasswordsNotificationInteractions"
-    expires_after="2024-03-01">
+    expires_after="2024-09-01">
   <owner>mamir@chromium.org</owner>
   <owner>rgod@google.com</owner>
   <summary>
