@@ -68,14 +68,14 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   }
 
   // Unlike CSSStyleValue::toString(), this returns tokens without
-  // serialization.
-  String ToUnparsedString() const {
-    return ToStringInternal(/*separate_tokens=*/true);
-  }
+  // substituting variables. There are extra /**/ inserted between
+  // every token to ensure there are no ambiguities, which is fine
+  // because this value is never presented directly to the user
+  // (ToCSSValue() will parse to a token range and then re-serialize
+  // using extra /**/ only where needed).
+  String ToUnparsedString() const;
 
  private:
-  String ToStringInternal(bool separate_tokens) const;
-
   HeapVector<Member<V8CSSUnparsedSegment>> tokens_;
 
   FRIEND_TEST_ALL_PREFIXES(CSSVariableReferenceValueTest, MixedList);

@@ -120,7 +120,7 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
 }
 
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
-  CSSTokenizer tokenizer(ToStringInternal(/*separate_tokens=*/true));
+  CSSTokenizer tokenizer(ToUnparsedString());
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
 
@@ -130,11 +130,21 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   }
 
   // The string we just parsed has /**/ inserted between every token
-  // to make sure we get back the correct sequence of tokens,
-  // but the spec says we must not do that for the original text
-  // (which we use for serialization):
+  // to make sure we get back the correct sequence of tokens.
+  // The spec mentions nothing of the sort:
   // https://drafts.css-houdini.org/css-typed-om-1/#unparsedvalue-serialization
-  String original_text = ToStringInternal(/*separate_tokens=*/false);
+  //
+  // However, inserting /**/ is required in some places, or round-tripping
+  // of properties would not work. This is acknowledged as a mistake in the
+  // spec:
+  // https://github.com/w3c/css-houdini-drafts/issues/1021
+  //
+  // Thus, we use the regular Serialize() on the token range here, which will
+  // insert empty comments but only when needed to avoid changing the meaning.
+  // If this CSSUnparsedValue came from serializing a string,
+  // the original contents of any comments will be lost, but Typed OM does
+  // not have anywhere to store that kind of data, so it is expected.
+  String original_text = range.Serialize();
 
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
@@ -144,11 +154,11 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
                               false /* needs_variable_resolution */));
 }
 
-String CSSUnparsedValue::ToStringInternal(bool separate_tokens) const {
+String CSSUnparsedValue::ToUnparsedString() const {
   StringBuilder input;
 
   for (unsigned i = 0; i < tokens_.size(); i++) {
-    if (separate_tokens && i) {
+    if (i) {
       input.Append("/**/");
     }
     switch (tokens_[i]->GetContentType()) {
@@ -159,8 +169,7 @@ String CSSUnparsedValue::ToStringInternal(bool separate_tokens) const {
         input.Append(reference_value->variable());
         if (reference_value->fallback()) {
           input.Append(",");
-          input.Append(reference_value->fallback()->ToStringInternal(
-              /*separate_tokens=*/false));
+          input.Append(reference_value->fallback()->ToUnparsedString());
         }
         input.Append(")");
         break;
