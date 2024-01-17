@@ -876,6 +876,11 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              "video-blit-color-accuracy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A client (e.g. cast mirroring) can allow a video encoder to drop a frame.
+BASE_FEATURE(kVideoEncoderFrameDrop,
+             "VideoEncoderFrameDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_APPLE)
 // Use VideoToolbox for AV1 hardware decoding.
 // Owner: dalecurtis@chromium.org, sandersd@chromium.org

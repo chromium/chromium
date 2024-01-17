@@ -257,6 +257,16 @@ bool ConvertKbpsToBps(uint32_t bitrate_kbps, uint32_t* bitrate_bps) {
   *bitrate_bps = bitrate_kbps * 1000;
   return true;
 }
+
+uint8_t GetDropFrameThreshold(const webrtc::VideoCodec& codec_settings) {
+  // This drop frame threshold is same as WebRTC.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp9/libvpx_vp9_encoder.cc
+  if (codec_settings.GetFrameDropEnabled() &&
+      base::FeatureList::IsEnabled(media::kVideoEncoderFrameDrop)) {
+    return 30;
+  }
+  return 0;
+}
 }  // namespace
 
 namespace WTF {
@@ -1113,6 +1123,35 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     return;
   }
 
+  DCHECK_NE(output_buffers_in_encoder_count_, 0u);
+  output_buffers_in_encoder_count_--;
+
+  // Decrease |frames_in_encoder_count_| on the first frame so that
+  // UseOutputBitstreamBuffer() is not called until next frame if no frame but
+  // the current frame is in VideoEncodeAccelerator.
+  if (metadata.spatial_idx().value_or(0) == 0) {
+    DCHECK_NE(0u, frames_in_encoder_count_);
+    frames_in_encoder_count_--;
+  }
+
+  // An encoder drops a frame.
+  if (metadata.dropped_frame()) {
+    BitstreamBufferAvailable(bitstream_buffer_id);
+    // Invoke OnDroppedFrame() only in the end of picture. How to call
+    // OnDroppedFrame() in spatial layers is not defined in the webrtc encoder
+    // API. We call once in spatial layers. This point will be fixed in a
+    // new WebRTC encoder API.
+    if (metadata.end_of_picture) {
+      base::AutoLock lock(lock_);
+      if (!encoded_image_callback_) {
+        return;
+      }
+      encoded_image_callback_->OnDroppedFrame(
+          webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
+    }
+    return;
+  }
+
   scoped_refptr<RefCountedWritableSharedMemoryMapping> output_mapping =
       output_buffers_[bitstream_buffer_id].second;
   if (metadata.payload_size_bytes >
@@ -1121,15 +1160,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                        "invalid payload_size: " +
                            base::NumberToString(metadata.payload_size_bytes)});
     return;
-  }
-
-  DCHECK_NE(output_buffers_in_encoder_count_, 0u);
-  output_buffers_in_encoder_count_--;
-
-  // Decrease |frames_in_encoder_count_| on the first frame.
-  if (metadata.spatial_idx().value_or(0) == 0) {
-    DCHECK_NE(0u, frames_in_encoder_count_);
-    frames_in_encoder_count_--;
   }
 
   if (metadata.end_of_picture) {
@@ -1176,12 +1206,11 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         }
         break;
       }
-      // Timestamp does not match front of the pending frames list.
-      if (end_of_picture)
-        submitted_frames_.pop_front();
+      submitted_frames_.pop_front();
     }
     DCHECK(rtp_timestamp.has_value());
   }
+
   if (!rtp_timestamp.has_value() || !capture_timestamp_ms.has_value()) {
     failed_timestamp_match_ = true;
     submitted_frames_.clear();
@@ -1940,6 +1969,8 @@ int32_t RTCVideoEncoder::InitEncode(
   vea_config_->content_type = vea_content_type;
   vea_config_->spatial_layers = spatial_layers;
   vea_config_->inter_layer_pred = inter_layer_pred;
+  vea_config_->drop_frame_thresh_percentage =
+      GetDropFrameThreshold(*codec_settings);
 
   if (!base::FeatureList::IsEnabled(
           features::kWebRtcInitializeEncoderOnFirstFrame)) {
