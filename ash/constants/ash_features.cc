@@ -1038,6 +1038,12 @@ BASE_FEATURE(kFastPairSoftwareScanning,
              "FastPairSoftwareScanning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables support for software-based scanning on devices that don't support
+// hardware-based BLE advertisement filtering.
+BASE_FEATURE(kFastPairSoftwareScanningSupport,
+             "FastPairSoftwareScanningSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the "Saved Devices" Fast Pair page in scenario in Bluetooth Settings.
 BASE_FEATURE(kFastPairSavedDevices,
              "FastPairSavedDevices",
@@ -3423,6 +3429,10 @@ bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
 
 bool IsFastPairSoftwareScanningEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSoftwareScanning);
+}
+
+bool IsFastPairSoftwareScanningSupportEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairSoftwareScanningSupport);
 }
 
 bool IsFastPairSavedDevicesEnabled() {

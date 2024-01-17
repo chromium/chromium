@@ -22012,6 +22012,7 @@ from previous Chrome versions.
   <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1111056156" label="AdvancedPeripheralsSupportTabStrip:enabled"/>
   <int value="-1110928012" label="force-companion-pinned-state"/>
+  <int value="-1110240043" label="FastPairSoftwareScanningSupport:disabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
   <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
   <int value="-1109309340" label="ContextualPageActionReaderMode:enabled"/>
@@ -25737,6 +25738,7 @@ from previous Chrome versions.
   <int value="642996845" label="NotifierCollision:disabled"/>
   <int value="643068614"
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
+  <int value="643637203" label="FastPairSoftwareScanningSupport:enabled"/>
   <int value="643725031" label="disable-touch-feedback"/>
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>

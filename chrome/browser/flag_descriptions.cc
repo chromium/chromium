@@ -6037,6 +6037,12 @@ const char kFastPairSoftwareScanningDescription[] =
     "Allow using Fast Pair on devices which don't support hardware offloading "
     "of BLE scans. For development use.";
 
+const char kFastPairSoftwareScanningSupportName[] =
+    "Enable Fast Pair Software Scanning Support";
+const char kFastPairSoftwareScanningSupportDescription[] =
+    "Enable support for software-based scanning on devices that don't support "
+    "hardware-based BLE advertisement filtering.";
+
 const char kFastPairSavedDevicesName[] = "Enable Fast Pair Saved Devices";
 const char kFastPairSavedDevicesDescription[] =
     "Enables the Fast Pair \"Saved Devices\" page to display a list of the "

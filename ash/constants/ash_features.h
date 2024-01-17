@@ -327,6 +327,10 @@ extern const base::FeatureParam<double> kFastPairLowPowerActiveSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kFastPairLowPowerInactiveSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairSoftwareScanning);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kFastPairSoftwareScanningSupport);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsFastPairSoftwareScanningSupportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairSavedDevices);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairSavedDevicesStrictOptIn);

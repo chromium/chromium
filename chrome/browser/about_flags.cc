@@ -7583,6 +7583,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanning)},
 
+    {"fast-pair-software-scanning-support",
+     flag_descriptions::kFastPairSoftwareScanningSupportName,
+     flag_descriptions::kFastPairSoftwareScanningSupportDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanningSupport)},
+
     {"nearby-presence", flag_descriptions::kNearbyPresenceName,
      flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNearbyPresence)},
