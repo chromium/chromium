@@ -2148,6 +2148,24 @@ crbug.com/1516468 [ Chrome ] wpt_internal/webtransport/subresource-filter-disall
 [ Chrome ] external/wpt/fledge/* [ Skip ]
 [ Chrome ] wpt_internal/import-maps/* [ Skip ]
 
+# bfcache related tests does not work on headless_shell, see crbug.com/1510549
+crbug.com/1510549 [ Chrome ] external/wpt/performance-timeline/not-restored-reasons/* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/html/semantics/embedded-content/bfcache/* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/IndexedDB/back-forward-cache-* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/webrtc/back-forward-cache-* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/websockets/back-forward-cache-* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/webtransport/back-forward-cache-* [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/fs/FileSystemFileHandle-writable-file-stream-back-forward-cache.https.tentative.window.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-activation/activation-after-bfcache-cross-origin.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-activation/activation-after-bfcache.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache-in-iframe.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/per-entry-events/dispose-after-bfcache.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/suspend-with-navigation.html [ Skip ]
+crbug.com/1510549 [ Chrome ] external/wpt/webmessaging/message-channels/close-event/entangled-after-back-forward-cache-restore.https.tentative.window.html [ Skip ]
+
 # many failures in the folders below, skip for now
 crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/* [ Skip ]
 crbug.com/1499775 [ Chrome ] external/wpt/attribution-reporting/* [ Skip ]

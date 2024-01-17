@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[PRECONDITION_FAILED] Storage events should not be fired for BFCached pages after becoming active
-  Could have been BFCached but actually wasn't
-Harness: the test ran to completion.

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[PRECONDITION_FAILED] suspend() with navigation
-  Could have been BFCached but actually wasn't
-Harness: the test ran to completion.
