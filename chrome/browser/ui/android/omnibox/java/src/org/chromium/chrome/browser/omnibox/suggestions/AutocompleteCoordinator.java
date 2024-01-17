@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewB
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineView;
-import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
@@ -291,7 +290,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         adapter.registerType(
                 OmniboxSuggestionUiType.DIVIDER_LINE,
                 parent -> new DividerLineView(parent.getContext()),
-                DividerLineViewBinder::bind);
+                (m, v, p) -> {});
 
         adapter.registerType(
                 OmniboxSuggestionUiType.QUERY_TILES,

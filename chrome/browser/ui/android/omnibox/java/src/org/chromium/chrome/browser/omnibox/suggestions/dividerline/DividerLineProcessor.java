@@ -12,7 +12,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** A class that handles model and view creation for the suggestion divider line. */
+/**
+ * A class that handles model and view creation for the suggestion divider line.
+ * TODO(crbug/1518967): Move functionality to HeaderView and remove this component.
+ */
 public class DividerLineProcessor implements DropdownItemProcessor {
     private final int mMinimumHeight;
 

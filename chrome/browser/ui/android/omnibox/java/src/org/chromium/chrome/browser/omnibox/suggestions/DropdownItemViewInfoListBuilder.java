@@ -85,12 +85,7 @@ class DropdownItemViewInfoListBuilder {
             mImageSupplier = new OmniboxImageSupplier(context);
         }
 
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            // Only create DividerLineProcessor when feature is enabled.
-            // Feature is enabled on non-tablet devices.
-            mDividerLineProcessor = new DividerLineProcessor(context);
-        }
+        mDividerLineProcessor = new DividerLineProcessor(context);
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(
                 new EditUrlSuggestionProcessor(
@@ -261,6 +256,7 @@ class DropdownItemViewInfoListBuilder {
     @NonNull
     List<DropdownItemViewInfo> buildVerticalSuggestionsGroup(
             @NonNull GroupConfig groupDetails,
+            @Nullable GroupConfig previousDetails,
             @NonNull List<AutocompleteMatch> groupMatches,
             int firstVerticalPosition) {
         assert groupDetails != null;
@@ -274,11 +270,19 @@ class DropdownItemViewInfoListBuilder {
         // Note that despite GroupsDetails map not holding <null> values,
         // a group definition for specific ID may be unavailable, or the group
         // header text may be empty.
+        // TODO(http://crbug/1518967): move this to the calling function and instantiate the
+        // HeaderView undonditionally when passing from one suggestion group to another.
+        // TODO(http://crbug/1518967): collapse Header and DivierLine to a single component.
         if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
             final PropertyModel model = mHeaderProcessor.createModel();
             mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
             result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
+        } else if (previousDetails != null
+                && previousDetails.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
+            final PropertyModel model = mDividerLineProcessor.createModel();
+            result.add(new DropdownItemViewInfo(mDividerLineProcessor, model, groupDetails));
         }
+
 
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
             var indexOnList = firstVerticalPosition + indexInList;
@@ -367,11 +371,7 @@ class DropdownItemViewInfoListBuilder {
         var currentGroupMatches = new ArrayList<AutocompleteMatch>();
         var nextSuggestionLogicalIndex = 0;
 
-        // Add the divider line on top if the suggestion list is not empty.
-        if (mDividerLineProcessor != null && newMatchesCount > 0) {
-            final PropertyModel model = mDividerLineProcessor.createModel();
-            viewInfoList.add(new DropdownItemViewInfo(mDividerLineProcessor, model, null));
-        }
+        GroupConfig previousGroupConfig = null;
 
         // Outer loop to ensure suggestions are always added to the produced ViewInfo list.
         for (int index = 0; index < newMatchesCount; ) {
@@ -398,6 +398,7 @@ class DropdownItemViewInfoListBuilder {
                 viewInfoList.addAll(
                         buildVerticalSuggestionsGroup(
                                 currentGroupConfig,
+                                previousGroupConfig,
                                 currentGroupMatches,
                                 nextSuggestionLogicalIndex));
                 nextSuggestionLogicalIndex += currentGroupMatches.size();
@@ -413,6 +414,8 @@ class DropdownItemViewInfoListBuilder {
                 assert false
                         : "Unsupported group render type: " + currentGroupConfig.getRenderType();
             }
+
+            previousGroupConfig = currentGroupConfig;
         }
 
         return viewInfoList;
