@@ -1535,12 +1535,6 @@ int watchRunNumber = 0;
   pasteboard.URL = [NSURL URLWithString:@"chrome://version"];
 }
 
-#pragma mark - Default Search Engine Choice Screen Utilities
-
-+ (BOOL)IsSearchEngineChoiceScreenEnabledFre {
-  return ios::first_run::IsSearchEngineChoiceScreenEnabledFre();
-}
-
 #pragma mark - First Run Utilities
 
 + (void)writeFirstRunSentinel {

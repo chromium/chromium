@@ -1491,10 +1491,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
-  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    // Do not run this test if the choice screen is not enabled.
-    return;
-  }
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1531,10 +1527,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
-  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    // Do not run this test if the choice screen is not enabled.
-    return;
-  }
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
