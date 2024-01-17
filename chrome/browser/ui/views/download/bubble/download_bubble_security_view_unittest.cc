@@ -389,7 +389,7 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
         bubble_delegate_);
     security_view->InitializeForDownload(*row1_model_);
 
-    security_view.reset();
+    security_view->MaybeLogDismiss();
     ++item1_actions_expected;
 
     std::vector<WarningActionEvent> events =
@@ -416,7 +416,7 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
     // The security view can be re-opened after back button is pressed.
     security_view->InitializeForDownload(*row1_model_);
 
-    security_view.reset();
+    security_view->MaybeLogDismiss();
     ++item1_actions_expected;
 
     events = DownloadItemWarningData::GetWarningActionEvents(&download_item1_);
@@ -448,7 +448,7 @@ TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
 
     // Since the reset occurs while we are showing download2, we don't log
     // DISMISS for the first download.
-    security_view.reset();
+    security_view->MaybeLogDismiss();
     ++item2_actions_expected;
 
     events = DownloadItemWarningData::GetWarningActionEvents(&download_item1_);

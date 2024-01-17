@@ -75,6 +75,9 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 }
 
 DownloadBubbleContentsView::~DownloadBubbleContentsView() {
+  if (VisiblePage() == Page::kSecurity) {
+    security_view_->MaybeLogDismiss();
+  }
   security_view_->Reset();
   // In order to ensure that `info_` is valid for the entire lifetime of the
   // child views, we delete the child views here rather than in `~View()`.
