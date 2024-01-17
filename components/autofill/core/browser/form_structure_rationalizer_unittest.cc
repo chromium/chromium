@@ -746,6 +746,18 @@ TEST_F(FormStructureRationalizerTest,
               ElementsAre(EMAIL_ADDRESS, UNKNOWN_TYPE));
 }
 
+// Tests that contenteditables types are overridden with UNKNOWN_TYPE.
+TEST_F(FormStructureRationalizerTest, RationalizeContentEditables) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {{.field_type = CREDIT_CARD_NUMBER,
+        .form_control_type = FormControlType::kContentEditable},
+       {.field_type = CREDIT_CARD_NUMBER,
+        .form_control_type = FormControlType::kInputText}},
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(UNKNOWN_TYPE, CREDIT_CARD_NUMBER));
+}
+
 // Tests the rationalization that ignores certain types on the main origin. The
 // underlying assumption is that the field in the main frame misclassified
 // because such fields usually do not occur on the main frame's origin due to

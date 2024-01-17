@@ -186,6 +186,15 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
   }
 }
 
+void FormStructureRationalizer::RationalizeContentEditables(
+    LogManager* log_manager) {
+  for (const auto& field : *fields_) {
+    if (field->form_control_type == FormControlType::kContentEditable) {
+      field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+    }
+  }
+}
+
 void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
     LogManager* log_manager) {
   bool cc_first_name_found = false;
