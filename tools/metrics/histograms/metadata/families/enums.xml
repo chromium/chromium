@@ -114,15 +114,23 @@ chromium-metrics-reviews@google.com.
 
 <enum name="FamilyLinkUserLogSegment">
   <summary>
-    Filters family link user metrics into categories of interest. ChromeOS uses
-    service flags to segment by account types, whereas Chrome browser uses
-    Capabilities API to identify users with this specific requirement. ChromeOS
-    will transition to use Capabilities API with crbug.com/1251622.
+    Filters family link user metrics into categories of interest.
   </summary>
-  <int value="0" label="Other Not Supervised"/>
-  <int value="1" label="Policy Enabled Supervision"/>
-  <int value="2" label="User Enabled Supervision"/>
-  <int value="3" label="Mixed Profile"/>
+  <int value="0" label="Other Not Supervised">
+    None of the users are supervised. This includes signed out users, and where
+    a secondary account is supervised.
+  </int>
+  <int value="1" label="Policy Enabled Supervision">
+    Users under the age of consent automatically have supervision applied to
+    their accounts.
+  </int>
+  <int value="2" label="User Enabled Supervision">
+    Users over the age of consent can opt into supervision.
+  </int>
+  <int value="3" label="Mixed Profile">
+    Profiles with different supervision types were in use during the reporting
+    window.
+  </int>
 </enum>
 
 <enum name="FamilyLinkUserParentAccessWidgetError">
