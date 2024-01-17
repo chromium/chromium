@@ -161,7 +161,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
           webapps::WebappUninstallSource::kHealthcareUserInstallCleanup,
           *profile(), future.GetCallback()));
-  EXPECT_EQ(future.Get(), app_id + "[Sync]: Error");
+  EXPECT_EQ(future.Get(), app_id + "[Sync]: kError");
 
   EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 }

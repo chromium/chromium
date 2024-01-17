@@ -108,9 +108,9 @@ void UninstallAllUserInstalledWebAppsCommand::JobComplete(
 
   if (code != webapps::UninstallResultCode::kSuccess &&
       code != webapps::UninstallResultCode::kNoAppToUninstall) {
-    errors_.push_back(base::StrCat(
-        {active_job_->app_id(), "[", base::ToString(install_source),
-         "]: ", ConvertUninstallResultCodeToString(code)}));
+    errors_.push_back(base::StrCat({active_job_->app_id(), "[",
+                                    base::ToString(install_source),
+                                    "]: ", base::ToString(code)}));
   }
 
   active_job_.reset();
