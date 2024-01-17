@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
@@ -213,12 +212,6 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
     GetTargetLayoutManager()->SetDefault(views::kMarginsKey,
                                          gfx::Insets::VH(0, 2));
   }
-
-  // Observers.
-  // TODO(pbos): Consider splitting out tab-strip observing into another class.
-  // Triggers for Extensions-related bubbles should preferably be separate from
-  // the container where they are shown.
-  browser_->tab_strip_model()->AddObserver(this);
 
   UpdateControlsVisibility();
 
@@ -624,58 +617,6 @@ bool ExtensionsToolbarContainer::HasAnyExtensions() const {
   return !actions_.empty();
 }
 
-void ExtensionsToolbarContainer::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (tab_strip_model->empty() || !selection.active_tab_changed())
-    return;
-
-  // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
-
-  extensions::MaybeShowExtensionControlledNewTabPage(browser_,
-                                                     selection.new_contents);
-
-  // Request access button confirmation is tab-specific. Therefore, we need to
-  // reset if the active tab changes.
-  if (extensions_controls_ && extensions_controls_->IsShowingConfirmation()) {
-    extensions_controls_->ResetConfirmation();
-    UpdateControlsVisibility();
-  }
-
-  MaybeShowIPH();
-}
-
-void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
-                                              int index,
-                                              TabChangeType change_type) {
-  // Ignore changes that don't affect all the tab contents (e.g loading
-  // changes).
-  if (change_type != TabChangeType::kAll) {
-    return;
-  }
-
-  // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
-
-  // Request access button confirmation is tab-specific for a specific origin.
-  // Therefore, we need to reset it if it's currently showing, we are on the
-  // same tab and we have navigated to another origin.
-  // Note: When we switch tabs, `OnTabStripModelChanged` is called before
-  // `TabChangedAt` and takes care of resetting the confirmation if shown.
-  if (extensions_controls_ && extensions_controls_->IsShowingConfirmation() &&
-      !extensions_controls_->IsShowingConfirmationFor(
-          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    extensions_controls_->ResetConfirmation();
-    UpdateControlsVisibility();
-  }
-
-  MaybeShowIPH();
-}
-
 void ExtensionsToolbarContainer::ReorderViews() {
   const auto& pinned_action_ids = model_->pinned_action_ids();
   for (size_t i = 0; i < pinned_action_ids.size(); ++i)
@@ -1043,33 +984,6 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
 
   extensions_controls_->UpdateControls(is_restricted_url, actions_,
                                        site_setting, web_contents, browser_);
-}
-
-void ExtensionsToolbarContainer::MaybeShowIPH() {
-  // IPH is only shown for the kExtensionsMenuAccessControl feature.
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    return;
-  }
-
-  CHECK(browser_->window());
-
-  // Display IPH, with priority order.
-  if (extensions_controls_->request_access_button()->GetVisible()) {
-    const int extensions_size =
-        extensions_controls_->request_access_button()->GetExtensionsCount();
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
-    params.body_params = extensions_size;
-    params.title_params = extensions_size;
-    browser_->window()->MaybeShowFeaturePromo(std::move(params));
-  }
-
-  if (extensions_controls_->extensions_button()->state() ==
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsMenuFeature);
-  }
 }
 
 void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {

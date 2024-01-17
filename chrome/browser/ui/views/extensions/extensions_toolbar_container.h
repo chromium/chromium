@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
@@ -39,7 +38,6 @@ class ExtensionsMenuCoordinator;
 // or be called out to the user.
 class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                    public ExtensionsContainer,
-                                   public TabStripModelObserver,
                                    public ToolbarActionView::Delegate,
                                    public views::WidgetObserver {
   METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
@@ -288,20 +286,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // animation ends.
   void UpdateContainerVisibilityAfterAnimation();
 
-  // Maybe displays the In-Product-Help with a specific priority order.
-  void MaybeShowIPH();
-
   // Triggers the side panel to close.
   void CloseSidePanelButtonPressed();
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

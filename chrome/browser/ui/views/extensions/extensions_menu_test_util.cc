@@ -60,7 +60,7 @@ class ExtensionsMenuTestUtil::Wrapper {
   explicit Wrapper(Browser* browser)
       : extensions_container_(new ExtensionsToolbarContainer(browser)) {
     extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(browser->profile(),
+        std::make_unique<ExtensionsToolbarCoordinator>(browser,
                                                        extensions_container_);
     container_parent_.SetSize(gfx::Size(1000, 1000));
     container_parent_.Layout();

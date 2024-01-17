@@ -390,7 +390,7 @@ void ToolbarView::Init() {
     extensions_container_ =
         container_view_->AddChildView(std::move(extensions_container));
     extensions_toolbar_coordinator_ =
-        std::make_unique<ExtensionsToolbarCoordinator>(browser_->profile(),
+        std::make_unique<ExtensionsToolbarCoordinator>(browser_,
                                                        extensions_container_);
   }
 
