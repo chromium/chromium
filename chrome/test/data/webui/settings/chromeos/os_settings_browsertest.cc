@@ -10,6 +10,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
 namespace ash::settings {
@@ -830,6 +831,79 @@ IN_PROC_BROWSER_TEST_F(OSSettingsNearbyShareTestSharingEnabled,
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OncMojoTest) {
   RunSettingsTest("onc_mojo_test.js");
+}
+
+class OSSettingsOsA11yTestPdfOcrEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsOsA11yTestPdfOcrEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kPdfOcr);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled, OsA11yPage) {
+  RunSettingsTest("os_a11y_page/os_a11y_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageAudioAndCaptionsPage) {
+  RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageChromeVoxSubpage) {
+  RunSettingsTest("os_a11y_page/chromevox_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageCursorAndTouchpadPage) {
+  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageChangeDictationLocaleDialog) {
+  RunSettingsTest("os_a11y_page/change_dictation_locale_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageDisplayAndMagnificationSubpage) {
+  RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageKeyboardAndTextInputPage) {
+  RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageKioskMode) {
+  RunSettingsTest("os_a11y_page/os_a11y_page_kiosk_mode_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageSelectToSpeakSubpage) {
+  RunSettingsTest("os_a11y_page/select_to_speak_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageSwitchAccessActionAssignmentDialog) {
+  RunSettingsTest(
+      "os_a11y_page/switch_access_action_assignment_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageSwitchAccessSetupGuideDialog) {
+  RunSettingsTest("os_a11y_page/switch_access_setup_guide_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageSwitchAccessSubpage) {
+  RunSettingsTest("os_a11y_page/switch_access_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled,
+                       OsA11yPageTextToSpeechSubpage) {
+  RunSettingsTest("os_a11y_page/text_to_speech_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageTtsVoiceSubpage) {
+  RunSettingsTest("os_a11y_page/tts_voice_subpage_test.js");
 }
 
 }  // namespace ash::settings

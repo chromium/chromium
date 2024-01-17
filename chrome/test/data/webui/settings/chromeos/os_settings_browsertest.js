@@ -14,7 +14,6 @@ GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "ui/accessibility/accessibility_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
 var OSSettingsBrowserTest = class extends PolymerTest {
@@ -98,63 +97,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
        'ash::features::kPasspointARCSupport',
      ]
    }
- ],
- [
-   'OsA11yPage',
-   'os_a11y_page/os_a11y_page_test.js',
-   {enabled: ['features::kPdfOcr']},
- ],
- [
-   'OsA11yPageAudioAndCaptionsPage',
-   'os_a11y_page/audio_and_captions_page_test.js',
- ],
- [
-   'OsA11yPageChromeVoxSubpage',
-   'os_a11y_page/chromevox_subpage_test.js',
- ],
- [
-   'OsA11yPageCursorAndTouchpadPage',
-   'os_a11y_page/cursor_and_touchpad_page_test.js',
- ],
- [
-   'OsA11yPageChangeDictationLocaleDialog',
-   'os_a11y_page/change_dictation_locale_dialog_test.js',
- ],
- [
-   'OsA11yPageDisplayAndMagnificationSubpage',
-   'os_a11y_page/display_and_magnification_subpage_test.js',
- ],
- [
-   'OsA11yPageKeyboardAndTextInputPage',
-   'os_a11y_page/keyboard_and_text_input_page_test.js',
- ],
- [
-   'OsA11yPageKioskMode',
-   'os_a11y_page/os_a11y_page_kiosk_mode_test.js',
- ],
- [
-   'OsA11yPageSelectToSpeakSubpage',
-   'os_a11y_page/select_to_speak_subpage_test.js',
- ],
- [
-   'OsA11yPageSwitchAccessActionAssignmentDialog',
-   'os_a11y_page/switch_access_action_assignment_dialog_test.js',
- ],
- [
-   'OsA11yPageSwitchAccessSetupGuideDialog',
-   'os_a11y_page/switch_access_setup_guide_dialog_test.js'
- ],
- [
-   'OsA11yPageSwitchAccessSubpage', 'os_a11y_page/switch_access_subpage_test.js'
- ],
- [
-   'OsA11yPageTextToSpeechSubpage',
-   'os_a11y_page/text_to_speech_subpage_test.js',
-   {enabled: ['features::kPdfOcr']},
- ],
- [
-   'OsA11yPageTtsVoiceSubpage',
-   'os_a11y_page/tts_voice_subpage_test.js',
  ],
  [
    'OsAppsPage',
