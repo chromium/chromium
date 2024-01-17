@@ -9,6 +9,7 @@
 #include "chrome/browser/nearby_sharing/wifi_credentials_attachment.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,10 +79,10 @@ class FakeCrosNetworkConfig : public ash::network_config::CrosNetworkConfig {
 
 TEST(WifiNetworkConfigurationHandlerTest, Success) {
   base::test::TaskEnvironment task_environment;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   ash::NetworkStateTestHelper network_state_test_helper{
       /*use_default_devices_and_services=*/true};
   FakeCrosNetworkConfig fake_cros_network_config{&network_state_test_helper};
-
   fake_cros_network_config.SetOutput(kTestNetworkGuid, kTestErrorMessage);
   ash::network_config::OverrideInProcessInstanceForTesting(
       &fake_cros_network_config);
@@ -119,6 +120,7 @@ TEST(WifiNetworkConfigurationHandlerTest, Success) {
 
 TEST(WifiNetworkConfigurationHandlerTest, Failure) {
   base::test::TaskEnvironment task_environment;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   ash::NetworkStateTestHelper network_state_test_helper{
       /*use_default_devices_and_services=*/true};
   FakeCrosNetworkConfig fake_cros_network_config{&network_state_test_helper};

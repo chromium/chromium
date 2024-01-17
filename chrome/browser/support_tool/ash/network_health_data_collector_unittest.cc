@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/test/browser_task_environment.h"
@@ -188,6 +189,7 @@ class NetworkHealthDataCollectorTest : public ::testing::Test {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
   scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
 };
 
 TEST_F(NetworkHealthDataCollectorTest, CollectAndExportData) {
