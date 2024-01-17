@@ -28,6 +28,8 @@ class MockReadAnythingToolbarViewDelegate
   MOCK_METHOD(void, OnLetterSpacingChanged, (int new_index), (override));
   MOCK_METHOD(ReadAnythingMenuModel*, GetLetterSpacingModel, (), (override));
   MOCK_METHOD(void, OnSystemThemeChanged, (), (override));
+  MOCK_METHOD(void, OnLinksEnabledChanged, (bool is_enabled), (override));
+  MOCK_METHOD(bool, GetLinksEnabled, (), (override));
 };
 
 class MockReadAnythingFontComboboxDelegate

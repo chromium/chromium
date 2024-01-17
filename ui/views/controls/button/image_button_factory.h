@@ -84,7 +84,8 @@ VIEWS_EXPORT void SetToggledImageFromVectorIconWithColorId(
     ToggleImageButton* button,
     const gfx::VectorIcon& icon,
     ui::ColorId icon_color_id,
-    ui::ColorId icon_disabled_color_id);
+    ui::ColorId icon_disabled_color_id,
+    absl::optional<int> icon_size = absl::nullopt);
 
 }  // namespace views
 

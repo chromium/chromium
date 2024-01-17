@@ -138,6 +138,15 @@ void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
       static_cast<size_t>(letter_spacing));
 }
 
+void ReadAnythingController::OnLinksEnabledChanged(bool is_enabled) {
+  // TODO(francisjp): implement.
+}
+
+bool ReadAnythingController::GetLinksEnabled() {
+  // TODO(francisjp): implement.
+  return true;
+}
+
 ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
   return model_->GetLetterSpacingModel();
 }

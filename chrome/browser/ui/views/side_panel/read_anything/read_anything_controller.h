@@ -58,6 +58,8 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   void OnLetterSpacingChanged(int new_index) override;
   ReadAnythingMenuModel* GetLetterSpacingModel() override;
   void OnSystemThemeChanged() override;
+  void OnLinksEnabledChanged(bool is_enabled) override;
+  bool GetLinksEnabled() override;
 
   Profile* GetProfile();
 

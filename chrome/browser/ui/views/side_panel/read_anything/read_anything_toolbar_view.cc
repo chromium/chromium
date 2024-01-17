@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -78,7 +79,6 @@ void ReadAnythingToolbarView::Init(
   auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      kTextDecreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL));
   decrease_size_button->SetProperty(views::kCrossAxisAlignmentKey,
@@ -88,12 +88,23 @@ void ReadAnythingToolbarView::Init(
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      kTextIncreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL));
   increase_size_button->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
   increase_size_button->SetGroup(kToolbarGroupId);
+
+  // Create link toggle button.
+  auto toggle_links_button = std::make_unique<ReadAnythingToggleButtonView>(
+      !delegate_->GetLinksEnabled(),
+      base::BindRepeating(&ReadAnythingToolbarView::LinksToggledCallback,
+                          weak_pointer_factory_.GetWeakPtr()),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL));
+
+  toggle_links_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                   views::LayoutAlignment::kCenter);
+  toggle_links_button->SetGroup(kToolbarGroupId);
 
   // Create theme selection menubutton.
   auto colors_button = std::make_unique<ReadAnythingMenuButton>(
@@ -128,6 +139,7 @@ void ReadAnythingToolbarView::Init(
   decrease_text_size_button_ = AddChildView(std::move(decrease_size_button));
   increase_text_size_button_ = AddChildView(std::move(increase_size_button));
   AddChildView(Separator());
+  toggle_links_button_ = AddChildView(std::move(toggle_links_button));
   colors_button_ = AddChildView(std::move(colors_button));
   line_spacing_button_ = AddChildView(std::move(line_spacing_button));
   letter_spacing_button_ = AddChildView(std::move(letter_spacing_button));
@@ -175,6 +187,14 @@ void ReadAnythingToolbarView::ChangeLetterSpacingCallback() {
   if (delegate_) {
     delegate_->OnLetterSpacingChanged(
         letter_spacing_button_->GetSelectedIndex().value_or(0));
+  }
+}
+
+void ReadAnythingToolbarView::LinksToggledCallback() {
+  const bool toggled = !toggle_links_button_->GetToggled();
+  toggle_links_button_->SetToggled(toggled);
+  if (delegate_) {
+    delegate_->OnLinksEnabledChanged(toggled);
   }
 }
 
@@ -242,6 +262,10 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kFontSizeIconSize,
                                          foreground_color_id,
                                          focus_ring_color_id);
+
+  toggle_links_button_->UpdateIcons(
+      kReadAnythingLinksEnabledIcon, kReadAnythingLinksDisabledIcon,
+      kLinkToggleIconSize, foreground_color_id, focus_ring_color_id);
 
   colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id,
                           focus_ring_color_id);
