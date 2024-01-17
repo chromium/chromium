@@ -5,8 +5,8 @@
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {NetworkGuidInfo} from './diagnostics_types.js';
-import {Network, NetworkHealthProviderInterface, NetworkListObserverRemote, NetworkStateObserverRemote} from './network_health_provider.mojom-webui.js';
+import {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
+import {NetworkHealthProviderInterface, NetworkListObserverRemote, NetworkStateObserverRemote} from './network_health_provider.mojom-webui.js';
 
 // Method names.
 export const ON_NETWORK_LIST_CHANGED_METHOD_NAME =
@@ -20,8 +20,20 @@ const ON_NETWORK_STATE_CHANGED_METHOD_NAME =
  * Implements a fake version of the NetworkHealthProvider mojo interface.
  */
 
+/**
+ * Type for methods needed for the fake NetworkHealthProvider implementation.
+ */
+export type FakeNetworkHealthProviderInterface =
+    NetworkHealthProviderInterface&{
+      setFakeNetworkGuidInfo(networkGuidInfoList: NetworkGuidInfo[]): void,
+      setFakeNetworkState(
+          guid: string,
+          networkStateList: EthernetNetwork[]|WiFiNetwork[]|CellularNetwork[]):
+          void,
+    };
+
 export class FakeNetworkHealthProvider implements
-    NetworkHealthProviderInterface {
+    FakeNetworkHealthProviderInterface {
   private observables: FakeObservables = new FakeObservables();
   private observeNetworkListPromise: Promise<void>|null = null;
   private observeNetworkStatePromise: Promise<void>|null = null;
@@ -60,7 +72,10 @@ export class FakeNetworkHealthProvider implements
         ON_NETWORK_LIST_CHANGED_METHOD_NAME, networkGuidInfoList);
   }
 
-  setFakeNetworkState(guid: string, networkStateList: Network[]): void {
+  setFakeNetworkState(
+      guid: string,
+      networkStateList: EthernetNetwork[]|WiFiNetwork[]|
+      CellularNetwork[]): void {
     this.observables.setObservableDataForArg(
         ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, networkStateList);
   }

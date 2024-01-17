@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeKeyboards, fakeMemoryUsage, fakeSystemInfo, fakeTouchDevices, fakeWifiNetwork} from './fake_data.js';
 import {FakeInputDataProvider} from './fake_input_data_provider.js';
@@ -22,54 +22,37 @@ import {SystemRoutineController, SystemRoutineControllerInterface} from './syste
 
 /**
  * If true this will replace all providers with fakes.
- * @type {boolean}
  */
 const useFakeProviders = false;
 
-/**
- * @type {?SystemDataProviderInterface}
- */
-let systemDataProvider = null;
+let systemDataProvider: SystemDataProviderInterface|null = null;
 
-/**
- * @type {?SystemRoutineControllerInterface}
- */
-let systemRoutineController = null;
+let systemRoutineController: SystemRoutineControllerInterface|null = null;
 
-/**
- * @type {?NetworkHealthProviderInterface}
- */
-let networkHealthProvider = null;
+let networkHealthProvider: NetworkHealthProviderInterface|null = null;
 
-/**
- * @type {?InputDataProviderInterface}
- */
-let inputDataProvider = null;
+let inputDataProvider: InputDataProviderInterface|null = null;
 
-/**
- * @param {!SystemDataProviderInterface} testProvider
- */
-export function setSystemDataProviderForTesting(testProvider) {
+export function setSystemDataProviderForTesting(
+    testProvider: SystemDataProviderInterface): void {
   systemDataProvider = testProvider;
 }
 
 /**
  * Create a FakeSystemDataProvider with reasonable fake data.
  */
-function setupFakeSystemDataProvider() {
-  systemDataProvider = new FakeSystemDataProvider();
-  systemDataProvider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
-  systemDataProvider.setFakeBatteryHealth(fakeBatteryHealth);
-  systemDataProvider.setFakeBatteryInfo(fakeBatteryInfo);
-  systemDataProvider.setFakeCpuUsage(fakeCpuUsage);
-  systemDataProvider.setFakeMemoryUsage(fakeMemoryUsage);
-  systemDataProvider.setFakeSystemInfo(fakeSystemInfo);
+function setupFakeSystemDataProvider(): void {
+  const provider = new FakeSystemDataProvider();
+  provider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
+  provider.setFakeBatteryHealth(fakeBatteryHealth);
+  provider.setFakeBatteryInfo(fakeBatteryInfo);
+  provider.setFakeCpuUsage(fakeCpuUsage);
+  provider.setFakeMemoryUsage(fakeMemoryUsage);
+  provider.setFakeSystemInfo(fakeSystemInfo);
+  setSystemDataProviderForTesting(provider);
 }
 
-/**
- * @return {!SystemDataProviderInterface}
- */
-export function getSystemDataProvider() {
+export function getSystemDataProvider(): SystemDataProviderInterface {
   if (!systemDataProvider) {
     if (useFakeProviders) {
       setupFakeSystemDataProvider();
@@ -82,29 +65,22 @@ export function getSystemDataProvider() {
   return systemDataProvider;
 }
 
-/**
- * @param {!SystemRoutineControllerInterface} testController
- */
-export function setSystemRoutineControllerForTesting(testController) {
+export function setSystemRoutineControllerForTesting(
+    testController: SystemRoutineControllerInterface): void {
   systemRoutineController = testController;
 }
 
 /**
  * Create a FakeSystemRoutineController with reasonable fake data.
  */
-function setupFakeSystemRoutineController() {
-  systemRoutineController = new FakeSystemRoutineController();
-  systemRoutineController.setDelayTimeInMillisecondsForTesting(-1);
-
+function setupFakeSystemRoutineController(): void {
+  const controller = new FakeSystemRoutineController();
   // Enable all routines by default.
-  systemRoutineController.setFakeSupportedRoutines(
-      systemRoutineController.getAllRoutines());
+  controller.setFakeSupportedRoutines(controller.getAllRoutines());
+  setSystemRoutineControllerForTesting(controller);
 }
 
-/**
- * @return {!SystemRoutineControllerInterface}
- */
-export function getSystemRoutineController() {
+export function getSystemRoutineController(): SystemRoutineControllerInterface {
   if (!systemRoutineController) {
     if (useFakeProviders) {
       setupFakeSystemRoutineController();
@@ -117,17 +93,15 @@ export function getSystemRoutineController() {
   return systemRoutineController;
 }
 
-/**
- * @param {!NetworkHealthProviderInterface} testProvider
- */
-export function setNetworkHealthProviderForTesting(testProvider) {
+export function setNetworkHealthProviderForTesting(
+    testProvider: NetworkHealthProviderInterface): void {
   networkHealthProvider = testProvider;
 }
 
 /**
  * Create a FakeNetworkHealthProvider with reasonable fake data.
  */
-function setupFakeNetworkHealthProvider() {
+function setupFakeNetworkHealthProvider(): void {
   const provider = new FakeNetworkHealthProvider();
   // The fake provides a stable state with all networks connected.
   provider.setFakeNetworkGuidInfo([fakeAllNetworksAvailable]);
@@ -138,10 +112,7 @@ function setupFakeNetworkHealthProvider() {
   setNetworkHealthProviderForTesting(provider);
 }
 
-/**
- * @return {!NetworkHealthProviderInterface}
- */
-export function getNetworkHealthProvider() {
+export function getNetworkHealthProvider(): NetworkHealthProviderInterface {
   if (!networkHealthProvider) {
     if (useFakeProviders) {
       setupFakeNetworkHealthProvider();
@@ -155,23 +126,18 @@ export function getNetworkHealthProvider() {
 }
 
 // Creates a FakeInputDataProvider with fake devices setup.
-function setupFakeInputDataProvider() {
+function setupFakeInputDataProvider(): void {
   const provider = new FakeInputDataProvider();
   provider.setFakeConnectedDevices(fakeKeyboards, fakeTouchDevices);
   setInputDataProviderForTesting(provider);
 }
 
-/**
- * @param {!InputDataProviderInterface} testProvider
- */
-export function setInputDataProviderForTesting(testProvider) {
+export function setInputDataProviderForTesting(
+    testProvider: InputDataProviderInterface): void {
   inputDataProvider = testProvider;
 }
 
-/**
- * @return {!InputDataProviderInterface}
- */
-export function getInputDataProvider() {
+export function getInputDataProvider(): InputDataProviderInterface {
   if (!inputDataProvider) {
     if (useFakeProviders) {
       setupFakeInputDataProvider();
