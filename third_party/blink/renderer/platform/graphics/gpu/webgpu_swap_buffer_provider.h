@@ -170,6 +170,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   const viz::SharedImageFormat format_;
   const WGPUTextureUsage usage_;
   const PredefinedColorSpace color_space_;
+  const gfx::HDRMetadata hdr_metadata_;
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
   int max_texture_size_;
 
   scoped_refptr<SwapBuffer> current_swap_buffer_;
