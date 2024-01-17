@@ -5201,6 +5201,17 @@
           '--test-launcher-print-test-stdio=always',
         ],
       },
+      'mac-ubsan-fyi-rel': {
+        'mixins': [
+          'mac_default_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+        },
+        'args': [
+          '--test-launcher-print-test-stdio=always',
+        ],
+      },
     },
   },
   {

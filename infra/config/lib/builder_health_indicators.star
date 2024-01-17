@@ -482,6 +482,7 @@ _exempted_from_contact_builders = {
         "mac-perfetto-rel",
         "mac-rel-dev",
         "mac-rust-x64-dbg",
+        "mac-ubsan-fyi-rel",
         "mac-updater-builder-arm64-dbg",
         "mac-updater-builder-arm64-rel",
         "mac-updater-builder-asan-dbg",
