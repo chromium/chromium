@@ -421,7 +421,8 @@ testcase.showFilesSettingsButton = async () => {
   const filesSettingsWindowURL = 'chrome://os-settings/files';
 
   // Open Files.App on Downloads and wait for the gear menu button to appear.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
   await remoteCall.waitForElement(appId, '#gear-button');
 
   // Click the gear menu button.
