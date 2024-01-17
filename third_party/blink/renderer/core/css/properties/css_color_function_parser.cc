@@ -157,9 +157,11 @@ static HashMap<CSSValueID, double> GenerateChannelKeywordValues(
     case Color::ColorSpace::kA98RGB:
     case Color::ColorSpace::kProPhotoRGB:
     case Color::ColorSpace::kRec2020:
+      channel_names = {CSSValueID::kR, CSSValueID::kG, CSSValueID::kB};
+      break;
     case Color::ColorSpace::kXYZD50:
     case Color::ColorSpace::kXYZD65:
-      channel_names = {CSSValueID::kR, CSSValueID::kG, CSSValueID::kB};
+      channel_names = {CSSValueID::kX, CSSValueID::kY, CSSValueID::kZ};
       break;
     case Color::ColorSpace::kLab:
     case Color::ColorSpace::kOklab:
@@ -188,6 +190,18 @@ static HashMap<CSSValueID, double> GenerateChannelKeywordValues(
   };
 }
 
+// https://www.w3.org/TR/css-color-4/#color-function
+static bool IsValidColorSpaceForColorFunction(Color::ColorSpace color_space) {
+  return color_space == Color::ColorSpace::kSRGB ||
+         color_space == Color::ColorSpace::kSRGBLinear ||
+         color_space == Color::ColorSpace::kDisplayP3 ||
+         color_space == Color::ColorSpace::kA98RGB ||
+         color_space == Color::ColorSpace::kProPhotoRGB ||
+         color_space == Color::ColorSpace::kRec2020 ||
+         color_space == Color::ColorSpace::kXYZD50 ||
+         color_space == Color::ColorSpace::kXYZD65;
+}
+
 bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -212,7 +226,7 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     }
     color_space_ =
         CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
-    if (!Color::IsPredefinedColorSpace(color_space_)) {
+    if (!IsValidColorSpaceForColorFunction(color_space_)) {
       return false;
     }
   }
@@ -232,16 +246,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     origin_color_.ConvertToColorSpace(color_space_);
     channel_keyword_values_ =
         GenerateChannelKeywordValues(color_space_, origin_color_);
-    if (Color::IsPredefinedColorSpace(color_space_)) {
-      // Relative colors with color() can use 'x', 'y', 'z' in the place of 'r',
-      // 'g', 'b'.
-      xyz_keyword_values_ = {
-          {CSSValueID::kX, origin_color_.Param0()},
-          {CSSValueID::kY, origin_color_.Param1()},
-          {CSSValueID::kZ, origin_color_.Param2()},
-          {CSSValueID::kAlpha, origin_color_.Alpha()},
-      };
-    }
   }
 
   return true;
@@ -329,22 +333,8 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
 
   if (is_relative_color_) {
     channel_types_[i] = ChannelType::kRelative;
-    // First, check if the channel contains only the keyword "alpha", because
-    // that can be either an rgb or an xyz param.
-    if ((channels_[i] = ConsumeRelativeColorChannel(
-             args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}}))) {
-      return true;
-    }
     if ((channels_[i] = ConsumeRelativeColorChannel(args, context,
                                                     channel_keyword_values_))) {
-      uses_rgb_relative_params_ = true;
-      return true;
-    }
-
-    if (Color::IsPredefinedColorSpace(color_space_) &&
-        (channels_[i] =
-             ConsumeRelativeColorChannel(args, context, xyz_keyword_values_))) {
-      uses_xyz_relative_params_ = true;
       return true;
     }
   }
@@ -383,14 +373,6 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
 
   if (is_relative_color_ && (alpha_ = ConsumeRelativeColorChannel(
                                  args, context, channel_keyword_values_))) {
-    uses_rgb_relative_params_ = true;
-    return true;
-  }
-
-  if (is_relative_color_ && Color::IsPredefinedColorSpace(color_space_) &&
-      (alpha_ =
-           ConsumeRelativeColorChannel(args, context, xyz_keyword_values_))) {
-    uses_xyz_relative_params_ = true;
     return true;
   }
 
@@ -536,10 +518,8 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     alpha_ = channel_keyword_values_.at(CSSValueID::kAlpha);
   }
 
-  // Cannot mix the two color channel keyword types.
   // "None" is not a part of the legacy syntax.
   if (!args.AtEnd() ||
-      (uses_rgb_relative_params_ && uses_xyz_relative_params_) ||
       (is_legacy_syntax_ && has_none_)) {
     return false;
   }

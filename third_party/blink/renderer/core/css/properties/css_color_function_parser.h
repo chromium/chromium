@@ -46,9 +46,6 @@ class CORE_EXPORT ColorFunctionParser {
   bool is_relative_color_ = false;
   Color origin_color_;
   HashMap<CSSValueID, double> channel_keyword_values_;
-  HashMap<CSSValueID, double> xyz_keyword_values_;
-  bool uses_rgb_relative_params_ = false;
-  bool uses_xyz_relative_params_ = false;
 };
 
 }  // namespace blink

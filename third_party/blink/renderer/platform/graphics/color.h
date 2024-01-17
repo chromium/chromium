@@ -103,17 +103,6 @@ class PLATFORM_EXPORT Color {
     kNone,
   };
 
-  static bool IsPredefinedColorSpace(ColorSpace color_space) {
-    return color_space == ColorSpace::kSRGB ||
-           color_space == ColorSpace::kSRGBLinear ||
-           color_space == ColorSpace::kDisplayP3 ||
-           color_space == ColorSpace::kA98RGB ||
-           color_space == ColorSpace::kProPhotoRGB ||
-           color_space == ColorSpace::kRec2020 ||
-           color_space == ColorSpace::kXYZD50 ||
-           color_space == ColorSpace::kXYZD65;
-  }
-
   static bool HasRGBOrXYZComponents(ColorSpace color_space) {
     return color_space == ColorSpace::kSRGB ||
            color_space == ColorSpace::kSRGBLinear ||
