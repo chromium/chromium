@@ -7,7 +7,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/json/json_writer.h"
-#include "base/values.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -54,8 +55,9 @@ void AddInternetStrings(content::WebUIDataSource* html_source) {
       {"close", IDS_CANCEL},
       {"save", IDS_SAVE},
   };
-  for (const auto& entry : localized_strings)
+  for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
+  }
 }
 
 std::string GetId(const std::string& network_type,
@@ -89,8 +91,8 @@ void InternetConfigDialog::ShowDialogForNetworkId(const std::string& network_id,
     return;
   }
 
-  InternetConfigDialog* dialog =
-      new InternetConfigDialog(id, network_type, network_id);
+  InternetConfigDialog* dialog = new InternetConfigDialog(
+      id, network_type, network_id, /*prefilled_wifi_config=*/std::nullopt);
   dialog->ShowSystemDialog(parent);
 }
 
@@ -98,25 +100,52 @@ void InternetConfigDialog::ShowDialogForNetworkId(const std::string& network_id,
 void InternetConfigDialog::ShowDialogForNetworkType(
     const std::string& network_type,
     gfx::NativeWindow parent) {
-  std::string id = GetId(network_type, "");
+  std::string id = GetId(network_type, std::string());
   auto* instance = SystemWebDialogDelegate::FindInstance(id);
   if (instance) {
     instance->Focus();
     return;
   }
 
-  InternetConfigDialog* dialog = new InternetConfigDialog(id, network_type, "");
+  InternetConfigDialog* dialog =
+      new InternetConfigDialog(id, network_type, /*network_id=*/std::string(),
+                               /*prefilled_wifi_config=*/std::nullopt);
   dialog->ShowSystemDialog(parent);
 }
 
-InternetConfigDialog::InternetConfigDialog(const std::string& dialog_id,
-                                           const std::string& network_type,
-                                           const std::string& network_id)
+// static
+void InternetConfigDialog::ShowDialogForNetworkWithWifiConfig(
+    mojo::StructPtr<chromeos::network_config::mojom::WiFiConfigProperties>
+        wifi_config,
+    gfx::NativeWindow parent) {
+  const std::string network_type = onc::network_type::kWiFi;
+  const std::string id = GetId(network_type, std::string());
+  auto* instance = SystemWebDialogDelegate::FindInstance(id);
+  if (instance) {
+    LOG(ERROR)
+        << "Dialog is already on. The provided Wi-Fi config will be dropped";
+    instance->Focus();
+    return;
+  }
+  InternetConfigDialog* dialog = new InternetConfigDialog(
+      id, network_type, /*network_id=*/std::string(),
+      /*prefilled_wifi_config=*/std::move(wifi_config));
+  dialog->ShowSystemDialog(parent);
+}
+
+InternetConfigDialog::InternetConfigDialog(
+    const std::string& dialog_id,
+    const std::string& network_type,
+    const std::string& network_id,
+    std::optional<
+        mojo::StructPtr<chromeos::network_config::mojom::WiFiConfigProperties>>
+        prefilled_wifi_config)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIInternetConfigDialogURL),
                               std::u16string() /* title */),
       dialog_id_(dialog_id),
       network_type_(network_type),
-      network_id_(network_id) {}
+      network_id_(network_id),
+      prefilled_wifi_config_(std::move(prefilled_wifi_config)) {}
 
 InternetConfigDialog::~InternetConfigDialog() = default;
 
@@ -147,6 +176,13 @@ std::string InternetConfigDialog::GetDialogArgs() const {
   base::Value::Dict args;
   args.Set("type", network_type_);
   args.Set("guid", network_id_);
+
+  if (prefilled_wifi_config_.has_value()) {
+    base::Value::Dict prefilled_properties =
+        chromeos::network_config::WiFiConfigPropertiesToMojoJsValue(
+            *prefilled_wifi_config_);
+    args.Set("prefilledProperties", std::move(prefilled_properties));
+  }
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
