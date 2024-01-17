@@ -7507,6 +7507,22 @@
             ]
         }
     ],
+    "ForceSigninFlowInProfilePicker": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ForceSigninFlowInProfilePicker"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForgotPasswordFormSupport": [
         {
             "platforms": [
