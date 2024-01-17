@@ -4690,11 +4690,10 @@ if (enable_java_templates && is_android) {
         _stamp = "${target_out_dir}/${target_name}.trace_event_rewrite.stamp"
         action_with_pydeps(_rewritten_jar_target_name) {
           script = "//build/android/gyp/trace_event_bytecode_rewriter.py"
-          inputs = [
-            java_path_for_inputs,
-            _rewriter_path,
-            _build_config,
-          ]
+          inputs = java_paths_for_inputs + [
+                     _rewriter_path,
+                     _build_config,
+                   ]
           outputs = [ _stamp ]
           depfile = "$target_gen_dir/$_rewritten_jar_target_name.d"
           args = [
@@ -4950,10 +4949,8 @@ if (enable_java_templates && is_android) {
     _bundle_target_name = "${_target_name}__bundle"
     action_with_pydeps(_bundle_target_name) {
       script = "//build/android/gyp/create_app_bundle.py"
-      inputs = _all_module_zip_paths + _all_module_build_configs + [
-                 _BUNDLETOOL_JAR_PATH,
-                 java_path_for_inputs,
-               ]
+      inputs = _all_module_zip_paths + _all_module_build_configs +
+               [ _BUNDLETOOL_JAR_PATH ] + java_paths_for_inputs
       outputs = [ _bundle_path ]
       deps = _all_create_module_targets + [ ":$_build_config_target" ]
       args = [
@@ -5185,11 +5182,10 @@ if (enable_java_templates && is_android) {
     _apks_path = "$root_build_dir/apks/$_bundle_name.apks"
     action_with_pydeps("${_target_name}_apks") {
       script = "//build/android/gyp/create_app_bundle_apks.py"
-      inputs = [
-        java_path_for_inputs,
-        _bundle_path,
-        _BUNDLETOOL_JAR_PATH,
-      ]
+      inputs = java_paths_for_inputs + [
+                 _bundle_path,
+                 _BUNDLETOOL_JAR_PATH,
+               ]
       outputs = [ _apks_path ]
       data = [ _apks_path ]
       args = [
@@ -5248,10 +5244,7 @@ if (enable_java_templates && is_android) {
       _name = get_path_info(invoker.bundle_path, "name")
       _output_path = "$_dir/$_name.minimal.apks"
       outputs = [ _output_path ]
-      inputs = [
-        invoker.bundle_path,
-        java_path_for_inputs,
-      ]
+      inputs = [ invoker.bundle_path ] + java_paths_for_inputs
       args = [
         "--bundle",
         rebase_path(invoker.bundle_path, root_build_dir),

@@ -1090,12 +1090,11 @@ if (enable_java_templates) {
 
       script = "//build/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = [
-        java_path_for_inputs,
-        _lint_jar_path,
-        _custom_lint_jar_path,
-        _backported_methods,
-      ]
+      inputs = java_paths_for_inputs + [
+                 _lint_jar_path,
+                 _custom_lint_jar_path,
+                 _backported_methods,
+               ]
 
       args = [
         "--target-name",
@@ -1218,12 +1217,11 @@ if (enable_java_templates) {
     _script = "//build/android/gyp/proguard.py"
     _deps = invoker.deps
 
-    _inputs = [
-      java_path_for_inputs,
-      invoker.build_config,
-      _r8_path,
-      _custom_r8_path,
-    ]
+    _inputs = java_paths_for_inputs + [
+                invoker.build_config,
+                _r8_path,
+                _custom_r8_path,
+              ]
     if (defined(invoker.inputs)) {
       _inputs += invoker.inputs
     }
@@ -1643,14 +1641,13 @@ if (enable_java_templates) {
           invoker.output + ".md5.stamp",
         ]
         inputs = [
-          "$android_sdk/optional/android.test.base.jar",
-          "$android_sdk/optional/org.apache.http.legacy.jar",
-          "//third_party/jdk/current/bin/java",
-          _custom_d8_path,
-          _d8_path,
-          android_sdk_jar,
-          java_path_for_inputs,
-        ]
+                   "$android_sdk/optional/android.test.base.jar",
+                   "$android_sdk/optional/org.apache.http.legacy.jar",
+                   "//third_party/jdk/current/bin/java",
+                   _custom_d8_path,
+                   _d8_path,
+                   android_sdk_jar,
+                 ] + java_paths_for_inputs
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
         }
@@ -1783,8 +1780,7 @@ if (enable_java_templates) {
       _jacococli_jar = "//third_party/jacoco/lib/jacococli.jar"
 
       script = "//build/android/gyp/jacoco_instr.py"
-      inputs = invoker.source_files + [
-                 java_path_for_inputs,
+      inputs = invoker.source_files + java_paths_for_inputs + [
                  _jacococli_jar,
                  invoker.input_jar_path,
                ]
@@ -1902,11 +1898,10 @@ if (enable_java_templates) {
                                    "deps",
                                  ])
       script = "//build/android/gyp/bytecode_processor.py"
-      inputs = [
-        java_path_for_inputs,
-        invoker.build_config,
-        invoker.input_jar,
-      ]
+      inputs = java_paths_for_inputs + [
+                 invoker.build_config,
+                 invoker.input_jar,
+               ]
       outputs = [ "$target_out_dir/$target_name.bytecode.stamp" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
@@ -1947,12 +1942,11 @@ if (enable_java_templates) {
       script = "//build/android/gyp/merge_manifest.py"
       depfile = "$target_gen_dir/$target_name.d"
 
-      inputs = [
-        java_path_for_inputs,
-        invoker.build_config,
-        invoker.input_manifest,
-        _manifest_merger_jar_path,
-      ]
+      inputs = java_paths_for_inputs + [
+                 invoker.build_config,
+                 invoker.input_manifest,
+                 _manifest_merger_jar_path,
+               ]
 
       outputs = [ invoker.output_manifest ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
@@ -2570,10 +2564,7 @@ if (enable_java_templates) {
       script = "//build/android/gyp/unused_resources.py"
       depfile = "$target_gen_dir/${target_name}.d"
       _unused_resources_script = "$root_build_dir/bin/helper/unused_resources"
-      inputs = [
-        _unused_resources_script,
-        java_path_for_inputs,
-      ]
+      inputs = [ _unused_resources_script ] + java_paths_for_inputs
       outputs = [
         invoker.output_config,
         invoker.output_r_txt,
@@ -3039,7 +3030,7 @@ if (enable_java_templates) {
         ]
       } else {
         script = "//build/android/gyp/compile_java.py"
-        inputs = [ "//third_party/jdk/current/bin/javac" ]
+        inputs = javac_paths_for_inputs
       }
 
       if (target_name == "chrome_java__header") {
@@ -3064,8 +3055,7 @@ if (enable_java_templates) {
                   "$android_sdk/optional/android.test.base.jar",
                   "$android_sdk/optional/org.apache.http.legacy.jar",
                   _build_config,
-                  java_path_for_inputs,
-                ]
+                ] + java_paths_for_inputs
 
       if (invoker.source_files != []) {
         inputs += [ invoker.target_sources_file ]
@@ -4012,12 +4002,11 @@ if (enable_java_templates) {
       _rebased_build_config = rebase_path(_build_config, root_build_dir)
       action_with_pydeps(_rewritten_jar_target_name) {
         script = "//build/android/gyp/bytecode_rewriter.py"
-        inputs = [
-          java_path_for_inputs,
-          _rewriter_path,
-          _build_config,
-          _unprocessed_jar_path,
-        ]
+        inputs = java_paths_for_inputs + [
+                   _rewriter_path,
+                   _build_config,
+                   _unprocessed_jar_path,
+                 ]
         outputs = [ _rewritten_jar ]
         depfile = "$target_gen_dir/$target_name.d"
         args = [

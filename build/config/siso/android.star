@@ -20,8 +20,6 @@ def __filegroups(ctx):
     return {}
 
 def __step_config(ctx, step_config):
-    __input_deps(ctx, step_config["input_deps"])
-
     remote_run = True  # Turn this to False when you do file access trace.
     step_config["rules"].extend([
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
@@ -316,46 +314,10 @@ __handlers = {
     "android_write_build_config": __android_write_build_config_handler,
 }
 
-def __input_deps(ctx, input_deps):
-    # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
-    input_deps["third_party/jdk/current:current"] = [
-        "third_party/jdk/current/bin/java",
-        "third_party/jdk/current/bin/java.chromium",
-        "third_party/jdk/current/conf/logging.properties",
-        "third_party/jdk/current/conf/security/java.security",
-        "third_party/jdk/current/lib/ct.sym",
-        "third_party/jdk/current/lib/jrt-fs.jar",
-        "third_party/jdk/current/lib/jvm.cfg",
-        "third_party/jdk/current/lib/libawt.so",
-        "third_party/jdk/current/lib/libawt_headless.so",
-        "third_party/jdk/current/lib/libawt_xawt.so",
-        "third_party/jdk/current/lib/libjava.so",
-        "third_party/jdk/current/lib/libjimage.so",
-        "third_party/jdk/current/lib/libjli.so",
-        "third_party/jdk/current/lib/libjsvml.so",
-        "third_party/jdk/current/lib/libmanagement.so",
-        "third_party/jdk/current/lib/libmanagement_ext.so",
-        "third_party/jdk/current/lib/libnet.so",
-        "third_party/jdk/current/lib/libnio.so",
-        "third_party/jdk/current/lib/libverify.so",
-        "third_party/jdk/current/lib/libzip.so",
-        "third_party/jdk/current/lib/modules",
-        "third_party/jdk/current/lib/server/classes.jsa",
-        "third_party/jdk/current/lib/server/libjvm.so",
-        "third_party/jdk/current/lib/tzdb.dat",
-    ]
-    input_deps["third_party/jdk/current/bin/java"] = [
-        "third_party/jdk/current:current",
-    ]
-    input_deps["third_party/jdk/current/bin/javac"] = [
-        "third_party/jdk/current:current",
-    ]
-
 android = module(
     "android",
     enabled = __enabled,
     step_config = __step_config,
     filegroups = __filegroups,
     handlers = __handlers,
-    input_deps = __input_deps,
 )
