@@ -32,6 +32,7 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -85,15 +86,13 @@ base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
   return dict;
 }
 
-// Returns empty string if `host` has no known scheme.
-// TODO(bashi): Avoid duplication.
-base::StringPiece GetScheme(
+bool IsSchemeHttpsOrWss(
     const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    return absl::get<url::SchemeHostPort>(host).scheme();
+  if (!absl::holds_alternative<url::SchemeHostPort>(host)) {
+    return false;
   }
-
-  return base::StringPiece();
+  base::StringPiece scheme = absl::get<url::SchemeHostPort>(host).scheme();
+  return scheme == url::kHttpsScheme || scheme == url::kWssScheme;
 }
 
 }  // namespace
@@ -910,8 +909,7 @@ void HostResolverManager::Job::RecordJobHistograms(
         // Skip http- and ws-schemed hosts. Although they query HTTPS records,
         // successful queries are reported as errors, which would skew the
         // metrics.
-        (GetScheme(key_.host) == url::kHttpsScheme ||
-         GetScheme(key_.host) == url::kWssScheme) &&
+        IsSchemeHttpsOrWss(key_.host) &&
         IsGoogleHostWithAlpnH3(HostResolver::GetHostname(key_.host))) {
       bool has_metadata = !results.GetMetadatas().empty();
       base::UmaHistogramExactLinear(
