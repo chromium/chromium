@@ -51,6 +51,18 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
   return *mouse_metadata_list;
 }
 
+const base::flat_map<VendorProductId, GraphicsTabletMetadata>&
+GetGraphicsTabletMetadataList() {
+  const static base::NoDestructor<
+      base::flat_map<VendorProductId, GraphicsTabletMetadata>>
+      graphics_tablet_metadata_list({
+          // Fake data for testing.
+          {{0xeeee, 0xeeee},
+           {mojom::CustomizationRestriction::kAllowCustomizations}},
+      });
+  return *graphics_tablet_metadata_list;
+}
+
 const base::flat_map<VendorProductId, KeyboardMetadata>&
 GetKeyboardMetadataList() {
   const static base::NoDestructor<
@@ -146,6 +158,11 @@ bool MouseMetadata::operator==(const MouseMetadata& other) const {
   return customization_restriction == other.customization_restriction;
 }
 
+bool GraphicsTabletMetadata::operator==(
+    const GraphicsTabletMetadata& other) const {
+  return customization_restriction == other.customization_restriction;
+}
+
 bool KeyboardMouseComboMetadata::operator==(
     const KeyboardMouseComboMetadata& other) const {
   return customization_restriction == other.customization_restriction;
@@ -161,6 +178,24 @@ const MouseMetadata* GetMouseMetadata(const ui::InputDevice& device) {
 
   const auto iter = GetMouseMetadataList().find(vid_pid);
   if (iter != GetMouseMetadataList().end()) {
+    return &(iter->second);
+  }
+
+  return nullptr;
+}
+
+const GraphicsTabletMetadata* GetGraphicsTabletMetadata(
+    const ui::InputDevice& device) {
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetGraphicsTabletMetadataList().find(
+      {vid_pid.vendor_id, vid_pid.product_id});
+  if (iter != GetGraphicsTabletMetadataList().end()) {
     return &(iter->second);
   }
 

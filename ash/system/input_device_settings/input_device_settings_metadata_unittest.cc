@@ -42,7 +42,7 @@ bool ValidateVidPidAliasList() {
   return true;
 }
 
-TEST_F(MetadataTest, MouseMetadata) {
+TEST_F(MetadataTest, GetMetadata) {
   ASSERT_TRUE(ValidateDeviceLists());
   const ui::InputDevice kSampleMouse1(0, ui::INPUT_DEVICE_USB, "kSampleMouse1",
                                       /*phys=*/"",
@@ -56,16 +56,44 @@ TEST_F(MetadataTest, MouseMetadata) {
                                       /*vendor=*/0xffff,
                                       /*product=*/0xffff,
                                       /*version=*/0x0002);
+  const ui::InputDevice kSampleGraphicsTablet1(1, ui::INPUT_DEVICE_USB,
+                                               "kSampleGraphicsTablet1",
+                                               /*phys=*/"",
+                                               /*sys_path=*/base::FilePath(),
+                                               /*vendor=*/0x000e,
+                                               /*product=*/0x000e,
+                                               /*version=*/0x0001);
+  const ui::InputDevice kSampleGraphicsTablet2(1, ui::INPUT_DEVICE_USB,
+                                               "kSampleGraphicsTablet2",
+                                               /*phys=*/"",
+                                               /*sys_path=*/base::FilePath(),
+                                               /*vendor=*/0xeeee,
+                                               /*product=*/0xeeee,
+                                               /*version=*/0x0002);
 
-  const auto* metadata1 = GetMouseMetadata(kSampleMouse1);
-  EXPECT_EQ(metadata1, nullptr);
+  const auto* mouse_metadata1 = GetMouseMetadata(kSampleMouse1);
+  EXPECT_EQ(mouse_metadata1, nullptr);
 
-  const auto* metadata2 = GetMouseMetadata(kSampleMouse2);
-  MouseMetadata expected_metadata;
-  expected_metadata.customization_restriction =
+  const auto* mouse_metadata2 = GetMouseMetadata(kSampleMouse2);
+  MouseMetadata expected_mouse_metadata;
+  expected_mouse_metadata.customization_restriction =
       mojom::CustomizationRestriction::kDisallowCustomizations;
-  ASSERT_TRUE(metadata2);
-  EXPECT_EQ(*metadata2, expected_metadata);
+  expected_mouse_metadata.mouse_button_config =
+      mojom::MouseButtonConfig::kNoConfig;
+  ASSERT_TRUE(mouse_metadata2);
+  EXPECT_EQ(*mouse_metadata2, expected_mouse_metadata);
+
+  const auto* graphics_tablet_metadata1 =
+      GetGraphicsTabletMetadata(kSampleGraphicsTablet1);
+  EXPECT_EQ(graphics_tablet_metadata1, nullptr);
+
+  const auto* graphics_tablet_metadata2 =
+      GetGraphicsTabletMetadata(kSampleGraphicsTablet2);
+  GraphicsTabletMetadata graphics_tablet_expected_metadata;
+  graphics_tablet_expected_metadata.customization_restriction =
+      mojom::CustomizationRestriction::kAllowCustomizations;
+  ASSERT_TRUE(graphics_tablet_metadata2);
+  EXPECT_EQ(*graphics_tablet_metadata2, graphics_tablet_expected_metadata);
 }
 
 TEST_F(MetadataTest, GetDeviceType) {

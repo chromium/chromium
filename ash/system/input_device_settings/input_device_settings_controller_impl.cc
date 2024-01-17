@@ -1486,6 +1486,18 @@ InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
   return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
 }
 
+mojom::CustomizationRestriction
+InputDeviceSettingsControllerImpl::GetGraphicsTabletCustomizationRestriction(
+    const ui::InputDevice& graphics_tablet) {
+  const auto* graphics_tablet_metadata =
+      GetGraphicsTabletMetadata(graphics_tablet);
+  if (graphics_tablet_metadata) {
+    return graphics_tablet_metadata->customization_restriction;
+  }
+
+  return mojom::CustomizationRestriction::kAllowCustomizations;
+}
+
 mojom::MouseButtonConfig
 InputDeviceSettingsControllerImpl::GetMouseButtonConfig(
     const ui::InputDevice& mouse) {
@@ -1579,7 +1591,8 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     std::vector<DeviceId> graphics_tablet_ids_to_remove) {
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
-        graphics_tablet, mojom::CustomizationRestriction::kAllowCustomizations);
+        graphics_tablet,
+        GetGraphicsTabletCustomizationRestriction(graphics_tablet));
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
