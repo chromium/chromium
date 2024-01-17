@@ -197,10 +197,12 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
     DumpAccessibilityTreeTestPassToString());
 
-// TODO(crbug.com/1428967): Flaky on asan of linux, chromeos and win.
-// This is not fixed by rebuilding the subtree when parsing is complete.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(AccessibilityCSSAltText)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSAltText) {
+  RunCSSTest(FILE_PATH_LITERAL("alt-text.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSAltText) {
   RunCSSTest(FILE_PATH_LITERAL("alt-text.html"));
 }
 
@@ -350,6 +352,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSLanguage) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSPseudoElements) {
   RunCSSTest(FILE_PATH_LITERAL("pseudo-elements.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementsSeparatedByWhitespace) {
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-elements-separated-by-whitespace.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementsSeparatedByWhitespace) {
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-elements-separated-by-whitespace.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

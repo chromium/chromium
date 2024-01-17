@@ -2417,35 +2417,69 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
     PostNotification(root, ax::mojom::blink::Event::kDocumentTitleChanged);
 }
 
+bool AXObjectCacheImpl::IsReadyToProcessTreeUpdatesForNode(const Node* node) {
+  DCHECK(node);
+
+  // The maximum number of nodes after whitespace is parsed before a tree update
+  // should occur. The value was chosen based on what was needed to eliminate
+  // flakiness in existing tests and may need adjustment. Example: the
+  // `AccessibilityCSSPseudoElementsSeparatedByWhitespace` Yielding Parser test
+  // regularly fails if this value is set to 2, but passes if set to at least 3.
+  constexpr int kMaxAllowedTreeUpdatePauses = 3;
+
+  // If we have a node that must be fully parsed before updates can continue,
+  // we're ready to process tree updates only if that node has finished parsing
+  // its children. In this scenario, the maximum number of tree update pauses is
+  // irrelevant.
+  if (node_to_parse_before_more_tree_updates_) {
+    return node_to_parse_before_more_tree_updates_->IsFinishedParsingChildren();
+  }
+
+  // There should be no reason to pause for a script element. Plus if we pause
+  // for the script element, the slow-document-load.html web test fails.
+  if (IsA<HTMLScriptElement>(node)) {
+    return true;
+  }
+
+  if (auto* text = DynamicTo<Text>(node)) {
+    if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+      return true;
+    }
+
+    // Whitespace at the end of parsed content is a problem because we won't
+    // know if that whitespace node is relevant until we have some text or a
+    // block node. And we won't know the layout of a node at connection time.
+    // Therefore, if this is a whitespace node, reset the maximum number of
+    // allowed pauses and wait.
+    allowed_tree_update_pauses_remaining_ = kMaxAllowedTreeUpdatePauses;
+    return false;
+  }
+
+  // If the node following a whitespace node is a pseudo element, we won't have
+  // its contents at the time the node is connected. Those contents can impact
+  // the relevance of the whitespace node. So remain paused if node is a pseudo
+  // element, without resetting the maximum number of allowed pauses.
+  if (node->IsPseudoElement()) {
+    return false;
+  }
+
+  // No new reason to pause, and there are no prior requested pauses remaining.
+  if (!allowed_tree_update_pauses_remaining_) {
+    return true;
+  }
+
+  // No new reason to pause, but we're not ready to unpause yet. So decrement
+  // the number of pauses requested and wait for the next connected node.
+  CHECK_GT(allowed_tree_update_pauses_remaining_, 0u);
+  allowed_tree_update_pauses_remaining_--;
+  return false;
+}
+
 void AXObjectCacheImpl::NodeIsConnected(Node* node) {
   if (IsParsingMainDocument()) {
-    // Pausing tree updates during page loads until ready to process more:
-    // 1. An unrendeered subtree, which will not receive NodeIsAttached()
-    // signals for incrementally loaded content, and therefore is unsafe to
-    // finish parsing until it has completely loaded.
-    // 2. Whitespace at the end of the document is a problem during page loads,
-    // because there is not yet enough context around the whitespace to
-    // determine whether it's relevant. This will pause processing of the
-    // a11y tree until the document is either completely loaded or it does
-    // not end in whitespace.
-    if (node_to_parse_before_more_tree_updates_) {
-      CHECK(pause_tree_updates_until_more_loaded_content_);
-      // For case #1, keep the pause  if the expected node isn't fully parsed.
-      if (node_to_parse_before_more_tree_updates_
-              ->IsFinishedParsingChildren()) {
-        node_to_parse_before_more_tree_updates_ = nullptr;
-        pause_tree_updates_until_more_loaded_content_ = false;
-      }
-    } else {
-      // For case #2, any new content means there's enough context around
-      // the whitespace to process updates.
-      pause_tree_updates_until_more_loaded_content_ = false;
-    }
-    // Start a new tree update pause if we are on a whitespace node.
-    if (Text* text = DynamicTo<Text>(node)) {
-      if (text->ContainsOnlyWhitespaceOrEmpty()) {
-        pause_tree_updates_until_more_loaded_content_ = true;
-      }
+    if (IsReadyToProcessTreeUpdatesForNode(node)) {
+      node_to_parse_before_more_tree_updates_ = nullptr;
+      allowed_tree_update_pauses_remaining_ = 0;
     }
   } else {
     // Handle case where neither NodeIsAttached() nor SubtreeIsAttached() will
@@ -2491,7 +2525,6 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
       // process until they are complete, because there are no NodeIsAttached()
       // signals for incrementally loaded content.
       node_to_parse_before_more_tree_updates_ = node;
-      pause_tree_updates_until_more_loaded_content_ = true;
     }
 
     // No AX subtree to invalidate: just add an AXObject for this node.
@@ -2550,7 +2583,6 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       // Tables must be fully parsed before building, because many of the
       // computed properties require the entire table.
       node_to_parse_before_more_tree_updates_ = node;
-      pause_tree_updates_until_more_loaded_content_ = true;
     }
   }
 
@@ -3015,11 +3047,13 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   // Don't update the tree at an awkward time during page load.
   // Example: when the last node is whitespace, there is not yet enough context
   // to determine the relevance of the whitespace.
-  if (pause_tree_updates_until_more_loaded_content_ && !force) {
+  if ((allowed_tree_update_pauses_remaining_ ||
+       node_to_parse_before_more_tree_updates_) &&
+      !force) {
     if (IsParsingMainDocument()) {
       return;
     }
-    pause_tree_updates_until_more_loaded_content_ = false;
+    allowed_tree_update_pauses_remaining_ = 0;
     node_to_parse_before_more_tree_updates_ = nullptr;
   }
 

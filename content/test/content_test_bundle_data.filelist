@@ -1919,6 +1919,8 @@ data/accessibility/css/pseudo-elements-expected-auralinux.txt
 data/accessibility/css/pseudo-elements-expected-blink.txt
 data/accessibility/css/pseudo-elements-ignored-parent-expected-blink.txt
 data/accessibility/css/pseudo-elements-ignored-parent.html
+data/accessibility/css/pseudo-elements-separated-by-whitespace-expected-blink.txt
+data/accessibility/css/pseudo-elements-separated-by-whitespace.html
 data/accessibility/css/pseudo-elements.html
 data/accessibility/css/pseudo-with-code-expected-uia-win.txt
 data/accessibility/css/pseudo-with-code.html

@@ -255,6 +255,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void FocusableChangedWithCleanLayout(Node* node);
   void DocumentTitleChanged() override;
+
+  // Returns true if we can immediately process tree updates for this node.
+  // The main reason we cannot is lacking enough context to determine the
+  // relevance of a whitespace node.
+  bool IsReadyToProcessTreeUpdatesForNode(const Node*);
   // Called when a node is connected to the document.
   void NodeIsConnected(Node*) override;
   // Called when a node is attached to the layout tree.
@@ -890,10 +895,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool updating_layout_and_ax_ = false;
 #endif
 
-  // If true, do not do work to process a11y or build the a11y in
-  // ProcessDeferredAccessibilityEvents(). Will be set to false when more
-  // content is loaded or the load is completed.
-  bool pause_tree_updates_until_more_loaded_content_ = false;
+  // If non-zero, do not do work to process a11y or build the a11y tree in
+  // ProcessDeferredAccessibilityEvents(). Will be set to 0 when more content
+  // is loaded or the load is completed.
+  size_t allowed_tree_update_pauses_remaining_ = 0;
   // If null, then any new connected node will unpause tree updates.
   // Otherwise, tree updates will unpause once the node is fully parsed.
   WeakMember<Node> node_to_parse_before_more_tree_updates_;
