@@ -525,9 +525,6 @@ class AutocompleteMediator
                     isZeroPrefix
                             ? RefineActionUsage.SEARCH_WITH_ZERO_PREFIX
                             : RefineActionUsage.SEARCH_WITH_PREFIX;
-            RecordUserAction.record("MobileOmniboxRefineSuggestion.Search");
-        } else {
-            RecordUserAction.record("MobileOmniboxRefineSuggestion.Url");
         }
     }
 
