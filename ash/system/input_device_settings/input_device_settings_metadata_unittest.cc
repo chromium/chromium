@@ -33,6 +33,15 @@ bool ValidateDeviceLists() {
   return true;
 }
 
+bool ValidateVidPidAliasList() {
+  for (auto vid_pid_alias_pair : GetVidPidAliasList()) {
+    if (!GetMouseMetadataList().contains(vid_pid_alias_pair.second)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 TEST_F(MetadataTest, MouseMetadata) {
   ASSERT_TRUE(ValidateDeviceLists());
   const ui::InputDevice kSampleMouse1(0, ui::INPUT_DEVICE_USB, "kSampleMouse1",
@@ -125,6 +134,28 @@ TEST_F(MetadataTest, GetButtonRemappingListForConfig) {
   EXPECT_EQ(4u, GetButtonRemappingListForConfig(
                     GetMouseMetadata(kLogitechSixKeyMouse)->mouse_button_config)
                     .size());
+}
+
+TEST_F(MetadataTest, GetVidPidAliasList) {
+  ASSERT_TRUE(ValidateDeviceLists());
+  ASSERT_TRUE(ValidateVidPidAliasList());
+  const ui::InputDevice kSampleBluetoothMouse(0, ui::INPUT_DEVICE_BLUETOOTH,
+                                              "Razer Naga Pro (Bluetooth)",
+                                              /*phys=*/"",
+                                              /*sys_path=*/base::FilePath(),
+                                              /*vendor=*/0x1532,
+                                              /*product=*/0x0092,
+                                              /*version=*/0x0001);
+  const ui::InputDevice kSampleUSBMouse(1, ui::INPUT_DEVICE_USB,
+                                        "Razer Naga Pro (USB Doggle)",
+                                        /*phys=*/"",
+                                        /*sys_path=*/base::FilePath(),
+                                        /*vendor=*/0x1532,
+                                        /*product=*/0x0090,
+                                        /*version=*/0x0001);
+
+  ASSERT_EQ(GetMouseMetadata(kSampleUSBMouse),
+            GetMouseMetadata(kSampleBluetoothMouse));
 }
 
 }  // namespace ash

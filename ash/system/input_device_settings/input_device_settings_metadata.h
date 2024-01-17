@@ -67,6 +67,10 @@ GetKeyboardMetadataList();
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 GetButtonRemappingListForConfig(mojom::MouseButtonConfig mouse_button_config);
 
+// This function returns the vid pid alias list.
+ASH_EXPORT const base::flat_map<VendorProductId, VendorProductId>&
+GetVidPidAliasList();
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METADATA_H_

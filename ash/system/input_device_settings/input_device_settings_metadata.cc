@@ -29,8 +29,8 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // Razer Naga Pro (Bluetooth)
-          {{0x1532, 0x0092},
+          // Logitech ERGO M575 (USB Dongle)
+          {{0x46d, 0x4096},
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
@@ -130,6 +130,18 @@ GetKeyboardMouseComboMetadataList() {
   return *keyboard_mouse_combo_metadata_list;
 }
 
+const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
+  const static base::NoDestructor<
+      base::flat_map<VendorProductId, VendorProductId>>
+      vid_pid_alias_list({
+          // Razer Naga Pro (Bluetooth -> USB Dongle)
+          {{0x1532, 0x0092}, {0x1532, 0x0090}},
+          // Logitech ERGO M575 (Bluetooth -> USB Dongle)
+          {{0x46d, 0xb027}, {0x46d, 0x4096}},
+      });
+  return *vid_pid_alias_list;
+}
+
 bool MouseMetadata::operator==(const MouseMetadata& other) const {
   return customization_restriction == other.customization_restriction;
 }
@@ -140,30 +152,51 @@ bool KeyboardMouseComboMetadata::operator==(
 }
 
 const MouseMetadata* GetMouseMetadata(const ui::InputDevice& device) {
-  const auto iter =
-      GetMouseMetadataList().find({device.vendor_id, device.product_id});
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetMouseMetadataList().find(vid_pid);
   if (iter != GetMouseMetadataList().end()) {
     return &(iter->second);
   }
+
   return nullptr;
 }
 
 const KeyboardMetadata* GetKeyboardMetadata(const ui::InputDevice& device) {
-  const auto iter =
-      GetKeyboardMetadataList().find({device.vendor_id, device.product_id});
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetKeyboardMetadataList().find(vid_pid);
   if (iter != GetKeyboardMetadataList().end()) {
     return &(iter->second);
   }
+
   return nullptr;
 }
 
 const KeyboardMouseComboMetadata* GetKeyboardMouseComboMetadata(
     const ui::InputDevice& device) {
-  const auto iter = GetKeyboardMouseComboMetadataList().find(
-      {device.vendor_id, device.product_id});
+  VendorProductId vid_pid = {device.vendor_id, device.product_id};
+
+  const auto alias_iter = GetVidPidAliasList().find(vid_pid);
+  if (alias_iter != GetVidPidAliasList().end()) {
+    vid_pid = alias_iter->second;
+  }
+
+  const auto iter = GetKeyboardMouseComboMetadataList().find(vid_pid);
   if (iter != GetKeyboardMouseComboMetadataList().end()) {
     return &(iter->second);
   }
+
   return nullptr;
 }
 
