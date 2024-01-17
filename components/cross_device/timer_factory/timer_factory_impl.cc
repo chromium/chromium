@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/secure_channel/timer_factory_impl.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/timer/timer.h"
 
-namespace ash::secure_channel {
+namespace cross_device {
 
 // static
-TimerFactoryImpl::Factory* TimerFactoryImpl::Factory::test_factory_ = nullptr;
+std::unique_ptr<TimerFactoryImpl::Factory> TimerFactoryImpl::Factory::test_factory_ = nullptr;
 
 // static
 std::unique_ptr<TimerFactory> TimerFactoryImpl::Factory::Create() {
@@ -21,8 +21,8 @@ std::unique_ptr<TimerFactory> TimerFactoryImpl::Factory::Create() {
 }
 
 // static
-void TimerFactoryImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
-  test_factory_ = test_factory;
+void TimerFactoryImpl::Factory::SetFactoryForTesting(std::unique_ptr<Factory> test_factory) {
+  test_factory_ = std::move(test_factory);
 }
 
 TimerFactoryImpl::Factory::~Factory() = default;
@@ -35,4 +35,4 @@ std::unique_ptr<base::OneShotTimer> TimerFactoryImpl::CreateOneShotTimer() {
   return std::make_unique<base::OneShotTimer>();
 }
 
-}  // namespace ash::secure_channel
+}  // namespace cross_device

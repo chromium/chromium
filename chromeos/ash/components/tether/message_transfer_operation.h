@@ -24,9 +24,11 @@ namespace ash::secure_channel {
 class SecureChannelClient;
 }
 
-namespace ash::tether {
-
+namespace cross_device {
 class TimerFactory;
+}  // namespace cross_device
+
+namespace ash::tether {
 
 // Abstract base class used for operations which send and/or receive messages
 // from remote devices.
@@ -181,14 +183,14 @@ class MessageTransferOperation {
       const std::string& device_id);
 
   void SetTimerFactoryForTest(
-      std::unique_ptr<TimerFactory> timer_factory_for_test);
+      std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
 
   multidevice::RemoteDeviceRefList remote_devices_;
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   const secure_channel::ConnectionPriority connection_priority_;
 
-  std::unique_ptr<TimerFactory> timer_factory_;
+  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
 
   bool initialized_ = false;
   bool shutting_down_ = false;

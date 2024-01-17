@@ -12,14 +12,14 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/persistent_host_scan_cache.h"
-#include "chromeos/ash/components/tether/timer_factory.h"
+#include "components/cross_device/timer_factory/timer_factory.h"
 
 namespace ash {
 
 namespace tether {
 
 TopLevelHostScanCache::TopLevelHostScanCache(
-    std::unique_ptr<TimerFactory> timer_factory,
+    std::unique_ptr<cross_device::TimerFactory> timer_factory,
     ActiveHost* active_host,
     HostScanCache* network_host_scan_cache,
     PersistentHostScanCache* persistent_host_scan_cache)

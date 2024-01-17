@@ -18,6 +18,10 @@
 #include "chromeos/ash/services/secure_channel/connection_role.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 
+namespace cross_device {
+class TimerFactory;
+}  // namespace cross_device
+
 namespace device {
 class BluetoothAdapter;
 }
@@ -27,7 +31,6 @@ namespace ash::secure_channel {
 class BleSynchronizerBase;
 class BluetoothHelper;
 class SecureChannelDisconnector;
-class TimerFactory;
 
 // Concrete BleConnectionManager implementation. This class initializes
 // BleAdvertiser and BleScanner objects and utilizes them to bootstrap
@@ -47,7 +50,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
         SecureChannelDisconnector* secure_channel_disconnector,
-        TimerFactory* timer_factory,
+        cross_device::TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance());
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -59,7 +62,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
         SecureChannelDisconnector* secure_channel_disconnector,
-        TimerFactory* timer_factory,
+        cross_device::TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance()) = 0;
 
    private:
@@ -110,7 +113,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       BleSynchronizerBase* ble_synchronizer,
       BleScanner* ble_scanner,
       SecureChannelDisconnector* secure_channel_disconnector,
-      TimerFactory* timer_factory,
+      cross_device::TimerFactory* timer_factory,
       base::Clock* clock);
 
   // BleConnectionManager:

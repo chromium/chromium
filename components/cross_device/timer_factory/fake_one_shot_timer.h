@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_ONE_SHOT_TIMER_H_
-#define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_ONE_SHOT_TIMER_H_
+#ifndef COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_FAKE_ONE_SHOT_TIMER_H_
+#define COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_FAKE_ONE_SHOT_TIMER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 
-namespace ash::secure_channel {
+namespace cross_device {
 
 // Fake base::OneShotTimer implementation, which extends MockTimer and provides
 // a mechanism for alerting its creator when it is destroyed.
@@ -30,6 +30,6 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
   base::UnguessableToken id_;
 };
 
-}  // namespace ash::secure_channel
+}  // namespace cross_device
 
-#endif  // CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_ONE_SHOT_TIMER_H_
+#endif  // COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_FAKE_ONE_SHOT_TIMER_H_

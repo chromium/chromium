@@ -22,7 +22,7 @@
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector_impl.h"
-#include "chromeos/ash/services/secure_channel/timer_factory_impl.h"
+#include "components/cross_device/timer_factory/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {
@@ -67,7 +67,7 @@ SecureChannelImpl::ConnectionRequestWaitingForDisconnection::
 SecureChannelImpl::SecureChannelImpl(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
     : bluetooth_adapter_(std::move(bluetooth_adapter)),
-      timer_factory_(TimerFactoryImpl::Factory::Create()),
+      timer_factory_(cross_device::TimerFactoryImpl::Factory::Create()),
       remote_device_cache_(multidevice::RemoteDeviceCache::Factory::Create()),
       bluetooth_helper_(
           BluetoothHelperImpl::Factory::Create(remote_device_cache_.get())),
