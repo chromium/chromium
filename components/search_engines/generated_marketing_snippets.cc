@@ -9,8 +9,8 @@
 
 namespace search_engines {
 // This file is generated using
-// tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify
-// it manually.
+// google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+// Do not modify it manually.
 int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::bing.keyword) {
     return IDS_BING_SEARCH_DESCRIPTION;
