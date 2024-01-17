@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/strings/escape.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
@@ -16,15 +18,12 @@ class HtmlInProcessFuzzer : public InProcessFuzzer {
   HtmlInProcessFuzzer() = default;
 
   int Fuzz(const uint8_t* data, size_t size) override;
-
- private:
-  std::string current_fuzz_case_;
 };
 
 REGISTER_IN_PROCESS_FUZZER(HtmlInProcessFuzzer)
 
 int HtmlInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
-  std::string html_string(reinterpret_cast<const char*>(data), size);
+  std::string_view html_string(reinterpret_cast<const char*>(data), size);
   // See
   // docs/security/url_display_guidelines/url_display_guidelines.md#url-length
   const size_t kMaxUrlLength = 2 * 1024 * 1024;
