@@ -155,7 +155,9 @@ class TouchToFillMediator {
             new GenerateAvatarTask(avatarUrls)
                     .fetchInBackground(
                             (roundedAvatarImage) -> {
-                                headerModel.set(AVATAR, roundedAvatarImage);
+                                if (roundedAvatarImage != null) {
+                                    headerModel.set(AVATAR, roundedAvatarImage);
+                                }
                             });
         }
 
@@ -497,6 +499,10 @@ class TouchToFillMediator {
 
         private void onAllImagesFetched() {
             ThreadUtils.assertOnUiThread();
+            if (mAvatarImages.isEmpty()) {
+                mDoneCallback.onResult(null);
+                return;
+            }
             mDoneCallback.onResult(
                     AvatarGenerator.makeRoundAvatar(
                             mContext.getResources(),
