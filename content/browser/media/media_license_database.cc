@@ -103,6 +103,7 @@ bool MediaLicenseDatabase::WriteFile(const media::CdmType& cdm_type,
   DCHECK(db_.IsSQLValid(kInsertSql));
 
   last_operation_ = "WriteFile";
+  last_write_file_size_ = data.size();
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, cdm_type.ToString());
