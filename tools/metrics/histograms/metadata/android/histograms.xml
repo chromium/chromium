@@ -5483,7 +5483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
-    enum="PrimaryCpuAbiBitness" expires_after="2024-01-31">
+    enum="PrimaryCpuAbiBitness" expires_after="2024-06-02">
   <owner>bartekn@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
