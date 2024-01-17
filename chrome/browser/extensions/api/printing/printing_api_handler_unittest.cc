@@ -458,8 +458,10 @@ TEST_P(PrintingAPIHandlerParam, EventIsDispatched) {
   int index = job_id.size() - 1;
   const Param& param = GetParam();
   if (param.status != crosapi::mojom::PrintJobStatus::kUnknown) {
-    printing_api_handler_->OnPrintJobUpdate(job_id.substr(0, index),
-                                            job_id[index] - '0', param.status);
+    auto update = crosapi::mojom::PrintJobUpdate::New();
+    update->status = param.status;
+    printing_api_handler_->OnPrintJobUpdate(
+        job_id.substr(0, index), job_id[index] - '0', std::move(update));
   }
 
   event_observer.CheckJobStatusEvent(kExtensionId, job_id,
@@ -835,9 +837,10 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidState) {
   // Explicitly complete started print job.
   ASSERT_TRUE(job_id.size() > 1);
   int index = job_id.size() - 1;
+  auto update = crosapi::mojom::PrintJobUpdate::New();
+  update->status = crosapi::mojom::PrintJobStatus::kDone;
   printing_api_handler_->OnPrintJobUpdate(
-      job_id.substr(0, index), job_id[index] - '0',
-      crosapi::mojom::PrintJobStatus::kDone);
+      job_id.substr(0, index), job_id[index] - '0', std::move(update));
 
   // Try to cancel already completed print job.
   std::optional<std::string> error =
@@ -867,9 +870,11 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob) {
   EXPECT_EQ("", event_observer.extension_id());
   EXPECT_TRUE(event_observer.event_args().is_none());
 
-  printing_api_handler_->OnPrintJobUpdate(
-      GetJobsCancelled()[0].printer_id, GetJobsCancelled()[0].job_id,
-      crosapi::mojom::PrintJobStatus::kCancelled);
+  auto update = crosapi::mojom::PrintJobUpdate::New();
+  update->status = crosapi::mojom::PrintJobStatus::kCancelled;
+  printing_api_handler_->OnPrintJobUpdate(GetJobsCancelled()[0].printer_id,
+                                          GetJobsCancelled()[0].job_id,
+                                          std::move(update));
 
   // Now the job is canceled.
   event_observer.CheckJobStatusEvent(kExtensionId, job_id,

@@ -127,14 +127,20 @@ enum WebPrintJobState {
   kAborted,
 };
 
+struct WebPrintJobUpdate {
+  WebPrintJobState state;
+  uint32 pages_printed = 0;
+};
+
 // Informs the renderer of changes to a particular print job.
 interface WebPrintJobStateObserver {
-  // Dispatches a state change notification.
-  OnWebPrintJobStateChanged(WebPrintJobState state);
+  // Dispatches an update notification.
+  OnWebPrintJobUpdate(WebPrintJobUpdate update);
 };
 
 struct WebPrintJobInfo {
   string job_name;
+  uint32 job_pages;
   pending_receiver<WebPrintJobStateObserver> observer;
 };
 

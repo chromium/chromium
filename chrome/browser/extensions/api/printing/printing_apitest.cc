@@ -251,9 +251,11 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(DoAll(WithArg<0>([&](const auto& job) {
                         job_id = job->job_id;
-                        observer_remote()->OnPrintJobUpdate(
-                            kId, *job_id,
-                            crosapi::mojom::PrintJobStatus::kStarted);
+                        auto update = crosapi::mojom::PrintJobUpdate::New();
+                        update->status =
+                            crosapi::mojom::PrintJobStatus::kStarted;
+                        observer_remote()->OnPrintJobUpdate(kId, *job_id,
+                                                            std::move(update));
                       }),
                       base::test::RunOnceCallback<1>()));
 
@@ -268,9 +270,11 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
                         // test, it's guaranteed that `job_id` will be set
                         // before we get here.
                         ASSERT_TRUE(job_id);
-                        observer_remote()->OnPrintJobUpdate(
-                            kId, *job_id,
-                            crosapi::mojom::PrintJobStatus::kCancelled);
+                        auto update = crosapi::mojom::PrintJobUpdate::New();
+                        update->status =
+                            crosapi::mojom::PrintJobStatus::kCancelled;
+                        observer_remote()->OnPrintJobUpdate(kId, *job_id,
+                                                            std::move(update));
                       }),
                       base::test::RunOnceCallback<2>(/*canceled=*/true)));
 

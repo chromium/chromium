@@ -21,6 +21,8 @@ WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
       attributes_(MakeGarbageCollected<WebPrintJobAttributes>()),
       observer_(this, execution_context) {
   attributes_->setJobName(print_job_info->job_name);
+  attributes_->setJobPages(print_job_info->job_pages);
+  attributes_->setJobPagesCompleted(0);
   attributes_->setJobState(V8WebPrintJobState::Enum::kPreliminary);
 
   observer_.Bind(std::move(print_job_info->observer),
@@ -37,9 +39,16 @@ const AtomicString& WebPrintJob::InterfaceName() const {
   return event_target_names::kWebPrintJob;
 }
 
-void WebPrintJob::OnWebPrintJobStateChanged(
-    mojom::blink::WebPrintJobState state) {
-  attributes_->setJobState(mojo::ConvertTo<V8WebPrintJobState::Enum>(state));
+void WebPrintJob::OnWebPrintJobUpdate(
+    mojom::blink::WebPrintJobUpdatePtr update) {
+  auto state = mojo::ConvertTo<V8WebPrintJobState::Enum>(update->state);
+  // Discard the update if nothing has actually changed.
+  if (state == attributes_->jobState().AsEnum() &&
+      update->pages_printed == attributes_->jobPagesCompleted()) {
+    return;
+  }
+  attributes_->setJobState(state);
+  attributes_->setJobPagesCompleted(update->pages_printed);
   DispatchEvent(*Event::Create(event_type_names::kJobstatechange));
 }
 

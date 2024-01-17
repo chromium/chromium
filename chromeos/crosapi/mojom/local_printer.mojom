@@ -261,11 +261,27 @@ enum PrintJobStatus {
   kCancelled,
 };
 
+[Stable]
+struct PrintJobUpdate {
+  PrintJobStatus status;
+  uint32 pages_printed;
+};
+
 // This interface is used to notify Lacros about print job events.
 [Stable, Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
 interface PrintJobObserver {
-  // Runs when the status of a print job changes.
-  OnPrintJobUpdate@0(string printer_id, uint32 job_id, PrintJobStatus status);
+  // Deprecated and replaced with `OnPrintJobUpdate` below.
+  OnPrintJobUpdateDeprecated@0(
+    string printer_id,
+    uint32 job_id,
+    PrintJobStatus status);
+
+  // Runs when the print jobs gets an update.
+  [MinVersion=1]
+  OnPrintJobUpdate@1(
+    string printer_id,
+    uint32 job_id,
+    PrintJobUpdate update);
 };
 
 // Used to specify which source(s) to observe print jobs from.

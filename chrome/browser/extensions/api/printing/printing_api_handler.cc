@@ -308,15 +308,22 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
           /*error=*/std::nullopt));
 }
 
-void PrintingAPIHandler::OnPrintJobUpdate(
+void PrintingAPIHandler::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     unsigned int job_id,
     crosapi::mojom::PrintJobStatus status) {
+  NOTREACHED();
+}
+
+void PrintingAPIHandler::OnPrintJobUpdate(
+    const std::string& printer_id,
+    unsigned int job_id,
+    crosapi::mojom::PrintJobUpdatePtr update) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   bool done = true;
   api::printing::JobStatus job_status;
-  switch (status) {
+  switch (update->status) {
     case crosapi::mojom::PrintJobStatus::kStarted:
       job_status = api::printing::JobStatus::kInProgress;
       done = false;

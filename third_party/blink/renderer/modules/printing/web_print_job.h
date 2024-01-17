@@ -37,7 +37,7 @@ class MODULES_EXPORT WebPrintJob
   DEFINE_ATTRIBUTE_EVENT_LISTENER(jobstatechange, kJobstatechange)
 
   // WebPrintJobStateObserver:
-  void OnWebPrintJobStateChanged(mojom::blink::WebPrintJobState state) override;
+  void OnWebPrintJobUpdate(mojom::blink::WebPrintJobUpdatePtr update) override;
 
   void Trace(Visitor* visitor) const override;
 

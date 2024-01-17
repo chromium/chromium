@@ -267,6 +267,8 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
   mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer;
   auto job_info = blink::mojom::WebPrintJobInfo::New();
   job_info->job_name = base::UTF16ToUTF8(settings->title());
+  // Total number of pages in all copies.
+  job_info->job_pages = flatten_pdf_result->page_count * settings->copies();
   job_info->observer = observer.InitWithNewPipeAndPassReceiver();
 
   // TODO(b/302505962): Figure out the correct value to pass as `source_id`.
@@ -287,8 +289,10 @@ void WebPrintingServiceChromeOS::OnPrintJobCreated(
     std::optional<PrintJobCreatedInfo> creation_info) {
   if (!creation_info) {
     // Dispatches a notification and deletes itself.
+    auto update = blink::mojom::WebPrintJobUpdate::New();
+    update->state = blink::mojom::WebPrintJobState::kAborted;
     mojo::Remote<blink::mojom::WebPrintJobStateObserver>(std::move(observer))
-        ->OnWebPrintJobStateChanged(blink::mojom::WebPrintJobState::kAborted);
+        ->OnWebPrintJobUpdate(std::move(update));
     return;
   }
 

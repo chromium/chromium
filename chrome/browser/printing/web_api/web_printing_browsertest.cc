@@ -358,10 +358,14 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, Print) {
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
       .WillOnce(DoAll(
           WithArg<0>([&](const auto& job) {
-            observer_remote()->OnPrintJobUpdate(
-                kId, job->job_id, crosapi::mojom::PrintJobStatus::kStarted);
-            observer_remote()->OnPrintJobUpdate(
-                kId, job->job_id, crosapi::mojom::PrintJobStatus::kDone);
+            auto started_update = crosapi::mojom::PrintJobUpdate::New();
+            started_update->status = crosapi::mojom::PrintJobStatus::kStarted;
+            observer_remote()->OnPrintJobUpdate(kId, job->job_id,
+                                                std::move(started_update));
+            auto done_update = crosapi::mojom::PrintJobUpdate::New();
+            done_update->status = crosapi::mojom::PrintJobStatus::kDone;
+            observer_remote()->OnPrintJobUpdate(kId, job->job_id,
+                                                std::move(done_update));
           }),
           base::test::RunOnceCallback<1>()));
 

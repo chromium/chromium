@@ -24,9 +24,13 @@ class InProgressJobsStorageChromeOS : public crosapi::mojom::PrintJobObserver {
   ~InProgressJobsStorageChromeOS() override;
 
   // crosapi::mojom::PrintJobObserver:
+  void OnPrintJobUpdateDeprecated(
+      const std::string& printer_id,
+      uint32_t job_id,
+      crosapi::mojom::PrintJobStatus status) override;
   void OnPrintJobUpdate(const std::string& printer_id,
                         uint32_t job_id,
-                        crosapi::mojom::PrintJobStatus status) override;
+                        crosapi::mojom::PrintJobUpdatePtr update) override;
 
   // Adds a job with `job_id` from `printer_id` to the storage and starts
   // dispatching notifications to it via the supplied `observer`.
