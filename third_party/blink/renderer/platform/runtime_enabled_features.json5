@@ -1153,6 +1153,7 @@
     {
       // crbug.com/1463891: CSS `text-spacing-trim` property
       name: "CSSTextSpacingTrim",
+      status: "test",
     },
     // Use the `ScoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
     {
