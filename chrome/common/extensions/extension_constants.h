@@ -188,8 +188,12 @@ extern const char kAccessibilityCommonGuestManifestFilename[];
 extern const char kChromeVoxExtensionPath[];
 // The manifest filename of the ChromeVox extension.
 extern const char kChromeVoxManifestFilename[];
+// The manifest v3 filename of the ChromeVox extension.
+extern const char kChromeVoxManifestV3Filename[];
 // The guest manifest filename of the ChromeVox extension.
 extern const char kChromeVoxGuestManifestFilename[];
+// The guest manifest v3 filename of the ChromeVox etension.
+extern const char kChromeVoxGuestManifestV3Filename[];
 // The path to the ChromeVox extension's options page.
 extern const char kChromeVoxOptionsPath[];
 // The extension id of the Enhanced network TTS engine extension.

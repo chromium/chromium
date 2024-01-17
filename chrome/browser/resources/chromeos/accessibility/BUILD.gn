@@ -19,8 +19,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 group("build") {
   deps = [
     ":accessibility_strings",
-    ":chromevox_guest_manifest",
-    ":chromevox_manifest",
+    ":chromevox_manifests",
     "braille_ime:build",
     "chromevox:build",
     "common:build",
@@ -51,13 +50,19 @@ ts_library("ts_build") {
     "definitions/command_line_private.d.ts",
     "definitions/extension_types.d.ts",
     "definitions/extensions.d.ts",
+    "definitions/goog_i18n.d.ts",
+    "definitions/i18n.d.ts",
     "definitions/runtime.d.ts",
     "definitions/settings_private_mv2.d.ts",
+    "definitions/storage_mv2.d.ts",
     "definitions/tabs.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
 
-  in_files = [ "switch_access_loader.ts" ]
+  in_files = [
+    "chromevox_loader.ts",
+    "switch_access_loader.ts",
+  ]
 
   tsconfig_base = "tsconfig.base.json"
 }
@@ -87,17 +92,13 @@ manifest("accessibility_common_guest_manifest") {
   is_guest_manifest = true
 }
 
-manifest("chromevox_manifest") {
+manifest_variants("chromevox_manifests") {
   input_file = "chromevox_manifest.json.jinja2"
-  output_file = "$accessibility_out_dir/chromevox_manifest.json"
+  output_dir = accessibility_out_dir
+  output_name = "chromevox_manifest"
   key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDltVl1k15pjRzuZfMc3B69inxwm2bZeZ2O8/zFO+NluHnBm3GJ3fzdOoFGJd+M16I8p7zxxQyHeDMfWYASyCeB8XnUEDKjqNLQfCnncsANzHsYoEbYj2nEUML2P13b9q+AAvpCBpAJ4cZp81e9n1y/vbSXHE4385cgkKueItzikQIDAQAB"
-}
-
-manifest("chromevox_guest_manifest") {
-  input_file = "chromevox_manifest.json.jinja2"
-  output_file = "$accessibility_out_dir/chromevox_manifest_guest.json"
-  key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDltVl1k15pjRzuZfMc3B69inxwm2bZeZ2O8/zFO+NluHnBm3GJ3fzdOoFGJd+M16I8p7zxxQyHeDMfWYASyCeB8XnUEDKjqNLQfCnncsANzHsYoEbYj2nEUML2P13b9q+AAvpCBpAJ4cZp81e9n1y/vbSXHE4385cgkKueItzikQIDAQAB"
-  is_guest_manifest = true
+  make_guest = true
+  make_v3 = true
 }
 
 manifest("enhanced_network_tts_manifest") {

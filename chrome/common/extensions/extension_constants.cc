@@ -94,7 +94,10 @@ const char kAccessibilityCommonGuestManifestFilename[] =
     "accessibility_common_manifest_guest.json";
 const char kChromeVoxExtensionPath[] = "chromeos/accessibility";
 const char kChromeVoxManifestFilename[] = "chromevox_manifest.json";
+const char kChromeVoxManifestV3Filename[] = "chromevox_manifest_v3.json";
 const char kChromeVoxGuestManifestFilename[] = "chromevox_manifest_guest.json";
+const char kChromeVoxGuestManifestV3Filename[] =
+    "chromevox_manifest_guest_v3.json";
 const char kChromeVoxOptionsPath[] = "/chromevox/options/options.html";
 const char kEnhancedNetworkTtsExtensionId[] =
     "jacnkoglebceckolkoapelihnglgaicd";

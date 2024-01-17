@@ -2,16 +2,24 @@
 {%if key is defined %}
   "key": "{{key}}",
 {% endif %}
+{% if is_manifest_v3 == '1' %}
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "chromevox_loader.js",
+    "type": "module"
+  },
+{% else %}
   "manifest_version": 2,
+  "background": {
+    "page": "chromevox/background/background.html"
+  },
+{% endif %}
   "name": "__MSG_CHROMEVOX_NAME__",
   "version": "{{set_version}}",
   "description": "__MSG_CHROMEVOX_DESCRIPTION__",
 {% if is_guest_manifest == '1' %}
   "incognito": "split",
 {% endif %}
-  "background": {
-    "page": "chromevox/background/background.html"
-  },
   "bluetooth": {},
   "permissions": [
     "accessibilityPrivate",
