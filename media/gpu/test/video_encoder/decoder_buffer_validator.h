@@ -13,6 +13,7 @@
 #include "media/gpu/test/bitstream_helpers.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/video/h264_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -169,6 +170,8 @@ class VP9Validator : public DecoderBufferValidator {
   // buffer has been invalidated (e.g. due to sync points).
   std::vector<std::array<absl::optional<BufferState>, kVp9NumRefFrames>>
       reference_buffers_;
+
+  absl::optional<base::TimeDelta> dropped_superframe_timestamp_;
 };
 
 class AV1Validator : public DecoderBufferValidator {

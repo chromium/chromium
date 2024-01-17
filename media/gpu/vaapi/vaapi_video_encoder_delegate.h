@@ -114,6 +114,7 @@ class VaapiVideoEncoderDelegate {
     bool IsFrameDropped() const { return !coded_buffer_; }
 
     base::TimeDelta timestamp() const;
+    // This is a frame in the top spatial layer.
     bool end_of_picture() const;
 
     // VA-API specific methods.

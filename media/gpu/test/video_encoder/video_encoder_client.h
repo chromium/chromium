@@ -265,9 +265,6 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // BitstreamBufferReady().
   size_t frame_index_ = 0;
 
-  // The current top spatial layer index.
-  uint8_t current_top_spatial_index_ = 0;
-
   // A map from an input VideoFrame timestamp to the time when it is enqueued
   // into |encoder_|.
   std::map<base::TimeDelta, base::TimeTicks> source_timestamps_;

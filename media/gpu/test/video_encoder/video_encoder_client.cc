@@ -395,27 +395,28 @@ void VideoEncoderClient::BitstreamBufferReady(
     current_stats_.total_encoded_frames_size += metadata.payload_size_bytes;
     if (metadata.dropped_frame()) {
       current_stats_.num_dropped_frames++;
-    }
-    if (metadata.vp9.has_value()) {
-      uint8_t temporal_id = metadata.vp9->temporal_idx;
-      uint8_t spatial_id = metadata.vp9->spatial_idx;
-      ASSERT_LT(spatial_id, current_stats_.num_spatial_layers);
-      ASSERT_LT(temporal_id, current_stats_.num_temporal_layers);
-      current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
-      current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
-          metadata.payload_size_bytes;
-    } else if (metadata.h264.has_value()) {
-      uint8_t temporal_id = metadata.h264->temporal_idx;
-      ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
-      current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
-      current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
-          metadata.payload_size_bytes;
-    } else if (metadata.vp8.has_value()) {
-      uint8_t temporal_id = metadata.vp8->temporal_idx;
-      ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
-      current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
-      current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
-          metadata.payload_size_bytes;
+    } else {
+      if (metadata.vp9.has_value()) {
+        uint8_t temporal_id = metadata.vp9->temporal_idx;
+        uint8_t spatial_id = metadata.vp9->spatial_idx;
+        ASSERT_LT(spatial_id, current_stats_.num_spatial_layers);
+        ASSERT_LT(temporal_id, current_stats_.num_temporal_layers);
+        current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
+            metadata.payload_size_bytes;
+      } else if (metadata.h264.has_value()) {
+        uint8_t temporal_id = metadata.h264->temporal_idx;
+        ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
+        current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
+            metadata.payload_size_bytes;
+      } else if (metadata.vp8.has_value()) {
+        uint8_t temporal_id = metadata.vp8->temporal_idx;
+        ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
+        current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
+        current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
+            metadata.payload_size_bytes;
+      }
     }
   }
 
@@ -439,16 +440,8 @@ void VideoEncoderClient::BitstreamBufferReady(
       bitstream_processor_->ProcessBitstream(bitstream_ref, frame_index_);
     }
   }
-  if (metadata.vp9.has_value()) {
-    if (!metadata.vp9->spatial_layer_resolutions.empty()) {
-      current_top_spatial_index_ =
-          metadata.vp9->spatial_layer_resolutions.size() - 1;
-    }
-    if (metadata.vp9->spatial_idx == current_top_spatial_index_) {
-      frame_index_++;
-      CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
-    }
-  } else {
+
+  if (metadata.end_of_picture) {
     frame_index_++;
     CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
   }

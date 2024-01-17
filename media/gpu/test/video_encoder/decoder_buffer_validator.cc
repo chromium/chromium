@@ -456,8 +456,34 @@ VP9Validator::~VP9Validator() = default;
 bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
   if (metadata.dropped_frame()) {
-    LOG(ERROR)
-        << "VideoEncodeAccelerator doesn't support drop frame support in VP9";
+    if (metadata.key_frame) {
+      LOG(ERROR) << "Don't drop key frame";
+      return false;
+    }
+    if (metadata.vp9.has_value()) {
+      LOG(ERROR)
+          << "BitstreamBufferMetadata has Vp9Metadata on a dropped frame";
+      return false;
+    }
+    if (metadata.end_of_picture) {
+      dropped_superframe_timestamp_.reset();
+    } else {
+      if (!dropped_superframe_timestamp_) {
+        dropped_superframe_timestamp_ = metadata.timestamp;
+      }
+      if (*dropped_superframe_timestamp_ != metadata.timestamp) {
+        LOG(ERROR) << "A timestamp mismatch on dropped frame in the same "
+                   << "spatial layers";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  if (dropped_superframe_timestamp_ &&
+      *dropped_superframe_timestamp_ == metadata.timestamp) {
+    LOG(ERROR) << "A frame on upper spatial layers are not dropped though a "
+               << "frame on bottom spatial layers is dropped";
     return false;
   }
 
