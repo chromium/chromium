@@ -666,8 +666,6 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      // TODO(crbug.com/1501194): pass in async_check_tracker to support async
-      // check on WV.
       /* async_check_tracker */ nullptr));
 
   return result;
