@@ -39,15 +39,32 @@
 
 namespace {
 
-// Get the list of distillable URLs defined by the Finch experiment parameter.
+// Get the list of distillable URLs defined by the experiment parameter.
+// When ReadAnythingCoordinator observes a tab change, page load complete, or
+// primary page change, it compares the active url against this list of urls
+// to see whether the active page is considered "distillable". This information
+// is then passed on to observers which are gated behind the experiments listed
+// below: omnibox icon and IPH. The list of URLs will be associated as a param
+// of the experiment to ensure that the variation groups that have the
+// experiment enabled also have the list of urls as a param.
 std::vector<std::string> GetDistillableURLs() {
-  return base::SplitString(base::GetFieldTrialParamValueByFeature(
-                               features::kReadAnything, "distillable_urls"),
-                           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  const base::Feature* feature = nullptr;
+  if (features::IsReadAnythingOmniboxIconEnabled()) {
+    feature = &features::kReadAnythingOmniboxIcon;
+  } else if (base::FeatureList::IsEnabled(
+                 feature_engagement::kIPHReadingModeSidePanelFeature)) {
+    feature = &feature_engagement::kIPHReadingModeSidePanelFeature;
+  }
+  if (feature) {
+    return base::SplitString(
+        base::GetFieldTrialParamValueByFeature(*feature, "distillable_urls"),
+        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
+  return std::vector<std::string>();
 }
 
 base::TimeDelta GetDelaySeconds() {
-  // TODO(francisjp): Pull this value from Finch.
+  // TODO(francisjp): Pull this value from variation.
   return base::Seconds(2);
 }
 
