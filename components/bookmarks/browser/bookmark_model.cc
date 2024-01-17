@@ -457,8 +457,10 @@ void BookmarkModel::Move(const BookmarkNode* node,
       DetermineTypeForUuidLookupForExistingNode(new_parent);
 
   if (old_type_for_uuid_lookup != new_type_for_uuid_lookup) {
-    // TODO(crbug.com/1494120): Update the UUID index.
-    NOTIMPLEMENTED();
+    uuid_index_[old_type_for_uuid_lookup].erase(node);
+    bool uuid_is_unique =
+        uuid_index_[new_type_for_uuid_lookup].insert(node).second;
+    DUMP_WILL_BE_CHECK(uuid_is_unique);
   }
 
   BookmarkNode* mutable_old_parent = AsMutable(old_parent);

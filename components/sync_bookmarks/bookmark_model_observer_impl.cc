@@ -123,12 +123,28 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
     size_t new_index) {
   const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
 
-  // TODO(crbug.com/1494120): Handle moving across mapping boundary.
-  DUMP_WILL_BE_CHECK_EQ(bookmark_model_->IsNodeSyncable(old_parent),
-                        bookmark_model_->IsNodeSyncable(new_parent));
-
   // We shouldn't see changes to the top-level nodes.
   DCHECK(!bookmark_model_->is_permanent_node(node));
+
+  // Handle moves that make a node newly syncable.
+  if (!bookmark_model_->IsNodeSyncable(old_parent) &&
+      bookmark_model_->IsNodeSyncable(new_parent)) {
+    BookmarkNodeAdded(nullptr /*unused*/, new_parent, new_index,
+                      false /*unused*/);
+    return;
+  }
+
+  // Handle moves that make a node non-syncable.
+  if (bookmark_model_->IsNodeSyncable(old_parent) &&
+      !bookmark_model_->IsNodeSyncable(new_parent)) {
+    // OnWillRemoveBookmarks() cannot be invoked here because |node| is already
+    // moved and unsyncable, whereas OnWillRemoveBookmarks() assumes the change
+    // hasn't happened yet.
+    ProcessDelete(node);
+    nudge_for_commit_closure_.Run();
+    bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
+    return;
+  }
 
   // Ignore changes to non-syncable nodes (e.g. managed nodes).
   if (!bookmark_model_->IsNodeSyncable(node)) {
