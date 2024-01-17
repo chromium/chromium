@@ -125,6 +125,8 @@ enum DisableReason {
   kSuspended,
   // Disabled because hotspot need to be restarted.
   kRestart,
+  // Disabled because the upstream network doesn't have Internet connectivity.
+  kUpstreamNoInternet,
 };
 
 // Information about Hotspot feature including current state, active client

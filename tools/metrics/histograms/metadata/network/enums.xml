@@ -500,6 +500,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kSuspended: Hotspot disabled due to device suspend."/>
   <int value="7"
       label="kRestart: Hotspot disabled due to hotspot restart process."/>
+  <int value="8"
+      label="kUpstreamNoInternet: Hotspot disabled due to upstream network
+             has no Internet connectivity."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">
