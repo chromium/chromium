@@ -734,8 +734,10 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point,
   }
 
   // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragEnter(point, std::move(data), operation,
-                            /*modifiers=*/0);
+  drop_handler->OnDragEnter(point, operation, /*modifiers=*/0);
+
+  // TODO(crbug.com/1487784): Factor DataFetched out of Enter callback.
+  drop_handler->OnDragDataAvailable(std::move(data));
 }
 
 int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {

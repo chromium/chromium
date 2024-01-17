@@ -1656,9 +1656,12 @@ int X11Window::UpdateDrag(const gfx::Point& connection_point) {
   gfx::PointF local_point_in_dip =
       platform_window_delegate_->ConvertScreenPointToLocalDIP(connection_point);
   if (!notified_enter_) {
-    drop_handler->OnDragEnter(local_point_in_dip, std::move(data),
-                              suggested_operations,
+    drop_handler->OnDragEnter(local_point_in_dip, suggested_operations,
                               GetKeyModifiers(source_client));
+
+    // TODO(crbug.com/1487784): Factor DataFetched out of Enter callback.
+    drop_handler->OnDragDataAvailable(std::move(data));
+
     notified_enter_ = true;
   }
   allowed_drag_operations_ = drop_handler->OnDragMotion(

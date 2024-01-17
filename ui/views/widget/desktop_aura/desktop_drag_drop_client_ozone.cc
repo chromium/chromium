@@ -228,19 +228,21 @@ void DesktopDragDropClientOzone::RemoveObserver(
 
 void DesktopDragDropClientOzone::OnDragEnter(
     const gfx::PointF& point,
-    std::unique_ptr<ui::OSExchangeData> data,
     int operation,
     int modifiers) {
+  // Cache received values and wait for |data_to_drop_| to be delivered through
+  // OnDragDataFetched and then propagate drag events to |drag_drop_delegate_|.
+  // TODO(nickdiego): Check if delegates does/should really require drag data.
   last_drag_point_ = point;
   last_drop_operation_ = operation;
+  last_modifiers_ = modifiers;
+}
 
-  // If |data| is empty, we defer sending any events to the
-  // |drag_drop_delegate_|.  All necessary events will be sent on dropping.
-  if (!data)
-    return;
-
+void DesktopDragDropClientOzone::OnDragDataAvailable(
+    std::unique_ptr<ui::OSExchangeData> data) {
+  DCHECK(data);
   data_to_drop_ = std::move(data);
-  UpdateTargetAndCreateDropEvent(point, modifiers);
+  UpdateTargetAndCreateDropEvent();
 }
 
 int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
@@ -248,15 +250,16 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
                                              int modifiers) {
   last_drag_point_ = point;
   last_drop_operation_ = operation;
+  last_modifiers_ = modifiers;
 
   // If |data_to_drop_| doesn't have data, return that we accept everything.
-  if (!data_to_drop_)
+  if (!data_to_drop_) {
     return ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE;
+  }
 
   // Ask the delegate what operation it would accept for the current data.
   int client_operation = ui::DragDropTypes::DRAG_NONE;
-  std::unique_ptr<ui::DropTargetEvent> event =
-      UpdateTargetAndCreateDropEvent(point, modifiers);
+  auto event = UpdateTargetAndCreateDropEvent();
   if (drag_drop_delegate_ && event) {
     current_drag_info_ = drag_drop_delegate_->OnDragUpdated(*event);
     client_operation = current_drag_info_.drag_operation;
@@ -265,14 +268,13 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
 }
 
 void DesktopDragDropClientOzone::OnDragDrop(int modifiers) {
+  last_modifiers_ = modifiers;
   // Ensure |data_to_drop_| is set, so crashes, such as
   // https://crbug.com/1151836, are avoided.
   if (data_to_drop_) {
-    // This will call the delegate's OnDragEntered if needed.
-    auto event = UpdateTargetAndCreateDropEvent(last_drag_point_, modifiers);
+    auto event = UpdateTargetAndCreateDropEvent();
     if (drag_drop_delegate_ && event) {
-      auto drop_cb = drag_drop_delegate_->GetDropCallback(*event);
-      if (drop_cb) {
+      if (auto drop_cb = drag_drop_delegate_->GetDropCallback(*event)) {
         base::ScopedClosureRunner drag_cancel(
             base::BindOnce(&DesktopDragDropClientOzone::DragCancel,
                            weak_factory_.GetWeakPtr()));
@@ -290,6 +292,9 @@ void DesktopDragDropClientOzone::OnDragDrop(int modifiers) {
 
 void DesktopDragDropClientOzone::OnDragLeave() {
   data_to_drop_.reset();
+  last_drag_point_ = {};
+  last_drop_operation_ = 0;
+  last_modifiers_ = 0;
   ResetDragDropTarget(true);
 }
 
@@ -312,13 +317,11 @@ void DesktopDragDropClientOzone::OnDragFinished(DragOperation operation) {
 }
 
 std::unique_ptr<ui::DropTargetEvent>
-DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent(
-    const gfx::PointF& root_location,
-    int modifiers) {
+DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent() {
   DCHECK(data_to_drop_);
 
-  aura::Window* window =
-      root_window_->GetEventHandlerForPoint(gfx::ToFlooredPoint(root_location));
+  aura::Window* window = root_window_->GetEventHandlerForPoint(
+      gfx::ToFlooredPoint(last_drag_point_));
 
   if (!window) {
     ResetDragDropTarget(true);
@@ -337,13 +340,13 @@ DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent(
   if (!drag_drop_delegate_)
     return nullptr;
 
-  gfx::PointF target_location(root_location);
+  gfx::PointF target_location(last_drag_point_);
   aura::Window::ConvertPointToTarget(root_window_, window, &target_location);
 
   auto event = std::make_unique<ui::DropTargetEvent>(
-      *data_to_drop_, target_location, gfx::PointF(root_location),
+      *data_to_drop_, target_location, gfx::PointF(last_drag_point_),
       last_drop_operation_);
-  event->SetFlags(modifiers);
+  event->SetFlags(last_modifiers_);
   if (delegate_has_changed)
     drag_drop_delegate_->OnDragEntered(*event);
   return event;

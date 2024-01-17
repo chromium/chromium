@@ -134,7 +134,8 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
     ui::WmDropHandler* drop_handler = ui::GetWmDropHandler(*this);
     if (!drop_handler)
       return;
-    drop_handler->OnDragEnter(point, std::move(data), operation, modifiers_);
+    drop_handler->OnDragEnter(point, operation, modifiers_);
+    drop_handler->OnDragDataAvailable(std::move(data));
   }
 
   int OnDragMotion(const gfx::PointF& point, int operation) {
