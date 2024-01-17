@@ -123,6 +123,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
@@ -846,6 +850,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        TriggersAfterLoadingNewManifestUrl) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP()
+        << "Shortcuts do not manifest update when Shortstand is enabled.";
+  }
+#endif
+
   // Install an app with no manifest, trigger an update by navigation.
   GURL no_manifest_url = GetAppURLWithoutManifest();
   const webapps::AppId app_id = InstallWebAppWithoutManifest();
@@ -1018,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       "start_url": ".",
       "scope": "/",
       "display": "standalone",
-      "icons": $1,
+      "icons": $1
       $2
     }
   )";
@@ -4478,6 +4489,13 @@ class ManifestUpdateManagerAppIdentityBrowserTest
 // update the name back to the manifest app name.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
                        CheckShortcutAppDoesntPromptForUpdates) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    GTEST_SKIP()
+        << "Shortcuts do not manifest update when Shortstand is enabled.";
+  }
+#endif
+
   constexpr char kAppName[] = "Test app";
   constexpr char kOverrideName[] = "Override name";
 
@@ -5764,8 +5782,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ManifestUpdateResult::kShortcutIgnoresManifest,
             std::move(result_awaiter).AwaitNextResult());
 
-  histogram_tester_.ExpectBucketCount(
-      kUpdateHistogramName, ManifestUpdateResult::kShortcutIgnoresManifest, 1);
+  ManifestUpdateResult expected_result =
+      ManifestUpdateResult::kShortcutIgnoresManifest;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled()) {
+    // When Shortstand is enabled, Shortcuts do not count as in scope and
+    // therefore do not manifest update.
+    expected_result = ManifestUpdateResult::kNoAppInScope;
+  }
+#endif
+
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName, expected_result, 1);
 }
 
 }  // namespace web_app
