@@ -33,7 +33,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabResumptionModuleUtilsUnitTest {
+public class TabResumptionModuleSuggestionsUnitTest {
 
     // Fake LargeIconBridge, which is explicitly faked for testing since it uses
     // a callback to pass results.

@@ -60,7 +60,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleSuggestionsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",
   ]
 
