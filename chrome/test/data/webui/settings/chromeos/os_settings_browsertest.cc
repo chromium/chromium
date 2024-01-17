@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -904,6 +905,138 @@ IN_PROC_BROWSER_TEST_F(OSSettingsOsA11yTestPdfOcrEnabled,
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageTtsVoiceSubpage) {
   RunSettingsTest("os_a11y_page/tts_voice_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsAppsPage) {
+  RunSettingsTest("os_apps_page/os_apps_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsAppsPageRevamp) {
+  RunSettingsTest("os_apps_page/os_apps_page_test.js");
+}
+
+class OSSettingsAppsTestAppManagementAppDetailsEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsAppsTestAppManagementAppDetailsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAppManagementAppDetails);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsAppsTestAppManagementAppDetailsEnabled,
+                       OsAppsPageAppManagementPageAppDetailsItem) {
+  RunSettingsTest("os_apps_page/app_management_page/app_details_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageAppDetailView) {
+  RunSettingsTest("os_apps_page/app_management_page/app_detail_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageAppItem) {
+  RunSettingsTest("os_apps_page/app_management_page/app_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageAppLanguageItem) {
+  RunSettingsTest("os_apps_page/app_management_page/app_language_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsAppsPageAppManagementPage) {
+  RunSettingsTest(
+      "os_apps_page/app_management_page/app_management_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageArcDetailView) {
+  RunSettingsTest("os_apps_page/app_management_page/arc_detail_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageBorealisDetailView) {
+  RunSettingsTest(
+      "os_apps_page/app_management_page/borealis_detail_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageChromeAppDetailView) {
+  RunSettingsTest(
+      "os_apps_page/app_management_page/chrome_app_detail_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageDomSwitch) {
+  RunSettingsTest("os_apps_page/app_management_page/dom_switch_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageMainView) {
+  RunSettingsTest("os_apps_page/app_management_page/main_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPagePinToShelfItem) {
+  RunSettingsTest("os_apps_page/app_management_page/pin_to_shelf_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPagePluginVmDetailView) {
+  RunSettingsTest(
+      "os_apps_page/app_management_page/plugin_vm_detail_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPagePwaDetailView) {
+  RunSettingsTest("os_apps_page/app_management_page/pwa_detail_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageReducers) {
+  RunSettingsTest("os_apps_page/app_management_page/reducers_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageResizeLockItem) {
+  RunSettingsTest("os_apps_page/app_management_page/resize_lock_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsAppsPageAppManagementPageSupportedLinksItem) {
+  RunSettingsTest(
+      "os_apps_page/app_management_page/supported_links_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsAppsPageAppNotificationsSubpage) {
+  RunSettingsTest(
+      "os_apps_page/app_notifications_page/app_notifications_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsAppsPageAppNotificationsSubpageRevamp) {
+  RunSettingsTest(
+      "os_apps_page/app_notifications_page/app_notifications_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTestRevampEnabled,
+    OsAppsPageAppNotificationsPageAppNotificationsManagerSubpage) {
+  RunSettingsTest(
+      "os_apps_page/app_notifications_page/"
+      "app_notifications_manager_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTest,
+    OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage) {
+  RunSettingsTest(
+      "os_apps_page/manage_isolated_web_apps_page/"
+      "manage_isolated_web_apps_subpage_test.js");
 }
 
 }  // namespace ash::settings

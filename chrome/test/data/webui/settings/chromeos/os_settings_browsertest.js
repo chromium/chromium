@@ -10,7 +10,6 @@ GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
-GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -97,100 +96,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
        'ash::features::kPasspointARCSupport',
      ]
    }
- ],
- [
-   'OsAppsPage',
-   'os_apps_page/os_apps_page_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsAppsPageRevamp',
-   'os_apps_page/os_apps_page_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsAppsPageAppManagementPageAppDetailsItem',
-   'os_apps_page/app_management_page/app_details_item_test.js',
-   {enabled: ['features::kAppManagementAppDetails']},
- ],
- [
-   'OsAppsPageAppManagementPageAppDetailView',
-   'os_apps_page/app_management_page/app_detail_view_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageAppItem',
-   'os_apps_page/app_management_page/app_item_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageAppLanguageItem',
-   'os_apps_page/app_management_page/app_language_item_test.js'
- ],
- [
-   'OsAppsPageAppManagementPage',
-   'os_apps_page/app_management_page/app_management_page_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageArcDetailView',
-   'os_apps_page/app_management_page/arc_detail_view_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageBorealisDetailView',
-   'os_apps_page/app_management_page/borealis_detail_view_test.js',
- ],
- [
-   'OsAppsPageAppManagementPageChromeAppDetailView',
-   'os_apps_page/app_management_page/chrome_app_detail_view_test.js',
- ],
- [
-   'OsAppsPageAppManagementPageDomSwitch',
-   'os_apps_page/app_management_page/dom_switch_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageMainView',
-   'os_apps_page/app_management_page/main_view_test.js'
- ],
- [
-   'OsAppsPageAppManagementPagePinToShelfItem',
-   'os_apps_page/app_management_page/pin_to_shelf_item_test.js'
- ],
- [
-   'OsAppsPageAppManagementPagePluginVmDetailView',
-   'os_apps_page/app_management_page/plugin_vm_detail_view_test.js',
- ],
- [
-   'OsAppsPageAppManagementPagePwaDetailView',
-   'os_apps_page/app_management_page/pwa_detail_view_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageReducers',
-   'os_apps_page/app_management_page/reducers_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageResizeLockItem',
-   'os_apps_page/app_management_page/resize_lock_item_test.js'
- ],
- [
-   'OsAppsPageAppManagementPageSupportedLinksItem',
-   'os_apps_page/app_management_page/supported_links_item_test.js',
- ],
- [
-   'OsAppsPageAppNotificationsSubpageWithRevamp',
-   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsAppsPageAppNotificationsSubpageWithoutRevamp',
-   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsAppsPageAppNotificationsPageAppNotificationsManagerSubpage',
-   'os_apps_page/app_notifications_page/app_notifications_manager_subpage_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']}
- ],
- [
-   'OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage',
-   'os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage_test.js'
  ],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_test.js'],
  [
