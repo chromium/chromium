@@ -435,15 +435,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
        owner_->IsMainResourceLoader() ? ".MainResource" : ".Subresource",
        ".RaceNetworkRequest.DataTransfer"});
 
-  // Read data from |body_| data pipe.
-  const void* buffer;
-  // Contains the actual byte size for read/write data. The smallest number from
-  // 1) read size, 2) write size for the RaceNetworkRequest, 3) write size for
-  // the fetch handler, will be used.
   uint32_t num_bytes_to_consume = 0;
-
-  MojoResult result = body_->BeginReadData(&buffer, &num_bytes_to_consume,
-                                           MOJO_READ_DATA_FLAG_NONE);
+  auto [result, read_buffer] = BeginReadData();
   TRACE_EVENT_WITH_FLOW2(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite",
@@ -467,22 +460,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       return;
   }
 
-  void* write_buffer = nullptr;
-  void* write_buffer_for_fetch_handler = nullptr;
-
   if (data_pipe_for_race_network_request_.watcher.IsWatching() &&
       data_pipe_for_fetch_handler_.watcher.IsWatching()) {
     // If both data pipes are watched, write data to both pipes. Cancel writing
     // process if one of them is failed.
-    result = BeginWriteData(data_pipe_for_race_network_request_, &write_buffer,
-                            histogram_prefix);
+    result =
+        BeginWriteData(data_pipe_for_race_network_request_, histogram_prefix);
     switch (result) {
       case MOJO_RESULT_OK:
-        // Perhaps writable size may be smaller than the readable size. Choose
-        // the most smallest size.
-        num_bytes_to_consume =
-            std::min(num_bytes_to_consume,
-                     data_pipe_for_race_network_request_.num_write_bytes);
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
         // The data pipe consumer is aborted.
@@ -497,12 +482,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         data_pipe_for_race_network_request_.watcher.ArmOrNotify();
         return;
     }
-    result = BeginWriteData(data_pipe_for_fetch_handler_,
-                            &write_buffer_for_fetch_handler, histogram_prefix);
+    result = BeginWriteData(data_pipe_for_fetch_handler_, histogram_prefix);
     switch (result) {
       case MOJO_RESULT_OK:
-        num_bytes_to_consume = std::min(
-            num_bytes_to_consume, data_pipe_for_fetch_handler_.num_write_bytes);
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
         TransitionState(State::kAborted);
@@ -520,22 +502,29 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         data_pipe_for_race_network_request_.watcher.ArmOrNotify();
         return;
     }
+    // The maximum byte size to consume data. Use the smallest number from
+    // 1) write size for the RaceNetworkRequest or 2) write size for the fetch
+    // handler. This cap is needed because read/write operations are processed
+    // sequentially, we should write the same size of data even if the available
+    // buffer sizes in 1) and 2) are different per buffer.
+    uint32_t max_num_bytes_to_consume =
+        std::min(data_pipe_for_race_network_request_.buffer_size(),
+                 data_pipe_for_fetch_handler_.buffer_size());
     // Copy data and call EndWriteData.
-    CompleteWriteData(data_pipe_for_race_network_request_, write_buffer, buffer,
-                      num_bytes_to_consume);
-    CompleteWriteData(data_pipe_for_fetch_handler_,
-                      write_buffer_for_fetch_handler, buffer,
-                      num_bytes_to_consume);
+    uint32_t bytes_for_race_network_request =
+        CompleteWriteData(data_pipe_for_race_network_request_, read_buffer,
+                          max_num_bytes_to_consume);
+    uint32_t bytes_for_fetch_handler = CompleteWriteData(
+        data_pipe_for_fetch_handler_, read_buffer, max_num_bytes_to_consume);
+    CHECK_EQ(bytes_for_race_network_request, bytes_for_fetch_handler);
+    num_bytes_to_consume = bytes_for_race_network_request;
   } else if (data_pipe_for_race_network_request_.watcher.IsWatching()) {
     // If the data pipe for RaceNetworkRequest is the only watcher, don't write
     // data to the data pipe for the fetch handler.
-    result = BeginWriteData(data_pipe_for_race_network_request_, &write_buffer,
-                            histogram_prefix);
+    result =
+        BeginWriteData(data_pipe_for_race_network_request_, histogram_prefix);
     switch (result) {
       case MOJO_RESULT_OK:
-        num_bytes_to_consume =
-            std::min(num_bytes_to_consume,
-                     data_pipe_for_race_network_request_.num_write_bytes);
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
         TransitionState(State::kAborted);
@@ -547,17 +536,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         data_pipe_for_race_network_request_.watcher.ArmOrNotify();
         return;
     }
-    CompleteWriteData(data_pipe_for_race_network_request_, write_buffer, buffer,
-                      num_bytes_to_consume);
+    num_bytes_to_consume = CompleteWriteData(
+        data_pipe_for_race_network_request_, read_buffer, std::nullopt);
   } else if (data_pipe_for_fetch_handler_.watcher.IsWatching()) {
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
-    result = BeginWriteData(data_pipe_for_fetch_handler_,
-                            &write_buffer_for_fetch_handler, histogram_prefix);
+    result = BeginWriteData(data_pipe_for_fetch_handler_, histogram_prefix);
     switch (result) {
       case MOJO_RESULT_OK:
-        num_bytes_to_consume = std::min(
-            num_bytes_to_consume, data_pipe_for_fetch_handler_.num_write_bytes);
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
         TransitionState(State::kAborted);
@@ -569,19 +555,36 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         data_pipe_for_fetch_handler_.watcher.ArmOrNotify();
         return;
     }
-    CompleteWriteData(data_pipe_for_fetch_handler_,
-                      write_buffer_for_fetch_handler, buffer,
-                      num_bytes_to_consume);
+    num_bytes_to_consume = CompleteWriteData(data_pipe_for_fetch_handler_,
+                                             read_buffer, std::nullopt);
   }
   CompleteReadData(num_bytes_to_consume);
 }
 
+std::pair<MojoResult, base::span<const char>>
+ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginReadData() {
+  const void* buffer;
+  uint32_t buffer_num_bytes = 0;
+  base::span<const char> read_buffer;
+  MojoResult result = body_->BeginReadData(&buffer, &buffer_num_bytes,
+                                           MOJO_READ_DATA_FLAG_NONE);
+  if (result == MOJO_RESULT_OK) {
+    read_buffer =
+        base::make_span(static_cast<const char*>(buffer), buffer_num_bytes);
+  }
+
+  return std::make_pair(result, read_buffer);
+}
+
 MojoResult ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginWriteData(
     DataPipeInfo& data_pipe_info,
-    void** buffer,
     const std::string& histogram_prefix) {
+  void* buffer;
+  uint32_t num_write_bytes;
   MojoResult result = data_pipe_info.producer->BeginWriteData(
-      buffer, &data_pipe_info.num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      &buffer, &num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  data_pipe_info.buffer =
+      base::make_span(static_cast<char*>(buffer), num_write_bytes);
   base::UmaHistogramEnumeration(
       base::StrCat({histogram_prefix, ".WriteForRaceNetworkRequset"}),
       ConvertMojoResultForUMA(result));
@@ -589,11 +592,20 @@ MojoResult ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginWriteData(
   return result;
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
+size_t ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
     DataPipeInfo& data_pipe_info,
-    void* write_buffer,
-    const void* read_buffer,
-    uint32_t num_bytes_to_consume) {
+    base::span<const char> read_buffer,
+    std::optional<uint32_t> max_num_bytes_to_consume) {
+  // Choose smaller one from either read or write buffer size. If
+  // |max_num_bytes_to_consume| is provided, use it as a maximum size to copy
+  // buffer and commit mojo data pipe.
+  uint32_t num_bytes_to_consume =
+      std::min(data_pipe_info.buffer_size(), read_buffer.size());
+  if (max_num_bytes_to_consume) {
+    num_bytes_to_consume =
+        std::min(num_bytes_to_consume, max_num_bytes_to_consume.value());
+  }
+
   SCOPED_CRASH_KEY_NUMBER("SWRace", "physical_memory_mb",
                           base::SysInfo::AmountOfPhysicalMemoryMB());
   SCOPED_CRASH_KEY_NUMBER("SWRace", "available_physical_memory_mb",
@@ -604,11 +616,17 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
                           data_pipe_buffer_size_);
   SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_to_consume",
                           num_bytes_to_consume);
+
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
-  memcpy(write_buffer, read_buffer, num_bytes_to_consume);
+  CHECK_GE(data_pipe_info.buffer_size(), num_bytes_to_consume);
+  CHECK_GE(read_buffer.size(), num_bytes_to_consume);
+  memcpy(data_pipe_info.buffer.data(), read_buffer.data(),
+         num_bytes_to_consume);
   MojoResult result =
       data_pipe_info.producer->EndWriteData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
+
+  return num_bytes_to_consume;
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteReadData(
@@ -785,8 +803,7 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::ConvertMojoResultForUMA(
 ServiceWorkerRaceNetworkRequestURLLoaderClient::DataPipeInfo::DataPipeInfo()
     : watcher(FROM_HERE,
               mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-              base::SequencedTaskRunner::GetCurrentDefault()),
-      num_write_bytes(0) {}
+              base::SequencedTaskRunner::GetCurrentDefault()) {}
 ServiceWorkerRaceNetworkRequestURLLoaderClient::DataPipeInfo::~DataPipeInfo() =
     default;
 

@@ -5,6 +5,8 @@
 #ifndef CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_URL_LOADER_CLIENT_H_
 #define CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_URL_LOADER_CLIENT_H_
 
+#include <optional>
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
@@ -163,7 +165,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::SimpleWatcher watcher;
-    uint32_t num_write_bytes;
+    base::span<char> buffer;
+    size_t buffer_size() const { return buffer.size(); }
     DataPipeInfo();
     ~DataPipeInfo();
   };
@@ -205,13 +208,12 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // the fetch handler
   void ReadAndWrite(MojoResult);
   void WatchDataUpdate();
+  std::pair<MojoResult, base::span<const char>> BeginReadData();
   MojoResult BeginWriteData(DataPipeInfo& data_pipe_info,
-                            void** buffer,
                             const std::string& histogram_prefix);
-  void CompleteWriteData(DataPipeInfo& data_pipe_info,
-                         void* write_buffer,
-                         const void* read_buffer,
-                         uint32_t num_bytes_to_consume);
+  size_t CompleteWriteData(DataPipeInfo& data_pipe_info,
+                           base::span<const char> read_buffer,
+                           std::optional<uint32_t> max_num_bytes_to_consume);
   void CompleteReadData(uint32_t num_bytes_to_consume);
 
   void Abort();
