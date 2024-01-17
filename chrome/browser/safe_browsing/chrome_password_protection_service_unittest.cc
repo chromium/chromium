@@ -279,28 +279,14 @@ class ChromePasswordProtectionServiceTest
 
     password_store_ = base::WrapRefCounted(
         static_cast<password_manager::MockPasswordStoreInterface*>(
-            ProfilePasswordStoreFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating(
-                        &password_manager::BuildPasswordStoreInterface<
-                            content::BrowserContext,
-                            password_manager::MockPasswordStoreInterface>))
+            ProfilePasswordStoreFactory::GetForProfile(
+                profile(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
-
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kEnablePasswordsAccountStorage)) {
-      account_password_store_ = base::WrapRefCounted(
-          static_cast<password_manager::MockPasswordStoreInterface*>(
-              AccountPasswordStoreFactory::GetInstance()
-                  ->SetTestingFactoryAndUse(
-                      profile(),
-                      base::BindRepeating(
-                          &password_manager::BuildPasswordStoreInterface<
-                              content::BrowserContext,
-                              password_manager::MockPasswordStoreInterface>))
-                  .get()));
-    }
+    account_password_store_ = base::WrapRefCounted(
+        static_cast<password_manager::MockPasswordStoreInterface*>(
+            AccountPasswordStoreFactory::GetForProfile(
+                profile(), ServiceAccessType::EXPLICIT_ACCESS)
+                .get()));
 
     profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
     profile()->GetPrefs()->SetInteger(
@@ -389,8 +375,24 @@ class ChromePasswordProtectionServiceTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactories();
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.emplace_back(
+        ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            content::BrowserContext,
+                            password_manager::MockPasswordStoreInterface>));
+    // It's fine to override unconditionally, GetForProfile() will still return
+    // null if account storage is disabled.
+    // TODO(crbug.com/1516660): Remove the comment above when the account store
+    // is always non-null.
+    factories.emplace_back(
+        AccountPasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            content::BrowserContext,
+                            password_manager::MockPasswordStoreInterface>));
+    return factories;
   }
 
   syncer::FakeUserEventService* GetUserEventService() {
