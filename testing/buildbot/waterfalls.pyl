@@ -1535,6 +1535,17 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-amd64-generic-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
+      'lacros-amd64-generic-rel-gtest': {
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_gtest',
+        },
+        'os_type': 'chromeos'
+      },
       'lacros-amd64-generic-rel-non-skylab': {
         'additional_compile_targets': [
           'chrome',
@@ -1551,6 +1562,12 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
+        },
+        'os_type': 'chromeos'
+      },
+      'lacros-amd64-generic-rel-tast': {
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_tast',
         },
         'os_type': 'chromeos'
       },
