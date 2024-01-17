@@ -836,6 +836,9 @@ public final class ProductionSupportedFlagList {
                 "MojoChannelAssociatedSendUsesRunOrPostTask",
                 "Enables optimization for sending messages on channel-associated interfaces"),
         Flag.baseFeature(
+                "MojoBindingsInlineSLS",
+                "Enable small value optimization for current Mojo dispatch context storage"),
+        Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_DIRECTION_SUPPORT,
                 "Enables support for CSS direction ltr and rtl on vertical slider elements"
                         + " progress, meter and range."),
