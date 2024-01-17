@@ -652,24 +652,12 @@ std::pair<GURL, std::optional<ErrorUrlType>> GetErrorUrlAndType(
   }
 
   url::Origin error_origin = url::Origin::Create(error_url);
-  if (!network::IsOriginPotentiallyTrustworthy(error_origin)) {
-    return std::make_pair(GURL(), std::nullopt);
-  }
-
-  std::string error_url_etld_plus_one =
-      webid::FormatUrlWithDomain(error_url, /*for_display=*/false);
-  if (error_url_etld_plus_one.empty()) {
-    return std::make_pair(GURL(), std::nullopt);
-  }
-
   url::Origin idp_origin = url::Origin::Create(idp_url);
   if (error_origin == idp_origin) {
     return std::make_pair(error_url, ErrorUrlType::kSameOrigin);
   }
 
-  std::string idp_etld_plus_one =
-      webid::FormatUrlWithDomain(idp_url, /*for_display=*/false);
-  if (error_url_etld_plus_one != idp_etld_plus_one) {
+  if (!webid::IsSameSite(error_origin, idp_origin)) {
     return std::make_pair(GURL(), ErrorUrlType::kCrossSite);
   }
 
