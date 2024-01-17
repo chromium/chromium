@@ -318,6 +318,9 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
 
   animation_host->SetMutatorHostClient(nullptr);
   animation_host2->SetMutatorHostClient(nullptr);
+
+  host_client1.SetLayerTreeHost(nullptr);
+  host_client2.SetLayerTreeHost(nullptr);
 }
 
 // Verify that PictureLayer::DropRecordingSourceContentIfInvalid does not
@@ -394,6 +397,9 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   // This layer should also drop its recording source because it was resized
   // and not recorded.
   EXPECT_EQ(gfx::Size(), layer->GetRecordingSourceForTesting()->GetSize());
+
+  host_client1.SetLayerTreeHost(nullptr);
+  host_client2.SetLayerTreeHost(nullptr);
 }
 
 TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {

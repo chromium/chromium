@@ -104,6 +104,7 @@ class PaintArtifactCompositorTest : public testing::Test,
     // Make sure we remove all child layers to satisfy destructor
     // child layer element id DCHECK.
     WillBeRemovedFromFrame();
+    layer_tree_host_client_.SetLayerTreeHost(nullptr);
   }
 
   cc::PropertyTrees& GetPropertyTrees() {

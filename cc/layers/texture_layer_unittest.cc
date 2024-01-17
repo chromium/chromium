@@ -296,6 +296,7 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
       loop.Run();
     }
 
+    client.SetLayerTreeHost(nullptr);
     // Destroy the LayerTreeHost and the compositor-thread LayerImpl trees
     // while the resource is still in the layer. The resource should be released
     // back to the TextureLayer's client, but is post-tasked back so...
