@@ -62,6 +62,13 @@ export class ComposeAppAnimator extends Animator {
     ].flat();
   }
 
+  transitionInDialog() {
+    return [
+      this.slideIn('.dialog:not([hidden])', -8, {duration: 200}),
+      this.fadeIn('.dialog:not([hidden])', {duration: 200}),
+    ];
+  }
+
   transitionInLoading(): Animation[] {
     return this.fadeIn('#loading', {delay: 100, duration: 100});
   }

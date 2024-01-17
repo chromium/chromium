@@ -288,10 +288,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       // the FRE causes the dialog to show the MSBB state if MSBB is not
       // enabled, and the main app state otherwise.
       this.showFirstRunDialog_ = !initialState.freComplete;
-      if (this.showFirstRunDialog_) {
-        this.animator_.transitionToFirstRun();
-      }
-
       this.showMSBBDialog_ =
           initialState.freComplete && !initialState.msbbState;
       this.shouldShowMSBBDialog_ = !initialState.msbbState;
@@ -325,6 +321,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
           this.editedInput_ = appState.editedInput!;
         }
       }
+
+      if (this.showFirstRunDialog_) {
+        this.animator_.transitionToFirstRun();
+      } else {
+        this.animator_.transitionInDialog();
+      }
+
       // Wait for one timeout to flush Polymer tasks, then wait for the next
       // render.
       setTimeout(() => {
