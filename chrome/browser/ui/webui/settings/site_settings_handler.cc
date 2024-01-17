@@ -65,6 +65,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
+#include "components/browsing_data/core/features.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -99,6 +100,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -1076,8 +1078,11 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
   if (origin.opaque())
     return;
   AllowJavascript();
-  DCHECK(cookies_tree_model_);
-  RemoveMatchingNodes(cookies_tree_model_.get(), origin, std::nullopt);
+  if (!base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    DCHECK(cookies_tree_model_);
+    RemoveMatchingNodes(cookies_tree_model_.get(), origin, std::nullopt);
+  }
 
   // TODO(crbug.com/1368048) - Permission info loading before storage info
   // can result in an interleaving of actions that means this pointer is
@@ -1106,12 +1111,15 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     replacements.SetSchemeStr(url::kHttpsScheme);
     https_url = https_url.ReplaceComponents(replacements);
     auto https_origin = url::Origin::Create(https_url);
-
-    // Also remove matching cookies node with HTTPS scheme if it exists to
-    // avoid confusion when cookies already exist when refreshing clear site
-    // data page. Notes: this also means HTTPS sites cookie will be cleared when
-    // user clear HTTP scheme Cookie.
-    RemoveMatchingNodes(cookies_tree_model_.get(), https_origin, std::nullopt);
+    if (!base::FeatureList::IsEnabled(
+            browsing_data::features::kDeprecateCookiesTreeModel)) {
+      // Also remove matching cookies node with HTTPS scheme if it exists to
+      // avoid confusion when cookies already exist when refreshing clear site
+      // data page. Notes: this also means HTTPS sites cookie will be cleared
+      // when user clear HTTP scheme Cookie.
+      RemoveMatchingNodes(cookies_tree_model_.get(), https_origin,
+                          std::nullopt);
+    }
     affected_origins.emplace_back(https_origin);
   }
 
@@ -1123,23 +1131,23 @@ void SiteSettingsHandler::HandleClearPartitionedUsage(
   CHECK_EQ(2U, args.size());
   auto origin = url::Origin::Create(GURL(args[0].GetString()));
   auto grouping_key = GroupingKey::Deserialize(args[1].GetString());
-
-  RemoveMatchingNodes(cookies_tree_model_.get(), origin, grouping_key);
-  std::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
+  if (!base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    RemoveMatchingNodes(cookies_tree_model_.get(), origin, grouping_key);
+  }
 
   // The group key should always be an eTLD+1 because there aren't any
   // partitioned entries for IWAs (which have a non-eTLD+1 grouping key).
+  absl::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
   DCHECK(group_etld_plus1);
 
   net::SchemefulSite https_top_level_site(
       ConvertEtldToOrigin(*group_etld_plus1, true));
-
   browsing_data_model_->RemovePartitionedBrowsingData(
       origin.host(), https_top_level_site, base::DoNothing());
 
   net::SchemefulSite http_top_level_site =
       net::SchemefulSite(ConvertEtldToOrigin(*group_etld_plus1, false));
-
   browsing_data_model_->RemovePartitionedBrowsingData(
       origin.host(), http_top_level_site, base::DoNothing());
 }
@@ -2289,6 +2297,34 @@ void SiteSettingsHandler::GetHostCookies(
     AllSitesMap* all_sites_map,
     std::map<std::pair<std::string, std::optional<std::string>>, int>*
         host_cookie_map) {
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    for (const auto& [owner, key, details] : *browsing_data_model_) {
+      const net::CanonicalCookie* cookie =
+          absl::get_if<net::CanonicalCookie>(&key.get());
+      // Skip data keys that don't have cookies.
+      if (!cookie) {
+        continue;
+      }
+      absl::optional<std::string> partition_etld_plus1 = absl::nullopt;
+      absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
+      if (cookie->IsPartitioned()) {
+        partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().host();
+        partition_grouping_key =
+            GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
+      }
+
+      const auto owner_host = BrowsingDataModel::GetHost(owner.get());
+      const auto origin = ConvertEtldToOrigin(
+          owner_host,
+          browsing_data::IsHttpsCookieSourceScheme(cookie->SourceScheme()));
+      InsertOriginIntoGroup(all_sites_map, origin,
+                            /*is_origin_with_cookies=*/true,
+                            partition_grouping_key);
+      (*host_cookie_map)[{owner_host, partition_etld_plus1}]++;
+    }
+    return;
+  }
   CHECK(cookies_tree_model_.get());
   // Get sites that don't have data but have cookies.
   // TODO(crbug.com/1271155): Query the Browsing Data Model instead when cookie
