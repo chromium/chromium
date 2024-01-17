@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Size;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -76,22 +77,23 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        (activity) -> {
-                            mActivity = activity;
-                            mRootView = new FrameLayout(mActivity);
-                            mActivity.setContentView(mRootView);
-
-                            mHubContainerView = new HubContainerView(mActivity);
-                            mHubContainerView.setVisibility(View.INVISIBLE);
-                            mRootView.addView(mHubContainerView);
-
-                            mHubContainerView.layout(0, 0, WIDTH, HEIGHT);
-                        });
+        mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
         ShadowLooper.runUiThreadTasks();
         mAnimationDataSupplier = new SyncOneshotSupplierImpl<ShrinkExpandAnimationData>();
+    }
+
+    private void onActivityCreated(Activity activity) {
+        mActivity = activity;
+        mRootView = new FrameLayout(mActivity);
+        mActivity.setContentView(mRootView);
+
+        mHubContainerView = new HubContainerView(mActivity);
+        mHubContainerView.setVisibility(View.INVISIBLE);
+        View hubLayout = LayoutInflater.from(activity).inflate(R.layout.hub_layout, null);
+        mHubContainerView.addView(hubLayout);
+        mRootView.addView(mHubContainerView);
+
+        mHubContainerView.layout(0, 0, WIDTH, HEIGHT);
     }
 
     @Test
@@ -118,7 +120,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
         ShrinkExpandImageView imageView = getImageView(animatorProvider);
-        setUpShrinkExpandListener(imageView, initialRect, finalRect, /* hasBitmap= */ true);
+        setUpShrinkExpandListener(
+                /* isShrink= */ true, imageView, initialRect, finalRect, /* hasBitmap= */ true);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
@@ -154,7 +157,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
         ShrinkExpandImageView imageView = getImageView(animatorProvider);
-        setUpShrinkExpandListener(imageView, initialRect, finalRect, /* hasBitmap= */ true);
+        setUpShrinkExpandListener(
+                /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ true);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
@@ -193,7 +197,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
         ShrinkExpandImageView imageView = getImageView(animatorProvider);
-        setUpShrinkExpandListener(imageView, initialRect, finalRect, /* hasBitmap= */ false);
+        setUpShrinkExpandListener(
+                /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ false);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
@@ -339,7 +344,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         /* useFallbackAnimation= */ true);
 
         ShrinkExpandImageView imageView = getImageView(animatorProvider);
-        setUpShrinkExpandListener(imageView, initialRect, finalRect, /* hasBitmap= */ false);
+        setUpShrinkExpandListener(
+                /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ false);
         runner.addListener(mListener);
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
@@ -410,10 +416,12 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     private void setUpShrinkExpandListener(
+            boolean isShrink,
             @NonNull ShrinkExpandImageView imageView,
             @NonNull Rect initialRect,
             @NonNull Rect finalRect,
             boolean hasBitmap) {
+        View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
         mListener =
                 spy(
                         new HubLayoutAnimationListener() {
@@ -424,8 +432,9 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                                         View.VISIBLE,
                                         mHubContainerView.getVisibility());
                                 assertEquals(
-                                        "HubContainerView should have one child",
-                                        1,
+                                        "HubContainerView should have two children the Hub layout"
+                                                + " and the ShrinkExpandImageView",
+                                        2,
                                         mHubContainerView.getChildCount());
                                 assertEquals(
                                         "HubContainerView should not have custom alpha",
@@ -446,21 +455,39 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                                             "ShrinkExpandImageView should have no bitmap",
                                             imageView.getBitmap());
                                 }
-                                assertEquals(imageView, mHubContainerView.getChildAt(0));
+                                assertEquals(imageView, mHubContainerView.getChildAt(1));
                                 assertImageViewRect(imageView, initialRect);
+                                float expectedAlpha = isShrink ? 0.0f : 1.0f;
+                                assertEquals(
+                                        "Unexpected initial toolbar alpha",
+                                        expectedAlpha,
+                                        toolbarView.getAlpha(),
+                                        EPSILON);
                             }
 
                             @Override
                             public void onEnd(boolean wasForcedToFinish) {
                                 assertImageViewRect(imageView, finalRect);
+                                float expectedAlpha = isShrink ? 1.0f : 0.0f;
+                                assertEquals(
+                                        "Unexpected final toolbar alpha",
+                                        expectedAlpha,
+                                        toolbarView.getAlpha(),
+                                        EPSILON);
                             }
 
                             @Override
                             public void afterEnd() {
                                 assertEquals(
-                                        "HubContainerView's child should have been removed",
-                                        0,
+                                        "HubContainerView's ShrinkExpandImageView should have been"
+                                                + " removed",
+                                        1,
                                         mHubContainerView.getChildCount());
+                                assertEquals(
+                                        "Toolbar alpha not reset",
+                                        1.0f,
+                                        mHubContainerView.findViewById(R.id.hub_toolbar).getAlpha(),
+                                        EPSILON);
                             }
                         });
     }
@@ -481,8 +508,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                                         mHubContainerView.getAlpha(),
                                         EPSILON);
                                 assertEquals(
-                                        "HubContainerView has unexpected child",
-                                        0,
+                                        "HubContainerView has unexpected extra child",
+                                        1,
                                         mHubContainerView.getChildCount());
                             }
 
@@ -529,8 +556,8 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         assertNull("ShrinkExpandImageView should now be null", getImageView(animatorProvider));
         assertEquals(
-                "HubContainerView's child should have been removed",
-                0,
+                "HubContainerView's ShrinkExpandImageView child should have been removed",
+                1,
                 mHubContainerView.getChildCount());
     }
 

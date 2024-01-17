@@ -103,7 +103,7 @@ public class ShrinkExpandAnimator {
         // offscreen at the top correctly "crops" the top of the image throughout the animation.
         // This is only necessary when expanding the rect.
         if (mThumbnailSize != null
-                && mInitialRect.top == 0
+                && mInitialRect.top == mFinalRect.top
                 && mInitialRect.height() < mThumbnailSize.getHeight()) {
             // Y translation offset shifts in line with the scaling of the rectangle. It should
             // progress from initialYOffset -> 0 as the scaling progresses.

@@ -2103,7 +2103,7 @@ class TabListMediator {
      * @param tab the {@link Tab} to find the group index of.
      * @return the index for the tab group within {@link mModel}
      */
-    private int getIndexForTabWithRelatedTabs(Tab tab) {
+    int getIndexForTabWithRelatedTabs(Tab tab) {
         List<Integer> relatedTabIds = getRelatedTabsIds(tab.getId());
         if (!relatedTabIds.isEmpty()) {
             for (int i = 0; i < mModel.size(); i++) {

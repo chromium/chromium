@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
 
@@ -103,6 +104,11 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public void showAllTabs() {
         resetWithTabList(mTabModelFilterSupplier.get(), false);
+    }
+
+    @Override
+    public int getCurrentTabId() {
+        return TabModelUtils.getCurrentTabId(mTabModelFilterSupplier.get().getTabModel());
     }
 
     @Override

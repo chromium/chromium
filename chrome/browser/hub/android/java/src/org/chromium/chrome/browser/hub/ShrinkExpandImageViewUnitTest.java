@@ -167,18 +167,6 @@ public class ShrinkExpandImageViewUnitTest {
     /** These tests are mirrored from {@link RunOnNextLayoutDelegateUnitTest}. */
     @Test
     @SmallTest
-    public void testRunsImmediatelyWhenDetached() {
-        assertFalse(mShrinkExpandImageView.isAttachedToWindow());
-
-        mShrinkExpandImageView.runOnNextLayout(mRunnable1);
-        verify(mRunnable1, times(1)).run();
-
-        mShrinkExpandImageView.runOnNextLayout(mRunnable2);
-        verify(mRunnable2, times(1)).run();
-    }
-
-    @Test
-    @SmallTest
     public void testRunsImmediatelyIfNotWaitingForLayout() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -234,6 +222,29 @@ public class ShrinkExpandImageViewUnitTest {
 
         // Even if a layout never happens because the mShrinkExpandImageView hasn't changed, the
         // runnable should still run.
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mRunnable1, times(1)).run();
+        verify(mRunnable2, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testDelayedIfLayoutHasZeroDimension() {
+        mRootView.addView(mShrinkExpandImageView);
+        ShadowLooper.runUiThreadTasks();
+        mRootView.layout(0, 0, 0, 100);
+        assertTrue(mShrinkExpandImageView.isAttachedToWindow());
+
+        mShrinkExpandImageView.requestLayout();
+        assertTrue(mShrinkExpandImageView.isLayoutRequested());
+
+        mShrinkExpandImageView.runOnNextLayout(mRunnable1);
+        mShrinkExpandImageView.runOnNextLayout(mRunnable2);
+        verify(mRunnable1, never()).run();
+        verify(mRunnable2, never()).run();
+
+        mShrinkExpandImageView.layout(0, 0, 100, 100);
         ShadowLooper.runUiThreadTasks();
 
         verify(mRunnable1, times(1)).run();

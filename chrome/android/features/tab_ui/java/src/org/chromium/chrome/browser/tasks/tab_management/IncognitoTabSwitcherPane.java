@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.tab_ui.R;
 
 /** A {@link Pane} representing the incognito tab switcher. */
@@ -181,6 +182,11 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public void showAllTabs() {
         resetWithTabList(mIncognitoTabModelFilterSupplier.get(), false);
+    }
+
+    @Override
+    public int getCurrentTabId() {
+        return TabModelUtils.getCurrentTabId(mIncognitoTabModelFilterSupplier.get().getTabModel());
     }
 
     @Override

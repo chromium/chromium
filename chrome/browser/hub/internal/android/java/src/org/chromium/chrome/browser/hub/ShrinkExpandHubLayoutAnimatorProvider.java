@@ -105,7 +105,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         mShrinkExpandImageView = new ShrinkExpandImageView(hubContainerView.getContext());
         mShrinkExpandImageView.setVisibility(View.INVISIBLE);
         mShrinkExpandImageView.setBackgroundColor(backgroundColor);
-        mHubContainerView.addView(mShrinkExpandImageView, 0);
+        mHubContainerView.addView(mShrinkExpandImageView);
 
         mBitmapCallback =
                 needsBitmap
@@ -143,6 +143,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void onAnimationDataAvailable(ShrinkExpandAnimationData animationData) {
+        if (mShrinkExpandImageView == null) return;
+
         // Preserve the bitmap because it might have been supplied before the animation data.
         mShrinkExpandImageView.resetKeepingBitmap(animationData.getInitialRect());
 
@@ -159,6 +161,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     }
 
     private void maybeSupplyAnimation() {
+        if (mShrinkExpandImageView == null) return;
+
         boolean bitmapSatisfied =
                 mBitmapCallback == null || mShrinkExpandImageView.getBitmap() != null;
         if (!bitmapSatisfied || !mLayoutSatisfied) return;
@@ -197,6 +201,14 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     private void supplyAnimator() {
         assert mAnimationDataSupplier.hasValue();
 
+        View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
+        boolean isShrink = mAnimationType == HubLayoutAnimationType.SHRINK_TAB;
+        float initialAlpha = isShrink ? 0.0f : 1.0f;
+        float finalAlpha = isShrink ? 1.0f : 0.0f;
+        ObjectAnimator fadeAnimator =
+                ObjectAnimator.ofFloat(toolbarView, View.ALPHA, initialAlpha, finalAlpha);
+        fadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+
         ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
         mShrinkExpandAnimator =
                 new ShrinkExpandAnimator(
@@ -214,7 +226,6 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         animationData.getInitialRect(),
                         animationData.getFinalRect());
         shrinkExpandAnimator.setInterpolator(getInterpolator(mAnimationType));
-        shrinkExpandAnimator.setDuration(mDurationMs);
 
         // TODO(crbug/1492207): Add the ability to change corner radii of the ShrinkExpandImageView
         // via ShrinkExpandAnimator as part of the animation. For radiii use data supplied through
@@ -223,14 +234,15 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         // * 0 -> TabThumbnailView radii for shrink.
         // * TabThumbnailView radii -> 0 for expand.
 
-        // TODO(crbug/1492207): Fade in or out the toolbar along with this animation.
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(shrinkExpandAnimator);
+        animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator);
+        animatorSet.setDuration(mDurationMs);
 
         HubLayoutAnimationListener listener =
                 new HubLayoutAnimationListener() {
                     @Override
-                    public void onStart() {
+                    public void beforeStart() {
+                        toolbarView.setAlpha(initialAlpha);
                         mHubContainerView.setVisibility(View.VISIBLE);
                         mShrinkExpandImageView.setVisibility(View.VISIBLE);
                     }
@@ -253,6 +265,10 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                     @Override
                     public void afterEnd() {
                         resetState();
+                        // Reset the toolbar to the default alpha of 1. For future animations this
+                        // will be updated again. At this point the Hub is either gone or visible
+                        // so the correct alpha is 1 regardless of the animation direction.
+                        toolbarView.setAlpha(1.0f);
                     }
                 };
 

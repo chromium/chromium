@@ -202,7 +202,8 @@ class TabListRecyclerView extends RecyclerView
 
         // If the view is detached or won't conduct a new layout then trigger the runnable
         // immediately rather than waiting for it to be attached.
-        if (!isAttachedToWindow() || !isLayoutRequested()) {
+        // if (!isAttachedToWindow() || !isLayoutRequested()) {
+        if (!isLayoutRequested()) {
             Runnable runNow = mOnNextLayoutRunnable;
             mOnNextLayoutRunnable = null;
             runNow.run();
@@ -579,6 +580,24 @@ class TabListRecyclerView extends RecyclerView
         if (mFadeOutAnimator != null) {
             mFadeOutAnimator.end();
         }
+    }
+
+    /**
+     * @param tabIndex The index in the RecyclerView of the tab.
+     * @param tabId The tab ID of the tab.
+     * @return The {@link Rect} of the thumbnail of the tab in global coordinates.
+     */
+    @NonNull
+    Rect getRectOfTabThumbnail(int tabIndex, int tabId) {
+        SimpleRecyclerViewAdapter.ViewHolder holder =
+                (SimpleRecyclerViewAdapter.ViewHolder) findViewHolderForAdapterPosition(tabIndex);
+        Rect rect = new Rect();
+        if (holder == null || tabIndex == TabModel.INVALID_TAB_INDEX) return rect;
+        assert holder.model.get(TabProperties.TAB_ID) == tabId;
+        ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
+        View v = root.fastFindViewById(R.id.tab_thumbnail);
+        if (v != null) v.getGlobalVisibleRect(rect);
+        return rect;
     }
 
     /**

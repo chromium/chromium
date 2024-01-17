@@ -32,6 +32,8 @@ import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -157,37 +159,7 @@ public class HubLayoutUnitTest {
         when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
         when(mHubManager.getHubController()).thenReturn(mHubController);
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        (activity) -> {
-                            mActivity = activity;
-                            mFrameLayout = new FrameLayout(mActivity);
-                            mHubContainerView = new HubContainerView(mActivity);
-                            mActivity.setContentView(mFrameLayout);
-
-                            when(mHubController.getContainerView()).thenReturn(mHubContainerView);
-
-                            LazyOneshotSupplier<HubManager> hubManagerSupplier =
-                                    LazyOneshotSupplier.fromValue(mHubManager);
-                            LazyOneshotSupplier<ViewGroup> rootViewSupplier =
-                                    LazyOneshotSupplier.fromValue(mFrameLayout);
-                            HubLayoutDependencyHolder dependencyHolder =
-                                    new HubLayoutDependencyHolder(
-                                            hubManagerSupplier, rootViewSupplier, mScrimController);
-
-                            mHubLayout =
-                                    spy(
-                                            new HubLayout(
-                                                    mActivity,
-                                                    mUpdateHost,
-                                                    mRenderHost,
-                                                    mLayoutStateProvider,
-                                                    dependencyHolder));
-                            mHubLayout.setTabModelSelector(mTabModelSelector);
-                            mHubLayout.setTabContentManager(mTabContentManager);
-                            mHubLayout.onFinishNativeInitialization();
-                        });
+        mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
 
         doAnswer(
                         invocation -> {
@@ -210,6 +182,37 @@ public class HubLayoutUnitTest {
 
         mPaneSupplier = new ObservableSupplierImpl<Pane>();
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mPaneSupplier);
+    }
+
+    private void onActivityCreated(Activity activity) {
+        mActivity = activity;
+        mFrameLayout = new FrameLayout(mActivity);
+        mHubContainerView = new HubContainerView(mActivity);
+        View hubLayout = LayoutInflater.from(activity).inflate(R.layout.hub_layout, null);
+        mHubContainerView.addView(hubLayout);
+        mActivity.setContentView(mFrameLayout);
+
+        when(mHubController.getContainerView()).thenReturn(mHubContainerView);
+
+        LazyOneshotSupplier<HubManager> hubManagerSupplier =
+                LazyOneshotSupplier.fromValue(mHubManager);
+        LazyOneshotSupplier<ViewGroup> rootViewSupplier =
+                LazyOneshotSupplier.fromValue(mFrameLayout);
+        HubLayoutDependencyHolder dependencyHolder =
+                new HubLayoutDependencyHolder(
+                        hubManagerSupplier, rootViewSupplier, mScrimController);
+
+        mHubLayout =
+                spy(
+                        new HubLayout(
+                                mActivity,
+                                mUpdateHost,
+                                mRenderHost,
+                                mLayoutStateProvider,
+                                dependencyHolder));
+        mHubLayout.setTabModelSelector(mTabModelSelector);
+        mHubLayout.setTabContentManager(mTabContentManager);
+        mHubLayout.onFinishNativeInitialization();
     }
 
     @After
@@ -608,6 +611,11 @@ public class HubLayoutUnitTest {
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
         assertTrue(mHubLayout.isRunningAnimations());
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+        // Force any layout delayed animations to run.
+        mHubContainerView.layout(0, 0, 100, 100);
+        for (int i = 0; i < mHubContainerView.getChildCount(); i++) {
+            mHubContainerView.getChildAt(i).layout(0, 0, 100, 100);
+        }
 
         ShadowLooper.runUiThreadTasks();
 

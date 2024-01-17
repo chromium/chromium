@@ -55,15 +55,19 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneUnitTest {
+    private static final int TAB_ID = 723849;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SharedPreferences mSharedPreferences;
@@ -87,6 +91,7 @@ public class TabSwitcherPaneUnitTest {
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangeSupplier =
             new ObservableSupplierImpl<>();
     private TabSwitcherPane mTabSwitcherPane;
+    private MockTabModel mTabModel;
     private int mTimesCreated;
 
     @Before
@@ -99,6 +104,9 @@ public class TabSwitcherPaneUnitTest {
 
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mProfileProviderSupplier.set(mProfileProvider);
+
+        mTabModel = new MockTabModel(mProfile, null);
+        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
 
         doAnswer(
                         invocation -> {
@@ -322,18 +330,71 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     @SmallTest
-    public void testCreatesAnimatorProviders() {
-        // TODO(crbug/1505772): This test will need to be reworked to confirm shrink expand
-        // animators are correctly created. This is a temporary test for coverage.
+    public void testCreateFadeOutAnimatorNoTab() {
         assertEquals(
                 HubLayoutAnimationType.FADE_OUT,
                 mTabSwitcherPane
                         .createHideHubLayoutAnimatorProvider(mHubContainerView)
                         .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateFadeInAnimatorNoTab() {
         assertEquals(
                 HubLayoutAnimationType.FADE_IN,
                 mTabSwitcherPane
                         .createShowHubLayoutAnimatorProvider(mHubContainerView)
+                        .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateFadeOutAnimatorListMode() {
+        createSelectedTab();
+        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
+        assertEquals(
+                HubLayoutAnimationType.FADE_OUT,
+                mTabSwitcherPane
+                        .createHideHubLayoutAnimatorProvider(mHubContainerView)
+                        .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateFadeInAnimatorListMode() {
+        createSelectedTab();
+        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
+        assertEquals(
+                HubLayoutAnimationType.FADE_IN,
+                mTabSwitcherPane
+                        .createShowHubLayoutAnimatorProvider(mHubContainerView)
+                        .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateExpandTabAnimator() {
+        createSelectedTab();
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        assertEquals(
+                HubLayoutAnimationType.EXPAND_TAB,
+                mTabSwitcherPane
+                        .createHideHubLayoutAnimatorProvider(mHubContainerView)
+                        .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateShrinkTabAnimator() {
+        createSelectedTab();
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        assertEquals(
+                HubLayoutAnimationType.EXPAND_TAB,
+                mTabSwitcherPane
+                        .createHideHubLayoutAnimatorProvider(mHubContainerView)
                         .getPlannedAnimationType());
     }
 
@@ -494,5 +555,10 @@ public class TabSwitcherPaneUnitTest {
 
         mOnTabClickedCallbackCaptor.getValue().onResult(tabId);
         verify(mPaneHubController).selectTabAndHideHub(tabId);
+    }
+
+    private void createSelectedTab() {
+        mTabModel.addTab(TAB_ID);
+        mTabModel.setIndex(0, TabSelectionType.FROM_USER, false);
     }
 }

@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PANE_KEYS;
 
 import android.app.Activity;
+import android.graphics.Rect;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -324,6 +326,47 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     /** Set the tab switcher's RecyclerViewPosition. */
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition position) {
         mTabListCoordinator.setRecyclerViewPosition(position);
+    }
+
+    /** Returns the {@link Rect} of the recyclerview in global coordinates. */
+    public @NonNull Rect getRecyclerViewRect() {
+        return mTabListCoordinator.getRecyclerViewLocation();
+    }
+
+    /**
+     * @param tabId The tab ID to get a rect for.
+     * @return a {@link Rect} for the tab's thumbnail (may be an empty rect if the tab is not
+     *     found).
+     */
+    public @NonNull Rect getTabThumbnailRect(int tabId) {
+        TabGridDialogCoordinator dialogCoordinator = mTabGridDialogCoordinator;
+        if (dialogCoordinator != null && dialogCoordinator.isVisible()) {
+            return dialogCoordinator.getTabThumbnailRect(tabId);
+        }
+        return mTabListCoordinator.getTabThumbnailRect(tabId);
+    }
+
+    /** Returns the {@link Rect} of the recyclerview in global coordinates. */
+    public @NonNull Size getThumbnailSize() {
+        TabGridDialogCoordinator dialogCoordinator = mTabGridDialogCoordinator;
+        if (dialogCoordinator != null && dialogCoordinator.isVisible()) {
+            return dialogCoordinator.getThumbnailSize();
+        }
+        return mTabListCoordinator.getThumbnailSize();
+    }
+
+    /**
+     * @param tabId The tab ID whose view to wait for.
+     * @param r A runnable to be executed on the next layout pass or immediately if one is not
+     *     scheduled.
+     */
+    public void waitForLayoutWithTab(int tabId, Runnable r) {
+        TabGridDialogCoordinator dialogCoordinator = mTabGridDialogCoordinator;
+        if (dialogCoordinator != null && dialogCoordinator.isVisible()) {
+            dialogCoordinator.waitForLayoutWithTab(tabId, r);
+            return;
+        }
+        mTabListCoordinator.waitForLayoutWithTab(tabId, r);
     }
 
     @Override
