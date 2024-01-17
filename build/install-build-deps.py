@@ -374,6 +374,8 @@ def lib_list():
       "libxrender1",
       "libxtst6",
       "x11-utils",
+      "xserver-xorg-core",  # TODO(crbug.com/1417069): Experimental.
+      "xserver-xorg-video-dummy",  # TODO(crbug.com/1417069): Experimental.
       "xvfb",
       "zlib1g",
   ]
