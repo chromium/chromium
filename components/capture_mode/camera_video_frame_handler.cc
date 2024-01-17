@@ -689,7 +689,16 @@ void CameraVideoFrameHandler::OnFatalErrorOrDisconnection() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   video_frame_handler_receiver_.reset();
   camera_video_source_remote_.reset();
+
+  // There is a chance where resetting `camera_video_stream_subsciption_remote_`
+  // causes the deletion of `this`. That is the reason why we need to use a weak
+  // pointer, as to avoid unexpected behaviour.
+  // For more info check `Close()` function.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   camera_video_stream_subsciption_remote_.reset();
+  if (!weak_ptr) {
+    return;
+  }
 
   if (delegate_) {
     delegate_->OnFatalErrorOrDisconnection();
