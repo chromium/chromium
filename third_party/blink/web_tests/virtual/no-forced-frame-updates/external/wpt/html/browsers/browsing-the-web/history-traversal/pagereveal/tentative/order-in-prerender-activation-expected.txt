@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] pagereveal event fires and in correct order on prerender activation
-  assert_equals: expected "pageshow,prerenderingchange,pagereveal,raf" but got "prerenderingchange,pagereveal,raf"
-Harness: the test ran to completion.
-
