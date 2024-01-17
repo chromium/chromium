@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * To have the IDE support for types when writing inspector-protocol tests:
+ *
+ * - `npm i devtools-protocol -g`
+ * - `cd $HOME && npm link devtools-protocol`
+ *
+ * Note that `devtools-protocol` package won't include your local changes
+ * to the protocol and might be slightly out-of-date. Update it from time to time.
+ */
 var TestRunner = class {
   constructor(testBaseURL, targetBaseURL, log, completeTest, fetch, params) {
     this._dumpInspectorProtocolMessages = false;
@@ -42,7 +51,7 @@ var TestRunner = class {
     ];
   }
 
-  static extendStabilizeNames(extended){
+  static extendStabilizeNames(extended) {
     return [
       ...TestRunner.stabilizeNames,
       ...extended
@@ -475,6 +484,9 @@ TestRunner.Session = class {
       handler(message);
   }
 
+  /**
+   * @returns {import("devtools-protocol/types/protocol-proxy-api.d.ts").ProtocolProxyApi.ProtocolApi}
+   */
   _setupProtocol() {
     return new Proxy({}, {
       get: (target, agentName, receiver) => new Proxy({}, {
@@ -715,3 +727,5 @@ window.addEventListener('unhandledrejection', e => {
   DevToolsAPI._log(`Promise rejection: ${e.reason}\n${e.reason ? e.reason.stack : ''}`);
   DevToolsAPI._completeTest();
 }, false);
+
+exports.TestRunner = TestRunner;
