@@ -398,8 +398,8 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
 }
 
 bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
-  // Legacy rgb needs percentage consistency. Non-percentages need to be mapped
-  // from the range [0, 255] to the [0, 1] that we store internally.
+  // Legacy rgb needs percentage consistency. Percentages need to be mapped
+  // from the range [0, 1] to the [0, 255] that the color space uses.
   // Percentages and bare numbers CAN be mixed in relative colors.
   if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
     bool uses_percentage = false;
@@ -413,19 +413,20 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
           return false;
         }
         uses_percentage = true;
+        channels_[i].value() *= 255.0;
       } else if (channel_types_[i] == ChannelType::kNumber) {
         if (uses_percentage && is_legacy_syntax_) {
           return false;
         }
         uses_bare_numbers = true;
-        channels_[i].value() /= 255.0;
       }
 
       if (!isfinite(channels_[i].value())) {
-        channels_[i].value() = channels_[i].value() > 0 ? 1 : 0;
+        channels_[i].value() = channels_[i].value() > 0 ? 255.0 : 0;
       } else if (!is_relative_color_) {
         // Clamp to [0, 1] range, but allow out-of-gamut relative colors.
-        channels_[i].value() = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
+        channels_[i].value() =
+            ClampTo<double>(channels_[i].value(), 0.0, 255.0);
       }
     }
     // TODO(crbug.com/1399566): There are many code paths that still compress

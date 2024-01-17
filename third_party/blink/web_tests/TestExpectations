@@ -2673,7 +2673,6 @@ crbug.com/626703 external/wpt/css/compositing/root-element-background-image-tran
 crbug.com/626703 [ Win11 ] external/wpt/fetch/orb/tentative/known-mime-type.sub.any.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-shadow-parts/animation-part.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-color/parsing/color-valid-relative-color.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-color/relative-currentcolor-a98rgb-01.html [ Crash Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-color/relative-currentcolor-displayp3-01.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-color/relative-currentcolor-hsl-01.html [ Crash Failure Timeout ]
