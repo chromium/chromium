@@ -32,9 +32,8 @@ class PersonalDataManagerCleaner {
   PersonalDataManagerCleaner& operator=(const PersonalDataManagerCleaner&) =
       delete;
 
-  // Applies address and credit card fixes and cleanups if the sync is enabled.
-  // Also, logs address, credit card and offer startup metrics.
-  void CleanupDataAndNotifyPersonalDataObservers();
+  // Applies address and credit card fixes and cleanups if sync is disabled.
+  void CleanupData();
 
   // Applies address/credit card fixes and cleanups depending on the
   // |model_type|.

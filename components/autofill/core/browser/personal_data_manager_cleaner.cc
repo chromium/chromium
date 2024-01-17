@@ -34,7 +34,7 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
 
 PersonalDataManagerCleaner::~PersonalDataManagerCleaner() = default;
 
-void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
+void PersonalDataManagerCleaner::CleanupData() {
   // The profile de-duplication is run once every major chrome version. If the
   // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
   // |AlternativeStateNameMap| needs to be populated first. Otherwise,
@@ -43,8 +43,7 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
            ->is_alternative_state_name_map_populated() &&
       is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&PersonalDataManagerCleaner::
-                           CleanupDataAndNotifyPersonalDataObservers,
+        base::BindOnce(&PersonalDataManagerCleaner::CleanupData,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -61,11 +60,6 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
           syncer::UserSelectableType::kPayments)) {
     ApplyCardFixesAndCleanups();
   }
-
-  // Log address, credit card, offer, IBAN, and usage data startup metrics.
-  personal_data_manager_->LogStoredDataMetrics();
-
-  personal_data_manager_->NotifyPersonalDataObserver();
 }
 
 void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(

@@ -632,10 +632,10 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   // if this is the initial load.
   if (!is_data_loaded_) {
     is_data_loaded_ = true;
-    personal_data_manager_cleaner_->CleanupDataAndNotifyPersonalDataObservers();
-  } else {
-    NotifyPersonalDataObserver();
+    LogStoredDataMetrics();
+    personal_data_manager_cleaner_->CleanupData();
   }
+  NotifyPersonalDataObserver();
 }
 
 void PersonalDataManager::OnAutofillChangedBySync(
