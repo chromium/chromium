@@ -470,6 +470,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onFooterClick_(e: Event) {
+    if ((e.target as HTMLElement).tagName !== 'A') {
+      // Do nothing if a link is not clicked.
+      return;
+    }
     e.preventDefault();
     // The "File a bug" and "survey" links are embedded into the string.
     // Embedded links do not work in WebUI so handle each click in the parent
