@@ -1091,7 +1091,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     test_api(*browser_autofill_manager_)
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
             browser_autofill_manager_.get(),
-            /*call_parent_methods=*/false));
+            /*call_parent_methods=*/true));
     test_api(*browser_autofill_manager_)
         .set_credit_card_access_manager(
             std::make_unique<NiceMock<MockCreditCardAccessManager>>(
@@ -2002,7 +2002,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
 struct ManualFallbackTestParams {
   const FormType form_type;
   const AutofillSuggestionTriggerSource manual_fallback_option;
-  const FillingProduct expected_filling_product;
+  const FillingProduct expected_main_filling_product;
   const std::string test_name;
 };
 
@@ -2039,11 +2039,8 @@ TEST_P(ManualFallbackTest, ReturnsExpectedSuggestionTypes) {
   GetAutofillSuggestions(form, form.fields.back(),
                          params.manual_fallback_option);
 
-  EXPECT_TRUE(base::ranges::all_of(
-      external_delegate()->suggestions(), [&](const Suggestion& suggestion) {
-        return GetFillingProductFromPopupItemId(suggestion.popup_item_id) ==
-               params.expected_filling_product;
-      }));
+  EXPECT_EQ(external_delegate()->GetMainFillingProduct(),
+            params.expected_main_filling_product);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2055,7 +2052,7 @@ INSTANTIATE_TEST_SUITE_P(
          {.form_type = FormType::kUnknownFormType,
           .manual_fallback_option =
               AutofillSuggestionTriggerSource::kManualFallbackAddress,
-          .expected_filling_product = FillingProduct::kAddress,
+          .expected_main_filling_product = FillingProduct::kAddress,
           .test_name = "_UnclassifiedField_AddressFallback"},
          // Tests that address suggestions are rendered when address manual
          // fallback is
@@ -2063,7 +2060,7 @@ INSTANTIATE_TEST_SUITE_P(
          {.form_type = FormType::kCreditCardForm,
           .manual_fallback_option =
               AutofillSuggestionTriggerSource::kManualFallbackAddress,
-          .expected_filling_product = FillingProduct::kAddress,
+          .expected_main_filling_product = FillingProduct::kAddress,
 
           .test_name = "_CreditCardField_AddressFallback"},
          // Tests that payments suggestions are rendered when payments manual
@@ -2071,7 +2068,7 @@ INSTANTIATE_TEST_SUITE_P(
          {.form_type = FormType::kUnknownFormType,
           .manual_fallback_option =
               AutofillSuggestionTriggerSource::kManualFallbackPayments,
-          .expected_filling_product = FillingProduct::kCreditCard,
+          .expected_main_filling_product = FillingProduct::kCreditCard,
           .test_name = "_UnclassifiedField_CreditCard"},
          // Tests that payments suggestions are rendered when payments manual
          // fallback is
@@ -2079,7 +2076,7 @@ INSTANTIATE_TEST_SUITE_P(
          {.form_type = FormType::kAddressForm,
           .manual_fallback_option =
               AutofillSuggestionTriggerSource::kManualFallbackPayments,
-          .expected_filling_product = FillingProduct::kCreditCard,
+          .expected_main_filling_product = FillingProduct::kCreditCard,
           .test_name = "_AddressField_CreditCard"}})),
     [](const ::testing::TestParamInfo<ManualFallbackTest::ParamType>& info) {
       return info.param.test_name;
