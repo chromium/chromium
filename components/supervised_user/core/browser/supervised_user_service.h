@@ -241,7 +241,8 @@ class SupervisedUserService : public KeyedService,
   // prefs::kDefaultSupervisedUserFilteringBehavior and
   // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
   // reports. Initialized in the SetActive().
-  WebFilterType current_web_filter_type_ = WebFilterType::kMaxValue;
+  SupervisedUserURLFilter::WebFilterType current_web_filter_type_ =
+      SupervisedUserURLFilter::WebFilterType::kMaxValue;
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };
