@@ -221,8 +221,7 @@ struct SQLTableBuilders {
 };
 
 base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(pickle.data()),
-                         pickle.size());
+  return base::make_span(pickle);
 }
 
 base::Pickle PickleFromSpan(base::span<const uint8_t> data) {

@@ -561,8 +561,7 @@ mojo_base::BigBuffer SystemClipboard::Snapshot::Png(
     mojom::blink::ClipboardBuffer buffer) const {
   DCHECK(HasPng(buffer));
   // Make an owning copy of the png to return to user.
-  base::span<const uint8_t> span =
-      base::make_span(png_.value().data(), png_.value().size());
+  base::span<const uint8_t> span = base::make_span(png_.value());
   return mojo_base::BigBuffer(span);
 }
 
@@ -571,7 +570,7 @@ void SystemClipboard::Snapshot::SetPng(mojom::blink::ClipboardBuffer buffer,
                                        const mojo_base::BigBuffer& png) {
   BindToBuffer(buffer);
   // Make an owning copy of the png to save locally.
-  base::span<const uint8_t> span = base::make_span(png.data(), png.size());
+  base::span<const uint8_t> span = base::make_span(png);
   png_ = mojo_base::BigBuffer(span);
 }
 

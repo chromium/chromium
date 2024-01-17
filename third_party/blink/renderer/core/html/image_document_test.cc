@@ -157,7 +157,7 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
       is_animated ? AnimatedWebpImage() : JpegImage();
   WebNavigationParams::FillStaticResponse(
       params.get(), is_animated ? "image/webp" : "image/jpeg", "UTF-8",
-      base::make_span(reinterpret_cast<const char*>(data.data()), data.size()));
+      base::as_chars(base::span(data)));
   dummy_page_holder_->GetFrame().Loader().CommitNavigation(std::move(params),
                                                            nullptr);
 }

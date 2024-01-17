@@ -342,9 +342,7 @@ void WebRtcLogUploader::LoggingStoppedDoStore(
     base::FilePath meta_path =
         log_paths.directory.AppendASCII(log_id).AddExtension(
             FILE_PATH_LITERAL(".meta"));
-    base::WriteFile(meta_path,
-                    base::make_span(static_cast<const uint8_t*>(pickle.data()),
-                                    pickle.size()));
+    base::WriteFile(meta_path, pickle);
   }
 
   main_task_runner_->PostTask(

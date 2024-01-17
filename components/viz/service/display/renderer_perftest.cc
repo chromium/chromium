@@ -139,12 +139,6 @@ SharedQuadState* CreateTestSharedQuadState(
   return shared_state;
 }
 
-template <typename T>
-base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(vec.data()),
-                         vec.size() * sizeof(T));
-}
-
 void DeleteSharedImage(
     scoped_refptr<RasterContextProvider> context_provider,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image,
@@ -177,7 +171,8 @@ TransferableResource CreateTestTexture(
   auto client_shared_image = sii->CreateSharedImage(
       SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel", MakePixelSpan(pixels));
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      base::as_byte_span(pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(

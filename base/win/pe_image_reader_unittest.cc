@@ -105,12 +105,11 @@ TEST_P(PeImageReaderTest, InitializeFailTruncatedFile) {
   PeImageReader short_reader;
 
   // Initialize should succeed when all headers are present.
-  EXPECT_TRUE(
-      short_reader.Initialize(make_span(data_file_.data(), header_size)));
+  EXPECT_TRUE(short_reader.Initialize(data_file_.bytes().first(header_size)));
 
   // But fail if anything is missing.
   for (size_t i = 0; i < header_size; ++i) {
-    EXPECT_FALSE(short_reader.Initialize(make_span(data_file_.data(), i)));
+    EXPECT_FALSE(short_reader.Initialize(data_file_.bytes().first(i)));
   }
 }
 

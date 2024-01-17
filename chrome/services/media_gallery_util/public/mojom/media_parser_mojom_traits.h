@@ -25,8 +25,7 @@ struct StructTraits<chrome::mojom::AttachedImageDataView,
       const ::metadata::AttachedImage& image) {
     // TODO(dcheng): perhaps metadata::AttachedImage should consider passing the
     // image data around in a std::vector<uint8_t>.
-    return base::make_span(reinterpret_cast<const uint8_t*>(image.data.data()),
-                           image.data.size());
+    return base::as_byte_span(image.data);
   }
 
   static bool Read(chrome::mojom::AttachedImageDataView view,

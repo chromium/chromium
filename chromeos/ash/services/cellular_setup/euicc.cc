@@ -214,8 +214,7 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
       base::StrCat({kEidQrCodePrefix, properties_->eid});
   qr_code_generator::QRCodeGenerator qr_generator;
   std::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data =
-      qr_generator.Generate(base::as_bytes(
-          base::make_span(qr_code_string.data(), qr_code_string.size())));
+      qr_generator.Generate(base::as_byte_span(qr_code_string));
   if (!qr_data || qr_data->data.data() == nullptr ||
       qr_data->data.size() == 0) {
     std::move(callback).Run(nullptr);

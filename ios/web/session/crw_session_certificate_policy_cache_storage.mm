@@ -102,9 +102,7 @@ size_t GetCertPolicyBytesEncoded() {
 - (instancetype)initWithProto:(const web::proto::CertificateStorage&)storage {
   const std::string& certString = storage.certificate();
   scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBytes(
-          base::make_span(reinterpret_cast<const uint8_t*>(certString.data()),
-                          certString.size()));
+      net::X509Certificate::CreateFromBytes(base::as_byte_span(certString));
 
   // Return nil if the cert cannot be decoded or the host is empty.
   if (!cert || storage.host().empty()) {

@@ -328,7 +328,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
   base::span<const uint8_t> raw_data() const override {
     DCHECK(raw_data_.size());
-    return base::as_bytes(base::make_span(raw_data_.data(), raw_data_.size()));
+    return raw_data_;
   }
 
   uint32_t id() const override { return id_; }

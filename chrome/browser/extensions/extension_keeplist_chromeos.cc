@@ -278,19 +278,14 @@ base::span<const base::StringPiece> GetExtensionsRunInOSOnlyLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
     return base::span<const base::StringPiece>();
   }
-
-  return base::make_span(ExtensionsRunInOSOnlyFromBrowserInitParams().data(),
-                         ExtensionsRunInOSOnlyFromBrowserInitParams().size());
+  return ExtensionsRunInOSOnlyFromBrowserInitParams();
 }
 
 base::span<const base::StringPiece> GetExtensionAppsRunInOSOnlyLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
     return base::span<const base::StringPiece>();
   }
-
-  return base::make_span(
-      ExtensionAppsRunInOSOnlyFromBrowserInitParams().data(),
-      ExtensionAppsRunInOSOnlyFromBrowserInitParams().size());
+  return ExtensionAppsRunInOSOnlyFromBrowserInitParams();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

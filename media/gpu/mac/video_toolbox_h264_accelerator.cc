@@ -84,8 +84,7 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
     // TODO(crbug.com/1331597): Record that this PPS has been provided and avoid
     // sending it again. (Copy implementation from H265Accelerator.)
     if (!pic->idr && sps_data == active_sps_data_) {
-      slice_nalu_data_.push_back(
-          base::make_span(pps_data.data(), pps_data.size()));
+      slice_nalu_data_.push_back(base::make_span(pps_data));
       return Status::kOk;
     }
 

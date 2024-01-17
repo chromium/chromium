@@ -326,8 +326,7 @@ int EvaluateSeedMain(FILE* in_stream,
     return EXIT_FAILURE;
   }
 
-  if (!out.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(out_str.data(), out_str.size())))) {
+  if (!out.WriteAtCurrentPosAndCheck(base::as_byte_span(out_str))) {
     LOG(ERROR) << "Failed to write to output";
     return EXIT_FAILURE;
   }

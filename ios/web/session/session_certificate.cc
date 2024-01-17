@@ -73,10 +73,8 @@ SessionCertificate::SessionCertificate(
 
 SessionCertificate::SessionCertificate(const proto::CertificateStorage& storage)
     : host_(storage.host()), status_(storage.status()) {
-  const std::string& cert_string = storage.certificate();
   certificate_ = net::X509Certificate::CreateFromBytes(
-      base::make_span(reinterpret_cast<const uint8_t*>(cert_string.data()),
-                      cert_string.size()));
+      base::as_byte_span(storage.certificate()));
 }
 
 SessionCertificate::SessionCertificate(SessionCertificate&&) = default;

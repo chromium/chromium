@@ -526,12 +526,11 @@ TEST(ImageTransferCacheEntryTestHDR, Gainmap) {
         gainmap_info, false);
 
     std::vector<uint8_t> storage(client_entry.SerializedSize());
-    client_entry.Serialize(base::make_span(storage.data(), storage.size()));
+    client_entry.Serialize(storage);
 
     ServiceImageTransferCacheEntry service_entry;
-    service_entry.Deserialize(gr_context,
-                              /*graphite_recorder=*/nullptr,
-                              base::make_span(storage.data(), storage.size()));
+    service_entry.Deserialize(gr_context, /*graphite_recorder=*/nullptr,
+                              storage);
     ASSERT_TRUE(service_entry.image());
     ASSERT_TRUE(service_entry.NeedsToneMapApplied());
     auto image = service_entry.GetImageWithToneMapApplied(2.f, false);

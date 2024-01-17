@@ -101,10 +101,7 @@ base::ScopedFD PassNetworkContextParentDirs(
                    "network service.";
     return base::ScopedFD();
   }
-  if (!base::WriteFileDescriptor(
-          write_fd.get(),
-          base::make_span(reinterpret_cast<const uint8_t*>(pickle.data()),
-                          pickle.size()))) {
+  if (!base::WriteFileDescriptor(write_fd.get(), pickle)) {
     PLOG(ERROR) << "Failed to write to the pipe which is necessary to properly "
                    "sandbox the network service.";
     return base::ScopedFD();

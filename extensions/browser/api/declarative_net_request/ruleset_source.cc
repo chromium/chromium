@@ -105,8 +105,7 @@ ParseInfo RulesetSource::IndexRules(
   }
 
   flatbuffers::DetachedBuffer buffer = indexer.FinishAndReleaseBuffer();
-  int ruleset_checksum =
-      GetChecksum(base::make_span(buffer.data(), buffer.size()));
+  int ruleset_checksum = GetChecksum(buffer);
   return ParseInfo(rules_count, regex_rules_count, std::move(rule_warnings),
                    std::move(buffer), ruleset_checksum);
 }

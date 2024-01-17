@@ -786,8 +786,7 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
       SetupFrameParams(sequence_header, pic.frame_header, ref_frames);
 
   std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors =
-      FillTileGroupParams(base::make_span(stream.data(), stream.size()),
-                          pic.frame_header.tile_info.tile_columns,
+      FillTileGroupParams(stream, pic.frame_header.tile_info.tile_columns,
                           tile_buffers);
 
   if (tile_group_entry_vectors.empty()) {

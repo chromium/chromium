@@ -84,8 +84,7 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
     auto& compute_result = helper_->GetComputeResult();
     HashMap<String, mojo_base::BigBuffer> mojo_outputs;
     for (const auto& [name, output_data] : compute_result.output) {
-      mojo_outputs.insert(
-          name, base::make_span(output_data.data(), output_data.size()));
+      mojo_outputs.insert(name, base::span(output_data));
     }
     std::move(callback).Run(
         blink_mojom::ComputeResult::NewNamedOutputs(std::move(mojo_outputs)));

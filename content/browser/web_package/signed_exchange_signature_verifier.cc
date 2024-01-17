@@ -297,10 +297,8 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
     return Result::kErrUnsupportedCertType;
 
   const std::string& sig = envelope.signature().sig;
-  if (!VerifySignature(
-          base::make_span(reinterpret_cast<const uint8_t*>(sig.data()),
-                          sig.size()),
-          message, certificate, *algorithm, devtools_proxy)) {
+  if (!VerifySignature(base::as_byte_span(sig), message, certificate,
+                       *algorithm, devtools_proxy)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to verify signature \"sig\".");
     return Result::kErrSignatureVerificationFailed;

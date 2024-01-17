@@ -1215,7 +1215,7 @@ String WebSocketChannelImpl::GetTextMessage(
       flatten.Append(chunk.data(),
                      base::checked_cast<wtf_size_t>(chunk.size()));
     }
-    span = base::make_span(flatten.data(), flatten.size());
+    span = base::span(flatten);
   } else if (chunks.size() == 1) {
     span = chunks[0];
   }

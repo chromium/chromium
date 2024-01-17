@@ -86,8 +86,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
   static const base::span<const uint8_t> data(
       const blink::PlatformNotificationData& data) {
     // TODO(https://crbug.com/798466): Align data types to avoid this cast.
-    return base::make_span(reinterpret_cast<const uint8_t*>(data.data.data()),
-                           data.data.size());
+    return base::as_byte_span(data.data);
   }
 
   static const std::vector<blink::mojom::NotificationActionPtr>& actions(
