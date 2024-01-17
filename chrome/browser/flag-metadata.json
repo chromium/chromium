@@ -4054,7 +4054,7 @@
     "name": "fast-pair",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 116
   },
@@ -4062,7 +4062,7 @@
     "name": "fast-pair-debug-metadata",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 125
   },
@@ -4070,7 +4070,7 @@
     "name": "fast-pair-devices-bluetooth-settings",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 125
   },
@@ -4078,7 +4078,7 @@
     "name": "fast-pair-handshake-long-term-refactor",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 125
   },
@@ -4086,7 +4086,7 @@
     "name": "fast-pair-hid",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 125
   },
@@ -4094,7 +4094,7 @@
     "name": "fast-pair-low-power",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 116
   },
@@ -4110,7 +4110,7 @@
     "name": "fast-pair-saved-devices",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 116
   },
@@ -4118,7 +4118,7 @@
     "name": "fast-pair-software-scanning",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jackshira@chromium.org"
+      "jackshira@google.com"
     ],
     "expiry_milestone": 116
   },
