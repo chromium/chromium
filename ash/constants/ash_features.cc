@@ -1941,6 +1941,12 @@ BASE_FEATURE(kOneDriveUploadImmediateReauth,
              "OneDriveUploadImmediateReauth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the new UI for pinned notifications will be enabled.
+// go/ongoing-ui
+BASE_FEATURE(kOngoingProcesses,
+             "OngoingProcesses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3909,7 +3915,10 @@ bool IsSysUiDownloadsIntegrationV2Enabled() {
 }
 
 bool IsNotificationCenterControllerEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationCenterController);
+  return base::FeatureList::IsEnabled(kNotificationCenterController) ||
+         // Ongoing processes must launch together with the new
+         // `NotificationCenterController`.
+         base::FeatureList::IsEnabled(kOngoingProcesses);
 }
 
 bool IsNotificationExpansionAnimationEnabled() {
@@ -3930,6 +3939,10 @@ bool IsNotificationsInContextMenuEnabled() {
 
 bool IsOakEnabled() {
   return base::FeatureList::IsEnabled(kOak);
+}
+
+bool AreOngoingProcessesEnabled() {
+  return base::FeatureList::IsEnabled(kOngoingProcesses);
 }
 
 bool IsOobeChromeVoxHintEnabled() {
