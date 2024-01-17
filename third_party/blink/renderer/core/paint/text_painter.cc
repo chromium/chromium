@@ -289,11 +289,11 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     }
     PaintSvgDecorationsExceptLineThrough(fragment_paint_info, decoration_offset,
                                          decoration_info, lines_to_paint,
-                                         paint_info, text_style);
+                                         text_style);
   } else {
     TextPainterBase::PaintUnderOrOverLineDecorations(
         fragment_paint_info, decoration_offset, decoration_info, lines_to_paint,
-        paint_info, text_style, nullptr);
+        text_style, nullptr);
   }
 }
 
@@ -313,10 +313,10 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
       paint_info.context.Scale(
           1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
     }
-    PaintSvgDecorationsOnlyLineThrough(decoration_info, paint_info, text_style);
+    PaintSvgDecorationsOnlyLineThrough(decoration_info, text_style);
   } else {
     TextPainterBase::PaintDecorationsOnlyLineThrough(decoration_info,
-                                                     paint_info, text_style);
+                                                     text_style);
   }
 }
 
@@ -451,7 +451,6 @@ void TextPainter::PaintSvgDecorationsExceptLineThrough(
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
-    const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
   const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
   absl::optional<SelectionStyleScope> selection_style_scope;
@@ -489,7 +488,7 @@ void TextPainter::PaintSvgDecorationsExceptLineThrough(
                                flags)) {
         TextPainterBase::PaintUnderOrOverLineDecorations(
             fragment_paint_info, decoration_offset, decoration_info,
-            lines_to_paint, paint_info, text_style, &flags);
+            lines_to_paint, text_style, &flags);
       }
     }
   }
@@ -497,7 +496,6 @@ void TextPainter::PaintSvgDecorationsExceptLineThrough(
 
 void TextPainter::PaintSvgDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
-    const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
   const TextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
   absl::optional<SelectionStyleScope> selection_style_scope;
@@ -533,8 +531,8 @@ void TextPainter::PaintSvgDecorationsOnlyLineThrough(
       if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
                                SvgPaintMode::kTextDecoration, *resource_mode,
                                flags)) {
-        TextPainterBase::PaintDecorationsOnlyLineThrough(
-            decoration_info, paint_info, text_style, &flags);
+        TextPainterBase::PaintDecorationsOnlyLineThrough(decoration_info,
+                                                         text_style, &flags);
       }
     }
   }

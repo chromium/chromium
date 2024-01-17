@@ -106,10 +106,10 @@ void TextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
   // Paint underline and overline text decorations
   PaintUnderOrOverLineDecorations(TextFragmentPaintInfo{}, decoration_offset,
                                   decoration_info, ~TextDecorationLine::kNone,
-                                  paint_info, text_style);
+                                  text_style);
 
   // Paint line through if needed
-  PaintDecorationsOnlyLineThrough(decoration_info, paint_info, text_style);
+  PaintDecorationsOnlyLineThrough(decoration_info, text_style);
 }
 
 void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,

@@ -134,10 +134,8 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
-      const PaintInfo& paint_info,
       const TextPaintStyle& text_style);
   void PaintSvgDecorationsOnlyLineThrough(TextDecorationInfo& decoration_info,
-                                          const PaintInfo& paint_info,
                                           const TextPaintStyle& text_style);
 
   const gfx::Rect visual_rect_;

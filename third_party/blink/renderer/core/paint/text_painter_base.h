@@ -99,7 +99,6 @@ class CORE_EXPORT TextPainterBase {
       const Vector<Font::TextIntercept>& text_intercepts);
 
   void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
-                                       const PaintInfo&,
                                        const TextPaintStyle&,
                                        const cc::PaintFlags* flags = nullptr);
 
@@ -113,7 +112,6 @@ class CORE_EXPORT TextPainterBase {
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
-      const PaintInfo& paint_info,
       const TextPaintStyle& text_style,
       const cc::PaintFlags* flags = nullptr);
 
@@ -135,7 +133,6 @@ class CORE_EXPORT TextPainterBase {
  private:
   void PaintDecorationUnderOrOverLine(
       const TextFragmentPaintInfo& fragment_paint_info,
-      GraphicsContext& context,
       TextDecorationInfo& decoration_info,
       TextDecorationLine line,
       const cc::PaintFlags* flags = nullptr);
@@ -146,16 +143,14 @@ class CORE_EXPORT TextPainterBase {
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,
-      const TextPaintStyle& text_style,
-      GraphicsContext& context);
+      const TextPaintStyle& text_style);
 
   void PaintUnderOrOverLineDecorations(
       const TextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
-      const cc::PaintFlags* flags,
-      GraphicsContext& context);
+      const cc::PaintFlags* flags);
 };
 
 }  // namespace blink
