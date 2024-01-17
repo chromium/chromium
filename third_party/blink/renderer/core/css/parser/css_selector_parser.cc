@@ -1694,6 +1694,18 @@ bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenRange& range) {
 
   output_.push_back(
       CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/false));
+
+  if (is_inside_has_argument_) {
+    // In case that a nesting parent selector is inside a :has() pseudo class,
+    // mark the :has() containing a pseudo selector so that the StyleEngine can
+    // invalidate the anchor element of the :has() for a pseudo state change
+    // in the parent selector. (crbug.com/1517866)
+    // This ignores whether the nesting parent actually contains a pseudo to
+    // avoid nesting parent lookup overhead and the complexity caused by
+    // reparenting style rules.
+    found_pseudo_in_has_argument_ = true;
+  }
+
   return true;
 }
 
