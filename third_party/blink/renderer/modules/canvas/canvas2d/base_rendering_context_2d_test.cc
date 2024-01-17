@@ -63,10 +63,8 @@ class TestRenderingContext2D final
       : BaseRenderingContext2D(
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()),
-        recorder_(this),
-        host_canvas_element_(nullptr) {
-    recorder_.beginRecording(gfx::Size(Width(), Height()));
-  }
+        recorder_(gfx::Size(Width(), Height()), this),
+        host_canvas_element_(nullptr) {}
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
@@ -170,9 +168,9 @@ class TestRenderingContext2D final
   }
 
   Member<ExecutionContext> execution_context_;
-  MemoryManagedPaintRecorder recorder_;
-  bool context_lost_ = false;
   bool restore_matrix_enabled_ = true;
+  bool context_lost_ = false;
+  MemoryManagedPaintRecorder recorder_;
   Member<HTMLCanvasElement> host_canvas_element_;
 };
 

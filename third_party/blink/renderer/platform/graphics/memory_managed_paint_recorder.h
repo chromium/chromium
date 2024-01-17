@@ -42,12 +42,11 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   // If specified, `client` is notified for events from this object. `client`
   // must outlive this `MemoryManagedPaintRecorder`.
-  explicit MemoryManagedPaintRecorder(Client* client = nullptr);
+  explicit MemoryManagedPaintRecorder(gfx::Size size, Client* client);
   ~MemoryManagedPaintRecorder();
 
   void SetClient(Client* client);
 
-  cc::PaintCanvas* beginRecording(const gfx::Size& size);
   cc::PaintRecord finishRecordingAsPicture();
 
   // Drops all draw ops from the recording while preserving the layer and matrix
@@ -62,36 +61,19 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   // initial state.
   void RestartRecording();
 
-  bool HasRecordedDrawOps() const {
-    DCHECK(canvas_);
-    return canvas_->HasRecordedDrawOps();
-  }
-  size_t TotalOpCount() const {
-    DCHECK(canvas_);
-    return canvas_->TotalOpCount();
-  }
-  size_t OpBytesUsed() const {
-    DCHECK(canvas_);
-    return canvas_->OpBytesUsed();
-  }
-  size_t ImageBytesUsed() const {
-    return canvas_ == nullptr ? 0 : canvas_->ImageBytesUsed();
-  }
+  bool HasRecordedDrawOps() const { return canvas_.HasRecordedDrawOps(); }
+  size_t TotalOpCount() const { return canvas_.TotalOpCount(); }
+  size_t OpBytesUsed() const { return canvas_.OpBytesUsed(); }
+  size_t ImageBytesUsed() const { return canvas_.ImageBytesUsed(); }
 
-  // Only valid while recording.
-  cc::PaintCanvas* getRecordingCanvas() const {
-    DCHECK(!is_recording_ || canvas_);
-    return is_recording_ ? canvas_.get() : nullptr;
-  }
+  cc::PaintCanvas* getRecordingCanvas() { return &canvas_; }
 
  private:
   // Pointer to the client interested in events from this
   // `MemoryManagedPaintRecorder`. If `nullptr`, notifications are disabled.
   raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
 
-  bool is_recording_ = false;
-  gfx::Size size_;
-  std::unique_ptr<MemoryManagedPaintCanvas> canvas_;
+  MemoryManagedPaintCanvas canvas_;
 };
 
 }  // namespace blink

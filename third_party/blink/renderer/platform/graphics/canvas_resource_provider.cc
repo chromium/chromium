@@ -1286,12 +1286,12 @@ CanvasResourceProvider::CanvasResourceProvider(
     : type_(type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       resource_dispatcher_(resource_dispatcher),
+      info_(info),
       filter_quality_(filter_quality),
       is_origin_top_left_(is_origin_top_left),
-      recorder_(std::make_unique<MemoryManagedPaintRecorder>(this)),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      resource_host_(resource_host) {
-  info_ = info;
+      resource_host_(resource_host),
+      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
+      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   if (context_provider_wrapper_) {
@@ -1302,7 +1302,6 @@ CanvasResourceProvider::CanvasResourceProvider(
   }
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  recorder_->beginRecording(Size());
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
@@ -1322,7 +1321,7 @@ std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasResourceProvider::ReleaseRecorder() {
   // When releasing the recorder, we swap it with a new, valid one. This way,
   // the `recorder_` member is guarantied to be always valid.
-  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(this);
+  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   recorder_->SetClient(nullptr);
   recorder_.swap(recorder);
   return recorder;

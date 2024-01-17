@@ -17,13 +17,11 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PaintWorkletGlobalScope* global_scope)
     : BaseRenderingContext2D(std::move(task_runner)),
-      paint_recorder_(this),
+      paint_recorder_(container_size, this),
       container_size_(container_size),
       context_settings_(context_settings),
       effective_zoom_(zoom),
       global_scope_(global_scope) {
-  paint_recorder_.beginRecording(container_size_);
-
   scale(effective_zoom_, effective_zoom_);
 
   clip_antialiasing_ = kAntiAliased;
