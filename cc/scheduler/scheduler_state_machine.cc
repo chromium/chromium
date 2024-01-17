@@ -942,10 +942,6 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
       // need first draw to come through).
       active_tree_is_ready_to_draw_ = false;
     }
-
-    aborted_begin_main_frame_count_ = 0;
-  } else {
-    aborted_begin_main_frame_count_++;
   }
 
   // Update state related to forced draws.
