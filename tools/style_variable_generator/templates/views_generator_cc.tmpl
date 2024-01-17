@@ -9,7 +9,7 @@
 
 #include "{{header_file}}"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace {{namespace_name}} {
@@ -54,7 +54,7 @@ SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
 
 {%- endif %}
 
-absl::optional<SkColor> GetDebugColor(ColorName color_name, bool is_dark_mode) {
+std::optional<SkColor> GetDebugColor(ColorName color_name, bool is_dark_mode) {
   switch (color_name) {
 {%- for obj in colors %}
 {%-   if obj.mode_values[Modes.DEBUG] %}
@@ -64,7 +64,7 @@ absl::optional<SkColor> GetDebugColor(ColorName color_name, bool is_dark_mode) {
 {%-    endif %}
 {%-  endfor %}
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
