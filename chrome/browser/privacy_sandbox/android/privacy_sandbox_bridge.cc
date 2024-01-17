@@ -45,7 +45,8 @@ ScopedJavaLocalRef<jobjectArray> ToJavaTopicsArray(
   for (const auto& topic : topics) {
     j_topics.push_back(Java_PrivacySandboxBridge_createTopic(
         env, topic.topic_id().value(), topic.taxonomy_version(),
-        ConvertUTF16ToJavaString(env, topic.GetLocalizedRepresentation())));
+        ConvertUTF16ToJavaString(env, topic.GetLocalizedRepresentation()),
+        ConvertUTF16ToJavaString(env, topic.GetLocalizedDescription())));
   }
   return base::android::ToJavaArrayOfObjects(
       env, base::android::GetClass(env, TOPICS_JAVA_CLASS), j_topics);

@@ -43,8 +43,9 @@ public class PrivacySandboxBridge {
     }
 
     @CalledByNative
-    private static Topic createTopic(int topicId, int taxonomyVersion, String name) {
-        return new Topic(topicId, taxonomyVersion, name);
+    private static Topic createTopic(
+            int topicId, int taxonomyVersion, String name, String description) {
+        return new Topic(topicId, taxonomyVersion, name, description);
     }
 
     private static List<Topic> sortTopics(List<Topic> topics) {

@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -47,9 +46,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
         mTopicsCategory.removeAll();
         List<Topic> topics = PrivacySandboxBridge.getFirstLevelTopics();
         for (Topic topic : topics) {
-            ChromeSwitchPreference preference = new ChromeSwitchPreference(getContext());
-            preference.setTitle(topic.getName());
-            mTopicsCategory.addPreference(preference);
+            mTopicsCategory.addPreference(new TopicSwitchPreference(getContext(), topic));
         }
     }
 
