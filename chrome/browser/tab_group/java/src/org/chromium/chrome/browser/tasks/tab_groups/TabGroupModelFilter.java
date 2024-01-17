@@ -114,6 +114,14 @@ public class TabGroupModelFilter extends TabModelFilter {
                 List<Integer> tabOriginalIndex,
                 List<Integer> tabOriginalRootId,
                 String destinationGroupTitle);
+
+        /**
+         * This method is called after a new tab group is created, either through drag and drop, the
+         * tab selection editor, or by longpressing a link on a tab and using the context menu.
+         *
+         * @param newRootId The new root id of the group after merge.
+         */
+        void didCreateNewGroup(int newRootId);
     }
 
     /**
@@ -347,6 +355,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationGroupId);
+        boolean isDestinationTabGroup = hasOtherRelatedTabs(destinationTab);
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -385,6 +394,18 @@ public class TabGroupModelFilter extends TabModelFilter {
                                 isMergingBackward
                                         ? destinationIndexInTabModel
                                         : destinationIndexInTabModel++);
+            }
+        }
+
+        // If any originalRootIds have duplicates, they are removed. This is to help indicate if a
+        // tab group is part of the tabs to merge.
+        HashSet<Integer> uniqueRootIds = new HashSet<>(originalRootIds);
+
+        // If the destination tab is not part of a tab group and none of the tabs to merge were part
+        // of a tab group, then this action is creating a new tab group.
+        if (!isDestinationTabGroup && (uniqueRootIds.size() == originalRootIds.size())) {
+            for (Observer observer : mGroupFilterObserver) {
+                observer.didCreateNewGroup(destinationGroupId);
             }
         }
 
@@ -654,16 +675,23 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         int groupId = getRootId(tab);
         if (mGroupIdToGroupMap.containsKey(groupId)) {
-            if (mGroupIdToGroupMap.get(groupId).size() == 1) {
+            boolean wasGroupSizeOfOne = mGroupIdToGroupMap.get(groupId).size() == 1;
+            mGroupIdToGroupMap.get(groupId).addTab(tab.getId());
+
+            if (wasGroupSizeOfOne) {
                 mActualGroupCount++;
                 // TODO(crbug.com/1188370): Update UMA for Context menu creation.
-                if (mShouldRecordUma
-                        && (tab.getLaunchType()
-                                == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP)) {
-                    RecordUserAction.record("TabGroup.Created.OpenInNewTab");
+                if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
+                    if (mShouldRecordUma) {
+                        RecordUserAction.record("TabGroup.Created.OpenInNewTab");
+                    }
+
+                    // When creating a tab group with the context menu longpress, this action runs.
+                    for (Observer observer : mGroupFilterObserver) {
+                        observer.didCreateNewGroup(groupId);
+                    }
                 }
             }
-            mGroupIdToGroupMap.get(groupId).addTab(tab.getId());
         } else {
             TabGroup tabGroup = new TabGroup(getRootId(tab));
             tabGroup.addTab(tab.getId());

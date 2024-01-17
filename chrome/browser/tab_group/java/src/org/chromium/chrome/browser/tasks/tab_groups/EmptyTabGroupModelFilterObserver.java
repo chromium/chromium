@@ -34,4 +34,7 @@ public class EmptyTabGroupModelFilterObserver implements TabGroupModelFilter.Obs
             List<Integer> tabOriginalIndex,
             List<Integer> tabOriginalRootId,
             String destinationGroupTitle) {}
+
+    @Override
+    public void didCreateNewGroup(int newRootId) {}
 }

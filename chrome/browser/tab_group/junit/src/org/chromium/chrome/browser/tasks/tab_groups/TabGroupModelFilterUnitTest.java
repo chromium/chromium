@@ -393,6 +393,8 @@ public class TabGroupModelFilterUnitTest {
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
         addTabToTabModel(POSITION1 + 1, newTab);
         assertThat(newTab.getRootId(), equalTo(TAB1_ROOT_ID));
+
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(TAB1_ID);
     }
 
     @Test
@@ -812,6 +814,9 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab1, mTab5.getId());
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4, mTab5.getId());
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+
+        // Attempt to merge single tabs with group tabs.
+        verify(mTabGroupModelFilterObserver, never()).didCreateNewGroup(mTab5.getRootId());
     }
 
     @Test
@@ -830,6 +835,9 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4, mTab1.getId());
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(newTab, mTab1.getId());
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+
+        // Attempt to merge all single tabs, resulting in a new group creation.
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab1.getRootId());
     }
 
     @Test
@@ -848,6 +856,9 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab1, mTab4.getId());
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(newTab, mTab4.getId());
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+
+        // Attempt to merge all single tabs, resulting in a new group creation.
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4.getRootId());
     }
 
     @Test
@@ -873,6 +884,9 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(newTab1, newTab0.getId());
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(newTab2, newTab0.getId());
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+
+        // Attempt to merge all single tabs, resulting in a new group creation.
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(newTab0.getRootId());
     }
 
     @Test
@@ -900,6 +914,9 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).didMoveWithinGroup(newTab2, 8, 8);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(newTab0, newTab1.getId());
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+
+        // Attempt to merge a single tab with group tabs.
+        verify(mTabGroupModelFilterObserver, never()).didCreateNewGroup(newTab1.getRootId());
     }
 
     @Test

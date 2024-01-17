@@ -6,6 +6,10 @@ found in the LICENSE file.
 -->
 
 <resources>
+    <declare-styleable name="TabGroupCreationTextInputLayout">
+        <attr name="emptyErrorMessage" format="string" />
+    </declare-styleable>
+
     <declare-styleable name="TabThumbnailPlaceholder">
         <attr name="colorTileBase" format="color" />
         <attr name="elevationTileBase" format="dimension" />
