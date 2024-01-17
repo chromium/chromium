@@ -8,6 +8,18 @@
 
 namespace chromeos::network_config {
 
+const char kMojoKeySecurity[] = "security";
+const char kMojoKeySsid[] = "ssid";
+const char kMojoKeyPassphrase[] = "passphrase";
+const char kMojoKeyEapInner[] = "inner";
+const char kMojoKeyEapOuter[] = "outer";
+const char kMojoKeyEapIdentity[] = "identity";
+const char kMojoKeyEapAnonymousIdentity[] = "anonymousIdentity";
+const char kMojoKeyEapPassword[] = "password";
+const char kMojoKeyEap[] = "eap";
+const char kMojoKeyWifi[] = "wifi";
+const char kMojoKeyTypeConfig[] = "typeConfig";
+
 namespace {
 
 std::optional<std::string> GetString(const base::Value::Dict& onc_apn,
@@ -426,6 +438,46 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value,
   }
   NET_LOG(ERROR) << "Expected list or dictionary, found: " << *value;
   return nullptr;
+}
+
+base::Value::Dict WiFiConfigPropertiesToMojoJsValue(
+    const mojo::StructPtr<
+        chromeos::network_config::mojom::WiFiConfigProperties>& wifi_config) {
+  base::Value::Dict prefilled_wifi_config;
+  prefilled_wifi_config.Set(kMojoKeySecurity,
+                            static_cast<int>(wifi_config->security));
+  if (wifi_config->ssid.has_value()) {
+    prefilled_wifi_config.Set(kMojoKeySsid, *(wifi_config->ssid));
+  }
+  if (wifi_config->passphrase.has_value()) {
+    prefilled_wifi_config.Set(kMojoKeyPassphrase, *(wifi_config->passphrase));
+  }
+  if (!wifi_config->eap.is_null()) {
+    auto& eap_config = wifi_config->eap;
+    base::Value::Dict prefilled_eap_config;
+    if (eap_config->inner.has_value()) {
+      prefilled_eap_config.Set(kMojoKeyEapInner, *(eap_config->inner));
+    }
+    if (eap_config->outer.has_value()) {
+      prefilled_eap_config.Set(kMojoKeyEapOuter, *(eap_config->outer));
+    }
+    if (eap_config->identity.has_value()) {
+      prefilled_eap_config.Set(kMojoKeyEapIdentity, *(eap_config->identity));
+    }
+    if (eap_config->anonymous_identity.has_value()) {
+      prefilled_eap_config.Set(kMojoKeyEapAnonymousIdentity,
+                               *(eap_config->anonymous_identity));
+    }
+    if (eap_config->password.has_value()) {
+      prefilled_eap_config.Set(kMojoKeyEapPassword, *(eap_config->password));
+    }
+    prefilled_wifi_config.Set(kMojoKeyEap, prefilled_eap_config.Clone());
+  }
+  base::Value::Dict type_config;
+  type_config.Set(kMojoKeyWifi, prefilled_wifi_config.Clone());
+  base::Value::Dict config;
+  config.Set(kMojoKeyTypeConfig, type_config.Clone());
+  return config;
 }
 
 }  // namespace chromeos::network_config
