@@ -793,6 +793,9 @@ ci.builder(
             "official_optimize",
             "stable_channel",
             "v8_release_branch",
+            # Allows the bot to measure low-end arm32 and high-end arm64 using
+            # a single build.
+            "android_low_end_secondary_toolchain",
         ],
     ),
     builderless = False,

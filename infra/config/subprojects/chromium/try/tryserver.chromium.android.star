@@ -255,7 +255,9 @@ try_.builder(
             "official_optimize",
             "stable_channel",
             "v8_release_branch",
-            "android_low_end",
+            # Allows the bot to measure low-end arm32 and high-end arm64 using
+            # a single build.
+            "android_low_end_secondary_toolchain",
         ],
     ),
     builderless = not settings.is_main,

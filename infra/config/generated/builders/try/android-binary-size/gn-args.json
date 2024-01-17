@@ -3,7 +3,7 @@
     "android_channel": "stable",
     "debuggable_apks": false,
     "ffmpeg_branding": "Chrome",
-    "is_high_end_android": false,
+    "is_high_end_android_secondary_toolchain": false,
     "is_official_build": true,
     "proprietary_codecs": true,
     "symbol_level": 1,
