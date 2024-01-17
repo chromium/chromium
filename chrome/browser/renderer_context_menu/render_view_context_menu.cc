@@ -1785,9 +1785,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         }
       }
 
-      if ((multiple_profiles_open_ ||
-           (base::FeatureList::IsEnabled(features::kDisplayOpenLinkAsProfile) &&
-            has_active_profiles))) {
+      if (multiple_profiles_open_ || has_active_profiles) {
         DCHECK(!target_profiles_entries.empty());
         if (target_profiles_entries.size() == 1) {
           int menu_index = static_cast<int>(profile_link_paths_.size());
