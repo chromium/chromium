@@ -553,7 +553,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Callback for MenuRunner.
   // |source| is either a ShelfView or a ShelfAppButton.
-  void OnMenuClosed(views::View* source);
+  void OnMenuClosed(MayBeDangling<views::View> source);
 
   // Overridden from views::BoundsAnimatorObserver:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;

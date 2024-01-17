@@ -2663,11 +2663,12 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 
+  // UnsafeDangling triaged in https://crbug.com/1423849.
   shelf_menu_model_adapter_ = std::make_unique<ShelfMenuModelAdapter>(
       item ? item->id.app_id : std::string(), std::move(menu_model), source,
       source_type,
       base::BindOnce(&ShelfView::OnMenuClosed, base::Unretained(this),
-                     base::UnsafeDanglingUntriaged(source)),
+                     base::UnsafeDangling(source)),
       display::Screen::GetScreen()->InTabletMode(),
       /*for_application_menu_items*/ !context_menu);
   shelf_menu_model_adapter_->Run(
@@ -2681,7 +2682,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
     context_menu_shown_callback_.Run();
 }
 
-void ShelfView::OnMenuClosed(views::View* source) {
+void ShelfView::OnMenuClosed(MayBeDangling<views::View> source) {
   context_menu_id_ = ShelfID();
 
   closing_event_time_ = shelf_menu_model_adapter_->GetClosingEventTime();
