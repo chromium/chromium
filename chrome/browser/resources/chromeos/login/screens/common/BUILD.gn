@@ -32,7 +32,6 @@ js_type_check("closure_compile_local") {
     ":offline_ad_login",
     ":quick_start",
     ":recommend_apps",
-    ":remote_activity_notification",
     ":saml_confirm_password",
     ":signin_fatal_error",
     ":sync_consent",
@@ -161,18 +160,6 @@ js_library("recommend_apps") {
     "//ash/webui/common/resources:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("remote_activity_notification") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/remote_activity_notification.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
   extra_deps = [ ":web_components" ]
 }
 

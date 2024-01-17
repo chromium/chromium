@@ -13,54 +13,56 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import { mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './remote_activity_notification.html.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
-const RemoteActivityNotificationBase = mixinBehaviors(
+const RemoteActivityNotificationBase =
+  mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+    PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+  };
 
-/**
- * @polymer
- */
 class RemoteActivityNotification extends RemoteActivityNotificationBase {
   static get is() {
-    return 'remote-activity-notification-element';
+    return 'remote-activity-notification-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {};
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('RemoteActivityNotificationScreen');
   }
 
   /** Initial UI State for screen */
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.BLOCKING;
   }
 
-  onContinueUsingDevice_() {
+  onContinueUsingDevice(): void {
     this.userActed('continue-using-device');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [RemoteActivityNotification.is]: RemoteActivityNotification;
   }
 }
 
