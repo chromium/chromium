@@ -108,8 +108,8 @@ void AutomationManagerAura::Disable() {
     tree_.reset();
   }
   tree_serializer_.reset();
-  cache_ = std::make_unique<views::AXAuraObjCache>();
   alert_window_.reset();
+  cache_ = std::make_unique<views::AXAuraObjCache>();
 
   if (automation_event_router_observer_.IsObserving())
     automation_event_router_observer_.Reset();
