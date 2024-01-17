@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
@@ -144,12 +145,17 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   web_data_service_->Init(base::NullCallback());
 
+  search_engine_choice_service_ =
+      std::make_unique<search_engines::SearchEngineChoiceService>(
+          *profile_->GetPrefs());
+
   ResetModel(false);
 }
 
 TemplateURLServiceTestUtil::~TemplateURLServiceTestUtil() {
   ClearModel();
   web_data_service_->ShutdownOnUISequence();
+  search_engine_choice_service_.reset();
   profile_.reset();
 
   // Flush the message loop to make application verifiers happy.
@@ -194,7 +200,7 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_)
     ClearModel();
   model_ = std::make_unique<TemplateURLService>(
-      profile()->GetPrefs(),
+      profile()->GetPrefs(), search_engine_choice_service_.get(),
       std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
       std::unique_ptr<TemplateURLServiceClient>(
@@ -204,7 +210,8 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
               &search_term_)),
       base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; })
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      , profile()->IsMainProfile()
+          ,
+      profile()->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
   model()->AddObserver(this);

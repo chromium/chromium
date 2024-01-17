@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -82,6 +83,8 @@ class MockSearchEngineChoiceDialogService
   explicit MockSearchEngineChoiceDialogService(Profile* profile)
       : SearchEngineChoiceDialogService(
             *profile,
+            *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+                profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, NotifyDialogOpened)
         .WillByDefault([this](Browser* browser, base::OnceClosure callback) {

@@ -28,6 +28,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -607,9 +608,13 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     // Explicitly set the DSE (it's otherwise NULL by default, preventing
     // thorough testing of the PROTECTION_ENABLED_DSE level).
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , profile()->IsMainProfile()
+            ,
+        profile()->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
     DefaultSearchManager::Source dse_source =
@@ -691,9 +696,13 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     // Explicitly verify the result of reported resets.
 
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , profile()->IsMainProfile()
+            ,
+        profile()->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
     DefaultSearchManager::Source dse_source =
@@ -1161,9 +1170,13 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
   void SetupPreferences() override {
     // Set user selected default search engine.
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , profile()->IsMainProfile()
+            ,
+        profile()->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
     DefaultSearchManager::Source dse_source =
@@ -1230,9 +1243,13 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 
   void VerifyReactionToPrefAttack() override {
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+        profile()->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile()),
+        DefaultSearchManager::ObserverCallback()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , profile()->IsMainProfile()
+            ,
+        profile()->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
     DefaultSearchManager::Source dse_source =

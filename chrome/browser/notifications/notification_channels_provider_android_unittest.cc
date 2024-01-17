@@ -732,7 +732,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
 
   // Set up TemplateURLService with a default search engine.
-  TemplateURLService* template_url_service = new TemplateURLService(NULL, 0);
+  TemplateURLService* template_url_service = new TemplateURLService(
+      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLData data;
   data.SetURL("https://default-search-engine.com/url?bar={searchTerms}");
   TemplateURL* template_url =

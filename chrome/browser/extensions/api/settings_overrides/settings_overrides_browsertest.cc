@@ -14,6 +14,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/common/chrome_switches.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -49,11 +51,14 @@ namespace {
 const int kTestExtensionPrepopulatedId = 83;
 // TemplateURLData with search engines settings from test extension manifest.
 // chrome/test/data/extensions/settings_override/manifest.json
-std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(PrefService* prefs) {
+std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
   // Enforcing that `kTestExtensionPrepopulatedId` is not part of the
   // prepopulated set for the current profile's country.
-  for (auto& data :
-       TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs, nullptr)) {
+  for (auto& data : TemplateURLPrepopulateData::GetPrepopulatedEngines(
+           prefs, search_engine_choice_service, nullptr)) {
     EXPECT_NE(data->prepopulate_id, kTestExtensionPrepopulatedId);
   }
 
@@ -74,7 +79,7 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(PrefService* prefs) {
   if (base::FeatureList::IsEnabled(kPrepopulatedSearchEngineOverrideRollout)) {
     std::unique_ptr<TemplateURLData> prepopulated =
         TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-            prefs, kTestExtensionPrepopulatedId);
+            prefs, search_engine_choice_service, kTestExtensionPrepopulatedId);
     EXPECT_TRUE(prepopulated);
     // Values below do not exist in extension manifest and are taken from
     // prepopulated engine with prepopulated_id set in extension manifest.
@@ -84,7 +89,7 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(PrefService* prefs) {
     // GetPrepopulatedEngineFromFullList() should not be called. The old method
     // is not expected to find anything.
     EXPECT_FALSE(TemplateURLPrepopulateData::GetPrepopulatedEngine(
-        prefs, kTestExtensionPrepopulatedId));
+        prefs, search_engine_choice_service, kTestExtensionPrepopulatedId));
   }
   return result;
 }
@@ -155,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideDSE) {
   EXPECT_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, current_dse->type());
 
   std::unique_ptr<TemplateURLData> extension_dse =
-      TestExtensionSearchEngine(prefs);
+      TestExtensionSearchEngine(profile());
   ExpectSimilar(extension_dse.get(), &current_dse->data());
 
   UnloadExtension(extension->id());
@@ -191,7 +196,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PRE_OverridenDSEPersists) {
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverridenDSEPersists) {
   Profile* profile = browser()->profile();
   DefaultSearchManager default_manager(
-      profile->GetPrefs(), DefaultSearchManager::ObserverCallback());
+      profile->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      DefaultSearchManager::ObserverCallback());
 
   DefaultSearchManager::Source source;
   const TemplateURLData* current_dse =
@@ -199,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverridenDSEPersists) {
 
   ASSERT_TRUE(current_dse);
   std::unique_ptr<TemplateURLData> extension_dse =
-      TestExtensionSearchEngine(profile->GetPrefs());
+      TestExtensionSearchEngine(profile);
   ExpectSimilar(extension_dse.get(), current_dse);
   EXPECT_EQ(DefaultSearchManager::FROM_EXTENSION, source);
 
@@ -236,8 +243,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverridenDSEPersists) {
 // This test checks that an extension overriding the default search engine can
 // be correctly loaded before the TemplateURLService is loaded.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BeforeTemplateUrlServiceLoad) {
-  PrefService* prefs = profile()->GetPrefs();
-  ASSERT_TRUE(prefs);
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(url_service);
@@ -251,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BeforeTemplateUrlServiceLoad) {
   EXPECT_TRUE(url_service->IsExtensionControlledDefaultSearch());
 
   std::unique_ptr<TemplateURLData> extension_dse =
-      TestExtensionSearchEngine(prefs);
+      TestExtensionSearchEngine(profile());
   ExpectSimilar(extension_dse.get(), &current_dse->data());
 
   UnloadExtension(extension->id());

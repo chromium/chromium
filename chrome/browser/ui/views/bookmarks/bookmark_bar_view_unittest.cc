@@ -21,6 +21,7 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -39,6 +40,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -64,6 +66,9 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     feature_list_.InitAndEnableFeature(features::kTabGroupsSave);
 
     TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
+        search_engines::SearchEngineChoiceServiceFactory::GetDefaultFactory());
     profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
         base::BindRepeating(
@@ -155,12 +160,17 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   static std::unique_ptr<KeyedService> CreateTemplateURLService(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
+    search_engines::SearchEngineChoiceService* search_engine_choice_service =
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            profile);
     return std::make_unique<TemplateURLService>(
-        profile->GetPrefs(), std::make_unique<SearchTermsData>(),
+        profile->GetPrefs(), search_engine_choice_service,
+        std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
         nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        , profile->IsMainProfile()
+                                                    ,
+        profile->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
   }

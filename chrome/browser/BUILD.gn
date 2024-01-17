@@ -1481,6 +1481,8 @@ static_library("browser") {
     "safe_browsing/metrics/safe_browsing_metrics_provider.h",
     "search/search.cc",
     "search/search.h",
+    "search_engine_choice/search_engine_choice_service_factory.cc",
+    "search_engine_choice/search_engine_choice_service_factory.h",
     "search_engines/chrome_template_url_service_client.cc",
     "search_engines/chrome_template_url_service_client.h",
     "search_engines/template_url_fetcher_factory.cc",

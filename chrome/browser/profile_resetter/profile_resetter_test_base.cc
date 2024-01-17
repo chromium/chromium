@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -65,12 +66,15 @@ std::unique_ptr<KeyedService> CreateTemplateURLServiceForTesting(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(),
+      profile->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      , profile->IsMainProfile()
+                                                  ,
+      profile->IsMainProfile()
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 }

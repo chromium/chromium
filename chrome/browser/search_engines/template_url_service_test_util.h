@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/template_url.h"
@@ -112,6 +113,9 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   KeywordWebDataService* web_data_service() { return web_data_service_.get(); }
   TemplateURLService* model() { return model_.get(); }
   TestingProfile* profile() { return profile_.get(); }
+  search_engines::SearchEngineChoiceService* search_engine_choice_service() {
+    return search_engine_choice_service_.get();
+  }
 
  private:
   std::unique_ptr<TestingProfile> profile_;
@@ -119,6 +123,8 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   std::u16string search_term_;
   int dsp_set_to_google_callback_count_ = 0;
   scoped_refptr<KeywordWebDataService> web_data_service_;
+  std::unique_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> model_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };

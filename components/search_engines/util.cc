@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
@@ -468,6 +469,7 @@ void GetSearchProvidersUsingKeywordResult(
     const WDTypedResult& result,
     KeywordWebDataService* service,
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
@@ -500,9 +502,9 @@ void GetSearchProvidersUsingKeywordResult(
   *new_resource_keyword_version = keyword_result.builtin_keyword_version;
   *new_resource_starter_pack_version = keyword_result.starter_pack_version;
   GetSearchProvidersUsingLoadedEngines(
-      service, prefs, template_urls, default_search_provider, search_terms_data,
-      new_resource_keyword_version, new_resource_starter_pack_version,
-      removed_keyword_guids);
+      service, prefs, search_engine_choice_service, template_urls,
+      default_search_provider, search_terms_data, new_resource_keyword_version,
+      new_resource_starter_pack_version, removed_keyword_guids);
 
   // If a data change happened (new version != 0), it should not be caused by a
   // version downgrade. Upgrades (builtin > new) or feature-related merges
@@ -515,6 +517,7 @@ void GetSearchProvidersUsingKeywordResult(
 void GetSearchProvidersUsingLoadedEngines(
     KeywordWebDataService* service,
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
@@ -524,7 +527,8 @@ void GetSearchProvidersUsingLoadedEngines(
   DCHECK(template_urls);
   DCHECK(resource_keyword_version);
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs, nullptr);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs, search_engine_choice_service, nullptr);
   RemoveDuplicatePrepopulateIDs(service, prepopulated_urls,
                                 default_search_provider, template_urls,
                                 search_terms_data, removed_keyword_guids);

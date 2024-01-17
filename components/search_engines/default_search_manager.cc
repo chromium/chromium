@@ -99,15 +99,19 @@ const char DefaultSearchManager::kEnforcedByPolicy[] = "enforced_by_policy";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     const ObserverCallback& change_observer
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    , bool for_lacros_main_profile
+    ,
+    bool for_lacros_main_profile
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     )
     : pref_service_(pref_service),
+      search_engine_choice_service_(search_engine_choice_service),
       change_observer_(change_observer)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      , for_lacros_main_profile_(for_lacros_main_profile)
+      ,
+      for_lacros_main_profile_(for_lacros_main_profile)
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 {
   if (pref_service_) {
@@ -297,8 +301,8 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
     return;
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service_,
-                                                         nullptr);
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          pref_service_, search_engine_choice_service_, nullptr);
 
   auto default_engine = base::ranges::find(
       prepopulated_urls, prefs_default_search_->prepopulate_id,
@@ -363,7 +367,8 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
 
 void DefaultSearchManager::LoadPrepopulatedDefaultSearch() {
   std::unique_ptr<TemplateURLData> data =
-      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(pref_service_);
+      TemplateURLPrepopulateData::GetPrepopulatedDefaultSearch(
+          pref_service_, search_engine_choice_service_);
   fallback_default_search_ = std::move(data);
   MergePrefsDataWithPrepopulated();
 }

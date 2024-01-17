@@ -61,10 +61,15 @@ class TemplateUrlServiceAndroidUnitTest
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
 
+    search_engine_choice_service_ =
+        std::make_unique<search_engines::SearchEngineChoiceService>(
+            pref_service_);
+
     env_ = base::android::AttachCurrentThread();
 
     template_url_service_ = std::make_unique<TemplateURLService>(
-        &pref_service_, std::make_unique<SearchTermsData>(),
+        &pref_service_, search_engine_choice_service_.get(),
+        std::make_unique<SearchTermsData>(),
         /*web_data_service=*/nullptr,
         /*client=*/nullptr, base::RepeatingClosure());
 
@@ -104,6 +109,8 @@ class TemplateUrlServiceAndroidUnitTest
  private:
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_;
 
   raw_ptr<JNIEnv> env_ = nullptr;
 

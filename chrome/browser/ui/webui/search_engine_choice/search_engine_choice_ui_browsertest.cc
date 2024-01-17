@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
@@ -47,6 +48,8 @@ class MockSearchEngineChoiceDialogService
   explicit MockSearchEngineChoiceDialogService(Profile* profile)
       : SearchEngineChoiceDialogService(
             *profile,
+            *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+                profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
       std::vector<std::unique_ptr<TemplateURL>> choices;

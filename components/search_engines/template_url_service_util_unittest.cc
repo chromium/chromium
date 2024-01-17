@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -71,6 +72,7 @@ std::unique_ptr<TemplateURL> CreatePrepopulateTemplateURL(
 // prepopulated engines were loaded.
 void CallGetSearchProvidersUsingLoadedEngines(
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     int* resource_keyword_version) {
   // Setup inspired by `//components/webdata_services/web_data_service_wrapper*`
@@ -99,7 +101,8 @@ void CallGetSearchProvidersUsingLoadedEngines(
     int resource_starter_pack_version = 0;
 
     GetSearchProvidersUsingLoadedEngines(
-        keyword_web_data.get(), prefs, template_urls,
+        keyword_web_data.get(), prefs, search_engine_choice_service,
+        template_urls,
         /*default_search_provider=*/nullptr, search_terms_data,
         resource_keyword_version, &resource_starter_pack_version,
         &removed_keyword_guids);
@@ -247,6 +250,7 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   using TemplateURLPrepopulateData::kCurrentDataVersion;
 
   sync_preferences::TestingPrefServiceSyncable prefs;
+  search_engines::SearchEngineChoiceService search_engine_choice_service(prefs);
   size_t starter_pack_engines_count =
       TemplateURLStarterPackData::GetStarterPackEngines().size();
 
@@ -266,8 +270,9 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
 
     TemplateURLService::OwnedTemplateURLVector template_urls;
     int resource_keyword_version = mocked_current_version;
-    CallGetSearchProvidersUsingLoadedEngines(&prefs, &template_urls,
-                                             &resource_keyword_version);
+    CallGetSearchProvidersUsingLoadedEngines(
+        &prefs, &search_engine_choice_service, &template_urls,
+        &resource_keyword_version);
 
     struct {
       size_t loaded_engines_count;

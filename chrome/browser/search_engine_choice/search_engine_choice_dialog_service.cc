@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -77,8 +78,11 @@ SearchEngineChoiceDialogService::~SearchEngineChoiceDialogService() = default;
 
 SearchEngineChoiceDialogService::SearchEngineChoiceDialogService(
     Profile& profile,
+    search_engines::SearchEngineChoiceService& search_engine_choice_service,
     TemplateURLService& template_url_service)
-    : profile_(profile), template_url_service_(template_url_service) {}
+    : profile_(profile),
+      search_engine_choice_service_(search_engine_choice_service),
+      template_url_service_(template_url_service) {}
 
 void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
                                                        EntryPoint entry_point) {
@@ -91,11 +95,10 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
   const int kCustomSearchEngineId = 0;
   if (prepopulate_id != kCustomSearchEngineId) {
     std::unique_ptr<TemplateURLData> search_engine =
-        TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
-                                                          prepopulate_id);
+        TemplateURLPrepopulateData::GetPrepopulatedEngine(
+            pref_service, &search_engine_choice_service_.get(), prepopulate_id);
 
-    int country_id =
-        search_engines::GetSearchEngineChoiceCountryId(pref_service);
+    int country_id = search_engine_choice_service_->GetCountryId();
     SCOPED_CRASH_KEY_STRING32(
         "ChoiceService", "choice_country",
         country_codes::CountryIDToCountryString(country_id));
@@ -105,7 +108,8 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
     if (!search_engine) {
       search_engine =
           TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-              pref_service, prepopulate_id);
+              pref_service, &search_engine_choice_service_.get(),
+              prepopulate_id);
 
       SCOPED_CRASH_KEY_BOOL("ChoiceService", "engine_found",
                             search_engine != nullptr);
@@ -297,8 +301,8 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(Browser& browser) {
 
   // Respect common conditions with other platforms.
   search_engines::SearchEngineChoiceScreenConditions dynamic_conditions =
-      search_engines::GetDynamicChoiceScreenConditions(
-          CHECK_DEREF(profile_->GetPrefs()), *template_url_service_);
+      search_engine_choice_service_->GetDynamicChoiceScreenConditions(
+          *template_url_service_);
   if (dynamic_conditions !=
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     return dynamic_conditions;

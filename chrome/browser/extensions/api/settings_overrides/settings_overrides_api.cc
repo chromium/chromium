@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/settings_overrides/settings_overrides_api.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
@@ -13,9 +14,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/pref_names.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -51,6 +54,7 @@ std::string SubstituteInstallParam(std::string str,
 
 std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     PrefService* prefs,
+    search_engines::SearchEngineChoiceService* search_engine_choice_service,
     const ChromeSettingsOverrides::SearchProvider& search_provider,
     const std::string& install_parameter) {
   std::unique_ptr<TemplateURLData> data;
@@ -58,10 +62,12 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     if (base::FeatureList::IsEnabled(
             kPrepopulatedSearchEngineOverrideRollout)) {
       data = TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-          prefs, *search_provider.prepopulated_id);
+          prefs, search_engine_choice_service,
+          *search_provider.prepopulated_id);
     } else {
       data = TemplateURLPrepopulateData::GetPrepopulatedEngine(
-          prefs, *search_provider.prepopulated_id);
+          prefs, search_engine_choice_service,
+          *search_provider.prepopulated_id);
     }
 
     if (data) {
@@ -259,7 +265,9 @@ void SettingsOverridesAPI::RegisterSearchProvider(
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   std::string install_parameter = prefs->GetInstallParam(extension->id());
   std::unique_ptr<TemplateURLData> data = ConvertSearchProvider(
-      profile_->GetPrefs(), *settings->search_engine, install_parameter);
+      profile_->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_),
+      *settings->search_engine, install_parameter);
   auto turl = std::make_unique<TemplateURL>(
       *data, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, extension->id(),
       prefs->GetLastUpdateTime(extension->id()),
@@ -281,6 +289,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(ExtensionPrefsHelperFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(search_engines::SearchEngineChoiceServiceFactory::GetInstance());
 }
 
 }  // namespace extensions

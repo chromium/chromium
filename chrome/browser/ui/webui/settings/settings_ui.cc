@@ -29,6 +29,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -97,6 +98,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/base/features.h"
@@ -326,8 +328,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("searchEngineChoiceSettingsUi",
                           is_search_engine_choice_settings_ui);
 
+  search_engines::SearchEngineChoiceService*
+      search_engine_choice_dialog_service =
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              profile);
   const bool is_eea_country = search_engines::IsEeaChoiceCountry(
-      search_engines::GetSearchEngineChoiceCountryId(profile->GetPrefs()));
+      search_engine_choice_dialog_service->GetCountryId());
   html_source->AddBoolean("useLargeSearchEngineIcons", is_eea_country);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -52,6 +52,10 @@ struct TemplateURLData;
 class TemplateUrlServiceAndroid;
 #endif
 
+namespace search_engines {
+class SearchEngineChoiceService;
+}
+
 namespace syncer {
 class SyncData;
 }
@@ -134,12 +138,14 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   TemplateURLService(
       PrefService* prefs,
+      search_engines::SearchEngineChoiceService* search_engine_choice_service,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const scoped_refptr<KeywordWebDataService>& web_data_service,
       std::unique_ptr<TemplateURLServiceClient> client,
       const base::RepeatingClosure& dsp_change_callback
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      , bool for_lacros_main_profile
+      ,
+      bool for_lacros_main_profile
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 
@@ -152,6 +158,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // some template URL data.
   explicit TemplateURLService(
       PrefService* prefs,
+      search_engines::SearchEngineChoiceService* search_engine_choice_service,
       base::span<const TemplateURLService::Initializer> initializers = {});
 
   TemplateURLService(const TemplateURLService&) = delete;
@@ -570,10 +577,13 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // data, an appropriate SyncChange is added to |change_list|.  If the sync
   // data is bad for some reason, an ACTION_DELETE change is added and the
   // function returns NULL.
+  // `search_engine_choice_service` is used to obtain the country code (for the
+  // list of prepopulated engines).
   static std::unique_ptr<TemplateURL>
   CreateTemplateURLFromTemplateURLAndSyncData(
       TemplateURLServiceClient* client,
       PrefService* prefs,
+      search_engines::SearchEngineChoiceService* search_engine_choice_service,
       const SearchTermsData& search_terms_data,
       const TemplateURL* existing_turl,
       const syncer::SyncData& sync_data,
@@ -726,8 +736,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // country, update all its fields save for the keyword, short name and id so
   // that they match the internal prepopulated URL. TemplateURLs not coming from
   // a prepopulated URL are not modified.
-  static void UpdateTemplateURLIfPrepopulated(TemplateURL* existing_turl,
-                                              PrefService* prefs);
+  static void UpdateTemplateURLIfPrepopulated(
+      TemplateURL* existing_turl,
+      PrefService* prefs,
+      search_engines::SearchEngineChoiceService* search_engine_choice_service);
 
   // If the TemplateURL's sync GUID matches the kSyncedDefaultSearchProviderGUID
   // preference it will be used to update the DSE in prefs.
@@ -868,6 +880,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // ---------- Browser state related members ---------------------------------
   raw_ptr<PrefService> prefs_ = nullptr;
+
+  raw_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_ = nullptr;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();

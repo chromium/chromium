@@ -49,7 +49,9 @@ using testing::Return;
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient()
-      : template_url_service_(new TemplateURLService(nullptr, 0)),
+      : template_url_service_(
+            new TemplateURLService(/*prefs=*/nullptr,
+                                   /*search_engine_choice_service=*/nullptr)),
         pref_service_(new TestingPrefServiceSimple()) {
     pref_service_->registry()->RegisterBooleanPref(
         omnibox::kDocumentSuggestEnabled, true);

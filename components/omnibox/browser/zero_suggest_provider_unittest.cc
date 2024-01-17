@@ -51,7 +51,9 @@ constexpr int kCacheSize = 10;
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient()
-      : template_url_service_(new TemplateURLService(nullptr, 0)),
+      : template_url_service_(std::make_unique<TemplateURLService>(
+            /*prefs=*/nullptr,
+            /*search_engine_choice_service=*/nullptr)),
         pref_service_(new TestingPrefServiceSimple()) {
     ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
     zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(

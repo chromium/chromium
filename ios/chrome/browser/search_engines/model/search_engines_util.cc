@@ -34,10 +34,12 @@ void UpdateSearchEngine(PrefService* preferences, TemplateURLService* service) {
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
     new_engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-        preferences, nullptr);
+        preferences, /*search_engine_choice_service=*/nullptr,
+        /*default_search_provider_index=*/nullptr);
   } else {
-    new_engines =
-        TemplateURLPrepopulateData::GetPrepopulatedEngines(nullptr, nullptr);
+    new_engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
+        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
+        /*default_search_provider_index=*/nullptr);
   }
   // The aim is to replace the old search engines with the new ones.
   // It is not possible to remove all of them, because removing the current

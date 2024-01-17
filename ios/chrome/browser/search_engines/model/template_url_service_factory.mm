@@ -12,6 +12,7 @@
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_client_impl.h"
 #import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -42,6 +43,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<TemplateURLService>(
       browser_state->GetPrefs(),
+      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browser_state),
       std::make_unique<ios::UIThreadSearchTermsData>(),
       ios::WebDataServiceFactory::GetKeywordWebDataForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS),
@@ -78,6 +80,7 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
+  DependsOn(ios::SearchEngineChoiceServiceFactory::GetInstance());
 }
 
 TemplateURLServiceFactory::~TemplateURLServiceFactory() {}
