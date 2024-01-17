@@ -36,6 +36,7 @@ struct SessionRejectedRecord {
 struct SessionStartedRecord {
     // ID of this request, used for tracing.
     uint64 trace_id;
+    device.mojom.XRDeviceId device_id;
     mojo_base.mojom.Time started_time;
 };
 

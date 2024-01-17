@@ -411,8 +411,8 @@ void VRServiceImpl::OnImmersiveSessionCreated(
   // Get the metrics tracker for the new immersive session
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
       session_metrics_recorder =
-          GetSessionMetricsHelper()->StartImmersiveSession(*(request.options),
-                                                           enabled_features);
+          GetSessionMetricsHelper()->StartImmersiveSession(
+              request.runtime_id, *(request.options), enabled_features);
 
   // If the session specified a FrameSinkId that means that it is handling its
   // own compositing in a way that we should notify the WebContents about.

@@ -145,6 +145,7 @@ void SessionMetricsHelper::StopAndRecordInlineSession(size_t session_id) {
 
 mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
 SessionMetricsHelper::StartImmersiveSession(
+    const device::mojom::XRDeviceId& runtime_id,
     const device::mojom::XRSessionOptions& session_options,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         enabled_features) {
@@ -158,6 +159,7 @@ SessionMetricsHelper::StartImmersiveSession(
       webxr::mojom::SessionStartedRecord::New();
   session_started_record->trace_id = session_timer_->GetTraceId();
   session_started_record->started_time = session_timer_->GetStartTime();
+  session_started_record->device_id = runtime_id;
   XRRuntimeManagerImpl::GetOrCreateInstance()
       ->GetLoggerManager()
       .RecordSessionStarted(std::move(session_started_record));
