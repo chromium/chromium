@@ -106,13 +106,13 @@ GameDashboardContextTestApi::GetMainMenuGameControlsDetailsButton() {
 PillButton* GameDashboardContextTestApi::GetMainMenuGameControlsSetupButton() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
-  return main_menu_view->game_controls_setup_button_;
+  return main_menu_view->GetGameControlsSetupButton();
 }
 
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
-  return main_menu_view->game_controls_feature_switch_;
+  return main_menu_view->GetGameControlsFeatureSwith();
 }
 
 views::LabelButton* GameDashboardContextTestApi::GetMainMenuFeedbackButton() {

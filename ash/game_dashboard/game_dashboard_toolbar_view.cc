@@ -279,16 +279,8 @@ void GameDashboardToolbarView::UpdateViewForGameControls(
     }
 
     // Update game_controls_button_.
-    game_controls_button_->SetEnabled(
-        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled) &&
-        !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty));
-    if (game_controls_button_->GetEnabled()) {
-      game_controls_button_->SetToggled(
-          game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kHint));
-    }
-
-    game_dashboard_utils::UpdateGameControlsHintButtonToolTipText(
-        game_controls_button_, flags);
+    game_dashboard_utils::UpdateGameControlsHintButton(game_controls_button_,
+                                                       flags);
   }
 }
 

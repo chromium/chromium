@@ -34,15 +34,16 @@ ASH_EXPORT ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
                                           ArcGameControlsFlag flag,
                                           bool enable_flag);
 
-// Returns flags value if Game Controls is available on `window`. Otherwise, it
-// returns nullopt.
+// Returns flags value if `window` is an ARC game window. Otherwise, it returns
+// nullopt.
 std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
 
-// Updates Game Controls mapping hint button tooltip text. `button`
-// refers to `game_controls_tile_` in `GameDashboardMainMenuView` or
+// Updates Game Controls mapping hint button, such as button enabled state,
+// toggled state, label text and tooltip text. `button` refers to
+// `game_controls_tile_` in `GameDashboardMainMenuView` or
 // `game_controls_button_` in `GameDashboardToolbarView`.
-void UpdateGameControlsHintButtonToolTipText(views::Button* button,
-                                             ArcGameControlsFlag flags);
+void UpdateGameControlsHintButton(views::Button* button,
+                                  ArcGameControlsFlag flags);
 
 // Returns true if `window` is not ARC game window, or Game Controls state is
 // known and not in edit mode.

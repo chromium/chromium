@@ -129,13 +129,13 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   // end of the test, closes the main menu and toolbar.
   // `hint_tile_states` is about feature tile states, {expect_exists,
   // expect_enabled, expect_on}.
-  // `details_row_exists` is about if the Game Controls details row exists.
-  // `feature_switch_states` is about feature switch button states,
-  // {expect_exists, expect_toggled}.
-  // `setup_exists` shows if setup button exists.
+  // `details_row_states` is about the Game Controls details row states,
+  // {expect_exists, expect_enabled}. `feature_switch_states` is about feature
+  // switch button states, {expect_exists, expect_toggled}. `setup_exists` shows
+  // if setup button exists.
   void OpenMenuCheckGameControlsUIState(
       std::array<bool, 3> hint_tile_states,
-      bool details_row_exists,
+      std::array<bool, 2> details_row_states,
       std::array<bool, 2> feature_switch_states,
       bool setup_exists) {
     test_api_->OpenTheMainMenu();
@@ -150,7 +150,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     }
 
     auto* details_row = test_api_->GetMainMenuGameControlsDetailsButton();
-    ASSERT_EQ(!!details_row, details_row_exists);
+    EXPECT_EQ(details_row_states[0], !!details_row);
+    if (details_row) {
+      EXPECT_EQ(details_row_states[1], details_row->GetEnabled());
+    }
 
     if (const auto* switch_button =
             test_api_->GetMainMenuGameControlsFeatureSwitch();
@@ -163,6 +166,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
     auto* setup_button = test_api_->GetMainMenuGameControlsSetupButton();
     ASSERT_EQ(!!setup_button, setup_exists);
+    if (setup_button) {
+      EXPECT_EQ(details_row_states[1], setup_button->GetEnabled());
+    }
 
     // Open toolbar and check the toolbar's Game Controls button state.
     test_api_->OpenTheToolbar();
@@ -438,15 +444,17 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 // - The tile can only be toggled when Game Controls has at least one action and
 //   Game Controls feature is enabled.
 TEST_F(GameDashboardContextTest, GameControlsMenuState) {
-  CreateGameWindow(/*is_arc_window=*/true);
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true);
 
+  // Game Controls is not available (GC is optout).
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
-      {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
-      /*details_row_exists=*/false,
+      {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/false},
       /*feature_switch_states=*/
       {/*expect_exists=*/false, /*expect_toggled=*/false},
-      /*setup_exists=*/false);
+      /*setup_exists=*/true);
 
   // Game Controls is available, not empty, but not enabled.
   game_window_->SetProperty(
@@ -456,7 +464,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
-      /*details_row_exists=*/true,
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/false},
       /*setup_exists=*/false);
@@ -471,7 +479,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
-      /*details_row_exists=*/true,
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*feature_switch_states=*/
       {/*expect_exists=*/false, /*expect_toggled=*/false},
       /*setup_exists=*/true);
@@ -485,7 +493,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
-      /*details_row_exists=*/true,
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
@@ -499,7 +507,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/true},
-      /*details_row_exists=*/true,
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
@@ -591,7 +599,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
-      /*details_row_exists=*/true,
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/false},
       /*setup_exists=*/false);
@@ -621,7 +629,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
   OpenMenuCheckGameControlsUIState(
       /*hint_tile_states=*/
       {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
-      /*details_row_exists=*/true,
+      /*details_row_exists=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
@@ -864,6 +872,26 @@ TEST_P(GameTypeGameDashboardContextTest, OpenGameDashboardButtonWidget) {
 
   // Open the main menu dialog and verify the main menu is open.
   test_api_->OpenTheMainMenu();
+}
+
+// Verifies Game Controls UIs only show up on the ARC games.
+TEST_P(GameTypeGameDashboardContextTest, GameControlsUiExistence) {
+  const bool is_arc_game = IsArcGame();
+  if (is_arc_game) {
+    // The ARC game has Game Controls optout in this test.
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
+  OpenMenuCheckGameControlsUIState(
+      /*hint_tile_states=*/
+      {/*expect_exists=*/is_arc_game, /*expect_enabled=*/false,
+       /*expect_on=*/false},
+      /*details_row_exists=*/
+      {/*expect_exists=*/is_arc_game, /*expect_enabled=*/false},
+      /*feature_switch_states=*/
+      {/*expect_exists=*/false, /*expect_toggled=*/false},
+      /*setup_exists=*/is_arc_game);
 }
 
 // Verifies clicking the Game Dashboard button will close the main menu widget
