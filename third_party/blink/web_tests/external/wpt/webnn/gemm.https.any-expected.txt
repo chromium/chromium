@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] gemm two float32 2D constant tensors options.c / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The dimensions of bias must be [5]."
 [FAIL] gemm two float32 2D tensors options.c / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The dimensions of bias must be [5]."
 [FAIL] gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5] / async

@@ -2582,6 +2582,8 @@ crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
+crbug.com/626703 [ Win10.20h2 ] virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/storage-access-api/hasStorageAccess.sub.https.window.html [ Crash ]
 crbug.com/626703 external/wpt/focus/focus-large-element-in-overflow-hidden-container.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-button-overflow.html [ Failure ]

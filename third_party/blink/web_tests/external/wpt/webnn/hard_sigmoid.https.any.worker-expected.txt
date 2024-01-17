@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] hardSigmoid float32 positive 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (hardSigmoid) is not supported.
 [FAIL] hardSigmoid float32 positive 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (hardSigmoid) is not supported.
 [FAIL] hardSigmoid float32 positive 2D tensor default options / sync
@@ -25,6 +27,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (hardSigmoid) is not supported.
 [FAIL] hardSigmoid float32 negative 4D tensor specified all options (negative options.alpha and positive options.beta) / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (hardSigmoid) is not supported.
+[FAIL] hardSigmoid float32 positive 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] hardSigmoid float32 positive 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] hardSigmoid float32 positive 2D tensor default options / async

@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_path_invalid_values[no_leading_forward_slash]
+  AttributeError: module 'webdriver.bidi.error' has no attribute 'UnableToSetCookieException'
+Harness: the test ran to completion.

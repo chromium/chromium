@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransport interface: operation getStats()
   assert_own_property: interface prototype object missing non-static operation expected property "getStats" missing
 [FAIL] WebTransport interface: attribute reliability
@@ -10,6 +10,8 @@ Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "draining" expected true got false
 [FAIL] WebTransport interface: operation createSendGroup()
   assert_own_property: interface prototype object missing non-static operation expected property "createSendGroup" missing
+[FAIL] WebTransport interface: attribute supportsReliableOnly
+  assert_own_property: The interface object must have a property "supportsReliableOnly" expected property "supportsReliableOnly" missing
 [FAIL] WebTransport interface: webTransport must inherit property "getStats()" with the proper type
   assert_inherits: property "getStats" not found in prototype chain
 [FAIL] WebTransport interface: webTransport must inherit property "reliability" with the proper type

@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 304 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] reduceL1 float32 1D constant tensor all positive default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL1) is not supported.
 [FAIL] reduceL1 float32 1D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL1) is not supported.
 [FAIL] reduceL1 float32 1D tensor all negative default options / sync
@@ -32,6 +34,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL1) is not supported.
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL1) is not supported.
+[FAIL] reduceL2 float32 1D constant tensor all positive default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL2) is not supported.
 [FAIL] reduceL2 float32 1D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL2) is not supported.
 [FAIL] reduceL2 float32 1D tensor all negative default options / sync
@@ -64,6 +68,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL2) is not supported.
 [FAIL] reduceL2 float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceL2) is not supported.
+[FAIL] reduceLogSum float32 1D constant tensor all non-negative default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported.
 [FAIL] reduceLogSum float32 1D tensor all non-negative default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported.
 [FAIL] reduceLogSum float32 1D tensor all non-negative integers default options / sync
@@ -92,6 +98,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported.
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported.
+[FAIL] reduceLogSumExp float32 1D constant tensor all positive default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported.
 [FAIL] reduceLogSumExp float32 1D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported.
 [FAIL] reduceLogSumExp float32 1D tensor all negative default options / sync
@@ -124,6 +132,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported.
 [FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported.
+[FAIL] reduceMax float32 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMax) is not supported.
 [FAIL] reduceMax float32 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMax) is not supported.
 [FAIL] reduceMax float32 2D tensor default options / sync
@@ -156,6 +166,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter.
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter.
+[FAIL] reduceMin float32 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMin) is not supported.
 [FAIL] reduceMin float32 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMin) is not supported.
 [FAIL] reduceMin float32 2D tensor default options / sync
@@ -182,6 +194,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMin) is not supported.
 [FAIL] reduceMin float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceMin) is not supported.
+[FAIL] reduceProduct float32 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceProduct) is not supported.
 [FAIL] reduceProduct float32 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceProduct) is not supported.
 [FAIL] reduceProduct float32 2D tensor default options / sync
@@ -208,6 +222,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceProduct) is not supported.
 [FAIL] reduceProduct float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceProduct) is not supported.
+[FAIL] reduceSum float32 1D constant tensor all positive default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 [FAIL] reduceSum float32 1D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 [FAIL] reduceSum float32 1D tensor all negative default options / sync
@@ -240,6 +256,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
 [FAIL] reduceSum float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSum) is not supported.
+[FAIL] reduceSumSquare float32 1D constant tensor all positive default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSumSquare) is not supported.
 [FAIL] reduceSumSquare float32 1D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSumSquare) is not supported.
 [FAIL] reduceSumSquare float32 1D tensor all negative default options / sync
@@ -272,6 +290,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSumSquare) is not supported.
 [FAIL] reduceSumSquare float32 4D tensor options.axes with options.keepDimensions=true / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reduceSumSquare) is not supported.
+[FAIL] reduceL1 float32 1D constant tensor all positive default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceL1 float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceL1 float32 1D tensor all negative default options / async
@@ -303,6 +323,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceL2 float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceL2 float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -336,6 +358,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceL2 float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceLogSum float32 1D constant tensor all non-negative default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceLogSum float32 1D tensor all non-negative default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceLogSum float32 1D tensor all non-negative integers default options / async
@@ -363,6 +387,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceLogSumExp float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceLogSumExp float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -396,6 +422,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceMax float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMax float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMax float32 2D tensor default options / async
@@ -421,6 +449,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceMean float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMean float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -454,6 +484,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceMin float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMin float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMin float32 2D tensor default options / async
@@ -480,6 +512,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceMin float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceProduct float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceProduct float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceProduct float32 2D tensor default options / async
@@ -505,6 +539,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceProduct float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceProduct float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceSum float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceSum float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -537,6 +573,8 @@ Found 285 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceSum float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceSum float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reduceSumSquare float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] reduceSumSquare float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] averagePool2d float32 4D tensor options.dilations / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': DirectML: Dilations are not supported for average pooling operator.
+[FAIL] averagePool2d float32 4D constant tensor all positive default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor all negative default options / async
@@ -41,6 +43,8 @@ Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor options.dilations with options.strides / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] maxPool2d float32 4D constant tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] maxPool2d float32 4D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

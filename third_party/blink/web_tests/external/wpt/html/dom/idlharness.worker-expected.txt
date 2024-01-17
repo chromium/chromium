@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] UserActivation interface: existence and properties of interface object
   assert_false: expected false got true
+[FAIL] PromiseRejectionEvent interface: attribute promise
+  assert_throws_js: getting property on prototype object must throw TypeError function "function () { [native code] }" did not throw
 [FAIL] WorkerGlobalScope interface: attribute onoffline
   assert_true: The prototype object must have a property "onoffline" expected true got false
 [FAIL] WorkerGlobalScope interface: attribute ononline

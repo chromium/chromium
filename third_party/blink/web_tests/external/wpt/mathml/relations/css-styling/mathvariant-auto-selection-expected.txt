@@ -1,0 +1,226 @@
+This is a testharness.js-based test.
+Found 111 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Selection.toString() for <mi>A</mi> returns the transformed character.
+  assert_equals: expected "𝐴" but got "U+d835"
+[FAIL] Selection.toString() for <mi>B</mi> returns the transformed character.
+  assert_equals: expected "𝐵" but got "U+d835"
+[FAIL] Selection.toString() for <mi>C</mi> returns the transformed character.
+  assert_equals: expected "𝐶" but got "U+d835"
+[FAIL] Selection.toString() for <mi>D</mi> returns the transformed character.
+  assert_equals: expected "𝐷" but got "U+d835"
+[FAIL] Selection.toString() for <mi>E</mi> returns the transformed character.
+  assert_equals: expected "𝐸" but got "U+d835"
+[FAIL] Selection.toString() for <mi>F</mi> returns the transformed character.
+  assert_equals: expected "𝐹" but got "U+d835"
+[FAIL] Selection.toString() for <mi>G</mi> returns the transformed character.
+  assert_equals: expected "𝐺" but got "U+d835"
+[FAIL] Selection.toString() for <mi>H</mi> returns the transformed character.
+  assert_equals: expected "𝐻" but got "U+d835"
+[FAIL] Selection.toString() for <mi>I</mi> returns the transformed character.
+  assert_equals: expected "𝐼" but got "U+d835"
+[FAIL] Selection.toString() for <mi>J</mi> returns the transformed character.
+  assert_equals: expected "𝐽" but got "U+d835"
+[FAIL] Selection.toString() for <mi>K</mi> returns the transformed character.
+  assert_equals: expected "𝐾" but got "U+d835"
+[FAIL] Selection.toString() for <mi>L</mi> returns the transformed character.
+  assert_equals: expected "𝐿" but got "U+d835"
+[FAIL] Selection.toString() for <mi>M</mi> returns the transformed character.
+  assert_equals: expected "𝑀" but got "U+d835"
+[FAIL] Selection.toString() for <mi>N</mi> returns the transformed character.
+  assert_equals: expected "𝑁" but got "U+d835"
+[FAIL] Selection.toString() for <mi>O</mi> returns the transformed character.
+  assert_equals: expected "𝑂" but got "U+d835"
+[FAIL] Selection.toString() for <mi>P</mi> returns the transformed character.
+  assert_equals: expected "𝑃" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Q</mi> returns the transformed character.
+  assert_equals: expected "𝑄" but got "U+d835"
+[FAIL] Selection.toString() for <mi>R</mi> returns the transformed character.
+  assert_equals: expected "𝑅" but got "U+d835"
+[FAIL] Selection.toString() for <mi>S</mi> returns the transformed character.
+  assert_equals: expected "𝑆" but got "U+d835"
+[FAIL] Selection.toString() for <mi>T</mi> returns the transformed character.
+  assert_equals: expected "𝑇" but got "U+d835"
+[FAIL] Selection.toString() for <mi>U</mi> returns the transformed character.
+  assert_equals: expected "𝑈" but got "U+d835"
+[FAIL] Selection.toString() for <mi>V</mi> returns the transformed character.
+  assert_equals: expected "𝑉" but got "U+d835"
+[FAIL] Selection.toString() for <mi>W</mi> returns the transformed character.
+  assert_equals: expected "𝑊" but got "U+d835"
+[FAIL] Selection.toString() for <mi>X</mi> returns the transformed character.
+  assert_equals: expected "𝑋" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Y</mi> returns the transformed character.
+  assert_equals: expected "𝑌" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Z</mi> returns the transformed character.
+  assert_equals: expected "𝑍" but got "U+d835"
+[FAIL] Selection.toString() for <mi>a</mi> returns the transformed character.
+  assert_equals: expected "𝑎" but got "U+d835"
+[FAIL] Selection.toString() for <mi>b</mi> returns the transformed character.
+  assert_equals: expected "𝑏" but got "U+d835"
+[FAIL] Selection.toString() for <mi>c</mi> returns the transformed character.
+  assert_equals: expected "𝑐" but got "U+d835"
+[FAIL] Selection.toString() for <mi>d</mi> returns the transformed character.
+  assert_equals: expected "𝑑" but got "U+d835"
+[FAIL] Selection.toString() for <mi>e</mi> returns the transformed character.
+  assert_equals: expected "𝑒" but got "U+d835"
+[FAIL] Selection.toString() for <mi>f</mi> returns the transformed character.
+  assert_equals: expected "𝑓" but got "U+d835"
+[FAIL] Selection.toString() for <mi>g</mi> returns the transformed character.
+  assert_equals: expected "𝑔" but got "U+d835"
+[FAIL] Selection.toString() for <mi>i</mi> returns the transformed character.
+  assert_equals: expected "𝑖" but got "U+d835"
+[FAIL] Selection.toString() for <mi>j</mi> returns the transformed character.
+  assert_equals: expected "𝑗" but got "U+d835"
+[FAIL] Selection.toString() for <mi>k</mi> returns the transformed character.
+  assert_equals: expected "𝑘" but got "U+d835"
+[FAIL] Selection.toString() for <mi>l</mi> returns the transformed character.
+  assert_equals: expected "𝑙" but got "U+d835"
+[FAIL] Selection.toString() for <mi>m</mi> returns the transformed character.
+  assert_equals: expected "𝑚" but got "U+d835"
+[FAIL] Selection.toString() for <mi>n</mi> returns the transformed character.
+  assert_equals: expected "𝑛" but got "U+d835"
+[FAIL] Selection.toString() for <mi>o</mi> returns the transformed character.
+  assert_equals: expected "𝑜" but got "U+d835"
+[FAIL] Selection.toString() for <mi>p</mi> returns the transformed character.
+  assert_equals: expected "𝑝" but got "U+d835"
+[FAIL] Selection.toString() for <mi>q</mi> returns the transformed character.
+  assert_equals: expected "𝑞" but got "U+d835"
+[FAIL] Selection.toString() for <mi>r</mi> returns the transformed character.
+  assert_equals: expected "𝑟" but got "U+d835"
+[FAIL] Selection.toString() for <mi>s</mi> returns the transformed character.
+  assert_equals: expected "𝑠" but got "U+d835"
+[FAIL] Selection.toString() for <mi>t</mi> returns the transformed character.
+  assert_equals: expected "𝑡" but got "U+d835"
+[FAIL] Selection.toString() for <mi>u</mi> returns the transformed character.
+  assert_equals: expected "𝑢" but got "U+d835"
+[FAIL] Selection.toString() for <mi>v</mi> returns the transformed character.
+  assert_equals: expected "𝑣" but got "U+d835"
+[FAIL] Selection.toString() for <mi>w</mi> returns the transformed character.
+  assert_equals: expected "𝑤" but got "U+d835"
+[FAIL] Selection.toString() for <mi>x</mi> returns the transformed character.
+  assert_equals: expected "𝑥" but got "U+d835"
+[FAIL] Selection.toString() for <mi>y</mi> returns the transformed character.
+  assert_equals: expected "𝑦" but got "U+d835"
+[FAIL] Selection.toString() for <mi>z</mi> returns the transformed character.
+  assert_equals: expected "𝑧" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ı</mi> returns the transformed character.
+  assert_equals: expected "𝚤" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ȷ</mi> returns the transformed character.
+  assert_equals: expected "𝚥" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Α</mi> returns the transformed character.
+  assert_equals: expected "𝛢" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Β</mi> returns the transformed character.
+  assert_equals: expected "𝛣" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Γ</mi> returns the transformed character.
+  assert_equals: expected "𝛤" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Δ</mi> returns the transformed character.
+  assert_equals: expected "𝛥" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ε</mi> returns the transformed character.
+  assert_equals: expected "𝛦" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ζ</mi> returns the transformed character.
+  assert_equals: expected "𝛧" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Η</mi> returns the transformed character.
+  assert_equals: expected "𝛨" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Θ</mi> returns the transformed character.
+  assert_equals: expected "𝛩" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ι</mi> returns the transformed character.
+  assert_equals: expected "𝛪" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Κ</mi> returns the transformed character.
+  assert_equals: expected "𝛫" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Λ</mi> returns the transformed character.
+  assert_equals: expected "𝛬" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Μ</mi> returns the transformed character.
+  assert_equals: expected "𝛭" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ν</mi> returns the transformed character.
+  assert_equals: expected "𝛮" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ξ</mi> returns the transformed character.
+  assert_equals: expected "𝛯" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ο</mi> returns the transformed character.
+  assert_equals: expected "𝛰" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Π</mi> returns the transformed character.
+  assert_equals: expected "𝛱" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ρ</mi> returns the transformed character.
+  assert_equals: expected "𝛲" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Σ</mi> returns the transformed character.
+  assert_equals: expected "𝛴" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Τ</mi> returns the transformed character.
+  assert_equals: expected "𝛵" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Υ</mi> returns the transformed character.
+  assert_equals: expected "𝛶" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Φ</mi> returns the transformed character.
+  assert_equals: expected "𝛷" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Χ</mi> returns the transformed character.
+  assert_equals: expected "𝛸" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ψ</mi> returns the transformed character.
+  assert_equals: expected "𝛹" but got "U+d835"
+[FAIL] Selection.toString() for <mi>Ω</mi> returns the transformed character.
+  assert_equals: expected "𝛺" but got "U+d835"
+[FAIL] Selection.toString() for <mi>α</mi> returns the transformed character.
+  assert_equals: expected "𝛼" but got "U+d835"
+[FAIL] Selection.toString() for <mi>β</mi> returns the transformed character.
+  assert_equals: expected "𝛽" but got "U+d835"
+[FAIL] Selection.toString() for <mi>γ</mi> returns the transformed character.
+  assert_equals: expected "𝛾" but got "U+d835"
+[FAIL] Selection.toString() for <mi>δ</mi> returns the transformed character.
+  assert_equals: expected "𝛿" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ε</mi> returns the transformed character.
+  assert_equals: expected "𝜀" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ζ</mi> returns the transformed character.
+  assert_equals: expected "𝜁" but got "U+d835"
+[FAIL] Selection.toString() for <mi>η</mi> returns the transformed character.
+  assert_equals: expected "𝜂" but got "U+d835"
+[FAIL] Selection.toString() for <mi>θ</mi> returns the transformed character.
+  assert_equals: expected "𝜃" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ι</mi> returns the transformed character.
+  assert_equals: expected "𝜄" but got "U+d835"
+[FAIL] Selection.toString() for <mi>κ</mi> returns the transformed character.
+  assert_equals: expected "𝜅" but got "U+d835"
+[FAIL] Selection.toString() for <mi>λ</mi> returns the transformed character.
+  assert_equals: expected "𝜆" but got "U+d835"
+[FAIL] Selection.toString() for <mi>μ</mi> returns the transformed character.
+  assert_equals: expected "𝜇" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ν</mi> returns the transformed character.
+  assert_equals: expected "𝜈" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ξ</mi> returns the transformed character.
+  assert_equals: expected "𝜉" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ο</mi> returns the transformed character.
+  assert_equals: expected "𝜊" but got "U+d835"
+[FAIL] Selection.toString() for <mi>π</mi> returns the transformed character.
+  assert_equals: expected "𝜋" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ρ</mi> returns the transformed character.
+  assert_equals: expected "𝜌" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ς</mi> returns the transformed character.
+  assert_equals: expected "𝜍" but got "U+d835"
+[FAIL] Selection.toString() for <mi>σ</mi> returns the transformed character.
+  assert_equals: expected "𝜎" but got "U+d835"
+[FAIL] Selection.toString() for <mi>τ</mi> returns the transformed character.
+  assert_equals: expected "𝜏" but got "U+d835"
+[FAIL] Selection.toString() for <mi>υ</mi> returns the transformed character.
+  assert_equals: expected "𝜐" but got "U+d835"
+[FAIL] Selection.toString() for <mi>φ</mi> returns the transformed character.
+  assert_equals: expected "𝜑" but got "U+d835"
+[FAIL] Selection.toString() for <mi>χ</mi> returns the transformed character.
+  assert_equals: expected "𝜒" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ψ</mi> returns the transformed character.
+  assert_equals: expected "𝜓" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ω</mi> returns the transformed character.
+  assert_equals: expected "𝜔" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϑ</mi> returns the transformed character.
+  assert_equals: expected "𝜗" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϕ</mi> returns the transformed character.
+  assert_equals: expected "𝜙" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϖ</mi> returns the transformed character.
+  assert_equals: expected "𝜛" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϰ</mi> returns the transformed character.
+  assert_equals: expected "𝜘" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϱ</mi> returns the transformed character.
+  assert_equals: expected "𝜚" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϴ</mi> returns the transformed character.
+  assert_equals: expected "𝛳" but got "U+d835"
+[FAIL] Selection.toString() for <mi>ϵ</mi> returns the transformed character.
+  assert_equals: expected "𝜖" but got "U+d835"
+[FAIL] Selection.toString() for <mi>∂</mi> returns the transformed character.
+  assert_equals: expected "𝜕" but got "U+d835"
+[FAIL] Selection.toString() for <mi>∇</mi> returns the transformed character.
+  assert_equals: expected "𝛻" but got "U+d835"
+Harness: the test ran to completion.
+

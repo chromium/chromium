@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] conv2d float32 4D input and filter tensors options.filterLayout='hwio' / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: The filter layout hwio is not supported.
 [FAIL] conv2d float32 4D input and filter tensors options.filterLayout='ohwi' / sync
@@ -17,6 +17,8 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] conv2d float32 4D input and filter tensors, both negative input tensor and options.bias / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: The filter layout hwio is not supported.
 [FAIL] conv2d float32 4D input and filter(non-constant) tensors default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] conv2d float32 4D both input and filter constant tensors default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] conv2d float32 4D input and filter tensors default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

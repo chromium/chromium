@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] inbound-rtp's framesRendered
   assert_true: Is framesRendered present expected true got false
 [FAIL] inbound-rtp's fecBytesReceived
@@ -18,14 +18,6 @@ Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
   media-source.echoReturnLoss marked as not testable.
 [PRECONDITION_FAILED] media-source's echoReturnLossEnhancement
   media-source.echoReturnLossEnhancement marked as not testable.
-[FAIL] media-source's droppedSamplesDuration
-  assert_true: Is droppedSamplesDuration present expected true got false
-[FAIL] media-source's droppedSamplesEvents
-  assert_true: Is droppedSamplesEvents present expected true got false
-[FAIL] media-source's totalCaptureDelay
-  assert_true: Is totalCaptureDelay present expected true got false
-[FAIL] media-source's totalSamplesCaptured
-  assert_true: Is totalSamplesCaptured present expected true got false
 [PRECONDITION_FAILED] candidate-pair's availableIncomingBitrate
   candidate-pair.availableIncomingBitrate marked as not testable.
 [PRECONDITION_FAILED] local-candidate's url
