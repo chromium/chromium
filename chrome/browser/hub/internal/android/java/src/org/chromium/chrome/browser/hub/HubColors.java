@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.widget.Button;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -103,15 +101,5 @@ public final class HubColors {
             @ColorInt int selectedColor, @ColorInt int normalColor) {
         int[] colors = new int[] {selectedColor, normalColor};
         return new ColorStateList(SELECTED_AND_NORMAL_STATES, colors);
-    }
-
-    /** Convenience method to tint the drawable(s) of a button. */
-    public static void tintCompoundDrawable(Button button, @ColorInt int color) {
-        for (Drawable drawable : button.getCompoundDrawables()) {
-            if (drawable != null) {
-                drawable.mutate();
-                drawable.setTint(color);
-            }
-        }
     }
 }

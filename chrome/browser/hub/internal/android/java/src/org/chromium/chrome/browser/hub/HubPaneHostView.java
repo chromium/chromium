@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import androidx.core.widget.TextViewCompat;
 
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -48,7 +49,8 @@ public class HubPaneHostView extends FrameLayout {
         Context context = getContext();
 
         @ColorInt int iconColor = HubColors.getIconColor(context, colorScheme);
-        HubColors.tintCompoundDrawable(mActionButton, iconColor);
+        TextViewCompat.setCompoundDrawableTintList(
+                mActionButton, ColorStateList.valueOf(iconColor));
 
         @ColorInt int backgroundColor = HubColors.getSecondaryContainerColor(context, colorScheme);
         mActionButton.setButtonColor(ColorStateList.valueOf(backgroundColor));

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
@@ -88,7 +90,8 @@ public class HubToolbarView extends LinearLayout {
         setBackgroundColor(HubColors.getBackgroundColor(context, colorScheme));
         @ColorInt int iconColor = HubColors.getIconColor(context, colorScheme);
         @ColorInt int selectedIconColor = HubColors.getSelectedIconColor(context, colorScheme);
-        HubColors.tintCompoundDrawable(mActionButton, iconColor);
+        TextViewCompat.setCompoundDrawableTintList(
+                mActionButton, ColorStateList.valueOf(iconColor));
         mPaneSwitcher.setTabIconTint(HubColors.getSelectableIconList(selectedIconColor, iconColor));
         mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
 
