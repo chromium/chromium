@@ -153,41 +153,7 @@ try_.orchestrator_builder(
     ),
 )
 
-try_.orchestrator_builder(
-    name = "chromeos-amd64-generic-rel-renamed",
-    branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    description_html = "This is a renamed builder of chromeos-amd64-generic-rel.",
-    mirrors = ["ci/chromeos-amd64-generic-rel-renamed"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/chromeos-amd64-generic-rel-renamed",
-            "dcheck_always_on",
-        ],
-    ),
-    compilator = "chromeos-amd64-generic-rel-compilator",
-    contact_team_email = "chromeos-sw-engprod@google.com",
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-)
-
 CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache"
-
-try_.compilator_builder(
-    name = "chromeos-amd64-generic-rel-compilator",
-    branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    cores = "8|16",
-    caches = [
-        swarming.cache(
-            name = CHROMEOS_SHARED_CACHE,
-            path = "builder",
-            wait_for_warm_cache = 4 * time.minute,
-        ),
-    ],
-    main_list_view = "try",
-)
 
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-gtest-compilator",

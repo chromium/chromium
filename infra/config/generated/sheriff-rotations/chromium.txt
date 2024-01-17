@@ -78,7 +78,6 @@ ci/chromeos-amd64-generic-dbg
 ci/chromeos-amd64-generic-lacros-dbg
 ci/chromeos-amd64-generic-rel
 ci/chromeos-amd64-generic-rel-gtest
-ci/chromeos-amd64-generic-rel-renamed
 ci/chromeos-amd64-generic-rel-tast
 ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel

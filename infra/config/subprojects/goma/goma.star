@@ -92,7 +92,7 @@ fyi_goma_rbe_canary_builder(
 fyi_goma_rbe_canary_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-canary",
     builder_spec = builder_config.copy_from(
-        "ci/chromeos-amd64-generic-rel-renamed",
+        "ci/chromeos-amd64-generic-rel",
         lambda spec: structs.evolve(
             spec,
             chromium_config = structs.extend(
@@ -283,7 +283,7 @@ goma_builder(
 
 goma_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-staging",
-    builder_spec = builder_config.copy_from("ci/chromeos-amd64-generic-rel-renamed"),
+    builder_spec = builder_config.copy_from("ci/chromeos-amd64-generic-rel"),
     gn_args = gn_args.config(
         configs = [
             "chromeos_device",
