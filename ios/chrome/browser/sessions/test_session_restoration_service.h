@@ -33,6 +33,7 @@ class TestSessionRestorationService : public SessionRestorationService {
   void LoadWebStateStorage(Browser* browser,
                            web::WebState* web_state,
                            WebStateStorageCallback callback) override;
+  void AttachBackup(Browser* browser, Browser* backup) final;
   void Disconnect(Browser* browser) override;
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
