@@ -1436,18 +1436,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
 
     // If we're dragging a saved group, resume tracking now that the group is
     // re-attached.
-    if (header_drag_ &&
-        base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-        paused_saved_group_id_.has_value()) {
-      Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
-                             GetAttachedBrowserWidget()->GetNativeWindow())
-                             ->browser();
-      SavedTabGroupKeyedService* const saved_tab_group_service =
-          SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-      saved_tab_group_service->ResumeTrackingLocalTabGroup(
-          paused_saved_group_id_.value(), group_.value());
-      paused_saved_group_id_ = std::nullopt;
-    }
+    MaybeResumeTrackingSavedTabGroup();
   }
   DCHECK_EQ(views.size(), drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i) {
@@ -1510,18 +1499,7 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
 
   // If we're dragging a saved tab group, suspend tracking between Detach and
   // Attach. Otherwise, the group will get emptied out as we close all the tabs.
-  if (header_drag_ && base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
-    Browser* browser = BrowserView::GetBrowserViewForNativeWindow(
-                           GetAttachedBrowserWidget()->GetNativeWindow())
-                           ->browser();
-    SavedTabGroupKeyedService* const saved_tab_group_service =
-        SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-    if (saved_tab_group_service->model()->Contains(group_.value())) {
-      paused_saved_group_id_ =
-          saved_tab_group_service->model()->Get(group_.value())->saved_guid();
-      saved_tab_group_service->PauseTrackingLocalTabGroup(group_.value());
-    }
-  }
+  MaybePauseTrackingSavedTabGroup();
 
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     int index = attached_model->GetIndexOfWebContents(drag_data_[i].contents);
@@ -1905,8 +1883,13 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
 
 void TabDragController::RevertDrag() {
   std::vector<raw_ptr<TabSlotView, VectorExperimental>> views;
-  if (header_drag_)
+  if (header_drag_) {
     views.push_back(drag_data_[0].attached_view.get());
+  }
+
+  // If we're dragging a saved tab group, suspend tracking during the revert.
+  // Otherwise, the group will get emptied out as we revert all the tabs.
+  MaybePauseTrackingSavedTabGroup();
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     if (drag_data_[i].contents) {
       // Contents is NULL if a tab was destroyed while the drag was under way.
@@ -1914,6 +1897,7 @@ void TabDragController::RevertDrag() {
       RevertDragAt(i);
     }
   }
+  MaybeResumeTrackingSavedTabGroup();
 
   if (attached_context_) {
     if (did_restore_window_)
@@ -2836,4 +2820,44 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
         element, kTabGroupedCustomEventId);
     break;
   }
+}
+
+void TabDragController::MaybePauseTrackingSavedTabGroup() {
+  if (!header_drag_ ||
+      !base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    return;
+  }
+
+  const Browser* const browser =
+      BrowserView::GetBrowserViewForNativeWindow(
+          GetAttachedBrowserWidget()->GetNativeWindow())
+          ->browser();
+  SavedTabGroupKeyedService* const saved_tab_group_service =
+      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  if (!saved_tab_group_service->model()->Contains(group_.value())) {
+    return;
+  }
+
+  paused_saved_group_id_ =
+      saved_tab_group_service->model()->Get(group_.value())->saved_guid();
+  saved_tab_group_service->PauseTrackingLocalTabGroup(group_.value());
+}
+
+void TabDragController::MaybeResumeTrackingSavedTabGroup() {
+  if (!header_drag_ ||
+      !base::FeatureList::IsEnabled(features::kTabGroupsSave) ||
+      !paused_saved_group_id_.has_value()) {
+    return;
+  }
+
+  const Browser* const browser =
+      BrowserView::GetBrowserViewForNativeWindow(
+          GetAttachedBrowserWidget()->GetNativeWindow())
+          ->browser();
+  SavedTabGroupKeyedService* const saved_tab_group_service =
+      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+
+  saved_tab_group_service->ResumeTrackingLocalTabGroup(
+      paused_saved_group_id_.value(), group_.value());
+  paused_saved_group_id_ = std::nullopt;
 }

@@ -630,6 +630,10 @@ class TabDragController : public views::WidgetObserver,
   // as a result of a drag finishing.
   void NotifyEventIfTabAddedToGroup();
 
+  void MaybePauseTrackingSavedTabGroup();
+
+  void MaybeResumeTrackingSavedTabGroup();
+
   ui::mojom::DragEventSource event_source_ = ui::mojom::DragEventSource::kMouse;
 
   // The TabDragContext the drag originated from. This is set to null
