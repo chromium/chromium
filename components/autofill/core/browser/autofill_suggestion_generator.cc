@@ -1903,8 +1903,15 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
     }
   } else if (trigger_field_type == CREDIT_CARD_VERIFICATION_CODE) {
     CHECK(!credit_card.cvc().empty());
+#if BUILDFLAG(IS_ANDROID)
+    main_text = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT,
+        credit_card.CardNameForAutofillDisplay(
+            GetDisplayNicknameForCreditCard(credit_card)));
+#else
     main_text =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT);
+#endif
   } else {
     main_text =
         credit_card.GetInfo(trigger_field_type, personal_data_->app_locale());

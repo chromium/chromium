@@ -3046,7 +3046,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_ANDROID)
 // Verify that the suggestion's texts are populated correctly for a local and
 // server card suggestion when the CVC field is focused.
 TEST_F(AutofillCreditCardSuggestionContentTest,
@@ -3072,10 +3071,17 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // Both local card and server card suggestion should be shown when CVC field
   // is focused.
   ASSERT_EQ(suggestions.size(), 2U);
-  EXPECT_EQ(suggestions[0].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
-  EXPECT_EQ(suggestions[1].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
+  EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
+  EXPECT_EQ(suggestions[0].minor_text.value, u"");
+  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+#else
+  EXPECT_EQ(suggestions[0].main_text.value, u"CVC for Visa");
+  EXPECT_EQ(suggestions[1].main_text.value, u"CVC for Mastercard");
+  EXPECT_EQ(suggestions[0].minor_text.value, u"");
+  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+#endif
 }
 
 // Verify that the suggestion's texts are populated correctly for a duplicate
@@ -3098,8 +3104,6 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   // Only 1 suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 1U);
-  EXPECT_EQ(suggestions[0].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
 }
 
 // Verify that the FPAN and VCN suggestion's texts are populated correctly for a
@@ -3124,10 +3128,18 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 2U);
-  EXPECT_EQ(suggestions[0].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
-  EXPECT_EQ(suggestions[1].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
+  EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
+  EXPECT_EQ(suggestions[0].minor_text.value, u"");
+  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+#else
+  EXPECT_EQ(suggestions[0].main_text.value, u"Virtual card  CVC for Visa");
+  EXPECT_EQ(suggestions[1].main_text.value, u"CVC for Visa");
+  EXPECT_EQ(suggestions[0].minor_text.value, u"");
+  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+#endif
 }
 
 // Verify that the FPAN and VCN suggestion's texts are populated correctly for a
@@ -3154,13 +3166,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   // Both FPAN and VCN suggestion should be shown when CVC field is focused.
   ASSERT_EQ(suggestions.size(), 2U);
-  EXPECT_EQ(suggestions[0].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
-  EXPECT_EQ(suggestions[1].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
 // Tests that credit card suggestions on iOS use the correct number of '•'
