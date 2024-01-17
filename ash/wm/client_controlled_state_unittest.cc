@@ -254,6 +254,23 @@ class ClientControlledStateTest : public AshTestBase {
     widget->Show();
     widget->Activate();
   }
+  void DragResizeSnappedWindow(int target_x) {
+    ASSERT_TRUE(window_state()->IsSnapped());
+
+    ui::test::EventGenerator* const generator = GetEventGenerator();
+    const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
+    if (in_tablet) {
+      auto* split_view_controller = SplitViewController::Get(window());
+      const gfx::Rect divider_bounds =
+          split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
+              false);
+      generator->set_current_screen_location(divider_bounds.CenterPoint());
+    } else {
+      generator->set_current_screen_location(
+          window()->GetBoundsInScreen().right_center());
+    }
+    generator->DragMouseTo(gfx::Point(target_x, 0));
+  }
 
  private:
   raw_ptr<ClientControlledState, DanglingUntriaged> state_ = nullptr;
@@ -570,7 +587,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapWindow) {
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 }
 
-TEST_F(ClientControlledStateTest, PartialSnap) {
+TEST_P(ClientControlledStateTestClamshellAndTablet, PartialSnap) {
   // Snap enabled.
   widget_delegate()->EnableSnap();
 
@@ -665,11 +682,13 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
             delegate()->requested_bounds());
 }
 
-TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
-  UpdateDisplay("800x600");
+TEST_P(ClientControlledStateTestClamshellAndTablet, SnapMinimizeAndUnminimize) {
+  UpdateDisplay("900x600");
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
   widget_delegate()->EnableSnap();
 
-  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_event(WM_EVENT_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
 
   // Apply pending requests.
@@ -679,19 +698,14 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
 
-  const gfx::Rect resized_bounds(0, 0, 300,
-                                 600 - ShelfConfig::Get()->shelf_size());
-  const SetBoundsWMEvent set_bounds_event(resized_bounds,
-                                          delegate()->display_id());
-  window_state()->OnWMEvent(&set_bounds_event);
-  const float expected_snap_ratio =
-      static_cast<float>(resized_bounds.width()) / 800;
+  const float target_width = 300;
+  const float expected_snap_ratio = target_width / 900;
+  DragResizeSnappedWindow(target_width);
 
   // Apply pending requests.
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), expected_snap_ratio);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
-  EXPECT_EQ(resized_bounds, delegate()->requested_bounds());
 
   widget()->Minimize();
   state()->EnterNextState(window_state(), delegate()->new_state());
@@ -703,7 +717,6 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), expected_snap_ratio);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
-  EXPECT_EQ(resized_bounds, delegate()->requested_bounds());
 }
 
 // Tests that auto snapping from maximized/minimized via overview/shelf works
@@ -1092,7 +1105,6 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
                         static_cast<int>(AppType::ARC_APP));
   ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             GetCurrentScreenOrientation());
-  auto* const split_view_controller = SplitViewController::Get(window());
 
   // Snap a window
   widget_delegate()->EnableSnap();
@@ -1103,18 +1115,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
   EXPECT_TRUE(window_state()->IsSnapped());
 
   // Resize to 1/3 (i.e. make the width 400).
-  ui::test::EventGenerator* const generator = GetEventGenerator();
-  if (InTabletMode()) {
-    const gfx::Rect divider_bounds =
-        split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
-            false);
-    generator->set_current_screen_location(divider_bounds.CenterPoint());
-  } else {
-    generator->set_current_screen_location(
-        window()->GetBoundsInScreen().right_center());
-  }
   const float target_width = 400;
-  generator->DragMouseTo(gfx::Point(target_width, 0));
+  DragResizeSnappedWindow(target_width);
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), target_width / 1200);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
