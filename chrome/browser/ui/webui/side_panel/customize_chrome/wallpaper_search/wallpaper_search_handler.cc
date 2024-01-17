@@ -522,8 +522,8 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
   if (!log_entries_.empty()) {
     feedback_metadata.Set("log_id", log_entries_.back()
                                         .first->log_ai_data_request()
-                                        ->mutable_model_execution_info()
-                                        ->server_execution_id());
+                                        ->model_execution_info()
+                                        .execution_id());
   }
   chrome::ShowFeedbackPage(
       browser, chrome::kFeedbackSourceAI,

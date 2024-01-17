@@ -624,8 +624,8 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
       // Open the Feedback Page for a thumbs down using current request log.
       std::string feedback_id = most_recent_ok_state_->modeling_log_entry()
                                     ->log_ai_data_request()
-                                    ->mutable_model_execution_info()
-                                    ->server_execution_id();
+                                    ->model_execution_info()
+                                    .execution_id();
       OpenFeedbackPage(feedback_id);
     }
   }

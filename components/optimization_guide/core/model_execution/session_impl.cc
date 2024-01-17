@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -30,6 +31,10 @@ void LogResponseHasRepeats(proto::ModelExecutionFeature feature,
           {"OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.",
            GetStringNameForModelExecutionFeature(feature)}),
       has_repeats);
+}
+
+std::string GenerateExecutionId() {
+  return "on-device:" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 }  // namespace
@@ -419,11 +424,13 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
   if (callback) {
     OptimizationGuideModelExecutionError og_error =
         OptimizationGuideModelExecutionError::FromModelExecutionError(error);
-    callback.Run(base::unexpected(og_error),
-                 og_error.ShouldLogModelQuality()
-                     ? std::make_unique<ModelQualityLogEntry>(
-                           std::move(log_ai_data_request))
-                     : nullptr);
+    std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr;
+    if (og_error.ShouldLogModelQuality()) {
+      log_entry = std::make_unique<ModelQualityLogEntry>(
+          std::move(log_ai_data_request));
+      log_entry->set_model_execution_id(GenerateExecutionId());
+    }
+    callback.Run(base::unexpected(og_error), std::move(log_entry));
   }
 }
 
@@ -543,6 +550,7 @@ void SessionImpl::SendResponse(ResponseType response_type) {
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
       log_entry = std::make_unique<ModelQualityLogEntry>(
           std::move(on_device_state_->log_ai_data_request));
+      log_entry->set_model_execution_id(GenerateExecutionId());
       on_device_state_->log_ai_data_request.reset();
     }
   }

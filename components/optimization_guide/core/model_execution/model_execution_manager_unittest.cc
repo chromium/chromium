@@ -200,8 +200,8 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
                             ->mutable_compose()
                             ->has_response_data());
             EXPECT_EQ(log_entry->log_ai_data_request()
-                          ->mutable_model_execution_info()
-                          ->server_execution_id(),
+                          ->model_execution_info()
+                          .execution_id(),
                       "test_id");
             run_loop->Quit();
           },
@@ -535,8 +535,8 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
                             ->mutable_compose()
                             ->has_response_data());
             EXPECT_EQ(log_entry->log_ai_data_request()
-                          ->mutable_model_execution_info()
-                          ->server_execution_id(),
+                          ->model_execution_info()
+                          .execution_id(),
                       "test_id");
             run_loop->Quit();
           },

@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -456,6 +457,18 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result,
                   std::unique_ptr<ModelQualityLogEntry> log_entry) {
     log_entry_received_ = std::move(log_entry);
+    if (log_entry_received_) {
+      // Make sure that an execution ID is always generated if we return a log
+      // entry.
+      ASSERT_FALSE(log_entry_received_->log_ai_data_request()
+                       ->model_execution_info()
+                       .execution_id()
+                       .empty());
+      EXPECT_TRUE(base::StartsWith(log_entry_received_->log_ai_data_request()
+                                       ->model_execution_info()
+                                       .execution_id(),
+                                   "on-device"));
+    }
     if (!result.has_value()) {
       response_error_ = result.error().error();
       return;
