@@ -24,6 +24,9 @@
 + (void)removeInfoBarsAndPresentedStateWithCompletionUUID:
     (NSUUID*)completionUUID;
 
+// Blocks signin IPH from triggering in egtests.
++ (void)blockSigninIPH;
+
 // Returns YES if the completion related to `completionUUID` has been invoked.
 // Once this method returns YES, `completionUUID` is dropped, and a second call
 // will return NO.

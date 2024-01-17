@@ -227,6 +227,8 @@ void ResetAuthentication() {
     [ChromeEarlGrey openNewTab];
   }
   _executedTestMethodSetUp = YES;
+
+  [ChromeTestCaseAppInterface blockSigninIPH];
 }
 
 // Tear down called once per test, to close all tabs and menus, and clear the
