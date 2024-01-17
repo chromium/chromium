@@ -159,15 +159,18 @@ std::string GetNbPasswordAttemptsHistogramName(
 // metrics in metadata/ash/histograms.xml.
 std::string GetConfiguredAuthFactorsHistogramSuffix(
     cryptohome::AuthFactorType factor) {
+  CHECK_NE(factor, cryptohome::AuthFactorType::kPassword);
   switch (factor) {
-    case cryptohome::AuthFactorType::kPassword:
-      return "GaiaPassword";
     case cryptohome::AuthFactorType::kPin:
       return "CryptohomePin";
     case cryptohome::AuthFactorType::kRecovery:
       return "Recovery";
     case cryptohome::AuthFactorType::kSmartCard:
       return "SmartCard";
+    case cryptohome::AuthFactorType::kPassword:
+      NOTREACHED() << "For password factor use "
+                      "`GetConfiguredPasswordFactorsHistogramSuffix()`";
+      return "";
     case cryptohome::AuthFactorType::kUnknownLegacy:
     case cryptohome::AuthFactorType::kLegacyFingerprint:
     case cryptohome::AuthFactorType::kKiosk:
@@ -181,9 +184,37 @@ std::string GetConfiguredAuthFactorsHistogramSuffix(
 // Complete name of the configured auth factors histogram.
 std::string GetConfiguredAuthFactorsHistogramName(
     cryptohome::AuthFactorType factor) {
+  CHECK_NE(factor, cryptohome::AuthFactorType::kPassword)
+      << "For password factor use `GetConfiguredPasswordFactorHistogramName()`";
   return base::StrCat(
       {kConfiguredAuthFactorsHistogramPrefix,
        GetConfiguredAuthFactorsHistogramSuffix(factor).c_str()});
+}
+
+enum class ConfiguredPasswordType {
+  kGaia,
+  kLocal,
+};
+
+// Should match suffixes of the
+// "Ash.OSAuth.Login.ConfiguredAuthFactors.{GaiaPassword,LocalPassword...}"
+// metrics in metadata/ash/histograms.xml.
+std::string GetConfiguredPasswordFactorsHistogramSuffix(
+    const ConfiguredPasswordType& type) {
+  switch (type) {
+    case ConfiguredPasswordType::kGaia:
+      return "GaiaPassword";
+    case ConfiguredPasswordType::kLocal:
+      return "LocalPassword";
+  }
+}
+
+// Complete name of the configured auth factors histogram.
+std::string GetConfiguredPasswordFactorHistogramName(
+    const ConfiguredPasswordType& type) {
+  return base::StrCat(
+      {kConfiguredAuthFactorsHistogramPrefix,
+       GetConfiguredPasswordFactorsHistogramSuffix(type).c_str()});
 }
 
 std::string GetRecoveryOutcomeSuffix(CryptohomeRecoveryResult result) {
@@ -364,8 +395,8 @@ void AuthEventsRecorder::OnExistingUserLoginScreenExit(
   AddAuthEvent("login_screen_exit_" + GetAuthenticationOutcomeName(exit_type));
 }
 
-void AuthEventsRecorder::RecordUserAuthFactors(
-    const std::vector<cryptohome::AuthFactorType>& auth_factors) const {
+void AuthEventsRecorder::RecordSessionAuthFactors(
+    const SessionAuthFactors& auth_factors) const {
   // These histograms are recorded only for login at the moment.
   // If we need to record the auth factors configured for unlock as well, the
   // DCHECK can be removed and `auth_surface_` value can be used to determine
@@ -373,9 +404,22 @@ void AuthEventsRecorder::RecordUserAuthFactors(
   DCHECK(auth_surface_.has_value());
   DCHECK_EQ(auth_surface_.value(), AuthenticationSurface::kLogin);
 
+  const auto factor_types = auth_factors.GetSessionFactors();
   for (const auto factor : kTrackedAuthFactors) {
+    if (factor == cryptohome::AuthFactorType::kPassword) {
+      auto* online_password = auth_factors.FindOnlinePasswordFactor();
+      base::UmaHistogramBoolean(GetConfiguredPasswordFactorHistogramName(
+                                    ConfiguredPasswordType::kGaia),
+                                online_password != nullptr);
+      auto* local_password = auth_factors.FindLocalPasswordFactor();
+      base::UmaHistogramBoolean(GetConfiguredPasswordFactorHistogramName(
+                                    ConfiguredPasswordType::kLocal),
+                                local_password != nullptr);
+      continue;
+    }
+
     base::UmaHistogramBoolean(GetConfiguredAuthFactorsHistogramName(factor),
-                              base::Contains(auth_factors, factor));
+                              base::Contains(factor_types, factor));
   }
 }
 

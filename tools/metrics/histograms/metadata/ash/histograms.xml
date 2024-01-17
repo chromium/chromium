@@ -4866,6 +4866,7 @@ chromium-metrics-reviews@google.com.
   <token key="AuthFactor">
     <variant name="CryptohomePin"/>
     <variant name="GaiaPassword"/>
+    <variant name="LocalPassword"/>
     <variant name="Recovery"/>
     <variant name="SmartCard"/>
   </token>

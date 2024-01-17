@@ -42,8 +42,8 @@ namespace {
 
 std::unique_ptr<UserContext> RecordConfiguredFactors(
     std::unique_ptr<UserContext> context) {
-  AuthEventsRecorder::Get()->RecordUserAuthFactors(
-      context->GetAuthFactorsData().GetSessionFactors());
+  AuthEventsRecorder::Get()->RecordSessionAuthFactors(
+      context->GetAuthFactorsData());
   return context;
 }
 
