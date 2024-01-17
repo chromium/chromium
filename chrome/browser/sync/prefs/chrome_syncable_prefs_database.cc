@@ -317,6 +317,7 @@ enum {
   kProfileContentSettingsPartitionedExceptionsMouselock = 100258,
   kProfileContentSettingsPartitionedExceptionsPopups = 100259,
   kProfileContentSettingsPartitionedExceptionsWindowPlacement = 100260,
+  kStandaloneWindowMigrationNudgeShown = 100261,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1089,6 +1090,10 @@ const auto& SyncablePreferences() {
       {language::prefs::kApplicationLocale,
        {syncable_prefs_ids::kApplicationLocale, syncer::OS_PRIORITY_PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
+        sync_preferences::MergeBehavior::kNone}},
+      {prefs::kStandaloneWindowMigrationNudgeShown,
+       {syncable_prefs_ids::kStandaloneWindowMigrationNudgeShown,
+        syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,

@@ -470,6 +470,11 @@ inline constexpr char kInsightsExtensionEnabled[] =
 // Boolean controlling whether showing Sync Consent during sign-in is enabled.
 // Controlled by policy.
 inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
+
+// Boolean pref recording the whether a nudge has been shown, to notify users of
+// changes to default display modes for affected web apps.
+inline constexpr char kStandaloneWindowMigrationNudgeShown[] =
+    "standalone_window_migration_nudge_shown";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

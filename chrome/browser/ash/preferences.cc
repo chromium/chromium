@@ -617,6 +617,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kAshAppIconLightVibrantColorCache);
   registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorGroupCache);
   registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorHueCache);
+
+  registry->RegisterBooleanPref(::prefs::kStandaloneWindowMigrationNudgeShown,
+                                false);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
