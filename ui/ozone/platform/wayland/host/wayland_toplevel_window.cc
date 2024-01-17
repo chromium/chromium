@@ -106,7 +106,18 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
 #endif
   shell_toplevel_->SetTitle(window_title_);
   SetSizeConstraints();
-  TriggerStateChanges();
+  switch (pending_state_) {
+    case PlatformWindowState::kMaximized:
+      Maximize();
+      break;
+    case PlatformWindowState::kUnknown:
+      // TODO(crbug.com/1466385): Migrate all states to here.
+      TriggerStateChanges();
+      // Do nothing.
+      break;
+    default:
+      LOG(FATAL) << "We have no other cases";
+  }
   SetUpShellIntegration();
   OnDecorationModeChanged();
 
@@ -239,7 +250,12 @@ void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
 }
 
 void WaylandToplevelWindow::Maximize() {
-  SetWindowState(PlatformWindowState::kMaximized, display::kInvalidDisplayId);
+  fullscreen_display_id_ = display::kInvalidDisplayId;
+  if (shell_toplevel_) {
+    shell_toplevel_->SetMaximized();
+  } else {
+    pending_state_ = PlatformWindowState::kMaximized;
+  }
 }
 
 void WaylandToplevelWindow::Minimize() {
@@ -253,6 +269,7 @@ void WaylandToplevelWindow::Minimize() {
   // mentioned initial configure/ack_configure messaging hasn't happened.
   //
   // TODO(crbug.com/1293740): find a solution to this workaround.
+  pending_state_ = PlatformWindowState::kUnknown;
   if (IsSurfaceConfigured()) {
     fullscreen_display_id_ = display::kInvalidDisplayId;
     shell_toplevel_->SetMinimized();
@@ -1129,7 +1146,7 @@ void WaylandToplevelWindow::TriggerStateChanges() {
       zaura_surface->UnsetPin();
     }
   } else if (state_ == PlatformWindowState::kMaximized) {
-    shell_toplevel_->SetMaximized();
+    LOG(FATAL) << "Should not be called with kMaximized state";
   } else if (state_ == PlatformWindowState::kNormal) {
     shell_toplevel_->UnSetMaximized();
   }
@@ -1141,6 +1158,11 @@ void WaylandToplevelWindow::TriggerStateChanges() {
 void WaylandToplevelWindow::SetWindowState(PlatformWindowState state,
                                            int64_t target_display_id) {
   CHECK_NE(state, PlatformWindowState::kMinimized);
+  CHECK_NE(state, PlatformWindowState::kMaximized);
+
+  // This function is to update the state synchronously, so unset
+  // pending_state_.
+  pending_state_ = PlatformWindowState::kUnknown;
 
   if (ShouldTriggerStateChange(state, target_display_id)) {
     // We don't want to update the previous state, for cases like fullscreening

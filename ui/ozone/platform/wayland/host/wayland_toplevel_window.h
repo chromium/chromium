@@ -257,6 +257,13 @@ class WaylandToplevelWindow : public WaylandWindow,
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
   // Contains the previous state of the window.
   PlatformWindowState previous_state_ = PlatformWindowState::kUnknown;
+  // The window state change may be requested before connection to compositor
+  // is set up. This keeps tracking the latest requested state, and so we can
+  // send it on connection set up.
+  // kUnknown is the default value, meaning nothing should be sent.
+  // This variable is in effect only before connection is set up.
+  PlatformWindowState pending_state_ = PlatformWindowState::kUnknown;
+
   // The display ID to switch to in case the state is `kFullscreen`.
   int64_t fullscreen_display_id_ = display::kInvalidDisplayId;
 
