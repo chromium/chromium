@@ -151,20 +151,6 @@ bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
                << ", actual: " << actual.nickname.value_or("<empty>");
     return false;
   }
-  if (!KeyPermissionsEqual(expected.key_permissions, actual.key_permissions)) {
-    LOG(ERROR) << "ERROR: key_permissions: expected: "
-               << ToString(expected.key_permissions)
-               << ", actual: " << ToString(actual.key_permissions);
-    return false;
-  }
-  if (expected.cert_provisioning_profile_id !=
-      actual.cert_provisioning_profile_id) {
-    LOG(ERROR) << "ERROR: cert_provisioning_profile_id: expected: "
-               << expected.cert_provisioning_profile_id.value_or("<empty>")
-               << ", actual: "
-               << actual.cert_provisioning_profile_id.value_or("<empty>");
-    return false;
-  }
   return true;
 }
 
@@ -888,9 +874,9 @@ TEST_F(KcerNssTest, GetKeyInfoForEccKey) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-// Test generic fields from GetKeyInfo's result and they get updated after
-// related Set* methods.
-TEST_F(KcerNssTest, GetKeyInfoGeneric) {
+// Test generic fields from GetKeyInfo's result and that they get updated after
+// related Set* methods. Test getters for custom attributes.
+TEST_F(KcerNssTest, GetKeyInfoGenericAndCustomAttributes) {
   InitializeKcer({Token::kUser});
 
   // Generate new key.
@@ -909,8 +895,8 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
   expected_key_info.nickname = "";
   // Custom attributes are stored differently in tests and have empty values by
   // default.
-  expected_key_info.key_permissions = chaps::KeyPermissions();
-  expected_key_info.cert_provisioning_profile_id = "";
+  chaps::KeyPermissions expected_key_permissions = chaps::KeyPermissions();
+  std::string expected_cert_provisioning_profile_id = "";
 
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
@@ -948,37 +934,52 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
   }
 
   {
-    expected_key_info.key_permissions->mutable_key_usages()->set_corporate(
-        true);
-    expected_key_info.key_permissions->mutable_key_usages()->set_arc(true);
+    expected_key_permissions.mutable_key_usages()->set_corporate(true);
+    expected_key_permissions.mutable_key_usages()->set_arc(true);
 
     base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
     kcer_->SetKeyPermissions(PrivateKeyHandle(public_key),
-                             expected_key_info.key_permissions.value(),
+                             expected_key_permissions,
                              set_permissions_waiter.GetCallback());
     ASSERT_TRUE(set_permissions_waiter.Get().has_value());
   }
 
   {
-    base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
-                      key_info_waiter.GetCallback());
-    ASSERT_TRUE(key_info_waiter.Get().has_value());
-    EXPECT_TRUE(
-        KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
+    base::test::TestFuture<
+        base::expected<std::optional<chaps::KeyPermissions>, Error>>
+        key_permissions_waiter;
+    kcer_->GetKeyPermissions(PrivateKeyHandle(public_key),
+                             key_permissions_waiter.GetCallback());
+    ASSERT_TRUE(key_permissions_waiter.Get().has_value());
+    const std::optional<chaps::KeyPermissions>& key_permissions =
+        key_permissions_waiter.Get().value();
+    EXPECT_TRUE(KeyPermissionsEqual(expected_key_permissions, key_permissions))
+        << "ERROR: key_permissions: expected: "
+        << ToString(expected_key_permissions)
+        << ", actual: " << ToString(key_permissions);
   }
 
   {
-    expected_key_info.cert_provisioning_profile_id = "cert_prov_id_123";
+    expected_cert_provisioning_profile_id = "cert_prov_id_123";
 
     base::test::TestFuture<base::expected<void, Error>> set_cert_prov_id_waiter;
-    kcer_->SetCertProvisioningProfileId(
-        PrivateKeyHandle(public_key),
-        expected_key_info.cert_provisioning_profile_id.value(),
-        set_cert_prov_id_waiter.GetCallback());
+    kcer_->SetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                        expected_cert_provisioning_profile_id,
+                                        set_cert_prov_id_waiter.GetCallback());
     ASSERT_TRUE(set_cert_prov_id_waiter.Get().has_value());
   }
 
+  {
+    base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+        cert_prov_waiter;
+    kcer_->GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                        cert_prov_waiter.GetCallback());
+    ASSERT_TRUE(cert_prov_waiter.Get().has_value());
+    EXPECT_EQ(expected_cert_provisioning_profile_id,
+              cert_prov_waiter.Get().value());
+  }
+
+  // Check that the setters above didn't modify unrelated attributes.
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
     kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
