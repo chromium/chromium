@@ -71,7 +71,8 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
     RGBA = 6,             // One 8:8:8:8 RGBA
     BGRA = 7,             // One 8:8:8:8 BGRA (Usually Mac)
     P010 = 8,             // One P010 GMB.
-    kMaxValue = P010
+    YV12 = 9,             // One YV12 GMB.
+    kMaxValue = YV12
   };
 
   enum class Supported {

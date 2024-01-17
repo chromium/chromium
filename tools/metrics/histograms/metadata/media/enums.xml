@@ -1663,6 +1663,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="RGBA, 8:8:8:8 RGBA in one GMB"/>
   <int value="7" label="BGRA, 8:8:8:8 BGRA in one GMB"/>
   <int value="8" label="P010, one P010 GMB"/>
+  <int value="9" label="YV12, one YV12 GMB"/>
 </enum>
 
 <enum name="PepperVideoDecoderHardwareAccelerationBehavior">

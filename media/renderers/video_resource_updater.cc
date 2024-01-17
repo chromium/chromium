@@ -190,6 +190,12 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::RGB;
       }
 
+    case PIXEL_FORMAT_YV12:
+      CHECK_EQ(frame.shared_image_format_type(),
+               SharedImageFormatType::kSharedImageFormat);
+      si_formats[0] = viz::MultiPlaneFormat::kYV12;
+      return VideoFrameResourceType::RGBA;
+
     case PIXEL_FORMAT_NV12:
       // |target| is set to 0 for Vulkan textures.
       //
@@ -254,7 +260,6 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     case PIXEL_FORMAT_UYVY:
       NOTREACHED();
       [[fallthrough]];
-    case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_I420A:
