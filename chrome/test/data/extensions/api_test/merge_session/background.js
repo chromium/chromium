@@ -24,6 +24,7 @@ function startXHRRequests(googlePageUrl, googlePageCheckCallback,
   var validateResponse = function() {
     if (xhr.status == 200 &&
         xhr.responseText.indexOf('Hello Google') != -1) {
+      chrome.test.sendMessage('google-xhr-received');
       googleResponseReceived = true;
       googlePageCheckCallback();
     }
@@ -79,6 +80,7 @@ function startNonGoogleXHRRequests(nonGooglePageUrl,
   };
   xhr.open("GET", nonGooglePageUrl, async);
   xhr.send();
+  nonGoogleRequestSent = true;
   if (!async) {
     validateResponse();
   }
