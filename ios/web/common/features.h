@@ -88,6 +88,9 @@ BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 // Feature flag to remove the UnsafeRestore code path.
 BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
 
+// Feature flag to enable intent detection in viewport only.
+BASE_DECLARE_FEATURE(kEnableViewportIntents);
+
 // When true, the new loadSimulatedRequest API should be used when displaying
 // error pages.
 bool IsLoadSimulatedRequestAPIEnabled();

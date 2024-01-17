@@ -201,6 +201,10 @@ extern const char kPhoneNumberDescription[];
 extern const char kMeasurementsName[];
 extern const char kMeasurementsDescription[];
 
+// Title and description for the flag to enable viewport intent detection.
+extern const char kEnableViewportIntentsName[];
+extern const char kEnableViewportIntentsDescription[];
+
 // Title and description for the flag to enable text classifier entity detection
 // in experience kit for different entity types.
 extern const char kEnableExpKitTextClassifierName[];
