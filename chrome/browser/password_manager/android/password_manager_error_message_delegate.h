@@ -45,20 +45,22 @@ class PasswordManagerErrorMessageDelegate {
  private:
   friend class PasswordManagerErrorMessageDelegateTest;
 
-  void CreateMessage(content::WebContents* web_contents,
-                     password_manager::ErrorMessageFlowType flow_type);
+  std::unique_ptr<messages::MessageWrapper> CreateMessage(
+      content::WebContents* web_contents,
+      password_manager::PasswordStoreBackendErrorType error_type,
+      base::OnceCallback<void()> dismissal_callback);
 
   // Following methods handle events associated with user interaction with UI.
-  void HandleSignInButtonClicked(content::WebContents* web_contents);
+  void HandleActionButtonClicked(
+      content::WebContents* web_contents,
+      password_manager::PasswordStoreBackendErrorType error);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
-
-  void RecordDismissalReasonMetrics(messages::DismissReason dismiss_reason);
-  void RecordErrorTypeMetrics(
-      password_manager::PasswordStoreBackendErrorType error_type);
 
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PasswordManagerErrorMessageHelperBridge> helper_bridge_;
-  base::OnceCallback<void()> dismissal_callback_;
+
+  base::WeakPtrFactory<PasswordManagerErrorMessageDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_DELEGATE_H_

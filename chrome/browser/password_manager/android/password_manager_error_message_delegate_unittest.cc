@@ -108,7 +108,8 @@ void PasswordManagerErrorMessageDelegateTest::DismissMessageAndExpectDismissed(
   EXPECT_CALL(mock_dismissal_callback_, Run);
   // In production code this method is called as a result of a java action.
   // Since that is not possible in a unit test, the method is invoked directly.
-  delegate_->HandleMessageDismissed(dismiss_reason);
+  GetMessageWrapper()->HandleDismissCallback(
+      base::android::AttachCurrentThread(), static_cast<int>(dismiss_reason));
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
