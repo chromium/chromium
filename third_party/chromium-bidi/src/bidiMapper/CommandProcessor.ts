@@ -37,6 +37,7 @@ import type {BrowsingContextStorage} from './domains/context/BrowsingContextStor
 import {InputProcessor} from './domains/input/InputProcessor.js';
 import {NetworkProcessor} from './domains/network/NetworkProcessor.js';
 import {NetworkStorage} from './domains/network/NetworkStorage.js';
+import {PermissionsProcessor} from './domains/permissions/PermissionsProcessor.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './domains/script/RealmStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
@@ -63,6 +64,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #cdpProcessor: CdpProcessor;
   #inputProcessor: InputProcessor;
   #networkProcessor: NetworkProcessor;
+  #permissionsProcessor: PermissionsProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
   #storageProcessor: StorageProcessor;
@@ -118,6 +120,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       browsingContextStorage,
       networkStorage
     );
+    this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,
       realmStorage,
@@ -257,6 +260,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'network.removeIntercept':
         return await this.#networkProcessor.removeIntercept(
           this.#parser.parseRemoveInterceptParams(command.params)
+        );
+      // keep-sorted end
+
+      // Permissions domain
+      // keep-sorted start block=yes
+      case 'permissions.setPermission':
+        return await this.#permissionsProcessor.setPermissions(
+          this.#parser.parseSetPermissionsParams(command.params)
         );
       // keep-sorted end
 

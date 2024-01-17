@@ -16,6 +16,7 @@
  */
 
 import type * as Cdp from './cdp.js';
+import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export type EventNames =
@@ -87,7 +88,15 @@ export namespace Network {
   }
 }
 
-export type Command = (WebDriverBidi.Command | Cdp.Command) & {
+export type Command = (
+  | WebDriverBidi.Command
+  | Cdp.Command
+  | ({
+      // id is defined by the main WebDriver BiDi spec and extension specs do
+      // not re-define it. Therefore, it's not part of generated types.
+      id: WebDriverBidi.JsUint;
+    } & WebDriverBidiPermissions.PermissionsCommand)
+) & {
   channel?: WebDriverBidi.Script.Channel;
 };
 

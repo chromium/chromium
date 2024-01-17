@@ -20,6 +20,7 @@ import type {
   Cdp,
   Input,
   Network,
+  Permissions,
   Script,
   Session,
   Storage,
@@ -61,6 +62,13 @@ export interface BidiCommandParameterParser {
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters;
   parseSetFilesParams(params: unknown): Input.SetFilesParameters;
   // keep-sorted end
+
+  // PermissionsDomain domain
+  // keep-sorted start block=yes
+  parseSetPermissionsParams(
+    params: unknown
+  ): Permissions.SetPermissionParameters;
+  // keep-sorted end block=yes
 
   // Network domain
   // keep-sorted start block=yes

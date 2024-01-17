@@ -24,6 +24,7 @@ import {z, type ZodType} from 'zod';
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
+import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export function parseObject<T extends ZodType>(
@@ -342,5 +343,16 @@ export namespace Cdp {
     params: unknown
   ): Protocol.Cdp.GetSessionParameters {
     return parseObject(params, GetSessionRequestSchema);
+  }
+}
+
+export namespace Permissions {
+  export function parseSetPermissionsParams(
+    params: unknown
+  ): Protocol.Permissions.SetPermissionParameters {
+    return parseObject(
+      params,
+      WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema
+    ) as Protocol.Permissions.SetPermissionParameters;
   }
 }
