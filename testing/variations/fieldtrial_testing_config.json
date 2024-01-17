@@ -3735,6 +3735,21 @@
             ]
         }
     ],
+    "ChromeOSGlanceablesTimeManagementTasksView": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlanceablesTimeManagementTasksView"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSGrowthFramework": [
         {
             "platforms": [

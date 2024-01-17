@@ -217,12 +217,16 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   std::unique_ptr<FakeGlanceablesClassroomClient>
       fake_glanceables_classroom_client_;
-
-  base::test::ScopedFeatureList features_{features::kGlanceablesV2};
 };
 
 class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
  public:
+  GlanceablesMvpBrowserTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlanceablesV2},
+        /*disabled_features=*/{features::kGlanceablesTimeManagementTasksView});
+  }
+
   void SetUpOnMainThread() override {
     GlanceablesBrowserTest::SetUpOnMainThread();
     base::AddFeatureIdTagToTestResult(
@@ -234,6 +238,9 @@ class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
     return views::AsViewClass<GlanceablesTaskView>(
         GetTasksItemContainerView()->children()[item_index]);
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, OpenStudentCourseItemURL) {
