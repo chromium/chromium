@@ -32,6 +32,18 @@ def get_attr(elem, tag, regex=None):
 
     Error if it is missing, optionally error if it doesn't match the provided
     regex.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag/attribute to find.
+      regex: Optional regex to match the value of the attribute.
+
+    Returns:
+      The value of the attribute.
+
+    Raises:
+      ValueError: The attribute specified is missing or doesn't match provided
+      regex.
     """
   attr = elem.attrib.get(tag, None)
   if not attr:
@@ -49,6 +61,18 @@ def get_optional_attr(elem, tag, regex=None):
   """Get an attribute.
 
     Returns None if it doesn't exist.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag/attribute to find.
+      regex: Optional regex to match the value of the attribute.
+
+    Returns:
+      The value of the attribute, or None if it doesn't exist.
+
+    Raises:
+      ValueError: The attribute specified exists but doesn't match provided
+      regex.
     """
   attr = elem.attrib.get(tag)
   if not attr:
@@ -66,6 +90,20 @@ def get_compound_children(elem, tag, allow_missing_children=False):
   """Get all child nodes of `elem` with tag `tag`.
 
     Error if none exist, or a child is not a compound node.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag to find.
+      allow_missing_children: If True does not raise an
+        error when there are no children.
+
+    Returns:
+      All child nodes of 'elem' with the specified tag 'tag'.
+
+    Raises:
+      ValueError: child node of 'elem' with tag 'tag' is
+        not a compound node, or does not have children nodes
+        when `allow_missing_children` is False.
     """
   children = elem.findall(tag)
   if not children and not allow_missing_children:
@@ -80,6 +118,16 @@ def get_compound_child(elem, tag):
   """Get the child of `elem` with tag `tag`.
 
     Error if there isn't exactly one matching child, or it isn't compound.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag/attribute to find.
+
+    Returns:
+      The child node.
+
+    Raises:
+      ValueError: If there isn't exactly one matching child node.
     """
   children = elem.findall(tag)
   if len(children) != 1:
@@ -92,6 +140,18 @@ def get_text_children(elem, tag, regex=None):
 
     Error if none exist, or a child is not a text node. Optionally ensure the
     text matches `regex`.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag/attribute to find.
+      regex: Optional regex to match the value of the attribute.
+
+    Returns:
+      Text of all child nodes of 'elem' with tag 'tag'.
+
+    Raises:
+      ValueError: The attribute specified is missing or doesn't match provided
+      regex.
     """
   children = elem.findall(tag)
   if not children:
@@ -119,6 +179,17 @@ def get_text_child(elem, tag, regex=None):
 
     Error if there isn't exactly one matching child, or it isn't a text node.
     Optionally ensure the text matches `regex`.
+
+    Args:
+      elem: structured.xml file element tree.
+      tag: Name of the tag/attribute to find.
+      regex: Optional regex to match the value of the attribute.
+
+    Returns:
+      Text of the child of 'elem' with tag 'tag'.
+
+    Raises:
+      ValueError: There isn't exactly one matching child that is a text node.
     """
   result = get_text_children(elem, tag, regex)
   if len(result) != 1:
