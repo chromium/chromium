@@ -70,6 +70,10 @@ bool TestAshWebView::IsErrorDocument() {
   return is_error_document_;
 }
 
+void TestAshWebView::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
+  // Not yet implemented for unittests.
+}
+
 BEGIN_METADATA(TestAshWebView)
 END_METADATA
 

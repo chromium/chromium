@@ -19,6 +19,7 @@ include_rules = [
   "+chromeos/ash/services/assistant/public/cpp",
   "+chromeos/ash/services/libassistant/public/cpp",
   "+chromeos/constants",
+  "+chromeos/ui/frame",
   "+components/feature_engagement/public/feature_constants.h",
   "+mojo/public/cpp",
   "+net/base",

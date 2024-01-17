@@ -112,6 +112,9 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
   // See `RenderFrameHost::IsErrorDocument()`.
   virtual bool IsErrorDocument() = 0;
 
+  // Sets the specified `corner_radii` to the native view that hosts the webview.
+  virtual void SetCornerRadii(const gfx::RoundedCornersF& corner_radii) = 0;
+
  protected:
   AshWebView();
 };
