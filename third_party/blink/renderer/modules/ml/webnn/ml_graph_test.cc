@@ -35,7 +35,7 @@ const TestVariety kGraphTestVariety[] = {
     {BackendType::kXnnpack, ExecutionMode::kSync},
 #endif
 
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
     {BackendType::kModelLoader, ExecutionMode::kAsync},
 #endif
 };

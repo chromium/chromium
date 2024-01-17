@@ -19,8 +19,8 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_cros.h"
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_model_loader.h"
 #endif
 
 namespace blink {
@@ -29,9 +29,9 @@ class MLGraphBuilder;
 class V8TestingScope;
 
 // The utility methods for graph test.
-enum ExecutionMode { kAsync, kSync };
+enum class ExecutionMode { kAsync, kSync };
 // The backends share the unit tests in the MLGraphTest.
-enum BackendType { kFake, kXnnpack, kModelLoader, kWebNNService };
+enum class BackendType { kFake, kXnnpack, kModelLoader, kWebNNService };
 
 struct TestVariety {
   BackendType backend_type;
@@ -94,14 +94,14 @@ class MLGraphV8TestingScope : public V8TestingScope {
 
  public:
   MLGraphV8TestingScope() {
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
     scoped_ml_service_.SetUpMLService(*this);
 #endif
   }
   ~MLGraphV8TestingScope() = default;
 
  private:
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
   ScopedMLService scoped_ml_service_;
 #endif
 };

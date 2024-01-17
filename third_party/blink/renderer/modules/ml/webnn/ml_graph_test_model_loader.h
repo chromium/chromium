@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_CROS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_CROS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_MODEL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_MODEL_LOADER_H_
 
 #include <memory>
 
@@ -16,8 +16,8 @@ class FakeMLModelLoader;
 class FakeWebNNModel;
 class ScopedSetMLServiceBinder;
 
-// This class sets up MLService on CrOS to infer tflite model that is converted
-// from WebNN Graph.
+// This class sets up MLService to infer a tflite model that is converted from a
+// WebNN Graph.
 class ScopedMLService final {
   STACK_ALLOCATED();
 
@@ -36,4 +36,4 @@ class ScopedMLService final {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_CROS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_TEST_MODEL_LOADER_H_

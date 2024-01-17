@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_CROS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_CROS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_MODEL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_MODEL_LOADER_H_
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
@@ -20,9 +20,16 @@ namespace blink {
 
 class ScriptPromiseResolver;
 
-class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
+// Provides a mechanism to delegate an ML model (as a format-agnostic blob) to
+// the browser for inferencing.
+//
+// TODO(https://crbug.com/1513481): Currently this handles only TFLite models.
+// Consider moving the TFLite-specific logic in this class somewhere else. If it
+// is later decided that this class will only handle TFLite models, rename it
+// appropriately.
+class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
  public:
-  // Create and build an MLGraphCrOS object. Resolve the promise with
+  // Create and build an MLGraphModelLoader object. Resolve the promise with
   // this concrete object if the underlying TF-Lite model converted from WebNN
   // graph builds successfully.
   static void ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
@@ -33,8 +40,8 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
   // The constructor shouldn't be called directly, use ValidateAndBuildAsync()
   // method instead, and the declaration must be public to be called by
   // MakeGarbageCollected.
-  MLGraphCrOS(ExecutionContext* execution_context, MLContext* context);
-  ~MLGraphCrOS() override;
+  MLGraphModelLoader(ExecutionContext* execution_context, MLContext* context);
+  ~MLGraphModelLoader() override;
 
   void Trace(Visitor* visitor) const override;
 
@@ -96,4 +103,4 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_CROS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_MODEL_LOADER_H_

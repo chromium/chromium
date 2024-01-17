@@ -27,7 +27,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum OperandKind { kInput, kConstant, kOutput };
+  enum class OperandKind { kInput, kConstant, kOutput };
 
   // Validate and create different kinds of operand if there are no errors.
   // Otherwise return nullptr and set the corresponding error message.

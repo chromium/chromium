@@ -43,8 +43,8 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
 #endif
 
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_cros.h"
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_model_loader.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1755,11 +1755,12 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   }
 #endif
 
-#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
-  // On ChromeOS, ML model inferencing is off-loaded to ModelLoader service.
+#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
+  // TODO(https://crbug.com/1513481): Support GPU devices with the TFLite
+  // backend.
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphCrOS::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_,
-                                       named_outputs, resolver);
+    MLGraphModelLoader::ValidateAndBuildAsync(
+        std::move(scoped_trace), ml_context_, named_outputs, resolver);
     return promise;
   }
 #endif

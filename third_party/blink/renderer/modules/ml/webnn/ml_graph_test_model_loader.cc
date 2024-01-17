@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_cros.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_model_loader.h"
 
 #include "components/ml/mojom/ml_service.mojom-blink.h"
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_cros.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_model_loader.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -223,7 +223,7 @@ class FakeWebNNModel : public blink_mojom::Model {
   mojo_base::BigBuffer buffer_;
 };
 
-class MLGraphTestCrOS : public MLGraphTestBase {};
+class MLGraphTestTfLite : public MLGraphTestBase {};
 
 ScopedMLService::ScopedMLService()
     : loader_(std::make_unique<FakeMLModelLoader>()),
@@ -246,12 +246,12 @@ struct ElementWiseAddTester {
   OperandInfo<T> rhs;
   OperandInfo<T> expected;
 
-  ~ElementWiseAddTester() { MLGraphCrOS::SetFlatbufferForTesting(nullptr); }
+  ~ElementWiseAddTester() { MLGraphModelLoader::SetFlatbufferForTesting(nullptr); }
 
-  void Test(MLGraphTestCrOS& helper, V8TestingScope& scope) {
+  void Test(MLGraphTestTfLite& helper, V8TestingScope& scope) {
     // Set the flatbuffer of tflite model converted from the WebNN graph.
     flatbuffers::DetachedBuffer flatbuffer = GetFlatBuffer();
-    MLGraphCrOS::SetFlatbufferForTesting(&flatbuffer);
+    MLGraphModelLoader::SetFlatbufferForTesting(&flatbuffer);
 
     // Test building graph for the operands in the following topology:
     //       [input] [constant]
@@ -272,7 +272,8 @@ struct ElementWiseAddTester {
     auto [graph, exception] =
         helper.BuildGraph(scope, builder, {{"output", output}});
     ASSERT_THAT(graph, testing::NotNull());
-    MLGraphCrOS* cros_graph = static_cast<MLGraphCrOS*>(graph.Get());
+    MLGraphModelLoader* cros_graph =
+        static_cast<MLGraphModelLoader*>(graph.Get());
     const auto& input_tensor_info = cros_graph->GetInputResourcesInfo();
     EXPECT_EQ(input_tensor_info.size(), 1u);
     EXPECT_TRUE(input_tensor_info.Contains("input"));
@@ -370,7 +371,7 @@ struct ElementWiseAddTester {
   }
 };
 
-TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
+TEST_P(MLGraphTestTfLite, BuildGraphWithTfliteModel) {
   MLGraphV8TestingScope scope;
 
   {
@@ -409,7 +410,7 @@ const TestVariety kGraphTestModelLoaderVariety[] = {
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MLGraphTestCrOS,
+                         MLGraphTestTfLite,
                          testing::ValuesIn(kGraphTestModelLoaderVariety),
                          TestVarietyToString);
 

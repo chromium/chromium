@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_cros.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_model_loader.h"
 
 #include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
@@ -118,30 +118,30 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
 }  // namespace
 
 // static
-void MLGraphCrOS::ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
+void MLGraphModelLoader::ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
                                         MLContext* ml_context,
                                         const MLNamedOperands& named_outputs,
                                         ScriptPromiseResolver* resolver) {
-  scoped_trace.AddStep("MLGraphCrOS::ValidateAndBuildAsync");
+  scoped_trace.AddStep("MLGraphModelLoader::ValidateAndBuildAsync");
   auto* script_state = resolver->GetScriptState();
   auto* execution_context = ExecutionContext::From(script_state);
   auto* graph =
-      MakeGarbageCollected<MLGraphCrOS>(execution_context, ml_context);
+      MakeGarbageCollected<MLGraphModelLoader>(execution_context, ml_context);
   graph->BuildAsync(std::move(scoped_trace), named_outputs, resolver);
 }
 
-MLGraphCrOS::MLGraphCrOS(ExecutionContext* execution_context,
+MLGraphModelLoader::MLGraphModelLoader(ExecutionContext* execution_context,
                          MLContext* ml_context)
     : MLGraph(ml_context), remote_model_(execution_context) {}
 
-MLGraphCrOS::~MLGraphCrOS() = default;
+MLGraphModelLoader::~MLGraphModelLoader() = default;
 
-void MLGraphCrOS::Trace(Visitor* visitor) const {
+void MLGraphModelLoader::Trace(Visitor* visitor) const {
   visitor->Trace(remote_model_);
   MLGraph::Trace(visitor);
 }
 
-void MLGraphCrOS::BuildAsyncImpl(ScopedMLTrace scoped_trace,
+void MLGraphModelLoader::BuildAsyncImpl(ScopedMLTrace scoped_trace,
                                  const MLNamedOperands& outputs,
                                  ScriptPromiseResolver* resolver) {
   DOMArrayBuffer* buffer = nullptr;
@@ -164,12 +164,12 @@ void MLGraphCrOS::BuildAsyncImpl(ScopedMLTrace scoped_trace,
   auto* ml_model_loader = ml_context_->GetModelLoaderForWebNN(script_state);
   ml_model_loader->Load(
       script_state, buffer,
-      WTF::BindOnce(&MLGraphCrOS::OnRemoteModelLoad, WrapPersistent(this),
+      WTF::BindOnce(&MLGraphModelLoader::OnRemoteModelLoad, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(execution_context),
                     WrapPersistent(resolver)));
 }
 
-void MLGraphCrOS::OnRemoteModelLoad(
+void MLGraphModelLoader::OnRemoteModelLoad(
     ScopedMLTrace scoped_trace,
     ExecutionContext* execution_context,
     ScriptPromiseResolver* resolver,
@@ -208,12 +208,12 @@ void MLGraphCrOS::OnRemoteModelLoad(
 }
 
 // static
-void MLGraphCrOS::SetFlatbufferForTesting(
+void MLGraphModelLoader::SetFlatbufferForTesting(
     flatbuffers::DetachedBuffer* flatbuffer) {
   g_flatbuffer_for_testing = flatbuffer;
 }
 
-MLGraph* MLGraphCrOS::BuildSyncImpl(ScriptState* script_state,
+MLGraph* MLGraphModelLoader::BuildSyncImpl(ScriptState* script_state,
                                     const MLNamedOperands& named_outputs,
                                     ExceptionState& exception_state) {
   // TODO(crbug.com/1273291): Support sync build that is only exposed to
@@ -223,7 +223,7 @@ MLGraph* MLGraphCrOS::BuildSyncImpl(ScriptState* script_state,
   return nullptr;
 }
 
-void MLGraphCrOS::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+void MLGraphModelLoader::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
                                    const MLNamedArrayBufferViews& inputs,
                                    const MLNamedArrayBufferViews& outputs,
                                    ScriptPromiseResolver* resolver,
@@ -259,12 +259,12 @@ void MLGraphCrOS::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
   }
   remote_model_->Compute(
       std::move(input_mojo),
-      WTF::BindOnce(&MLGraphCrOS::OnComputeGraph, WrapPersistent(this),
+      WTF::BindOnce(&MLGraphModelLoader::OnComputeGraph, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
                     std::move(inputs_info), std::move(outputs_info)));
 }
 
-void MLGraphCrOS::OnComputeGraph(
+void MLGraphModelLoader::OnComputeGraph(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver* resolver,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
@@ -305,7 +305,7 @@ void MLGraphCrOS::OnComputeGraph(
   resolver->Resolve(result);
 }
 
-void MLGraphCrOS::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
+void MLGraphModelLoader::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                                   const MLNamedArrayBufferViews& outputs,
                                   ExceptionState& exception_state) {
   // TODO(crbug.com/1273291): Support sync compute that is only exposed to
