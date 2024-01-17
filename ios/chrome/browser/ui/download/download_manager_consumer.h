@@ -38,9 +38,10 @@ enum class DownloadFileDestination {
 // kDownloadManagerStateNotStarted.
 - (void)setState:(DownloadManagerState)state;
 
-@optional
 // Sets visible state to Install Google Drive button.
 - (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated;
+
+@optional
 
 // Sets the visibility of the "Drive" button (which downloads the file and then
 // uploads it to Drive). The button will only be visible if the current download

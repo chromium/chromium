@@ -28,6 +28,11 @@
 - (void)downloadManagerViewControllerDidStartDownloadToDrive:
     (UIViewController*)controller;
 
+// Called when "Open" button was tapped. Delegate open the uploaded file in the
+// Drive app.
+- (void)downloadManagerViewControllerDidOpenInDriveApp:
+    (UIViewController*)controller;
+
 // Called when "Open In.." button was tapped. Delegate should present system's
 // OpenIn dialog.
 - (void)presentOpenInForDownloadManagerViewController:

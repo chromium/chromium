@@ -312,6 +312,17 @@
   [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
 }
 
+- (void)downloadManagerViewControllerDidOpenInDriveApp:
+    (UIViewController*)controller {
+  CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
+  UploadTask* uploadTask = _mediator.GetUploadTask();
+  CHECK(uploadTask);
+  [UIApplication.sharedApplication
+                openURL:uploadTask->GetResponseLink()
+                options:@{UIApplicationOpenURLOptionUniversalLinksOnly : @YES}
+      completionHandler:nil];
+}
+
 - (void)presentOpenInForDownloadManagerViewController:
     (UIViewController*)controller {
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpenIn"));

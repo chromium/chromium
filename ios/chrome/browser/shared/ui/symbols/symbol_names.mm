@@ -54,6 +54,7 @@ NSString* const kTopOmniboxOptionSymbol = @"top_omnibox_option";
 NSString* const kBottomOmniboxOptionSymbol = @"bottom_omnibox_option";
 NSString* const kDangerousOmniboxSymbol = @"dangerous_omnibox";
 NSString* const kArrowDownSymbol = @"arrow.down";
+NSString* const kArrowUpSymbol = @"arrow.up";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

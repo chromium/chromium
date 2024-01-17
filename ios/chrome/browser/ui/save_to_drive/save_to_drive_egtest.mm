@@ -28,14 +28,14 @@ id<GREYMatcher> DownloadToDriveButton() {
                     grey_interactable(), nil);
 }
 
-// Matcher for "Open in..." button on Download Manager UI.
-id<GREYMatcher> DownloadManagerOpenInButton() {
+// Matcher for "GET THE APP" button on Download Manager UI.
+id<GREYMatcher> DownloadManagerGetTheAppButton() {
   return grey_allOf(
-      grey_accessibilityID(kDownloadManagerOpenInAccessibilityIdentifier),
+      grey_accessibilityID(kDownloadManagerInstallAppAccessibilityIdentifier),
       grey_interactable(), nil);
 }
 
-// Matcher for "Open in..." button on Download Manager UI.
+// Matcher for "TRY AGAIN" button on Download Manager UI.
 id<GREYMatcher> DownloadManagerTryAgainButton() {
   return grey_allOf(
       grey_accessibilityID(kDownloadManagerTryAgainAccessibilityIdentifier),
@@ -104,7 +104,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 // Tests that when the user is signed-in, they can choose Drive as destination
 // for their download, tap "Save" in the account picker. Tests that after a few
-// seconds, the file has been uploaded successfully and an "Open in..." button
+// seconds, the file has been uploaded successfully and a "GET THE APP" button
 // is displayed.
 - (void)testCanDownloadToDrive {
   // Sign-in.
@@ -124,9 +124,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       performAction:grey_tap()];
   // Wait for the account picker to disappear.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
-  // Check that after a few seconds, the "Open in..." button appears.
+  // Check that after a few seconds, the "GET THE APP" button appears.
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:DownloadManagerOpenInButton()
+      waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
 }
@@ -134,8 +134,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 // Tests that when the user is signed-in, they can choose Drive as destination
 // for their download, tap "Save" in the account picker. Tests that after a few
 // seconds, if the file upload fails, the user can tap "Try Again..." in the
-// download manager, and after a few seconds, when the upload succeeds, an "Open
-// in..." button is displayed.
+// download manager, and after a few seconds, when the upload succeeds, an "GET
+// THE APP" button is displayed.
 - (void)testCanRetryDownloadToDrive {
   // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -165,10 +165,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                                               kWaitForDownloadTimeout];
   [[EarlGrey selectElementWithMatcher:DownloadManagerTryAgainButton()]
       performAction:grey_tap()];
-  // Check that after a few seconds, when the upload succeeds, the "Open in..."
+  // Check that after a few seconds, when the upload succeeds, the "GET THE APP"
   // button appears.
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:DownloadManagerOpenInButton()
+      waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
 }

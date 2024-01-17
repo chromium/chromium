@@ -114,14 +114,37 @@ UIButtonConfiguration* CreateDownloadButtonConfiguration(
   return conf;
 }
 
-// Creates a button configuration for an action button ("Open in..." or "Try
-// Again")
-UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
+// Creates a button for an action button ("OPEN", "GET THE APP" or "TRY AGAIN")
+UIButton* CreateActionButton(NSString* title,
+                             NSString* accessibility_identifier,
+                             UIAction* action) {
   UIButtonConfiguration* conf =
       [UIButtonConfiguration plainButtonConfiguration];
   conf.buttonSize = UIButtonConfigurationSizeSmall;
   conf.title = title;
-  return conf;
+  UIButton* button = [UIButton buttonWithConfiguration:conf
+                                         primaryAction:action];
+  [button setContentHuggingPriority:UILayoutPriorityRequired
+                            forAxis:UILayoutConstraintAxisHorizontal];
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  button.accessibilityIdentifier = accessibility_identifier;
+  return button;
+}
+
+// Creates an icon to be added in the center of the radial progress view.
+UIImageView* CreateProgressIcon(NSString* symbol_name) {
+  UIImageConfiguration* image_configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolDownloadInfobarPointSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleSmall];
+  UIImage* image;
+  image = DefaultSymbolWithConfiguration(symbol_name, image_configuration);
+  UIImageView* icon = [[UIImageView alloc] initWithImage:image];
+  icon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+  icon.translatesAutoresizingMaskIntoConstraints = NO;
+  return icon;
 }
 
 }  // namespace
@@ -132,6 +155,7 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
   int64_t _countOfBytesExpectedToReceive;
   float _progress;
   DownloadManagerState _state;
+  BOOL _installDriveButtonVisible;
   BOOL _downloadToDriveButtonVisible;
   DownloadFileDestination _downloadFileDestination;
   NSString* _saveToDriveUserEmail;
@@ -145,8 +169,11 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
   UIButton* _downloadToFilesButton;
   UIButton* _downloadToDriveButton;
   RadialProgressView* _progressView;
-  UIImageView* _progressIcon;
+  UIImageView* _filesProgressIcon;
+  UIImageView* _driveProgressIcon;
   UIButton* _openInButton;
+  UIButton* _openInDriveButton;
+  UIButton* _installAppButton;
   UIButton* _tryAgainButton;
   UIButton* _closeButton;
   UIStackView* _downloadControlsRow;
@@ -159,7 +186,7 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 @property(nonatomic, readonly) UIButton* downloadToFilesButton;
 @property(nonatomic, readonly) UIButton* downloadToDriveButton;
 @property(nonatomic, readonly) RadialProgressView* progressView;
-@property(nonatomic, readonly) UIImageView* progressIcon;
+@property(nonatomic, readonly) UIImageView* filesProgressIcon;
 @property(nonatomic, readonly) UIButton* openInButton;
 @property(nonatomic, readonly) UIButton* tryAgainButton;
 @property(nonatomic, readonly) UIButton* closeButton;
@@ -198,9 +225,12 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
   [self.downloadControlsRow addArrangedSubview:self.textStack];
   [self.downloadControlsRow addArrangedSubview:self.downloadToFilesButton];
   [self.downloadControlsRow addArrangedSubview:self.downloadToDriveButton];
-  [self.progressView addSubview:self.progressIcon];
+  [self.progressView addSubview:self.filesProgressIcon];
+  [self.progressView addSubview:self.driveProgressIcon];
   [self.downloadControlsRow addArrangedSubview:self.progressView];
   [self.downloadControlsRow addArrangedSubview:self.openInButton];
+  [self.downloadControlsRow addArrangedSubview:self.openInDriveButton];
+  [self.downloadControlsRow addArrangedSubview:self.installAppButton];
   [self.downloadControlsRow addArrangedSubview:self.tryAgainButton];
   [self.downloadControlsRow addArrangedSubview:self.closeButton];
   [self.view addSubview:self.downloadControlsRow];
@@ -254,17 +284,14 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 
   // Progress view constraints.
   UIView* progressView = self.progressView;
-  UIView* progressIcon = self.progressIcon;
   [NSLayoutConstraint activateConstraints:@[
     [progressView.widthAnchor
         constraintEqualToAnchor:self.closeButton.widthAnchor],
     [progressView.heightAnchor
         constraintEqualToAnchor:progressView.widthAnchor],
-    [progressIcon.centerXAnchor
-        constraintEqualToAnchor:progressView.centerXAnchor],
-    [progressIcon.centerYAnchor
-        constraintEqualToAnchor:progressView.centerYAnchor],
   ]];
+  AddSameCenterConstraints(self.filesProgressIcon, progressView);
+  AddSameCenterConstraints(self.driveProgressIcon, progressView);
 
   // Download buttons constraints.
   UIView* downloadToFilesButton = self.downloadToFilesButton;
@@ -336,6 +363,13 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 - (void)setState:(DownloadManagerState)state {
   if (_state != state) {
     _state = state;
+    [self updateViews];
+  }
+}
+
+- (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated {
+  if (_installDriveButtonVisible != visible) {
+    _installDriveButtonVisible = visible;
     [self updateViews];
   }
 }
@@ -501,66 +535,77 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
   return _progressView;
 }
 
-- (UIImageView*)progressIcon {
-  if (!_progressIcon) {
-    UIImageConfiguration* arrowDownConfiguration = [UIImageSymbolConfiguration
-        configurationWithPointSize:kSymbolDownloadInfobarPointSize
-                            weight:UIImageSymbolWeightBold
-                             scale:UIImageSymbolScaleSmall];
-    UIImage* arrowDownImage = DefaultSymbolWithConfiguration(
-        kArrowDownSymbol, arrowDownConfiguration);
-    arrowDownImage = SymbolWithPalette(
-        arrowDownImage, @[ [UIColor colorNamed:kTextQuaternaryColor] ]);
-    _progressIcon = [[UIImageView alloc] initWithImage:arrowDownImage];
-    _progressIcon.translatesAutoresizingMaskIntoConstraints = NO;
+- (UIImageView*)filesProgressIcon {
+  if (!_filesProgressIcon) {
+    _filesProgressIcon = CreateProgressIcon(kArrowDownSymbol);
   }
 
-  return _progressIcon;
+  return _filesProgressIcon;
+}
+
+- (UIImageView*)driveProgressIcon {
+  if (!_driveProgressIcon) {
+    _driveProgressIcon = CreateProgressIcon(kArrowUpSymbol);
+  }
+
+  return _driveProgressIcon;
 }
 
 - (UIButton*)openInButton {
   if (!_openInButton) {
-    UIButtonConfiguration* openInButtonConf = CreateActionButtonConfiguration(
-        l10n_util::GetNSString(IDS_IOS_OPEN_IN));
     __weak __typeof(self) weakSelf = self;
-    UIAction* openInAction = [UIAction actionWithHandler:^(UIAction* action) {
-      [weakSelf.delegate
-          presentOpenInForDownloadManagerViewController:weakSelf];
-    }];
-    _openInButton = [UIButton buttonWithConfiguration:openInButtonConf
-                                        primaryAction:openInAction];
-    [_openInButton setContentHuggingPriority:UILayoutPriorityRequired
-                                     forAxis:UILayoutConstraintAxisHorizontal];
-    [_openInButton
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    _openInButton.accessibilityIdentifier =
-        kDownloadManagerOpenInAccessibilityIdentifier;
+    _openInButton = CreateActionButton(
+        [l10n_util::GetNSString(IDS_IOS_OPEN_IN) localizedUppercaseString],
+        kDownloadManagerOpenInAccessibilityIdentifier,
+        [UIAction actionWithHandler:^(UIAction* action) {
+          [weakSelf.delegate
+              presentOpenInForDownloadManagerViewController:weakSelf];
+        }]);
   }
 
   return _openInButton;
 }
 
+- (UIButton*)openInDriveButton {
+  if (!_openInDriveButton) {
+    __weak __typeof(self) weakSelf = self;
+    _openInDriveButton = CreateActionButton(
+        l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_OPEN),
+        kDownloadManagerOpenInDriveAccessibilityIdentifier,
+        [UIAction actionWithHandler:^(UIAction* action) {
+          [weakSelf.delegate
+              downloadManagerViewControllerDidOpenInDriveApp:weakSelf];
+        }]);
+  }
+
+  return _openInDriveButton;
+}
+
+- (UIButton*)installAppButton {
+  if (!_installAppButton) {
+    __weak __typeof(self) weakSelf = self;
+    _installAppButton = CreateActionButton(
+        l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_GET_THE_APP),
+        kDownloadManagerInstallAppAccessibilityIdentifier,
+        [UIAction actionWithHandler:^(UIAction* action) {
+          [weakSelf.delegate
+              installDriveForDownloadManagerViewController:weakSelf];
+        }]);
+  }
+
+  return _installAppButton;
+}
+
 - (UIButton*)tryAgainButton {
   if (!_tryAgainButton) {
-    UIButtonConfiguration* tryAgainButtonConf = CreateActionButtonConfiguration(
-        l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_TRY_AGAIN));
     __weak __typeof(self) weakSelf = self;
-    UIAction* tryAgainAction = [UIAction actionWithHandler:^(UIAction* action) {
-      [weakSelf.delegate downloadManagerViewControllerDidRetry:weakSelf];
-    }];
-    _tryAgainButton = [UIButton buttonWithConfiguration:tryAgainButtonConf
-                                          primaryAction:tryAgainAction];
-    [_tryAgainButton
-        setContentHuggingPriority:UILayoutPriorityRequired
-                          forAxis:UILayoutConstraintAxisHorizontal];
-    [_tryAgainButton
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                        forAxis:
-                                            UILayoutConstraintAxisHorizontal];
-    _tryAgainButton.accessibilityIdentifier =
-        kDownloadManagerTryAgainAccessibilityIdentifier;
+    _tryAgainButton = CreateActionButton(
+        [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_TRY_AGAIN)
+            localizedUppercaseString],
+        kDownloadManagerTryAgainAccessibilityIdentifier,
+        [UIAction actionWithHandler:^(UIAction* action) {
+          [weakSelf.delegate downloadManagerViewControllerDidRetry:weakSelf];
+        }]);
   }
 
   return _tryAgainButton;
@@ -655,18 +700,40 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
 
 // Updates views `hidden` attribute according to the current state.
 - (void)updateViewsVisibility {
+  const bool taskNotStarted = _state == kDownloadManagerStateNotStarted;
+  const bool taskInProgress = _state == kDownloadManagerStateInProgress;
+  const bool taskSucceeded = _state == kDownloadManagerStateSucceeded;
+  const bool taskFailed = _state == kDownloadManagerStateFailed;
+  const bool destinationIsFiles =
+      _downloadFileDestination == DownloadFileDestination::kFiles;
+  const bool destinationIsDrive =
+      _downloadFileDestination == DownloadFileDestination::kDrive;
+
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  self.leadingIcon.hidden = _state == kDownloadManagerStateNotStarted;
+  self.leadingIcon.hidden = taskNotStarted;
 #else
   self.leadingIcon.hidden = YES;
 #endif
-  self.downloadToFilesButton.hidden = _state != kDownloadManagerStateNotStarted;
+
+  // Views only shown when task has not started.
+  self.downloadToFilesButton.hidden = !taskNotStarted;
   self.downloadToDriveButton.hidden =
-      _state != kDownloadManagerStateNotStarted ||
-      !_downloadToDriveButtonVisible;
-  self.progressView.hidden = _state != kDownloadManagerStateInProgress;
-  self.openInButton.hidden = _state != kDownloadManagerStateSucceeded;
-  self.tryAgainButton.hidden = _state != kDownloadManagerStateFailed;
+      !taskNotStarted || !_downloadToDriveButtonVisible;
+
+  // Views only shown when task is in progress.
+  self.progressView.hidden = !taskInProgress;
+  self.filesProgressIcon.hidden = !taskInProgress || !destinationIsFiles;
+  self.driveProgressIcon.hidden = !taskInProgress || !destinationIsDrive;
+
+  // Views only shown when task has succeeded.
+  self.openInButton.hidden = !taskSucceeded || !destinationIsFiles;
+  self.openInDriveButton.hidden =
+      !taskSucceeded || !destinationIsDrive || _installDriveButtonVisible;
+  self.installAppButton.hidden =
+      !taskSucceeded || !destinationIsDrive || !_installDriveButtonVisible;
+
+  // Views only shown when task has failed.
+  self.tryAgainButton.hidden = !taskFailed;
 }
 
 // Sets up views for the state `kDownloadManagerStateNotStarted`.
@@ -692,11 +759,14 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
     self.detailLabel.numberOfLines = 1;
   }
 
-  self.downloadToFilesButton.configuration = CreateDownloadButtonConfiguration(
+  NSString* downloadToFilesButtonText =
       _downloadToDriveButtonVisible
           ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES)
-          : l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD),
-      DownloadFileDestination::kFiles, _downloadToDriveButtonVisible,
+          : [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
+                localizedUppercaseString];
+  self.downloadToFilesButton.configuration = CreateDownloadButtonConfiguration(
+      downloadToFilesButtonText, DownloadFileDestination::kFiles,
+      _downloadToDriveButtonVisible,
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   self.downloadToDriveButton.configuration = CreateDownloadButtonConfiguration(
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE),
