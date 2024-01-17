@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/captured_surface_controller.h"
 
+#include <list>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -34,6 +35,62 @@ CapturedWheelActionPtr MakeCapturedWheelActionPtr() {
       /*wheel_delta_x=*/0,
       /*wheel_delta_y=*/0);
 }
+
+class InputObserver : public RenderWidgetHost::InputEventObserver {
+ public:
+  struct ExpectedWheelEvent {
+    double x = 0;
+    double y = 0;
+    double delta_x = 0;
+    double delta_y = 0;
+  };
+
+  ~InputObserver() override { EXPECT_TRUE(expected_events_.empty()); }
+
+  void OnInputEvent(const blink::WebInputEvent& event) override {
+    CHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kMouseWheel);
+
+    const blink::WebMouseWheelEvent& wheel_event =
+        static_cast<const blink::WebMouseWheelEvent&>(event);
+
+    CHECK(!expected_events_.empty());
+    ExpectedWheelEvent expected_event = expected_events_.front();
+    expected_events_.pop_front();
+
+    EXPECT_EQ(expected_event.x, wheel_event.PositionInWidget().x());
+    EXPECT_EQ(expected_event.y, wheel_event.PositionInWidget().y());
+    EXPECT_EQ(expected_event.delta_x, wheel_event.delta_x);
+    EXPECT_EQ(expected_event.delta_y, wheel_event.delta_y);
+  }
+
+  void AddExpectation(ExpectedWheelEvent expected_event) {
+    expected_events_.push_back(expected_event);
+
+    // The wheel event chains are closed with a scroll of zero
+    // magnitude in the same location.
+    expected_events_.push_back(ExpectedWheelEvent{.x = expected_event.x,
+                                                  .y = expected_event.y,
+                                                  .delta_x = 0,
+                                                  .delta_y = 0});
+  }
+
+ private:
+  std::list<ExpectedWheelEvent> expected_events_;
+};
+
+class TestView : public TestRenderWidgetHostView {
+ public:
+  explicit TestView(RenderWidgetHostImpl* rwhi)
+      : TestRenderWidgetHostView(rwhi) {}
+  ~TestView() override = default;
+
+  void SetSize(const gfx::Size& size) override { size_ = size; }
+
+  gfx::Size GetVisibleViewportSize() override { return size_; }
+
+ private:
+  gfx::Size size_;
+};
 
 class MockCapturedSurfaceControlPermissionManager
     : public CapturedSurfaceControlPermissionManager {
@@ -91,6 +148,8 @@ MakeGetZoomLevelCallbackExpectingResult(base::RunLoop* run_loop,
 
 class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
  public:
+  static constexpr gfx::Size kCapturedViewportSize = gfx::Size(100, 400);
+
   ~CapturedSurfaceControllerTestBase() override = default;
 
   std::unique_ptr<TestWebContents> MakeTestWebContents() {
@@ -100,17 +159,36 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     return TestWebContents::Create(GetBrowserContext(), std::move(instance));
   }
 
+  RenderWidgetHostImpl* GetRenderWidgetHostImpl(WebContents& wc) {
+    return RenderWidgetHostImpl::From(
+        wc.GetPrimaryMainFrame()->GetRenderWidgetHost());
+  }
+
+  RenderWidgetHostViewBase* GetView(WebContents& wc) {
+    return GetRenderWidgetHostImpl(wc)->GetView();
+  }
+
+  void SetView(WebContents& wc, RenderWidgetHostViewBase* rwhv) {
+    GetRenderWidgetHostImpl(wc)->SetView(rwhv);
+  }
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
     capturing_wc_ = MakeTestWebContents();
     captured_wc_ = MakeTestWebContents();
 
-    const RenderFrameHost* const captured_main_rfh =
+    RenderFrameHost* const captured_main_rfh =
         captured_wc_->GetPrimaryMainFrame();
     const WebContentsMediaCaptureId captured_wc_id(
         captured_main_rfh->GetProcess()->GetID(),
         captured_main_rfh->GetRoutingID());
+
+    old_rwhv_ = GetView(*captured_wc_);
+    captured_rwhv_ =
+        std::make_unique<TestView>(GetRenderWidgetHostImpl(*captured_wc_));
+    SetView(*captured_wc_, captured_rwhv_.get());
+    captured_rwhv_->SetSize(kCapturedViewportSize);
 
     auto permission_manager = std::make_unique<MockPermissionManager>(
         capturing_wc_->GetPrimaryMainFrame()->GetGlobalId());
@@ -120,20 +198,140 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
         captured_wc_id, std::move(permission_manager));
   }
 
+  void UnloadCapturedWebContents() {
+    if (!captured_wc_) {
+      return;
+    }
+
+    SetView(*captured_wc_, old_rwhv_);
+    old_rwhv_ = nullptr;
+
+    captured_wc_.reset();
+  }
+
   void TearDown() override {
     permission_manager_ = nullptr;
     controller_.reset();
     capturing_wc_.reset();
-    captured_wc_.reset();
+    UnloadCapturedWebContents();
+    captured_rwhv_.reset();
 
     RenderViewHostTestHarness::TearDown();
   }
 
   std::unique_ptr<CapturedSurfaceController> controller_;
   raw_ptr<MockPermissionManager> permission_manager_ = nullptr;
+  std::unique_ptr<TestView> captured_rwhv_;
+  raw_ptr<RenderWidgetHostViewBase> old_rwhv_ = nullptr;
   std::unique_ptr<TestWebContents> capturing_wc_;
   std::unique_ptr<TestWebContents> captured_wc_;
 };
+
+class CapturedSurfaceControllerSendWheelTest
+    : public CapturedSurfaceControllerTestBase {
+ public:
+  ~CapturedSurfaceControllerSendWheelTest() override = default;
+
+  void SetUp() override {
+    CapturedSurfaceControllerTestBase::SetUp();
+
+    input_observer_ = std::make_unique<InputObserver>();
+    GetRenderWidgetHostImpl(*captured_wc_)
+        ->AddInputEventObserver(input_observer_.get());
+  }
+
+  void TearDown() override {
+    GetRenderWidgetHostImpl(*captured_wc_)
+        ->RemoveInputEventObserver(input_observer_.get());
+
+    CapturedSurfaceControllerTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<InputObserver> input_observer_;
+};
+
+TEST_F(CapturedSurfaceControllerSendWheelTest, CorrectScaling) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  captured_rwhv_->SetSize(gfx::Size(256, 4096));
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 256 * 0.25, .y = 4096 * 0.5, .delta_x = 300, .delta_y = 400});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0.25,
+          /*y=*/0.5,
+          /*wheel_delta_x=*/300,
+          /*wheel_delta_y=*/400),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_F(CapturedSurfaceControllerSendWheelTest,
+       GracefullyHandleZeroWidthCapturedSurface) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  captured_rwhv_->SetSize(gfx::Size(0, 4096));
+  base::RunLoop run_loop;
+  // Note absence of call to input_observer_->AddExpectation().
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0.25,
+          /*y=*/0.5,
+          /*wheel_delta_x=*/300,
+          /*wheel_delta_y=*/400),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError));
+  run_loop.Run();
+}
+
+TEST_F(CapturedSurfaceControllerSendWheelTest,
+       GracefullyHandleZeroHeightCapturedSurface) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  captured_rwhv_->SetSize(gfx::Size(256, 0));
+  base::RunLoop run_loop;
+  // Note absence of call to input_observer_->AddExpectation().
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0.25,
+          /*y=*/0.5,
+          /*wheel_delta_x=*/300,
+          /*wheel_delta_y=*/400),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kUnknownError));
+  run_loop.Run();
+}
+
+TEST_F(CapturedSurfaceControllerSendWheelTest,
+       GracefullyHandleExtremelyNarrowCapturedSurface) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  captured_rwhv_->SetSize(gfx::Size(1, 4096));
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 0, .y = 4096 * 0.5, .delta_x = 300, .delta_y = 400});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0.25,
+          /*y=*/0.5,
+          /*wheel_delta_x=*/300,
+          /*wheel_delta_y=*/400),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_F(CapturedSurfaceControllerSendWheelTest,
+       GracefullyHandleExtremelyShortCapturedSurface) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  captured_rwhv_->SetSize(gfx::Size(256, 1));
+  base::RunLoop run_loop;
+  input_observer_->AddExpectation(InputObserver::ExpectedWheelEvent{
+      .x = 256 * 0.25, .y = 0, .delta_x = 300, .delta_y = 400});
+  controller_->SendWheel(
+      CapturedWheelAction::New(
+          /*x=*/0.25,
+          /*y=*/0.5,
+          /*wheel_delta_x=*/300,
+          /*wheel_delta_y=*/400),
+      MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+}
 
 // TODO(crbug.com/1466247): Remove this test suite after the getZoomLevel() API
 // is made synchronous.
@@ -154,7 +352,7 @@ TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelSuccess) {
 
 TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelUnknownError) {
   base::RunLoop run_loop;
-  captured_wc_.reset();
+  UnloadCapturedWebContents();
   controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
       &run_loop, std::nullopt, CSCResult::kCapturedSurfaceNotFoundError));
   run_loop.Run();
@@ -253,7 +451,7 @@ TEST_P(CapturedSurfaceControllerInterfaceTest,
        SurfaceNotFoundReportedIfTabClosedBeforePromptResponseHandled) {
   base::RunLoop run_loop;
   permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
-  captured_wc_.reset();
+  UnloadCapturedWebContents();
   RunTestedAction(MakeCallbackExpectingResult(
       &run_loop, CSCResult::kCapturedSurfaceNotFoundError));
   run_loop.Run();

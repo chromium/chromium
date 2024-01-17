@@ -85,13 +85,11 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  void SendWheel(
-      CapturedWheelAction* action,
-      base::OnceCallback<void(bool, const String&)> callback) override;
-
-  void SetSendWheelResult(bool success, const String& error) {
-    send_wheel_result_ = SendWheelResult(success, error);
-  }
+  MOCK_METHOD(
+      void,
+      SendWheel,
+      (double, double, int, int, base::OnceCallback<void(bool, const String&)>),
+      (override));
 
   void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
                         callback) override;
@@ -141,13 +139,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
-  struct SendWheelResult {
-    SendWheelResult(bool success, String error)
-        : success(success), error(std::move(error)) {}
-    bool success;
-    String error;
-  };
-
   struct GetZoomLevelResult {
     GetZoomLevelResult(absl::optional<int> zoom_level, String error)
         : zoom_level(zoom_level), error(std::move(error)) {}
@@ -162,7 +153,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
     String error;
   };
 
-  absl::optional<SendWheelResult> send_wheel_result_;
   absl::optional<GetZoomLevelResult> get_zoom_level_result_;
   absl::optional<SetZoomLevelResult> set_zoom_level_result_;
 #endif  // !BUILDFLAG(IS_ANDROID)

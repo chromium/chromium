@@ -923,7 +923,10 @@ void MediaStreamTrackImpl::PropagateTrackEnded() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamTrackImpl::SendWheel(
-    CapturedWheelAction* action,
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
     base::OnceCallback<void(bool, const String&)> callback) {
   std::move(callback).Run(false, "Unsupported.");
 }

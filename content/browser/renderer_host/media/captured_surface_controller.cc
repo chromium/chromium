@@ -4,16 +4,22 @@
 
 #include "content/browser/renderer_host/media/captured_surface_controller.h"
 
+#include <cmath>
+
 #include "base/task/bind_post_task.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/events/types/scroll_types.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 
@@ -43,13 +49,47 @@ CapturedSurfaceControlResult DoSendWheel(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!wc_id.is_null());
 
-  RenderFrameHost* const rfh = RenderFrameHost::FromID(
+  RenderFrameHostImpl* const rfhi = RenderFrameHostImpl::FromID(
       wc_id.render_process_id, wc_id.main_render_frame_id);
-  if (!rfh) {
+  RenderWidgetHostImpl* const rwhi =
+      rfhi ? rfhi->GetRenderWidgetHost() : nullptr;
+  if (!rwhi) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  // TODO(crbug.com/1466247): Implement.
+  // Scale (x, y).
+  const gfx::Size captured_viewport_size = rwhi->GetRootWidgetViewportSize();
+  if (captured_viewport_size.width() < 1 ||
+      captured_viewport_size.height() < 1) {
+    return CapturedSurfaceControlResult::kUnknownError;
+  }
+  const double x =
+      std::floor(action->relative_x * captured_viewport_size.width());
+  const double y =
+      std::floor(action->relative_y * captured_viewport_size.height());
+
+  // Produce the wheel event on the captured surface.
+  {
+    blink::WebMouseWheelEvent event =
+        blink::SyntheticWebMouseWheelEventBuilder::Build(
+            x, y, action->wheel_delta_x, action->wheel_delta_y,
+            blink::WebInputEvent::kNoModifiers,
+            ui::ScrollGranularity::kScrollByPixel);
+    event.phase = blink::WebMouseWheelEvent::Phase::kPhaseBegan;
+    rwhi->ForwardWheelEvent(event);
+  }
+
+  // Close the loop by producing an event at the same location with zero deltas
+  // and with the phase set to kPhaseEnded.
+  {
+    blink::WebMouseWheelEvent event =
+        blink::SyntheticWebMouseWheelEventBuilder::Build(
+            x, y, /*dx=*/0, /*dy=*/0, blink::WebInputEvent::kNoModifiers,
+            ui::ScrollGranularity::kScrollByPixel);
+    event.phase = blink::WebMouseWheelEvent::Phase::kPhaseEnded;
+    rwhi->ForwardWheelEvent(event);
+  }
+
   return CapturedSurfaceControlResult::kSuccess;
 }
 

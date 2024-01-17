@@ -684,7 +684,8 @@ void MediaStreamDispatcherHost::SendWheel(
     return;
   }
 
-  if (!action || action->x < 0 || action->y < 0) {
+  if (!action || action->relative_x < 0.0 || action->relative_x >= 1.0 ||
+      action->relative_y < 0.0 || action->relative_y >= 1.0) {
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_SEND_WHEEL_INVALID_ACTION);
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);

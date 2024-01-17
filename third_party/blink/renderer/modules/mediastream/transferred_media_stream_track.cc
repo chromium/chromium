@@ -12,7 +12,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
@@ -317,7 +316,10 @@ void TransferredMediaStreamTrack::UnregisterMediaStream(MediaStream* stream) {
 
 #if !BUILDFLAG(IS_ANDROID)
 void TransferredMediaStreamTrack::SendWheel(
-    CapturedWheelAction* action,
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
     base::OnceCallback<void(bool, const String&)> callback) {
   NOTREACHED_NORETURN();
 }

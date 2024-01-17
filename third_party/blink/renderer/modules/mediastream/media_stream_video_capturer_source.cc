@@ -17,7 +17,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -237,7 +236,10 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamVideoCapturerSource::SendWheel(
-    CapturedWheelAction* action,
+    double relative_x,
+    double relative_y,
+    int wheel_delta_x,
+    int wheel_delta_y,
     base::OnceCallback<void(bool, const String&)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -248,12 +250,10 @@ void MediaStreamVideoCapturerSource::SendWheel(
     return;
   }
 
-  // TODO(crbug.com/1466247): Use traits to avoid explicit type translation.
   GetMediaStreamDispatcherHost()->SendWheel(
       session_id.value(),
-      blink::mojom::blink::CapturedWheelAction::New(action->x(), action->y(),
-                                                    action->wheelDeltaX(),
-                                                    action->wheelDeltaY()),
+      blink::mojom::blink::CapturedWheelAction::New(
+          relative_x, relative_y, wheel_delta_x, wheel_delta_y),
       WTF::BindOnce(&OnCapturedSurfaceControlResult, std::move(callback)));
 }
 

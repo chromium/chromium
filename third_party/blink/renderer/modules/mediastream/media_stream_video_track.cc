@@ -981,7 +981,7 @@ void MediaStreamVideoTrack::AddSink(
     StartTimerForRequestingFrames();
 }
 
-bool MediaStreamVideoTrack::UsingAlpha() {
+bool MediaStreamVideoTrack::UsingAlpha() const {
   // Alpha can't be discarded if any sink uses alpha, or if the only sinks
   // connected are kDependsOnOtherSinks.
   bool only_sinks_with_alpha_depending_on_other_sinks =
@@ -989,6 +989,10 @@ bool MediaStreamVideoTrack::UsingAlpha() {
       alpha_discarding_sinks_.empty();
   return !alpha_using_sinks_.empty() ||
          only_sinks_with_alpha_depending_on_other_sinks;
+}
+
+gfx::Size MediaStreamVideoTrack::GetVideoSize() const {
+  return gfx::Size(width_, height_);
 }
 
 void MediaStreamVideoTrack::SetSinkNotifyFrameDroppedCallback(

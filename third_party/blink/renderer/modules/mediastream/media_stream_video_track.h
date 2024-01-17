@@ -196,7 +196,12 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
     return MediaStreamTrackPlatform::StreamType::kVideo;
   }
 
-  bool UsingAlpha();
+  bool UsingAlpha() const;
+
+  // Return either the configured target size, or the size of the last observed
+  // frame. If both happened - return the more recent. If neither happened -
+  // return gfx::Size(0, 0).
+  gfx::Size GetVideoSize() const;
 
   // After this many frame drops of the same reason, we skip logging
   // Media.VideoCapture.Track.FrameDrop UMAs.
