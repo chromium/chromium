@@ -1,0 +1,22 @@
+Name: Cloud authenticator
+URL: https://cloudenclave.git.corp.google.com/enclave/
+Version: git
+License: Apache 2.0
+License File: LICENSE.txt
+License Android Compatible: yes
+Security Critical: no
+Shipped: no
+
+Description:
+This directory contains the partial source code for the passkeys enclave. The
+full source (which is not yet available at the time of writing, but which it is
+intended to be in the future) builds an "application" that runs under the [Oak
+restricted kernel]
+(https://github.com/project-oak/oak/tree/main/oak_restricted_kernel). In
+Chromium we just want to be able to test the Chromium client against a
+reasonable simulation of the enclave system and thus nothing but the core of
+the processing is needed.
+
+The production enclave build uses [ring](https://crates.io/crates/ring) to
+provide cryptographic primitives in a `no_std` environment. In Chromium,
+BoringSSL is used instead.
