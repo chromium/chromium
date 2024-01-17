@@ -190,9 +190,14 @@ class CheckedContiguousIterator {
     CHECK_EQ(end_, other.end_);
   }
 
-  // RAW_PTR_EXCLUSION: T can be a STACK_ALLOCATED class.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION const T* start_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION T* current_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union, #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION const T* end_ = nullptr;
 };
 

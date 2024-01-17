@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -83,8 +84,12 @@ class PrefsAsh : public mojom::Prefs,
   };
 
   struct State {
-    raw_ptr<PrefService, DanglingUntriaged> pref_service;
-    raw_ptr<PrefChangeRegistrar> registrar;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION PrefService* pref_service;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION PrefChangeRegistrar* registrar;
     AshPrefSource pref_source;
     std::string path;
   };

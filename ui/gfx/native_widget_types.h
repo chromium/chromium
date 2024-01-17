@@ -158,7 +158,9 @@ class GFX_EXPORT NativeView {
 #if HAS_FEATURE(objc_arc)
   __unsafe_unretained NSView* ns_view_ = nullptr;
 #else
-  // RAW_PTR_EXCLUSION: Points to Objective-C object which isn't supported.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field also points to Objective-C object.
   RAW_PTR_EXCLUSION NSView* ns_view_ = nullptr;
 #endif
 };

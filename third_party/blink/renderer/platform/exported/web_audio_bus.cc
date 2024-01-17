@@ -84,7 +84,7 @@ float* WebAudioBus::ChannelData(unsigned channel_index) {
 }
 
 scoped_refptr<AudioBus> WebAudioBus::Release() {
-  scoped_refptr<AudioBus> audio_bus(private_.get());
+  scoped_refptr<AudioBus> audio_bus(private_);
   private_->Release();
   private_ = nullptr;
   return audio_bus;

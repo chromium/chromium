@@ -176,8 +176,8 @@ class ReadAnythingLineSpacingModel : public ReadAnythingMenuModel {
     std::u16string name;
 
     // The resources value/identifier for the icon image asset.
-    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
-    // global), so there is no benefit to using a raw_ptr, only cost.
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
     RAW_PTR_EXCLUSION const gfx::VectorIcon& icon_asset;
   };
 
@@ -216,8 +216,8 @@ class ReadAnythingLetterSpacingModel : public ReadAnythingMenuModel {
     std::u16string name;
 
     // The resources value/identifier for the icon image asset.
-    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
-    // global), so there is no benefit to using a raw_ptr, only cost.
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
     RAW_PTR_EXCLUSION const gfx::VectorIcon& icon_asset;
   };
 

@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -74,7 +75,9 @@ class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeTimerFactory, DanglingUntriaged> instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeTimerFactory* instance_ = nullptr;
 };
 
 class TestRemoteDeviceCacheFactory
@@ -103,8 +106,9 @@ class TestRemoteDeviceCacheFactory
     return instance;
   }
 
-  raw_ptr<multidevice::RemoteDeviceCache, DanglingUntriaged> instance_ =
-      nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION multidevice::RemoteDeviceCache* instance_ = nullptr;
 };
 
 class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
@@ -162,7 +166,9 @@ class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
     return instance;
   }
 
-  raw_ptr<FakeBleSynchronizer, DanglingUntriaged> instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeBleSynchronizer* instance_ = nullptr;
 };
 
 class FakeBleScannerFactory : public BleScannerImpl::Factory {
@@ -224,7 +230,9 @@ class FakeSecureChannelDisconnectorFactory
     return instance;
   }
 
-  raw_ptr<FakeSecureChannelDisconnector, DanglingUntriaged> instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelDisconnector* instance_ = nullptr;
 };
 
 class FakeBleConnectionManagerFactory
@@ -402,7 +410,9 @@ class FakeActiveConnectionManagerFactory
     return instance;
   }
 
-  raw_ptr<FakeActiveConnectionManager, DanglingUntriaged> instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeActiveConnectionManager* instance_ = nullptr;
 };
 
 class TestSecureChannelInitializerFactory

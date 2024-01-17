@@ -336,7 +336,7 @@ BrowserAccessibility::InternalChildrenEnd() const {
 const BrowserAccessibility*
 BrowserAccessibility::AllChildrenRange::Iterator::operator*() {
   if (child_tree_root_)
-    return index_ == 0 ? child_tree_root_.get() : nullptr;
+    return index_ == 0 ? child_tree_root_ : nullptr;
 
   // TODO(nektar): Consider using
   // `AXNode::GetChildAtIndexCrossingTreeBoundary()`.

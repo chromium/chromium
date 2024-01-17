@@ -1107,7 +1107,7 @@ void BrowserManager::EmitLoginPromptVisibleCalled() {
 void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
   BrowserAction* action_raw = action.get();  // We're `move`ing action below.
   action_raw->Perform(
-      {browser_service_.value().service.get(),
+      {browser_service_.value().service,
        browser_service_.value().interface_version},
       base::BindOnce(&BrowserManager::OnActionPerformed,
                      weak_factory_.GetWeakPtr(), std::move(action)));

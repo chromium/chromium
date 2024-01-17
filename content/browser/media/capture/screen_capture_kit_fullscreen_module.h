@@ -8,7 +8,6 @@
 #include <CoreGraphics/CoreGraphics.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
-#include "base/memory/raw_ref.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -75,7 +74,7 @@ class API_AVAILABLE(macos(12.3))
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
 
   // Interface to the owner of the SCK stream.
-  const raw_ref<ScreenCaptureKitResetStreamInterface> reset_stream_interface_;
+  ScreenCaptureKitResetStreamInterface& reset_stream_interface_;
 
   // Identifier of the original window that is captured.
   const CGWindowID original_window_id_;

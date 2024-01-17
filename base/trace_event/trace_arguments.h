@@ -576,7 +576,8 @@ class BASE_EXPORT StringStorage {
   // enough, but the compiler will then complaing about inlined constructors
   // and destructors being too complex (!), resulting in larger code for no
   // good reason.
-  // RAW_PTR_EXCLUSION: As above, inlining bloats code for no good reason.
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION Data* data_ = nullptr;
 };
 

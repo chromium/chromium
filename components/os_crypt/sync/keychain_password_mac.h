@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ref.h"
 
 namespace crypto {
 class AppleKeychain;
@@ -42,7 +41,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetAccountName();
 
  private:
-  const raw_ref<const crypto::AppleKeychain> keychain_;
+  const crypto::AppleKeychain& keychain_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_SYNC_KEYCHAIN_PASSWORD_MAC_H_

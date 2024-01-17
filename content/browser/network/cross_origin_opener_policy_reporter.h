@@ -82,7 +82,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
                              bool is_report_only);
 
   // See the class comment.
-  raw_ptr<StoragePartition, DanglingUntriaged> storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
   base::UnguessableToken reporting_source_;
   GURL source_url_;
   GlobalRenderFrameHostId source_routing_id_;

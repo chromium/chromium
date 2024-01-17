@@ -8,7 +8,6 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sys_byteorder.h"
 #include "base/task/task_traits.h"
@@ -249,8 +248,9 @@ using device::cbor_extract::Stop;
 
 // PreLinkInfo reflects the linking information provided by Play Services.
 struct PreLinkInfo {
-  // RAW_PTR_EXCLUSION: cbor_extract.cc would cast the raw_ptr<T> to a void*,
-  // skipping an AddRef() call and causing a ref-counting mismatch.
+  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
+  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
+  // ref-counting mismatch.
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* contact_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* pairing_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* secret;

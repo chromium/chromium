@@ -13,7 +13,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -106,7 +105,7 @@ class SynchronizedRunLoopObserver final {
 
  private:
   // Lock to use to synchronize the run loop sources.
-  const raw_ref<base::Lock> lock_;
+  base::Lock& lock_;
   // Indicates whether the current observer holds the lock. It is used to
   // avoid double locking and releasing.
   bool lock_acquired_ = false;
@@ -156,7 +155,7 @@ void SynchronizedRunLoopObserver::RunLoopObserverCallBack(
   switch (activity) {
     case kCFRunLoopBeforeSources:
       if (!lock_acquired_) {
-        lock_->Acquire();
+        lock_.Acquire();
         lock_acquired_ = true;
       }
       break;
@@ -164,7 +163,7 @@ void SynchronizedRunLoopObserver::RunLoopObserverCallBack(
     case kCFRunLoopExit:
       if (lock_acquired_) {
         lock_acquired_ = false;
-        lock_->Release();
+        lock_.Release();
       }
       break;
   }

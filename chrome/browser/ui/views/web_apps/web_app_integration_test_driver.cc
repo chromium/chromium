@@ -823,8 +823,7 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
       base::Value::Dict browser_dict;
       const BrowserState& browser = browser_pair.second;
 
-      browser_dict.Set("browser",
-                       base::StringPrintf("%p", browser.browser.get()));
+      browser_dict.Set("browser", base::StringPrintf("%p", browser.browser));
 
       base::Value::Dict tab_dicts;
       for (const auto& tab_pair : browser.tabs) {
@@ -836,7 +835,7 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
       }
       browser_dict.Set("tabs", std::move(tab_dicts));
       browser_dict.Set("active_tab",
-                       base::StringPrintf("%p", browser.active_tab.get()));
+                       base::StringPrintf("%p", browser.active_tab));
       browser_dict.Set("app_id", browser.app_id);
       browser_dict.Set("launch_icon_shown", browser.launch_icon_shown);
 

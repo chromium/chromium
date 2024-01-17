@@ -82,8 +82,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     EditButtonParams(const EditButtonParams&);
     ~EditButtonParams();
 
-    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
-    // global), so there is no benefit to using a raw_ptr, only cost.
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
     RAW_PTR_EXCLUSION const gfx::VectorIcon* edit_icon;
     std::u16string edit_tooltip_text;
     base::RepeatingClosure edit_action;

@@ -41,7 +41,7 @@ class ReceiverSetState::Entry::DispatchFilter : public MessageFilter {
       nested_filter_->DidDispatchOrReject(message, accepted);
   }
 
-  // RAW_PTR_EXCLUSION: Binary size increase.
+  // `entry_` is not a raw_ref<...> as that leads to a binary size increase.
   RAW_PTR_EXCLUSION Entry& entry_;
   std::unique_ptr<MessageFilter> nested_filter_;
 };

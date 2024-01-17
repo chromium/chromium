@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -419,7 +420,10 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     }
 
     size_t initial_widget_count_ = 0;
-    raw_ptr<content::RenderWidgetHost> last_render_widget_host_ = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION content::RenderWidgetHost* last_render_widget_host_ =
+        nullptr;
     std::unique_ptr<base::RunLoop> run_loop_;
   };
 

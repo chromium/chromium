@@ -83,9 +83,10 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
  private:
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation{
       this};
-  // RAW_PTR_EXCLUSION: Avoid turning this into a `raw_ref<raw_ptr<>>`. The
-  // current `raw_ptr&` setup is intentional and used to observe the pointer
-  // without counting as a live reference to the underlying memory.
+  // Excluded from `raw_ref` rewriter which would otherwise turn this
+  // into a `raw_ref<raw_ptr<>>`. The current `raw_ptr&` setup is
+  // intentional and used to observe the pointer without counting as a
+  // live reference to the underlying memory.
   RAW_PTR_EXCLUSION const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
       mouse_move_handler_;
 };

@@ -4,7 +4,7 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
@@ -37,7 +37,9 @@ class TestObserver : public mojom::MetricsReportingObserver {
   // Public because this is test code.
   std::optional<bool> metrics_enabled_;
   std::optional<std::string> metrics_client_id_;
-  raw_ptr<base::RunLoop> on_changed_run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION base::RunLoop* on_changed_run_loop_ = nullptr;
   mojo::Receiver<mojom::MetricsReportingObserver> receiver_{this};
 };
 
