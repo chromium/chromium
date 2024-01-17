@@ -30,31 +30,31 @@ class CameraAppUIDelegate {
  public:
   enum class FileMonitorResult {
     // The file is deleted.
-    DELETED = 0,
+    kDeleted = 0,
 
     // The request is canceled since there is another monitor request.
-    CANCELED = 1,
+    kCanceled = 1,
 
     // Fails to monitor the file due to errors.
-    ERROR = 2,
+    kError = 2,
   };
 
   enum class StorageMonitorStatus {
     // Storage has enough space to operate CCA functions.
-    NORMAL = 0,
+    kNormal = 0,
 
     // Storage is getting low, display warning to users.
-    LOW = 1,
+    kLow = 1,
 
     // Storage is almost full. Should stop ongoing recording and don't allow new
     // recording.
-    CRITICALLY_LOW = 2,
+    kCriticallyLow = 2,
 
     // Monitoring got canceled since there is another monitor request.
-    CANCELED = 3,
+    kCanceled = 3,
 
     // Monitoring get errors.
-    ERROR = 4,
+    kError = 4,
   };
 
   struct WifiConfig {

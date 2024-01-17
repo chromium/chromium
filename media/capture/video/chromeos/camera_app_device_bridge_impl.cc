@@ -225,7 +225,7 @@ void CameraAppDeviceBridgeImpl::GetCameraAppDevice(
     device->BindReceiver(device_remote.InitWithNewPipeAndPassReceiver());
   }
   UpdateCameraInfo(device_id);
-  std::move(callback).Run(cros::mojom::GetCameraAppDeviceStatus::SUCCESS,
+  std::move(callback).Run(cros::mojom::GetCameraAppDeviceStatus::kSuccess,
                           std::move(device_remote));
 }
 

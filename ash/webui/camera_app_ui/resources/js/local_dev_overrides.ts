@@ -35,7 +35,7 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override async initScreenStateMonitor(
       _onChange: (state: ScreenState) => void): Promise<ScreenState> {
-    return ScreenState.ON;
+    return ScreenState.kOn;
   }
 
   override async initExternalScreenMonitor(
@@ -146,7 +146,7 @@ export class ChromeHelperFake extends ChromeHelper {
   override async startMonitorStorage(
       _onChange: (status: StorageMonitorStatus) => void):
       Promise<StorageMonitorStatus> {
-    return StorageMonitorStatus.NORMAL;
+    return StorageMonitorStatus.kNormal;
   }
 
   override stopMonitorStorage(): void {

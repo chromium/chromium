@@ -115,15 +115,15 @@ export class WindowController {
    * Returns true if the window is currently minimized.
    */
   isMinimized(): boolean {
-    return this.windowStates.includes(WindowStateType.MINIMIZED);
+    return this.windowStates.includes(WindowStateType.kMinimized);
   }
 
   /**
    * Returns true if the window is currently fullscreen or maximized.
    */
   isFullscreenOrMaximized(): boolean {
-    return this.windowStates.includes(WindowStateType.FULLSCREEN) ||
-        this.windowStates.includes(WindowStateType.MAXIMIZED);
+    return this.windowStates.includes(WindowStateType.kFullscreen) ||
+        this.windowStates.includes(WindowStateType.kMaximized);
   }
 
   /**

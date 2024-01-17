@@ -663,7 +663,7 @@ export class Preview {
     };
 
     this.metadataObserver = await deviceOperator.addMetadataObserver(
-        deviceId, callback, StreamType.PREVIEW_OUTPUT);
+        deviceId, callback, StreamType.kPreviewOutput);
   }
 
   /**

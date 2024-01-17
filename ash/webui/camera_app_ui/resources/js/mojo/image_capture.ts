@@ -112,7 +112,7 @@ export class CrosImageCapture {
       } else {
         assert(
             photoEffects.length === 1 &&
-            photoEffects[0] === Effect.PORTRAIT_MODE);
+            photoEffects[0] === Effect.kPortraitMode);
         const portraitBlobs =
             await deviceOperator.takePortraitModePhoto(this.deviceId);
         blobs.push(...portraitBlobs);
@@ -187,7 +187,7 @@ export class CrosImageCapture {
     };
 
     this.metadataObserver = await deviceOperator.addMetadataObserver(
-        this.deviceId, callback, StreamType.JPEG_OUTPUT);
+        this.deviceId, callback, StreamType.kJpegOutput);
   }
 
   removeMetadataObserver(): void {

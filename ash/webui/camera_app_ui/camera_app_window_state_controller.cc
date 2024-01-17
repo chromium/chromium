@@ -192,16 +192,16 @@ CameraAppWindowStateController::GetCurrentWindowStates() {
   }
   base::flat_set<CameraAppWindowStateController::WindowStateType> states;
   if (widget_->IsMinimized()) {
-    states.insert(WindowStateType::MINIMIZED);
+    states.insert(WindowStateType::kMinimized);
   }
   if (widget_->IsMaximized()) {
-    states.insert(WindowStateType::MAXIMIZED);
+    states.insert(WindowStateType::kMaximized);
   }
   if (widget_->IsFullscreen()) {
-    states.insert(WindowStateType::FULLSCREEN);
+    states.insert(WindowStateType::kFullscreen);
   }
   if (IsRestored(widget_)) {
-    states.insert(WindowStateType::REGULAR);
+    states.insert(WindowStateType::kRegular);
   }
   return states;
 }

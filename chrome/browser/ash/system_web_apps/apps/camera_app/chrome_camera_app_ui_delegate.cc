@@ -140,13 +140,13 @@ void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
     base::OnceCallback<void(FileMonitorResult)> callback) {
   // Cancel the previous monitor callback if it hasn't been notified.
   if (!callback_.is_null()) {
-    std::move(callback_).Run(FileMonitorResult::CANCELED);
+    std::move(callback_).Run(FileMonitorResult::kCanceled);
   }
 
   // There is chance that the file is deleted during the task is scheduled and
   // executed. Therefore, check here before watching it.
   if (!base::PathExists(file_path)) {
-    std::move(callback).Run(FileMonitorResult::DELETED);
+    std::move(callback).Run(FileMonitorResult::kDeleted);
     return;
   }
 
@@ -157,7 +157,7 @@ void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
           base::BindRepeating(
               &ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion,
               base::Unretained(this)))) {
-    std::move(callback_).Run(FileMonitorResult::ERROR);
+    std::move(callback_).Run(FileMonitorResult::kError);
   }
 }
 
@@ -169,10 +169,10 @@ void ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion(
   }
 
   if (error) {
-    std::move(callback_).Run(FileMonitorResult::ERROR);
+    std::move(callback_).Run(FileMonitorResult::kError);
     return;
   }
-  std::move(callback_).Run(FileMonitorResult::DELETED);
+  std::move(callback_).Run(FileMonitorResult::kDeleted);
 }
 
 ChromeCameraAppUIDelegate::StorageMonitor::StorageMonitor(
@@ -218,14 +218,14 @@ ChromeCameraAppUIDelegate::StorageMonitor::GetWeakPtr() {
 ChromeCameraAppUIDelegate::StorageMonitorStatus
 ChromeCameraAppUIDelegate::StorageMonitor::GetCurrentStatus() {
   auto current_storage = base::SysInfo::AmountOfFreeDiskSpace(monitor_path_);
-  auto status = StorageMonitorStatus::NORMAL;
+  auto status = StorageMonitorStatus::kNormal;
   if (current_storage < 0) {
     LOG(ERROR) << "Failed to get the amount of free disk space.";
-    status = StorageMonitorStatus::ERROR;
+    status = StorageMonitorStatus::kError;
   } else if (current_storage < kStorageCriticallyLowThreshold) {
-    status = StorageMonitorStatus::CRITICALLY_LOW;
+    status = StorageMonitorStatus::kCriticallyLow;
   } else if (current_storage < kStorageLowThreshold) {
-    status = StorageMonitorStatus::LOW;
+    status = StorageMonitorStatus::kLow;
   }
   return status;
 }
@@ -414,11 +414,11 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
   auto file_path = GetFilePathByName(name);
   if (file_path.empty()) {
     LOG(ERROR) << "Unexpected file name: " << name;
-    std::move(callback).Run(FileMonitorResult::ERROR);
+    std::move(callback).Run(FileMonitorResult::kError);
     return;
   }
   if (!file_monitor_) {
-    std::move(callback).Run(FileMonitorResult::ERROR);
+    std::move(callback).Run(FileMonitorResult::kError);
     return;
   }
 
@@ -447,7 +447,7 @@ void ChromeCameraAppUIDelegate::StartStorageMonitor(
   if (!storage_monitor_) {
     LOG(ERROR) << "Failed to start monitoring storage due to missing monitor "
                   "instance.";
-    monitor_callback.Run(StorageMonitorStatus::ERROR);
+    monitor_callback.Run(StorageMonitorStatus::kError);
     return;
   }
 

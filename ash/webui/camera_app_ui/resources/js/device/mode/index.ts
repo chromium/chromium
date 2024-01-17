@@ -155,7 +155,7 @@ export class Modes {
           }
           const deviceId = constraints.deviceId;
           await deviceOperator.setCaptureIntent(
-              deviceId, CaptureIntent.VIDEO_RECORD);
+              deviceId, CaptureIntent.kVideoRecord);
           await deviceOperator.setMultipleStreamsEnabled(
               deviceId,
               expert.isEnabled(
@@ -200,7 +200,7 @@ export class Modes {
         isSupported: () => Promise.resolve(true),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.kStillCapture),
         fallbackMode: Mode.SCAN,
       },
       [Mode.PORTRAIT]: {
@@ -222,7 +222,7 @@ export class Modes {
         },
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.PORTRAIT_CAPTURE),
+            constraints, resolution, CaptureIntent.kPortraitCapture),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.SCAN]: {
@@ -235,7 +235,7 @@ export class Modes {
         isSupported: async () => Promise.resolve(true),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.kStillCapture),
         fallbackMode: Mode.PHOTO,
       },
     };

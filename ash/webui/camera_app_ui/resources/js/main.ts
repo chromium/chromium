@@ -330,7 +330,7 @@ async function setupMultiWindowHandling(
       Comlink.proxy(handleSuspend), Comlink.proxy(handleResume));
   await ChromeHelper.getInstance().initCameraWindowController();
   windowController.addWindowStateListener((states) => {
-    const isMinimizing = states.includes(WindowStateType.MINIMIZED);
+    const isMinimizing = states.includes(WindowStateType.kMinimized);
     // If the window is minimized while recording time-lapse, the camera
     // usage will not be paused to keep recording.
     if (isMinimizing && state.get(state.State.RECORDING) &&
