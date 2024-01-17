@@ -2836,6 +2836,12 @@ BASE_FEATURE(kVcLightIntensity,
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, "VcWebApi", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable global preferences for skin tone and gender in the virtual
+// keyboard emoji picker.
+BASE_FEATURE(kVirtualKeyboardGlobalEmojiPreferences,
+             "VirtualKeyboardGlobalEmojiPreferences",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable round corners for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardRoundCorners,
              "VirtualKeyboardRoundCorners",

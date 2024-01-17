@@ -26139,6 +26139,7 @@ from previous Chrome versions.
   <int value="813302293" label="RemoveStatusBarInWebApps:disabled"/>
   <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
   <int value="813999334" label="HistoryManipulationIntervention:enabled"/>
+  <int value="814671037" label="VirtualKeyboardGlobalEmojiPreferences:enabled"/>
   <int value="816369907" label="SharingHubDesktopAppMenu:disabled"/>
   <int value="816596744" label="PhoneHubOnboardingNotifierRevamp:enabled"/>
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
@@ -27621,6 +27622,8 @@ from previous Chrome versions.
   <int value="1527072723" label="PdfUseSkiaRenderer:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
+  <int value="1529285725"
+      label="VirtualKeyboardGlobalEmojiPreferences:disabled"/>
   <int value="1529979182" label="EnablePasswordSelection:enabled"/>
   <int value="1530113113" label="disable-pushstate-throttle"/>
   <int value="1530177325" label="LanguagesPreference:disabled"/>

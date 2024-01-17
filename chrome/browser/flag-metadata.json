@@ -2468,6 +2468,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-cros-virtual-keyboard-global-emoji-preferences",
+    "owners": [ "lukefl@google.com", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "enable-cros-virtual-keyboard-new-header",
     "owners": ["jopalmer@chromium.org", "essential-inputs-team@google.com"],
     "expiry_milestone" : 116
