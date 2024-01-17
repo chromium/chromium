@@ -103,7 +103,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   // returns false otherwise.
   // This method should not be removed because it's required to transfer XKB
   // input method ID from VPD into extension-based XKB input method ID.
-  static bool MigrateInputMethods(std::vector<std::string>* input_method_ids);
+  static bool GetMigratedInputMethodIDs(
+      std::vector<std::string>* input_method_ids);
 
   // Updates the internal cache of hardware layouts.
   void UpdateHardwareLayoutCache();

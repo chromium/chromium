@@ -81,7 +81,7 @@ std::string CurrentInputMethod() {
 std::string ToExtensionBasedInputMethod(std::string_view method) {
   InputMethodManager& manager = CHECK_DEREF(InputMethodManager::Get());
   std::vector<std::string> extension_based_input_methods{std::string(method)};
-  CHECK(manager.MigrateInputMethods(&extension_based_input_methods));
+  CHECK(manager.GetMigratedInputMethodIDs(&extension_based_input_methods));
   return extension_based_input_methods[0];
 }
 
@@ -95,7 +95,7 @@ bool EnableInputMethods(const std::vector<std::string_view>& methods) {
       CHECK_DEREF(manager.GetActiveIMEState().get());
   std::vector<std::string> extension_based_input_methods(methods.begin(),
                                                          methods.end());
-  return manager.MigrateInputMethods(&extension_based_input_methods) &&
+  return manager.GetMigratedInputMethodIDs(&extension_based_input_methods) &&
          state.ReplaceEnabledInputMethods(extension_based_input_methods);
 }
 

@@ -1321,7 +1321,7 @@ TEST_F(InputMethodManagerImplTest, MigrateInputMethodsTest) {
   input_method_ids.emplace_back("_comp_ime_asdf_pinyin");
   input_method_ids.push_back(ImeIdFromEngineId(kPinyinImeId));
 
-  manager_->MigrateInputMethods(&input_method_ids);
+  manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
   ASSERT_EQ(4U, input_method_ids.size());
 

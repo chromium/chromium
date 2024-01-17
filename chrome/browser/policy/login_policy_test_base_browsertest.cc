@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   input_methods.emplace_back("xkb:us::eng");
   input_methods.emplace_back("xkb:fr::fra");
   input_methods.emplace_back("xkb:de::ger");
-  EXPECT_TRUE(imm->MigrateInputMethods(&input_methods));
+  EXPECT_TRUE(imm->GetMigratedInputMethodIDs(&input_methods));
 
   // No restrictions and current input method should be "xkb:us::eng" (default).
   EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());

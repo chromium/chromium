@@ -294,7 +294,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
     }
   }
 
-  manager_->MigrateInputMethods(&layouts);
+  manager_->GetMigratedInputMethodIDs(&layouts);
   enabled_input_method_ids_.swap(layouts);
 
   if (IsActive()) {
@@ -403,7 +403,7 @@ bool InputMethodManagerImpl::StateImpl::ReplaceEnabledInputMethods(
       new_enabled_input_method_ids_filtered.push_back(input_method_id);
   }
   enabled_input_method_ids_.swap(new_enabled_input_method_ids_filtered);
-  manager_->MigrateInputMethods(&enabled_input_method_ids_);
+  manager_->GetMigratedInputMethodIDs(&enabled_input_method_ids_);
 
   manager_->ReconfigureIMFramework(this);
 
@@ -702,7 +702,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
 
   std::vector<std::string> layouts = base::SplitString(
       layout, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  manager_->MigrateInputMethods(&layouts);
+  manager_->GetMigratedInputMethodIDs(&layouts);
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetString(prefs::kHardwareKeyboardLayout,
@@ -923,9 +923,9 @@ std::string InputMethodManagerImpl::GetMigratedInputMethodID(
   return util_.MigrateInputMethod(input_method_id);
 }
 
-bool InputMethodManagerImpl::MigrateInputMethods(
+bool InputMethodManagerImpl::GetMigratedInputMethodIDs(
     std::vector<std::string>* input_method_ids) {
-  return util_.MigrateInputMethods(input_method_ids);
+  return util_.GetMigratedInputMethodIDs(input_method_ids);
 }
 
 // Starts or stops the system input method framework as needed.

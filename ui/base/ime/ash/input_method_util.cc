@@ -671,7 +671,7 @@ std::string InputMethodUtil::MigrateInputMethod(
   return id;
 }
 
-bool InputMethodUtil::MigrateInputMethods(
+bool InputMethodUtil::GetMigratedInputMethodIDs(
     std::vector<std::string>* input_method_ids) {
   bool rewritten = false;
   std::vector<std::string>& ids = *input_method_ids;
@@ -706,7 +706,7 @@ void InputMethodUtil::UpdateHardwareLayoutCache() {
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
   hardware_layouts_ = cached_hardware_layouts_;
-  MigrateInputMethods(&hardware_layouts_);
+  GetMigratedInputMethodIDs(&hardware_layouts_);
 
   bool has_xkb = false;
   for (const auto& hardware_layout : hardware_layouts_) {
