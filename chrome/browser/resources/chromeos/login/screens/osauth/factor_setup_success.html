@@ -9,10 +9,10 @@ found in the LICENSE file.
 <oobe-adaptive-dialog id="factorSetupSuccessDialog" role="dialog">
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
   <h1 slot="title">
-    [[getTitle_(locale, factors_, changeMode_)]]
+    [[getTitle(locale, factors, changeMode)]]
   </h1>
   <div slot="subtitle">
-    [[getSubtitle_(locale, factors_, changeMode_)]]
+    [[getSubtitle(locale, factors)]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
     <iron-icon icon="oobe-illos:pin-illustration-illo"
@@ -20,13 +20,13 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="doneButton" inverse on-click="onProceed_"
+    <oobe-text-button id="doneButton" inverse on-click="onProceed"
         class="focus-on-show" text-key="factorSuccessDoneButton"
-        hidden="[[hasNextStep_]]">
+        hidden="[[hasNextStep]]">
     </oobe-text-button>
-    <oobe-next-button id="nextButton" inverse on-click="onProceed_"
+    <oobe-next-button id="nextButton" inverse on-click="onProceed"
         class="focus-on-show"
-     hidden="[[!hasNextStep_]]" >
+     hidden="[[!hasNextStep]]" >
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
