@@ -141,11 +141,16 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAttestationSentinel);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const char kPrivacySandboxEnrollmentOverrides[];
 
-// Allow the Privacy Sandbox Attestations component registration to use higher
-// task priority.
+// Allow the Privacy Sandbox Attestations component registration to use
+// `USER_VISIBLE` task priority.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(
     kPrivacySandboxAttestationsHigherComponentRegistrationPriority);
+
+// Allow the Privacy Sandbox Attestations component registration to use
+// `USER_BLOCKING` task priority.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsUserBlockingPriority);
 
 // Enables Privacy Sandbox Proactive Topics Blocking.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
