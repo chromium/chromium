@@ -14,7 +14,6 @@ load("./mojo.star", "mojo")
 load("./platform.star", "platform")
 load("./reproxy.star", "reproxy")
 load("./simple.star", "simple")
-load("./typescript_all.star", "typescript_all")
 load("./windows.star", chromium_windows = "chromium")
 
 def __use_large_b289968566(ctx, step_config):
@@ -119,17 +118,11 @@ def init(ctx):
         },
         "input_deps": {},
         "rules": [],
-        # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
-        # This is necessary for cross platform build actions. e.g. node binary for typescript
-        "executables": [
-            "third_party/node/linux/node-linux-x64/bin/node",
-        ],
     }
     step_config = blink_all.step_config(ctx, step_config)
     step_config = host.step_config(ctx, step_config)
     step_config = mojo.step_config(ctx, step_config)
     step_config = simple.step_config(ctx, step_config)
-    step_config = typescript_all.step_config(ctx, step_config)
     if reproxy.enabled(ctx):
         step_config = reproxy.step_config(ctx, step_config)
 
@@ -159,14 +152,12 @@ def init(ctx):
     filegroups.update(blink_all.filegroups(ctx))
     filegroups.update(host.filegroups(ctx))
     filegroups.update(simple.filegroups(ctx))
-    filegroups.update(typescript_all.filegroups(ctx))
 
     handlers = {}
     handlers.update(blink_all.handlers)
     handlers.update(host.handlers)
-    handlers.update(reproxy.handlers)
     handlers.update(simple.handlers)
-    handlers.update(typescript_all.handlers)
+    handlers.update(reproxy.handlers)
 
     return module(
         "config",
