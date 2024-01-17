@@ -124,6 +124,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.ExperimentalStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
@@ -218,6 +220,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
+import org.chromium.chrome.features.tasks.SingleTabSwitcherBuilder;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -2242,6 +2245,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         });
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
         getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
+
+        mayRegisterHomeModules();
+    }
+
+    private void mayRegisterHomeModules() {
+        if (!StartSurfaceConfiguration.useMagicStack()) return;
+
+        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
+        SingleTabSwitcherBuilder builder =
+                new SingleTabSwitcherBuilder(
+                        this, getTabModelSelectorSupplier(), getTabContentManagerSupplier());
+        moduleRegistry.registerModule(ModuleType.SINGLE_TAB, builder);
     }
 
     private boolean shouldIgnoreIntent() {

@@ -87,6 +87,8 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         super.onDrawOver(canvas, parent, state);
 
         int itemCount = parent.getAdapter().getItemCount();
+        // Don't draw page indicator if there is only one item.
+        if (itemCount <= 1) return;
 
         // The page indicators are center-horizontal. Calculates the total width and subtracts half
         // from the center.
@@ -173,7 +175,7 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
 
         if (!mIsTablet
                 || mUiConfig != null && mUiConfig.getCurrentDisplayStyle().isSmall()
-                || parent.getLayoutManager().getChildCount() < 2) return;
+                || parent.getAdapter().getItemCount() < 2) return;
 
         // On wide screen, we will show 2 cards instead of 1 on the magic stack.
         int position = parent.getChildAdapterPosition(view);

@@ -27,6 +27,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -66,6 +68,7 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
     private ThumbnailProvider mThumbnailProvider;
     private Size mThumbnailSize;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
+    private @Nullable ModuleDelegate mModuleDelegate;
 
     SingleTabSwitcherOnNtpMediator(
             Context context,
@@ -78,7 +81,8 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
             Runnable singleTabCardClickedCallback,
             @Nullable TabContentManager tabContentManager,
             @Nullable UiConfig uiConfig,
-            boolean isTablet) {
+            boolean isTablet,
+            @Nullable ModuleDelegate moduleDelegate) {
         mContext = context;
         mPropertyModel = propertyModel;
         mResources = mContext.getResources();
@@ -89,6 +93,7 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
         mIsSurfacePolishEnabled = tabContentManager != null;
         mUiConfig = uiConfig;
         mIsTablet = isTablet;
+        mModuleDelegate = moduleDelegate;
 
         mMarginNarrowWindowOnTablet =
                 mResources.getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish);
@@ -142,6 +147,9 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
             mDisplayStyleObserver = this::onDisplayStyleChanged;
             mUiConfig.addObserver(mDisplayStyleObserver);
         }
+
+        mTabListFaviconProvider.initWithNative(
+                tabModelSelector.getModel(/* isIncognito= */ false).getProfile());
     }
 
     private void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
@@ -194,6 +202,10 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
         }
 
         mPropertyModel.set(IS_VISIBLE, true);
+        if (mModuleDelegate != null) {
+            mModuleDelegate.onDataReady(getModuleType(), mPropertyModel);
+        }
+
         if (mResources != null) {
             updateMargins(
                     mResources.getConfiguration().orientation,
@@ -327,5 +339,10 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
 
     int getMarginSmallPortraitForTesting() {
         return mMarginSmallPortrait;
+    }
+
+    @ModuleType
+    int getModuleType() {
+        return ModuleType.SINGLE_TAB;
     }
 }

@@ -154,7 +154,8 @@ public class SingleTabViewBinderUnitTest {
                         mTabModelSelector,
                         mTabListFaviconProvider,
                         null,
-                        false);
+                        false,
+                        null);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mSingleTabView.performClick();
         assertEquals(

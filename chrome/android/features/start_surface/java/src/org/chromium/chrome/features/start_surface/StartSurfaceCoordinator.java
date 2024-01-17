@@ -997,7 +997,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                             /* singleTabCardClickedCallback= */ null,
                             /* snapshotParentViewRunnable= */ null,
                             mTabContentManager,
-                            null);
+                            /* uiConfig= */ null,
+                            /* moduleDelegate= */ null);
         }
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
         mMostVisitedCoordinator =

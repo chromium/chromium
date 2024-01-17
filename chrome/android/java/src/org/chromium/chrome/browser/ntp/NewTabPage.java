@@ -1199,7 +1199,7 @@ public class NewTabPage
         if (mSingleTabSwitcherCoordinator == null) {
             initializeSingleTabCard(mostRecentTab);
         } else {
-            mSingleTabSwitcherCoordinator.showModule(mostRecentTab);
+            mSingleTabSwitcherCoordinator.show(mostRecentTab);
         }
     }
 
@@ -1247,7 +1247,8 @@ public class NewTabPage
                         () -> mSnapshotSingleTabCardChanged = true,
                         mTabContentManagerSupplier.get()
                         /* tabContentManager= */ ,
-                        mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null);
+                        mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null,
+                        /* moduleDelegate= */ null);
         mSingleTabSwitcherCoordinator.initWithNative();
         mSingleTabSwitcherCoordinator.showModule();
     }

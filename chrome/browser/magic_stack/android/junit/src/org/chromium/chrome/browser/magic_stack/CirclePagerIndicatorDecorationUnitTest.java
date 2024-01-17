@@ -213,7 +213,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
                 new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
         assertFalse(displayStyle.isSmall());
-        when(mLayoutManager.getChildCount()).thenReturn(3);
+        when(mAdapter.getItemCount()).thenReturn(3);
 
         MarginLayoutParams layoutParams = Mockito.mock(MarginLayoutParams.class);
         when(view.getLayoutParams()).thenReturn(layoutParams);

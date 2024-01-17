@@ -38,11 +38,12 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
     /** Build {@link ModuleProvider} for the price change module. */
     @Override
     public boolean build(
-            @NonNull ModuleDelegate moduleDelegate, @NonNull Callback<ModuleProvider> callback) {
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
         PriceChangeModuleCoordinator coordinator =
                 new PriceChangeModuleCoordinator(
                         mContext, mProfile, mTabModelSelector, moduleDelegate);
-        callback.onResult(coordinator);
+        onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
 

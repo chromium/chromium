@@ -16,14 +16,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 public interface ModuleProviderBuilder {
     /**
      * Builds a module {@link ModuleProvider}. The module will be returned to the caller in the
-     * callback.
+     * onModuleBuiltCallback.
      *
      * @param moduleDelegate The magic stack which owns the module.
-     * @param callback The callback which is called when the module is built.
+     * @param onModuleBuiltCallback The callback which is called when the module is built.
      * @return Whether a module is built successfully.
      */
     boolean build(
-            @NonNull ModuleDelegate moduleDelegate, @NonNull Callback<ModuleProvider> callback);
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull Callback<ModuleProvider> onModuleBuiltCallback);
 
     /**
      * Creates a view for the module.
