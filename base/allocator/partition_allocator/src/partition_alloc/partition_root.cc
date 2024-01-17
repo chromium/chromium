@@ -988,6 +988,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
     if (settings.scheduler_loop_quarantine) {
       scheduler_loop_quarantine_capacity_in_bytes =
           opts.scheduler_loop_quarantine_capacity_in_bytes;
+      scheduler_loop_quarantine_capacity_count =
+          opts.scheduler_loop_quarantine_capacity_count;
       scheduler_loop_quarantine_root.SetCapacityInBytes(
           opts.scheduler_loop_quarantine_capacity_in_bytes);
       scheduler_loop_quarantine.emplace(
@@ -1668,7 +1670,7 @@ ThreadCache* PartitionRoot::MaybeInitThreadCache() {
 internal::LightweightQuarantineBranch
 PartitionRoot::CreateSchedulerLoopQuarantineBranch(bool lock_required) {
   return scheduler_loop_quarantine_root.CreateBranch(
-      scheduler_loop_quarantine_capacity_in_bytes, lock_required);
+      scheduler_loop_quarantine_capacity_count, lock_required);
 }
 
 // static
