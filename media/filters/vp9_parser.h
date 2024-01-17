@@ -268,11 +268,6 @@ struct MEDIA_EXPORT Vp9FrameHeader {
 // A parser for VP9 bitstream.
 class MEDIA_EXPORT Vp9Parser {
  public:
-  // If context update is needed after decoding a frame, the client must
-  // execute this callback, passing the updated context state.
-  using ContextRefreshCallback =
-      base::OnceCallback<void(const Vp9FrameContext&)>;
-
   // ParseNextFrame() return values. See documentation for ParseNextFrame().
   enum Result {
     kOk,
@@ -370,11 +365,6 @@ class MEDIA_EXPORT Vp9Parser {
 
   // Return current parsing context.
   const Context& context() const { return context_; }
-
-  // Return a ContextRefreshCallback, which, if not null, has to be called with
-  // the new context state after the frame associated with |frame_context_idx|
-  // is decoded.
-  ContextRefreshCallback GetContextRefreshCb(size_t frame_context_idx);
 
   // Clear parser state and return to an initialized state.
   void Reset();
