@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -1834,7 +1835,7 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 
 namespace {
 
-String ApplyMathAutoTransform(const String& text) {
+String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
   if (text.length() != 1) {
     return text;
   }
@@ -1847,7 +1848,11 @@ String ApplyMathAutoTransform(const String& text) {
   Vector<UChar> transformed_text(U16_LENGTH(transformed_char));
   int i = 0;
   U16_APPEND_UNSAFE(transformed_text, i, transformed_char);
-  return String(transformed_text);
+  String transformed_string = String(transformed_text);
+  if (offset_map) {
+    offset_map->Append(text.length(), transformed_string.length());
+  }
+  return transformed_string;
 }
 
 }  // namespace
@@ -1872,7 +1877,7 @@ String ComputedStyle::ApplyTextTransform(const String& text,
       return case_map.ToLower(text, offset_map);
     }
     case ETextTransform::kMathAuto:
-      return ApplyMathAutoTransform(text);
+      return ApplyMathAutoTransform(text, offset_map);
   }
   NOTREACHED();
 }
