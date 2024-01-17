@@ -38,11 +38,6 @@ Polymer({
       reflectToAttribute: true,
     },
 
-    value: {
-      type: String,
-      notify: true,
-    },
-
     showPassword: {
       type: Boolean,
       value: false,
@@ -203,5 +198,4 @@ Polymer({
       event.preventDefault();
     }
   },
-
 });

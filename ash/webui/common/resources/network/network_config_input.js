@@ -33,19 +33,9 @@ Polymer({
       reflectToAttribute: true,
     },
 
-    readonly: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
-
     invalid: {
       type: Boolean,
       value: false,
-    },
-
-    value: {
-      type: String,
-      notify: true,
     },
   },
 

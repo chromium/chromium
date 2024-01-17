@@ -163,6 +163,13 @@ Polymer({
       notify: true,
     },
 
+    /**
+     * The prefilled network configuration. This can be empty if nothing to
+     * prefill or the configuration will be synced according to `this.guid`.
+     * @type {?ConfigProperties}
+     */
+    prefilledProperties: Object,
+
     /** @private {?ManagedProperties} */
     managedProperties_: {
       type: Object,

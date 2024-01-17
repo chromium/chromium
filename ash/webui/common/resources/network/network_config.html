@@ -30,6 +30,7 @@
   <template is="dom-if" if="[[isWiFi_(mojoType_)]]" restamp>
     <network-config-input id="ssid" label="[[i18n('OncWiFi-SSID')]]"
         value="{{configProperties_.typeConfig.wifi.ssid}}"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.ssid}}"
         readonly="[[hasGuid_(guid)]]">
     </network-config-input>
   </template>
@@ -40,6 +41,7 @@
         label="[[i18n('OncWiFi-Security')]]"
         value="{{securityType_}}" key="security"
         disabled="[[!securityIsEnabled_(guid, mojoType_)]]"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.security}}"
         items="[[getSecurityItems_(mojoType_)]]"
         onc-prefix="WiFi.Security"
         property="[[getManagedSecurity_(managedProperties_)]]">
@@ -52,6 +54,7 @@
         on-keypress="onWifiPasswordInputKeypress_"
         label="[[i18n('OncWiFi-Passphrase')]]"
         value="{{configProperties_.typeConfig.wifi.passphrase}}"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.passphrase}}"
         property="[[managedProperties_.typeProperties.wifi.passphrase]]">
     </network-password-input>
   </template>
@@ -208,11 +211,13 @@
   <template is="dom-if" if="[[showEap_]]" restamp>
     <network-config-select id="outer" label="[[i18n('OncEAP-Outer')]]"
         value="{{eapProperties_.outer}}" items="[[eapOuterItems_]]"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.eap.outer}}"
         onc-prefix="EAP.Outer" hidden="[[!showEap_.Outer]]"
         property="[[managedEapProperties_.outer]]">
     </network-config-select>
     <network-config-select id="inner" label="[[i18n('OncEAP-Inner')]]"
         value="{{eapProperties_.inner}}"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.eap.inner}}"
         items="[[getEapInnerItems_(eapProperties_.outer)]]"
         onc-prefix="EAP.Inner" hidden="[[!showEap_.Inner]]"
         property="[[managedEapProperties_.inner]]">
@@ -245,14 +250,17 @@
         device-certs-only="[[deviceCertsOnly_]]">
     </network-config-select>
     <network-config-input id="oncEAPIdentity" label="[[i18n('OncEAP-Identity')]]"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.eap.identity}}"
         value="{{eapProperties_.identity}}" hidden="[[!showEap_.Identity]]"
         property="[[managedEapProperties_.identity]]">
     </network-config-input>
-    <network-password-input label="[[i18n('OncEAP-Password')]]"
+    <network-password-input id="eapPassword" label="[[i18n('OncEAP-Password')]]"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.eap.password}}"
         value="{{eapProperties_.password}}" hidden="[[!showEap_.Password]]"
         property="[[managedEapProperties_.password]]">
     </network-password-input>
-    <network-config-input label="[[i18n('OncEAP-AnonymousIdentity')]]"
+    <network-config-input id="oncEAPAnonymousIdentity" label="[[i18n('OncEAP-AnonymousIdentity')]]"
+        prefilled-value="{{prefilledProperties.typeConfig.wifi.eap.anonymousIdentity}}"
         value="{{eapProperties_.anonymousIdentity}}"
         hidden="[[!showEap_.AnonymousIdentity]]"
         property="[[managedEapProperties_.anonymousIdentity]]">

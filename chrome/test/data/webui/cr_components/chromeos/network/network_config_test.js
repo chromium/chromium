@@ -28,13 +28,17 @@ suite('network-config', function() {
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
   });
 
-  function setNetworkConfig(properties) {
+  function setNetworkConfig(properties, prefilledProperties = undefined) {
     assertTrue(!!properties.guid);
     mojoApi_.setManagedPropertiesForTest(properties);
     PolymerTest.clearBody();
     networkConfig = document.createElement('network-config');
     networkConfig.guid = properties.guid;
     networkConfig.managedProperties = properties;
+
+    if (prefilledProperties !== undefined) {
+      networkConfig.prefilledProperties = prefilledProperties;
+    }
   }
 
   function setNetworkType(type, security) {
@@ -353,6 +357,155 @@ suite('network-config', function() {
         assertFalse(networkConfig.propertiesSent_);
         simulateEnterPressedInElement('oncEAPIdentity');
         assertTrue(networkConfig.propertiesSent_);
+      });
+    });
+  });
+
+  suite('Pre-filled', function() {
+    setup(function() {
+      mojoApi_.resetForTest();
+    });
+
+    teardown(function() {
+      PolymerTest.clearBody();
+    });
+
+    function getPrefilledProperties(
+        ssid, security, password = undefined, eapConfig = undefined) {
+      const properties = OncMojo.getDefaultConfigProperties(NetworkType.kWiFi);
+      properties.typeConfig.wifi.ssid = ssid;
+      properties.typeConfig.wifi.security = security;
+      properties.typeConfig.wifi.passphrase = password;
+      properties.typeConfig.wifi.eap = eapConfig;
+      return properties;
+    }
+
+    test('None', function() {
+      setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+      initNetworkConfig();
+
+      return flushAsync().then(() => {
+        const ssid = networkConfig.$$('#ssid');
+        assertTrue(!!ssid);
+        assertFalse(ssid.readonly);
+
+        const security = networkConfig.$$('#security');
+        assertTrue(!!security);
+        assertFalse(security.disabled);
+
+        const password = networkConfig.$$('#wifi-passphrase');
+        assertTrue(!!password);
+        assertFalse(password.readonly);
+      });
+    });
+
+    test('Insecure', function() {
+      const testSsid = 'somessid';
+      const wifi = OncMojo.getDefaultManagedProperties(
+          NetworkType.kWiFi, 'someguid', '');
+      const prefilledProperties =
+          getPrefilledProperties(testSsid, SecurityType.kNone);
+      setNetworkConfig(wifi, prefilledProperties);
+      initNetworkConfig();
+
+      return flushAsync().then(() => {
+        const ssid = networkConfig.$$('#ssid');
+        assertTrue(!!ssid);
+        assertTrue(ssid.readonly);
+        assertEquals(testSsid, ssid.value);
+
+        const security = networkConfig.$$('#security');
+        assertTrue(!!security);
+        assertTrue(security.disabled);
+        assertEquals(SecurityType.kNone, security.value);
+      });
+    });
+
+    test('Secure', function() {
+      const testSsid = 'somessid';
+      const testPassword = 'somepassword';
+      const wifi = OncMojo.getDefaultManagedProperties(
+          NetworkType.kWiFi, 'someguid', '');
+      const prefilledProperties =
+          getPrefilledProperties(testSsid, SecurityType.kWpaPsk, testPassword);
+      setNetworkConfig(wifi, prefilledProperties);
+      initNetworkConfig();
+
+      return flushAsync().then(() => {
+        const ssid = networkConfig.$$('#ssid');
+        assertTrue(!!ssid);
+        assertTrue(ssid.readonly);
+        assertEquals(testSsid, ssid.value);
+
+        const security = networkConfig.$$('#security');
+        assertTrue(!!security);
+        assertTrue(security.disabled);
+        assertEquals(SecurityType.kWpaPsk, security.value);
+
+        const password = networkConfig.$$('#wifi-passphrase');
+        assertTrue(!!password);
+        assertTrue(password.readonly);
+        assertEquals(testPassword, password.value);
+      });
+    });
+
+    test('Secure EAP', function() {
+      const testSsid = 'somessid';
+      const testPassword = 'somepassword';
+      const testAnonymousIdentity = 'testid1';
+      const testIdentity = 'testid2';
+      const testInner = 'MSCHAPv2';
+      const testOuter = 'PEAP';
+      const testEapConfig = {
+        anonymousIdentity: testAnonymousIdentity,
+        identity: testIdentity,
+        inner: testInner,
+        outer: testOuter,
+        password: testPassword,
+      };
+      const wifi = OncMojo.getDefaultManagedProperties(
+          NetworkType.kWiFi, 'someguid', '');
+      const prefilledProperties = getPrefilledProperties(
+          testSsid, SecurityType.kWpaEap, testPassword, testEapConfig);
+      setNetworkConfig(wifi, prefilledProperties);
+      initNetworkConfig();
+
+      return flushAsync().then(() => {
+        const ssid = networkConfig.$$('#ssid');
+        assertTrue(!!ssid);
+        assertTrue(ssid.readonly);
+        assertEquals(testSsid, ssid.value);
+
+        const security = networkConfig.$$('#security');
+        assertTrue(!!security);
+        assertTrue(security.disabled);
+        assertEquals(SecurityType.kWpaEap, security.value);
+
+        const eapPassword = networkConfig.$$('#eapPassword');
+        assertTrue(!!eapPassword);
+        assertTrue(eapPassword.readonly);
+        assertEquals(testPassword, eapPassword.value);
+
+        const eapOuter = networkConfig.$$('#outer');
+        assertTrue(!!eapOuter);
+        assertTrue(eapOuter.disabled);
+        assertEquals(testOuter, eapOuter.value);
+
+        const eapInner = networkConfig.$$('#inner');
+        assertTrue(!!eapInner);
+        assertTrue(eapInner.disabled);
+        assertEquals(testInner, eapInner.value);
+
+        const eapIdentity = networkConfig.$$('#oncEAPIdentity');
+        assertTrue(!!eapIdentity);
+        assertTrue(eapIdentity.readonly);
+        assertEquals(testIdentity, eapIdentity.value);
+
+        const eapAnonymousIdentity =
+            networkConfig.$$('#oncEAPAnonymousIdentity');
+        assertTrue(!!eapAnonymousIdentity);
+        assertTrue(eapAnonymousIdentity.readonly);
+        assertEquals(testAnonymousIdentity, eapAnonymousIdentity.value);
       });
     });
   });

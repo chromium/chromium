@@ -95,4 +95,16 @@ suite('CrComponentsNetworkConfigElementBehaviorTest', function() {
     config.property = OncMojo.createManagedString('policy');
     assertTrue(config.showPolicyIndicator);
   });
+
+  test('Pre-filled values behavior', function() {
+    config.property = null;
+    config.prefilledValue = null;
+    assertFalse(config.readonly);
+    assertFalse(config.disabled);
+
+    config.prefilledValue = 'something';
+    assertTrue(config.readonly);
+    assertTrue(config.disabled);
+    assertEquals(config.value, config.prefilledValue);
+  });
 });

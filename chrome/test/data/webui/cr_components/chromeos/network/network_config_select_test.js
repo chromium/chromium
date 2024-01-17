@@ -85,4 +85,25 @@ suite('NetworkConfigSelectTest', function() {
     optionEnabled = !optionEl.disabled;
     assertFalse(optionEnabled);
   });
+
+  test('Valid Pre-filled value', function() {
+    assertTrue(!!configSelect);
+
+    const validValue = 'None';
+    configSelect.oncPrefix = 'WiFi.Security';
+    configSelect.items = [validValue];
+    configSelect.prefilledValue = validValue;
+    assertEquals(configSelect.value, configSelect.prefilledValue);
+  });
+
+  test('Invalid Pre-filled value', function() {
+    assertTrue(!!configSelect);
+
+    const validValue = 'None';
+    const invalidValue = 'Nothing';
+    configSelect.oncPrefix = 'WiFi.Security';
+    configSelect.items = [validValue];
+    configSelect.prefilledValue = invalidValue;
+    assertNotEquals(configSelect.value, configSelect.prefilledValue);
+  });
 });
