@@ -10,9 +10,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Utility class for toolbar code interacting with features and params. */
 public final class ToolbarFeatures {
-
-    private static final String ALLOW_CAPTURES = "allow_captures";
-
     @VisibleForTesting public static final String BLOCK_FOR_FULLSCREEN = "block_for_fullscreen";
 
     /** Private constructor to avoid instantiation. */
