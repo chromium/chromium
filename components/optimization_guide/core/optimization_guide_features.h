@@ -582,6 +582,19 @@ bool GetOnDeviceModelMustUseSafetyModel();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldDownloadTextSafetyClassifierModel();
 
+// These params configure the repetition checker. See HasRepeatingSuffix() in
+// repetition_checker.h for explanation. A value of 2 for num repeats and 16 for
+// min repeat chars would mean we will halt a response once it repeats at least
+// 16 chars 2 times at the end of the response.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetOnDeviceModelNumRepeats();
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetOnDeviceModelMinRepeatChars();
+
+// Whether the response should be retracted if repeats are detected.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool GetOnDeviceModelRetractRepeats();
+
 }  // namespace features
 }  // namespace optimization_guide
 

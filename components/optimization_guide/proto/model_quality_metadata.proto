@@ -143,6 +143,9 @@ message OnDeviceModelServiceResponse {
 
   // The status of the completed response.
   OnDeviceModelServiceResponseStatus status = 4;
+
+  // Whether the response was stopped because of repeating text.
+  bool has_repeats = 5;
 }
 
 enum OnDeviceModelServiceResponseStatus {

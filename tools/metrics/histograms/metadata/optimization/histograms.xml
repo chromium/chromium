@@ -728,6 +728,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.{ModelExecutionFeature}"
+    enum="Boolean" expires_after="2024-07-16">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether the response was halted due to repeating text. Recorded for
+    every execute call to the on device model that completes.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.Result.{ModelExecutionFeature}"
     enum="Boolean" expires_after="2024-07-14">
   <owner>rajendrant@chromium.org</owner>

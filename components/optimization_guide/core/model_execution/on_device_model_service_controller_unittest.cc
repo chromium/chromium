@@ -43,7 +43,7 @@ namespace {
 base::TimeDelta g_execute_delay = base::TimeDelta();
 
 // If non-empty, used as the output from Execute().
-std::string g_model_execute_result;
+std::vector<std::string> g_model_execute_result;
 
 }  // namespace
 
@@ -100,12 +100,17 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
       chunk->text = "Context: " + context + "\n";
       remote->OnResponse(std::move(chunk));
     }
-    auto chunk = on_device_model::mojom::ResponseChunk::New();
-    chunk->text = "Input: " +
-                  (g_model_execute_result.empty() ? input->text
-                                                  : g_model_execute_result) +
-                  "\n";
-    remote->OnResponse(std::move(chunk));
+    if (g_model_execute_result.empty()) {
+      auto chunk = on_device_model::mojom::ResponseChunk::New();
+      chunk->text = "Input: " + input->text + "\n";
+      remote->OnResponse(std::move(chunk));
+    } else {
+      for (const auto& text : g_model_execute_result) {
+        auto chunk = on_device_model::mojom::ResponseChunk::New();
+        chunk->text = text;
+        remote->OnResponse(std::move(chunk));
+      }
+    }
     remote->OnComplete(on_device_model::mojom::ResponseSummary::New());
   }
 
@@ -1297,7 +1302,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response2));
 
   // Output contains redacted text (and  input doesn't), so redact.
-  g_model_execute_result = "abarx";
+  g_model_execute_result = {"Input: abarx\n"};
   response_received_.reset();
   streamed_responses_.clear();
   auto session3 =
@@ -1356,7 +1361,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   Initialize({.config = config});
 
   // Force 'bar' to be returned from model.
-  g_model_execute_result = "bar";
+  g_model_execute_result = {"Input: bar\n"};
 
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
@@ -1376,7 +1381,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   Initialize({.config = config});
 
   // Output contains redacted text (and  input doesn't), so redact.
-  g_model_execute_result = "abarx";
+  g_model_execute_result = {"Input: abarx\n"};
   auto session =
       test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   ASSERT_TRUE(session);
@@ -1385,6 +1390,198 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   const std::string expected_response = "Input: a[redacted]x\n";
   EXPECT_EQ(*response_received_, expected_response);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "false"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "true"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(response_received_);
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kResponseHadRepeats, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "false"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",   " some more repeating", " text",
+      " some more ", "repeating text",       " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating",
+      " text",
+      " some more ",
+      "repeating text",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_retract_repeats", "false"}});
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  Initialize();
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  });
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_FALSE(log_entry_received_->log_ai_data_request()
+                   ->model_execution_info()
+                   .on_device_model_execution_info()
+                   .execution_infos(0)
+                   .response()
+                   .on_device_model_service_response()
+                   .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      false, 1);
 }
 
 }  // namespace optimization_guide

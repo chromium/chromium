@@ -1068,5 +1068,24 @@ bool ShouldDownloadTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
+int GetOnDeviceModelNumRepeats() {
+  static const base::FeatureParam<int> kOnDeviceModelNumRepeats{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_num_repeats", 2};
+  return kOnDeviceModelNumRepeats.Get();
+}
+
+int GetOnDeviceModelMinRepeatChars() {
+  static const base::FeatureParam<int> kOnDeviceModelMinRepeatChars{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_min_repeat_chars", 16};
+  return kOnDeviceModelMinRepeatChars.Get();
+}
+
+bool GetOnDeviceModelRetractRepeats() {
+  static const base::FeatureParam<bool> kOnDeviceModelRetractRepeats{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_retract_repeats",
+      true};
+  return kOnDeviceModelRetractRepeats.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

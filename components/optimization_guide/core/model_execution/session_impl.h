@@ -76,7 +76,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     kUsedOnDeviceOutputUnsafe = 9,
     // On-device was used, but the output was rejected (because contained PII).
     kContainedPII = 10,
-    kMaxValue = kContainedPII,
+    // On-device was used, but the output was rejected because it had repeats.
+    kResponseHadRepeats = 11,
+    kMaxValue = kResponseHadRepeats,
   };
 
   SessionImpl(
@@ -135,8 +137,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Captures all state used for the on device model.
   struct OnDeviceState {
-    OnDeviceState(StartSessionFn start_session_fn,
-                  on_device_model::mojom::StreamingResponder* session);
+    OnDeviceState(StartSessionFn start_session_fn, SessionImpl* session);
     ~OnDeviceState();
 
     // Returns true if ExecuteModel() was called and the complete response
@@ -170,6 +171,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     std::unique_ptr<ExecuteModelHistogramLogger> histogram_logger;
     // Used to log execution information for the request.
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request;
+
+    // Factory for weak pointers related to this session that are invalidated
+    // with the request state.
+    base::WeakPtrFactory<SessionImpl> session_weak_ptr_factory_;
   };
 
   AddContextResult AddContextImpl(

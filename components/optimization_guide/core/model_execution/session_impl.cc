@@ -12,14 +12,27 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
+#include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
+namespace {
 
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
+
+void LogResponseHasRepeats(proto::ModelExecutionFeature feature,
+                           bool has_repeats) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      has_repeats);
+}
+
+}  // namespace
 
 // Handles incrementally processing context. After the min context size has been
 // processed, any pending context processing will be cancelled if an
@@ -442,8 +455,40 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     return;
   }
 
-  std::unique_ptr<ModelQualityLogEntry> log_entry;
   const bool is_complete = response_type != ResponseType::kPartial;
+
+  int num_repeats = features::GetOnDeviceModelNumRepeats();
+  if (!is_complete && num_repeats > 1 &&
+      HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
+                         num_repeats, current_response)) {
+    on_device_state_->MutableLoggedResponse()->set_has_repeats(true);
+    LogResponseHasRepeats(feature_, true);
+
+    if (features::GetOnDeviceModelRetractRepeats()) {
+      on_device_state_->current_response.clear();
+      logged_response->set_status(
+          proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+      CancelPendingResponse(ExecuteModelResult::kResponseHadRepeats,
+                            ModelExecutionError::kFiltered);
+      return;
+    }
+
+    // If a repeat is detected, halt the response, and artificially send the
+    // OnComplete event.
+    on_device_state_->receiver.reset();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SessionImpl::OnComplete,
+                       on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                       on_device_model::mojom::ResponseSummary::New()));
+  } else if (is_complete &&
+             !on_device_state_->MutableLoggedResponse()->has_repeats()) {
+    // Log completed responses with no repeats to calculate percentage of
+    // responses that have repeats.
+    LogResponseHasRepeats(feature_, false);
+  }
+
+  std::unique_ptr<ModelQualityLogEntry> log_entry;
   if (is_complete) {
     if (response_type == ResponseType::kCompleteUnsafeOutput) {
       if (on_device_state_->histogram_logger) {
@@ -517,10 +562,11 @@ std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
   return message;
 }
 
-SessionImpl::OnDeviceState::OnDeviceState(
-    StartSessionFn start_session_fn,
-    on_device_model::mojom::StreamingResponder* session)
-    : start_session_fn(std::move(start_session_fn)), receiver(session) {}
+SessionImpl::OnDeviceState::OnDeviceState(StartSessionFn start_session_fn,
+                                          SessionImpl* session)
+    : start_session_fn(std::move(start_session_fn)),
+      receiver(session),
+      session_weak_ptr_factory_(session) {}
 
 SessionImpl::OnDeviceState::~OnDeviceState() = default;
 
@@ -546,6 +592,7 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   timer_for_first_response.Stop();
   histogram_logger.reset();
   log_ai_data_request.reset();
+  session_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
