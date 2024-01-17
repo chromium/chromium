@@ -1100,7 +1100,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                "bitstream_buffer_id", bitstream_buffer_id);
   DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id
            << ", payload_size=" << metadata.payload_size_bytes
-           << ", end_of_picture=" << metadata.end_of_picture()
+           << ", end_of_picture=" << metadata.end_of_picture
            << ", key_frame=" << metadata.key_frame
            << ", timestamp ms=" << metadata.timestamp.InMicroseconds();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1112,6 +1112,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                            base::NumberToString(bitstream_buffer_id)});
     return;
   }
+
   scoped_refptr<RefCountedWritableSharedMemoryMapping> output_mapping =
       output_buffers_[bitstream_buffer_id].second;
   if (metadata.payload_size_bytes >
@@ -1131,7 +1132,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     frames_in_encoder_count_--;
   }
 
-  if (metadata.end_of_picture()) {
+  if (metadata.end_of_picture) {
     CHECK(encoder_metrics_provider_);
     encoder_metrics_provider_->IncrementEncodedFrameCount();
   }
@@ -1145,7 +1146,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     // Pop timestamps until we have a match.
     while (!submitted_frames_.empty()) {
       auto& front_frame = submitted_frames_.front();
-      const bool end_of_picture = metadata.end_of_picture();
+      const bool end_of_picture = metadata.end_of_picture;
       if (front_frame.media_timestamp_ == metadata.timestamp) {
         rtp_timestamp = front_frame.rtp_timestamp_;
         capture_timestamp_ms = front_frame.capture_time_ms_;
@@ -1349,7 +1350,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         }
         vp9.flexible_mode = true;
         vp9.gof_idx = 0;
-        info.end_of_picture = metadata.vp9->end_of_picture;
+        info.end_of_picture = metadata.end_of_picture;
       } else {
         // Simple stream, neither temporal nor spatial layer stream.
         vp9.flexible_mode = false;

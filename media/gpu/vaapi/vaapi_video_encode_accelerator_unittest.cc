@@ -445,6 +445,7 @@ class VaapiVideoEncodeAcceleratorTest
               // Same implementation in VP9VaapiVideoEncoderDelegate.
               BitstreamBufferMetadata metadata(
                   payload_size, job.IsKeyframeRequested(), job.timestamp());
+              metadata.end_of_picture = job.end_of_picture();
               CodecPicture* picture = job.picture().get();
               metadata.vp9 =
                   reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
@@ -626,6 +627,7 @@ class VaapiVideoEncodeAcceleratorTest
                 // Same implementation in VP9VaapiVideoEncoderDelegate.
                 BitstreamBufferMetadata metadata(
                     payload_size, job.IsKeyframeRequested(), job.timestamp());
+                metadata.end_of_picture = job.end_of_picture();
                 CodecPicture* picture = job.picture().get();
                 metadata.vp9 = reinterpret_cast<VP9Picture*>(picture)
                                    ->metadata_for_encoding;

@@ -476,9 +476,6 @@ class RTCVideoEncoderTest {
       bool force_keyframe) {
     int32_t frame_num = frame->timestamp().InMicroseconds();
     CHECK(0 <= frame_num && frame_num <= 4);
-    media::BitstreamBufferMetadata metadata(100u /* payload_size_bytes */,
-                                            force_keyframe, frame->timestamp());
-
     for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
       // Assume the number of TLs is three. TL structure is below.
       // TL2:      [#1]     /-[#3]
@@ -509,13 +506,18 @@ class RTCVideoEncoderTest {
           vp9.p_diffs = {4};
           break;
       }
+
+      const bool end_of_picture = sid + 1 == num_spatial_layers_;
+      media::BitstreamBufferMetadata metadata(
+          100u /* payload_size_bytes */, force_keyframe, frame->timestamp());
+
       // Assume k-SVC encoding.
       metadata.key_frame = frame_num == 0 && sid == 0;
+      metadata.end_of_picture = end_of_picture;
       vp9.spatial_idx = sid;
       vp9.reference_lower_spatial_layers = frame_num == 0 && sid != 0;
       vp9.referenced_by_upper_spatial_layers =
           frame_num == 0 && (sid + 1 != num_spatial_layers_);
-      vp9.end_of_picture = (sid + 1 == num_spatial_layers_);
       if (metadata.key_frame) {
         constexpr int kDenom[] = {4, 2, 1};
         for (size_t i = 0; i < num_spatial_layers_; ++i) {
@@ -1360,21 +1362,22 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->spatial_layer_resolutions = ToResolutionList(tl_codec);
     ASSERT_EQ(metadata.vp9->spatial_layer_resolutions.size(), 2u);
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    // Incorrectly mark last spatial layer with eop = false.
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->reference_lower_spatial_layers = true;
-    // Incorrectly mark last spatial layer with eop = false.
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
@@ -1428,12 +1431,13 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMismatchingResolutions) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_layer_resolutions = {gfx::Size(
         tl_codec.spatialLayers[0].width, tl_codec.spatialLayers[0].height)};
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
   });
 
@@ -1488,22 +1492,23 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->spatial_layer_resolutions = ToResolutionList(tl_codec);
     ASSERT_EQ(metadata.vp9->spatial_layer_resolutions.size(), 2u);
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 2;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
@@ -1530,7 +1535,8 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Microseconds(1));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Microseconds(1));
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->inter_pic_predicted = true;
@@ -1540,7 +1546,6 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
     };
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 1;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
   });
   frame_types[0] = webrtc::VideoFrameType::kVideoFrameDelta;
@@ -1562,7 +1567,9 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
     media::BitstreamBufferMetadata metadata(
         100u /* payload_size_bytes */,
-        /*keyframe=*/true, /*timestamp=*/base::Microseconds(2));
+        /*keyframe=*/true,
+        /*timestamp=*/base::Microseconds(2));
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->inter_pic_predicted = true;
@@ -1574,14 +1581,13 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
     };
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 2;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->inter_pic_predicted = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
@@ -1658,27 +1664,27 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
         /*payload_size_bytes=*/100u,
         /*keyframe=*/true, /*timestamp=*/base::Milliseconds(0));
     metadata.key_frame = true;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->spatial_layer_resolutions = ToResolutionList(tl_codec);
     ASSERT_THAT(metadata.vp9->spatial_layer_resolutions, SizeIs(3));
     metadata.vp9->begin_active_spatial_layer_index = 0;
     metadata.vp9->end_active_spatial_layer_index = 3;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = false;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 2;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/2, metadata);
   });
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
@@ -1717,7 +1723,6 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->reference_lower_spatial_layers = false;
     metadata.vp9->inter_pic_predicted = true;
-    metadata.vp9->end_of_picture = true;
     metadata.vp9->spatial_layer_resolutions = {
         gfx::Size(tl_codec.spatialLayers[1].width,
                   tl_codec.spatialLayers[1].height),
@@ -1749,10 +1754,10 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     media::BitstreamBufferMetadata metadata(
         /*payload_size_bytes=*/100u,
         /*keyframe=*/true, /*timestamp=*/base::Microseconds(2));
+    metadata.end_of_picture = false;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 0;
     metadata.vp9->inter_pic_predicted = false;
-    metadata.vp9->end_of_picture = false;
     metadata.vp9->spatial_layer_resolutions = {
         gfx::Size(tl_codec.spatialLayers[0].width,
                   tl_codec.spatialLayers[0].height),
@@ -1764,11 +1769,11 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
     client_->BitstreamBufferReady(/*buffer_id=*/0, metadata);
 
     metadata.key_frame = false;
+    metadata.end_of_picture = true;
     metadata.vp9.emplace();
     metadata.vp9->spatial_idx = 1;
     metadata.vp9->inter_pic_predicted = true;
     metadata.vp9->reference_lower_spatial_layers = true;
-    metadata.vp9->end_of_picture = true;
     client_->BitstreamBufferReady(/*buffer_id=*/1, metadata);
   });
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()

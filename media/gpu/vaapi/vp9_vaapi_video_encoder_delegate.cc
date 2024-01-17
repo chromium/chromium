@@ -449,7 +449,9 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
   metadata.vp9 = picture->metadata_for_encoding;
 
   CHECK_EQ(metadata.key_frame, picture->frame_hdr->IsKeyframe());
-
+  DCHECK_EQ(GetSVCLayerResolutions().size() - 1 ==
+                (metadata.vp9 ? metadata.vp9->spatial_idx : 0),
+            metadata.end_of_picture);
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_hdr->quant_params.base_q_idx);
   return metadata;

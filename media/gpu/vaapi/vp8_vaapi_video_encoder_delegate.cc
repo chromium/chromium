@@ -408,13 +408,18 @@ BitstreamBufferMetadata VP8VaapiVideoEncoderDelegate::GetMetadata(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  CHECK(metadata.end_of_picture);
+  if (metadata.dropped_frame()) {
+    // BitstreamBufferMetadata should not have a codec specific metadata,
+    // when a frame is dropped.
+    return metadata;
+  }
+
   auto picture = GetVP8Picture(encode_job);
   DCHECK(picture);
-
   metadata.vp8 = picture->metadata_for_encoding;
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_hdr->quantization_hdr.y_ac_qi);
-
   return metadata;
 }
 

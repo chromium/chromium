@@ -89,7 +89,7 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
     EXPECT_TRUE(client_);
     client_->BitstreamBufferReady(
         configured_bitstream_buffer_id_,
-        BitstreamBufferMetadata(0, options.key_frame, frame->timestamp()));
+        BitstreamBufferMetadata(100, options.key_frame, frame->timestamp()));
     configured_bitstream_buffer_id_ = -1;
 
     DoEncode(frame, options.key_frame);

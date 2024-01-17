@@ -284,7 +284,6 @@ struct Vp9Metadata {
   bool temporal_up_switch;
   bool referenced_by_upper_spatial_layers;
   bool reference_lower_spatial_layers;
-  bool end_of_picture;
   uint8 temporal_idx;
   uint8 spatial_idx;
   array<gfx.mojom.Size> spatial_layer_resolutions;
@@ -310,6 +309,7 @@ struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
   mojo_base.mojom.TimeDelta timestamp;
+  bool end_of_picture;
   int32 qp;
   CodecMetadata? codec_metadata;
   gfx.mojom.Size? encoded_size;

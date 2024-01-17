@@ -452,11 +452,11 @@ BitstreamBufferMetadata AV1VaapiVideoEncoderDelegate::GetMetadata(
     size_t payload_size) {
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  CHECK(metadata.end_of_picture);
   auto picture = GetAV1Picture(encode_job);
   // Revisit populating metadata.av1 if we need SVC.
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_header.quantizer.base_index);
-
   return metadata;
 }
 

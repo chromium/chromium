@@ -272,6 +272,7 @@ class VP9VaapiVideoEncoderDelegateTest
       size_t num_temporal_layers);
   void EncodeConstantQuantizationParameterSequence(
       bool force_key,
+      bool end_of_picture,
       const gfx::Size& layer_size,
       absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
           expected_ref_frames_used,
@@ -294,6 +295,7 @@ class VP9VaapiVideoEncoderDelegateTest
  private:
   std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
       bool keyframe,
+      bool end_of_picture,
       const scoped_refptr<VASurface>& va_surface,
       const scoped_refptr<VP9Picture>& picture);
 
@@ -320,6 +322,7 @@ void VP9VaapiVideoEncoderDelegateTest::SetUp() {
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
     bool keyframe,
+    bool end_of_picture,
     const scoped_refptr<VASurface>& va_surface,
     const scoped_refptr<VP9Picture>& picture) {
   constexpr VABufferID kDummyVABufferID = 12;
@@ -331,7 +334,7 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
   // metadata.
   constexpr base::TimeDelta timestamp;
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      keyframe, timestamp, va_surface->id(), picture,
+      keyframe, timestamp, end_of_picture, va_surface->id(), picture,
       std::move(scoped_va_buffer));
 }
 
@@ -388,6 +391,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
 void VP9VaapiVideoEncoderDelegateTest::
     EncodeConstantQuantizationParameterSequence(
         bool force_key,
+        bool end_of_picture,
         const gfx::Size& layer_size,
         absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
             expected_ref_frames_used,
@@ -401,7 +405,8 @@ void VP9VaapiVideoEncoderDelegateTest::
       kDummyVASurfaceID, layer_size, VA_RT_FORMAT_YUV420, base::DoNothing());
   scoped_refptr<VP9Picture> picture = new VaapiVP9Picture(va_surface);
 
-  auto encode_job = CreateEncodeJob(force_key, va_surface, picture);
+  auto encode_job =
+      CreateEncodeJob(force_key, end_of_picture, va_surface, picture);
 
   // The first frame will be set to KeyFrame under the S-mode.
   libvpx::RcFrameType libvpx_frame_type =
@@ -500,12 +505,13 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
     const gfx::Size& layer_size = expected_spatial_layer_resolutions[sid];
     const bool is_keyframe = is_key_pic && sid == 0;
+    const bool end_of_picture = sid == num_spatial_layers - 1;
     const bool s_mode_keyframe =
         (inter_layer_pred == SVCInterLayerPredMode::kOff) && is_key_pic;
-    EncodeConstantQuantizationParameterSequence(is_keyframe, layer_size,
-                                                /*expected_ref_frames_used=*/{},
-                                                expected_temporal_layer_id, sid,
-                                                s_mode_keyframe);
+    EncodeConstantQuantizationParameterSequence(
+        is_keyframe, end_of_picture, layer_size,
+        /*expected_ref_frames_used=*/{}, expected_temporal_layer_id, sid,
+        s_mode_keyframe);
   }
 }
 
@@ -595,6 +601,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, EncodeWithSoftwareBitrateControl) {
   for (size_t frame_num = 0; frame_num < kEncodeFrames; ++frame_num) {
     for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
       const bool is_keyframe = (frame_num == 0 && sid == 0);
+      const bool end_of_picture = sid == num_spatial_layers - 1;
       const bool s_mode_keyframe =
           (inter_layer_pred == SVCInterLayerPredMode::kOff) && (frame_num == 0);
       std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
@@ -603,8 +610,8 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, EncodeWithSoftwareBitrateControl) {
                        num_temporal_layers, &ref_frames_used,
                        &temporal_layer_id);
       EncodeConstantQuantizationParameterSequence(
-          is_keyframe, layer_sizes[sid], ref_frames_used, temporal_layer_id,
-          sid, s_mode_keyframe);
+          is_keyframe, end_of_picture, layer_sizes[sid], ref_frames_used,
+          temporal_layer_id, sid, s_mode_keyframe);
     }
   }
 }
@@ -624,6 +631,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest,
     for (size_t i = 0; i < kKeyFrameInterval; ++i) {
       for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
         const bool keyframe = (i == 0 && sid == 0);
+        const bool end_of_picture = sid == num_spatial_layers - 1;
         const bool s_mode_keyframe =
             (inter_layer_pred == SVCInterLayerPredMode::kOff) && (i == 0);
         std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
@@ -631,8 +639,8 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest,
         GetTemporalLayer(keyframe, i, num_spatial_layers, num_temporal_layers,
                          &ref_frames_used, &temporal_layer_id);
         EncodeConstantQuantizationParameterSequence(
-            keyframe, layer_sizes[sid], ref_frames_used, temporal_layer_id, sid,
-            s_mode_keyframe);
+            keyframe, end_of_picture, layer_sizes[sid], ref_frames_used,
+            temporal_layer_id, sid, s_mode_keyframe);
       }
     }
   }

@@ -122,7 +122,6 @@ void VerifykSVCFrame(
     EXPECT_EQ(metadata.referenced_by_upper_spatial_layers,
               num_spatial_layers > 1);
     EXPECT_FALSE(metadata.reference_lower_spatial_layers);
-    EXPECT_EQ(metadata.end_of_picture, spatial_index == num_spatial_layers - 1);
     EXPECT_EQ(metadata.spatial_layer_resolutions,
               GetDefaultSVCResolutions(num_spatial_layers));
     EXPECT_EQ(metadata.begin_active_spatial_layer_index,

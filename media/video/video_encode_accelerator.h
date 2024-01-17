@@ -78,8 +78,6 @@ struct MEDIA_EXPORT Vp9Metadata final {
   bool referenced_by_upper_spatial_layers = false;
   // True iff frame is dependent on directly lower spatial layer frame.
   bool reference_lower_spatial_layers = false;
-  // True iff frame is last layer frame of picture.
-  bool end_of_picture = true;
 
   // The temporal index for this frame.
   uint8_t temporal_idx = 0;
@@ -139,9 +137,12 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool key_frame;
   base::TimeDelta timestamp;
   int32_t qp = -1;
+  // This is true if a frame is the last spatial layer frame in SVC encoding.
+  // This is useful, in SVC encoding, to represent it when a frame is dropped
+  // and thus the vp9 metadata is not filled.
+  bool end_of_picture = true;
 
   bool dropped_frame() const;
-  bool end_of_picture() const;
   absl::optional<uint8_t> spatial_idx() const;
 
   // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,

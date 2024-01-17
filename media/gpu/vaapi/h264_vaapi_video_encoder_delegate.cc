@@ -345,11 +345,11 @@ BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
 
   auto metadata =
       VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  CHECK(metadata.end_of_picture);
   auto picture = GetH264Picture(encode_job);
   DCHECK(picture);
 
   metadata.h264 = picture->metadata_for_encoding;
-
   return metadata;
 }
 

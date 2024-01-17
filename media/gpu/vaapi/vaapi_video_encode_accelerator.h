@@ -186,6 +186,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   std::unique_ptr<EncodeJob> CreateEncodeJob(
       bool force_keyframe,
       base::TimeDelta frame_timestamp,
+      bool end_of_picture,
       const VASurface& input_surface,
       scoped_refptr<VASurface> reconstructed_surface);
 
