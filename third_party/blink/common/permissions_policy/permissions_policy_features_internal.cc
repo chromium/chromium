@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -67,11 +68,15 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
   if (shp.scheme() != "http" && shp.scheme() != "https") {
     return false;
   }
-  static const base::NoDestructor<HostSet> hosts(
-      UnloadDeprecationAllowedHosts());
-  if (!UnloadDeprecationAllowedForHost(shp.host(), *hosts)) {
-    return false;
+
+  if (base::FeatureList::IsEnabled(features::kDeprecateUnloadByAllowList)) {
+    static const base::NoDestructor<HostSet> hosts(
+        UnloadDeprecationAllowedHosts());
+    if (!UnloadDeprecationAllowedForHost(shp.host(), *hosts)) {
+      return false;
+    }
   }
+
   return IsIncludedInGradualRollout(shp.host(),
                                     features::kDeprecateUnloadPercent.Get(),
                                     features::kDeprecateUnloadBucket.Get());
