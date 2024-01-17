@@ -15,7 +15,9 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -24,148 +26,148 @@ import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './touchpad_scroll.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const TouchpadScrollScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+const TouchpadScrollScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
 /**
  * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   shouldShowReturn: boolean,
- * }}
  */
-let TouchpadScrollScreenData;
+interface TouchpadScrollScreenData {
+  shouldShowReturn: boolean;
+}
 
 /**
  * Enum to represent steps on the touchpad scroll screen.
  * Currently there is only one step, but we still use
  * MultiStepBehavior because it provides implementation of
  * things like processing 'focus-on-show' class
- * @enum {string}
  */
-const TouchpadScrollStep = {
-  OVERVIEW: 'overview',
-};
-
+enum TouchpadScrollStep {
+  OVERVIEW = 'overview',
+}
 
 /**
  * Available user actions.
- * @enum {string}
  */
-const UserAction = {
-  NEXT: 'next',
-  REVERSE: 'update-scroll',
-  RETURN: 'return',
-};
+enum UserAction {
+  NEXT = 'next',
+  REVERSE = 'update-scroll',
+  RETURN = 'return',
+}
 
-/**
- * @polymer
- */
-class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
+export class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
   static get is() {
-    return 'touchpad-scroll-element';
+    return 'touchpad-scroll-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      isReverseScrolling_: {
+      isReverseScrolling: {
         type: Boolean,
         value: false,
-        observer: 'onCheckChanged_',
+        observer: 'onCheckChanged',
       },
 
       /**
        * Whether the button to return to CHOOBE screen should be shown.
-       * @private
        */
-      shouldShowReturn_: {
+      shouldShowReturn: {
         type: Boolean,
         value: false,
       },
     };
   }
 
+  private isReverseScrolling: boolean;
+  private shouldShowReturn: boolean;
+  private resizeobserver: ResizeObserver;
+
   constructor() {
     super();
-    this.resizeobserver_ = new ResizeObserver(() => this.onresize());
+    this.resizeobserver = new ResizeObserver(() => this.onScrollAreaResize());
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return ['setReverseScrolling'];
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return TouchpadScrollStep;
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): TouchpadScrollStep {
     return TouchpadScrollStep.OVERVIEW;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('TouchpadScrollScreen');
-    const scrollArea = this.shadowRoot.querySelector('#scrollArea');
-    if (scrollArea !== null) {
-      this.resizeobserver_.observe(scrollArea);
+    const scrollArea =
+        this.shadowRoot?.querySelector<HTMLElement>('#scrollArea');
+    if (scrollArea instanceof HTMLElement) {
+      this.resizeobserver.observe(scrollArea);
     }
   }
 
-  onresize() {
-    const scrollArea = this.shadowRoot.querySelector('#scrollArea');
+  onScrollAreaResize(): void {
+    const scrollArea = this.shadowRoot?.querySelector('#scrollArea');
+    assert(scrollArea instanceof HTMLElement);
     // Removing the margin to set it
     scrollArea.scrollTop = scrollArea.scrollHeight / 2 - 150;
   }
 
-  /**
-   * @param {TouchpadScrollScreenData} data Screen init payload.
-   */
-  onBeforeShow(data) {
-    this.shouldShowReturn_ = data['shouldShowReturn'];
+  onBeforeShow(data: TouchpadScrollScreenData): void {
+    this.shouldShowReturn = data['shouldShowReturn'];
   }
 
   /**
    * Set the toggle to the synced
    * scrolling preferences.
-   * @param {boolean} isReverseScrolling
    */
-  setReverseScrolling(isReverseScrolling) {
-    this.isReverseScrolling_ = isReverseScrolling;
+  setReverseScrolling(isReverseScrolling: boolean): void {
+    this.isReverseScrolling = isReverseScrolling;
   }
 
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.CHOOBE;
   }
 
-  onCheckChanged_(newValue, oldValue) {
+  private onCheckChanged(newValue: boolean, oldValue: boolean): void {
     // Do not forward action to browser during property initialization
     if (oldValue != null) {
       this.userActed([UserAction.REVERSE, newValue]);
     }
   }
 
-  onNextClicked_() {
+  private onNextClicked(): void {
     this.userActed(UserAction.NEXT);
   }
 
-  onReturnClicked_() {
+  private onReturnClicked(): void {
     this.userActed(UserAction.RETURN);
   }
 
-  getAriaLabelToggleButtons_(locale, title, subtitle) {
+  private getAriaLabelToggleButtons(
+      locale: string, title: string, subtitle: string): string {
     return this.i18nDynamic(locale, title) + '. ' +
         this.i18nDynamic(locale, subtitle);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TouchpadScrollScreen.is]: TouchpadScrollScreen;
   }
 }
 
