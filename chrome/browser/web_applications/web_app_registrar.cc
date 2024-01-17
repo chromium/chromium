@@ -332,11 +332,6 @@ size_t WebAppRegistrar::GetAppExtendedScopeScore(
     return app_scope;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableScopeExtensions)) {
-    return 0;
-  }
-
   const WebApp* app = GetAppById(app_id);
   if (!app || app->validated_scope_extensions().empty()) {
     return 0;
