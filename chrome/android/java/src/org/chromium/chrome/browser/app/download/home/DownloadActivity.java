@@ -59,7 +59,8 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
 
         // Loads offline pages and prefetch downloads.
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
-        boolean showPrefetchContent = DownloadUtils.shouldShowPrefetchContent(getIntent());
+        boolean showPrefetchContent =
+                DownloadActivityLauncher.shouldShowPrefetchContent(getIntent());
         mPermissionDelegate =
                 new ActivityAndroidPermissionDelegate(new WeakReference<Activity>(this));
         mOtrProfileID = DownloadUtils.getOTRProfileIDFromIntent(getIntent());

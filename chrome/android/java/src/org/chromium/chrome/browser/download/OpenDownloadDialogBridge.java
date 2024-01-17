@@ -10,13 +10,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
 import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog;
 import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog.OpenDownloadDialogEvent;
-import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /** Glues open download dialogs UI code and handles the communication to download native backend. */
@@ -40,18 +39,30 @@ public class OpenDownloadDialogBridge {
     /**
      * Called to show a warning dialog for opening a download.
      *
-     * @param windowAndroid Window to show the dialog.
+     * @param profile Profile of the user.
      * @param guid GUID of the download.
-     * @param fileName Name of the download file.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid, Profile profile, String guid) {
-        Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) {
-            onCancel(guid, windowAndroid);
-            return;
-        }
+    public void showDialog(Profile profile, String guid) {
+        DownloadActivityLauncher.getInstance()
+                .getActivityForOpenDialog(
+                        (activity) -> {
+                            if (activity == null) {
+                                onCancel(guid);
+                                return;
+                            }
+                            showOpenDownloadDialog(profile, guid, activity);
+                        });
+    }
 
+    /**
+     * Show a warning dialog for opening a download.
+     *
+     * @param profile Profile of the user.
+     * @param guid GUID of the download.
+     * @param activity Activity that displays the dialog.
+     */
+    private void showOpenDownloadDialog(Profile profile, String guid, Activity activity) {
         new OpenDownloadDialog()
                 .show(
                         activity,
@@ -70,7 +81,7 @@ public class OpenDownloadDialogBridge {
                                 recordOpenDownloadDialogEvent(
                                         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_JUST_ONCE);
                             } else {
-                                onCancel(guid, windowAndroid);
+                                onCancel(guid);
                                 recordOpenDownloadDialogEvent(
                                         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_DISMISS);
                             }
@@ -88,10 +99,9 @@ public class OpenDownloadDialogBridge {
                 .onConfirmed(mNativeOpenDownloadDialogBridge, guid, /* accepted= */ true);
     }
 
-    private void onCancel(String guid, WindowAndroid windowAndroid) {
+    private void onCancel(String guid) {
         OpenDownloadDialogBridgeJni.get()
                 .onConfirmed(mNativeOpenDownloadDialogBridge, guid, /* accepted= */ false);
-        NewDownloadTab.closeExistingNewDownloadTab(windowAndroid);
     }
 
     /**

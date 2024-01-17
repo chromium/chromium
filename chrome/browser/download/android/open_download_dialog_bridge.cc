@@ -13,16 +13,15 @@
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/android/chrome_jni_headers/OpenDownloadDialogBridge_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
-#include "chrome/browser/download/android/jni_headers/OpenDownloadDialogBridge_jni.h"
 #include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -41,21 +40,11 @@ OpenDownloadDialogBridge::~OpenDownloadDialogBridge() {
                                         java_object_);
 }
 
-void OpenDownloadDialogBridge::Show(content::WebContents* web_contents,
-                                    Profile* profile,
+void OpenDownloadDialogBridge::Show(Profile* profile,
                                     const std::string& download_guid) {
-  DCHECK(web_contents);
   JNIEnv* env = base::android::AttachCurrentThread();
-  ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
-  if (!window_android) {
-    delegate_->OnConfirmed(download_guid,
-                           /*accepted=*/false);
-    return;
-  }
-
   Java_OpenDownloadDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      env, java_object_, ProfileAndroid::FromProfile(profile)->GetJavaObject(),
       base::android::ConvertUTF8ToJavaString(env, download_guid));
 }
 

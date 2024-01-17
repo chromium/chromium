@@ -1922,7 +1922,7 @@ Your Google account may have other forms of browsing history like searches and a
         Cancel
       </message>
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_AUTO_OPEN_TEXT" desc="Text label for the check box on the open download dialog that allows user to auto-open downloaded PDF files in future.">
-        Automatically open downloaded PDFs in the future
+        Always open downloaded PDFs
       </message>
       <message name="IDS_AUTO_OPEN_PDF_ENABLED_TITLE" desc="Title for preference that allows the user to indicate whether they want to automatically open a pdf after download completion if the download is triggered by an external app.">
         Automatically open pdf after download

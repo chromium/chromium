@@ -516,9 +516,7 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
         item->OpenDownload();
       } else if (base::FeatureList::IsEnabled(
                      chrome::android::kOpenDownloadDialog)) {
-        content::WebContents* web_contents =
-            content::DownloadItemUtils::GetWebContents(item);
-        open_download_dialog_delegate_.CreateDialog(item, web_contents);
+        open_download_dialog_delegate_.CreateDialog(item);
       }
     }
   }

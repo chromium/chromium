@@ -36,7 +36,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.download.home.DownloadActivity;
+import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -78,12 +78,10 @@ import java.io.File;
 public class DownloadUtils {
     private static final String TAG = "download";
 
-    private static final String EXTRA_OTR_PROFILE_ID =
+    public static final String EXTRA_OTR_PROFILE_ID =
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
     private static final String MIME_TYPE_ZIP = "application/zip";
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
-    public static final String EXTRA_SHOW_PREFETCHED_CONTENT =
-            "org.chromium.chrome.browser.download.SHOW_PREFETCHED_CONTENT";
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
@@ -168,24 +166,8 @@ public class DownloadUtils {
                 }
             }
         } else {
-            // Download Home shows up as a new Activity on phones.
-            Intent intent = new Intent();
-            intent.setClass(appContext, DownloadActivity.class);
-            intent.putExtra(EXTRA_SHOW_PREFETCHED_CONTENT, showPrefetchedContent);
-            if (otrProfileID != null) {
-                intent.putExtra(EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(otrProfileID));
-            }
-
-            if (activity == null) {
-                // Stands alone in its own task.
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                appContext.startActivity(intent);
-            } else {
-                // Sits on top of another Activity.
-                intent.addFlags(
-                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                activity.startActivity(intent);
-            }
+            DownloadActivityLauncher.getInstance()
+                    .showDownloadActivity(activity, otrProfileID, showPrefetchedContent);
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
@@ -226,14 +208,6 @@ public class DownloadUtils {
 
         return otrProfileID == null
                 || Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
-    }
-
-    /**
-     * @return Whether or not the prefetched content section should be expanded on launch of the
-     * DownloadActivity.
-     */
-    public static boolean shouldShowPrefetchContent(Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_SHOW_PREFETCHED_CONTENT, false);
     }
 
     /**
