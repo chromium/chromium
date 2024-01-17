@@ -54,17 +54,6 @@ let kJPEGImageQuality: CGFloat = 1.0
     taskGroup.wait()
   }
 
-  func readImage(snapshotID: SnapshotIDWrapper) async -> UIImage? {
-    guard
-      let imagePath = imagePath(
-        snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
-    else {
-      return nil
-    }
-
-    return UIImage(contentsOfFile: imagePath.path)
-  }
-
   // Reads a color image from disk.
   func readImage(snapshotID: SnapshotIDWrapper, completion: @escaping (UIImage?) -> Void) {
     guard
