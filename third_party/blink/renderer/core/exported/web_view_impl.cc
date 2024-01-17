@@ -3997,7 +3997,24 @@ bool WebViewImpl::IsFencedFrameRoot() const {
 }
 
 void WebViewImpl::SetSupportsAppRegion(bool supports_app_region) {
-  MainFrameImpl()->GetFrame()->SetSupportsAppRegion(supports_app_region);
+  supports_app_region_ = supports_app_region;
+  if (!MainFrameImpl() || !MainFrameImpl()->GetFrame()) {
+    return;
+  }
+
+  LocalFrame* local_frame = MainFrameImpl()->GetFrame();
+
+  if (supports_app_region_) {
+    local_frame->View()->UpdateDocumentAnnotatedRegions();
+  } else {
+    local_frame->GetDocument()->SetAnnotatedRegions(
+        Vector<AnnotatedRegionValue>());
+    local_frame->Client()->AnnotatedRegionsChanged();
+  }
+}
+
+bool WebViewImpl::SupportsAppRegion() {
+  return supports_app_region_;
 }
 
 void WebViewImpl::MojoDisconnected() {

@@ -7041,8 +7041,15 @@ TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
 }
 
 TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
-  GetDocument().GetFrame()->SetSupportsAppRegion(true);
-  GetDocument().body()->setInnerHTML(R"HTML(
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view_impl = web_view_helper.Initialize();
+  web_view_impl->SetSupportsAppRegion(true);
+  web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  document->body()->setInnerHTML(R"HTML(
     <head>
     <style>
       .drag {
@@ -7058,27 +7065,28 @@ TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
     </body>
   )HTML");
 
-  Element* drag_element =
-      GetDocument().getElementById(AtomicString("drag-region"));
+  Element* drag_element = document->getElementById(AtomicString("drag-region"));
 
-  auto regions = GetDocument().AnnotatedRegions();
+  auto regions = document->AnnotatedRegions();
   auto* it =
       std::find_if(regions.begin(), regions.end(),
                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
   EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
 
   drag_element->classList().Add(AtomicString("drag"));
-  UpdateAllLifecyclePhases();
+  web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
 
-  regions = GetDocument().AnnotatedRegions();
+  regions = document->AnnotatedRegions();
   it = std::find_if(regions.begin(), regions.end(),
                     [](blink::AnnotatedRegionValue s) { return s.draggable; });
   EXPECT_NE(it, regions.end()) << "There should be one drag region";
 
   drag_element->classList().Add(AtomicString("no-drag"));
-  UpdateAllLifecyclePhases();
+  web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
 
-  regions = GetDocument().AnnotatedRegions();
+  regions = document->AnnotatedRegions();
   it = std::find_if(regions.begin(), regions.end(),
                     [](blink::AnnotatedRegionValue s) { return s.draggable; });
 

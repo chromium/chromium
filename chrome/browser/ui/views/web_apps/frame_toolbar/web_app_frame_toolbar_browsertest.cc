@@ -903,6 +903,11 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         u"Full page draggable window-controls-overlay app");
   }
 
+  GURL LoadWholeAppIsDraggableTestPageWithDataAndGetURL() {
+    return helper()->LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
+        embedded_test_server(), &temp_dir_);
+  }
+
   void ToggleWindowControlsOverlayAndWaitHelper(
       content::WebContents* web_contents,
       BrowserView* browser_view) {
@@ -1709,6 +1714,25 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ToggleWindowControlsOverlayAndWait();
 
   std::optional<SkRegion> draggable_region =
+      helper()->browser_view()->browser()->app_controller()->draggable_region();
+
+  EXPECT_TRUE(draggable_region.has_value());
+  EXPECT_FALSE(draggable_region.value().isEmpty());
+}
+
+// Regression test for https://crbug.com/1516830.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DragAfterNavigation) {
+  InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  // Navigates to the another draggable page within the app.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      helper()->app_browser(),
+      LoadWholeAppIsDraggableTestPageWithDataAndGetURL()));
+  content::WaitForLoadStop(helper()->browser_view()->GetActiveWebContents());
+
+  absl::optional<SkRegion> draggable_region =
       helper()->browser_view()->browser()->app_controller()->draggable_region();
 
   EXPECT_TRUE(draggable_region.has_value());

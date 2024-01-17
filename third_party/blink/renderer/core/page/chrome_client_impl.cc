@@ -305,6 +305,10 @@ void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {
   web_view_->SetKeyboardFocusURL(focus_url);
 }
 
+bool ChromeClientImpl::SupportsAppRegion() {
+  return web_view_->SupportsAppRegion();
+}
+
 void ChromeClientImpl::StartDragging(LocalFrame* frame,
                                      const WebDragData& drag_data,
                                      DragOperationsMask mask,

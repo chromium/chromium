@@ -1730,7 +1730,8 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
 
 void LocalFrameView::UpdateDocumentAnnotatedRegions() const {
   Document* document = frame_->GetDocument();
-  if (!document->HasAnnotatedRegions() || !frame_->SupportsAppRegion()) {
+  if (!document->HasAnnotatedRegions() ||
+      !frame_->GetPage()->GetChromeClient().SupportsAppRegion()) {
     return;
   }
 

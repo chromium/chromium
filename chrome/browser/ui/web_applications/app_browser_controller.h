@@ -243,11 +243,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidChangeThemeColor() override;
   void OnBackgroundColorChanged() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -298,6 +297,11 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
  private:
   // Sets the url that the app browser controller was created with.
   void SetInitialURL(const GURL& initial_url);
+
+  // Indicates to the WebView whether it should support draggable regions via
+  // the app-region CSS property.
+  void UpdateSupportsAppRegion(bool supports_app_region,
+                               content::RenderFrameHost* host);
 
   const raw_ptr<Browser> browser_;
   const webapps::AppId app_id_;

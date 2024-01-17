@@ -3011,7 +3011,8 @@ DOMRectList* Internals::nonDraggableRegions(Document* document,
 }
 
 void Internals::SetSupportsAppRegion(bool supports_app_region) {
-  GetFrame()->SetSupportsAppRegion(supports_app_region);
+  document_->GetPage()->GetChromeClient().GetWebView()->SetSupportsAppRegion(
+      supports_app_region);
 }
 
 DOMRectList* Internals::AnnotatedRegions(Document* document,

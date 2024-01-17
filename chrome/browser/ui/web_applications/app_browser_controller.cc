@@ -38,6 +38,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -370,22 +371,6 @@ void AppBrowserController::DidStartNavigation(
   SetInitialURL(navigation_handle->GetURL());
 }
 
-void AppBrowserController::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument())
-    return;
-
-  // For borderless mode when we navigate out of scope and then back to scope,
-  // the draggable regions stay same and nothing triggers to re-initialize them.
-  // So if they are cleared, they don't work anymore when coming back to scope.
-  if (AppUsesBorderlessMode())
-    return;
-
-  // Reset the draggable regions so they are not cached on navigation.
-  draggable_region_ = std::nullopt;
-}
-
 void AppBrowserController::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
   // We hold off changing theme color for a new tab until the page is loaded.
@@ -398,6 +383,24 @@ void AppBrowserController::DidChangeThemeColor() {
 
 void AppBrowserController::OnBackgroundColorChanged() {
   UpdateThemePack();
+}
+
+void AppBrowserController::PrimaryPageChanged(content::Page& page) {
+  // Reset the draggable regions for window controls overlay apps so they are
+  // not cached on navigation. Note that these are not cleared for borderless
+  // apps because when we navigate out of scope and then back to scope, the
+  // draggable regions stay same and nothing triggers to re-initialize them.
+  // So if they are cleared, they don't work anymore when coming back to scope.
+  if (AppUsesWindowControlsOverlay()) {
+    draggable_region_ = std::nullopt;
+  }
+
+  // Collect draggable app regions if the app supports Window Controls Overlay
+  // or Borderless mode.
+  if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
+    content::RenderFrameHost& host = page.GetMainDocument();
+    UpdateSupportsAppRegion(/*supports_app_region=*/true, &host);
+  }
 }
 
 std::optional<SkColor> AppBrowserController::GetThemeColor() const {
@@ -618,13 +621,12 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
     SetInitialURL(contents->GetVisibleURL());
 
   // Collect draggable app regions if the app supports Window Controls Overlay
-  // or Borderless mode.
+  // or Borderless mode. This is required in addition to the use in
+  // RenderFrameCreated to handle existing web contents being reparented into an
+  // app window.
   if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
     content::RenderFrameHost* host = contents->GetPrimaryMainFrame();
-    DCHECK(host);
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
-    host->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->SetSupportsAppRegion(true);
+    UpdateSupportsAppRegion(/*supports_app_region=*/true, host);
   }
 }
 
@@ -632,10 +634,7 @@ void AppBrowserController::OnTabRemoved(content::WebContents* contents) {
   // Stop collecting draggable app regions when the web contents is removed
   // since it may be reparented to a tab in the browser.
   content::RenderFrameHost* host = contents->GetPrimaryMainFrame();
-  DCHECK(host);
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
-  host->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-  client->SetSupportsAppRegion(false);
+  UpdateSupportsAppRegion(/*supports_app_region=*/false, host);
 }
 
 ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
@@ -738,6 +737,21 @@ void AppBrowserController::SetInitialURL(const GURL& initial_url) {
   initial_url_ = initial_url;
 
   OnReceivedInitialURL();
+}
+
+void AppBrowserController::UpdateSupportsAppRegion(
+    bool supports_app_region,
+    content::RenderFrameHost* host) {
+  CHECK(host);
+
+  // App regions are only supported in the main frame.
+  if (!host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
+  host->GetRemoteAssociatedInterfaces()->GetInterface(&client);
+  client->SetSupportsAppRegion(supports_app_region);
 }
 
 }  // namespace web_app
