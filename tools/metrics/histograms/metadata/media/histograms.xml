@@ -116,6 +116,11 @@ chromium-metrics-reviews@google.com.
   <variant name="VP9"/>
 </variants>
 
+<variants name="VideoEncoderImpl">
+  <variant name="HW"/>
+  <variant name="SW"/>
+</variants>
+
 <variants name="VideoEncoderUsage">
   <variant name="CastMirroring"/>
   <variant name="MediaRecorder"/>
@@ -6072,8 +6077,8 @@ chromium-metrics-reviews@google.com.
   <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.Area" units="pixels"
-    expires_after="2024-06-16">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Area" units="pixels"
+    expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6081,10 +6086,11 @@ chromium-metrics-reviews@google.com.
     a video encoder. Recorded when a video encoder is destroyed or reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.Frames" units="frames"
-    expires_after="2024-06-02">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Frames" units="frames"
+    expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6092,10 +6098,11 @@ chromium-metrics-reviews@google.com.
     destroyed or reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.Height" units="pixels"
-    expires_after="2024-06-16">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Height" units="pixels"
+    expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6103,21 +6110,11 @@ chromium-metrics-reviews@google.com.
     destroyed or reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.HW" enum="Boolean"
-    expires_after="2024-06-02">
-  <owner>hiroh@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    An used Video encoder is a hardware encoder or not. Recorded when a video
-    encoder is destroyed or reconfigured.
-  </summary>
-  <token key="Usage" variants="VideoEncoderUsage"/>
-</histogram>
-
-<histogram name="Media.VideoEncoder.{Usage}.Profile" enum="VideoCodecProfile"
-    expires_after="2024-06-02">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Profile"
+    enum="VideoCodecProfile" expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6125,10 +6122,11 @@ chromium-metrics-reviews@google.com.
     is destroyed or reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.Status" enum="EncoderStatus"
-    expires_after="2024-06-02">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Status" enum="EncoderStatus"
+    expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6137,10 +6135,11 @@ chromium-metrics-reviews@google.com.
     reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.SVC" enum="SVCScalabilityMode"
-    expires_after="2024-06-16">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.SVC"
+    enum="SVCScalabilityMode" expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6148,10 +6147,11 @@ chromium-metrics-reviews@google.com.
     encoder is destroyed or reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoEncoder.{Usage}.Width" units="pixels"
-    expires_after="2024-03-31">
+<histogram name="Media.VideoEncoder.{Usage}.{Impl}.Width" units="pixels"
+    expires_after="2024-12-15">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -6159,6 +6159,7 @@ chromium-metrics-reviews@google.com.
     destroyed or reconfigured.
   </summary>
   <token key="Usage" variants="VideoEncoderUsage"/>
+  <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
 <histogram name="Media.VideoFrameSubmitter" units="ms" expires_after="never">

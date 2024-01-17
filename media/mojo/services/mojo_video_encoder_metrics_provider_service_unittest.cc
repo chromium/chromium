@@ -225,6 +225,7 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
       uma_prefix += "WebRTC.";
       break;
   }
+  uma_prefix += is_hardware_encoder ? "HW." : "SW.";
 
 #define EXPECT_UMA(name, value)                                           \
   do {                                                                    \
@@ -234,7 +235,6 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
 
   EXPECT_UMA("Profile", codec_profile);
   EXPECT_UMA("SVC", svc_mode);
-  EXPECT_UMA("HW", is_hardware_encoder);
   EXPECT_UMA("Width", encode_size.width());
   EXPECT_UMA("Height", encode_size.height());
   EXPECT_UMA("Area", encode_size.GetArea() / 100);
