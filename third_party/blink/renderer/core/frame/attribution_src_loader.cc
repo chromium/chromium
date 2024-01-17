@@ -245,7 +245,6 @@ class AttributionSrcLoader::ResourceClient
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
-    CHECK(!KeepaliveResponsesHandledInBrowser());
     CHECK(data_host_.is_bound());
   }
 
