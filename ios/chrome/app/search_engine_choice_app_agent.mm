@@ -13,9 +13,11 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 
@@ -101,6 +103,14 @@
   // The application needs to be ready (i.e. the Browser created, ...) before
   // the choice screen can be presented. Assert this is the case.
   DCHECK_GT(self.appState.initStage, InitStageFirstRun);
+  BOOL hasPreRestoreAccountInfo =
+      GetPreRestoreIdentity(GetApplicationContext()->GetLocalState())
+          .has_value();
+  if (hasPreRestoreAccountInfo) {
+    // Do not override the post-restore signin promo. The choice screen should
+    // come after.
+    return;
+  }
   if (_searchEngineChoiceCoordinator) {
     return;
   }

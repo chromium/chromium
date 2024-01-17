@@ -554,12 +554,8 @@
   // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
 
   // StandardPromoAlertProvider promo(s) below:
-  syncer::SyncUserSettings* syncUserSettings =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState())
-          ->GetUserSettings();
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
-      [[PostRestoreSignInProvider alloc]
-          initWithSyncUserSettings:syncUserSettings];
+      [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
   if (GetPostRestoreDefaultBrowserPromoType() ==
       PostRestoreDefaultBrowserPromoType::kAlert) {
     _alertProviderPromos
