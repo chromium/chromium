@@ -296,13 +296,3 @@ export type DeepPartial<T> = T extends Builtin ? T : T extends {} ?
  */
 export type GetActionFactoryPayload<A extends ActionFactory<any>> =
     A extends ActionFactory<infer T>? T : unknown;
-
-/**
- * Check if the DEBUG_STORE is set or not. When it's set, action data will be
- * logged in the console for debugging purpose.
- *
- * Run `localStorage.setItem('DEBUG_STORE', '1')` in the console to enable it.
- */
-export function isDebugStoreEnabled() {
-  return localStorage.getItem('DEBUG_STORE') === '1';
-}
