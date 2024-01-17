@@ -19,8 +19,8 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_GLES2_READ = 1 << 0,
   // Image will be used as a framebuffer (hint)
   SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT = 1 << 1,
-  // Image will be used in RasterInterface
-  SHARED_IMAGE_USAGE_RASTER = 1 << 2,
+  // Image will be read via RasterInterface
+  SHARED_IMAGE_USAGE_RASTER_READ = 1 << 2,
   // Image will be read from inside Display Compositor
   SHARED_IMAGE_USAGE_DISPLAY_READ = 1 << 3,
   // Image will be written to inside Display Compositor
@@ -71,17 +71,27 @@ enum SharedImageUsage : uint32_t {
   // Image will be written via GLES2Interface
   SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 19,
 
+  // Image will be written via RasterInterface
+  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 20,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_GLES2_WRITE,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_RASTER_WRITE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 20,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 21,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
+
+// Constant left in place while we transition the codebase to use RASTER_READ
+// and RASTER_WRITE.
+// TODO(crbug.com/1519074): Transition all usage of this constant and eliminate
+// the constant.
+inline constexpr uint32_t SHARED_IMAGE_USAGE_RASTER =
+    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
 
 // Returns true if usage is a valid client usage.
 GPU_EXPORT bool IsValidClientUsage(uint32_t usage);
