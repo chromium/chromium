@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationPredicate} from '../common/automation_predicate.js';
-import {AutomationUtil} from '../common/automation_util.js';
-import {constants} from '../common/constants.js';
-import {NodeNavigationUtils} from '../common/node_navigation_utils.js';
-import {NodeUtils} from '../common/node_utils.js';
-import {ParagraphUtils} from '../common/paragraph_utils.js';
-import {WordUtils} from '../common/word_utils.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {NodeNavigationUtils} from '/common/node_navigation_utils.js';
+import {NodeUtils} from '/common/node_utils.js';
+import {ParagraphUtils} from '/common/paragraph_utils.js';
+import {WordUtils} from '/common/word_utils.js';
 
 import {InputHandler} from './input_handler.js';
 import {MetricsUtils} from './metrics_utils.js';

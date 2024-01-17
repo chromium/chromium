@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Flags} from '../common/flags.js';
-import {InstanceChecker} from '../common/instance_checker.js';
+import {Flags} from '/common/flags.js';
+import {InstanceChecker} from '/common/instance_checker.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
 import {Dictation} from './dictation/dictation.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
+import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
 
 /** The facial gestures that are supported by FaceGaze. */
 export enum FacialGesture {

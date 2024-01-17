@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncUtil} from '../../common/async_util.js';
-import {EventGenerator} from '../../common/event_generator.js';
-import {EventHandler} from '../../common/event_handler.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {EventHandler} from '/common/event_handler.js';
 
-import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
+import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
 
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;

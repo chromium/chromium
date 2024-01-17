@@ -14,7 +14,6 @@ import("tools/run_jsbundler.gni")
 assert(is_chromeos_ash)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
-tsc_preprocess_folder = "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/tsc_preprocessed"
 tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
@@ -169,12 +168,4 @@ js2gtest("misc_unit_tests_js") {
   sources = [ "braille_ime/braille_ime_unittest.js" ]
   gen_include_files = [ "common/testing/accessibility_test_base.js" ]
   extra_js_files = [ "braille_ime/braille_ime.js" ]
-}
-
-# Copy definitions from the main typescript folder into our local definitions
-# folder. This can only be done once, otherwise we will get collisions, so do
-# this at the very top-level of the build structure.
-copy("preprocess_files_for_ts_build") {
-  sources = [ "//tools/typescript/definitions/chrome_event.d.ts" ]
-  outputs = [ "$tsc_preprocess_folder/definitions/chrome_event.d.ts" ]
 }

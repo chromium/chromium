@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventHandler} from '../../common/event_handler.js';
+import {EventHandler} from '/common/event_handler.js';
 
 import {EditingUtil} from './editing_util.js';
 import {FocusHandler} from './focus_handler.js';

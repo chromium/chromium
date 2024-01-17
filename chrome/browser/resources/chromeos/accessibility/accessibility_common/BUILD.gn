@@ -17,16 +17,36 @@ declare_args() {
   include_mediapipe_task_vision_files_for_facegaze = false
 }
 
+group("build") {
+  deps = [ ":copied_files" ]
+}
+
 accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
-tsc_preprocess_folder = "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/tsc_preprocessed"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
+# Directories for generated third_party libraries.
+third_party_stage_dir = "$ts_build_staging_dir/third_party"
+mediapipe_task_vision_dir = "mediapipe/task_vision"
+mediapipe_availability_dir = "mediapipe/availability"
+
 tsc_out_dir = "$target_gen_dir/tsc"
+
+# Location of common typescript output.
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
 
 misc_sources = [
   "background.html",
   "dictation/earcons/audio_end.wav",
   "dictation/earcons/audio_initiate.wav",
   "dictation/earcons/null_selection.wav",
+  "facegaze/camera_stream.html",
+]
+
+js_modules = [
   "dictation/parse/input_text_strategy.js",
   "dictation/parse/parse_strategy.js",
   "dictation/parse/pumpkin/pumpkin_constants.js",
@@ -34,7 +54,6 @@ misc_sources = [
   "dictation/parse/sandboxed_pumpkin_tagger.js",
   "dictation/parse/simple_parse_strategy.js",
   "dictation/parse/speech_parser.js",
-  "facegaze/camera_stream.html",
 ]
 
 # TS files to build.
@@ -93,33 +112,23 @@ ts_definitions = [
   "//tools/typescript/definitions/i18n.d.ts",
 ]
 
-# Generated files needed for TS build.
+# Generated files required for ts_build.
+generated_ts_definitions =
+    [ "$third_party_stage_dir/$mediapipe_task_vision_dir/vision.d.ts" ]
 generated_ts_modules =
-    [ "accessibility_common/facegaze/mediapipe_availability.ts" ]
-generated_ts_definitions = [ "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_task_vision/vision.d.ts" ]
+    [ "third_party/$mediapipe_availability_dir/mediapipe_availability.ts" ]
 if (include_mediapipe_task_vision_files_for_facegaze) {
   generated_ts_modules +=
-      [ "accessibility_common/facegaze/mediapipe_task_vision/task_vision.js" ]
+      [ "third_party/$mediapipe_task_vision_dir/task_vision.js" ]
 }
 
-# JS files needed by the TS compiler.
-js_deps = []
-
 ts_library("ts_build") {
-  # Root dir must be the tsc preprocessed folder, since it will use both checked-in and generated files.
-  root_dir = "$tsc_preprocess_folder"
+  root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
-  definitions = ts_definitions + generated_ts_definitions
 
-  in_files = generated_ts_modules
-  foreach(_js_file, js_deps) {
-    in_files += [ "accessibility_common/" + _js_file ]
-  }
-  foreach(_ts_file, ts_modules) {
-    in_files += [ "accessibility_common/" + _ts_file ]
-  }
+  composite = true
 
-  tsconfig_base = "../tsconfig.base.json"
+  deps = [ "../common:ts_build" ]
 
   # Targets that need to run before running the TS build.
   extra_deps = [
@@ -127,15 +136,18 @@ ts_library("ts_build") {
     ":extract_mediapipe_task_vision_files",
     ":mediapipe_availability",
 
-    # Preprocess deps.
-    ":preprocess_files_for_ts_build",
-    "..:preprocess_files_for_ts_build",
-    "../common:preprocess_files_for_ts_build",
+    #copied files
+    ":stage_ts_build",
   ]
-}
 
-group("build") {
-  deps = [ ":copied_files" ]
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
+  definitions = ts_definitions + generated_ts_definitions
+
+  in_files = generated_ts_modules + js_modules + ts_modules
+
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
@@ -157,7 +169,7 @@ run_jsbundler("copied_files") {
       misc_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
-    rebase_path("$tsc_out_dir/accessibility_common", root_build_dir) + ":",
+    rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
@@ -165,16 +177,24 @@ run_jsbundler("copied_files") {
   if (include_mediapipe_task_vision_files_for_facegaze) {
     # Include generated mediapipe files that are required for facegaze.
     sources += [
-      "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_task_vision/face_landmarker.task",
-      "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_task_vision/vision_wasm_internal.js",
-      "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_task_vision/vision_wasm_internal.wasm",
+      "$third_party_stage_dir/$mediapipe_task_vision_dir/face_landmarker.task",
+      "$third_party_stage_dir/$mediapipe_task_vision_dir/vision_wasm_internal.js",
+      "$third_party_stage_dir/$mediapipe_task_vision_dir/vision_wasm_internal.wasm",
     ]
 
     deps += [ ":extract_mediapipe_task_vision_files" ]
     rewrite_rules +=
-        [ rebase_path("$tsc_preprocess_folder/accessibility_common",
+        [ rebase_path("$third_party_stage_dir/$mediapipe_task_vision_dir",
                       root_build_dir) + ":" ]
   }
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = js_modules + ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
 source_set("browser_tests") {
@@ -285,7 +305,7 @@ action("pumpkin_test_files") {
 action("extract_mediapipe_task_vision_files") {
   script = "third_party/mediapipe_task_vision/unpack.py"
   sources = [ "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
-  out_dir = "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_task_vision"
+  out_dir = "$third_party_stage_dir/$mediapipe_task_vision_dir"
 
   # Always extract vision.d.ts, as it's always needed for type-checking.
   files_to_extract = [ "$out_dir/vision.d.ts" ]
@@ -300,28 +320,18 @@ action("extract_mediapipe_task_vision_files") {
     ]
   }
 
-  tsc_preprocess_folder_rebased =
-      rebase_path(tsc_preprocess_folder, root_build_dir)
-  dest_dir = tsc_preprocess_folder_rebased +
-             "/accessibility_common/facegaze/mediapipe_task_vision"
+  mediapipe_task_vision_dir_rebased =
+      rebase_path("$third_party_stage_dir/$mediapipe_task_vision_dir",
+                  root_build_dir)
 
   args = [
-    "--dest-dir=$dest_dir",
-    rebase_path("third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
-                root_build_dir),
+    "--dest-dir=$mediapipe_task_vision_dir_rebased",
+    rebase_path(
+        "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
+        root_build_dir),
     string_join(",", files_to_extract),
   ]
   outputs = files_to_extract
-}
-
-# Copy all JS and TS sources to a preprocess folder. All generated TS/JS files
-# will also be copied into this folder, which will allow us to support a TS
-# build that uses both checked-in and generated files.
-copy("preprocess_files_for_ts_build") {
-  sources = misc_sources + ts_modules
-  outputs = [
-    "$tsc_preprocess_folder/accessibility_common/{{source_target_relative}}",
-  ]
 }
 
 copy("mediapipe_availability") {
@@ -331,5 +341,5 @@ copy("mediapipe_availability") {
     sources = [ "facegaze/exclude_mediapipe.ts" ]
   }
 
-  outputs = [ "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_availability.ts" ]
+  outputs = [ "$third_party_stage_dir/$mediapipe_availability_dir/mediapipe_availability.ts" ]
 }

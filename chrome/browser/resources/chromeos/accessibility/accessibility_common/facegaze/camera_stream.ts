@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DrawingUtils, FaceLandmarker, FilesetResolver} from './mediapipe_task_vision/task_vision.js';
-import {FaceLandmarkerResult} from './mediapipe_task_vision/vision.js';
+import {DrawingUtils, FaceLandmarker, FilesetResolver} from '../third_party/mediapipe/task_vision/task_vision.js';
+import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+
 import {MouseController} from './mouse_controller.js';
 
 /**
@@ -62,7 +63,8 @@ export class WebCamFaceLandmarker {
       return;
     }
 
-    const videoElement = document.getElementById('cameraStream');
+    const videoElement =
+        document.getElementById('cameraStream') as HTMLVideoElement;
     const result = this.faceLandmarker_.detectForVideo(
         /*videoFrame=*/ videoElement, /*timestamp=*/ performance.now());
     // Send result to the background page for processing.
