@@ -105,7 +105,10 @@ static constexpr auto kAllInteractionsSet =
     });
 
 // Enumeration of quantized time values for easy to interpret metrics about
-// human scale time measurements that can range from minutes to weeks.
+// human scale time measurements that can range from minutes to weeks. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused. Be sure to update `kAllTimeBucketsSet`
+// accordingly.
 enum class TimeBucket {
   kMinValue = 0,
   kOneMinute = kMinValue,
@@ -118,7 +121,21 @@ enum class TimeBucket {
   kMaxValue = kOverTwoWeeks,
 };
 
+static constexpr auto kAllTimeBucketsSet =
+    base::EnumSet<TimeBucket, TimeBucket::kMinValue, TimeBucket::kMaxValue>({
+        TimeBucket::kOneMinute,
+        TimeBucket::kTenMinutes,
+        TimeBucket::kOneHour,
+        TimeBucket::kOneDay,
+        TimeBucket::kOneWeek,
+        TimeBucket::kTwoWeeks,
+        TimeBucket::kOverTwoWeeks,
+    });
+
 // Utilities -------------------------------------------------------------------
+
+// Gets the appropriate `TimeBucket` for a given `time_delta`.
+ASH_EXPORT TimeBucket GetTimeBucket(base::TimeDelta time_delta);
 
 // Record that a given `interaction` has occurred.
 ASH_EXPORT void RecordInteraction(Interaction interaction);
