@@ -20,14 +20,6 @@
 
 namespace ui {
 
-// Sync versions are not supported in Android.  Callers should fall back
-// to the async version.
-bool GrabViewSnapshot(gfx::NativeView view,
-                      const gfx::Rect& snapshot_bounds,
-                      gfx::Image* image) {
-  return false;
-}
-
 static std::unique_ptr<viz::CopyOutputRequest> CreateCopyRequest(
     gfx::NativeView view,
     const gfx::Rect& source_rect,

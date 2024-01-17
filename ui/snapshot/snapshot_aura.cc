@@ -102,13 +102,6 @@ void GrabWindowSnapshotAsyncAura(aura::Window* window,
 
 #if !BUILDFLAG(IS_WIN)
 
-bool GrabViewSnapshot(gfx::NativeView view,
-                      const gfx::Rect& snapshot_bounds,
-                      gfx::Image* image) {
-  // Not supported in Aura.  Callers should fall back to the async version.
-  return false;
-}
-
 void GrabWindowSnapshotAndScaleAsync(gfx::NativeWindow window,
                                      const gfx::Rect& source_rect,
                                      const gfx::Size& target_size,
