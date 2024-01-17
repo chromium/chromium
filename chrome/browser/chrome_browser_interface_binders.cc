@@ -293,6 +293,7 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
+#include "ash/webui/vc_background_ui/vc_background_ui.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_impl.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -1549,7 +1550,8 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::personalization_app::mojom::SeaPenProvider,
-      ash::personalization_app::PersonalizationAppUI>(map);
+      ash::personalization_app::PersonalizationAppUI,
+      ash::vc_background_ui::VcBackgroundUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       launcher_internals::mojom::PageHandlerFactory, ash::LauncherInternalsUI>(

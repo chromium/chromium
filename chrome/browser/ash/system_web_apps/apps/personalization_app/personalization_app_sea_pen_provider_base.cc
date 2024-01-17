@@ -28,6 +28,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash::personalization_app {
+
 namespace {
 
 constexpr int kSeaPenImageThumbnailSizeDip = 512;

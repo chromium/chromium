@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/sea_pen_provider.h"
 #include "ash/webui/common/sea_pen_resources.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_vc_background_resources.h"
@@ -58,9 +60,11 @@ void AddResources(content::WebUIDataSource* source) {
 
 }  // namespace
 
-VcBackgroundUIConfig::VcBackgroundUIConfig()
+VcBackgroundUIConfig::VcBackgroundUIConfig(
+    SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
     : SystemWebAppUIConfig(kChromeUIVcBackgroundHost,
-                           SystemWebAppType::VC_BACKGROUND) {}
+                           SystemWebAppType::VC_BACKGROUND,
+                           create_controller_func) {}
 
 bool VcBackgroundUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -69,8 +73,11 @@ bool VcBackgroundUIConfig::IsWebUIEnabled(
          manta::features::IsMantaServiceEnabled();
 }
 
-VcBackgroundUI::VcBackgroundUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+VcBackgroundUI::VcBackgroundUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider)
+    : ui::MojoWebUIController(web_ui),
+      sea_pen_provider_(std::move(sea_pen_provider)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, std::string(kChromeUIVcBackgroundHost));
@@ -87,6 +94,12 @@ VcBackgroundUI::VcBackgroundUI(content::WebUI* web_ui)
 }
 
 VcBackgroundUI::~VcBackgroundUI() = default;
+
+void VcBackgroundUI::BindInterface(
+    mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
+        receiver) {
+  sea_pen_provider_->BindInterface(std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VcBackgroundUI)
 

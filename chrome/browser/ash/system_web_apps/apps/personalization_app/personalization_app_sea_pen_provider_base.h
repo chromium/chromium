@@ -11,8 +11,8 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
-#include "base/files/file.h"
+#include "ash/webui/common/sea_pen_provider.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/manta/manta_status.h"
@@ -40,7 +40,7 @@ using DecodeImageCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
 // private callback functions; while the non-shared code should be put into each
 // implementation and have the protected pure virtual interface here.
 class PersonalizationAppSeaPenProviderBase
-    : public PersonalizationAppSeaPenProvider {
+    : public ::ash::common::SeaPenProvider {
  public:
   PersonalizationAppSeaPenProviderBase(
       content::WebUI* web_ui,

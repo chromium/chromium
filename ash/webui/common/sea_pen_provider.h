@@ -1,16 +1,18 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_H_
-#define ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_H_
+#ifndef ASH_WEBUI_COMMON_SEA_PEN_PROVIDER_H_
+#define ASH_WEBUI_COMMON_SEA_PEN_PROVIDER_H_
 
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace ash::personalization_app {
+namespace ash::common {
 
-class PersonalizationAppSeaPenProvider
+// An interface for binding mojom::SeaPenProvider to a WebUI. Used for
+// VC Background and Personalization WebUIs.
+class SeaPenProvider
     : public ::ash::personalization_app::mojom::SeaPenProvider {
  public:
   virtual void BindInterface(
@@ -18,6 +20,6 @@ class PersonalizationAppSeaPenProvider
           receiver) = 0;
 };
 
-}  // namespace ash::personalization_app
+}  // namespace ash::common
 
-#endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_H_
+#endif  // ASH_WEBUI_COMMON_SEA_PEN_PROVIDER_H_

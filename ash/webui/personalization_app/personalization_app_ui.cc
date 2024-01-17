@@ -14,13 +14,13 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/sea_pen_provider.h"
 #include "ash/webui/common/sea_pen_resources.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
-#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
@@ -417,7 +417,7 @@ PersonalizationAppUI::PersonalizationAppUI(
     std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
     std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
         keyboard_backlight_provider,
-    std::unique_ptr<PersonalizationAppSeaPenProvider> sea_pen_provider,
+    std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider,
     std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
     std::unique_ptr<PersonalizationAppUserProvider> user_provider,
     std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider)
