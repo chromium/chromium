@@ -45,6 +45,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsPaymentsWalletSyncTransportEnabled() const override;
   void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
                        profile_or_credit_card) override;
+  void RecordUseOfIban(Iban& iban) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
   void AddProfile(const AutofillProfile& profile) override;

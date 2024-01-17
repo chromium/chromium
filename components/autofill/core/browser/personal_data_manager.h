@@ -240,7 +240,7 @@ class PersonalDataManager : public KeyedService,
 
   // Called to indicate `iban` was used (to fill in a form). Updates the
   // database accordingly.
-  void RecordUseOfIban(Iban& iban);
+  virtual void RecordUseOfIban(Iban& iban);
 
   // Try to save a credit card locally. If the card already exists, do nothing
   // and return false. If the card is new, save it locally and return true.
@@ -373,9 +373,9 @@ class PersonalDataManager : public KeyedService,
   // TODO(1426498): rewrite tests that rely on this method to use Init instead.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
-  // Returns the IBAN with the specified |guid|, or nullptr if there is no IBAN
-  // with the specified |guid|.
-  virtual const Iban* GetIbanByGUID(const std::string& guid);
+  // Returns the IBAN with the specified `guid`, or nullptr if there is no IBAN
+  // with the specified `guid`.
+  const Iban* GetIbanByGUID(const std::string& guid) const;
 
   // Returns the IBAN if any cached IBAN in `server_ibans_` has the same
   // `instrument_id` as the given `instrument_id`, otherwise returns nullptr.

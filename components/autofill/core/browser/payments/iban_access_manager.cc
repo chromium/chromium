@@ -22,22 +22,30 @@ IbanAccessManager::~IbanAccessManager() = default;
 
 void IbanAccessManager::FetchValue(const Suggestion& suggestion,
                                    OnIbanFetchedCallback on_iban_fetched) {
-  // If `ValueToFill` has a value then that means that it's a local IBAN
-  // suggestion, and the full IBAN value is known already.
-  if (absl::holds_alternative<Suggestion::ValueToFill>(suggestion.payload)) {
-    const std::u16string value =
-        suggestion.GetPayload<Suggestion::ValueToFill>().value();
-    if (!value.empty()) {
-      std::move(on_iban_fetched).Run(value);
+  // If `Guid` has a value then that means that it's a local IBAN suggestion.
+  // In this case, retrieving the complete IBAN value requires accessing the
+  // saved IBAN from the PersonalDataManager.
+  Suggestion::BackendId backend_id =
+      suggestion.GetPayload<Suggestion::BackendId>();
+  if (Suggestion::Guid* guid = absl::get_if<Suggestion::Guid>(&backend_id)) {
+    const Iban* iban =
+        client_->GetPersonalDataManager()->GetIbanByGUID(guid->value());
+    if (iban) {
+      Iban copy_iban = *iban;
+      std::move(on_iban_fetched).Run(copy_iban.value());
+      client_->GetPersonalDataManager()->RecordUseOfIban(copy_iban);
     }
     return;
   }
+
+  int64_t instrument_id =
+      absl::get<Suggestion::InstrumentId>(backend_id).value();
 
   // The suggestion is now presumed to be a masked server IBAN.
   // If there are no server IBANs in the PersonalDataManager that have the same
   // instrument ID as the provided BackendId, then abort the operation.
   if (!client_->GetPersonalDataManager()->GetIbanByInstrumentId(
-          suggestion.GetBackendId<Suggestion::InstrumentId>().value())) {
+          instrument_id)) {
     return;
   }
 
@@ -48,13 +56,19 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
 
   // Construct `UnmaskIbanRequestDetails` and send `UnmaskIban` to fetch the
   // full value of the server IBAN.
+  const Iban* iban =
+      client_->GetPersonalDataManager()->GetIbanByInstrumentId(instrument_id);
+  if (!iban) {
+    return;
+  }
+  Iban copy_iban = *iban;
+  client_->GetPersonalDataManager()->RecordUseOfIban(copy_iban);
   payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
   request_details.billable_service_number =
       payments::kUnmaskPaymentMethodBillableServiceNumber;
   request_details.billing_customer_number =
       payments::GetBillingCustomerId(client_->GetPersonalDataManager());
-  request_details.instrument_id =
-      suggestion.GetBackendId<Suggestion::InstrumentId>().value();
+  request_details.instrument_id = instrument_id;
   base::TimeTicks unmask_request_timestamp = base::TimeTicks::Now();
   client_->GetPaymentsNetworkInterface()->UnmaskIban(
       request_details,

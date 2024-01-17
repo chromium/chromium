@@ -1653,7 +1653,8 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
             IDR_AUTOFILL_IBAN);
     suggestion.popup_item_id = PopupItemId::kIbanEntry;
     if (iban->record_type() == Iban::kLocalIban) {
-      suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
+      suggestion.payload =
+          Suggestion::BackendId(Suggestion::Guid(iban->guid()));
     } else {
       CHECK(iban->record_type() == Iban::kServerIban);
       suggestion.payload = Suggestion::BackendId(

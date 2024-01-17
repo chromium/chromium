@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
+#include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -1132,12 +1133,12 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
           PopupOpenArgsAre(SuggestionVectorIdsAre(PopupItemId::kIbanEntry)),
           _));
   std::vector<Suggestion> suggestions;
-  const std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
-  const std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
-  suggestions.emplace_back(/*main_text=*/masked_iban_value,
-                           PopupItemId::kIbanEntry);
+  Iban iban = test::GetLocalIban();
+  suggestions.emplace_back(
+      /*main_text=*/iban.GetIdentifierStringForAutofillDisplay(),
+      PopupItemId::kIbanEntry);
   suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
-  suggestions[0].payload = Suggestion::ValueToFill(unmasked_iban_value);
+  suggestions[0].payload = Suggestion::Guid(iban.guid());
   external_delegate().OnSuggestionsReturned(queried_form_triggering_field_id_,
                                             suggestions);
 
@@ -1146,7 +1147,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
               FillOrPreviewField(mojom::ActionPersistence::kPreview,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 masked_iban_value, PopupItemId::kIbanEntry));
+                                 iban.GetIdentifierStringForAutofillDisplay(),
+                                 PopupItemId::kIbanEntry));
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -1154,7 +1156,17 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 unmasked_iban_value, PopupItemId::kIbanEntry));
+                                 iban.value(), PopupItemId::kIbanEntry));
+  EXPECT_CALL(*client().GetMockIbanManager(),
+              OnSingleFieldSuggestionSelected(
+                  iban.GetIdentifierStringForAutofillDisplay(),
+                  PopupItemId::kIbanEntry));
+  ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
+      .WillByDefault([iban](const Suggestion& suggestion,
+                            IbanAccessManager::OnIbanFetchedCallback callback) {
+        std::move(callback).Run(iban.value());
+      });
+
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
 }
@@ -2256,21 +2268,25 @@ TEST_F(AutofillExternalDelegateUnitTest,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery();
 
-  std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
-  std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
+  Iban iban = test::GetLocalIban();
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 unmasked_iban_value, PopupItemId::kIbanEntry));
+                                 iban.value(), PopupItemId::kIbanEntry));
   EXPECT_CALL(*client().GetMockIbanManager(),
-              OnSingleFieldSuggestionSelected(masked_iban_value,
-                                              PopupItemId::kIbanEntry));
-
+              OnSingleFieldSuggestionSelected(
+                  iban.GetIdentifierStringForAutofillDisplay(),
+                  PopupItemId::kIbanEntry));
+  ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
+      .WillByDefault([iban](const Suggestion& suggestion,
+                            IbanAccessManager::OnIbanFetchedCallback callback) {
+        std::move(callback).Run(iban.value());
+      });
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
-          PopupItemId::kIbanEntry, masked_iban_value,
-          Suggestion::ValueToFill(unmasked_iban_value)),
+          PopupItemId::kIbanEntry, iban.GetIdentifierStringForAutofillDisplay(),
+          Suggestion::Guid(iban.guid())),
       SuggestionPosition{.row = 0});
 }
 

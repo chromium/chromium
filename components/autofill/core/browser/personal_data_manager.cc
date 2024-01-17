@@ -1285,10 +1285,9 @@ void PersonalDataManager::RemoveByGUID(const std::string& guid) {
   }
 }
 
-const Iban* PersonalDataManager::GetIbanByGUID(const std::string& guid) {
-  const std::vector<const Iban*>& ibans = GetLocalIbans();
-  const auto iter = FindElementByGUID(ibans, guid);
-  return iter != ibans.end() ? *iter : nullptr;
+const Iban* PersonalDataManager::GetIbanByGUID(const std::string& guid) const {
+  auto iter = FindElementByGUID(local_ibans_, guid);
+  return iter != local_ibans_.end() ? iter->get() : nullptr;
 }
 
 const Iban* PersonalDataManager::GetIbanByInstrumentId(

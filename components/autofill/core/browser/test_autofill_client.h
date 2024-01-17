@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -141,6 +142,10 @@ class TestAutofillClientTemplate : public T {
   }
 
   IbanManager* GetIbanManager() override { return GetMockIbanManager(); }
+
+  IbanAccessManager* GetIbanAccessManager() override {
+    return GetMockIbanAccessManager();
+  }
 
   plus_addresses::PlusAddressService* GetPlusAddressService() override {
     return test_plus_address_service_;
@@ -691,6 +696,14 @@ class TestAutofillClientTemplate : public T {
     return mock_iban_manager_.get();
   }
 
+  ::testing::NiceMock<MockIbanAccessManager>* GetMockIbanAccessManager() {
+    if (!mock_iban_access_manager_) {
+      mock_iban_access_manager_ =
+          std::make_unique<testing::NiceMock<MockIbanAccessManager>>(this);
+    }
+    return mock_iban_access_manager_.get();
+  }
+
   ::testing::NiceMock<MockMerchantPromoCodeManager>*
   GetMockMerchantPromoCodeManager() {
     return &mock_merchant_promo_code_manager_;
@@ -756,6 +769,8 @@ class TestAutofillClientTemplate : public T {
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
+  std::unique_ptr<testing::NiceMock<MockIbanAccessManager>>
+      mock_iban_access_manager_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`

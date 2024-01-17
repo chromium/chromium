@@ -2315,26 +2315,22 @@ TEST_F(AutofillSuggestionGeneratorTest, GetLocalIbanSuggestions) {
   EXPECT_THAT(
       iban_suggestions[0],
       EqualsIbanSuggestion(iban0.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::ValueToFill(iban0.GetStrippedValue()),
-                           iban0.nickname()));
+                           Suggestion::Guid(iban0.guid()), iban0.nickname()));
 
   EXPECT_THAT(
       iban_suggestions[1],
       EqualsIbanSuggestion(iban1.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::ValueToFill(iban1.GetStrippedValue()),
-                           iban1.nickname()));
+                           Suggestion::Guid(iban1.guid()), iban1.nickname()));
 
   EXPECT_THAT(
       iban_suggestions[2],
       EqualsIbanSuggestion(iban2.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::ValueToFill(iban2.GetStrippedValue()),
-                           iban2.nickname()));
+                           Suggestion::Guid(iban2.guid()), iban2.nickname()));
 
   EXPECT_THAT(
       iban_suggestions[3],
       EqualsIbanSuggestion(iban3.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::ValueToFill(iban3.GetStrippedValue()),
-                           iban3.nickname()));
+                           Suggestion::Guid(iban3.guid()), iban3.nickname()));
 
   EXPECT_EQ(iban_suggestions[4].popup_item_id, PopupItemId::kSeparator);
 
@@ -2417,11 +2413,11 @@ TEST_F(AutofillSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
                                server_iban2.instrument_id())),
                            server_iban2.nickname()));
 
-  EXPECT_THAT(iban_suggestions[2],
-              EqualsIbanSuggestion(
-                  local_iban1.GetIdentifierStringForAutofillDisplay(),
-                  Suggestion::ValueToFill(local_iban1.GetStrippedValue()),
-                  local_iban1.nickname()));
+  EXPECT_THAT(
+      iban_suggestions[2],
+      EqualsIbanSuggestion(local_iban1.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::Guid(local_iban1.guid()),
+                           local_iban1.nickname()));
 
   EXPECT_EQ(iban_suggestions[3].popup_item_id, PopupItemId::kSeparator);
 
