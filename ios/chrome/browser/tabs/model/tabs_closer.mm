@@ -7,9 +7,11 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/strings/strcat.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
@@ -55,6 +57,12 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   }
 }
 
+// Get identifier for temporary Browser from Browser.
+std::string GetTemporaryIdentifier(Browser* original_browser) {
+  using session_util::GetSessionIdentifier;
+  return base::StrCat({GetSessionIdentifier(original_browser), "/{Undo}"});
+}
+
 }  // namespace
 
 class TabsCloser::UndoStorage {
@@ -91,14 +99,16 @@ class TabsCloser::UndoStorage {
   raw_ptr<Browser> original_browser_{nullptr};
   std::unique_ptr<Browser> temporary_browser_;
   std::vector<std::optional<Opener>> openers_;
+  const std::string identifier_;
 };
 
 TabsCloser::UndoStorage::UndoStorage(Browser* browser)
     : original_browser_(browser),
-      temporary_browser_(Browser::CreateTemporary(browser->GetBrowserState())) {
+      temporary_browser_(Browser::CreateTemporary(browser->GetBrowserState())),
+      identifier_(GetTemporaryIdentifier(browser)) {
   SessionRestorationServiceFactory::GetForBrowserState(
       temporary_browser_->GetBrowserState())
-      ->AttachBackup(original_browser_.get(), temporary_browser_.get());
+      ->SetSessionID(temporary_browser_.get(), identifier_);
 }
 
 TabsCloser::UndoStorage::~UndoStorage() {
@@ -114,6 +124,7 @@ TabsCloser::UndoStorage::~UndoStorage() {
           temporary_browser_->GetBrowserState());
 
   service->Disconnect(temporary_browser_.get());
+  service->DeleteDataForDiscardedSessions({identifier_}, base::DoNothing());
 }
 
 void TabsCloser::UndoStorage::CloseTabs(int start, int count) {

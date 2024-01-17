@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_LEGACY_SESSION_RESTORATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SESSIONS_LEGACY_SESSION_RESTORATION_SERVICE_H_
 
-#include <map>
 #include <set>
 
 #include "base/files/file_path.h"
@@ -48,7 +47,6 @@ class LegacySessionRestorationService final : public SessionRestorationService,
   void LoadWebStateStorage(Browser* browser,
                            web::WebState* web_state,
                            WebStateStorageCallback callback) final;
-  void AttachBackup(Browser* browser, Browser* backup) final;
   void Disconnect(Browser* browser) final;
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
@@ -93,10 +91,6 @@ class LegacySessionRestorationService final : public SessionRestorationService,
 
   // Set of observed Browser objects.
   std::set<Browser*> browsers_;
-
-  // Bi-directional mapping of observed Browser and their backup.
-  std::map<Browser*, Browser*> browsers_to_backup_;
-  std::map<Browser*, Browser*> backups_to_browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_LEGACY_SESSION_RESTORATION_SERVICE_H_
