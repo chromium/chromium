@@ -1058,14 +1058,20 @@ bool GetOnDeviceModelRetractUnsafeContent() {
 }
 
 bool GetOnDeviceModelMustUseSafetyModel() {
-  static const base::FeatureParam<bool>
-      kOnDeviceModelShouldRetractUnsafeContent{
-          &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
-  return kOnDeviceModelShouldRetractUnsafeContent.Get();
+  static const base::FeatureParam<bool> kOnDeviceModelMustUseSafetyModel{
+      &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
+  return kOnDeviceModelMustUseSafetyModel.Get();
 }
 
 bool ShouldDownloadTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
+}
+
+uint32_t GetOnDeviceModelTextSafetyTokenInterval() {
+  static const base::FeatureParam<int32_t>
+      kOnDeviceModelTextSafetyTokenInterval{
+          &kTextSafetyClassifier, "on_device_text_safety_token_interval", 10};
+  return static_cast<uint32_t>(kOnDeviceModelTextSafetyTokenInterval.Get());
 }
 
 int GetOnDeviceModelNumRepeats() {

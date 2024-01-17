@@ -109,11 +109,13 @@ SessionImpl::SessionImpl(
     std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
     const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
     base::WeakPtr<OnDeviceModelServiceController> controller,
+    const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger)
     : controller_(controller),
       feature_(feature),
       on_device_model_versions_(on_device_model_versions),
+      safety_config_(safety_config),
       execute_remote_fn_(std::move(execute_remote_fn)),
       optimization_guide_logger_(optimization_guide_logger) {
   if (controller_ && controller_->ShouldStartNewSession()) {
@@ -310,7 +312,10 @@ void SessionImpl::ExecuteModel(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
           /*token_offset=*/std::nullopt, input->should_ignore_input_context,
           features::GetOnDeviceModelMaxTokensForOutput(),
-          /*ts_interval=*/std::nullopt),
+          safety_config_
+              ? std::make_optional(
+                    features::GetOnDeviceModelTextSafetyTokenInterval())
+              : std::nullopt),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
   on_device_state_->receiver.set_disconnect_handler(
       base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
@@ -331,8 +336,17 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
         ->set_time_to_first_response_millis(
             time_to_first_response.InMilliseconds());
   }
+
   on_device_state_->current_response += chunk->text;
-  SendResponse(ResponseType::kPartial);
+  if (chunk->ts_scores) {
+    on_device_state_->current_text_safety_scores = *chunk->ts_scores;
+  }
+
+  // Only proceed to send the response if we are not evaluating text safety or
+  // if there are text safety scores to evaluate.
+  if (!safety_config_ || chunk->ts_scores) {
+    SendResponse(ResponseType::kPartial);
+  }
 }
 
 void SessionImpl::OnComplete(
@@ -348,6 +362,19 @@ void SessionImpl::OnComplete(
       time_to_completion.InMilliseconds());
   if (controller_) {
     controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
+  }
+
+  if (safety_config_ && !summary->ts_scores) {
+    on_device_state_->receiver.ReportBadMessage(
+        "Missing required safety scores on complete");
+    CancelPendingResponse(
+        ExecuteModelResult::kResponseCompleteButNoRequiredSafetyScores,
+        ModelExecutionError::kGenericFailure);
+    return;
+  }
+
+  if (summary->ts_scores) {
+    on_device_state_->current_text_safety_scores = *summary->ts_scores;
   }
   SendResponse(ResponseType::kComplete);
   on_device_state_->ResetRequestState();
@@ -441,6 +468,26 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     }
   }
 
+  const bool is_complete = response_type != ResponseType::kPartial;
+
+  bool is_unsafe = IsUnsafeText(on_device_state_->current_text_safety_scores);
+  if (is_unsafe || is_complete) {
+    on_device_state_->AddTextSafetyExecutionLogging(is_unsafe);
+  }
+  if (is_unsafe) {
+    if (on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
+    }
+
+    if (features::GetOnDeviceModelRetractUnsafeContent()) {
+      on_device_state_->current_response.clear();
+      CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                            ModelExecutionError::kFiltered);
+      return;
+    }
+  }
+
   auto output = on_device_state_->config_interpreter->ConstructOutputMetadata(
       feature_, current_response);
   if (!output) {
@@ -454,8 +501,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
         ModelExecutionError::kGenericFailure);
     return;
   }
-
-  const bool is_complete = response_type != ResponseType::kPartial;
 
   int num_repeats = features::GetOnDeviceModelNumRepeats();
   if (!is_complete && num_repeats > 1 &&
@@ -490,21 +535,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
 
   std::unique_ptr<ModelQualityLogEntry> log_entry;
   if (is_complete) {
-    if (response_type == ResponseType::kCompleteUnsafeOutput) {
-      if (on_device_state_->histogram_logger) {
-        on_device_state_->histogram_logger->set_result(
-            ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
-      }
-      if (features::GetOnDeviceModelRetractUnsafeContent()) {
-        on_device_state_->current_response.clear();
-        logged_response->set_status(
-            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-        CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
-                              ModelExecutionError::kFiltered);
-        return;
-      }
-    }
-
     // Only bother setting the full response if the request is complete.
     if (on_device_state_->log_ai_data_request) {
       SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
@@ -562,6 +592,32 @@ std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
   return message;
 }
 
+bool SessionImpl::IsUnsafeText(const std::vector<float>& scores) const {
+  if (!safety_config_) {
+    // If no safety config and we are allowed here, that means we don't care
+    // about the safety scores so just mark the content as safe.
+    return false;
+  }
+
+  CHECK(!scores.empty());
+
+  for (const auto& threshold : safety_config_->safety_category_thresholds()) {
+    size_t output_index = static_cast<size_t>(threshold.output_index());
+    if (static_cast<size_t>(output_index) >= scores.size()) {
+      // Needed to evaluate a score, but output was invalid. Mark it as unsafe.
+      return true;
+    }
+
+    if (scores.at(output_index) >= threshold.threshold()) {
+      // Output score exceeded threshold.
+      return true;
+    }
+  }
+
+  // If it gets here, everything has passed.
+  return false;
+}
+
 SessionImpl::OnDeviceState::OnDeviceState(StartSessionFn start_session_fn,
                                           SessionImpl* session)
     : start_session_fn(std::move(start_session_fn)),
@@ -584,10 +640,31 @@ SessionImpl::OnDeviceState::MutableLoggedResponse() {
       ->mutable_on_device_model_service_response();
 }
 
+void SessionImpl::OnDeviceState::AddTextSafetyExecutionLogging(bool is_unsafe) {
+  if (current_text_safety_scores.empty()) {
+    return;
+  }
+
+  CHECK(log_ai_data_request);
+
+  auto* ts_execution_info = log_ai_data_request->mutable_model_execution_info()
+                                ->mutable_on_device_model_execution_info()
+                                ->add_execution_infos();
+  ts_execution_info->mutable_request()
+      ->mutable_text_safety_model_request()
+      ->set_text(current_response);
+  auto* ts_resp = ts_execution_info->mutable_response()
+                      ->mutable_text_safety_model_response();
+  *ts_resp->mutable_scores() = {current_text_safety_scores.begin(),
+                                current_text_safety_scores.end()};
+  ts_resp->set_is_unsafe(is_unsafe);
+}
+
 void SessionImpl::OnDeviceState::ResetRequestState() {
   receiver.reset();
   callback.Reset();
   current_response.clear();
+  current_text_safety_scores.clear();
   start = base::TimeTicks();
   timer_for_first_response.Stop();
   histogram_logger.reset();

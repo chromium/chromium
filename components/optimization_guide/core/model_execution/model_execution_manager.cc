@@ -232,9 +232,10 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<SessionImpl>(base::DoNothing(), feature, std::nullopt,
-                                       nullptr, nullptr, std::move(execute_fn),
-                                       optimization_guide_logger_.get());
+  return std::make_unique<SessionImpl>(
+      base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
+      /*safety_config=*/std::nullopt, std::move(execute_fn),
+      optimization_guide_logger_.get());
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

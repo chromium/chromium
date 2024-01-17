@@ -66,6 +66,32 @@ bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
          model_info.GetAdditionalFileWithBaseName(kTsSpModelFile);
 }
 
+base::flat_map<proto::ModelExecutionFeature,
+               proto::FeatureTextSafetyConfiguration>
+GetFeatureTextSafetyConfigs(const ModelInfo& model_info) {
+  if (!model_info.GetModelMetadata()) {
+    return {};
+  }
+
+  std::optional<proto::TextSafetyModelMetadata> model_metadata =
+      ParsedAnyMetadata<proto::TextSafetyModelMetadata>(
+          *model_info.GetModelMetadata());
+  if (!model_metadata) {
+    return {};
+  }
+
+  // TODO(b/309696426): Add histograms for above failure cases.
+
+  base::flat_map<proto::ModelExecutionFeature,
+                 proto::FeatureTextSafetyConfiguration>
+      feature_configs;
+  for (const auto& feature_config :
+       model_metadata->feature_text_safety_configurations()) {
+    feature_configs[feature_config.feature()] = feature_config;
+  }
+  return feature_configs;
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -123,9 +149,11 @@ void OnDeviceModelServiceController::SetModelPath(
   model_paths.weights = model_path.Append(kWeightsFile);
   if (safety_model_info_) {
     model_paths.ts_data =
-        *(safety_model_info_->GetAdditionalFileWithBaseName(kTsDataFile));
+        *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
+            kTsDataFile));
     model_paths.ts_sp_model =
-        *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
+        *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
+            kTsSpModelFile));
   }
   model_paths_ = std::move(model_paths);
   model_versions_ = GetModelVersions(version);
@@ -155,11 +183,18 @@ OnDeviceModelServiceController::CreateSession(
     logger.set_reason(OnDeviceModelEligibilityReason::kSafetyModelNotAvailable);
     return nullptr;
   }
+  if (features::GetOnDeviceModelMustUseSafetyModel() &&
+      !GetFeatureTextSafetyConfigForFeature(feature)) {
+    logger.set_reason(
+        OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature);
+    return nullptr;
+  }
   if (!config_interpreter_->HasConfigForFeature(feature)) {
     logger.set_reason(
         OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
     return nullptr;
   }
+
   OnDeviceModelEligibilityReason reason =
       access_controller_->ShouldStartNewSession();
   logger.set_reason(reason);
@@ -172,8 +207,9 @@ OnDeviceModelServiceController::CreateSession(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
       feature, model_versions_, config_interpreter_.get(),
-      weak_ptr_factory_.GetWeakPtr(), std::move(execute_remote_fn),
-      optimization_guide_logger);
+      weak_ptr_factory_.GetWeakPtr(),
+      GetFeatureTextSafetyConfigForFeature(feature),
+      std::move(execute_remote_fn), optimization_guide_logger);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
@@ -234,20 +270,26 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
   if (model_info.has_value() && HasRequiredSafetyFiles(*model_info)) {
-    safety_model_info_ = *model_info;
+    base::flat_map<proto::ModelExecutionFeature,
+                   proto::FeatureTextSafetyConfiguration>
+        feature_configs = GetFeatureTextSafetyConfigs(*model_info);
+    safety_model_info_ = std::make_unique<SafetyModelInfo>(
+        *model_info, std::move(feature_configs));
 
     // Update the paths if this exists to be used in subsequent sessions.
     if (model_paths_) {
       model_paths_->ts_data =
-          *(safety_model_info_->GetAdditionalFileWithBaseName(kTsDataFile));
+          *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
+              kTsDataFile));
       model_paths_->ts_sp_model =
-          *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
+          *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
+              kTsSpModelFile));
     }
     if (model_versions_) {
       model_versions_->set_text_safety_model_version(model_info->GetVersion());
     }
   } else if (model_paths_) {
-    safety_model_info_ = std::nullopt;
+    safety_model_info_.reset();
     // Clear out T&S model paths if we shouldn't use the current safety model
     // anymore. The current active session will still use the safety model
     // though, if already using it.
@@ -316,10 +358,33 @@ proto::OnDeviceModelVersions OnDeviceModelServiceController::GetModelVersions(
       component_version);
 
   if (safety_model_info_) {
-    versions.set_text_safety_model_version(safety_model_info_->GetVersion());
+    versions.set_text_safety_model_version(
+        safety_model_info_->model_info.GetVersion());
   }
 
   return versions;
 }
+
+std::optional<proto::FeatureTextSafetyConfiguration>
+OnDeviceModelServiceController::GetFeatureTextSafetyConfigForFeature(
+    proto::ModelExecutionFeature feature) {
+  if (!safety_model_info_) {
+    return std::nullopt;
+  }
+
+  auto it = safety_model_info_->feature_configs.find(feature);
+  if (it == safety_model_info_->feature_configs.end()) {
+    return std::nullopt;
+  }
+
+  return it->second;
+}
+
+OnDeviceModelServiceController::SafetyModelInfo::SafetyModelInfo(
+    const ModelInfo& model_info,
+    base::flat_map<proto::ModelExecutionFeature,
+                   proto::FeatureTextSafetyConfiguration> feature_configs)
+    : model_info(model_info), feature_configs(std::move(feature_configs)) {}
+OnDeviceModelServiceController::SafetyModelInfo::~SafetyModelInfo() = default;
 
 }  // namespace optimization_guide

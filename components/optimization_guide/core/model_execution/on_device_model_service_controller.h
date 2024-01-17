@@ -114,6 +114,20 @@ class OnDeviceModelServiceController
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
 
+  class SafetyModelInfo {
+   public:
+    SafetyModelInfo(
+        const ModelInfo& model_info,
+        base::flat_map<proto::ModelExecutionFeature,
+                       proto::FeatureTextSafetyConfiguration> feature_configs);
+    ~SafetyModelInfo();
+
+    ModelInfo model_info;
+    base::flat_map<proto::ModelExecutionFeature,
+                   proto::FeatureTextSafetyConfiguration>
+        feature_configs;
+  };
+
   // Sets the base model directory and initializes the on-device model
   // controller with the parameters, to be ready to load models and execute.
   void SetModelPath(const base::FilePath& model_path,
@@ -144,13 +158,18 @@ class OnDeviceModelServiceController
   proto::OnDeviceModelVersions GetModelVersions(
       const std::string& component_version) const;
 
+  // Returns the text safety configuration for `feature`.
+  std::optional<proto::FeatureTextSafetyConfiguration>
+  GetFeatureTextSafetyConfigForFeature(proto::ModelExecutionFeature feature);
+
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
   std::optional<on_device_model::ModelAssetPaths> model_paths_;
   std::optional<proto::OnDeviceModelVersions> model_versions_;
-  std::optional<ModelInfo> safety_model_info_;
+  // Can be null if no safey model available.
+  std::unique_ptr<SafetyModelInfo> safety_model_info_;
   std::unique_ptr<OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;

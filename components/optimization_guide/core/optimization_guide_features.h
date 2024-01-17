@@ -582,6 +582,10 @@ bool GetOnDeviceModelMustUseSafetyModel();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldDownloadTextSafetyClassifierModel();
 
+// Number of tokens between each text safety update.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+uint32_t GetOnDeviceModelTextSafetyTokenInterval();
+
 // These params configure the repetition checker. See HasRepeatingSuffix() in
 // repetition_checker.h for explanation. A value of 2 for num repeats and 16 for
 // min repeat chars would mean we will halt a response once it repeats at least

@@ -271,12 +271,15 @@ enum class OnDeviceModelEligibilityReason {
   kTooManyRecentTimeouts = 7,
   // The on-device safety model was required but not available.
   kSafetyModelNotAvailable = 8,
+  // The on-device safety model was available but there was not a safety config
+  // available for the feature.
+  kSafetyConfigNotAvailableForFeature = 9,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kSafetyModelNotAvailable,
+  kMaxValue = kSafetyConfigNotAvailableForFeature,
 };
 
 // Status of the on-device model.

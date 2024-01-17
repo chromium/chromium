@@ -164,4 +164,7 @@ message TextSafetyModelRequest {
 message TextSafetyModelResponse {
   // The scores output by the model.
   repeated float scores = 1;
+
+  // Whether the output was deemed unsafe.
+  bool is_unsafe = 2;
 }
