@@ -9449,6 +9449,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosSharedComponentsDirName,
      flag_descriptions::kLacrosSharedComponentsDirDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kLacrosSharedComponentsDir)},
+    {"lacros-launch-at-login-screen",
+     flag_descriptions::kLacrosLaunchAtLoginScreenName,
+     flag_descriptions::kLacrosLaunchAtLoginScreenDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(crosapi::browser_util::kLacrosLaunchAtLoginScreen)},
+    {"lacros-fork-zygotes-at-login-screen",
+     flag_descriptions::kLacrosForkZygotesAtLoginScreenName,
+     flag_descriptions::kLacrosForkZygotesAtLoginScreenDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         crosapi::browser_util::kLacrosForkZygotesAtLoginScreen)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

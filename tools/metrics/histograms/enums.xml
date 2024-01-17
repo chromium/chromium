@@ -23044,6 +23044,7 @@ from previous Chrome versions.
   <int value="-619967827" label="CrosWebAppShortcutUiUpdate:disabled"/>
   <int value="-619740638" label="ListAllDisplayModes:enabled"/>
   <int value="-619665653" label="DisableKeepaliveFetch:disabled"/>
+  <int value="-619582383" label="LacrosLaunchAtLoginScreen:disabled"/>
   <int value="-619178844" label="NewOverviewLayout:disabled"/>
   <int value="-617851128"
       label="ForceGpuMainThreadToNormalPriorityDrDc:enabled"/>
@@ -24158,6 +24159,7 @@ from previous Chrome versions.
   <int value="-100702864" label="PageInfoAboutThisSite:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
+  <int value="-99433146" label="LacrosLaunchAtLoginScreen:enabled"/>
   <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
   <int value="-97511671" label="AnimatedImageDragShadow:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
@@ -26389,6 +26391,7 @@ from previous Chrome versions.
   <int value="945747753" label="ShadowDomSupport:enabled"/>
   <int value="946185008" label="EnableAppDataSearch:disabled"/>
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
+  <int value="946922321" label="LacrosForkZygotesAtLoginScreen:disabled"/>
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>
   <int value="947323794" label="BruschettaAlphaMigrate:disabled"/>
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
@@ -27039,6 +27042,7 @@ from previous Chrome versions.
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
   <int value="1254018350" label="InsecureDownloadWarnings:enabled"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>
+  <int value="1254761280" label="LacrosForkZygotesAtLoginScreen:enabled"/>
   <int value="1255967063" label="IsolatedSandboxedIframesName:enabled"/>
   <int value="1257482622" label="PageAlmostIdle:enabled"/>
   <int value="1257533754" label="UseDownloadOfflineContentProvider:disabled"/>
