@@ -1928,6 +1928,7 @@ enum HistogramValue {
   OS_TELEMETRY_GETTHERMALINFO = 1866,
   ACCESSIBILITY_PRIVATE_INSTALLFACEGAZEASSETS = 1867,
   OS_MANAGEMENT_SETAUDIOVOLUME = 1868,
+  AUTOTESTPRIVATE_SETDEVICELANGUAGE = 1869,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

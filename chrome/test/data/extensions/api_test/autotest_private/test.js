@@ -1580,6 +1580,13 @@ var clearAllowedPrefTests = [
   }
 ];
 
+var setDeviceLanguage = [
+  function setDeviceLanguage(locale) {
+    chrome.autotestPrivate.setDeviceLanguage(locale,
+        chrome.test.callbackPass());
+  }
+];
+
 // Tests that requires a concrete system web app installation.
 var systemWebAppsTests = [
   function getRegisteredSystemWebApps() {
@@ -1669,7 +1676,8 @@ var systemWebAppsTests = [
       'lacrosEnabled': lacrosEnabledTests,
       'launcherSearchBoxState': launcherSearchBoxStateTests,
       'isFieldTrialActive': isFieldTrialActiveTests,
-      'clearAllowedPref': clearAllowedPrefTests
+      'clearAllowedPref': clearAllowedPrefTests,
+      'setDeviceLanguage': setDeviceLanguage
     };
 
 chrome.test.getConfig(function(config) {

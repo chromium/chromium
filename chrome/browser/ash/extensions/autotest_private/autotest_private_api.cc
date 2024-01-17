@@ -6889,6 +6889,31 @@ void AutotestPrivateGetArcWakefulnessModeFunction::OnGetWakefulnessStateRespond(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateSetDeviceLanguageFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateSetDeviceLanguageFunction::
+    AutotestPrivateSetDeviceLanguageFunction() = default;
+
+AutotestPrivateSetDeviceLanguageFunction::
+    ~AutotestPrivateSetDeviceLanguageFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateSetDeviceLanguageFunction::Run() {
+  std::optional<api::autotest_private::SetDeviceLanguage::Params> params =
+      api::autotest_private::SetDeviceLanguage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DVLOG(1) << "AutotestPrivateSetDeviceLanguageFunction " << params->locale;
+
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  // Note that this only change the prefs, a restart would be required for the
+  // change to take effect.
+  profile->ChangeAppLocale(params->locale,
+                           Profile::APP_LOCALE_CHANGED_VIA_SETTINGS);
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateAPI
 ///////////////////////////////////////////////////////////////////////////////
 

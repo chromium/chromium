@@ -1630,6 +1630,11 @@ namespace autotestPrivate {
     // ARC get wakefulness mode.
     [supportsPromises] static void getArcWakefulnessMode(
       WakefulnessModeCallback callback);
+
+    // Sets the default device language.
+    // A restart is required for this change to take effect.
+    // |value|: the locale of the language.
+    static void setDeviceLanguage(DOMString locale, VoidCallback callback);
   };
 
   interface Events {
