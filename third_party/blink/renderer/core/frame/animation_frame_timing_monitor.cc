@@ -271,10 +271,6 @@ void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     const AnimationFrameTimingInfo& info) {
   RecordLongAnimationFrameTrace(info, this);
-  if (!RuntimeEnabledFeatures::LongAnimationFrameUKMEnabled()) {
-    return;
-  }
-
   ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
   ukm::SourceId source_id = client_.MainFrameUkmSourceId();
   if (!recorder || source_id == ukm::kInvalidSourceId) {
