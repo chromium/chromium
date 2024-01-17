@@ -10,6 +10,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -64,6 +65,8 @@ bool AutoPictureInPictureTabHelper::HasAutoPictureInPictureBeenRegistered()
 
 void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
   has_ever_registered_for_auto_picture_in_picture_ = false;
+  // On navigation, forget any 'allow once' state.
+  auto_pip_setting_helper_.reset();
 }
 
 void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
@@ -257,6 +260,44 @@ bool AutoPictureInPictureTabHelper::AreAutoPictureInPicturePreconditionsMet()
   // Note that `auto_picture_in_picture_activation_time_` is not set if all of
   // the other preconditions are not set.
   return base::TimeTicks::Now() < auto_picture_in_picture_activation_time_;
+}
+
+std::unique_ptr<AutoPipSettingOverlayView>
+AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
+    base::OnceClosure close_pip_cb,
+    const gfx::Rect& browser_view_overridden_bounds,
+    views::View* anchor_view,
+    views::BubbleBorder::Arrow arrow) {
+  // Check both preconditions and "in pip", since we don't know if pip is
+  // officially ready yet or not.  This might be during the opening of the pip
+  // window, so we might not know about it yet.
+  if (!AreAutoPictureInPicturePreconditionsMet() &&
+      !IsInAutoPictureInPicture()) {
+    // This isn't auto-pip, so the content setting doesn't matter.
+    return nullptr;
+  }
+
+  // If we don't have a setting helper associated with this session (site) yet,
+  // then create one.
+  if (!auto_pip_setting_helper_) {
+    auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
+        web_contents(), host_content_settings_map_, auto_blocker_);
+  }
+
+  return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
+      std::move(close_pip_cb), browser_view_overridden_bounds, anchor_view,
+      arrow);
+}
+
+void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
+  if (!auto_pip_setting_helper_) {
+    // There is definitely no auto-pip UI showing, so ignore this.  Either this
+    // isn't auto-pip, or we didn't need to ask the user about it.
+    return;
+  }
+
+  // There might be the auto-pip setting UI shown, so forward this.
+  auto_pip_setting_helper_->OnUserClosedWindow();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoPictureInPictureTabHelper);

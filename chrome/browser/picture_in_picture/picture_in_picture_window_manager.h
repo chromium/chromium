@@ -33,7 +33,6 @@ class Display;
 }  // namespace display
 
 #if !BUILDFLAG(IS_ANDROID)
-class AutoPipSettingHelper;
 class PictureInPictureOcclusionTracker;
 
 namespace views {
@@ -181,10 +180,6 @@ class PictureInPictureWindowManager {
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 
-  AutoPipSettingHelper* get_setting_helper_for_testing() {
-    return auto_pip_setting_helper_.get();
-  }
-
   // Returns the PictureInPictureOcclusionTracker, which can inform observers
   // when a widget has been occluded by a video or document picture-in-picture
   // window.
@@ -245,9 +240,6 @@ class PictureInPictureWindowManager {
   static void ExitPictureInPictureSoon();
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Create the settings helper if this is auto-pip and we don't have one.
-  void CreateAutoPipSettingHelperIfNeeded();
-
   // Creates the `occlusion_tracker_` if it does not already exist and should
   // exist.
   void CreateOcclusionTrackerIfNecessary();
@@ -262,8 +254,6 @@ class PictureInPictureWindowManager {
   std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
-
-  std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
 
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
 #endif  //! BUILDFLAG(IS_ANDROID)
