@@ -9977,26 +9977,6 @@
             ]
         }
     ],
-    "JourneysIncludeSyncedVisits": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "JourneysIncludeSyncedVisits"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysOnDeviceClusteringContentClustering": [
         {
             "platforms": [
