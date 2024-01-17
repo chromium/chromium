@@ -18,7 +18,7 @@ This file cannot be upstreamed to WPT until:
 <script>
 promise_test(async t => {
   const uid = token();
-  const gotMessages = waitChannelMessage('unload frame in prerendering', uid);
+  const gotMessages = waitChannelMessage('remove frame in prerendering', uid);
   const url = `resources/unload-on-prerender-remove-subframe.html?uid=${uid}`;
   window.open(url, '_blank', 'noopener');
   const result = await gotMessages;
@@ -28,9 +28,7 @@ promise_test(async t => {
     'load prerendering',
     'load frame',
     'request removal',
-    'pageshow frame in prerendering',
-    'pagehide frame in prerendering',
-    'unload frame in prerendering',
+    'remove frame in prerendering',
   ];
   assert_array_equals(result, expected, 'gotMessages');
 }, 'unload on removing subframe');
