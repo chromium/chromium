@@ -67,6 +67,12 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "ChromeActions";
     case WhatsNewType::kMiniMaps:
       return "MiniMaps";
+    case WhatsNewType::kLensSearch:
+      return "LensSearch";
+    case WhatsNewType::kBottomOmnibox:
+      return "BottomOmnibox";
+    case WhatsNewType::kESB:
+      return "ESB";
     case WhatsNewType::kError:
       return nil;
   };

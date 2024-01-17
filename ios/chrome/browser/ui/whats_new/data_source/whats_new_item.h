@@ -25,7 +25,10 @@ enum class WhatsNewType {
   kCalendarEvent = 9,
   kChromeActions = 10,
   kMiniMaps = 11,
-  kMaxValue = kMiniMaps,
+  kLensSearch = 12,
+  kBottomOmnibox = 13,
+  kESB = 14,
+  kMaxValue = kESB
 };
 
 // An enum representing the different primary button actions for features in

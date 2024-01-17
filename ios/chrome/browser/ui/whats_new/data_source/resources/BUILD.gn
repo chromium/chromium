@@ -65,6 +65,12 @@ screenshots_lists = [
   "m116/incognito_tabs_from_other_apps_darkmode.json",
   "m116/mini_maps.json",
   "m116/mini_maps_darkmode.json",
+  "m122/LensSearch.json",
+  "m122/LensSearch_darkmode.json",
+  "m122/BottomOmnibox.json",
+  "m122/BottomOmnibox_darkmode.json",
+  "m122/ESB.json",
+  "m122/ESB_darkmode.json",
 ]
 
 bundle_data("screenshots_files") {

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_TITLE" desc="LensSearch Title displayed in What's New. [iOS only]">
+        Search with Lens
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_SUBTITLE" desc="LensSearch Subtitle displayed in What's New. [iOS only]">
+        Shop, translate, and identify what you see using your camera and photo gallery.
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of LensSearch in What's New. [iOS only]">
+        Go to your homepage or keyboard
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of LensSearch in What's New. [iOS only]">
+        Tap the “Lens icon”
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of LensSearch in What's New. [iOS only]">
+        Take a photo of your search
+</message>
+<message name="IDS_IOS_WHATS_NEW_LENSSEARCH_SCREENSHOT_TEXT_1" desc="Text in image displaying: n/a for the feature: LensSearch in What's New. [iOS only]">
+        n/a
+</message>
+<message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_TITLE" desc="BottomOmnibox Title displayed in What's New. [iOS only]">
+        Bottom Address Bar
+</message>
+<message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SUBTITLE" desc="BottomOmnibox Subtitle displayed in What's New. [iOS only]">
+        Switch your address bar from the top to the bottom for a customized browsing experience.
+</message>
+<message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of BottomOmnibox in What's New. [iOS only]">
+        Tap and hold the address bar
+</message>
+<message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of BottomOmnibox in What's New. [iOS only]">
+        Select “Move address bar to bottom” or “Move address bar to top”
+</message>
+<message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SCREENSHOT_TEXT_1" desc="Text in image displaying: Move Address Bar for the feature: BottomOmnibox in What's New. [iOS only]">
+        Move Address Bar
+</message>
+<message name="IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SCREENSHOT_TEXT_2" desc="Text in image displaying: Copy Link for the feature: BottomOmnibox in What's New. [iOS only]">
+        Copy Link
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_TITLE" desc="ESB Title displayed in What's New. [iOS only]">
+        Chrome’s strongest security
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_SUBTITLE" desc="ESB Subtitle displayed in What's New. [iOS only]">
+        Add an extra layer of protection against online threats
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of ESB in What's New. [iOS only]">
+        Go to Chrome Settings
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of ESB in What's New. [iOS only]">
+        Tap “Privacy and Security” and then “Safe Browsing”
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of ESB in What's New. [iOS only]">
+        Choose “Enhanced Protection”
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_1" desc="Text in image displaying: Enhanced Protection for the feature: ESB in What's New. [iOS only]">
+        Enhanced Protection
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_2" desc="Text in image displaying: Standard Protection for the feature: ESB in What's New. [iOS only]">
+        Standard Protection
+</message>
+<message name="IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_3" desc="Text in image displaying: No Protection for the feature: ESB in What's New. [iOS only]">
+        No Protection
+</message>
+</grit-part>
