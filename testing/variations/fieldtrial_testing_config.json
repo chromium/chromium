@@ -600,6 +600,28 @@
             ]
         }
     ],
+    "AomVpxUseChromeThreads": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LibaomUseChromeThreads",
+                        "LibvpxUseChromeThreads"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApnRevamp": [
         {
             "platforms": [
