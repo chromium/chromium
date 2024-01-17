@@ -42,7 +42,8 @@ BUILDER_EXCLUDE_SET = set([
 
 # Test suites will not be autosharded on all builders that run the test suite.
 # Example: 'browser_tests' -> turns of browser_tests on linux-rel and win-rel
-TEST_SUITE_EXCLUDE_SET = set([])
+# 'chrome_all_tast_tests': crbug.com/1516971
+TEST_SUITE_EXCLUDE_SET = set(['chrome_all_tast_tests'])
 
 # Test suite and try builder dicts that should not be autosharded any further.
 # Maps try builder to set of test suite
