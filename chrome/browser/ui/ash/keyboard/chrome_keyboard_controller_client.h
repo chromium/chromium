@@ -188,7 +188,7 @@ class ChromeKeyboardControllerClient
 
   gfx::Rect BoundsFromScreen(const gfx::Rect& screen_bounds);
 
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   raw_ptr<ash::KeyboardController> keyboard_controller_ = nullptr;
 
