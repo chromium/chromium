@@ -10,9 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google_apis/gcm/engine/connection_handler_impl.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
@@ -416,6 +414,7 @@ void ConnectionFactoryImpl::OnConnectDone(
     const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
+  base::UmaHistogramSparse("GCM.MCSClientConnectionNetworkCode", -result);
   DCHECK_NE(net::ERR_IO_PENDING, result);
   if (!connection_handler_) {
     // If CloseSocket() is called while a connect is pending, this callback will
@@ -464,6 +463,7 @@ void ConnectionFactoryImpl::OnConnectDone(
 }
 
 void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
+  base::UmaHistogramSparse("GCM.ConnectionHandlerNetCode", -result);
   DCHECK(!connecting_);
   if (result != net::OK) {
     // TODO(zea): Consider how to handle errors that may require some sort of

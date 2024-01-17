@@ -33,10 +33,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
-    expires_after="2023-11-12">
+    expires_after="2024-11-12">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
-  <summary>Status code of the outcome of a GCM checkin request.</summary>
+  <summary>
+    Status code of the outcome of a GCM checkin request. Warning: this histogram
+    was expired from 2023-11-12 to 2024-01-17; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatusNetError" enum="NetErrorCodes"
@@ -55,6 +58,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time for which GCM client start task has been delayed. Recorded
     whenever GCM client is requested to start.
+  </summary>
+</histogram>
+
+<histogram name="GCM.ConnectionHandlerNetCode" enum="NetErrorCodes"
+    expires_after="2025-01-17">
+  <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records network error code for the ConnectionHandler whenever a connection
+    is established or there is a socket error.
   </summary>
 </histogram>
 
@@ -119,6 +132,16 @@ chromium-metrics-reviews@google.com.
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of loading from the persistent GCM store.</summary>
+</histogram>
+
+<histogram name="GCM.MCSClientConnectionNetworkCode" enum="NetErrorCodes"
+    expires_after="2025-01-17">
+  <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records network error code for MCS client connection whenever a connection
+    attempt is finished (e.g. after a network change, connection reset, etc).
+  </summary>
 </histogram>
 
 <histogram name="GCM.PendingConnectionEventsAtShutdown" units="events"
