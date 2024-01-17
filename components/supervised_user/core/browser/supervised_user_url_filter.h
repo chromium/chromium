@@ -24,6 +24,7 @@
 #include "ui/base/page_transition_types.h"
 
 class GURL;
+class PrefService;
 
 // Callback type for additional url validations.
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
@@ -129,6 +130,7 @@ class SupervisedUserURLFilter {
   };
 
   SupervisedUserURLFilter(
+      PrefService& user_prefs,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<Delegate> delegate);
 
@@ -292,6 +294,8 @@ class SupervisedUserURLFilter {
   // Blocked and Allowed host lists.
   std::set<std::string> blocked_host_list_;
   std::set<std::string> allowed_host_list_;
+
+  const raw_ref<PrefService> user_prefs_;
 
   std::unique_ptr<Delegate> service_delegate_;
 

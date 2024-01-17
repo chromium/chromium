@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/url_matcher/url_util.h"
@@ -224,9 +225,11 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 }  // namespace
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
+    PrefService& user_prefs,
     ValidateURLSupportCallback check_webstore_url_callback,
     std::unique_ptr<Delegate> service_delegate)
     : default_behavior_(FilteringBehavior::kAllow),
+      user_prefs_(user_prefs),
       service_delegate_(std::move(service_delegate)),
       check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
 
@@ -693,7 +696,7 @@ void SupervisedUserURLFilter::ClearAsyncURLChecker() {
 }
 
 bool SupervisedUserURLFilter::HasAsyncURLChecker() const {
-  return !!async_url_checker_;
+  return async_url_checker_.get() != nullptr;
 }
 
 void SupervisedUserURLFilter::Clear() {
@@ -721,9 +724,9 @@ SupervisedUserURLFilter::GetWebFilterType() const {
     return WebFilterType::kCertainSites;
   }
 
-  bool safe_sites_enabled = HasAsyncURLChecker();
-  return safe_sites_enabled ? WebFilterType::kTryToBlockMatureSites
-                            : WebFilterType::kAllowAllSites;
+  return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
+             ? SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites
+             : SupervisedUserURLFilter::WebFilterType::kAllowAllSites;
 }
 
 bool SupervisedUserURLFilter::EmitURLFilterMetrics() const {

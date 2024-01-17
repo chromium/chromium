@@ -160,7 +160,8 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
       EXPECT_EQ("allow_certain_sites", expected_feedback_value);
       break;
     case (supervised_user::FilteringBehavior::kAllow):
-      EXPECT_EQ("allow_all_sites", expected_feedback_value);
+      // Safe sites is enabled by default.
+      EXPECT_EQ("block_mature_sites", expected_feedback_value);
       break;
     default:
       // Remaining combinations are not tested.

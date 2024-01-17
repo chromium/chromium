@@ -155,7 +155,8 @@ SupervisedUserService::SupervisedUserService(
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
-      std::move(check_webstore_url_callback), std::move(url_filter_delegate));
+      user_prefs, std::move(check_webstore_url_callback),
+      std::move(url_filter_delegate));
   url_filter_->AddObserver(this);
 }
 

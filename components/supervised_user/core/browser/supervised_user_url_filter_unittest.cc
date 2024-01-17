@@ -14,6 +14,8 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +27,8 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
  public:
   SupervisedUserURLFilterTest() {
+    PrefRegistrySimple* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
     filter_.AddObserver(this);
   }
@@ -69,7 +73,9 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
+  TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
+      pref_service_,
       base::BindRepeating([](const GURL& url) { return false; }),
       std::make_unique<FakeURLFilterDelegate>());
   supervised_user::FilteringBehavior behavior_;
@@ -505,6 +511,8 @@ class SupervisedUserURLFilteringWithConflictsTest
               SupervisedUserURLFilter::FilteringSubdomainConflictType>>> {
  public:
   SupervisedUserURLFilteringWithConflictsTest() {
+    PrefRegistrySimple* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   }
 
@@ -517,7 +525,9 @@ class SupervisedUserURLFilteringWithConflictsTest
   }
 
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
+      pref_service_,
       base::BindRepeating([](const GURL& url) { return false; }),
       std::make_unique<FakeURLFilterDelegate>());
 };

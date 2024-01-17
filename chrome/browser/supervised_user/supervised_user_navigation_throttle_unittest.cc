@@ -28,8 +28,9 @@ static const char* kExampleURL = "https://example.com/";
 class MockSupervisedUserURLFilter
     : public supervised_user::SupervisedUserURLFilter {
  public:
-  MockSupervisedUserURLFilter()
+  explicit MockSupervisedUserURLFilter(PrefService& prefs)
       : supervised_user::SupervisedUserURLFilter(
+            prefs,
             base::BindRepeating([](const GURL& url) { return false; }),
             std::make_unique<supervised_user::FakeURLFilterDelegate>()) {}
 
@@ -122,7 +123,7 @@ TEST_F(SupervisedUserNavigationThrottleTest,
 TEST_F(SupervisedUserNavigationThrottleTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
   std::unique_ptr<MockSupervisedUserURLFilter> mock_url_filter =
-      std::make_unique<MockSupervisedUserURLFilter>();
+      std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs());
   ON_CALL(*mock_url_filter, GetFilteringBehaviorForURL(testing::_, testing::_))
       .WillByDefault([](const GURL& url,
                         supervised_user::FilteringBehaviorReason* reason) {
