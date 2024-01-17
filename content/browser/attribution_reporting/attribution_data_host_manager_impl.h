@@ -233,8 +233,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void MaybeOnRegistrationsFinished(
       base::flat_set<Registrations>::const_iterator);
 
-  void MaybeSetupDeferredReceivers(int64_t navigation_id);
+  void MaybeStartNavigation(int64_t navigation_id);
+  void MaybeDoneWithNavigation(int64_t navigation_id, bool due_to_timeout);
+
   void MaybeBindDeferredReceivers(int64_t navigation_id, bool due_to_timeout);
+  void ClearRegistrationsDeferUntilNavigation(int64_t navigation_id);
 
   // In `RegisterNavigationDataHost` which, for a given navigation, will be
   // called before `NotifyNavigationRegistrationStarted`, we receive the number
@@ -338,9 +341,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // registrations or via a Fenced Frame Beacon.
   base::flat_set<Registrations> registrations_;
 
-  // Guardrail to ensure a receiver in `deferred_receivers_` always eventually
-  // gets bound.
-  SequentialTimeoutsTimer deferred_receivers_timer_;
+  // Guardrail to ensure that a navigation which can receive registrations is
+  // always eventually considered done.
+  SequentialTimeoutsTimer navigation_registrations_timer_;
 
   data_decoder::DataDecoder data_decoder_;
 

@@ -751,7 +751,7 @@ AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
           /*delay=*/base::Seconds(3)),
       navigations_waiting_on_background_registrations_timer_(
           /*delay=*/base::Seconds(3)),
-      deferred_receivers_timer_(/*delay=*/base::Seconds(10)) {
+      navigation_registrations_timer_(/*delay=*/base::Seconds(10)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &AttributionDataHostManagerImpl::OnReceiverDisconnected,
       base::Unretained(this)));
@@ -971,7 +971,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     return;
   }
 
-  MaybeSetupDeferredReceivers(navigation_id);
+  MaybeStartNavigation(navigation_id);
 
   // When background registrations are enabled, we don't use a data host. The
   // registrations will be received via `NotifyBackgroundRegistration...`.
@@ -1194,10 +1194,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
         BackgroundRegistrationsTied(token, 1, /*due_to_timeout=*/false);
         return;
       }
-      RecordBackgroundNavigationOutcome(
-          BackgroundNavigationOutcome::kTiedImmediately);
       navigation_context = nav_waiting_it->second.GetContext();
-      BackgroundRegistrationsTied(token, 1, /*due_to_timeout=*/false);
     } else {
       // Navigation has not started yet
       //
@@ -1234,6 +1231,9 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
     deferred_until = last_navigation_id;
   }
 
+  bool navigation_tied =
+      attribution_src_token.has_value() && navigation_context.has_value();
+
   auto [it_unused, inserted] = registrations_.emplace(
       RegistrationsId(id),
       RegistrationContext(std::move(context_origin), registration_eligibility,
@@ -1242,6 +1242,17 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
                           std::move(navigation_context)),
       waiting_on_navigation, deferred_until);
   CHECK(inserted);
+
+  // We must indicate that the background registration was tied to the
+  // navigation only after the registration is inserted to avoid an inaccurate
+  // state where all expected registrations are tied and they are no ongoing
+  // registrations tied to the navigation.
+  if (navigation_tied) {
+    RecordBackgroundNavigationOutcome(
+        BackgroundNavigationOutcome::kTiedImmediately);
+    BackgroundRegistrationsTied(attribution_src_token.value(), 1,
+                                /*due_to_timeout=*/false);
+  }
 }
 
 bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
@@ -1426,8 +1437,8 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
             context.navigation()->navigation_id());
         it != ongoing_background_datahost_registrations_.end()) {
       ongoing_background_datahost_registrations_.erase(it);
-      MaybeBindDeferredReceivers(context.navigation()->navigation_id(),
-                                 /*due_to_timeout=*/false);
+      MaybeDoneWithNavigation(context.navigation()->navigation_id(),
+                              /*due_to_timeout=*/false);
     }
   }
 }
@@ -1442,7 +1453,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     std::string devtools_request_id) {
   std::optional<RegistrationNavigationContext> navigation;
   if (navigation_id.has_value()) {
-    MaybeSetupDeferredReceivers(navigation_id.value());
+    MaybeStartNavigation(navigation_id.value());
     navigation = RegistrationNavigationContext(navigation_id.value(),
                                                std::move(input_event));
   }
@@ -1529,12 +1540,10 @@ void AttributionDataHostManagerImpl::BackgroundRegistrationsTied(
     auto navigation_id = it->second.navigation_id();
     navigations_waiting_on_background_registrations_.erase(it);
     if (navigation_id.has_value()) {
-      MaybeBindDeferredReceivers(navigation_id.value(),
-                                 // We set `due_to_timeout` false here even when
-                                 // the call to this method is due to a timeout
-                                 // as this value refers to the deferred
-                                 // receivers timeout.
-                                 /*due_to_timeout=*/false);
+      // We set `due_to_timeout` false here even when the call to this method is
+      // due to a timeout as this value refers to the navigation timeout as
+      // opposed to the background registrations timeout (this method).
+      MaybeDoneWithNavigation(navigation_id.value(), /*due_to_timeout=*/false);
     }
   }
 }
@@ -1705,11 +1714,11 @@ void AttributionDataHostManagerImpl::MaybeOnRegistrationsFinished(
   std::optional<int64_t> navigation_id = it->navigation_id();
   registrations_.erase(it);
   if (navigation_id.has_value()) {
-    MaybeBindDeferredReceivers(navigation_id.value(), /*due_to_timeout=*/false);
+    MaybeDoneWithNavigation(navigation_id.value(), /*due_to_timeout=*/false);
   }
 }
 
-void AttributionDataHostManagerImpl::MaybeSetupDeferredReceivers(
+void AttributionDataHostManagerImpl::MaybeStartNavigation(
     int64_t navigation_id) {
   auto [it, inserted] = deferred_receivers_.try_emplace(
       navigation_id, std::vector<DeferredReceiver>());
@@ -1719,30 +1728,32 @@ void AttributionDataHostManagerImpl::MaybeSetupDeferredReceivers(
     return;
   }
 
-  deferred_receivers_timer_.Start(base::BindOnce(
-      &AttributionDataHostManagerImpl::MaybeBindDeferredReceivers,
-      weak_factory_.GetWeakPtr(), navigation_id,
-      /*due_to_timeout=*/true));
+  navigation_registrations_timer_.Start(
+      base::BindOnce(&AttributionDataHostManagerImpl::MaybeDoneWithNavigation,
+                     weak_factory_.GetWeakPtr(), navigation_id,
+                     /*due_to_timeout=*/true));
 }
 
-void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
+void AttributionDataHostManagerImpl::MaybeDoneWithNavigation(
     int64_t navigation_id,
     bool due_to_timeout) {
   if (due_to_timeout) {
-    // We cleanup and bind the deferred receivers on timeout
     if (const auto& it =
             ongoing_background_datahost_registrations_.find(navigation_id);
         it != ongoing_background_datahost_registrations_.end()) {
       ongoing_background_datahost_registrations_.erase(it);
     }
   } else {
-    // We skip binding the receiver if any registrations are still ongoing
+    // There still is a connected datahost tied to the navigation that can
+    // receive sources.
     if (base::Contains(ongoing_background_datahost_registrations_,
                        navigation_id)) {
       return;
     }
 
     for (const auto& registration : registrations_) {
+      // There still is a registration tied to the navigation which can receive
+      // more headers or is processing them.
       if (registration.navigation_id() == navigation_id) {
         return;
       }
@@ -1750,36 +1761,52 @@ void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
 
     for (const auto& waiting :
          navigations_waiting_on_background_registrations_) {
+      // More background registrations tied to the navigation are expected.
       if (waiting.second.navigation_id() == navigation_id) {
         return;
       }
     }
   }
 
-  if (auto it = deferred_receivers_.find(navigation_id);
-      it != deferred_receivers_.end()) {
-    base::UmaHistogramBoolean(
-        "Conversions.DeferredDataHostProcessedAfterTimeout", due_to_timeout);
-    for (auto& deferred_receiver : it->second) {
-      base::UmaHistogramMediumTimes(
-          "Conversions.ProcessRegisterDataHostDelay",
-          base::TimeTicks::Now() - deferred_receiver.initial_registration_time);
-      receivers_.Add(this, std::move(deferred_receiver.data_host),
-                     std::move(deferred_receiver.context));
-    }
-    deferred_receivers_.erase(it);
+  // All expected registrations tied to the navigation have been received and
+  // processed.
+  MaybeBindDeferredReceivers(navigation_id, due_to_timeout);
+  ClearRegistrationsDeferUntilNavigation(navigation_id);
+}
 
-    if (BackgroundRegistrationsEnabled()) {
-      for (auto& registration : registrations_) {
-        if (registration.defer_until_navigation() == navigation_id) {
-          registration.ClearDeferUntilNavigation();
-          if (!registration.pending_web_decodes().empty()) {
-            HandleNextWebDecode(registration);
-          }
-          if (!registration.pending_os_decodes().empty()) {
-            HandleNextOsDecode(registration);
-          }
-        }
+void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
+    int64_t navigation_id,
+    bool due_to_timeout) {
+  auto it = deferred_receivers_.find(navigation_id);
+  if (it == deferred_receivers_.end()) {
+    return;
+  }
+
+  base::UmaHistogramBoolean("Conversions.DeferredDataHostProcessedAfterTimeout",
+                            due_to_timeout);
+  for (auto& deferred_receiver : it->second) {
+    base::UmaHistogramMediumTimes(
+        "Conversions.ProcessRegisterDataHostDelay",
+        base::TimeTicks::Now() - deferred_receiver.initial_registration_time);
+    receivers_.Add(this, std::move(deferred_receiver.data_host),
+                   std::move(deferred_receiver.context));
+  }
+  deferred_receivers_.erase(it);
+}
+
+void AttributionDataHostManagerImpl::ClearRegistrationsDeferUntilNavigation(
+    int64_t navigation_id) {
+  if (!BackgroundRegistrationsEnabled()) {
+    return;
+  }
+  for (auto& registration : registrations_) {
+    if (registration.defer_until_navigation() == navigation_id) {
+      registration.ClearDeferUntilNavigation();
+      if (!registration.pending_web_decodes().empty()) {
+        HandleNextWebDecode(registration);
+      }
+      if (!registration.pending_os_decodes().empty()) {
+        HandleNextOsDecode(registration);
       }
     }
   }

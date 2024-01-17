@@ -2804,6 +2804,8 @@ TEST_F(
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
     EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(3));
     EXPECT_CALL(mock_manager_, HandleTrigger);
   }
   data_host_manager_.NotifyNavigationWithBackgroundRegistrationsWillStart(
@@ -2815,15 +2817,22 @@ TEST_F(
       kDevtoolsRequestId);
 
   // It should defer the trigger registration.
-  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
-  data_host_manager_.RegisterDataHost(
-      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
-      *SuitableOrigin::Deserialize("https://page2.example"),
+  BackgroundRegistrationsId trigger_background_id(321);
+  data_host_manager_.NotifyBackgroundRegistrationStarted(
+      trigger_background_id, context_origin,
       /*is_within_fenced_frame=*/false,
       RegistrationEligibility::kSourceOrTrigger, kFrameId,
-      /*last_navigation_id=*/kNavigationId);
-  trigger_data_host_remote->TriggerDataAvailable(
-      reporting_origin, TriggerRegistration(), /*verifications=*/{});
+      /*last_navigation_id=*/kNavigationId,
+      /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
+  auto triggerHeaders = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  triggerHeaders->SetHeader(kAttributionReportingRegisterTriggerHeader,
+                            kRegisterTriggerJson);
+  EXPECT_TRUE(data_host_manager_.NotifyBackgroundRegistrationData(
+      trigger_background_id, triggerHeaders.get(), reporting_url,
+      network::AttributionReportingRuntimeFeatures(),
+      /*trigger_verifications=*/{}));
+  data_host_manager_.NotifyBackgroundRegistrationCompleted(
+      trigger_background_id);
   task_environment_.FastForwardBy(base::TimeDelta());
 
   checkpoint.Call(1);
@@ -2844,6 +2853,12 @@ TEST_F(
       kBackgroundId, headers.get(), reporting_url,
       network::AttributionReportingRuntimeFeatures(),
       /*trigger_verifications=*/{}));
+  // The background source registration must be completed for the trigger to be
+  // processed.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  checkpoint.Call(3);
+  data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
   task_environment_.FastForwardBy(base::TimeDelta());
 
   // kTiedImmediately=0
