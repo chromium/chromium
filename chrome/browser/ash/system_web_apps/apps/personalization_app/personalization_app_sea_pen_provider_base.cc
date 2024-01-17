@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -15,6 +16,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
@@ -22,33 +24,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_status.h"
-#include "components/manta/proto/manta.pb.h"
 #include "content/public/browser/web_ui.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash::personalization_app {
 namespace {
-constexpr int kSeaPenImageThumbnailSizeDip = 512;
-constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-// Converts a base::Time time into a string in the format "mmm dd, yyyy" such as
-// "Jan 08, 2023".
-std::string GetTimeInfo(base::Time time) {
-  base::Time::Exploded exploded_time;
-  time.UTCExplode(&exploded_time);
-  return base::StringPrintf("%s %02d, %04d",
-                            kMonthName[exploded_time.month - 1],
-                            exploded_time.day_of_month, exploded_time.year);
-}
+constexpr int kSeaPenImageThumbnailSizeDip = 512;
 
 /**
  * Serializes a sea pen query into json string format based on the query type
  * such as {freeform_query: <string>} or {template_id: <number>, options:
  * {<chip_number>:<option_number>, ...}}. For example:
- * {"freeform_query":"test query"}
- * {"template_id":"2","options":{"4":"34","5":"40"}}
+ * {"creation_time":"123456789","freeform_query":"test query"}
+ * {"creation_time":"123456789","template_id":"2","options":{"4":"34","5":"40"}}
  *
  * @param query  pointer to the sea pen query
  * @return query information in string format
@@ -56,7 +45,7 @@ std::string GetTimeInfo(base::Time time) {
 std::string SeaPenQueryToJsonString(const mojom::SeaPenQueryPtr& query) {
   std::string query_info;
   base::Value::Dict query_dict = base::Value::Dict();
-  query_dict.Set("creation_time", GetTimeInfo(base::Time::Now()));
+  query_dict.Set("creation_time", base::TimeToValue(base::Time::Now()));
 
   switch (query->which()) {
     case mojom::SeaPenQuery::Tag::kTextQuery:

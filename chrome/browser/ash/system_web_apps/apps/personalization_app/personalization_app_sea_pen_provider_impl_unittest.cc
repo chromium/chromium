@@ -14,10 +14,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/flat_map.h"
+#include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
@@ -82,6 +85,25 @@ MatchesSeaPenImage(const std::string_view expected_jpg_bytes,
           GetJpegDataUrl(expected_jpg_bytes))),
       testing::Pointee(testing::Field(
           &ash::personalization_app::mojom::SeaPenThumbnail::id, expected_id)));
+}
+
+base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
+  return base::subtle::ScopedTimeClockOverrides(
+      []() -> base::Time {
+        base::Time fake_now;
+        bool success =
+            base::Time::FromString("2023-04-05T01:23:45Z", &fake_now);
+        DCHECK(success);
+        return fake_now;
+      },
+      nullptr, nullptr);
+}
+
+std::string DictToMetadataDescription(const base::Value::Dict& dict) {
+  std::string json;
+  bool success = base::JSONWriter::Write(dict, &json);
+  DCHECK(success);
+  return "<dc:description>" + json + "</dc:description>";
 }
 
 class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
@@ -265,6 +287,95 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_EQ(1, test_wallpaper_controller()->get_sea_pen_wallpaper_count());
   EXPECT_EQ(WallpaperType::kSeaPen,
             test_wallpaper_controller()->wallpaper_info()->type);
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       SelectThumbnailSendsFreeTextMetadata) {
+  auto time_override = CreateScopedTimeNowOverride();
+  std::string user_search_query = "user search query text";
+
+  // Store some test images in the provider so that one can be selected.
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
+      search_wallpaper_future;
+  mojom::SeaPenQueryPtr search_query =
+      mojom::SeaPenQuery::NewTextQuery(user_search_query);
+  sea_pen_provider_remote()->SearchWallpaper(
+      std::move(search_query), search_wallpaper_future.GetCallback());
+
+  ASSERT_EQ(std::string(), test_wallpaper_controller()->sea_pen_metadata());
+  // Select the first returned thumbnail.
+  base::test::TestFuture<bool> select_wallpaper_future;
+  sea_pen_provider_remote()->SelectSeaPenThumbnail(
+      search_wallpaper_future.Get<0>().value().front()->id,
+      select_wallpaper_future.GetCallback());
+
+  ASSERT_TRUE(select_wallpaper_future.Take());
+  base::Value::Dict expected_metadata;
+  // `time_override` is still in effect so `base::Time::Now()` should always
+  // return the same value.
+  expected_metadata.Set("creation_time", base::TimeToValue(base::Time::Now()));
+  expected_metadata.Set("freeform_query", user_search_query);
+  EXPECT_THAT(test_wallpaper_controller()->sea_pen_metadata(),
+              testing::HasSubstr(DictToMetadataDescription(expected_metadata)));
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       SelectThumbnailSendsTemplateMetadata) {
+  auto time_override = CreateScopedTimeNowOverride();
+
+  // Store some test images in the provider so that one can be selected.
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
+      search_wallpaper_future;
+
+  const base::flat_map<mojom::SeaPenTemplateChip, mojom::SeaPenTemplateOption>
+      chosen_options = {
+          {mojom::SeaPenTemplateChip::kCharactersBackground,
+           mojom::SeaPenTemplateOption::kCharactersBackgroundOlive},
+          {mojom::SeaPenTemplateChip::kCharactersColor,
+           mojom::SeaPenTemplateOption::kCharactersColorChartreuse},
+          {mojom::SeaPenTemplateChip::kCharactersSubjects,
+           mojom::SeaPenTemplateOption::kCharactersSubjectsBicycles}};
+
+  mojom::SeaPenQueryPtr search_query =
+      mojom::SeaPenQuery::NewTemplateQuery(mojom::SeaPenTemplateQuery::New(
+          mojom::SeaPenTemplateId::kCharacters, chosen_options));
+
+  sea_pen_provider_remote()->SearchWallpaper(
+      std::move(search_query), search_wallpaper_future.GetCallback());
+
+  ASSERT_EQ(std::string(), test_wallpaper_controller()->sea_pen_metadata());
+  // Select the first returned thumbnail.
+  base::test::TestFuture<bool> select_wallpaper_future;
+  sea_pen_provider_remote()->SelectSeaPenThumbnail(
+      search_wallpaper_future.Get<0>().value().front()->id,
+      select_wallpaper_future.GetCallback());
+
+  ASSERT_TRUE(select_wallpaper_future.Take());
+  base::Value::Dict expected_metadata;
+  // `time_override` is still in effect so `base::Time::Now()` should always
+  // return the same value.
+  expected_metadata.Set("creation_time", base::TimeToValue(base::Time::Now()));
+
+  {
+    base::Value::Dict options;
+    for (const auto& [chip, option] : chosen_options) {
+      options.Set(base::NumberToString(static_cast<int32_t>(chip)),
+                  base::NumberToString(static_cast<int32_t>(option)));
+    }
+    expected_metadata.Set("options", std::move(options));
+  }
+  expected_metadata.Set("template_id",
+                        base::NumberToString(static_cast<int32_t>(
+                            mojom::SeaPenTemplateId::kCharacters)));
+
+  EXPECT_THAT(test_wallpaper_controller()->sea_pen_metadata(),
+              testing::HasSubstr(DictToMetadataDescription(expected_metadata)));
 }
 
 }  // namespace

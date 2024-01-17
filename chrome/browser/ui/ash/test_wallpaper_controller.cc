@@ -222,6 +222,7 @@ void TestWallpaperController::SetSeaPenWallpaper(
   ++sea_pen_wallpaper_count_;
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  sea_pen_metadata_ = query_info;
   std::move(callback).Run(/*success=*/true);
 }
 
