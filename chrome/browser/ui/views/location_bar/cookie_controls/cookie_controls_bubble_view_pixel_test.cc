@@ -98,8 +98,7 @@ class CookieControlsBubbleViewPixelTest
     cookie_controls_coordinator_->SetDisplayNameForTesting(u"example.com");
   }
 
-  void SetStatus(CookieControlsStatus status,
-                 bool controls_visible,
+  void SetStatus(bool controls_visible,
                  bool protections_on,
                  CookieControlsEnforcement enforcement,
                  CookieBlocking3pcdStatus blocking_status,
@@ -111,9 +110,9 @@ class CookieControlsBubbleViewPixelTest
     auto expiration = days_to_expiration
                           ? base::Time::Now() + base::Days(days_to_expiration)
                           : base::Time();
-    view_controller()->OnStatusChanged(status, controls_visible, protections_on,
-                                       enforcement, blocking_status,
-                                       expiration);
+    view_controller()->OnStatusChanged(
+        CookieControlsStatus::kUninitialized, controls_visible, protections_on,
+        enforcement, blocking_status, expiration);
   }
 
   static base::Time GetReferenceTime() {
@@ -152,8 +151,8 @@ class CookieControlsBubbleViewPixelTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
     cookie_controls_icon()->ExecuteForTesting();
-    SetStatus(status_, controls_visible_, protections_on_, enforcement_,
-              GetParam(), days_to_expiration_);
+    SetStatus(controls_visible_, protections_on_, enforcement_, GetParam(),
+              days_to_expiration_);
     waiter.WaitIfNeededAndGet();
 
     // Even with the waiter, it's possible that the toggle is in the process
@@ -186,7 +185,6 @@ class CookieControlsBubbleViewPixelTest
  protected:
   bool controls_visible_ = true;
   bool protections_on_ = true;
-  CookieControlsStatus status_ = CookieControlsStatus::kEnabled;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
   int days_to_expiration_ = 0;
@@ -210,37 +208,36 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
   ShowAndVerifyUi();
 }
 
-// TODO(b/317975095): Remove `status_` in the tests below.
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   days_to_expiration_ = 90;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByCookieSetting) {
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByPolicy) {
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByExtension) {
-  status_ = CookieControlsStatus::kDisabledForSite;
+  protections_on_ = false;
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
   ShowAndVerifyUi();
 }
