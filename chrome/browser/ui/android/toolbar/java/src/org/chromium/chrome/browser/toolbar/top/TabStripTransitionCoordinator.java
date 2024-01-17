@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -35,7 +37,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
     // configuration changed.
     private static final int TRANSITION_DELAY_MS = 200;
-    private static final int DEFAULT_DTC_THRESHOLD_DP = 412;
+    @VisibleForTesting static final int DEFAULT_DTC_THRESHOLD_DP = 412;
+
+    @VisibleForTesting
+    static final String DTC_TRANSITION_THRESHOLD_DP_PARAM_NAME = "transition_threshold_dp";
 
     /** Observes height of tab strip that could change during run time. */
     // TODO(crbug.com/1509013): Rework the observer interface.
@@ -416,9 +421,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
     /** Get the min screen width required in DP for the tab strip to become visible. */
     private static int getScreenWidthThresholdDp() {
-        return sMinScreenWidthForTesting != null
-                ? sMinScreenWidthForTesting
-                : DEFAULT_DTC_THRESHOLD_DP;
+        if (sMinScreenWidthForTesting != null) return sMinScreenWidthForTesting;
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.DYNAMIC_TOP_CHROME,
+                DTC_TRANSITION_THRESHOLD_DP_PARAM_NAME,
+                DEFAULT_DTC_THRESHOLD_DP);
     }
 
     private boolean isTopControlAtSteadyState() {
