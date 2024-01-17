@@ -23,6 +23,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/channel_layout.h"
 #include "media/base/mac/channel_layout_util_mac.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -82,8 +83,21 @@ void SetAudioChannelLayout(int channels,
   DCHECK_GT(channels, 0);
   DCHECK_GT(channel_layout, CHANNEL_LAYOUT_UNSUPPORTED);
 
+  // On macOS, Audio MIDI only support setup 4 channel layout as
+  // Quadraphonic(kAudioChannelLayoutTag_Quadraphonic) which equals to
+  // "CHANNEL_LAYOUT_2_2" in FFMPEG/Chrome. FFMPEG and Chrome will guess
+  // 4 channel layout as "CHANNEL_LAYOUT_QUAD" which will always result
+  // in silent channel 3/4 output on Macs.
+  //
+  // On Windows, the system also support setup 4 channel layout as
+  // Quadraphonic(KSAUDIO_SPEAKER_QUAD) which equals to "CHANNEL_LAYOUT_QUAD"
+  // in FFMPEG/Chrome, so there is not such issue on Windows.
+  auto input_layout = channels == 4 && channel_layout == CHANNEL_LAYOUT_QUAD
+                          ? CHANNEL_LAYOUT_2_2
+                          : channel_layout;
+
   auto coreaudio_layout =
-      ChannelLayoutToAudioChannelLayout(channel_layout, channels);
+      ChannelLayoutToAudioChannelLayout(input_layout, channels);
 
   OSStatus result = AudioUnitSetProperty(
       audio_unit, kAudioUnitProperty_AudioChannelLayout, kAudioUnitScope_Input,

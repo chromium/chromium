@@ -263,6 +263,38 @@ TEST(ChannelLayoutUtilMac, AudioChannelLayoutWithStereoTagToChannelLayout) {
   EXPECT_EQ(output_layout, ChannelLayout::CHANNEL_LAYOUT_STEREO);
 }
 
+TEST(ChannelLayoutUtilMac,
+     AudioChannelLayoutWithQuadraphonicTagToChannelLayout) {
+  int layout_size = offsetof(AudioChannelLayout, mChannelDescriptions[0]);
+  ScopedAudioChannelLayout input_layout(layout_size);
+
+  input_layout.layout()->mNumberChannelDescriptions = 0;
+  // L R Ls Rs.
+  input_layout.layout()->mChannelLayoutTag =
+      kAudioChannelLayoutTag_Quadraphonic;
+
+  ChannelLayout output_layout;
+  EXPECT_EQ(
+      AudioChannelLayoutToChannelLayout(*input_layout.layout(), &output_layout),
+      true);
+  EXPECT_EQ(output_layout, ChannelLayout::CHANNEL_LAYOUT_2_2);
+}
+
+TEST(ChannelLayoutUtilMac, AudioChannelLayoutWith6Point1TagToChannelLayout) {
+  int layout_size = offsetof(AudioChannelLayout, mChannelDescriptions[0]);
+  ScopedAudioChannelLayout input_layout(layout_size);
+
+  input_layout.layout()->mNumberChannelDescriptions = 0;
+  // L R C LFE Ls Rs Cs.
+  input_layout.layout()->mChannelLayoutTag = kAudioChannelLayoutTag_Logic_6_1_C;
+
+  ChannelLayout output_layout;
+  EXPECT_EQ(
+      AudioChannelLayoutToChannelLayout(*input_layout.layout(), &output_layout),
+      true);
+  EXPECT_EQ(output_layout, ChannelLayout::CHANNEL_LAYOUT_6_1);
+}
+
 TEST(ChannelLayoutUtilMac, AudioChannelLayoutWithAAC5Point1TagToChannelLayout) {
   int layout_size = offsetof(AudioChannelLayout, mChannelDescriptions[0]);
   ScopedAudioChannelLayout input_layout(layout_size);
