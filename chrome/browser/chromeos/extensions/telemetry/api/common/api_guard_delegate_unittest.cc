@@ -639,9 +639,8 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   }
 
   // BrowserWithTestWindowTest overrides.
-  TestingProfile* CreateProfile() override {
-    return profile_manager()->CreateTestingProfile(
-        ash::kShimlessRmaAppBrowserContextBaseName);
+  std::string GetDefaultProfileName() override {
+    return ash::kShimlessRmaAppBrowserContextBaseName;
   }
 
   // ApiGuardDelegateTest overrides.

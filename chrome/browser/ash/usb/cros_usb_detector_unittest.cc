@@ -60,7 +60,6 @@ namespace {
 using testing::_;
 using MountCallback = ::base::OnceCallback<void(MountError)>;
 
-const char* kProfileName = "test@example.com";
 const char* kCrostiniTestContainerName = "test-container";
 
 // USB device product name.
@@ -165,10 +164,6 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ChunneldClient::Shutdown();
-  }
-
-  TestingProfile* CreateProfile() override {
-    return profile_manager()->CreateTestingProfile(kProfileName);
   }
 
   void SetUp() override {

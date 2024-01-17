@@ -23,8 +23,8 @@ namespace test {
 
 namespace {
 
-const char kTestAccount1[] = "user1@test.com";
-const char kTestAccount2[] = "user2@test.com";
+constexpr char kTestAccount1[] = "user1@test.com";
+constexpr char kTestAccount2[] = "user2@test.com";
 
 }  // namespace
 
@@ -38,45 +38,55 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   BrowserFinderChromeOSTest& operator=(const BrowserFinderChromeOSTest&) =
       delete;
 
-  TestingProfile* CreateMultiUserProfile(const AccountId& account_id) {
-    TestingProfile* profile =
-        profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
-    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        const_cast<user_manager::User*>(user), profile);
-    // Force creation of MultiProfileSupport.
-    GetMultiUserWindowManager();
-    MultiProfileSupport::GetInstanceForTest()->AddUser(profile);
-    return profile;
-  }
-
   ash::MultiUserWindowManager* GetMultiUserWindowManager() {
     if (!MultiUserWindowManagerHelper::GetInstance())
       MultiUserWindowManagerHelper::CreateInstanceForTest(test_account_id1_);
     return MultiUserWindowManagerHelper::GetWindowManager();
   }
 
-  AccountId test_account_id1_ = EmptyAccountId();
-  AccountId test_account_id2_ = EmptyAccountId();
+  const AccountId test_account_id1_ = AccountId::FromUserEmail(kTestAccount1);
+  const AccountId test_account_id2_ = AccountId::FromUserEmail(kTestAccount2);
 
  private:
   void SetUp() override {
-    test_account_id1_ = AccountId::FromUserEmail(kTestAccount1);
-    test_account_id2_ = AccountId::FromUserEmail(kTestAccount2);
     BrowserWithTestWindowTest::SetUp();
-    second_profile_ = CreateMultiUserProfile(test_account_id2_);
+    // Create secondary user/profile.
+    LogIn(kTestAccount2);
+    second_profile_ = CreateProfile(kTestAccount2);
   }
 
   void TearDown() override {
+    second_profile_ = nullptr;
     MultiUserWindowManagerHelper::DeleteInstance();
     BrowserWithTestWindowTest::TearDown();
   }
 
-  TestingProfile* CreateProfile() override {
-    return CreateMultiUserProfile(test_account_id1_);
+  // BrowserWithTestWindow:
+  std::string GetDefaultProfileName() override { return kTestAccount1; }
+
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 
-  raw_ptr<TestingProfile, DanglingUntriaged> second_profile_;
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
+    auto* user = fake_user_manager_->FindUserAndModify(
+        AccountId::FromUserEmail(profile_name));
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+    // Force creation of MultiProfileSupport.
+    GetMultiUserWindowManager();
+    MultiProfileSupport::GetInstanceForTest()->AddUser(profile);
+    return profile;
+  }
+
+  raw_ptr<TestingProfile> second_profile_;
 
   // |fake_user_manager_| is owned by |user_manager_enabler_|
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;

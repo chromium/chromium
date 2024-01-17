@@ -34,10 +34,6 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
   ~ReleaseNotesNotificationTest() override = default;
 
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
-    return profile_manager()->CreateTestingProfile("googler@google.com");
-  }
-
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -57,6 +53,12 @@ class ReleaseNotesNotificationTest : public BrowserWithTestWindowTest {
     release_notes_notification_.reset();
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  std::string GetDefaultProfileName() override {
+    // TODO(crbug.com/1494005): Use google.com domain to forcibly enable
+    // release note notification. Will merge into BrowserWithTestWindowTest.
+    return "primary_profile@google.com";
   }
 
   void OnNotificationAdded() { notification_count_++; }

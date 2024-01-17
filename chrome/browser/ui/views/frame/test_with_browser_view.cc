@@ -98,8 +98,10 @@ void TestWithBrowserView::TearDown() {
 #endif
 }
 
-TestingProfile* TestWithBrowserView::CreateProfile() {
-  TestingProfile* profile = BrowserWithTestWindowTest::CreateProfile();
+TestingProfile* TestWithBrowserView::CreateProfile(
+    const std::string& profile_name) {
+  TestingProfile* profile =
+      BrowserWithTestWindowTest::CreateProfile(profile_name);
   // TemplateURLService is normally null during testing. Instant extended
   // needs this service so set a custom factory function.
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(

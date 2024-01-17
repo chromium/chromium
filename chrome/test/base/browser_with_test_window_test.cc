@@ -103,7 +103,12 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
 
   // Subclasses can provide their own Profile.
-  profile_ = CreateProfile();
+  std::string profile_name = GetDefaultProfileName();
+#if BUILDFLAG(IS_CHROMEOS)
+  LogIn(profile_name);
+#endif
+  profile_ = CreateProfile(profile_name);
+
   // Subclasses can provide their own test BrowserWindow. If they return NULL
   // then Browser will create a production BrowserWindow and the subclass is
   // responsible for cleaning it up (usually by NativeWidget destruction).
@@ -211,10 +216,14 @@ void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
                                 title);
 }
 
-TestingProfile* BrowserWithTestWindowTest::CreateProfile() {
+std::string BrowserWithTestWindowTest::GetDefaultProfileName() {
+  return TestingProfile::kDefaultProfileUserName;
+}
+
+TestingProfile* BrowserWithTestWindowTest::CreateProfile(
+    const std::string& email) {
   return profile_manager_->CreateTestingProfile(
-      TestingProfile::kDefaultProfileUserName, nullptr, std::u16string(), 0,
-      GetTestingFactories());
+      email, nullptr, std::u16string(), 0, GetTestingFactories());
 }
 
 TestingProfile::TestingFactories
@@ -244,6 +253,12 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
   params.window = browser_window;
   return std::unique_ptr<Browser>(Browser::Create(params));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void BrowserWithTestWindowTest::LogIn(const std::string& email) {
+  // TODO(crbug/1494005): Log in a regular user by default.
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 ash::ScopedCrosSettingsTestHelper*

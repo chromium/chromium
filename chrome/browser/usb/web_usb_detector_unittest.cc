@@ -42,8 +42,6 @@
 #if !BUILDFLAG(IS_WIN)
 namespace {
 
-const char* kProfileName = "test@example.com";
-
 // USB device product name.
 const char* kProductName_1 = "Google Product A";
 const char* kProductName_2 = "Google Product B";
@@ -64,20 +62,15 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
   WebUsbDetectorTest& operator=(const WebUsbDetectorTest&) = delete;
   ~WebUsbDetectorTest() override = default;
 
-  TestingProfile* CreateProfile() override {
-    return profile_manager()->CreateTestingProfile(kProfileName);
-  }
-
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Inject UserManager to BrowserWithTestWindowTest.
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindow.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
-
-    auto* user =
-        GetFakeUserManager()->AddUser(AccountId::FromUserEmail(kProfileName));
-    GetFakeUserManager()->LoginUser(user->GetAccountId());
 #endif
+    BrowserWithTestWindowTest::SetUp();
+
     BrowserList::SetLastActive(browser());
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
@@ -100,6 +93,14 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
     web_usb_detector_.reset();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    GetFakeUserManager()->AddUser(account_id);
+    GetFakeUserManager()->LoginUser(account_id);
+  }
+#endif
   void Initialize() { web_usb_detector_->Initialize(); }
 
  protected:

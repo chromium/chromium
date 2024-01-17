@@ -78,9 +78,6 @@ namespace {
 const char kTestAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kSecondaryTestAppId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
-// The primary tesing profile.
-const char kPrimaryProfileName[] = "primary_profile";
-
 // Key for pref containing lock screen data crypto key.
 constexpr char kDataCryptoKeyPref[] = "lockScreenAppDataCryptoKey";
 
@@ -463,11 +460,12 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     ash::ConciergeClient::Shutdown();
   }
 
-  TestingProfile* CreateProfile() override {
-    const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
+  // BrowserWithTestWindow:
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindow.
+    const AccountId account_id = AccountId::FromUserEmail(email);
     AddTestUser(account_id);
     fake_user_manager()->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(kPrimaryProfileName);
   }
 
   // Adds test user for the primary profile - virtual so test fixture can

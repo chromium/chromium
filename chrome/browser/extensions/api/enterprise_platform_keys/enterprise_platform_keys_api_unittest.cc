@@ -110,10 +110,17 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   // This will be called by BrowserWithTestWindowTest::SetUp();
-  TestingProfile* CreateProfile() override {
-    fake_user_manager_->AddUserWithAffiliation(
-        AccountId::FromUserEmail(kUserEmail), true);
-    return profile_manager()->CreateTestingProfile(kUserEmail);
+  std::string GetDefaultProfileName() override { return kUserEmail; }
+
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    fake_user_manager_->AddUserWithAffiliation(account_id,
+                                               /*is_affiliated=*/true);
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(

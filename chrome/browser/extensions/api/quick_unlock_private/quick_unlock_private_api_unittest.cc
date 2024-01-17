@@ -229,22 +229,28 @@ class QuickUnlockPrivateUnitTest
     RunSetModes(QuickUnlockModeList{}, CredentialList{});
   }
 
-  TestingProfile* CreateProfile() override {
+  std::string GetDefaultProfileName() override { return kTestUserEmail; }
+
+  void LogIn(const std::string& email) override {
+    auto test_account = AccountId::FromUserEmailGaiaId(email, kTestUserGaiaId);
+    fake_user_manager_->AddUser(test_account);
+    fake_user_manager_->UserLoggedIn(test_account, kTestUserEmailHash, false,
+                                     false);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto pref_service =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(pref_service->registry());
     test_pref_service_ = pref_service.get();
 
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
-        kTestUserEmail, std::move(pref_service), u"Test profile",
+        profile_name, std::move(pref_service), u"Test profile",
         1 /* avatar_id */, GetTestingFactories());
 
     // Setup a primary user.
     auto test_account =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    fake_user_manager_->AddUser(test_account);
-    fake_user_manager_->UserLoggedIn(test_account, kTestUserEmailHash, false,
-                                     false);
+        AccountId::FromUserEmailGaiaId(profile_name, kTestUserGaiaId);
     fake_user_manager_->SimulateUserProfileLoad(test_account);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         fake_user_manager_->GetPrimaryUser(), profile);

@@ -388,13 +388,15 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
+  std::string GetDefaultProfileName() override { return kTestProfileName; }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     profile_prefs_ = prefs.get();
     return profile_manager()->CreateTestingProfile(
-        kTestProfileName, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
+        profile_name, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
         TestingProfile::TestingFactories());
   }
 

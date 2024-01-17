@@ -479,18 +479,17 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
                  temp_dir_.GetPath())}};
   }
 
-  TestingProfile* CreateProfile() override {
-    const std::string kPrimaryProfileName = "primary_profile@test";
-    const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-
+  // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-
-    GetSessionControllerClient()->AddUserSession(kPrimaryProfileName);
+    GetSessionControllerClient()->AddUserSession(email);
     GetSessionControllerClient()->SwitchActiveUser(account_id);
+  }
 
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(
-        kPrimaryProfileName, GetTestingFactories());
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
     SetUpDownloadManager(profile);
     return profile;
   }
@@ -3248,8 +3247,9 @@ class HoldingSpaceKeyedServiceIncognitoDownloadsTest
     : public HoldingSpaceKeyedServiceTest {
  public:
   // HoldingSpaceKeyedServiceTest:
-  TestingProfile* CreateProfile() override {
-    TestingProfile* profile = HoldingSpaceKeyedServiceTest::CreateProfile();
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    TestingProfile* profile =
+        HoldingSpaceKeyedServiceTest::CreateProfile(profile_name);
 
     // Construct an incognito profile from the primary profile.
     TestingProfile::Builder incognito_profile_builder;

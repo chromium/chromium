@@ -242,18 +242,21 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
   ~FileChangeServiceTest() override = default;
 
   // Creates and returns a new profile for the specified `name`.
-  TestingProfile* CreateProfileWithName(const std::string& name) {
-    const AccountId account_id(AccountId::FromUserEmail(name));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    return profile_manager()->CreateTestingProfile(name);
+  TestingProfile* CreateLoggedInUserProfile(const std::string& name) {
+    LogIn(name);
+    return CreateProfile(name);
   }
 
  private:
   // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
-    constexpr char kPrimaryProfileName[] = "primary_profile@test";
-    return CreateProfileWithName(kPrimaryProfileName);
+  std::string GetDefaultProfileName() override {
+    return "promary_profile@test";
+  }
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
   }
 
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
@@ -276,7 +279,7 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
 
   // `FileChangeService` should be created as needed for additional profiles.
   constexpr char kSecondaryProfileName[] = "secondary_profile@test";
-  auto* secondary_profile = CreateProfileWithName(kSecondaryProfileName);
+  auto* secondary_profile = CreateLoggedInUserProfile(kSecondaryProfileName);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);
 

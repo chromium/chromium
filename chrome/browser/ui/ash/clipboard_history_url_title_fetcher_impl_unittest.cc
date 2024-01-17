@@ -120,15 +120,11 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
                  base::Unretained(this))}};
   }
 
-  TestingProfile* CreateProfile() override {
-    const std::string kPrimaryProfileName = "primary_profile@test";
-    const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+    const AccountId account_id = AccountId::FromUserEmail(email);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-
-    return profile_manager()->CreateTestingProfile(kPrimaryProfileName,
-                                                   GetTestingFactories());
   }
 
   std::unique_ptr<KeyedService> BuildHistoryService(

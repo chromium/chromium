@@ -1653,7 +1653,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     ChromeShelfControllerTestBase::SetUp();
 
     // Ensure there are multiple profiles. User 0 is created during setup.
-    CreateMultiUserProfile("user1");
+    CreateMultiUserProfile("user1@example.com");
     ASSERT_TRUE(SessionControllerClientImpl::IsMultiProfileAvailable());
   }
 
@@ -1671,31 +1671,11 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     return false;
   }
 
-  // Creates a profile for a given |user_name|. Note that this class will keep
-  // the ownership of the created object.
-  TestingProfile* CreateMultiUserProfile(const std::string& user_name) {
-    const std::string email_string = user_name + "@example.com";
-    const AccountId account_id(AccountId::FromUserEmail(email_string));
-    // Add a user to the fake user manager.
-    auto* user = GetFakeUserManager()->AddUser(account_id);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        user->GetDisplayEmail());
-
-    GetFakeUserManager()->LoginUser(account_id);
-
-    TestingProfile* profile =
-        profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
-    EXPECT_TRUE(profile);
-
-    StartWebAppProvider(profile);
-
-    // Remember the profile name so that we can destroy it upon destruction.
-    created_profiles_[profile] = account_id.GetUserEmail();
-    if (MultiUserWindowManagerHelper::GetInstance())
-      MultiUserWindowManagerHelper::GetInstance()->AddUser(profile);
-    if (shelf_controller_)
-      shelf_controller_->AdditionalUserAddedToSession(profile);
-    return profile;
+  // Creates a user and profile for a given `email`. Note that this class will
+  // keep the ownership of the created object.
+  TestingProfile* CreateMultiUserProfile(const std::string& email) {
+    LogIn(email);
+    return CreateProfile(email);
   }
 
   // Switch to another user.
@@ -1735,8 +1715,32 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   }
 
   // Override BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
-    return CreateMultiUserProfile("user0");
+  std::string GetDefaultProfileName() override { return "user0@example.com"; }
+
+  void LogIn(const std::string& email) override {
+    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    // Add a user to the fake user manager.
+    auto* user = GetFakeUserManager()->AddUser(account_id);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        user->GetDisplayEmail());
+    GetFakeUserManager()->LoginUser(account_id);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    TestingProfile* profile =
+        BrowserWithTestWindowTest::CreateProfile(profile_name);
+    StartWebAppProvider(profile);
+
+    // Remember the profile name so that we can destroy it upon destruction.
+    created_profiles_[profile] = profile_name;
+    if (MultiUserWindowManagerHelper::GetInstance()) {
+      MultiUserWindowManagerHelper::GetInstance()->AddUser(profile);
+    }
+    if (shelf_controller_) {
+      shelf_controller_->AdditionalUserAddedToSession(profile);
+    }
+    return profile;
   }
 
  private:
@@ -2860,7 +2864,7 @@ TEST_F(ChromeShelfControllerMultiProfileWithArcTest, DISABLED_ArcMultiUser) {
   // user is active.
   // Gmail created when secondary user is active.
 
-  const std::string user2 = "user2";
+  const std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
@@ -3363,7 +3367,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(2, model_->item_count());
 
     // After switching to a second user the item should be gone.
-    std::string user2 = "user2";
+    std::string user2 = "user2@example.com";
     TestingProfile* profile2 = CreateMultiUserProfile(user2);
     const AccountId account_id2(
         multi_user_util::GetAccountIdFromProfile(profile2));
@@ -3387,7 +3391,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First test: Create an app when the user is not active.
-  std::string user2 = "user2";
+  std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
@@ -3423,7 +3427,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First create an app when the user is active.
-  std::string user2 = "user2";
+  std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
@@ -3459,7 +3463,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First test: Create an app when the user is not active.
-  std::string user2 = "user2";
+  std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
@@ -3502,7 +3506,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // BrowserWithTestWindowTest::SetUp(). No need to add the profiles to the
   // MultiUserWindowManagerHelper here. CreateMultiUserProfile() already does
   // that.
-  TestingProfile* profile2 = CreateMultiUserProfile("user2");
+  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
   const AccountId current_user =
       multi_user_util::GetAccountIdFromProfile(profile());
 
@@ -3535,7 +3539,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Create a browser item in the controller.
   InitShelfController();
 
-  std::string user2 = "user2";
+  std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
@@ -4195,13 +4199,13 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Create a browser for another user and check that it is not included in the
   // users running browser list.
-  std::string user2 = "user2";
+  std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   std::unique_ptr<Browser> browser2(
-      CreateBrowserAndTabWithProfile(profile2, user2, "http://test2"));
-  std::u16string one_menu_item2[] = {ASCIIToUTF16(user2)};
+      CreateBrowserAndTabWithProfile(profile2, "user2", "http://test2"));
+  std::u16string one_menu_item2[] = {u"user2"};
   CheckAppMenu(shelf_controller_.get(), item_browser, 1, one_menu_item1);
 
   // Switch to the other user and make sure that only that browser window gets
@@ -4313,7 +4317,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   CheckAppMenu(shelf_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create a second profile and switch to that user.
-  std::string user2 = "user2";
+  std::string user2 = "user2@example.com";
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
@@ -4347,7 +4351,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_EQ(2, model_->item_count());
 
   // Create a profile for our second user (will be destroyed by the framework).
-  TestingProfile* profile2 = CreateMultiUserProfile("user2");
+  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4367,7 +4371,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppHandlingTwoUsersEdgeCases) {
   InitShelfController();
   // Create a profile for our second user (will be destroyed by the framework).
-  TestingProfile* profile2 = CreateMultiUserProfile("user2");
+  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -4468,9 +4472,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       MultiUserWindowManagerHelper::GetWindowManager();
 
   // Create and add three users / profiles, and go to #1's desktop.
-  TestingProfile* profile1 = CreateMultiUserProfile("user-1");
-  TestingProfile* profile2 = CreateMultiUserProfile("user-2");
-  TestingProfile* profile3 = CreateMultiUserProfile("user-3");
+  TestingProfile* profile1 = CreateMultiUserProfile("user-1@example.com");
+  TestingProfile* profile2 = CreateMultiUserProfile("user-2@example.com");
+  TestingProfile* profile3 = CreateMultiUserProfile("user-3@example.com");
   const AccountId account_id1(
       multi_user_util::GetAccountIdFromProfile(profile1));
   const AccountId account_id2(
@@ -4547,7 +4551,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppHiddenWindows) {
   InitShelfController();
 
-  TestingProfile* profile2 = CreateMultiUserProfile("user-2");
+  TestingProfile* profile2 = CreateMultiUserProfile("user-2@example.com");
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   // If switch to account_id2 is not run, the following switch to account_id
@@ -4627,7 +4631,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  const std::string user2 = "user2";
+  const std::string user2 = "user2@example.com";
   const TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
@@ -4668,7 +4672,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  const std::string user2 = "user2";
+  const std::string user2 = "user2@example.com";
   const TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
