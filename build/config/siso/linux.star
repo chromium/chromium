@@ -15,7 +15,6 @@ load("./nasm_linux.star", "nasm")
 load("./proto_linux.star", "proto")
 load("./reproxy.star", "reproxy")
 load("./rust_linux.star", "rust")
-load("./typescript_unix.star", "typescript")
 
 def __filegroups(ctx):
     fg = {}
@@ -27,7 +26,6 @@ def __filegroups(ctx):
     fg.update(nasm.filegroups(ctx))
     fg.update(proto.filegroups(ctx))
     fg.update(rust.filegroups(ctx))
-    fg.update(typescript.filegroups(ctx))
     return fg
 
 __handlers = {}
@@ -39,7 +37,6 @@ __handlers.update(nacl.handlers)
 __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
 __handlers.update(rust.handlers)
-__handlers.update(typescript.handlers)
 
 def __step_config(ctx, step_config):
     config.check(ctx)
@@ -54,7 +51,6 @@ def __step_config(ctx, step_config):
     step_config = nasm.step_config(ctx, step_config)
     step_config = proto.step_config(ctx, step_config)
     step_config = rust.step_config(ctx, step_config)
-    step_config = typescript.step_config(ctx, step_config)
 
     return step_config
 
