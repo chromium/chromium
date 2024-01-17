@@ -93,6 +93,14 @@ source_set("drive_service_factory") {
   ]
 }
 
+source_set("test_constants") {
+  testonly = true
+  sources = [
+    "test_constants.h",
+    "test_constants.mm",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -104,6 +112,7 @@ source_set("test_support") {
   public_deps = [
     ":drive_file_uploader",
     ":drive_service",
+    ":test_constants",
     "//base",
   ]
 }

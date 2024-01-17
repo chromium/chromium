@@ -8,6 +8,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
+#import "ios/chrome/browser/drive/model/test_constants.h"
 
 @protocol SystemIdentity;
 
@@ -84,6 +85,14 @@ class TestDriveFileUploader final : public DriveFileUploader {
   // Runs `quit_closure_`.
   void RunQuitClosure();
 
+  // Returns values reported by callbacks of `DriveFileUploader` methods.
+  // Unless overridden e.g. using `SetFolderSearchResult()`, a default value
+  // will be returned.
+  DriveFolderResult GetFolderSearchResult() const;
+  DriveFolderResult GetFolderCreationResult() const;
+  std::vector<DriveFileUploadProgress> GetFileUploadProgressElements() const;
+  DriveFileUploadResult GetFileUploadResult() const;
+
   id<SystemIdentity> identity_;
 
   // Values passed to `DriveFileUploader` query methods.
@@ -94,7 +103,9 @@ class TestDriveFileUploader final : public DriveFileUploader {
   NSString* uploaded_file_mime_type_;
   NSString* uploaded_file_folder_identifier_;
 
-  // Results/progress to be reported by callbacks of DriveFileUploader` methods.
+  // Results/progress to be reported by callbacks of `DriveFileUploader`
+  // methods. If one of these values is not set, a default value will be
+  // reported instead.
   std::optional<DriveFolderResult> folder_search_result_;
   std::optional<DriveFolderResult> folder_creation_result_;
   std::vector<DriveFileUploadProgress> file_upload_progress_elements_;
@@ -102,6 +113,13 @@ class TestDriveFileUploader final : public DriveFileUploader {
 
   // Quit closure.
   base::RepeatingClosure quit_closure_ = base::DoNothing();
+
+  // Last value reported by `ReportFileUploadResult()`, if any.
+  std::optional<DriveFileUploadResult> last_reported_file_upload_result_;
+
+  // Behavior e.g. whether to return an error or not.
+  TestDriveFileUploaderBehavior behavior_ =
+      TestDriveFileUploaderBehavior::kSucceed;
 
   // Weak pointer factory, for callbacks. Can be used to cancel any pending
   // tasks by invalidating all weak pointers.
