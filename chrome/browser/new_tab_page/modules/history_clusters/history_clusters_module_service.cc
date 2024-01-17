@@ -281,6 +281,11 @@ void HistoryClustersModuleService::OnGetRankedClusters(
     std::vector<history::Cluster> clusters,
     base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
         ranking_signals) {
+  if (clusters.empty()) {
+    std::move(callback).Run(std::move(clusters), std::move(ranking_signals));
+    return;
+  }
+
   // Record metrics for top cluster.
   history::Cluster top_cluster = clusters.front();
   base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumVisits",

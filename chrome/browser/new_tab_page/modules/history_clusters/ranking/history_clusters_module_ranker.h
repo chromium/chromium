@@ -69,6 +69,9 @@ class HistoryClustersModuleRanker {
   // The category boostlist to use.
   const base::flat_set<std::string> category_boostlist_;
 
+  // The model returns a float between -1.0 and 0.
+  float threshold_param_;
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when `model_handler_` has completed scoring of `clusters`.
   void OnBatchModelExecutionComplete(

@@ -390,9 +390,9 @@ class FakeModelHandler : public HistoryClustersModuleRankingModelHandler {
     std::vector<float> outputs;
     outputs.reserve(inputs->size());
     for (const auto& input : *inputs) {
-      float score = input.belongs_to_boosted_category ? 1 : 0;
+      float score = input.belongs_to_boosted_category ? -1 : 0;
       outputs.push_back(
-          score + static_cast<float>(
+          score - static_cast<float>(
                       input.duration_since_most_recent_visit.InMinutes()));
       ;
     }
@@ -404,14 +404,36 @@ class HistoryClustersModuleRankerWithModelTest
     : public HistoryClustersModuleRankerTest {
  public:
   HistoryClustersModuleRankerWithModelTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kNtpHistoryClustersModuleUseModelRanking,
-         ntp_features::kNtpChromeCartModule},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpHistoryClustersModule,
+          {{ntp_features::kNtpHistoryClustersModuleScoreThresholdParam,
+            "-0.5"}}},
+         {ntp_features::kNtpHistoryClustersModuleUseModelRanking, {}},
+         {ntp_features::kNtpChromeCartModule, {}}},
         {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class MockHistoryClustersModuleRankingModelHandler
+    : public HistoryClustersModuleRankingModelHandler {
+ public:
+  explicit MockHistoryClustersModuleRankingModelHandler(
+      optimization_guide::OptimizationGuideModelProvider* provider)
+      : HistoryClustersModuleRankingModelHandler(provider) {}
+  MockHistoryClustersModuleRankingModelHandler(
+      const MockHistoryClustersModuleRankingModelHandler&) = delete;
+  MockHistoryClustersModuleRankingModelHandler& operator=(
+      const MockHistoryClustersModuleRankingModelHandler&) = delete;
+  ~MockHistoryClustersModuleRankingModelHandler() override = default;
+
+  bool CanExecuteAvailableModel() override { return true; }
+
+  MOCK_METHOD2(ExecuteBatch,
+               void(std::vector<HistoryClustersModuleRankingSignals>* inputs,
+                    ExecuteBatchCallback callback));
 };
 
 TEST_F(HistoryClustersModuleRankerWithModelTest,
@@ -588,23 +610,23 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   // Ordered as [3, 2, 1].
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
-      ElementsAre(ElementsAre(history_clusters::testing::VisitResult(
-                                  223, 1.0, {}, u"search"),
-                              history_clusters::testing::VisitResult(112, 0.8),
-                              history_clusters::testing::VisitResult(445, 0.6)),
-                  ElementsAre(history_clusters::testing::VisitResult(
-                                  222, 1.0, {}, u"search"),
-                              history_clusters::testing::VisitResult(111, 0.8),
-                              history_clusters::testing::VisitResult(444, 0.6)),
-                  ElementsAre(history_clusters::testing::VisitResult(2, 1.0, {},
-                                                                     u"search"),
-                              history_clusters::testing::VisitResult(4, 0.3),
-                              history_clusters::testing::VisitResult(1, 0.0))));
+      ElementsAre(
+          ElementsAre(
+              history_clusters::testing::VisitResult(2, 1.0, {}, u"search"),
+              history_clusters::testing::VisitResult(4, 0.3),
+              history_clusters::testing::VisitResult(1, 0.0)),
+          ElementsAre(
+              history_clusters::testing::VisitResult(222, 1.0, {}, u"search"),
+              history_clusters::testing::VisitResult(111, 0.8),
+              history_clusters::testing::VisitResult(444, 0.6)),
+          ElementsAre(
+              history_clusters::testing::VisitResult(223, 1.0, {}, u"search"),
+              history_clusters::testing::VisitResult(112, 0.8),
+              history_clusters::testing::VisitResult(445, 0.6))));
 
   histogram_tester_.ExpectBucketCount(
       "NewTabPage.HistoryClusters.CartAssociationStatus",
-      commerce::CartHistoryClusterAssociationStatus::
-          kAssociatedWithNonTopCluster,
+      commerce::CartHistoryClusterAssociationStatus::kAssociatedWithTopCluster,
       1);
 
   ASSERT_EQ(ranking_signals.size(), 3u);
@@ -620,6 +642,48 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
   // Cluster ID 3 has boosted category and 0 images.
   EXPECT_EQ(ranking_signals[3].num_visits_with_image, 0u);
   EXPECT_TRUE(ranking_signals[3].belongs_to_boosted_category);
+}
+
+TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailableScoreThreshold) {
+  history::Cluster cluster1;
+  cluster1.cluster_id = 1;
+  history::AnnotatedVisit visit =
+      history_clusters::testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://amazon.com/"));
+  visit.visit_row.is_known_to_sync = true;
+  visit.content_annotations.has_url_keyed_image = true;
+  visit.content_annotations.model_annotations.categories = {
+      {"category1", 90}, {"boostedbuthidden", 84}};
+  cluster1.visits = {history_clusters::testing::CreateClusterVisit(
+      visit, /*normalized_url=*/absl::nullopt, 0.0)};
+
+  history::Cluster cluster2 = cluster1;
+  cluster2.cluster_id = 2;
+
+  base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
+  auto model_provider = std::make_unique<
+      optimization_guide::TestOptimizationGuideModelProvider>();
+  auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
+      model_provider.get(), nullptr, boost);
+  auto model_handler =
+      std::make_unique<MockHistoryClustersModuleRankingModelHandler>(
+          model_provider.get());
+  EXPECT_CALL(*model_handler.get(), ExecuteBatch(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](std::vector<HistoryClustersModuleRankingSignals>* inputs,
+              HistoryClustersModuleRankingModelHandler::ExecuteBatchCallback
+                  callback) {
+            std::vector<float> outputs = {-0.6, -0.4};
+            std::move(callback).Run(outputs);
+          }));
+  module_ranker->OverrideModelHandlerForTesting(std::move(model_handler));
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
+
+  std::vector<history::Cluster> clusters =
+      RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
+
+  ASSERT_EQ(clusters.size(), 1u);
+  ASSERT_EQ(clusters[0].cluster_id, 1);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
