@@ -315,7 +315,6 @@
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
-#include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.h"
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
@@ -803,23 +802,6 @@ void BindMediaFoundationPreferences(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void BindNewWindowProxy(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<new_window_proxy::mojom::NewWindowProxy> receiver) {
-  DCHECK(render_frame_host);
-
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-
-  if (web_contents->GetVisibleURL().spec() != chrome::kChromeUIEmojiPickerURL) {
-    return;
-  }
-
-  new ash::NewWindowProxy(std::move(receiver));
-}
-#endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void BindScreenAIAnnotator(
@@ -1629,6 +1611,9 @@ void PopulateChromeWebUIFrameBinders(
         ash::app_install::mojom::PageHandlerFactory,
         ash::app_install::AppInstallDialogUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      new_window_proxy::mojom::NewWindowProxy, ash::EmojiUI>(map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -1685,14 +1670,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<::mojom::WebAppInternalsHandler,
                                          WebAppInternalsUI>(map);
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This MOJO API is currently only used by chrome://emoji-picker. Please check
-  // the allow-list logic in BindNewWindowProxy if you plan to use it in another
-  // Web UI.
-  map->Add<new_window_proxy::mojom::NewWindowProxy>(
-      base::BindRepeating(&BindNewWindowProxy));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   RegisterWebUIControllerInterfaceBinder<::mojom::LocationInternalsHandler,
                                          LocationInternalsUI>(map);

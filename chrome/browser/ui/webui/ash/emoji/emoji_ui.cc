@@ -166,6 +166,12 @@ void EmojiUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void EmojiUI::BindInterface(
+    mojo::PendingReceiver<new_window_proxy::mojom::NewWindowProxy> receiver) {
+  new_window_proxy_ =
+      std::make_unique<ash::NewWindowProxy>(std::move(receiver));
+}
+
 void EmojiUI::CreatePageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<EmojiPageHandler>(
