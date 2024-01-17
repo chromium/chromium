@@ -246,7 +246,6 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/screen_time/model:feature_flags",
     "//ios/chrome/browser/shared/ui/util:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

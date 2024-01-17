@@ -41,7 +41,6 @@ source_set("eg2_tests") {
   sources = [ "branding_view_controller_egtest.mm" ]
   deps = [
     "//base/test:test_support",
-    "//ios/chrome/browser/screen_time/model:feature_flags",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

@@ -10,7 +10,6 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/screen_time/model/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -199,11 +198,6 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordAuthOnEntryV2);
-
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    // TODO(crbug.com/1518919): Remove once fixed.
-    config.features_enabled.push_back(kScreenTimeIntegration);
-  }
 
   return config;
 }
