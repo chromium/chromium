@@ -154,7 +154,7 @@ TEST_F(SupervisedUserMetricsServiceTest, RecordDefaultMetrics) {
   histogram_tester_.ExpectUniqueSample(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites,
+      WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
       SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),

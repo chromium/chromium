@@ -716,8 +716,7 @@ void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-SupervisedUserURLFilter::WebFilterType
-SupervisedUserURLFilter::GetWebFilterType() const {
+WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
   // If the default filtering behavior is not block, it means the web filter
   // was set to either "allow all sites" or "try to block mature sites".
   if (default_behavior_ == FilteringBehavior::kBlock) {
