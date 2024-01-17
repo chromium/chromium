@@ -32,6 +32,10 @@ int GetDefaultLength(AttributeId attribute_id) {
     case AttributeId::kPkcs11Id:
       // The size of a SHA-1 hash, a typical size for CKA_ID.
       return 20;
+    case AttributeId::kLabel:
+      // An arbitrary length, label is just a user readable string. In same
+      // cases it contains a GUID (38 characters).
+      return 40;
   }
 }
 

@@ -1550,10 +1550,122 @@ void KcerTokenImpl::GetKeyInfo(PrivateKeyHandle key,
 
 //==============================================================================
 
+KcerTokenImpl::SetKeyAttributeTask::SetKeyAttributeTask(
+    PrivateKeyHandle in_key,
+    HighLevelChapsClient::AttributeId in_attribute_id,
+    std::vector<uint8_t> in_attribute_value,
+    Kcer::StatusCallback in_callback)
+    : key(std::move(in_key)),
+      attribute_id(in_attribute_id),
+      attribute_value(std::move(in_attribute_value)),
+      callback(std::move(in_callback)) {}
+KcerTokenImpl::SetKeyAttributeTask::SetKeyAttributeTask(
+    SetKeyAttributeTask&& other) = default;
+KcerTokenImpl::SetKeyAttributeTask::~SetKeyAttributeTask() = default;
+
+void KcerTokenImpl::SetKeyAttribute(
+    PrivateKeyHandle key,
+    HighLevelChapsClient::AttributeId attribute_id,
+    std::vector<uint8_t> attribute_value,
+    Kcer::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!EnsurePkcs11IdIsSet(key)) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  SetKeyAttributeImpl(SetKeyAttributeTask(std::move(key), attribute_id,
+                                          std::move(attribute_value),
+                                          std::move(callback)));
+}
+
+// Finds the private key that will store the attribute.
+void KcerTokenImpl::SetKeyAttributeImpl(SetKeyAttributeTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  chromeos::PKCS11_CK_OBJECT_CLASS obj_class = chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_CLASS, MakeSpan(&obj_class));
+  AddAttribute(attributes, chromeos::PKCS11_CKA_ID,
+               task.key.GetPkcs11IdInternal().value());
+
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::SetKeyAttributeWithHandle,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Set attribute on the key.
+void KcerTokenImpl::SetKeyAttributeWithHandle(
+    SetKeyAttributeTask task,
+    std::vector<ObjectHandle> private_key_handles,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return SetKeyAttributeImpl(std::move(task));
+  }
+  if ((result_code != chromeos::PKCS11_CKR_OK) || private_key_handles.empty()) {
+    return std::move(task.callback).Run(base::unexpected(Error::kKeyNotFound));
+  }
+  if (private_key_handles.size() != 1) {
+    // This shouldn't happen.
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kUnexpectedFindResult));
+  }
+
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, static_cast<uint32_t>(task.attribute_id),
+               task.attribute_value);
+
+  chaps_client_->SetAttributeValue(
+      pkcs_11_slot_id_, private_key_handles.front(), attributes,
+      base::BindOnce(&KcerTokenImpl::SetKeyAttributeDidSetAttribute,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void KcerTokenImpl::SetKeyAttributeDidSetAttribute(SetKeyAttributeTask task,
+                                                   uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return SetKeyAttributeImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToWriteAttribute));
+  }
+  return std::move(task.callback).Run({});
+}
+
+//==============================================================================
+
 void KcerTokenImpl::SetKeyNickname(PrivateKeyHandle key,
                                    std::string nickname,
                                    Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::SetKeyNickname, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(nickname), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking
+  // task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  return SetKeyAttribute(std::move(key),
+                         HighLevelChapsClient::AttributeId::kLabel,
+                         std::vector<uint8_t>(nickname.begin(), nickname.end()),
+                         std::move(unblocking_callback));
 }
 
 //==============================================================================

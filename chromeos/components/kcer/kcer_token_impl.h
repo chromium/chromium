@@ -282,6 +282,33 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                           std::vector<uint8_t> signature,
                           uint32_t result_code);
 
+  struct SetKeyAttributeTask {
+    SetKeyAttributeTask(PrivateKeyHandle in_key,
+                        HighLevelChapsClient::AttributeId in_attribute_id,
+                        std::vector<uint8_t> in_attribute_value,
+                        Kcer::StatusCallback in_callback);
+    SetKeyAttributeTask(SetKeyAttributeTask&& other);
+    ~SetKeyAttributeTask();
+
+    const PrivateKeyHandle key;
+    const HighLevelChapsClient::AttributeId attribute_id;
+    const std::vector<uint8_t> attribute_value;
+    Kcer::StatusCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  // Sets the `attribute_value` for the attribute with `attribute_id` on the
+  // `key`. Assumes that the `task_queue_` is already blocked.
+  void SetKeyAttribute(PrivateKeyHandle key,
+                       HighLevelChapsClient::AttributeId attribute_id,
+                       std::vector<uint8_t> attribute_value,
+                       Kcer::StatusCallback callback);
+  void SetKeyAttributeImpl(SetKeyAttributeTask task);
+  void SetKeyAttributeWithHandle(SetKeyAttributeTask task,
+                                 std::vector<ObjectHandle> private_key_handles,
+                                 uint32_t result_code);
+  void SetKeyAttributeDidSetAttribute(SetKeyAttributeTask task,
+                                      uint32_t result_code);
+
   // Indicates whether the task queue is blocked. Task queue should be
   // blocked until the token is initialized, during the processing of most
   // requests and during updating the cache.

@@ -1680,6 +1680,161 @@ TEST_F(KcerTokenImplTest, GetTokenInfoForDeviceToken) {
   EXPECT_EQ(info.module_name, "Chaps");
 }
 
+// Test that SetKeyNickname can successfully set a nickname.
+TEST_F(KcerTokenImplTest, SetKeyNicknameSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  ObjectHandle key_handle{1};
+  std::vector<ObjectHandle> key_handles{key_handle};
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&find_key_attrs),
+                RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList nickname_attrs;
+  EXPECT_CALL(chaps_client_,
+              SetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(DoAll(MoveArg<2>(&nickname_attrs),
+                      RunOnceCallback<3>(chromeos::PKCS11_CKR_OK)));
+
+  std::string new_nickname = "new_nickname";
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(public_key), new_nickname,
+                        waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(nickname_attrs, chromeos::PKCS11_CKA_LABEL,
+                            base::as_bytes(base::make_span(new_nickname))));
+  EXPECT_TRUE(waiter.Get().has_value());
+}
+
+// Test that SetKeyNickname can successfully set a nickname when the key is
+// specified by SPKI.
+TEST_F(KcerTokenImplTest, SetKeyNicknameBySpkiSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  ObjectHandle key_handle{1};
+  std::vector<ObjectHandle> key_handles{key_handle};
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&find_key_attrs),
+                RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList nickname_attrs;
+  EXPECT_CALL(chaps_client_,
+              SetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(DoAll(MoveArg<2>(&nickname_attrs),
+                      RunOnceCallback<3>(chromeos::PKCS11_CKR_OK)));
+
+  std::string new_nickname = "new_nickname";
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(Token::kUser, rsa_spki_), new_nickname,
+                        waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(nickname_attrs, chromeos::PKCS11_CKA_LABEL,
+                            base::as_bytes(base::make_span(new_nickname))));
+  EXPECT_TRUE(waiter.Get().has_value());
+}
+
+// Test that SetKeyNickname correctly fails when the key is specified by an
+// invalid SPKI.
+TEST_F(KcerTokenImplTest, SetKeyNicknameBySpkiFail) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::vector<uint8_t> bad_spki = rsa_spki_.value();
+  bad_spki.pop_back();
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(PublicKeySpki(bad_spki)), "",
+                        waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToGetPkcs11Id);
+}
+
+// Test that SetKeyNickname correctly fails when the key cannot be found.
+TEST_F(KcerTokenImplTest, SetKeyNicknameFailToFind) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(public_key), "", waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kKeyNotFound);
+}
+
+// Test that SetKeyNickname correctly fails when Chaps fails to set the
+// attribute.
+TEST_F(KcerTokenImplTest, SetKeyNicknameFailToSet) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  ObjectHandle key_handle(1);
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{key_handle},
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, SetAttributeValue(_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(public_key), "", waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToWriteAttribute);
+}
+
+// Test that SetKeyNickname retries several times when Chaps fails to find the
+// key with a session error.
+TEST_F(KcerTokenImplTest, SetKeyNicknameRetryToFind) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(public_key), "", waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that SetKeyNickname retries several times when Chaps fails to set an
+// attribute with a session error.
+TEST_F(KcerTokenImplTest, SetKeyNicknameRetryToSet) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  ObjectHandle key_handle(1);
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>{key_handle}, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, SetAttributeValue(_, key_handle, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<3>(chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(public_key), "", waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that all methods are queued until the token is initialized and unblocked
 // after that. In this scenario fail all the methods for simplicity.
 TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
@@ -1712,6 +1867,9 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   base::test::TestFuture<base::expected<std::vector<PublicKey>, Error>>
       list_keys_waiter;
   token_.ListKeys(list_keys_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
+  token_.SetKeyNickname(PrivateKeyHandle(public_key), "",
+                        set_nickname_waiter.GetCallback());
 
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(generate_rsa_waiter.IsReady());
@@ -1720,6 +1878,7 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(sign_waiter.IsReady());
   EXPECT_FALSE(sign_raw_waiter.IsReady());
   EXPECT_FALSE(list_keys_waiter.IsReady());
+  EXPECT_FALSE(set_nickname_waiter.IsReady());
 
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
@@ -1729,6 +1888,7 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(sign_waiter.Get().has_value());
   EXPECT_FALSE(sign_raw_waiter.Get().has_value());
   EXPECT_FALSE(list_keys_waiter.Get().has_value());
+  EXPECT_FALSE(set_nickname_waiter.Get().has_value());
 }
 
 }  // namespace

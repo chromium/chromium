@@ -42,6 +42,7 @@ class HighLevelChapsClient {
     kPublicExponent = chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
     kEcPoint = chromeos::PKCS11_CKA_EC_POINT,
     kPkcs11Id = chromeos::PKCS11_CKA_ID,
+    kLabel = chromeos::PKCS11_CKA_LABEL,
   };
 
   HighLevelChapsClient() = default;
