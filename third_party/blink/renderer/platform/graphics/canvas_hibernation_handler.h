@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -25,11 +26,15 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   // compression).
   static constexpr base::TimeDelta kBeforeCompressionDelay = base::Minutes(5);
 
-  void TakeHibernationImage(sk_sp<SkImage>&& image);
+  void SaveForHibernation(sk_sp<SkImage>&& image,
+                          std::unique_ptr<MemoryManagedPaintRecorder> recorder);
   // Returns the uncompressed image for this hibernation image. Does not
   // invalidate the hibernated image. Must call `Clear()` if invalidation is
   // required.
   sk_sp<SkImage> GetImage();
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() {
+    return std::move(recorder_);
+  }
   // Invalidate the hibernated image.
   void Clear();
 
@@ -94,6 +99,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   sk_sp<SkImage> image_ = nullptr;
   // Compressed hibernation image.
   sk_sp<SkData> encoded_ = nullptr;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
   scoped_refptr<base::SingleThreadTaskRunner>

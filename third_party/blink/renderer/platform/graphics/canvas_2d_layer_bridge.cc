@@ -140,8 +140,9 @@ void Canvas2DLayerBridge::Hibernate() {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  hibernation_handler_.TakeHibernationImage(
-      snapshot->PaintImageForCurrentFrame().GetSwSkImage());
+  hibernation_handler_.SaveForHibernation(
+      snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
+      resource_host_->ResourceProvider()->ReleaseRecorder());
 
   ResetResourceProvider();
   resource_host_->ClearLayerTexture();
@@ -239,6 +240,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
                     PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
   resource_provider->RestoreBackBuffer(builder.TakePaintImage());
+  resource_provider->SetRecorder(hibernation_handler_.ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler_.Clear();
   DCHECK(!IsHibernating());

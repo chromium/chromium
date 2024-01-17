@@ -40,9 +40,12 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
     virtual void RecordingCleared() = 0;
   };
 
-  // `client` can't be nullptr and must outlive this object.
-  explicit MemoryManagedPaintRecorder(Client* client);
+  // If specified, `client` is notified for events from this object. `client`
+  // must outlive this `MemoryManagedPaintRecorder`.
+  explicit MemoryManagedPaintRecorder(Client* client = nullptr);
   ~MemoryManagedPaintRecorder();
+
+  void SetClient(Client* client);
 
   cc::PaintCanvas* beginRecording(const gfx::Size& size);
   cc::PaintRecord finishRecordingAsPicture();
@@ -82,8 +85,10 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   }
 
  private:
-  // Unowned, must not be nullptr.
-  raw_ptr<MemoryManagedPaintRecorder::Client, ExperimentalRenderer> client_;
+  // Pointer to the client interested in events from this
+  // `MemoryManagedPaintRecorder`. If `nullptr`, notifications are disabled.
+  raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
+
   bool is_recording_ = false;
   gfx::Size size_;
   std::unique_ptr<MemoryManagedPaintCanvas> canvas_;

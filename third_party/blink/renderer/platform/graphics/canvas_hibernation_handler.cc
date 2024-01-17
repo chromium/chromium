@@ -8,6 +8,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -100,10 +101,13 @@ CanvasHibernationHandler::~CanvasHibernationHandler() {
   }
 }
 
-void CanvasHibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
+void CanvasHibernationHandler::SaveForHibernation(
+    sk_sp<SkImage>&& image,
+    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   DCheckInvariant();
   epoch_++;
   image_ = image;
+  recorder_ = std::move(recorder);
 
   width_ = image_->width();
   height_ = image_->height();
@@ -252,6 +256,7 @@ void CanvasHibernationHandler::Clear() {
   HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
   encoded_ = nullptr;
   image_ = nullptr;
+  recorder_ = nullptr;
 }
 
 size_t CanvasHibernationHandler::memory_size() const {

@@ -1288,6 +1288,7 @@ CanvasResourceProvider::CanvasResourceProvider(
       resource_dispatcher_(resource_dispatcher),
       filter_quality_(filter_quality),
       is_origin_top_left_(is_origin_top_left),
+      recorder_(std::make_unique<MemoryManagedPaintRecorder>(this)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       resource_host_(resource_host) {
   info_ = info;
@@ -1301,7 +1302,7 @@ CanvasResourceProvider::CanvasResourceProvider(
   }
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  recorder_.beginRecording(Size());
+  recorder_->beginRecording(Size());
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
@@ -1317,14 +1318,30 @@ CanvasResourceProvider::~CanvasResourceProvider() {
   }
 }
 
+std::unique_ptr<MemoryManagedPaintRecorder>
+CanvasResourceProvider::ReleaseRecorder() {
+  // When releasing the recorder, we swap it with a new, valid one. This way,
+  // the `recorder_` member is guarantied to be always valid.
+  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(this);
+  recorder_->SetClient(nullptr);
+  recorder_.swap(recorder);
+  return recorder;
+}
+
+void CanvasResourceProvider::SetRecorder(
+    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
+  recorder->SetClient(this);
+  recorder_ = std::move(recorder);
+}
+
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (UNLIKELY(recorder_.OpBytesUsed() > max_recorded_op_bytes_) ||
-      UNLIKELY(recorder_.ImageBytesUsed() > max_pinned_image_bytes_)) {
+  if (UNLIKELY(recorder_->OpBytesUsed() > max_recorded_op_bytes_) ||
+      UNLIKELY(recorder_->ImageBytesUsed() > max_pinned_image_bytes_)) {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }
@@ -1408,7 +1425,7 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
   if (needs_will_draw)
     WillDrawIfNeeded();
 
-  return recorder_.getRecordingCanvas();
+  return recorder_->getRecordingCanvas();
 }
 
 void CanvasResourceProvider::OnContextDestroyed() {
@@ -1503,7 +1520,7 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
 
 absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason) {
-  if (!recorder_.HasRecordedDrawOps()) {
+  if (!recorder_->HasRecordedDrawOps()) {
     return absl::nullopt;
   }
   ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
@@ -1526,7 +1543,7 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     clear_frame_ = true;
     printing_fallback_reason_ = FlushReason::kNone;
   }
-  cc::PaintRecord recording = recorder_.finishRecordingAsPicture();
+  cc::PaintRecord recording = recorder_->finishRecordingAsPicture();
   RasterRecord(recording);
   last_recording_ =
       preserve_recording ? absl::optional(recording) : absl::nullopt;
@@ -1593,7 +1610,7 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
 
   DCHECK(IsValid());
-  DCHECK(!recorder_.HasRecordedDrawOps());
+  DCHECK(!recorder_->HasRecordedDrawOps());
 
   EnsureSkiaCanvas();
 

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -255,7 +257,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void FlushIfRecordingLimitExceeded();
 
-  MemoryManagedPaintRecorder& Recorder() { return recorder_; }
+  MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
+  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
 
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
@@ -361,7 +365,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  MemoryManagedPaintRecorder recorder_{this};
+  // Recording accumulating draw ops. This pointer is always valid and safe to
+  // dereference.
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =

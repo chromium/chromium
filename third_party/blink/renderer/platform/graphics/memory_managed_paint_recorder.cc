@@ -28,11 +28,13 @@
 namespace blink {
 
 MemoryManagedPaintRecorder::MemoryManagedPaintRecorder(Client* client)
-    : client_(client) {
-  CHECK(client);
-}
+    : client_(client) {}
 
 MemoryManagedPaintRecorder::~MemoryManagedPaintRecorder() = default;
+
+void MemoryManagedPaintRecorder::SetClient(Client* client) {
+  client_ = client;
+}
 
 cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
     const gfx::Size& size) {
@@ -43,7 +45,9 @@ cc::PaintCanvas* MemoryManagedPaintRecorder::beginRecording(
     canvas_ = std::make_unique<MemoryManagedPaintCanvas>(size);
   }
   size_ = size;
-  client_->InitializeForRecording(canvas_.get());
+  if (client_) {
+    client_->InitializeForRecording(canvas_.get());
+  }
   return canvas_.get();
 }
 
@@ -51,7 +55,9 @@ cc::PaintRecord MemoryManagedPaintRecorder::finishRecordingAsPicture() {
   DCHECK(canvas_);
   DCHECK(is_recording_);
   cc::PaintRecord record = canvas_->ReleaseAsRecord();
-  client_->InitializeForRecording(canvas_.get());
+  if (client_) {
+    client_->InitializeForRecording(canvas_.get());
+  }
   return record;
 }
 
@@ -66,14 +72,18 @@ void MemoryManagedPaintRecorder::SkipQueuedDrawCommands() {
     finishRecordingAsPicture();
   }
 
-  client_->RecordingCleared();
+  if (client_) {
+    client_->RecordingCleared();
+  }
 }
 
 void MemoryManagedPaintRecorder::RestartRecording() {
   CHECK(is_recording_);
   // Discard the whole recording and re-initialize it.
   finishRecordingAsPicture();
-  client_->RecordingCleared();
+  if (client_) {
+    client_->RecordingCleared();
+  }
 }
 
 }  // namespace blink
