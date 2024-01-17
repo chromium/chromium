@@ -48,7 +48,8 @@ void ManageMigrationUiController::ShowOfferDialog(
     const LegalMessageLines& legal_message_lines,
     const std::string& user_email,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    AutofillClient::LocalCardMigrationCallback start_migrating_cards_callback) {
+    payments::PaymentsAutofillClient::LocalCardMigrationCallback
+        start_migrating_cards_callback) {
   flow_step_ = LocalCardMigrationFlowStep::OFFER_DIALOG;
   DCHECK(GetDialogController());
   GetDialogController()->ShowOfferDialog(

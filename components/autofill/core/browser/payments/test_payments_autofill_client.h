@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::payments {
@@ -25,7 +26,22 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
+
+  void ConfirmMigrateLocalCardToCloud(
+      const LegalMessageLines& legal_message_lines,
+      const std::string& user_email,
+      const std::vector<MigratableCreditCard>& migratable_credit_cards,
+      payments::PaymentsAutofillClient::LocalCardMigrationCallback
+          start_migrating_cards_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  void set_migration_card_selections(
+      const std::vector<std::string>& migration_card_selection) {
+    migration_card_selection_ = migration_card_selection;
+  }
+
+ private:
+  std::vector<std::string> migration_card_selection_;
 };
 
 }  // namespace autofill::payments

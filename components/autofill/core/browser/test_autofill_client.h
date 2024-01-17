@@ -325,22 +325,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void ConfirmMigrateLocalCardToCloud(
-      const LegalMessageLines& legal_message_lines,
-      const std::string& user_email,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::LocalCardMigrationCallback start_migrating_cards_callback)
-      override {
-    // If |migration_card_selection_| hasn't been preset by tests, default to
-    // selecting all migratable cards.
-    if (migration_card_selection_.empty()) {
-      for (MigratableCreditCard card : migratable_credit_cards) {
-        migration_card_selection_.push_back(card.credit_card().guid());
-      }
-    }
-    std::move(start_migrating_cards_callback).Run(migration_card_selection_);
-  }
-
   void ShowLocalCardMigrationResults(
       const bool has_server_error,
       const std::u16string& tip_message,
@@ -710,11 +694,6 @@ class TestAutofillClientTemplate : public T {
   ::testing::NiceMock<MockMerchantPromoCodeManager>*
   GetMockMerchantPromoCodeManager() {
     return &mock_merchant_promo_code_manager_;
-  }
-
-  void set_migration_card_selections(
-      const std::vector<std::string>& migration_card_selection) {
-    migration_card_selection_ = migration_card_selection;
   }
 
   void set_autofill_offer_manager(

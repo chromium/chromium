@@ -35,6 +35,12 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #if !BUILDFLAG(IS_ANDROID)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
+
+  void ConfirmMigrateLocalCardToCloud(
+      const LegalMessageLines& legal_message_lines,
+      const std::string& user_email,
+      const std::vector<MigratableCreditCard>& migratable_credit_cards,
+      LocalCardMigrationCallback start_migrating_cards_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

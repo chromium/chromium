@@ -162,13 +162,6 @@ void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 }
 
-void AutofillClient::ConfirmMigrateLocalCardToCloud(
-    const LegalMessageLines& legal_message_lines,
-    const std::string& user_email,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    LocalCardMigrationCallback start_migrating_cards_callback) {
-}
-
 void AutofillClient::ShowLocalCardMigrationResults(
     const bool has_server_error,
     const std::u16string& tip_message,

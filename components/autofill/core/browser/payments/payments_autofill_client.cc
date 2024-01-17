@@ -13,6 +13,12 @@ PaymentsAutofillClient::~PaymentsAutofillClient() = default;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void PaymentsAutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {}
+
+void PaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
+    const LegalMessageLines& legal_message_lines,
+    const std::string& user_email,
+    const std::vector<MigratableCreditCard>& migratable_credit_cards,
+    LocalCardMigrationCallback start_migrating_cards_callback) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::payments

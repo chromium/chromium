@@ -400,7 +400,7 @@ void LocalCardMigrationManager::ShowMainMigrationDialog() {
   autofill_metrics::LogLocalCardMigrationPromptMetric(
       local_card_migration_origin_, autofill_metrics::MAIN_DIALOG_SHOWN);
   // Pops up a larger, modal dialog showing the local cards to be uploaded.
-  client_->ConfirmMigrateLocalCardToCloud(
+  client_->GetPaymentsAutofillClient()->ConfirmMigrateLocalCardToCloud(
       legal_message_lines_,
       personal_data_manager_->GetAccountInfoForPaymentsServer().email,
       migratable_credit_cards_,

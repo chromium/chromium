@@ -65,7 +65,7 @@ class ManageMigrationUiController
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::LocalCardMigrationCallback
+      payments::PaymentsAutofillClient::LocalCardMigrationCallback
           start_migrating_cards_callback);
 
   void UpdateCreditCardIcon(

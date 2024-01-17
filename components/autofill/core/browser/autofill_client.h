@@ -359,12 +359,6 @@ class AutofillClient {
 
   using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
 
-  // Callback to run if user presses the Save button in the migration dialog.
-  // Will pass a vector of GUIDs of cards that the user selected to upload to
-  // LocalCardMigrationManager.
-  using LocalCardMigrationCallback =
-      base::OnceCallback<void(const std::vector<std::string>&)>;
-
   // Callback to run if the user presses the trash can button in the
   // action-required dialog. Will pass to LocalCardMigrationManager a
   // string of GUID of the card that the user selected to delete from local
@@ -605,15 +599,6 @@ class AutofillClient {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
-
-  // Shows a dialog with the given |legal_message_lines| and the |user_email|.
-  // Runs |start_migrating_cards_callback| if the user would like the selected
-  // cards in the |migratable_credit_cards| to be uploaded to cloud.
-  virtual void ConfirmMigrateLocalCardToCloud(
-      const LegalMessageLines& legal_message_lines,
-      const std::string& user_email,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      LocalCardMigrationCallback start_migrating_cards_callback);
 
   // Will show a dialog containing a error message if |has_server_error|
   // is true, or the migration results for cards in
