@@ -287,6 +287,13 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         PersonalizationRouterElement.instance().goToRoute(newPath as Paths);
       }
     }
+    // If the user clicks the last breadcrumb and the sea pen dropdown is
+    // present, open the dropdown.
+    const targetElement = e.currentTarget as HTMLElement;
+    if (index === this.breadcrumbs_.length - 1 &&
+        !!targetElement.querySelector('#seaPenDropdown')) {
+      this.onClickMenuIcon_(e);
+    }
   }
 
   private onClickMenuIcon_(e: Event) {
@@ -305,6 +312,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     assert(!!templateId, 'templateId is required');
     PersonalizationRouterElement.instance().goToRoute(
         Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId});
+    this.closeOptionMenu_();
+  }
+
+  private closeOptionMenu_() {
+    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
+    menuElement!.close();
   }
 
   private shouldShowSeaPenDropdown_(path: string, breadcrumb: string): boolean {

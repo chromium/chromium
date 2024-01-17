@@ -487,20 +487,22 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!dropdownIcon);
   });
 
-  test('show dropdown menu for SeaPen results', async () => {
+  test('click SeaPen template breadcrumb to show dropdown menu', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
     });
 
-    const dropdownIcon = breadcrumbElement.shadowRoot!.querySelector(
-                             '#seaPenDropdown') as HTMLElement;
-    dropdownIcon!.click();
+    const breadcrumb = (breadcrumbElement.shadowRoot!.querySelector(
+                            '#seaPenDropdown') as HTMLElement)
+                           .parentElement;
+    breadcrumb!.click();
 
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!dropdownMenu);
+    assertTrue(dropdownMenu!.open, 'the action menu should be open');
     const allMenuItems = dropdownMenu.querySelectorAll('button');
     assertTrue(allMenuItems.length > 1);
     const selectedElement =
@@ -541,5 +543,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_RESULTS, path);
     assertDeepEquals({'seaPenTemplateId': template.dataset['id']}, queryParams);
+    assertFalse(
+        !!breadcrumbElement.shadowRoot!.querySelector('cr-action-menu')?.open,
+        'the action menu should be closed');
   });
 });

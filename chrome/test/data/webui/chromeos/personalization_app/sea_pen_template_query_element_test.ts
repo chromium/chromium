@@ -7,7 +7,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenPaths, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -80,6 +80,11 @@ suite('SeaPenTemplateQueryElementTest', function() {
     chipToSelect!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
+    assertTrue(
+        !!seaPenTemplateQueryElement.shadowRoot!
+              .querySelector('cr-action-menu')
+              ?.open,
+        'the action menu should open after clicking a chip');
     const options = seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
         'button.dropdown-item:not([hidden])');
     assertTrue(
@@ -119,6 +124,12 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     optionToSelect!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertFalse(
+        !!seaPenTemplateQueryElement.shadowRoot!
+              .querySelector('cr-action-menu')
+              ?.open,
+        'the action menu should close after clicking an option');
 
     const selectedChip = seaPenTemplateQueryElement.shadowRoot!.querySelector(
                              '#template .selected') as HTMLElement;

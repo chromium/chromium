@@ -128,6 +128,12 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     this.selectedOptions_.set(this.selectedChip_!.id, option);
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
+    this.closeOptionMenu_();
+  }
+
+  private closeOptionMenu_() {
+    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
+    menuElement!.close();
   }
 
   private onClickInspire_() {

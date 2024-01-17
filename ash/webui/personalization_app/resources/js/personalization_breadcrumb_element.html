@@ -72,7 +72,7 @@
   }
 
   #seaPenDropdown {
-    margin-inline-start: 6px;
+    --iron-icon-fill-color: var(--cros-sys-secondary);
   }
 
   .dropdown-check {
@@ -113,12 +113,7 @@
             on-click="onBreadcrumbClick_">
           <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
           <template is="dom-if" if="[[shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
-            <cr-icon-button
-                id="seaPenDropdown"
-                iron-icon="cr:arrow-drop-down"
-                role="button"
-                on-click="onClickMenuIcon_">
-            </cr-icon-button>
+            <iron-icon id="seaPenDropdown" icon="cr:arrow-drop-down"></iron-icon>
           </template>
         </cr-button>
       </template>
