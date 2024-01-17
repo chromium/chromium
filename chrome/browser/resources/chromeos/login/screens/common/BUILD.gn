@@ -28,7 +28,6 @@ js_type_check("closure_compile_local") {
   deps = [
     ":consolidated_consent",
     ":error_message",
-    ":gaia_signin",
     ":guest_tos",
     ":offline_ad_login",
     ":quick_start",
@@ -75,25 +74,6 @@ js_library("consolidated_consent") {
     "$externs_path/webview_tag.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-}
-
-js_library("gaia_signin") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.js" ]
-  deps = [
-    "../..:display_manager",
-    "../../../../gaia_auth_host:authenticator",
-    "../../components:gaia_dialog",
-    "../../components:notification_card",
-    "../../components:oobe_types",
-    "../../components:security_token_pin",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:load_time_data.m",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("guest_tos") {

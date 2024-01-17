@@ -32,7 +32,7 @@ constexpr test::UIPath kUseAnotherAccountButton = {"gaia-signin",
 constexpr test::UIPath kEnterpriseEnrollmentButton = {"gaia-signin",
                                                       "enterpriseEnrollment"};
 
-constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
+constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame()";
 
 constexpr test::UIPath kSigninBackButton = {
     "gaia-signin", "signin-frame-dialog", "signin-back-button"};

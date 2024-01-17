@@ -143,7 +143,7 @@ constexpr char kCancelButton[] = "cancelButton";
 constexpr char kClientCert1Name[] = "client_1";
 constexpr char kClientCert2Name[] = "client_2";
 constexpr char kLoadingDialog[] = "loadingDialog";
-constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
+constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame()";
 constexpr char kSigninWebviewOnLockScreen[] =
     "$('main-element').getSigninFrame_()";
 constexpr char kTestCookieHost[] = "host1.com";
@@ -347,7 +347,7 @@ class WebviewLoginTest : public OobeBaseTest {
 
   void WaitForServicesSet() {
     test::OobeJS()
-        .CreateWaiter("$('gaia-signin').authenticator_.services_")
+        .CreateWaiter("$('gaia-signin').authenticator.services_")
         ->Wait();
   }
 
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest,
   fake_gaia_.fake_gaia()->SetFixedResponse(
       GaiaUrls::GetInstance()->embedded_setup_chromeos_url(), net::HTTP_OK,
       "<body>no-op gaia</body>");
-  test::OobeJS().ExecuteAsync("$('gaia-signin').authenticator_.reload()");
+  test::OobeJS().ExecuteAsync("$('gaia-signin').authenticator.reload()");
 
   // Wait for both buttons to become disabled due to reload.
   test::OobeJS().CreateEnabledWaiter(false, kPrimaryButton)->Wait();
@@ -525,12 +525,12 @@ class WebviewCloseViewLoginTest : public WebviewLoginTest,
   void EmulateGaiaDoneTimeout() {
     // Wait for user info timer to be set.
     test::OobeJS()
-        .CreateWaiter("$('gaia-signin').authenticator_.gaiaDoneTimer_")
+        .CreateWaiter("$('gaia-signin').authenticator.gaiaDoneTimer_")
         ->Wait();
 
     // Emulate timeout fire.
     test::OobeJS().ExecuteAsync(
-        "$('gaia-signin').authenticator_.onGaiaDoneTimeout_()");
+        "$('gaia-signin').authenticator.onGaiaDoneTimeout_()");
   }
 };
 
@@ -876,7 +876,7 @@ class WebviewDeviceOwnedLoginTest : public WebviewLoginTest {
 IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   WaitForGaiaPageLoad();
 
-  std::string frame_url = "$('gaia-signin').authenticator_.reloadUrl_";
+  std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
   // New users are allowed.
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') == -1");
 
@@ -2236,7 +2236,7 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentBeforeAuthFinished) {
   WaitForServicesSet();
 
   // Timer should not be set.
-  test::OobeJS().ExpectFalse("$('gaia-signin').authenticator_.gaiaDoneTimer_");
+  test::OobeJS().ExpectFalse("$('gaia-signin').authenticator.gaiaDoneTimer_");
 
   test::WaitForPrimaryUserSessionStart();
 
@@ -2260,7 +2260,7 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentAfterTimerSet) {
 
   // Wait for user info timer to be set.
   test::OobeJS()
-      .CreateWaiter("$('gaia-signin').authenticator_.gaiaDoneTimer_")
+      .CreateWaiter("$('gaia-signin').authenticator.gaiaDoneTimer_")
       ->Wait();
 
   // Send user info after that.
