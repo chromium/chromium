@@ -44,8 +44,8 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+    web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
+        WebAppProvider::GetForTest(profile()));
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -65,22 +65,14 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(profile())->ui_manager();
   }
 
-  raw_ptr<TestShortcutManager, AcrossTasksDanglingUntriaged> shortcut_manager_ =
-      nullptr;
-  raw_ptr<FakeOsIntegrationManager, AcrossTasksDanglingUntriaged>
-      os_integration_manager_ = nullptr;
-
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
     auto provider = std::make_unique<FakeWebAppProvider>(profile);
     auto shortcut_manager = std::make_unique<TestShortcutManager>(profile);
-    shortcut_manager_ = shortcut_manager.get();
     auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
         profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
-    os_integration_manager_ = os_integration_manager.get();
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
-    provider->Start();
-    DCHECK(provider);
+    provider->StartWithSubsystems();
     return provider;
   }
 

@@ -1701,18 +1701,6 @@ WebApp* WebAppRegistrarMutable::GetAppByIdMutable(
   return const_cast<WebApp*>(GetAppById(app_id));
 }
 
-WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutableForTesting(
-    Filter filter) {
-  return AppSet(this, filter, /*empty=*/registry_profile_being_deleted_);
-}
-
-WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
-  return AppSet(
-      this,
-      [](const WebApp& web_app) { return WebAppSourceSupported(web_app); },
-      /*empty=*/registry_profile_being_deleted_);
-}
-
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(
       this,

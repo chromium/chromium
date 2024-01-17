@@ -658,9 +658,6 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 
   WebApp* GetAppByIdMutable(const webapps::AppId& app_id);
 
-  AppSet FilterAppsMutableForTesting(Filter filter);
-
-  AppSet GetAppsIncludingStubsMutable();
   AppSet GetAppsMutable();
 
   using WebAppRegistrar::CountMutation;

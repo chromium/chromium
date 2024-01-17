@@ -240,8 +240,7 @@ class PreinstalledWebAppWindowExperimentBrowserTest
         .WillByDefault(testing::Return(false));
 
     provider->SetSynchronizePreinstalledAppsOnStartup(true);
-
-    provider->Start();
+    provider->StartWithSubsystems();
     registrar_observation_.Observe(&provider->registrar_unsafe());
     return provider;
   }

@@ -659,12 +659,10 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
 
   // Simulates what AppLauncherHandler::HandleInstallAppLocally() does.
   void InstallAppLocally(const WebApp* web_app) {
-    // Doesn't call GetProvider().os_integration_manager().InstallOsHooks() to
-    // suppress OS hooks.
-    GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        web_app->app_id(), true);
-    GetProvider().sync_bridge_unsafe().SetAppFirstInstallTime(
-        web_app->app_id(), base::Time::Now());
+    base::test::TestFuture<void> future;
+    GetProvider().scheduler().InstallAppLocally(web_app->app_id(),
+                                                future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   void SetTimeOverride(base::Time time_override) {
@@ -1049,8 +1047,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
   webapps::AppId app_id = InstallWebApp();
 
-  GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(app_id,
-                                                                        false);
+  // TODO(https://crbug.com/1517947): Instead of doing this, just install the
+  // app from sync in the first place to have it 'not locally installed' in the
+  // beginning.
+  GetProvider().sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(
+      app_id);
   EXPECT_FALSE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});

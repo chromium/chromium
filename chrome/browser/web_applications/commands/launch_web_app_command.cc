@@ -71,8 +71,6 @@ void LaunchWebAppCommand::OnAppLaunched(
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container,
     base::Value debug_value) {
-  LOG(ERROR) << "LaunchWebAppCommand::OnAppLaunched  "
-             << GetDebugValue().DebugString();
   GetMutableDebugValue().Set("launch_web_app_debug_value",
                              std::move(debug_value));
   CompleteAndSelfDestruct(CommandResult::kSuccess, std::move(browser),

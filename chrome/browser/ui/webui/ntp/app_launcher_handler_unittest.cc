@@ -10,12 +10,17 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
@@ -71,8 +76,9 @@ class TestAppLauncherHandler : public AppLauncherHandler {
 };
 
 std::unique_ptr<web_app::WebAppInstallInfo> BuildWebAppInfo() {
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  app_info->start_url = GURL(kTestAppUrl);
+  GURL start_url = GURL(kTestAppUrl);
+  auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
+      web_app::GenerateManifestIdFromStartUrlOnly(start_url), start_url);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
   app_info->manifest_url = GURL(kTestManifestUrl);
@@ -120,16 +126,30 @@ class AppLauncherHandlerTest
   // Install a web app and sets the locally installed property based on
   // |is_locally_installed|.
   webapps::AppId InstallWebApp(bool is_locally_installed = true) {
-    webapps::AppId installed_app_id =
-        web_app::test::InstallWebApp(profile(), BuildWebAppInfo());
-    if (is_locally_installed)
-      return installed_app_id;
+    auto* provider = WebAppProvider::GetForTest(profile());
+    web_app::WebAppInstallParams params;
+    params.locally_installed = is_locally_installed;
+    if (!is_locally_installed) {
+      params.add_to_applications_menu = false;
+      params.add_to_desktop = false;
+      params.add_to_quick_launch_bar = false;
+      params.add_to_search = false;
+    }
+    std::unique_ptr<web_app::WebAppInstallInfo> app = BuildWebAppInfo();
+    AppId app_id = web_app::GenerateAppIdFromManifestId(app->manifest_id);
 
-    provider()->sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        installed_app_id, false);
-    provider()->sync_bridge_unsafe().SetAppFirstInstallTime(installed_app_id,
-                                                            base::Time::Min());
-    return installed_app_id;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        future;
+    provider->scheduler().InstallFromInfoWithParams(
+        std::move(app), /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        future.GetCallback(), params);
+
+    apps::AppReadinessWaiter wait_for_app_service(profile(), app_id);
+    EXPECT_EQ(app_id, future.Get<AppId>());
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+              future.Get<webapps::InstallResultCode>());
+    return future.Get<webapps::AppId>();
   }
 
   // Validates the expectations for the JS call made after locally installing a

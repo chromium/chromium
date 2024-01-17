@@ -26,6 +26,7 @@ namespace web_app {
 class AbstractWebAppDatabaseFactory;
 class ExtensionsManager;
 class ExternallyManagedAppManager;
+class FakeWebAppProvider;
 class FileUtilsWrapper;
 class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
@@ -212,6 +213,9 @@ class WebAppProvider : public KeyedService {
   bool is_registry_ready() const { return is_registry_ready_; }
 
   base::WeakPtr<WebAppProvider> AsWeakPtr();
+
+  // Returns a nullptr in the default implementation
+  virtual FakeWebAppProvider* AsFakeWebAppProviderForTesting();
 
  protected:
   virtual void StartImpl();

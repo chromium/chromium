@@ -54,7 +54,7 @@ class WebAppTest : public content::RenderViewHostTestHarness {
   void SetUp() override;
   void TearDown() override;
 
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() const { return profile_.get(); }
   TestingProfileManager& profile_manager() { return testing_profile_manager_; }
 
   network::TestURLLoaderFactory& profile_url_loader_factory() {
@@ -67,7 +67,7 @@ class WebAppTest : public content::RenderViewHostTestHarness {
     return test_url_loader_factory_;
   }
 
-  web_app::FakeWebAppProvider& fake_provider();
+  web_app::FakeWebAppProvider& fake_provider() const;
 
  protected:
   // content::RenderViewHostTestHarness.

@@ -86,7 +86,6 @@ void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
   }
 
   WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
-  options.locally_installed = true;
   options.overwrite_existing_manifest_fields =
       overwrite_existing_manifest_fields_;
 

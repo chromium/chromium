@@ -355,7 +355,6 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
 
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
 
-  finalize_options.locally_installed = install_params_->locally_installed;
   finalize_options.overwrite_existing_manifest_fields =
       install_params_->force_reinstall;
 

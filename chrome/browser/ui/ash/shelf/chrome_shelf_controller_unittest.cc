@@ -617,7 +617,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     auto* system_web_app_manager = ash::TestSystemWebAppManager::Get(profile);
 
-    provider->SetRunSubsystemStartupTasks(true);
+    provider->SetStartSystemOnStart(true);
     provider->Start();
 
     system_web_app_manager->ScheduleStart();

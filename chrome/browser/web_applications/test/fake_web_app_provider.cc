@@ -61,7 +61,7 @@ std::unique_ptr<KeyedService> FakeWebAppProvider::BuildDefault(
       Profile::FromBrowserContext(context));
 
   // Do not call default production StartImpl if in TestingProfile.
-  provider->SetRunSubsystemStartupTasks(false);
+  provider->SetStartSystemOnStart(false);
 
   // TODO(crbug.com/973324): Consider calling `CreateFakeSubsystems` in the
   // constructor instead.
@@ -73,9 +73,8 @@ std::unique_ptr<KeyedService> FakeWebAppProvider::BuildDefault(
 
 // static
 FakeWebAppProvider* FakeWebAppProvider::Get(Profile* profile) {
-  CHECK(profile->AsTestingProfile());
-  auto* test_provider = static_cast<FakeWebAppProvider*>(
-      WebAppProvider::GetForLocalAppsUnchecked(profile));
+  auto* test_provider = WebAppProvider::GetForLocalAppsUnchecked(profile)
+                            ->AsFakeWebAppProviderForTesting();
   CHECK(test_provider);
 
   return test_provider;
@@ -86,10 +85,11 @@ FakeWebAppProvider::FakeWebAppProvider(Profile* profile)
 
 FakeWebAppProvider::~FakeWebAppProvider() = default;
 
-void FakeWebAppProvider::SetRunSubsystemStartupTasks(
-    bool run_subsystem_startup_tasks) {
-  CheckNotStartedAndDisconnect();
-  run_subsystem_startup_tasks_ = run_subsystem_startup_tasks;
+void FakeWebAppProvider::SetStartSystemOnStart(bool run_system_on_start) {
+  CheckNotStartedAndDisconnect(
+      "The system was already started, perhaps the profile has already been "
+      "created & started.");
+  run_system_on_start_ = run_system_on_start;
 }
 
 void FakeWebAppProvider::SetSynchronizePreinstalledAppsOnStartup(
@@ -269,8 +269,8 @@ OsIntegrationManager& FakeWebAppProvider::GetOsIntegrationManager() const {
 }
 
 void FakeWebAppProvider::StartWithSubsystems() {
-  CheckNotStartedAndDisconnect();
-  SetRunSubsystemStartupTasks(true);
+  CheckNotStartedAndDisconnect("Cannot start system if it's already started.");
+  SetStartSystemOnStart(true);
   Start();
 }
 
@@ -336,9 +336,15 @@ void FakeWebAppProvider::Shutdown() {
   is_registry_ready_ = false;
 }
 
-void FakeWebAppProvider::CheckNotStartedAndDisconnect() {
+FakeWebAppProvider* FakeWebAppProvider::AsFakeWebAppProviderForTesting() {
+  return this;
+}
+
+void FakeWebAppProvider::CheckNotStartedAndDisconnect(
+    std::string optional_message) {
   CHECK(!started_) << "Attempted to set a WebAppProvider subsystem after "
-                      "Start() was called.";
+                      "Start() was called. "
+                   << optional_message;
   connected_ = false;
 }
 
@@ -357,12 +363,23 @@ void FakeWebAppProvider::StartImpl() {
       break;
   }
 
-  if (run_subsystem_startup_tasks_) {
+  if (run_system_on_start_) {
     WebAppProvider::StartImpl();
   } else {
     on_registry_ready_.Signal();
     is_registry_ready_ = true;
   }
+}
+
+FakeWebAppProviderCreator::FakeWebAppProviderCreator()
+    : callback_(base::BindRepeating([](Profile* profile) {
+        return FakeWebAppProvider::BuildDefault(profile);
+      })) {
+  create_services_subscription_ =
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &FakeWebAppProviderCreator::OnWillCreateBrowserContextServices,
+              base::Unretained(this)));
 }
 
 FakeWebAppProviderCreator::FakeWebAppProviderCreator(

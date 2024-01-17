@@ -103,11 +103,17 @@ class InstallAppLocallyCommandTest
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
 
+    web_app::WebAppInstallParams params;
+    params.locally_installed = false;
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+    params.add_to_search = false;
     // InstallFromInfo does not trigger OS integration.
-    provider().scheduler().InstallFromInfo(
+    provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        result.GetCallback());
+        result.GetCallback(), params);
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
@@ -116,8 +122,6 @@ class InstallAppLocallyCommandTest
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
     const webapps::AppId app_id = result.Get<webapps::AppId>();
-    provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        app_id, /*is_locally_installed=*/false);
     return app_id;
   }
 

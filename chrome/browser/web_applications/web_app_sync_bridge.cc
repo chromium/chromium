@@ -684,7 +684,7 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
   }
 
   std::vector<webapps::AppId> apps_to_delete;
-  for (const WebApp& app : registrar_->GetAppsIncludingStubsMutable()) {
+  for (const WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (app.is_uninstalling())
       apps_to_delete.push_back(app.app_id());
   }
@@ -846,23 +846,21 @@ void WebAppSyncBridge::SetUninstallFromSyncCallbackForTesting(
       std::move(callback);
 }
 
-void WebAppSyncBridge::SetAppIsLocallyInstalledForTesting(
-    const webapps::AppId& app_id,
-    bool is_locally_installed) {
+void WebAppSyncBridge::SetAppNotLocallyInstalledForTesting(
+    const webapps::AppId& app_id) {
   {
     ScopedRegistryUpdate update = BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     if (web_app) {
-      web_app->SetIsLocallyInstalled(is_locally_installed);
+      web_app->SetIsLocallyInstalled(false);
     }
   }
-  install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
 void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   std::vector<webapps::AppId> apps_uninstalling;
 
-  for (WebApp& app : registrar_->GetAppsIncludingStubsMutable()) {
+  for (WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (app.is_uninstalling())
       apps_uninstalling.push_back(app.app_id());
   }
@@ -890,7 +888,7 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
 void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {
   std::vector<WebApp*> apps_in_sync_install;
 
-  for (WebApp& app : registrar_->GetAppsIncludingStubsMutable()) {
+  for (WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (app.is_from_sync_and_pending_installation())
       apps_in_sync_install.push_back(&app);
   }

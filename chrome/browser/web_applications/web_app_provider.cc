@@ -324,6 +324,10 @@ base::WeakPtr<WebAppProvider> WebAppProvider::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+FakeWebAppProvider* WebAppProvider::AsFakeWebAppProviderForTesting() {
+  return nullptr;
+}
+
 void WebAppProvider::StartImpl() {
   StartSyncBridge();
 }

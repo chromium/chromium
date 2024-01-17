@@ -104,7 +104,8 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     //   Add to user uninstalled prefs.
     // }
     CHECK(app->CanUserUninstallWebApp() ||
-          uninstall_source_ == webapps::WebappUninstallSource::kSync);
+          uninstall_source_ == webapps::WebappUninstallSource::kSync)
+        << app->AsDebugValue().DebugString();
 
     if (app->IsPreinstalledApp()) {
       // Update the default uninstalled web_app prefs if it is a preinstalled

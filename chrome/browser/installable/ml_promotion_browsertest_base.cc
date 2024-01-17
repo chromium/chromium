@@ -97,8 +97,9 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
   }
 
   const webapps::AppId& app_id = install_future.Get<webapps::AppId>();
-  provider->sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-      app_id, /*is_locally_installed=*/install_locally);
+  if (!install_locally) {
+    provider->sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(app_id);
+  }
   return success;
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -1333,6 +1333,7 @@ void ApplyParamsToFinalizeOptions(
     options.chromeos_data->handles_file_open_intents =
         install_params.handles_file_open_intents;
   }
+  options.locally_installed = install_params.locally_installed;
   options.bypass_os_hooks = install_params.bypass_os_hooks;
   options.add_to_applications_menu = install_params.add_to_applications_menu;
   options.add_to_desktop = install_params.add_to_desktop;

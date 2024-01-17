@@ -97,13 +97,10 @@ class FakeWebAppProvider : public WebAppProvider {
   explicit FakeWebAppProvider(Profile* profile);
   ~FakeWebAppProvider() override;
 
-  // |run_subsystem_startup_tasks| is true by default as browser test clients
-  // will generally want to construct their FakeWebAppProvider to behave as it
-  // would in a production browser.
-  //
-  // |run_subsystem_startup_tasks| is false by default for FakeWebAppProvider
-  // if it's a part of TestingProfile (see BuildDefault() method above).
-  void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
+  // |run_system_on_start| is false by default, and must be set to true here
+  // BEFORE WebAppProvider::Start is called to allow the system to start
+  // normally. Otherwise, StartWithSubsystems must be called.
+  void SetStartSystemOnStart(bool run_system_on_start);
 
   // The PreinstalledWebAppManager waits for some dependencies (extensions and
   // device initialization) on startup, and then processes the preinstalled apps
@@ -195,13 +192,15 @@ class FakeWebAppProvider : public WebAppProvider {
   // FakeWebAppProvider::Shutdown() as part of test teardown.
   void Shutdown() override;
 
+  FakeWebAppProvider* AsFakeWebAppProviderForTesting() override;
+
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
 
  private:
   // CHECK that `Start()` has not been called on this provider, and also
   // disconnect so that clients are forced to call `Start()` before accessing
   // any subsystems.
-  void CheckNotStartedAndDisconnect();
+  void CheckNotStartedAndDisconnect(std::string optional_message = "");
 
   // WebAppProvider:
   void StartImpl() override;
@@ -209,7 +208,7 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, when Start()ed the FakeWebAppProvider will call
   // WebAppProvider::StartImpl() and fire startup tasks like a real
   // WebAppProvider.
-  bool run_subsystem_startup_tasks_ = true;
+  bool run_system_on_start_ = false;
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
@@ -232,6 +231,9 @@ class FakeWebAppProviderCreator {
   using CreateWebAppProviderCallback =
       base::RepeatingCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
 
+  // Uses FakeWebAppProvider::BuildDefault to build the FakeWebAppProvider.
+  FakeWebAppProviderCreator();
+  // Uses the given callback to create the FakeWebAppProvider.
   explicit FakeWebAppProviderCreator(CreateWebAppProviderCallback callback);
   ~FakeWebAppProviderCreator();
 
