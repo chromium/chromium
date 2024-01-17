@@ -54,10 +54,7 @@ TEST_F(SoftNavigationHeuristicsTest,
   test_heuristics->InteractionCallbackCalled(
       GetScriptStateForTest(), SoftNavigationHeuristics::EventScopeType::kClick,
       true);
-  // Since pending_interaction_timestamp_ is not set, the execution of
-  // InteractionCallbackCalled would return early. As a result, the
-  // initial_interaction_encountered_ would not be set true.
-  ASSERT_FALSE(test_heuristics->GetInitialInteractionEncounteredForTest());
+  ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, UmaHistogramRecording) {
