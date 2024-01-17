@@ -346,13 +346,14 @@ bool OwnerSettingsServiceAsh::Set(const std::string& setting,
 bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
                                            const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::Value::List* old_value;
-  if (!CrosSettings::Get()->GetList(setting, &old_value)) {
+  const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
+  if (old_value && !old_value->is_list()) {
+    LOG(ERROR) << "The " << setting << " setting is not a list, append fail.";
     return false;
   }
 
   base::Value::List new_value =
-      old_value ? old_value->Clone() : base::Value::List();
+      old_value ? old_value->GetList().Clone() : base::Value::List();
 
   new_value.Append(value.Clone());
   return Set(setting, base::Value(std::move(new_value)));

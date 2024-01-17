@@ -44,6 +44,8 @@ namespace {
 const char kUserAllowlist[] = "*@allowlist-domain.com";
 const char kOther[] = "other";
 
+const char kListStr1[] = "abcdef1234";
+
 void OnPrefChanged(const std::string& /* setting */) {}
 
 class PrefsChecker : public ownership::OwnerSettingsService::Observer {
@@ -383,6 +385,24 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicyFailure) {
   const std::unique_ptr<enterprise_management::PolicyFetchResponse>&
       signed_policy = result_waiter.Get<1>();
   EXPECT_FALSE(signed_policy);
+}
+
+// Testing list operations.
+
+TEST_F(OwnerSettingsServiceAshTest, RemoveNonExistentElement) {
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+}
+
+// Append 1 item to an empty list.
+TEST_F(OwnerSettingsServiceAshTest, AppendList) {
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
 class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
