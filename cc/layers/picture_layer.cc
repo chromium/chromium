@@ -118,7 +118,7 @@ void PictureLayer::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
 }
 
 bool PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
-  const auto& display_list = picture_layer_inputs_.display_list;
+  const DisplayItemList* display_list = GetDisplayItemList();
   if (display_list &&
       display_list->discardable_image_map().content_color_usage() ==
           gfx::ContentColorUsage::kHDR) {
@@ -131,8 +131,6 @@ bool PictureLayer::Update() {
   update_source_frame_number_.Write(*this) =
       layer_tree_host()->SourceFrameNumber();
   bool updated = Layer::Update();
-
-  gfx::Size layer_size = bounds();
 
   auto& recording_source = recording_source_.Write(*this);
   recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor());
@@ -151,51 +149,34 @@ bool PictureLayer::Update() {
   // for them.
   DCHECK(picture_layer_inputs_.client);
 
-  updated |= recording_source->UpdateAndExpandInvalidation(
-      &last_updated_invalidation_.Write(*this), layer_size);
+  updated |= recording_source->Update(
+      bounds(), layer_tree_host()->recording_scale_factor(),
+      *picture_layer_inputs_.client, last_updated_invalidation_.Write(*this));
 
-  if (updated) {
-    {
-      auto old_display_list = std::move(picture_layer_inputs_.display_list);
-      picture_layer_inputs_.display_list =
-          picture_layer_inputs_.client->PaintContentsToDisplayList();
-      if (old_display_list &&
-          picture_layer_inputs_.display_list
-              ->NeedsAdditionalInvalidationForLCDText(*old_display_list)) {
-        last_updated_invalidation_.Write(*this) = gfx::Rect(bounds());
-      }
-    }
-
-    // Clear out previous directly composited image state - if the layer
-    // qualifies we'll set up the state below.
-    picture_layer_inputs_.directly_composited_image_default_raster_scale =
-        gfx::Vector2dF();
-    picture_layer_inputs_.nearest_neighbor = false;
-    std::optional<DisplayItemList::DirectlyCompositedImageResult> result =
-        picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult();
-    if (result) {
-      // Directly composited images are not guaranteed to fully cover every
-      // pixel in the layer due to ceiling when calculating the tile content
-      // rect from the layer bounds.
-      recording_source->SetRequiresClear(true);
-      picture_layer_inputs_.directly_composited_image_default_raster_scale =
-          result->default_raster_scale;
-      picture_layer_inputs_.nearest_neighbor = result->nearest_neighbor;
-    }
-
-    recording_source->UpdateDisplayItemList(
-        picture_layer_inputs_.display_list,
-        layer_tree_host()->recording_scale_factor());
-
-    SetNeedsPushProperties();
-    IncreasePaintCount();
-  } else {
-    // If this invalidation did not affect the recording source, then it can be
-    // cleared as an optimization.
-    last_updated_invalidation_.Write(*this).Clear();
+  if (!updated) {
+    return false;
   }
 
-  return updated;
+  // Clear out previous directly composited image state - if the layer
+  // qualifies we'll set up the state below.
+  picture_layer_inputs_.directly_composited_image_default_raster_scale =
+      gfx::Vector2dF();
+  picture_layer_inputs_.nearest_neighbor = false;
+  std::optional<DisplayItemList::DirectlyCompositedImageResult> result =
+      recording_source->display_list()->GetDirectlyCompositedImageResult();
+  if (result) {
+    // Directly composited images are not guaranteed to fully cover every
+    // pixel in the layer due to ceiling when calculating the tile content
+    // rect from the layer bounds.
+    recording_source->SetRequiresClear(true);
+    picture_layer_inputs_.directly_composited_image_default_raster_scale =
+        result->default_raster_scale;
+    picture_layer_inputs_.nearest_neighbor = result->nearest_neighbor;
+  }
+
+  SetNeedsPushProperties();
+  IncreasePaintCount();
+  return true;
 }
 
 sk_sp<const SkPicture> PictureLayer::GetPicture() const {
@@ -302,12 +283,12 @@ void PictureLayer::DropRecordingSourceContentIfInvalid(
     // for example), even though it has resized making the recording source no
     // longer valid. In this case just destroy the recording source.
     recording_source_.Write(*this)->SetEmptyBounds();
-    picture_layer_inputs_.display_list = nullptr;
   }
 }
 
 const DisplayItemList* PictureLayer::GetDisplayItemList() const {
-  return picture_layer_inputs_.display_list.get();
+  const RecordingSource* recording_source = recording_source_.Read(*this);
+  return recording_source ? recording_source->display_list() : nullptr;
 }
 
 }  // namespace cc

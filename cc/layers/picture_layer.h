@@ -64,8 +64,6 @@ class CC_EXPORT PictureLayer : public Layer {
     return recording_source_.Read(*this);
   }
 
-  const DisplayItemList* GetDisplayItemList() const;
-
   gfx::Vector2dF DirectlyCompositedImageDefaultRasterScaleForTesting() const {
     return picture_layer_inputs_.directly_composited_image_default_raster_scale;
   }
@@ -79,7 +77,6 @@ class CC_EXPORT PictureLayer : public Layer {
     raw_ptr<ContentLayerClient, DanglingUntriaged> client = nullptr;
     bool nearest_neighbor = false;
     bool is_backdrop_filter_mask = false;
-    scoped_refptr<DisplayItemList> display_list;
     gfx::Vector2dF directly_composited_image_default_raster_scale;
   };
 
@@ -98,6 +95,8 @@ class CC_EXPORT PictureLayer : public Layer {
 
   // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
+
+  const DisplayItemList* GetDisplayItemList() const;
 
   ProtectedSequenceWritable<std::unique_ptr<RecordingSource>> recording_source_;
   ProtectedSequenceForbidden<devtools_instrumentation::ScopedLayerObjectTracker>

@@ -16,6 +16,7 @@
 
 namespace cc {
 
+class ContentLayerClient;
 class DisplayItemList;
 class RasterSource;
 class Region;
@@ -28,11 +29,12 @@ class CC_EXPORT RecordingSource {
 
   RecordingSource& operator=(const RecordingSource&) = delete;
 
-  bool UpdateAndExpandInvalidation(Region* invalidation,
-                                   const gfx::Size& layer_size);
-  void UpdateDisplayItemList(const scoped_refptr<DisplayItemList>& display_list,
-                             float recording_scale_factor);
+  bool Update(const gfx::Size& layer_size,
+              float recording_scale_factor,
+              ContentLayerClient& content_layer_client,
+              Region& invalidation);
   gfx::Size GetSize() const;
+  const DisplayItemList* display_list() const { return display_list_.get(); }
   void SetEmptyBounds();
   void SetSlowdownRasterScaleFactor(int factor);
   void SetBackgroundColor(SkColor4f background_color);
@@ -61,8 +63,11 @@ class CC_EXPORT RecordingSource {
  private:
   void UpdateInvalidationForNewViewport(const gfx::Rect& old_recorded_viewport,
                                         const gfx::Rect& new_recorded_viewport,
-                                        Region* invalidation);
+                                        Region& invalidation);
 
+  void UpdateDisplayItemList(scoped_refptr<DisplayItemList> display_list,
+                             float recording_scale_factor,
+                             Region& invalidation);
   void FinishDisplayItemListUpdate();
 
   friend class RasterSource;

@@ -80,10 +80,7 @@ class FakeRecordingSource : public RecordingSource {
   void Rerecord() {
     SetNeedsDisplayRect(recorded_viewport_);
     Region invalidation;
-    scoped_refptr<DisplayItemList> display_list =
-        client_.PaintContentsToDisplayList();
-    UpdateAndExpandInvalidation(&invalidation, size_);
-    UpdateDisplayItemList(display_list, recording_scale_factor_);
+    Update(size_, recording_scale_factor_, client_, invalidation);
   }
 
   void add_draw_rect(const gfx::Rect& rect) {
