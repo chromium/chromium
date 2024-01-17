@@ -4,27 +4,11 @@
 
 #include "partition_alloc/lightweight_quarantine.h"
 
+#include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
 
 namespace partition_alloc::internal {
-
-namespace {
-constexpr PartitionOptions kLightweightQuarantineMetadataAllocatorConfig =
-    []() {
-      // Disable features using LightweightQuarantine to avoid reentrancy issue.
-      PartitionOptions opts;
-      opts.scheduler_loop_quarantine = PartitionOptions::kDisabled;
-      return opts;
-    }();
-}  // namespace
-
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-PartitionRoot& LightweightQuarantineMetadataAllocator() {
-  static internal::base::NoDestructor<PartitionRoot> allocator(
-      kLightweightQuarantineMetadataAllocatorConfig);
-  return *allocator;
-}
 
 LightweightQuarantineBranch LightweightQuarantineRoot::CreateBranch(
     size_t quarantine_capacity_count,
@@ -41,7 +25,7 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
       quarantine_capacity_count_(quarantine_capacity_count),
       lock_required_(lock_required),
       slots_(static_cast<QuarantineSlot*>(
-          LightweightQuarantineMetadataAllocator().Alloc<AllocFlags::kNoHooks>(
+          InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(
               sizeof(QuarantineSlot) * quarantine_capacity_count))) {
   // `QuarantineCapacityCount` must be a positive number.
   PA_CHECK(0 < quarantine_capacity_count);
@@ -62,7 +46,7 @@ LightweightQuarantineBranch::LightweightQuarantineBranch(
 
 LightweightQuarantineBranch::~LightweightQuarantineBranch() {
   Purge();
-  LightweightQuarantineMetadataAllocator().Free<FreeFlags::kNoHooks>(slots_);
+  InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(slots_);
   slots_ = nullptr;
 }
 

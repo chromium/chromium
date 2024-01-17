@@ -296,10 +296,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   ~ThreadCache();
 
-  // Force placement new.
-  void* operator new(size_t) = delete;
-  void* operator new(size_t, void* buffer) { return buffer; }
-  void operator delete(void* ptr) = delete;
+  // Disallow copy and move.
   ThreadCache(const ThreadCache&) = delete;
   ThreadCache(const ThreadCache&&) = delete;
   ThreadCache& operator=(const ThreadCache&) = delete;
@@ -414,6 +411,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   explicit ThreadCache(PartitionRoot* root);
   static void Delete(void* thread_cache_ptr);
+
+  static void* operator new(size_t count);
+  static void operator delete(void* ptr);
 
   void PurgeInternal();
   template <bool crash_on_corruption>

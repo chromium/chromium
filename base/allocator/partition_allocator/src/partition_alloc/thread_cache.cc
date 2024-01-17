@@ -11,6 +11,7 @@
 #include <cstdint>
 
 #include "build/build_config.h"
+#include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
@@ -461,24 +462,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root) {
   // kThreadCacheNeedleArray is kept in the final binary.
   PA_CHECK(tools::kThreadCacheNeedleArray[0] == tools::kNeedle1);
 
-  // Placement new and RawAlloc() are used, as otherwise when this partition is
-  // the malloc() implementation, the memory allocated for the new thread cache
-  // would make this code reentrant.
-  //
-  // This also means that deallocation must use RawFreeStatic(), hence the
-  // operator delete() implementation below.
-  size_t raw_size = root->AdjustSizeForExtrasAdd(sizeof(ThreadCache));
-  size_t usable_size;
-  size_t slot_size;
-  bool already_zeroed;
-
-  auto* bucket = root->buckets + PartitionRoot::SizeToBucketIndex(
-                                     raw_size, root->GetBucketDistribution());
-  uintptr_t buffer = root->RawAlloc<AllocFlags::kZeroFill>(
-      bucket, raw_size, internal::PartitionPageSize(), &usable_size, &slot_size,
-      &already_zeroed);
-  ThreadCache* tcache =
-      new (internal::SlotStartAddr2Ptr(buffer)) ThreadCache(root);
+  // Operator new is overloaded to route to internal partition.
+  // The internal partition does not use `ThreadCache`, so safe to depend on.
+  ThreadCache* tcache = new ThreadCache(root);
 
   // This may allocate.
   internal::PartitionTlsSet(internal::g_thread_cache_key, tcache);
@@ -551,11 +537,8 @@ void ThreadCache::Delete(void* tcache_ptr) {
   internal::PartitionTlsSet(internal::g_thread_cache_key, nullptr);
 #endif
 
-  auto* root = tcache->root_;
-  tcache->~ThreadCache();
-  // TreadCache was allocated using RawAlloc() and SlotStartAddr2Ptr(), so it
-  // shifted by extras, but is MTE-tagged.
-  root->RawFree(internal::SlotStartPtr2Addr(tcache_ptr));
+  // Operator new is overloaded to route to internal partition.
+  delete tcache;
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, allocations do occur during thread/process teardown, make sure
@@ -571,6 +554,15 @@ void ThreadCache::Delete(void* tcache_ptr) {
 #endif
 
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+// static
+void* ThreadCache::operator new(size_t count) {
+  return internal::InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(count);
+}
+// static
+void ThreadCache::operator delete(void* ptr) {
+  internal::InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(ptr);
 }
 
 ThreadCache::Bucket::Bucket() {
