@@ -814,6 +814,9 @@ extern const char kEnablePeripheralCustomizationDescription[];
 extern const char kEnablePeripheralNotificationName[];
 extern const char kEnablePeripheralNotificationDescription[];
 
+extern const char kEnablePeripheralsLoggingName[];
+extern const char kEnablePeripheralsLoggingDescription[];
+
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 

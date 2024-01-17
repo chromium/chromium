@@ -7664,6 +7664,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},
 
+    {"enable-peripherals-logging",
+     flag_descriptions::kEnablePeripheralNotificationName,
+     flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},
+
     {"enable-accessibility-accelerators-notifications-timeout",
      flag_descriptions::kAccessibilityAcceleratorNotificationsTimeoutName,
      flag_descriptions::

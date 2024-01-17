@@ -1274,6 +1274,10 @@ const char kEnablePeripheralNotificationDescription[] =
     "Enable peripheral notification to notify users when a input device is "
     "connected to the user's chromebook for the first time.";
 
+const char kEnablePeripheralsLoggingName[] = "Enable peripherals logging";
+const char kEnablePeripheralsLoggingDescription[] =
+    "Enable peripherals logging to get detailed logs of peripherals";
+
 const char kExperimentalRgbKeyboardPatternsName[] =
     "Enable experimental RGB Keyboard patterns support";
 const char kExperimentalRgbKeyboardPatternsDescription[] =
