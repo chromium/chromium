@@ -5722,8 +5722,8 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
           .GetFutureBackForwardCacheEligibilityPotential(old_frame_host)
           .CanStore();
   commit_params_->old_page_info = blink::mojom::OldPageInfo::New();
-  commit_params_->old_page_info->routing_id_for_old_main_frame =
-      old_frame_host->GetRoutingID();
+  commit_params_->old_page_info->frame_token_for_old_main_frame =
+      old_frame_host->GetFrameToken();
   auto* page_lifecycle_state_manager =
       old_frame_host->render_view_host()->GetPageLifecycleStateManager();
   commit_params_->old_page_info->new_lifecycle_state_for_old_page =

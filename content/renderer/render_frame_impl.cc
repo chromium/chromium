@@ -2528,12 +2528,18 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
     const GURL& new_page_url) {
   if (!old_page_info)
     return;
-  RenderFrameImpl* old_main_render_frame = RenderFrameImpl::FromRoutingID(
-      old_page_info->routing_id_for_old_main_frame);
-  if (!old_main_render_frame) {
-    // Even if we sent a valid |routing_id_for_old_main_frame|, it might have
-    // already been destroyed by the time we try to get the RenderFrame, so
+
+  WebLocalFrame* old_main_web_frame = WebLocalFrame::FromFrameToken(
+      old_page_info->frame_token_for_old_main_frame);
+  if (!old_main_web_frame) {
+    // Even if we sent a valid `frame_token_for_old_main_frame`, it might have
+    // already been destroyed by the time we try to get the WebLocalFrame, so
     // we should check if it still exists.
+    return;
+  }
+  RenderFrameImpl* old_main_render_frame =
+      RenderFrameImpl::FromWebFrame(old_main_web_frame);
+  if (!old_main_render_frame) {
     return;
   }
   if (!IsMainFrame() && !old_main_render_frame->IsMainFrame()) {
@@ -2547,8 +2553,6 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
                           old_main_render_frame->IsMainFrame());
     SCOPED_CRASH_KEY_STRING256("old_page_info", "old_url",
                                old_main_render_frame->GetLoadingUrl().spec());
-    SCOPED_CRASH_KEY_NUMBER("old_page_info", "old_routing_id",
-                            old_page_info->routing_id_for_old_main_frame);
     SCOPED_CRASH_KEY_BOOL(
         "old_page_info", "old_is_frozen",
         old_page_info->new_lifecycle_state_for_old_page->is_frozen);
@@ -2571,7 +2575,6 @@ void RenderFrameImpl::SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
             blink::mojom::PageVisibilityState::kHidden);
   DCHECK_NE(old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch,
             blink::mojom::PagehideDispatch::kNotDispatched);
-  WebFrame* old_main_web_frame = old_main_render_frame->GetWebFrame();
   old_main_web_frame->View()->SetPageLifecycleStateFromNewPageCommit(
       old_page_info->new_lifecycle_state_for_old_page->visibility,
       old_page_info->new_lifecycle_state_for_old_page->pagehide_dispatch);
