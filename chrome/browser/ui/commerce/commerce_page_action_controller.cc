@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -15,6 +16,13 @@ CommercePageActionController::CommercePageActionController(
 CommercePageActionController::~CommercePageActionController() = default;
 
 void CommercePageActionController::NotifyHost() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CommercePageActionController::RunHostUpdateCallback,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CommercePageActionController::RunHostUpdateCallback() {
   host_update_callback_.Run();
 }
 

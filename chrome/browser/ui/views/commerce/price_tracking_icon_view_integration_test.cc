@@ -118,6 +118,7 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
       GetTabHelper()->GetPriceTrackingControllerForTesting()->OnUnsubscribe(
           commerce::BuildUserSubscriptionForClusterId(0L), true);
     }
+    base::RunLoop().RunUntilIdle();
   }
 
   void VerifyIconState(PriceTrackingIconView* icon_view,
