@@ -38,11 +38,9 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
     self.EnableUITest(self.win_config['client'])
     self.InstallChrome(self.win_config['client'])
 
-  def GetEncryptedReportingAPIKey(self, use_production_database):
+  def GetEncryptedReportingAPIKey(self):
     """Returns the API key required to get events from the
     ChromeOS Insights and Intelligence team's encrypted reporting server."""
-    if use_production_database:
-      return self.GetFileFromGCSBucket('secrets/EncryptedReportingAPIProdKey')
     return self.GetFileFromGCSBucket('secrets/EncryptedReportingAPIKey')
 
   def GetManagedChromeDomainEnrollmentToken(self):
