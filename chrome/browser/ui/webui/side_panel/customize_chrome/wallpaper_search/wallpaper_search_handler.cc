@@ -181,13 +181,15 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
         semantics {
           sender: "Customize Chrome"
           description:
-            "This service downloads different descriptors "
-            "for Customize Chrome's Wallpaper Search."
+            "This service downloads the strings and/or images of "
+            "different search options for Customize Chrome's "
+            "Wallpaper Search."
           trigger:
             "Opening Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "Sends the URL to where the descriptor's JSON is located."
+          data: "Sends the locale of the user, "
+                "to ensure string localizations are correct."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -195,9 +197,9 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
             }
           }
           user_data {
-            type: ACCESS_TOKEN
+            type: NONE
           }
-          last_reviewed: "2023-10-10"
+          last_reviewed: "2024-01-17"
         }
         policy {
           cookies_allowed: NO
@@ -237,13 +239,14 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
         semantics {
           sender: "Customize Chrome"
           description:
-            "This service downloads example images for Customize "
-            "Chrome's Wallpaper Search. "
+            "This service downloads example images and their descriptions "
+            "for Customize Chrome's Wallpaper Search."
           trigger:
             "Opening Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "Sends the URL to where the example images' JSON is located."
+          data: "Sends the locale of the user, "
+                "to ensure string localizations are correct."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -251,9 +254,9 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
             }
           }
           user_data {
-            type: ACCESS_TOKEN
+            type: NONE
           }
-          last_reviewed: "2024-01-10"
+          last_reviewed: "2024-01-17"
         }
         policy {
           cookies_allowed: NO
@@ -398,7 +401,7 @@ void WallpaperSearchHandler::SetBackgroundToInspirationImage(
             "in Customize Chrome on the Desktop NTP, "
             "if Google is the default search provider "
             "and the user is signed in."
-          data: "Sends the URL for the image that the user selected."
+          data: "This request does not send any user data."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -406,9 +409,9 @@ void WallpaperSearchHandler::SetBackgroundToInspirationImage(
             }
           }
           user_data {
-            type: ACCESS_TOKEN
+            type: NONE
           }
-          last_reviewed: "2024-01-12"
+          last_reviewed: "2024-01-17"
         }
         policy {
           cookies_allowed: NO
