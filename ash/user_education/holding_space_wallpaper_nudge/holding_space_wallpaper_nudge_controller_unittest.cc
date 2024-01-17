@@ -30,6 +30,7 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
@@ -927,6 +928,39 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests -----------------------------------------------------------------------
 
+TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest,
+       FirstSessionMarked) {
+  const bool expect_first_session_marked =
+      !IsManagedUser() && IsNewUserFirstLoginLocally() &&
+      IsNewUserFirstLoginCrossDevice().value_or(false) &&
+      GetUserType() == user_manager::USER_TYPE_REGULAR;
+
+  const auto before = base::Time::Now();
+
+  // Log in a user type based on parameterization.
+  auto* session = GetSessionControllerClient();
+  const AccountId& account_id = AccountId::FromUserEmail("user@test");
+  session->AddUserSession(account_id.GetUserEmail(), GetUserType(),
+                          /*provide_pref_service=*/true,
+                          /*is_new_profile=*/IsNewUserFirstLoginLocally(),
+                          /*given_name=*/std::string(), IsManagedUser());
+  session->SwitchActiveUser(account_id);
+  session->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  const auto after = base::Time::Now();
+
+  auto* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  auto first_session_time =
+      holding_space_wallpaper_nudge_prefs::GetTimeOfFirstEligibleSession(prefs);
+  EXPECT_EQ(first_session_time.has_value(), expect_first_session_marked);
+
+  if (first_session_time.has_value()) {
+    EXPECT_GE(first_session_time.value(), before);
+    EXPECT_LE(first_session_time.value(), after);
+  }
+}
+
 // Verifies that the Holding Space wallpaper nudge is shown only for new, non-
 // managed users, and will still be shown as appropriate after a user logs out
 // and back in.
@@ -1434,7 +1468,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
 // concerned with the placeholder shown in cases where the Holding Space is
 // opened when empty.
 class HoldingSpaceWallpaperNudgePlaceholderTest
-    : public AshTestBase,
+    : public UserEducationAshTestBase,
       public testing::WithParamInterface</*nudge_enabled=*/bool> {
  public:
   HoldingSpaceWallpaperNudgePlaceholderTest() {

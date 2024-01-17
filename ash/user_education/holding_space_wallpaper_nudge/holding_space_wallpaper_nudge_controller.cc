@@ -19,6 +19,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -208,11 +209,14 @@ class Highlight : public ui::LayerOwner, public views::ViewObserver {
 //
 // While the observed drag-and-drop sequence is in progress.
 class DragDropDelegate : public WallpaperDragDropDelegate,
-                         public HoldingSpaceControllerObserver {
+                         public HoldingSpaceControllerObserver,
+                         public SessionObserver {
  public:
   explicit DragDropDelegate(
       UserEducationPrivateApiKey user_education_private_api_key)
-      : user_education_private_api_key_(user_education_private_api_key) {}
+      : user_education_private_api_key_(user_education_private_api_key) {
+    session_observer_.Observe(Shell::Get()->session_controller());
+  }
 
  private:
   // WallpaperDragDropDelegate:
@@ -504,6 +508,74 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     }
   }
 
+  // SessionObserver:
+  void OnChromeTerminating() override { session_observer_.Reset(); }
+
+  void OnSessionStateChanged(session_manager::SessionState state) override {
+    // This override is only meant to happen right after session start.
+    if (state != session_manager::SessionState::ACTIVE) {
+      return;
+    }
+
+    // Determine (and store) eligibility. If the user is eligible, then attempt
+    // to mark this as the first eligible session.
+    if (DetermineEligibility()) {
+      holding_space_wallpaper_nudge_prefs::MarkTimeOfFirstEligibleSession(
+          Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+    }
+  }
+
+  // Calculates and persists the user's eligibility for the nudge based on
+  // account type and new-ness. This is a simple pref fetch once the eligibility
+  // is persisted. Returns true if the user is eligible.
+  bool DetermineEligibility() {
+    const auto* const session_controller = Shell::Get()->session_controller();
+    PrefService* const prefs =
+        session_controller->GetLastActiveUserPrefService();
+
+    auto eligibility =
+        holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs);
+
+    // If there isn't a cached eligibility value for the user, determine and
+    // cache it now.
+    if (eligibility == std::nullopt) {
+      eligibility = true;
+
+      // The nudge is supported for regular users only.
+      if (const auto user_type = session_controller->GetUserType();
+          user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+        eligibility = false;
+      }
+
+      // The nudge is not supported for managed accounts.
+      if (session_controller->IsActiveAccountManaged()) {
+        eligibility = false;
+      }
+
+      // For sanity, confirm that the user is also considered "new" locally in
+      // case the proxy check proves to be erroneous.
+      if (!session_controller->IsUserFirstLogin()) {
+        eligibility = false;
+      }
+
+      const std::optional<bool>& is_new_user =
+          UserEducationController::Get()->IsNewUser(
+              user_education_private_api_key_);
+
+      // If we were unable to fetch cross device user new-ness, assume the user
+      // is not new.
+      if (!is_new_user.value_or(false)) {
+        eligibility = false;
+      }
+
+      // Persist eligibility.
+      holding_space_wallpaper_nudge_prefs::SetUserEligibility(
+          prefs, eligibility.value());
+    }
+
+    return eligibility.value();
+  }
+
   // Indicates whether the nudge should be shown based on when it was last
   // shown, how many times total it's been shown, and whether the user has
   // pinned a file before. It should be no more than once in a 24 hour period,
@@ -534,46 +606,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
       return false;
     }
 
-    auto eligibility =
-        forced_eligibility
-            ? std::make_optional<bool>(true)
-            : holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs);
-
-    // If there isn't a cached eligibility value for the user, determine and
-    // cache it now.
-    if (eligibility == std::nullopt) {
-      eligibility = true;
-
-      // The nudge is supported for regular users only.
-      if (const auto user_type = session_controller->GetUserType();
-          user_type != user_manager::UserType::USER_TYPE_REGULAR) {
-        eligibility = false;
-      }
-
-      // The nudge is not supported for managed accounts.
-      if (session_controller->IsActiveAccountManaged()) {
-        eligibility = false;
-      }
-
-      // For sanity, confirm that the user is also considered "new" locally in
-      // case the proxy check proves to be erroneous.
-      if (!session_controller->IsUserFirstLogin()) {
-        eligibility = false;
-      }
-
-      const std::optional<bool>& is_new_user =
-          UserEducationController::Get()->IsNewUser(
-              user_education_private_api_key_);
-
-      if (!is_new_user.value_or(false)) {
-        eligibility = false;
-      }
-
-      holding_space_wallpaper_nudge_prefs::SetUserEligibility(
-          prefs, eligibility.value());
-    }
-
-    if (!eligibility.value()) {
+    if (!(forced_eligibility || DetermineEligibility())) {
       return false;
     }
 
@@ -635,6 +668,10 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       holding_space_controller_observer_{this};
+
+  // Observes session changes so that user eligibility can be saved after login.
+  base::ScopedObservation<SessionController, SessionObserver> session_observer_{
+      this};
 };
 
 }  // namespace

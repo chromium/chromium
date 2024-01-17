@@ -8,6 +8,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_metrics.h"
+#include "base/json/values_util.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,10 +21,31 @@ namespace {
 
 // Aliases ---------------------------------------------------------------------
 
+using holding_space_wallpaper_nudge_metrics::Interaction;
+using holding_space_wallpaper_nudge_metrics::kAllInteractionsSet;
 using testing::AllOf;
 using testing::Ge;
 using testing::Le;
 using testing::Ne;
+
+// Constants -------------------------------------------------------------------
+
+constexpr char kTimeOfFirstInteractionPrefPrefix[] =
+    "ash.holding_space.wallpaper_nudge.interaction_time.";
+
+// Helpers ---------------------------------------------------------------------
+
+// Fetches the time pref associated with the first time of a given interaction.
+absl::optional<base::Time> GetTimeOfFirstInteraction(PrefService* prefs,
+                                                     Interaction interaction) {
+  auto pref_name = base::StrCat(
+      {kTimeOfFirstInteractionPrefPrefix,
+       holding_space_wallpaper_nudge_metrics::ToString(interaction),
+       ".first_time"});
+  auto* pref = prefs->FindPreference(pref_name);
+  return pref->IsDefaultValue() ? absl::nullopt
+                                : base::ValueToTime(pref->GetValue());
+}
 
 }  // namespace
 
@@ -46,6 +70,44 @@ class HoldingSpaceWallpaperNudgePrefsTest : public testing::Test {
 };
 
 // Tests -----------------------------------------------------------------------
+
+// Verifies that the first interaction metrics are recorded when an interaction
+// first happens once the session is determined to be eligible.
+TEST_F(HoldingSpaceWallpaperNudgePrefsTest, FirstInteraction) {
+  // Case: First session not set.
+  for (auto interaction : kAllInteractionsSet) {
+    // Should be unset by default.
+    EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
+              absl::nullopt);
+
+    // Should remain unset because the user's first session is not set.
+    EXPECT_FALSE(MarkTimeOfFirstInteraction(pref_service(), interaction));
+    EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
+              absl::nullopt);
+  }
+
+  MarkTimeOfFirstEligibleSession(pref_service());
+
+  // Case: First session set.
+  for (auto interaction : kAllInteractionsSet) {
+    // The first time the mark method is called, it should succeed and mark the
+    // time as now.
+    auto before = base::Time::Now();
+    EXPECT_TRUE(MarkTimeOfFirstInteraction(pref_service(), interaction));
+    auto after = base::Time::Now();
+
+    auto interaction_time =
+        GetTimeOfFirstInteraction(pref_service(), interaction);
+    EXPECT_THAT(interaction_time,
+                AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+
+    // For any call beyond the first, the function should return false and the
+    // marked time should not change.
+    EXPECT_FALSE(MarkTimeOfFirstInteraction(pref_service(), interaction));
+    EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
+              interaction_time);
+  }
+}
 
 // Verifies that the nudge shown count and last shown time are updated when
 // `MarkNudgeShown()` is called.
