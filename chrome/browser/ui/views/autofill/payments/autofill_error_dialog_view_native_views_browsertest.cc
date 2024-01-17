@@ -2,40 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views.h"
+
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
-
-// `TestAutofillErrorDialogControllerImpl` is a helper to make the lifetime of
-// the controller tested in this test more realistic. In production code, the
-// controller is owned by `ChromeAutofillClient`, which is a
-// `WebContentsUserData` - this means that its lifetime is tied to the
-// `WebContents` it belongs to.
-class TestAutofillErrorDialogControllerImpl
-    : public AutofillErrorDialogControllerImpl,
-      public content::WebContentsUserData<
-          TestAutofillErrorDialogControllerImpl> {
- public:
-  ~TestAutofillErrorDialogControllerImpl() override = default;
-
- private:
-  explicit TestAutofillErrorDialogControllerImpl(content::WebContents* contents)
-      : AutofillErrorDialogControllerImpl(contents),
-        WebContentsUserData<TestAutofillErrorDialogControllerImpl>(*contents) {}
-  friend WebContentsUserData;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TestAutofillErrorDialogControllerImpl);
 
 // Param of the AutofillErrorDialogViewNativeViewsBrowserTest:
 // -- bool server_did_return_title;
@@ -44,18 +25,17 @@ class AutofillErrorDialogViewNativeViewsBrowserTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  AutofillErrorDialogViewNativeViewsBrowserTest() = default;
+  AutofillErrorDialogViewNativeViewsBrowserTest() {
+    autofill_error_dialog_controller_ =
+        std::make_unique<AutofillErrorDialogControllerImpl>();
+  }
+
   ~AutofillErrorDialogViewNativeViewsBrowserTest() override = default;
+
   AutofillErrorDialogViewNativeViewsBrowserTest(
       const AutofillErrorDialogViewNativeViewsBrowserTest&) = delete;
   AutofillErrorDialogViewNativeViewsBrowserTest& operator=(
       const AutofillErrorDialogViewNativeViewsBrowserTest&) = delete;
-
-  // DialogBrowserTest:
-  void SetUpOnMainThread() override {
-    TestAutofillErrorDialogControllerImpl::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-  }
 
   void ShowUi(const std::string& name) override {
     AutofillErrorDialogContext autofill_error_dialog_context;
@@ -80,29 +60,41 @@ class AutofillErrorDialogViewNativeViewsBrowserTest
           AutofillErrorDialogType::kVirtualCardNotEligibleError;
     }
 
-    controller()->Show(autofill_error_dialog_context);
+    autofill_error_dialog_controller_->Show(
+        autofill_error_dialog_context,
+        base::BindOnce(&CreateAndShowAutofillErrorDialog,
+                       base::Unretained(controller()),
+                       base::Unretained(contents())));
   }
 
   AutofillErrorDialogViewNativeViews* GetDialogViews() {
-    if (!controller())
+    if (!autofill_error_dialog_controller_) {
       return nullptr;
+    }
 
     AutofillErrorDialogView* dialog_view =
-        controller()->autofill_error_dialog_view();
+        autofill_error_dialog_controller_->autofill_error_dialog_view();
     if (!dialog_view)
       return nullptr;
 
     return static_cast<AutofillErrorDialogViewNativeViews*>(dialog_view);
   }
 
-  AutofillErrorDialogControllerImpl* controller() {
-    return TestAutofillErrorDialogControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-  }
-
   bool server_did_return_title() { return std::get<0>(GetParam()); }
 
   bool server_did_return_description() { return std::get<1>(GetParam()); }
+
+  AutofillErrorDialogControllerImpl* controller() {
+    return autofill_error_dialog_controller_.get();
+  }
+
+  content::WebContents* contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  std::unique_ptr<AutofillErrorDialogControllerImpl>
+      autofill_error_dialog_controller_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -29,16 +29,6 @@ AutofillErrorDialogViewAndroid::AutofillErrorDialogViewAndroid(
 
 AutofillErrorDialogViewAndroid::~AutofillErrorDialogViewAndroid() = default;
 
-// static
-AutofillErrorDialogView* AutofillErrorDialogView::CreateAndShow(
-    AutofillErrorDialogController* controller,
-    content::WebContents* web_contents) {
-  AutofillErrorDialogViewAndroid* dialog_view =
-      new AutofillErrorDialogViewAndroid(controller);
-  dialog_view->Show(web_contents);
-  return dialog_view;
-}
-
 void AutofillErrorDialogViewAndroid::Dismiss() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
@@ -51,6 +41,8 @@ void AutofillErrorDialogViewAndroid::Dismiss() {
 void AutofillErrorDialogViewAndroid::OnDismissed(JNIEnv* env) {
   controller_->OnDismissed();
   controller_ = nullptr;
+  // Must delete itself when the view is dismissed to avoid memory leak as this
+  // class is not owned by other autofill components.
   delete this;
 }
 
@@ -71,6 +63,15 @@ void AutofillErrorDialogViewAndroid::Show(content::WebContents* web_contents) {
       ConvertUTF16ToJavaString(env, controller_->GetButtonLabel()),
       ResourceMapper::MapToJavaDrawableId(
           IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
+}
+
+AutofillErrorDialogView* CreateAndShowAutofillErrorDialog(
+    AutofillErrorDialogController* controller,
+    content::WebContents* web_contents) {
+  AutofillErrorDialogViewAndroid* dialog_view =
+      new AutofillErrorDialogViewAndroid(controller);
+  dialog_view->Show(web_contents);
+  return dialog_view;
 }
 
 }  // namespace autofill

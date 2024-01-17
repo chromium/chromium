@@ -2,34 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
-AutofillErrorDialogControllerImpl::AutofillErrorDialogControllerImpl(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+AutofillErrorDialogControllerImpl::AutofillErrorDialogControllerImpl() =
+    default;
 
 AutofillErrorDialogControllerImpl::~AutofillErrorDialogControllerImpl() {
   Dismiss();
 }
 
 void AutofillErrorDialogControllerImpl::Show(
-    const AutofillErrorDialogContext& autofill_error_dialog_context) {
-  if (autofill_error_dialog_view_)
+    const AutofillErrorDialogContext& autofill_error_dialog_context,
+    base::OnceCallback<AutofillErrorDialogView*()> view_creation_callback) {
+  if (autofill_error_dialog_view_) {
     Dismiss();
+  }
 
-  DCHECK(autofill_error_dialog_view_ == nullptr);
+  CHECK(!autofill_error_dialog_view_);
   error_dialog_context_ = autofill_error_dialog_context;
-  autofill_error_dialog_view_ =
-      AutofillErrorDialogView::CreateAndShow(this, web_contents_);
+  autofill_error_dialog_view_ = std::move(view_creation_callback).Run();
+  CHECK(autofill_error_dialog_view_);
 
   base::UmaHistogramEnumeration("Autofill.ErrorDialogShown",
                                 autofill_error_dialog_context.type);
@@ -128,8 +129,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetButtonLabel() {
 }
 
 void AutofillErrorDialogControllerImpl::Dismiss() {
-  if (autofill_error_dialog_view_)
+  if (autofill_error_dialog_view_) {
     autofill_error_dialog_view_->Dismiss();
+  }
 }
 
 }  // namespace autofill

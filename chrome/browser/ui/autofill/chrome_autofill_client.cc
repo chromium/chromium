@@ -78,6 +78,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
@@ -1197,7 +1198,11 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 
 void ChromeAutofillClient::ShowAutofillErrorDialog(
     const AutofillErrorDialogContext& context) {
-  autofill_error_dialog_controller_.Show(context);
+  autofill_error_dialog_controller_.Show(
+      context,
+      base::BindOnce(&CreateAndShowAutofillErrorDialog,
+                     base::Unretained(&autofill_error_dialog_controller_),
+                     base::Unretained(web_contents())));
 }
 
 void ChromeAutofillClient::ShowAutofillProgressDialog(
@@ -1387,7 +1392,6 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                              base::NullCallback())),
       unmask_controller_(std::make_unique<CardUnmaskPromptControllerImpl>(
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()))),
-      autofill_error_dialog_controller_(web_contents),
       autofill_progress_dialog_controller_(
           std::make_unique<AutofillProgressDialogControllerImpl>(
               web_contents)) {

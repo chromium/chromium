@@ -2,29 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
 
+#include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
+#include "base/functional/callback.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace autofill {
+
+class AutofillErrorDialogView;
 
 // Implementation of the AutofillErrorDialogController. This class allows error
 // dialog to be shown or dismissed.
 // The controller is destroyed once the view is dismissed.
 class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
  public:
-  explicit AutofillErrorDialogControllerImpl(
-      content::WebContents* web_contents);
+  AutofillErrorDialogControllerImpl();
   ~AutofillErrorDialogControllerImpl() override;
 
   AutofillErrorDialogControllerImpl(const AutofillErrorDialogControllerImpl&) =
@@ -32,8 +29,11 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   AutofillErrorDialogControllerImpl& operator=(
       const AutofillErrorDialogControllerImpl&) = delete;
 
-  // Show the error dialog for the given |autofill_error_dialog_context|.
-  void Show(const AutofillErrorDialogContext& autofill_error_dialog_context);
+  // Show the error dialog for the given `autofill_error_dialog_context` and the
+  // `view_creation_callback`.
+  void Show(
+      const AutofillErrorDialogContext& autofill_error_dialog_context,
+      base::OnceCallback<AutofillErrorDialogView*()> view_creation_callback);
 
   // AutofillErrorDialogController.
   void OnDismissed() override;
@@ -49,7 +49,6 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   // Dismiss the error dialog if showing.
   void Dismiss();
 
-  const raw_ptr<content::WebContents> web_contents_;
   // The context of the error dialog that is being displayed. Contains
   // information such as the type of the error dialog that is being displayed.
   // |error_dialog_context_| may also contain extra information such as a
@@ -64,4 +63,4 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_IMPL_H_
