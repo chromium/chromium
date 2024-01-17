@@ -12,13 +12,11 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 // Helper methods specific for granular filling metrics.
-namespace autofill::autofill_metrics {
-
 namespace autofill {
 
 class AutofillField;
 
-}  // namespace autofill
+namespace autofill_metrics {
 
 // Given a `AutofillFillingMethod` returns its `std::string_view`
 // representation.
@@ -32,6 +30,7 @@ void AddFillingStatsForAutofillFillingMethod(
     base::flat_map<AutofillFillingMethod, FormGroupFillingStats>&
         field_stats_by_filling_method);
 
-}  // namespace autofill::autofill_metrics
+}  // namespace autofill_metrics
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_GRANULAR_FILLING_METRICS_UTILS_H_

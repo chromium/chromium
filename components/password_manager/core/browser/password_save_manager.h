@@ -9,8 +9,11 @@
 
 namespace autofill {
 struct FormData;
-class GaiaIdHash;
 }  // namespace autofill
+
+namespace signin {
+class GaiaIdHash;
+}  // namespace signin
 
 namespace password_manager {
 

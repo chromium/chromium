@@ -35,6 +35,7 @@ class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
 struct PermissionRequestDescription;
+struct PermissionResult;
 }
 
 class GeolocationPermissionContextDelegateTests;
@@ -42,7 +43,6 @@ class SubscriptionInterceptingPermissionManager;
 
 namespace permissions {
 class PermissionContextBase;
-struct PermissionResult;
 class PermissionManagerTest;
 
 class PermissionManager : public KeyedService,

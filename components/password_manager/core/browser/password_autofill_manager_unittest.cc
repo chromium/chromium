@@ -101,8 +101,9 @@ using UkmEntry = ukm::builders::PageWithPassword;
 
 namespace autofill {
 class AutofillPopupDelegate;
-class PrefService;
 }
+
+class PrefService;
 
 namespace password_manager {
 

@@ -31,7 +31,6 @@ class BookmarkModel;
 
 namespace history {
 class HistoryDatabase;
-class InMemoryURLIndex;
 }  // namespace history
 
 // A structure private to InMemoryURLIndex describing its internal data and

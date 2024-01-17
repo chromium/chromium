@@ -34,10 +34,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cc {
-class CopyOutputRequest;
-}
-
 namespace gfx {
 struct PresentationFeedback;
 struct SwapTimings;
@@ -49,6 +45,7 @@ class LatencyInfo;
 
 namespace viz {
 
+class CopyOutputRequest;
 class SurfaceAllocationGroup;
 class SurfaceManager;
 

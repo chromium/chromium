@@ -23,10 +23,11 @@ namespace gpu {
 class GpuChannelManager;
 class VulkanImplementation;
 class VulkanDeviceQueue;
-class VulkanContextProvider;
 }  // namespace gpu
 
 namespace viz {
+
+class VulkanContextProvider;
 
 class VIZ_SERVICE_EXPORT CompositorGpuThread
     : public base::Thread,

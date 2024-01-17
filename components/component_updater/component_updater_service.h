@@ -41,7 +41,6 @@ class SodaInstallerImpl;
 }
 
 namespace update_client {
-class ComponentInstaller;
 class Configurator;
 struct CrxComponent;
 struct CrxUpdateItem;

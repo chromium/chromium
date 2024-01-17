@@ -24,7 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
-namespace gl {
+namespace gfx {
 struct HDRMetadata;
 }
 

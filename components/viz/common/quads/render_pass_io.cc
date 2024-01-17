@@ -32,7 +32,7 @@
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
-namespace gl {
+namespace gfx {
 struct HDRMetadata;
 }
 

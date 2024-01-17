@@ -8,8 +8,6 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
-class VirtualCardUsageData;
-
 namespace autofill::autofill_metrics {
 
 // Logs metrics about the virtual card usage data associated with a Chrome

@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_QUERY_PROCESSOR_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_QUERY_PROCESSOR_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +13,6 @@
 
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
-struct Data;
 
 // Interface that converts aribitrary data to a list of tensor in asynchronous
 // callback, which can be fed into machine learning model as training data or

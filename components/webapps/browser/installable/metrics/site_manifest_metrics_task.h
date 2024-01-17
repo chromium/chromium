@@ -13,9 +13,9 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-namespace contents {
+namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace webapps {
 

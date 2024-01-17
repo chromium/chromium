@@ -22,14 +22,12 @@ enum class PermissionType;
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
-struct PermissionResult;
 }  // namespace content
 
 class GURL;
 
 namespace permissions {
 class PermissionRequest;
-struct PermissionResult;
 
 // This enum backs a UMA histogram, so it must be treated as append-only.
 enum class PermissionAction {

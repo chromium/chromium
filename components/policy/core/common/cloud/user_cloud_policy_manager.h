@@ -24,11 +24,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-class SchemaRegistry;
-
 namespace policy {
 
 class CloudExternalDataManager;
+class SchemaRegistry;
 class UserCloudPolicyStore;
 
 // UserCloudPolicyManager handles initialization of user policy.

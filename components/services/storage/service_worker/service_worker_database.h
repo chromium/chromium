@@ -35,7 +35,6 @@ class Location;
 namespace leveldb {
 class DB;
 class Env;
-class Status;
 class WriteBatch;
 }  // namespace leveldb
 

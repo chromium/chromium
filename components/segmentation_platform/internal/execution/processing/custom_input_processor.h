@@ -16,6 +16,7 @@
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
 class InputDelegateHolder;
+struct Data;
 
 // CustomInputProcessor adds support to a larger variety of data type
 // (timestamps, strings mapped to enums, etc), transforming them into valid

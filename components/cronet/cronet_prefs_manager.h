@@ -11,7 +11,6 @@
 #include "base/threading/thread_checker.h"
 
 class JsonPrefStore;
-class NetLog;
 class PrefService;
 
 namespace base {
