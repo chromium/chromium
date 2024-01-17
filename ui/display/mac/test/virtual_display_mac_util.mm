@@ -6,7 +6,6 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#include <memory>
 
 #include <map>
 
@@ -204,15 +203,15 @@ class DisplayMetricsChangeObserver : public display::DisplayObserver {
  public:
   DisplayMetricsChangeObserver(int64_t display_id,
                                const gfx::Size& size,
-                               uint32_t expected_changed_metrics,
-                               display::Screen* screen)
+                               uint32_t expected_changed_metrics)
       : display_id_(display_id),
         size_(size),
-        expected_changed_metrics_(expected_changed_metrics),
-        screen_(screen) {
-    screen_->AddObserver(this);
+        expected_changed_metrics_(expected_changed_metrics) {
+    display::Screen::GetScreen()->AddObserver(this);
   }
-  ~DisplayMetricsChangeObserver() override { screen_->RemoveObserver(this); }
+  ~DisplayMetricsChangeObserver() override {
+    display::Screen::GetScreen()->RemoveObserver(this);
+  }
 
   DisplayMetricsChangeObserver(const DisplayMetricsChangeObserver&) = delete;
   DisplayMetricsChangeObserver& operator=(const DisplayMetricsChangeObserver&) =
@@ -246,15 +245,13 @@ class DisplayMetricsChangeObserver : public display::DisplayObserver {
   const int64_t display_id_;
   const gfx::Size size_;
   const uint32_t expected_changed_metrics_;
-  raw_ptr<display::Screen> screen_;
+
   bool observed_change_ = false;
   base::RunLoop run_loop_;
 };
 
-void EnsureDisplayWithResolution(display::Screen* screen,
-                                 CGDirectDisplayID display_id,
+void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
                                  const gfx::Size& size) {
-  CHECK(screen);
   base::apple::ScopedCFTypeRef<CGDisplayModeRef> current_display_mode(
       CGDisplayCopyDisplayMode(display_id));
   if (gfx::Size(CGDisplayModeGetWidth(current_display_mode.get()),
@@ -283,7 +280,7 @@ void EnsureDisplayWithResolution(display::Screen* screen,
       display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
       display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR;
   DisplayMetricsChangeObserver display_metrics_change_observer(
-      display_id, size, expected_changed_metrics, screen);
+      display_id, size, expected_changed_metrics);
 
   // This operation is always synchronous. The function doesn’t return until the
   // mode switch is complete.
@@ -322,22 +319,21 @@ struct DisplayParams {
   NSString* __strong description;
 };
 
-VirtualDisplayMacUtil::VirtualDisplayMacUtil(Screen* screen) : screen_(screen) {
-  CHECK(screen);
-  screen->AddObserver(this);
+VirtualDisplayMacUtil::VirtualDisplayMacUtil() {
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 VirtualDisplayMacUtil::~VirtualDisplayMacUtil() {
-  ResetDisplays();
-  screen_->RemoveObserver(this);
+  RemoveAllDisplays();
+  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
-int64_t VirtualDisplayMacUtil::AddDisplay(uint8_t display_id,
+int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
                                           const DisplayParams& display_params) {
   DCHECK(display_params.IsValid());
 
   NSString* display_name =
-      [NSString stringWithFormat:@"Virtual Display #%d", display_id];
+      [NSString stringWithFormat:@"Virtual Display #%lld", display_id];
   CGVirtualDisplay* display = CreateVirtualDisplay(
       display_params.width, display_params.height, display_params.ppi,
       display_params.hiDPI, display_name, display_id);
@@ -355,7 +351,7 @@ int64_t VirtualDisplayMacUtil::AddDisplay(uint8_t display_id,
   WaitForDisplay(id, /*added=*/true);
 
   EnsureDisplayWithResolution(
-      screen_, id, gfx::Size(display_params.width, display_params.height));
+      id, gfx::Size(display_params.width, display_params.height));
 
   // TODO(crbug.com/1126278): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
@@ -410,41 +406,29 @@ void VirtualDisplayMacUtil::RemoveDisplay(int64_t display_id) {
             << " - display id: " << display_id << ". WaitForDisplay success.";
 }
 
-void VirtualDisplayMacUtil::ResetDisplays() {
-  int display_count = g_display_map.size();
-
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
-  // [D]CHECK() ASAP when the TEST is stable.
-  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
-            << " - display count: " << display_count << ".";
-
-  if (!display_count) {
-    return;
-  }
-
-  if (display_count == 1 && g_need_display_removal_workaround) {
-    RemoveDisplay(g_display_map.begin()->first);
-    return;
-  }
-
-  for (const auto& [id, display] : g_display_map) {
-    waiting_for_ids_.insert(id);
-  }
-
-  g_display_map.clear();
-
-  StartWaiting();
-}
-
 // static
 bool VirtualDisplayMacUtil::IsAPIAvailable() {
+  bool is_api_available = false;
   // The underlying API is only available on macos 10.14 or higher.
   // TODO(crbug.com/1126278): enable support on 10.15.
   if (@available(macos 11.0, *)) {
-    // TODO(crbug.com/1126278): Support headless bots.
-    return !IsRunningHeadless();
+    is_api_available = true;
   }
-  return false;
+  if (!is_api_available) {
+    return false;
+  }
+
+  // Only support non-headless bots now. Some odd behavior happened when
+  // enable on headless bots. See
+  // https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1058024/test-results
+  // for details.
+  // TODO(crbug.com/1126278): Remove this restriction when support headless
+  // environment.
+  if (IsRunningHeadless()) {
+    return false;
+  }
+
+  return true;
 }
 
 // Predefined display configurations from
@@ -575,9 +559,35 @@ void VirtualDisplayMacUtil::OnDisplayAddedOrRemoved(int64_t id) {
   StopWaiting();
 }
 
+void VirtualDisplayMacUtil::RemoveAllDisplays() {
+  int display_count = g_display_map.size();
+
+  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+            << " - display count: " << display_count << ".";
+
+  if (!display_count) {
+    return;
+  }
+
+  if (display_count == 1 && g_need_display_removal_workaround) {
+    RemoveDisplay(g_display_map.begin()->first);
+    return;
+  }
+
+  for (const auto& [id, display] : g_display_map) {
+    waiting_for_ids_.insert(id);
+  }
+
+  g_display_map.clear();
+
+  StartWaiting();
+}
+
 void VirtualDisplayMacUtil::WaitForDisplay(int64_t id, bool added) {
   display::Display d;
-  if (screen_->GetDisplayWithDisplayId(id, &d) == added) {
+  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d) == added) {
     return;
   }
 
@@ -601,21 +611,6 @@ void VirtualDisplayMacUtil::StartWaiting() {
 void VirtualDisplayMacUtil::StopWaiting() {
   DCHECK(run_loop_);
   run_loop_->Quit();
-}
-
-// VirtualDisplayUtil definitions:
-const DisplayParams VirtualDisplayUtil::k1920x1080 =
-    VirtualDisplayMacUtil::k1920x1080;
-const DisplayParams VirtualDisplayUtil::k1024x768 =
-    DisplayParams(1024, 768, 113, false, "XGA");
-
-// static
-std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(
-    Screen* screen) {
-  if (!VirtualDisplayMacUtil::IsAPIAvailable()) {
-    return nullptr;
-  }
-  return std::make_unique<VirtualDisplayMacUtil>(screen);
 }
 
 }  // namespace display::test

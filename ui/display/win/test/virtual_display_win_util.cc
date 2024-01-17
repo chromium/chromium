@@ -59,7 +59,6 @@ VirtualDisplayWinUtil::~VirtualDisplayWinUtil() {
   screen_->RemoveObserver(this);
 }
 
-// static
 bool VirtualDisplayWinUtil::IsAPIAvailable() {
   return DisplayDriverController::IsDriverInstalled();
 }
