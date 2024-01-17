@@ -518,8 +518,8 @@ void DiscardableSharedMemoryHeap::ReleaseMemory(
   size_t end = offset + size / block_size_;
   
   recordreplay::Assert(
-      "[RUN-3056-3057] DiscardableSharedMemoryHeap::ReleaseMemory A %zu %zu %d",
-      offset, end, recordreplay::PointerId(shared_memory));
+      "[RUN-3056-3057] DiscardableSharedMemoryHeap::ReleaseMemory A %zu %d",
+      end - offset, recordreplay::PointerId(shared_memory));
   while (offset < end) {
     DCHECK(spans_.find(offset) != spans_.end());
     Span* span = spans_[offset];
