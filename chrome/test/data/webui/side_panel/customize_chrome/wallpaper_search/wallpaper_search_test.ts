@@ -1744,13 +1744,27 @@ suite('WallpaperSearchTest', () => {
                 subject: 'baz',
                 style: 'foo',
                 mood: 'bar',
+                color: {name: DescriptorDName.kYellow},
               },
               inspirations: [
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
-                  description: 'Description',
+                  description: 'Description foo',
                   backgroundUrl: {url: 'https://example.com/foo_1.png'},
                   thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+            {
+              descriptors: {
+                subject: 'bar',
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  description: 'Description bar',
+                  backgroundUrl: {url: 'https://example.com/bar_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/bar_2.png'},
                 },
               ],
             },
@@ -1768,9 +1782,14 @@ suite('WallpaperSearchTest', () => {
           undefined,
           $$<CustomizeChromeCombobox>(
               wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertFalse(
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
-      const inspirationTile =
-          $$(wallpaperSearchElement, '#inspirationCard .tile.result');
+      const inspirationGroupGrids =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '#inspirationCard cr-grid');
+      assertEquals(2, inspirationGroupGrids.length);
+      let inspirationTile = inspirationGroupGrids[0]!.querySelector('.tile');
       assertTrue(!!inspirationTile);
       (inspirationTile as HTMLElement).click();
       await flushTasks();
@@ -1787,8 +1806,31 @@ suite('WallpaperSearchTest', () => {
           'bar',
           $$<CustomizeChromeCombobox>(
               wallpaperSearchElement, '#descriptorComboboxC')!.value);
-    });
+      const checkedColor =
+          $$(wallpaperSearchElement, '#descriptorMenuD button [checked]');
+      assertTrue(!!checkedColor);
+      assertEquals('Yellow', checkedColor!.parentElement!.title);
 
+      inspirationTile = inspirationGroupGrids[1]!.querySelector('.tile');
+      assertTrue(!!inspirationTile);
+      (inspirationTile as HTMLElement).click();
+      await flushTasks();
+
+      assertEquals(
+          'bar',
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxA')!.value);
+      assertEquals(
+          null,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxB')!.value);
+      assertEquals(
+          null,
+          $$<CustomizeChromeCombobox>(
+              wallpaperSearchElement, '#descriptorComboboxC')!.value);
+      assertFalse(
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
+    });
 
     test('inspiration card toggles on click', async () => {
       createWallpaperSearchElement();

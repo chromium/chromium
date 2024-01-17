@@ -65,6 +65,13 @@ export const DESCRIPTOR_D_VALUE: ColorDescriptor[] = [
   },
 ];
 
+function descriptorDNameToHex(name: DescriptorDName): string {
+  switch (name) {
+    case DescriptorDName.kYellow:
+      return '#f9cc18';
+  }
+}
+
 interface ColorDescriptor {
   hex: string;
   name: string;
@@ -419,9 +426,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     // Filter out undefined or null values, then join the rest into a comma
     // separated string.
     let colorName;
-    switch (descriptors.color?.name) {
-      case DescriptorDName.kYellow:
-        colorName = 'Yellow';
+    if (descriptors.color?.name !== undefined) {
+      const hex = descriptorDNameToHex(descriptors.color.name);
+      if (hex) {
+        colorName = this.getColorLabel_(hex);
+      }
     }
     return [
       descriptors.subject,
@@ -592,6 +601,19 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorA_ = groupDescriptors.subject || null;
     this.selectedDescriptorB_ = groupDescriptors.style || null;
     this.selectedDescriptorC_ = groupDescriptors.mood || null;
+
+    if (groupDescriptors.color?.name !== undefined) {
+      const hex = descriptorDNameToHex(groupDescriptors.color.name);
+      this.selectedDefaultColor_ = hex;
+      this.selectedHue_ = null;
+      this.selectedDescriptorD_ = {
+        color: hexColorToSkColor(this.selectedDefaultColor_),
+      };
+    } else {
+      this.selectedDefaultColor_ = undefined;
+      this.selectedHue_ = null;
+      this.selectedDescriptorD_ = null;
+    }
   }
 
   private onLearnMoreClick_(e: Event) {
