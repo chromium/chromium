@@ -1258,6 +1258,7 @@ class InterestGroupAuction::BuyerHelper
   std::unique_ptr<Bid> TryToCreateBidFromServerResponse(
       InterestGroupAuction::Bid::BidRole bid_role,
       double bid,
+      const std::optional<blink::AdCurrency>& bid_currency,
       const std::optional<std::string>& ad_metadata,
       blink::AdDescriptor ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors) {
@@ -1294,15 +1295,14 @@ class InterestGroupAuction::BuyerHelper
     // 2. Reporting URLs must be okay
     // TODO(1457931): Implement reporting
 
-    return std::make_unique<Bid>(bid_role, ad_metadata.value_or("null"), bid,
-                                 /*bid_currency=*/std::nullopt,
-                                 /*ad_cost=*/std::nullopt,
-                                 std::move(ad_descriptor),
-                                 std::move(ad_component_descriptors),
-                                 /*modeling_signals=*/std::nullopt,
-                                 /*bid_duration=*/base::Seconds(0),
-                                 /*bidding_signals_data_version=*/std::nullopt,
-                                 matching_ad, bid_state, auction_);
+    return std::make_unique<Bid>(
+        bid_role, ad_metadata.value_or("null"), bid, bid_currency,
+        /*ad_cost=*/std::nullopt, std::move(ad_descriptor),
+        std::move(ad_component_descriptors),
+        /*modeling_signals=*/std::nullopt,
+        /*bid_duration=*/base::Seconds(0),
+        /*bidding_signals_data_version=*/std::nullopt, matching_ad, bid_state,
+        auction_);
   }
 
  private:
@@ -4876,6 +4876,12 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
   if (saved_response_->result != AuctionResult::kSuccess) {
     return;
   }
+  if (!saved_response_->bid) {
+    saved_response_->result = AuctionResult::kInvalidServerResponse;
+    errors_.emplace_back("runAdAuction(): Missing bid value");
+    return;
+  }
+
   CHECK_EQ(1u, buyer_helpers_.size());
 
   std::vector<blink::AdDescriptor> ad_components;
@@ -4885,7 +4891,8 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
   std::unique_ptr<Bid> bid =
       buyer_helpers_[0]->TryToCreateBidFromServerResponse(
           Bid::BidRole::kUnenforcedKAnon,  // TODO(behamilton): Fix this.
-          saved_response_->bid.value_or(0.00001), saved_response_->ad_metadata,
+          saved_response_->bid.value(), saved_response_->bid_currency,
+          saved_response_->ad_metadata,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
           /*ad_component_descriptors=*/std::move(ad_components));
@@ -4899,6 +4906,22 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
   auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
       component_auction_modified_bid_params;
   if (parent_) {
+    if (!blink::VerifyAdCurrencyCode(config_->non_shared_params.seller_currency,
+                                     saved_response_->bid_currency)) {
+      saved_response_.emplace();
+      errors_.emplace_back(
+          "runAdAuction(): currency didn't match auction config");
+      return;
+    }
+    if (!blink::VerifyAdCurrencyCode(
+            PerBuyerCurrency(config_->seller, *parent_->config_),
+            saved_response_->bid_currency)) {
+      saved_response_.emplace();
+      errors_.emplace_back(
+          "runAdAuction(): currency didn't match top-level per-buyer currency");
+      return;
+    }
+
     // Component auction.
     component_auction_modified_bid_params =
         auction_worklet::mojom::ComponentAuctionModifiedBidParams::New();

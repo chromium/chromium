@@ -151,6 +151,14 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   output.score = input_dict->FindDouble("score");
   output.bid = input_dict->FindDouble("bid");
 
+  std::string* maybe_currency = input_dict->FindString("bidCurrency");
+  if (maybe_currency) {
+    if (!blink::IsValidAdCurrencyCode(*maybe_currency)) {
+      return std::nullopt;
+    }
+    output.bid_currency = blink::AdCurrency::From(*maybe_currency);
+  }
+
   base::Value::Dict* win_reporting_urls =
       input_dict->FindDict("winReportingURLs");
   if (win_reporting_urls) {
