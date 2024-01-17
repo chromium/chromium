@@ -62,9 +62,14 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
     InlineLoginBrowserProxy {
   constructor() {
     super([
-      'initialize', 'authenticatorReady', 'switchToFullTab', 'completeLogin',
-      'lstFetchResults', 'metricsHandler:recordAction', 'showIncognito',
-      'getAccounts', 'getDeviceId', 'dialogClose',
+      'initialize',
+      'authenticatorReady',
+      'switchToFullTab',
+      'completeLogin',
+      'lstFetchResults',
+      'metricsHandler:recordAction',
+      'showIncognito',
+      'dialogClose',
     ]);
   }
 

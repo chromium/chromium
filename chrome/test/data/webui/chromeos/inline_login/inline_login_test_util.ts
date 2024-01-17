@@ -87,7 +87,6 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
       'authenticatorReady',
       'switchToFullTab',
       'completeLogin',
-      'lstFetchResults',
       'metricsHandler:recordAction',
       'showIncognito',
       'getAccounts',
