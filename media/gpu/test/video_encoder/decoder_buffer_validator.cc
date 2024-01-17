@@ -83,14 +83,6 @@ DecoderBufferValidator::~DecoderBufferValidator() = default;
 void DecoderBufferValidator::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
-  const BitstreamBufferMetadata& metadata = bitstream->metadata;
-  if (bitstream->metadata.dropped_frame()) {
-    if (metadata.key_frame) {
-      LOG(ERROR) << "Don't drop key frame";
-      num_errors_++;
-    }
-    return;
-  }
   if (!Validate(*bitstream->buffer, bitstream->metadata))
     num_errors_++;
 }
@@ -112,6 +104,17 @@ H264Validator::~H264Validator() = default;
 
 bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
                              const BitstreamBufferMetadata& metadata) {
+  if (metadata.dropped_frame()) {
+    LOG(ERROR)
+        << "VideoEncodeAccelerator doesn't support drop frame support in H264";
+    return false;
+  }
+
+  if (!metadata.end_of_picture) {
+    LOG(ERROR) << "end_of_picture must be true always in H264";
+    return false;
+  }
+
   parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size());
 
   if (num_temporal_layers_ > 1) {
@@ -301,6 +304,23 @@ VP8Validator::~VP8Validator() = default;
 
 bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
+  if (metadata.dropped_frame()) {
+    if (metadata.key_frame) {
+      LOG(ERROR) << "Don't drop key frame";
+      return false;
+    }
+    if (metadata.vp8.has_value()) {
+      LOG(ERROR) << "BitstreamBufferMetadata has Vp8Metadata on dropped frame";
+      return false;
+    }
+    return true;
+  }
+
+  if (!metadata.end_of_picture) {
+    LOG(ERROR) << "end_of_picture must be true always in VP8";
+    return false;
+  }
+
   // TODO(hiroh): We could be getting more frames in the buffer, but there is
   // no simple way to detect this. We'd need to parse the frames and go through
   // partition numbers/sizes. For now assume one frame per buffer.
@@ -435,6 +455,12 @@ VP9Validator::~VP9Validator() = default;
 
 bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
+  if (metadata.dropped_frame()) {
+    LOG(ERROR)
+        << "VideoEncodeAccelerator doesn't support drop frame support in VP9";
+    return false;
+  }
+
   // See Annex B "Superframes" in VP9 spec.
   constexpr uint8_t kSuperFrameMarkerMask = 0b11100000;
   constexpr uint8_t kSuperFrameMarker = 0b11000000;
@@ -635,7 +661,14 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
       .temporal_id = vp9.temporal_idx,
   };
 
-  if (vp9.spatial_idx == cur_num_spatial_layers_ - 1) {
+  const bool end_of_picture = vp9.spatial_idx == cur_num_spatial_layers_ - 1;
+  if (end_of_picture != metadata.end_of_picture) {
+    LOG(ERROR) << "end_of_picture mismatches: end_of_picture=" << end_of_picture
+               << ", metadata.end_of_picture=" << metadata.end_of_picture;
+    return false;
+  }
+
+  if (end_of_picture) {
     next_picture_id_++;
   }
 
@@ -801,9 +834,16 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
       .temporal_id = vp9.temporal_idx,
   };
 
-  if (vp9.spatial_idx == cur_num_spatial_layers_ - 1) {
+  const bool end_of_picture = vp9.spatial_idx == cur_num_spatial_layers_ - 1;
+  if (end_of_picture != metadata.end_of_picture) {
+    LOG(ERROR) << "end_of_picture mismatches: end_of_picture=" << end_of_picture
+               << ", metadata.end_of_picture=" << metadata.end_of_picture;
+    return false;
+  }
+  if (end_of_picture) {
     next_picture_id_++;
   }
+
   // Check the resolution is expected.
 
   const gfx::Rect visible_rect(header.render_width, header.render_height);
@@ -902,6 +942,16 @@ AV1Validator::AV1Validator(const gfx::Rect& visible_rect)
 // right dimensions.
 bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
+  if (metadata.dropped_frame()) {
+    LOG(ERROR)
+        << "VideoEncodeAccelerator doesn't support drop frame support in AV1.";
+    return false;
+  }
+  if (!metadata.end_of_picture) {
+    LOG(ERROR) << "end_of_picture must be true always in AV1";
+    return false;
+  }
+
   libgav1::ObuParser av1_parser(decoder_buffer.data(),
                                 decoder_buffer.data_size(), 0, &buffer_pool_,
                                 &decoder_state_);
