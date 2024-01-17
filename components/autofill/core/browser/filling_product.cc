@@ -49,9 +49,10 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDevtoolsTestAddressEntry:
       return FillingProduct::kAddress;
     case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kCreditCardFieldByFieldFilling:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kShowAccountCards:
       return FillingProduct::kCreditCard;
     case PopupItemId::kMerchantPromoCodeEntry:
       return FillingProduct::kMerchantPromoCode;
@@ -63,7 +64,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kShowAccountCards:
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kAccountStoragePasswordEntry:
