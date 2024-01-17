@@ -12,6 +12,6 @@ interface PreferenceManager {
   readonly attribute PreferenceObject colorScheme;
   readonly attribute PreferenceObject contrast;
   readonly attribute PreferenceObject reducedMotion;
-  [RuntimeEnabled=PrefersReducedTransparency] readonly attribute PreferenceObject reducedTransparency;
+  readonly attribute PreferenceObject reducedTransparency;
   [RuntimeEnabled=PrefersReducedData] readonly attribute PreferenceObject reducedData;
 };
