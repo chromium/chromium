@@ -93,6 +93,9 @@ class ASH_EXPORT AcceleratorControllerImpl
     void SetSideVolumeButtonLocation(const std::string& region,
                                      const std::string& side);
 
+    void SetCanHandleLauncher(bool can_handle);
+    void SetCanHandleCapsLock(bool can_handle);
+
    private:
     raw_ptr<AcceleratorControllerImpl, DanglingUntriaged>
         controller_;  // Not owned.
@@ -153,6 +156,7 @@ class ASH_EXPORT AcceleratorControllerImpl
   AcceleratorHistoryImpl* GetAcceleratorHistory() override;
   bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
                                   AcceleratorAction action) override;
+  void ApplyAcceleratorForTesting(const ui::Accelerator& accelerator) override;
 
   // Returns true if the |accelerator| is preferred. A preferred accelerator
   // is handled before being passed to an window/web contents, unless

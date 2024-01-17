@@ -44,6 +44,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_layout_util.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -216,6 +217,11 @@ bool CanHandleToggleAppList(
       return false;
     }
 
+    // Note: This check is no longer needed as the spoken feedback input is
+    // taken as an event rewriter before the accelerator controller can see the
+    // event. This check is redundant and will be removed when
+    // kShortcutStateMachines is enabled by default.
+
     // When spoken feedback is enabled, we should neither toggle the list nor
     // consume the key since Search+Shift is one of the shortcuts the a11y
     // feature uses. crbug.com/132296
@@ -370,6 +376,20 @@ void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonLocation(
   controller_->tablet_volume_controller_
       .SetSideVolumeButtonLocationForTest(  // IN-TEST
           region, side);
+}
+
+void AcceleratorControllerImpl::TestApi::SetCanHandleLauncher(bool can_handle) {
+  if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    controller_->launcher_state_machine_->SetCanHandleLauncherForTesting(
+        can_handle);  // IN-TEST
+  }
+}
+
+void AcceleratorControllerImpl::TestApi::SetCanHandleCapsLock(bool can_handle) {
+  if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    controller_->capslock_state_machine_->SetCanHandleCapsLockForTesting(
+        can_handle);  // IN-TEST
+  }
 }
 
 AcceleratorControllerImpl::AcceleratorControllerImpl(
@@ -550,6 +570,17 @@ bool AcceleratorControllerImpl::DoesAcceleratorMatchAction(
   const AcceleratorAction* action_ptr =
       accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && *action_ptr == action;
+}
+
+void AcceleratorControllerImpl::ApplyAcceleratorForTesting(
+    const ui::Accelerator& accelerator) {
+  if (!base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    return;
+  }
+  ui::KeyEvent key_event = accelerator.ToKeyEvent();
+  launcher_state_machine_->OnEvent(&key_event);
+  capslock_state_machine_->OnEvent(&key_event);
+  shift_disable_state_machine_->OnEvent(&key_event);
 }
 
 bool AcceleratorControllerImpl::IsPreferred(

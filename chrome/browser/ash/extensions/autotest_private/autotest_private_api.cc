@@ -4993,6 +4993,7 @@ AutotestPrivateActivateAcceleratorFunction::Run() {
   auto* accelerator_controller = ash::AcceleratorController::Get();
   accelerator_controller->GetAcceleratorHistory()->StoreCurrentAccelerator(
       accelerator);
+  accelerator_controller->ApplyAcceleratorForTesting(accelerator);  // IN-TEST
 
   if (!accelerator_controller->IsRegistered(accelerator)) {
     // If it's not ash accelerator, try aplication's accelerator.

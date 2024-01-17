@@ -127,6 +127,9 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   virtual bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
                                           const AcceleratorAction action) = 0;
 
+  virtual void ApplyAcceleratorForTesting(
+      const ui::Accelerator& accelerator) = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
