@@ -7,6 +7,10 @@
 
 #include "components/plus_addresses/plus_address_types.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace plus_addresses {
 
 enum class PlusAddressViewButtonType { kCancel = 0, kConfirm = 1, kClose = 2 };
@@ -14,13 +18,17 @@ enum class PlusAddressViewButtonType { kCancel = 0, kConfirm = 1, kClose = 2 };
 // An interface for orchestrating plus address creation UI.
 class PlusAddressCreationView {
  public:
-  // Updates the view to either show the plus address in the bottomsheet and
+  // Updates the view to either show the plus address in the bottom sheet and
   // enable the OK button or show an error message.
   virtual void ShowReserveResult(
       const PlusProfileOrError& maybe_plus_profile) = 0;
   // Either closes the UI or shows an error message.
   virtual void ShowConfirmResult(
       const PlusProfileOrError& maybe_plus_profile) = 0;
+  // Navigates to the link shown in the dialog's description.
+  virtual void OpenSettingsLink(content::WebContents* web_contents) = 0;
+  // Navigates to the link shown in error report instructions.
+  virtual void OpenErrorReportLink(content::WebContents* web_contents) = 0;
   // Returns whether the Confirm button can be pressed.
   virtual bool GetConfirmButtonEnabledForTesting() const = 0;
   // Simulates a click on the `type` of button.
@@ -32,6 +40,10 @@ class PlusAddressCreationView {
   virtual bool ShowsLoadingIndicatorForTesting() const = 0;
   // Blocks until either ShowReserveResult or ShowConfirmResult are called.
   virtual void WaitUntilResultShownForTesting() = 0;
+  // Return whether Plus Address label is visible.
+  virtual bool GetPlusAddressLabelVisibilityForTesting() const = 0;
+  // Return whether error label is visible.
+  virtual bool GetErrorLabelVisibilityForTesting() const = 0;
 };
 
 }  // namespace plus_addresses

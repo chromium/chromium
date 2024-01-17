@@ -19,6 +19,7 @@ class WebContents;
 namespace views {
 class Label;
 class MdTextButton;
+class StyledLabel;
 }  // namespace views
 
 namespace plus_addresses {
@@ -43,17 +44,18 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   bool ShouldShowCloseButton() const override;
   void OnWidgetInitialized() override;
 
-  // Navigates to the link shown in the dialog's description.
-  void OpenSettingsLink(content::WebContents* web_contents);
-
   // PlusAddressCreationView:
   void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile) override;
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile) override;
+  void OpenSettingsLink(content::WebContents* web_contents) override;
+  void OpenErrorReportLink(content::WebContents* web_contents) override;
   bool GetConfirmButtonEnabledForTesting() const override;
   void ClickButtonForTesting(PlusAddressViewButtonType type) override;
   std::u16string GetPlusAddressLabelTextForTesting() const override;
   bool ShowsLoadingIndicatorForTesting() const override;
   void WaitUntilResultShownForTesting() override;
+  bool GetPlusAddressLabelVisibilityForTesting() const override;
+  bool GetErrorLabelVisibilityForTesting() const override;
 
   // Calls the respective controller method for `type`.
   void HandleButtonPress(PlusAddressViewButtonType type);
@@ -61,9 +63,13 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
  private:
   // Blocks iff `WaitUntilResultShownForTesting()` has been called beforehand.
   void MaybeBlockUntilResultShows();
+  // Set the modal dialog to show error messages.
+  void ShowErrorStateUI();
 
   base::WeakPtr<PlusAddressCreationController> controller_;
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<views::Label> plus_address_label_ = nullptr;
+  raw_ptr<views::StyledLabel> error_report_label_ = nullptr;
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   // Stores a RunLoop::QuitClosure(). Only set in tests.

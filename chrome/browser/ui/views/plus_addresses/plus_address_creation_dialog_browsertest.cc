@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -46,10 +47,11 @@ namespace plus_addresses {
 namespace {
 
 constexpr char kFakeEmailAddress[] = "alice@email.com";
-constexpr char kFakePlusAddressManagementUrl[] = "https://manage.com";
+constexpr char kFakePlusAddressManagementUrl[] = "https://manage.com/";
 constexpr char kFakeOauthScope[] = "https://foo.example";
 constexpr char kPlusAddressModalEventHistogram[] =
     "Autofill.PlusAddresses.Modal.Events";
+constexpr char kFakeErrorReportUrl[] = "https://www.error-link.com/";
 
 }  // namespace
 
@@ -62,7 +64,8 @@ class ScopedPlusAddressFeatureList {
          // provided here to bypass any checks on this during service creation.
          {"server-url", {"https://override-me-please.example"}},
          {"oauth-scope", {kFakeOauthScope}},
-         {"manage-url", {kFakePlusAddressManagementUrl}}});
+         {"manage-url", {kFakePlusAddressManagementUrl}},
+         {"error-report-url", {kFakeErrorReportUrl}}});
   }
 
   void Reinit(const std::string& server_url) {
@@ -73,7 +76,8 @@ class ScopedPlusAddressFeatureList {
     features_.InitAndEnableFeatureWithParameters(
         kFeature, {{"server-url", {server_url}},
                    {"oauth-scope", {kFakeOauthScope}},
-                   {"manage-url", {kFakePlusAddressManagementUrl}}});
+                   {"manage-url", {kFakePlusAddressManagementUrl}},
+                   {"error-report-url", {kFakeErrorReportUrl}}});
   }
 
  private:
@@ -212,9 +216,26 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, InitialUi) {
   EXPECT_TRUE(VerifyUi());
   PlusAddressCreationView* view = desktop_controller()->get_view_for_testing();
   EXPECT_FALSE(view->GetConfirmButtonEnabledForTesting());
+  EXPECT_TRUE(view->GetPlusAddressLabelVisibilityForTesting());
   EXPECT_EQ(view->GetPlusAddressLabelTextForTesting(),
             l10n_util::GetStringUTF16(
                 IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER));
+  EXPECT_FALSE(view->GetErrorLabelVisibilityForTesting());
+
+  // Simulate manager url clicked.
+  view->OpenSettingsLink(browser()->tab_strip_model()->GetActiveWebContents());
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      /*expected_number_of_navigations=*/1);
+  observer.Wait();
+  // Verify that a new tab is opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(kFakePlusAddressManagementUrl, browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetVisibleURL()
+                                               .spec());
+
   DismissUi();
   reserve_controllable_response_->Done();
 
@@ -260,8 +281,24 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, ReserveRequestFails) {
 
   PlusAddressCreationView* view = desktop_controller()->get_view_for_testing();
   EXPECT_FALSE(view->GetConfirmButtonEnabledForTesting());
-  EXPECT_EQ(view->GetPlusAddressLabelTextForTesting(),
-            l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
+  EXPECT_TRUE(view->GetErrorLabelVisibilityForTesting());
+  EXPECT_FALSE(view->GetPlusAddressLabelVisibilityForTesting());
+
+  // Simulate error report link clicked.
+  view->OpenErrorReportLink(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      /*expected_number_of_navigations=*/1);
+  observer.Wait();
+  // Verify that a new tab is opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(kFakeErrorReportUrl, browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetVisibleURL()
+                                     .spec());
+
   DismissUi();
 
   // Verify expected metrics.
@@ -281,8 +318,10 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, ReserveRequestSucceeds) {
 
   PlusAddressCreationView* view = desktop_controller()->get_view_for_testing();
   EXPECT_TRUE(view->GetConfirmButtonEnabledForTesting());
+  EXPECT_TRUE(view->GetPlusAddressLabelVisibilityForTesting());
   EXPECT_EQ(view->GetPlusAddressLabelTextForTesting(),
             base::UTF8ToUTF16(fake_plus_address));
+  EXPECT_FALSE(view->GetErrorLabelVisibilityForTesting());
   DismissUi();
 
   // Verify expected metrics.
@@ -304,8 +343,24 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, ConfirmRequestFails) {
   view->ClickButtonForTesting(PlusAddressViewButtonType::kConfirm);
   FulfillRequestAndBlockUntilUiShows(RequestType::kConfirm, /*succeeds=*/false);
   EXPECT_FALSE(view->GetConfirmButtonEnabledForTesting());
-  EXPECT_EQ(view->GetPlusAddressLabelTextForTesting(),
-            l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
+  EXPECT_TRUE(view->GetErrorLabelVisibilityForTesting());
+  EXPECT_FALSE(view->GetPlusAddressLabelVisibilityForTesting());
+
+  // Simulate error report link clicked.
+  view->OpenErrorReportLink(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      /*expected_number_of_navigations=*/1);
+  observer.Wait();
+  // Verify that a new tab is opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(kFakeErrorReportUrl, browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetVisibleURL()
+                                     .spec());
+
   DismissUi();
 
   // Verify expected metrics.
@@ -332,8 +387,10 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogTest, ConfirmRequestSucceeds) {
   // Verify UI elements before button is pressed.
   PlusAddressCreationView* view = desktop_controller()->get_view_for_testing();
   ASSERT_TRUE(view->GetConfirmButtonEnabledForTesting());
+  EXPECT_TRUE(view->GetPlusAddressLabelVisibilityForTesting());
   ASSERT_EQ(view->GetPlusAddressLabelTextForTesting(),
             base::UTF8ToUTF16(fake_plus_address));
+  EXPECT_FALSE(view->GetErrorLabelVisibilityForTesting());
 
   view->ClickButtonForTesting(PlusAddressViewButtonType::kConfirm);
   confirm_controllable_response_->WaitForRequest();
