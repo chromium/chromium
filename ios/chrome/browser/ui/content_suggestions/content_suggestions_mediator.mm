@@ -732,7 +732,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)openTabResumptionItem {
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(
-      _tabResumptionItem.tabURL, _localState);
+      _tabResumptionItem.tabURL, self.browser->GetBrowserState()->GetPrefs());
   [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                            kTabResumption];
 
@@ -1681,7 +1681,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Shows the tab resumption tile with the given `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
-  if (tab_resumption_prefs::IsLastOpenedURL(item.tabURL, _localState)) {
+  if (tab_resumption_prefs::IsLastOpenedURL(
+          item.tabURL, self.browser->GetBrowserState()->GetPrefs())) {
     return;
   }
 

@@ -9,6 +9,7 @@ source_set("tab_resumption_prefs") {
   ]
   deps = [
     "//base",
+    "//components/pref_registry",
     "//components/prefs",
     "//url",
   ]

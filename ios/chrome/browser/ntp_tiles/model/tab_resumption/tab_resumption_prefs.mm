@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "url/gurl.h"
@@ -17,8 +18,11 @@ const char kTabResumptioDisabledPref[] = "tab_resumption.disabled";
 const char kTabResumptionLastOpenedTabURLPref[] =
     "tab_resumption.last_opened_tab_url";
 
-void RegisterPrefs(PrefRegistrySimple* registry) {
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kTabResumptioDisabledPref, false);
+}
+
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kTabResumptionLastOpenedTabURLPref,
                                std::string());
 }
