@@ -45,7 +45,8 @@ CommonConnectJobParams::CommonConnectJobParams(
     HttpServerProperties* http_server_properties,
     const NextProtoVector* alpn_protos,
     const SSLConfig::ApplicationSettings* application_settings,
-    const bool* ignore_certificate_errors)
+    const bool* ignore_certificate_errors,
+    const bool* enable_early_data)
     : client_socket_factory(client_socket_factory),
       host_resolver(host_resolver),
       http_auth_cache(http_auth_cache),
@@ -63,7 +64,8 @@ CommonConnectJobParams::CommonConnectJobParams(
       http_server_properties(http_server_properties),
       alpn_protos(alpn_protos),
       application_settings(application_settings),
-      ignore_certificate_errors(ignore_certificate_errors) {}
+      ignore_certificate_errors(ignore_certificate_errors),
+      enable_early_data(enable_early_data) {}
 
 CommonConnectJobParams::CommonConnectJobParams(
     const CommonConnectJobParams& other) = default;

@@ -788,9 +788,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
   server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
 
-  // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
-  server_ssl_config.early_data_enabled = session_->params().enable_early_data;
-
   if (using_quic_) {
     return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
   }

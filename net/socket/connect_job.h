@@ -60,6 +60,8 @@ class WebSocketEndpointLockManager;
 // ConnectJobs that wrap other ConnectJobs typically have different values for
 // those.
 struct NET_EXPORT_PRIVATE CommonConnectJobParams {
+  // TODO(https://crbug.com/1505765): Look into passing in HttpNetworkSession
+  // instead.
   CommonConnectJobParams(
       ClientSocketFactory* client_socket_factory,
       HostResolver* host_resolver,
@@ -78,7 +80,8 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
       HttpServerProperties* http_server_properties,
       const NextProtoVector* alpn_protos,
       const SSLConfig::ApplicationSettings* application_settings,
-      const bool* ignore_certificate_errors);
+      const bool* ignore_certificate_errors,
+      const bool* enable_early_data);
   CommonConnectJobParams(const CommonConnectJobParams& other);
   ~CommonConnectJobParams();
 
@@ -106,6 +109,7 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
   raw_ptr<const NextProtoVector> alpn_protos;
   raw_ptr<const SSLConfig::ApplicationSettings> application_settings;
   raw_ptr<const bool> ignore_certificate_errors;
+  raw_ptr<const bool> enable_early_data;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If

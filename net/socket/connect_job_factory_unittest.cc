@@ -171,6 +171,7 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
 
   const NextProtoVector alpn_protos_{kProtoHTTP2, kProtoHTTP11};
   const SSLConfig::ApplicationSettings application_settings_{{kProtoHTTP2, {}}};
+  bool early_data_enabled_ = true;
   const CommonConnectJobParams common_connect_job_params_{
       /*client_socket_factory=*/nullptr,
       /*host_resolver=*/nullptr,
@@ -189,7 +190,8 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
       /*http_server_properties=*/nullptr,
       &alpn_protos_,
       &application_settings_,
-      /*ignore_certificate_errors=*/nullptr};
+      /*ignore_certificate_errors=*/nullptr,
+      &early_data_enabled_};
   TestConnectJobDelegate delegate_;
 
   std::unique_ptr<ConnectJobFactory> factory_;
@@ -263,6 +265,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre(kProtoHTTP11));
+  EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -299,6 +302,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobForHttp11) {
   EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre(kProtoHTTP11));
+  EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -332,6 +336,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {
   EXPECT_EQ(params.ssl_config().renego_allowed_default, false);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -420,6 +425,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   EXPECT_EQ(params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre(kProtoHTTP11));
+  EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
   const HttpProxySocketParams& proxy_params =
@@ -464,6 +470,10 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttpsWithoutScheme) {
   EXPECT_EQ(params.ssl_config().renego_allowed_default, false);
   EXPECT_THAT(params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  // While the only production caller of this method disables SSL early data, it
+  // does so by configuring the HttpNetworkSession, rather than by relying on
+  // the ConnectJobFactory to disable early data when there's no scheme.
+  EXPECT_TRUE(params.ssl_config().early_data_enabled);
 
   ASSERT_TRUE(proxy_params.transport_params());
   const TransportSocketParams& transport_params =
@@ -510,6 +520,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
   EXPECT_EQ(ssl_params.ssl_config().renego_allowed_default, false);
   EXPECT_THAT(ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -556,6 +567,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
   EXPECT_EQ(ssl_params.ssl_config().renego_allowed_default, false);
   EXPECT_THAT(ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
@@ -606,6 +618,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
             false);
   EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server2_ssl_params.ssl_config().early_data_enabled);
 
   const HttpProxySocketParams& proxy_server1_http_params =
       *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
@@ -627,6 +640,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
             false);
   EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server1_ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);
@@ -686,6 +700,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobWithoutScheme) {
             false);
   EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server2_ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_TRUE(proxy_server1_http_params.ssl_params());
   const SSLSocketParams& proxy_server1_ssl_params =
@@ -700,6 +715,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobWithoutScheme) {
             false);
   EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server1_ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);
@@ -745,6 +761,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
   EXPECT_EQ(endpoint_ssl_params.ssl_config().renego_allowed_default, true);
   EXPECT_THAT(endpoint_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre(kProtoHTTP11));
+  EXPECT_TRUE(endpoint_ssl_params.ssl_config().early_data_enabled);
 
   // The SSLSocketParams for the destination should be configured to go through
   // the chain of proxies, with the corresponding HttpProxySocketParams and
@@ -768,6 +785,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
             false);
   EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server2_ssl_params.ssl_config().early_data_enabled);
 
   const HttpProxySocketParams& proxy_server1_http_params =
       *proxy_server2_ssl_params.GetHttpProxyConnectionParams();
@@ -789,6 +807,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJobForHttps) {
             false);
   EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server1_ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);
@@ -837,6 +856,7 @@ TEST_F(ConnectJobFactoryTest,
   EXPECT_EQ(endpoint_ssl_params.ssl_config().renego_allowed_default, false);
   EXPECT_THAT(endpoint_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_TRUE(endpoint_ssl_params.ssl_config().early_data_enabled);
 
   // The SSLSocketParams for the destination should be configured to go through
   // the chain of proxies, with the corresponding HttpProxySocketParams and
@@ -866,6 +886,7 @@ TEST_F(ConnectJobFactoryTest,
             false);
   EXPECT_THAT(proxy_server2_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server2_ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_TRUE(proxy_server1_http_params.ssl_params());
   const SSLSocketParams& proxy_server1_ssl_params =
@@ -880,6 +901,7 @@ TEST_F(ConnectJobFactoryTest,
             false);
   EXPECT_THAT(proxy_server1_ssl_params.ssl_config().renego_allowed_for_protos,
               testing::ElementsAre());
+  EXPECT_FALSE(proxy_server1_ssl_params.ssl_config().early_data_enabled);
 
   ASSERT_EQ(proxy_server1_ssl_params.GetConnectionType(),
             SSLSocketParams::DIRECT);

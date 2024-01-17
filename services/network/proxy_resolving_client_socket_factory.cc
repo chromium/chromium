@@ -67,6 +67,12 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
     // won't do anything here.
   }
 
+  // Disable early data. When early data is enabled, replay protection is not
+  // enabled until partway through the connection, so callers are expected to
+  // call `ConfirmHandshake` before performing replay-sensitive operations.
+  // These sockets bypass the HTTP-specific logic that handles this.
+  session_params.enable_early_data = false;
+
   // TODO(mmenke): Is a new HttpNetworkSession still needed?
   // ProxyResolvingClientSocket doesn't use socket pools, just the
   // SpdySessionPool, so it may be sufficient to create a new SpdySessionPool,

@@ -355,6 +355,10 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
                   *common_connect_job_params, ssl_config,
                   /*renego_allowed=*/true);
 
+    // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
+    ssl_config.early_data_enabled =
+        *common_connect_job_params->enable_early_data;
+
     if (proxy_chain.is_direct()) {
       ssl_tcp_params = base::MakeRefCounted<TransportSocketParams>(
           ToTransportEndpoint(endpoint), network_anonymization_key,

@@ -505,6 +505,7 @@ struct SSLSocketDataProvider {
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
+  absl::optional<bool> expected_early_data_enabled;
   absl::optional<bool> expected_send_client_cert;
   scoped_refptr<X509Certificate> expected_client_cert;
   absl::optional<HostPortPair> expected_host_and_port;

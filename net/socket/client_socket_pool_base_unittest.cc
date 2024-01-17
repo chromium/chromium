@@ -713,7 +713,8 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       /*http_server_properties=*/nullptr,
       /*alpn_protos=*/nullptr,
       /*application_settings=*/nullptr,
-      /*ignore_certificate_errors=*/nullptr};
+      /*ignore_certificate_errors=*/nullptr,
+      /*early_data_enabled=*/nullptr};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   RecordingNetLogObserver net_log_observer_;

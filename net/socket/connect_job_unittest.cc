@@ -111,7 +111,8 @@ class ConnectJobTest : public testing::Test {
             /*http_server_properties*/ nullptr,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
-            /*ignore_certificate_errors=*/nullptr) {}
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr) {}
   ~ConnectJobTest() override = default;
 
  protected:

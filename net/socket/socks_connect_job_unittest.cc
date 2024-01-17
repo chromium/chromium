@@ -68,7 +68,8 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
-            /*ignore_certificate_errors=*/nullptr) {}
+            /*ignore_certificate_errors=*/nullptr,
+            /*early_data_enabled=*/nullptr) {}
 
   ~SOCKSConnectJobTest() override = default;
 
