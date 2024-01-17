@@ -197,8 +197,6 @@ class AccountManagerUIHandlerTest
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
 
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
-
     auto* factory =
         g_browser_process->platform_part()->GetAccountManagerFactory();
     account_manager_ = factory->GetAccountManager(profile_->GetPath().value());
@@ -207,6 +205,9 @@ class AccountManagerUIHandlerTest
         ::account_manager::AccountKey{GetDeviceAccountInfo().id,
                                       GetDeviceAccountInfo().account_type},
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
+
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    signin::WaitForRefreshTokensLoaded(identity_manager_);
   }
 
   FakeChromeUserManager* GetFakeUserManager() const {
@@ -255,8 +256,7 @@ class AccountManagerUIHandlerTest
 };
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       // TODO(crbug.com/1474301): Re-enable this test
-                       DISABLED_OnGetAccountsNoSecondaryAccounts) {
+                       OnGetAccountsNoSecondaryAccounts) {
   const std::vector<::account_manager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   // Only Primary account.
