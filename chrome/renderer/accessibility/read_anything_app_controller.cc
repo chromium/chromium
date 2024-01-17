@@ -398,7 +398,6 @@ ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
     : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
   distiller_ = std::make_unique<AXTreeDistiller>(
-      render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -644,7 +643,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ReadAnythingAppController::ScreenAIServiceReady() {
-  distiller_->ScreenAIServiceReady();
+  distiller_->ScreenAIServiceReady(GetRenderFrame());
 }
 #endif
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -52,8 +51,8 @@ class AXTreeDistiller {
       const std::vector<ui::AXNodeID>& content_node_ids)>;
 
  public:
-  AXTreeDistiller(content::RenderFrame* render_frame,
-                  OnAXTreeDistilledCallback on_ax_tree_distilled_callback);
+  explicit AXTreeDistiller(
+      OnAXTreeDistilledCallback on_ax_tree_distilled_callback);
   virtual ~AXTreeDistiller();
   AXTreeDistiller(const AXTreeDistiller&) = delete;
   AXTreeDistiller& operator=(const AXTreeDistiller&) = delete;
@@ -69,7 +68,7 @@ class AXTreeDistiller {
                        const ukm::SourceId ukm_source_id);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void ScreenAIServiceReady();
+  void ScreenAIServiceReady(content::RenderFrame* render_frame);
 #endif
 
  private:
@@ -117,12 +116,6 @@ class AXTreeDistiller {
                            base::TimeDelta elapsed_time,
                            bool success);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
-  // render_frame_ is only used in the ENABLE_SCREEN_AI_SERVICE buildflag.
-  // Fuchsia does not build with that buildflag so it is throwing
-  // -Wunused-private-field errors. [[maybe_unused]] suppresses them.
-  [[maybe_unused]] raw_ptr<content::RenderFrame, DanglingUntriaged>
-      render_frame_;
 
   // TODO(crbug.com/1266555): Ensure this is called even if ScreenAIService is
   // disconnected.
