@@ -170,6 +170,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   bool has_incorrect_password_ = false;
   bool has_shown_local_decryption_prompt_ = false;
   bool fully_extracted_archive_ = false;
+  // Whether a "shown" event has been logged for the Downloads Page for this
+  // download. Not persisted across restarts.
+  bool logged_downloads_page_shown_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_
