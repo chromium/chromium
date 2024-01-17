@@ -68,33 +68,22 @@ void WaylandPointerDelegate::OnPointerMotion(base::TimeTicks time_stamp,
 void WaylandPointerDelegate::OnPointerButton(base::TimeTicks time_stamp,
                                              int button_flags,
                                              bool pressed) {
-  constexpr struct {
+  struct {
     ui::EventFlags flag;
     uint32_t value;
-    SerialTracker::EventType down;
-    SerialTracker::EventType up;
   } buttons[] = {
-      {ui::EF_LEFT_MOUSE_BUTTON, BTN_LEFT,
-       SerialTracker::EventType::POINTER_LEFT_BUTTON_DOWN,
-       SerialTracker::EventType::POINTER_LEFT_BUTTON_UP},
-      {ui::EF_RIGHT_MOUSE_BUTTON, BTN_RIGHT,
-       SerialTracker::EventType::POINTER_RIGHT_BUTTON_DOWN,
-       SerialTracker::EventType::POINTER_RIGHT_BUTTON_UP},
-      {ui::EF_MIDDLE_MOUSE_BUTTON, BTN_MIDDLE,
-       SerialTracker::EventType::POINTER_MIDDLE_BUTTON_DOWN,
-       SerialTracker::EventType::POINTER_MIDDLE_BUTTON_UP},
-      {ui::EF_FORWARD_MOUSE_BUTTON, BTN_EXTRA,
-       SerialTracker::EventType::POINTER_FORWARD_BUTTON_DOWN,
-       SerialTracker::EventType::POINTER_FORWARD_BUTTON_UP},
-      {ui::EF_BACK_MOUSE_BUTTON, BTN_SIDE,
-       SerialTracker::EventType::POINTER_BACK_BUTTON_DOWN,
-       SerialTracker::EventType::POINTER_BACK_BUTTON_UP},
+      {ui::EF_LEFT_MOUSE_BUTTON, BTN_LEFT},
+      {ui::EF_RIGHT_MOUSE_BUTTON, BTN_RIGHT},
+      {ui::EF_MIDDLE_MOUSE_BUTTON, BTN_MIDDLE},
+      {ui::EF_FORWARD_MOUSE_BUTTON, BTN_EXTRA},
+      {ui::EF_BACK_MOUSE_BUTTON, BTN_SIDE},
   };
   for (auto button : buttons) {
     if (button_flags & button.flag) {
       SendTimestamp(time_stamp);
-      const SerialTracker::EventType event_type =
-          (pressed ? button.down : button.up);
+      SerialTracker::EventType event_type =
+          pressed ? SerialTracker::EventType::POINTER_BUTTON_DOWN
+                  : SerialTracker::EventType::POINTER_BUTTON_UP;
       wl_pointer_send_button(pointer_resource_,
                              serial_tracker_->GetNextSerial(event_type),
                              TimeTicksToMilliseconds(time_stamp), button.value,

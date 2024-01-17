@@ -45,12 +45,10 @@ namespace exo {
 ////////////////////////////////////////////////////////////////////////////////
 // Display, public:
 
-Display::Display(std::unique_ptr<DataExchangeDelegate> data_exchange_delegate)
-    : seat_(std::move(data_exchange_delegate)),
+Display::Display()
+    : seat_(nullptr),
       client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf()) {}
-
-Display::Display() : Display(std::unique_ptr<DataExchangeDelegate>(nullptr)) {}
 
 Display::Display(
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,

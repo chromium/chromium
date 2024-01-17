@@ -186,10 +186,6 @@ class EventGenerator {
   void set_flags(int flags) { flags_ = flags; }
   int flags() const { return flags_; }
 
-  // Generates a button press / release event.
-  void PressButton(int flag);
-  void ReleaseButton(int flag);
-
   // Generates a left button press event.
   void PressLeftButton();
 
@@ -499,6 +495,8 @@ class EventGenerator {
 
   void SetCurrentScreenLocation(const gfx::Point& point);
   void UpdateCurrentDispatcher(const gfx::Point& point);
+  void PressButton(int flag);
+  void ReleaseButton(int flag);
 
   gfx::Point GetLocationInCurrentRoot() const;
   gfx::Point CenterOfWindow(const EventTarget* window) const;
