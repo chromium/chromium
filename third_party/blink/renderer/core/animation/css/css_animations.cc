@@ -2205,6 +2205,7 @@ bool CSSAnimations::CanCalculateTransitionUpdateForProperty(
 
 void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     TransitionUpdateState& state,
+    const CSSTransitionData::TransitionAnimationType type,
     const PropertyHandle& property,
     wtf_size_t transition_index,
     bool animate_all) {
@@ -2215,7 +2216,20 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   if (!CanCalculateTransitionUpdateForProperty(state, property))
     return;
 
-  if (IsAnimationAffectingProperty(property.GetCSSProperty())) {
+  bool is_animation_affecting = false;
+  if (!animate_all || type != CSSTransitionData::kTransitionKnownProperty) {
+    is_animation_affecting =
+        IsAnimationAffectingProperty(property.GetCSSProperty());
+  } else {
+    // For transition:all, the standard properties (kTransitionKnownProperty)
+    // to calculate update is filtered by PropertiesForTransitionAll(), which
+    // will have a check on IsAnimationAffectingProperty(). All the filtered
+    // properties stored in the static |properties| will return false on such
+    // check. So we can bypass this check here to reduce the repeated overhead
+    // for standard properties update of transition:all.
+    DCHECK_EQ(false, IsAnimationAffectingProperty(property.GetCSSProperty()));
+  }
+  if (is_animation_affecting) {
     return;
   }
 
@@ -2463,8 +2477,9 @@ void CSSAnimations::CalculateTransitionUpdateForCustomProperty(
   bool animate_all = resolved_id == CSSPropertyID::kAll;
 
   CalculateTransitionUpdateForPropertyHandle(
-      state, PropertyHandle(transition_property.property_string),
-      transition_index, animate_all);
+      state, transition_property.property_type,
+      PropertyHandle(transition_property.property_string), transition_index,
+      animate_all);
 }
 
 void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
@@ -2506,8 +2521,9 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
       continue;
     }
 
-    CalculateTransitionUpdateForPropertyHandle(state, property_handle,
-                                               transition_index, animate_all);
+    CalculateTransitionUpdateForPropertyHandle(
+        state, transition_property.property_type, property_handle,
+        transition_index, animate_all);
   }
 }
 
