@@ -123,6 +123,14 @@ BASE_FEATURE(kAllowURNsInIframes,
              "AllowURNsInIframes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A console warning is shown when the opaque url returned from Protected
+// Audience/selectUrl is used to navigate an iframe. Since fenced frames are not
+// going to be enforced for these APIs in the short-medium term, disabling this
+// warning for now.
+BASE_FEATURE(kDisplayWarningDeprecateURNIframesUseFencedFrames,
+             "DisplayWarningDeprecateURNIframesUseFencedFrames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Anchor Element Interaction
 BASE_FEATURE(kAnchorElementInteraction,
              "AnchorElementInteraction",
@@ -2302,6 +2310,11 @@ bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
 
 bool IsAllowURNsInIframeEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kAllowURNsInIframes);
+}
+
+bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames);
 }
 
 bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {

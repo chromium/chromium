@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/fenced_frame/fenced_frame.h"
+
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -24,7 +27,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/back_forward_cache_browsertest.h"
-#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -2098,6 +2100,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {blink::features::kParakeet, {}},
          {blink::features::kFledge, {}},
          {blink::features::kAllowURNsInIframes, {}},
+         {blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames,
+          {}},
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {features::kBackForwardCache, {}},
          // This feature allows `runAdAuction()`'s promise to resolve to a
@@ -2332,7 +2336,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
         };
     console_observer.SetFilter(base::BindRepeating(filter));
     console_observer.SetPattern(
-        "FLEDGE will deprecate supporting iframes to render the winning ad*");
+        "Protected Audience/selectURL will deprecate supporting iframes to "
+        "render the winning ad*");
     EXPECT_TRUE(ExecJs(root, navigate_urn_script));
     navigation_observer.WaitForCommit();
     // No console warning is emitted for urn::uuid navigation in fenced frames.
@@ -6750,17 +6755,15 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Parameterized on whether the feature is enabled or not.
-class UUIDFrameTreeBrowserTest : public FencedFrameBrowserTestBase,
-                                 public ::testing::WithParamInterface<bool> {
+class UUIDFrameTreeBrowserTest
+    : public FencedFrameBrowserTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   UUIDFrameTreeBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kAllowURNsInIframes);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kAllowURNsInIframes);
-    }
+    scoped_feature_list_.InitWithFeatureStates(
+        {{blink::features::kAllowURNsInIframes, IsAllowURNsInIframesEnabled()},
+         {blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames,
+          DisplayWarningDeprecateURNIframesUseFencedFrames()}});
   }
 
   bool NavigateIframeAndCheckURL(WebContents* web_contents,
@@ -6777,7 +6780,19 @@ class UUIDFrameTreeBrowserTest : public FencedFrameBrowserTestBase,
 
   static std::string DescribeParams(
       const ::testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "AllowURNsInIframes" : "DoNotAllowURNsInIframes";
+    return base::StringPrintf(
+        "%s_%s",
+        std::get<0>(info.param) ? "AllowURNsInIframes"
+                                : "DoNotAllowURNsInIframes",
+        std::get<1>(info.param)
+            ? "DisplayWarningDeprecateURNIframesUseFencedFrames"
+            : "DoNotDisplayWarningDeprecateURNIframesUseFencedFrames");
+  }
+
+  bool IsAllowURNsInIframesEnabled() { return std::get<0>(GetParam()); }
+
+  bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
+    return std::get<1>(GetParam());
   }
 
  private:
@@ -6822,25 +6837,32 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
       };
   console_observer.SetFilter(base::BindRepeating(filter));
   console_observer.SetPattern(
-      "FLEDGE will deprecate supporting iframes to render the winning ad*");
+      "Protected Audience/selectURL will deprecate supporting iframes to "
+      "render the winning ad*");
 
-  if (GetParam()) {
+  if (IsAllowURNsInIframesEnabled()) {
     // If the feature is enabled, we should navigate to the mapped page.
     EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
                                           urn_uuid, frame_url));
     histogram_tester.ExpectBucketCount(
         "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 1, 1);
-    // A console warning is emitted during navigation. This will be removed
-    // once navigation support for urn::uuid in iframes is deprecated.
+    // A console warning is emitted during navigation if feature
+    // `kDisplayWarningDeprecateURNIframesUseFencedFrames` is enabled. This will
+    // be removed once navigation support for urn::uuid in iframes is
+    // deprecated.
     // TODO(crbug.com/1355857)
-    ASSERT_TRUE(console_observer.Wait());
-    EXPECT_FALSE(console_observer.messages().empty());
-    EXPECT_EQ(
-        console_observer.GetMessageAt(0),
-        "FLEDGE will deprecate supporting iframes to render the winning ad. "
-        "Please use fenced frames instead. See "
-        "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
-        "#examples");
+
+    if (DisplayWarningDeprecateURNIframesUseFencedFrames()) {
+      ASSERT_TRUE(console_observer.Wait());
+      ASSERT_FALSE(console_observer.messages().empty());
+      EXPECT_EQ(
+          console_observer.GetMessageAt(0),
+          "Protected Audience/selectURL will deprecate supporting iframes to "
+          "render the winning ad/selected URL. "
+          "Please use fenced frames instead. See "
+          "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
+          "#examples");
+    }
   } else {
     // If the feature is disabled, navigation should fail.
     EXPECT_FALSE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
@@ -7478,7 +7500,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UUIDFrameTreeBrowserTest,
-                         ::testing::Values(true, false),
+                         ::testing::Combine(testing::Bool(), testing::Bool()),
                          &UUIDFrameTreeBrowserTest::DescribeParams);
 
 }  // namespace content

@@ -101,6 +101,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowSyncXHRInPageDismissal);
 // enabled as part of the FLEDGE origin trial.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowURNsInIframes);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kDisplayWarningDeprecateURNIframesUseFencedFrames);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnchorElementInteraction);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnchorElementMouseMotionEstimator);
@@ -1470,6 +1473,8 @@ BLINK_COMMON_EXPORT bool
 IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled();
 
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
+
+BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 

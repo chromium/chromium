@@ -2251,12 +2251,15 @@ void NavigationRequest::BeginNavigation() {
       // Iframes with urn::uuid.
       DCHECK(!frame_tree_node_->IsMainFrame());
       DCHECK(blink::features::IsAllowURNsInIframeEnabled());
-      AddDeferredConsoleMessage(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          "FLEDGE will deprecate supporting iframes to render the winning ad. "
-          "Please use fenced frames instead. See "
-          "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
-          "#examples");
+      if (blink::features::DisplayWarningDeprecateURNIframesUseFencedFrames()) {
+        AddDeferredConsoleMessage(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "Protected Audience/selectURL will deprecate supporting iframes to "
+            "render the winning ad/selected URL. "
+            "Please use fenced frames instead. See "
+            "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
+            "#examples");
+      }
     }
 
     UMA_HISTOGRAM_BOOLEAN(
