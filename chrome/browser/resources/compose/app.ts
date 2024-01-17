@@ -511,12 +511,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private rewrite_(style: StyleModifiers|null) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
+    const resultHeight = this.$.resultContainer.offsetHeight;
     this.$.body.scrollTop = 0;
     this.loading_ = true;
     this.response_ = undefined;
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.rewrite(style);
+    this.animator_.transitionFromResultToLoading(resultHeight);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {

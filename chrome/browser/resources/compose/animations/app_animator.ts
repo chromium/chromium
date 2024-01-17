@@ -109,4 +109,19 @@ export class ComposeAppAnimator extends Animator {
     return this.fadeIn(
         '#resultOptions, #resultFooter', {delay: 100, duration: 100});
   }
+
+  transitionFromResultToLoading(resultsHeight: number): Animation[] {
+    const loadingHeight = this.getElement('#loading').offsetHeight;
+    return [
+      this.fadeOutAndHide('#resultContainer', 'block', {duration: 100}),
+      this.fadeIn('#loading', {duration: 100}),
+      this.animate(
+          '#resultContainer',
+          [
+            {height: `${resultsHeight}px`},
+            {height: `${loadingHeight}px`},
+          ],
+          {duration: 100, easing: STANDARD_EASING}),
+    ].flat();
+  }
 }
