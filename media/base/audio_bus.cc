@@ -244,10 +244,11 @@ void AudioBus::Zero() {
 
 bool AudioBus::AreFramesZero() const {
   DCHECK(!is_bitstream_format_);
-  for (size_t i = 0; i < channel_data_.size(); ++i) {
+  for (const auto* channel : channel_data_) {
     for (int j = 0; j < frames_; ++j) {
-      if (channel_data_[i][j])
+      if (channel[j]) {
         return false;
+      }
     }
   }
   return true;
