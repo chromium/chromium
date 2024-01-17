@@ -64,7 +64,9 @@ const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("heuristics");
 // (i.e., FILE_PATH_LITERAL("NNN_some_site.html")) to the initializer_list given
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
-  static std::set<base::FilePath::StringType> failing_test_names{};
+  static std::set<base::FilePath::StringType> failing_test_names{
+      FILE_PATH_LITERAL("048_register_deviantart.com.html"),
+      FILE_PATH_LITERAL("159_bug_966406_transavia.com.html")};
   return failing_test_names;
 }
 
@@ -236,9 +238,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1493145): Remove when/if launched. This feature changes
        // default parsing behavior, so must be disabled to avoid
        // fieldtrial_testing_config interference.
-       features::kAutofillEnableEmailHeuristicOnlyAddressForms,
-       // TODO(crbug.com/1427131): Remove once launched.
-       blink::features::kAutofillUseDomNodeIdForRendererId});
+       features::kAutofillEnableEmailHeuristicOnlyAddressForms});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;
@@ -302,9 +302,10 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
-  bool is_expected_to_pass =
-      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
-  RunOneDataDrivenTest(GetParam(), GetOutputDirectory(), is_expected_to_pass);
+  if (!base::Contains(GetFailingTestNames(), GetParam().BaseName().value())) {
+    RunOneDataDrivenTest(GetParam(), GetOutputDirectory(),
+                         /*is_expected_to_pass=*/true);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(AllForms,

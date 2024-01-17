@@ -87,11 +87,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kReduceUserAgentMinorVersion);
 
-  // Disable using DOM node IDs in Autofill on WebView because of the slower
-  // rollout process for WebView.
-  aw_feature_overrides.DisableFeature(
-      blink::features::kAutofillUseDomNodeIdForRendererId);
-
   // Disable fenced frames on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kFencedFrames);
 

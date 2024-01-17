@@ -2002,27 +2002,6 @@
             ]
         }
     ],
-    "AutofillUseDomNodeIdForRendererId": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseDomNodeIdForRendererId"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillUseI18nAddressModel": [
         {
             "platforms": [
