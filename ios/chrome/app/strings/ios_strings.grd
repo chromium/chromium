@@ -5647,6 +5647,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_UNITS_MEASUREMENTS_VOLUME" desc="Title of the button that allows the user to use and convert volume type units" meaning="Button menu entry that allows the user to change the unit category to Volume.">
         Volume
       </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_DIALOG_ACCESSIBILITY_LABEL" desc="Accessibility label the voiceover uses when the idle timeout confirmation dialog is shown.">
+          Idle timeout dialog
+      </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when the user is about to be signed out.">
           You will be signed out
       </message>

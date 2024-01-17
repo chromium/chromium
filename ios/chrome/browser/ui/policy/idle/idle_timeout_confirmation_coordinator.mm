@@ -74,9 +74,12 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   _presentedViewController.modalInPresentation = YES;
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_presentedViewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -123,6 +126,11 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 - (enterprise_idle::IdleService*)idleService {
   return enterprise_idle::IdleServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+}
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _presentedViewController.image);
 }
 
 @end

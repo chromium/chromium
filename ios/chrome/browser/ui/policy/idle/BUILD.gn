@@ -49,6 +49,7 @@ source_set("idle_timeout_policy_ui") {
   ]
 
   deps = [
+    ":constants",
     "//base",
     "//components/enterprise/idle",
     "//components/prefs",
@@ -73,6 +74,13 @@ source_set("idle_timeout_policy_ui") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
 }
 
 source_set("unit_tests") {
@@ -121,6 +129,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "idle_timeout_policy_egtest.mm" ]
   deps = [
+    ":constants",
     "//base",
     "//base/test:test_support",
     "//components/enterprise/idle",

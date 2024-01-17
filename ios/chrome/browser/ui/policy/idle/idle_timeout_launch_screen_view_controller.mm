@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_launch_screen_view_controller.h"
 
+#import "ios/chrome/browser/ui/policy/idle/constants.h"
+
 @interface IdleTimeoutLaunchScreenViewController ()
 
 // Text displayed during the loading.
@@ -19,7 +21,8 @@
   self.detailView = [self createSpinnerView];
   [super viewDidLoad];
   // Override the accessibility ID defined in LaunchScreenViewController.
-  self.view.accessibilityIdentifier = @"IdleTimeoutLaunchScreenViewController";
+  self.view.accessibilityIdentifier =
+      kIdleTimeoutLaunchScreenAccessibilityIdentifier;
 }
 
 #pragma mark - Private

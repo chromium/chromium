@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/policy/idle/constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -41,7 +42,6 @@ using policy_test_utils::SetPolicy;
 
 namespace {
 
-NSString* const kDialogAccessibilityID = @"idleTimeoutConfirmationDialog";
 // kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + extra 4
 // seconds for avoiding flakiness due to time lags.
 constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(10 + 4);
@@ -61,7 +61,7 @@ id<GREYMatcher> GetContinueButton() {
 
 // Returns a matcher for the idle timeout confirmation dialog.
 id<GREYMatcher> GetIdleTimeoutDialogMatcher() {
-  return grey_accessibilityID(kDialogAccessibilityID);
+  return grey_accessibilityID(kIdleTimeoutDialogAccessibilityIdentifier);
 }
 
 // Returns whether the idle timeout dialog is shown.

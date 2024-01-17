@@ -239,11 +239,30 @@
           _idleService->GetLastActionSet());
   CHECK(messageId) << "There is no snackbar message for the set of actions";
   NSString* messageText = l10n_util::GetNSString(*messageId);
+
+  // Delay showing the snackbar message when voice over is on because other
+  // elements with higher accessibility priority will cut off reading the
+  // snackbar message. For example, when tabs are closed on idle timeout, the
+  // snackbar message is cut off when the screen reader reads out the text on
+  // the empty tab grid that got displayed, so we need to wait.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf showSnackbar:messageText];
+        }),
+        base::Seconds(2));
+  } else {
+    [self showSnackbar:messageText];
+  }
+  _idleService->OnIdleTimeoutSnackbarPresented();
+}
+
+- (void)showSnackbar:(NSString*)messageText {
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
+  message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];
-
-  _idleService->OnIdleTimeoutSnackbarPresented();
 }
 
 // Returns whether the scene and app states allow for the idle timeout
