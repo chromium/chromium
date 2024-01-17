@@ -232,7 +232,7 @@ class TestingBrowserProcess : public BrowserProcess {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   std::unique_ptr<printing::BackgroundPrintingManager>
       background_printing_manager_;
-  scoped_refptr<printing::PrintPreviewDialogController>
+  std::unique_ptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
 #endif
 

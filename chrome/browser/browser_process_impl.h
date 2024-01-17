@@ -322,7 +322,7 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  scoped_refptr<printing::PrintPreviewDialogController>
+  std::unique_ptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
 
   std::unique_ptr<printing::BackgroundPrintingManager>

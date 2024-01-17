@@ -1339,7 +1339,7 @@ void BrowserProcessImpl::CreatePrintPreviewDialogController() {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   DCHECK(!print_preview_dialog_controller_);
   print_preview_dialog_controller_ =
-      base::MakeRefCounted<printing::PrintPreviewDialogController>();
+      std::make_unique<printing::PrintPreviewDialogController>();
 #else
   NOTIMPLEMENTED();
 #endif
