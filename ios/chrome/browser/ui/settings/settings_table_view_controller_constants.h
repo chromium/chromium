@@ -56,6 +56,9 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
 // The accessibility identifier of the settings TableView.
 extern NSString* const kSettingsTableViewId;
 
+// The accessibility identifier of SearchEngineTableViewController.
+extern NSString* const kSearchEngineTableViewControllerId;
+
 // The accessibility identifier of the sign in cell.
 extern NSString* const kSettingsSignInCellId;
 

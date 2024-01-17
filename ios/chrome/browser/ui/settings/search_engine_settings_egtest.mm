@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -27,12 +28,28 @@ const char kCustomSearchEngineName[] = "Custom Search Engine";
 const char kGoogleURL[] = "google";
 const char kYahooURL[] = "yahoo";
 
-NSString* GetCustomeSearchEngineLabel() {
-  return [NSString stringWithFormat:@"%s, 127.0.0.1", kCustomSearchEngineName];
+id<GREYMatcher> GetCustomeSearchEngineAccessibilityLabel() {
+  NSString* label =
+      [NSString stringWithFormat:@"%s, 127.0.0.1", kCustomSearchEngineName];
+  return grey_accessibilityLabel(label);
 }
 
 std::string GetSearchExample() {
   return std::string(kSearchURL) + "example";
+}
+
+// Returns the GREYElementInteraction* for the item on the password list with
+// the given `matcher`. It scrolls in `direction` if necessary to ensure that
+// the matched item is sufficiently visible, thus interactable.
+GREYElementInteraction* GetInteractionForCustomeSearchEngine() {
+  id<GREYMatcher> customSearchEngineCell =
+      GetCustomeSearchEngineAccessibilityLabel();
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(customSearchEngineCell,
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+      onElementWithMatcher:grey_accessibilityID(
+                               kSearchEngineTableViewControllerId)];
 }
 
 // Responses for different search engine. The name of the search engine is
@@ -178,40 +195,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testDeleteCustomSearchEngineSwipeAndTap {
   [self enterSettingsWithCustomSearchEngine];
 
-  id<GREYMatcher> customSearchEngineCell =
-      grey_accessibilityLabel(GetCustomeSearchEngineLabel());
-
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  [GetInteractionForCustomeSearchEngine()
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  // Swipe all the way to the left, to delete the custom search engine.
+  id<GREYMatcher> customSearchEngineCell =
+      GetCustomeSearchEngineAccessibilityLabel();
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
-                                                            0.2, 0.5)];
-
-  id<GREYMatcher> deleteButtonMatcher =
-      grey_allOf(grey_accessibilityLabel(@"Delete"),
-                 grey_kindOfClassName(@"UISwipeActionStandardButton"), nil);
-  // Depending on the device, the swipe may have deleted the element or just
-  // displayed the "Delete" button. Check if the delete button is still on
-  // screen and tap it if it is the case.
-  GREYCondition* waitForDeleteToDisappear = [GREYCondition
-      conditionWithName:@"Element is already deleted"
-                  block:^{
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:deleteButtonMatcher]
-                        assertWithMatcher:grey_nil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-
-  bool matchedElement = [waitForDeleteToDisappear
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
-
-  if (!matchedElement) {
-    // Delete button is still on screen, tap it
-    [[EarlGrey selectElementWithMatcher:deleteButtonMatcher]
-        performAction:grey_tap()];
-  }
+                                                            0.9, 0.5)];
 
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       assertWithMatcher:grey_nil()];
@@ -220,15 +212,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Deletes a custom engine by swiping it.
 - (void)testDeleteCustomSearchEngineSwipe {
   [self enterSettingsWithCustomSearchEngine];
-
-  id<GREYMatcher> customSearchEngineCell =
-      grey_accessibilityLabel(GetCustomeSearchEngineLabel());
-
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  [GetInteractionForCustomeSearchEngine()
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
-
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  [[EarlGrey
+      selectElementWithMatcher:GetCustomeSearchEngineAccessibilityLabel()]
       assertWithMatcher:grey_nil()];
 }
 
@@ -244,8 +232,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:editButton] performAction:grey_tap()];
 
   id<GREYMatcher> customSearchEngineCell =
-      grey_accessibilityLabel(GetCustomeSearchEngineLabel());
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+      GetCustomeSearchEngineAccessibilityLabel();
+  [GetInteractionForCustomeSearchEngine()
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
       performAction:grey_tap()];

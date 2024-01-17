@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -238,6 +239,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
 
+  self.tableView.accessibilityIdentifier = kSearchEngineTableViewControllerId;
   TableViewModel* model = self.tableViewModel;
   [self loadSearchEngines];
 
