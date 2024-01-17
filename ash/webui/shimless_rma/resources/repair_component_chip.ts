@@ -9,11 +9,18 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CLICK_REPAIR_COMPONENT_BUTTON, ClickRepairComponentButtonEvent, createCustomEvent} from './events.js';
 import {getTemplate} from './repair_component_chip.html.js';
 import {modifyTabbableElement} from './shimless_rma_util.js';
+
+declare global {
+  interface HTMLElementEventMap {
+    [CLICK_REPAIR_COMPONENT_BUTTON]: ClickRepairComponentButtonEvent;
+  }
+}
 
 /**
  * @fileoverview
@@ -21,17 +28,11 @@ import {modifyTabbableElement} from './shimless_rma_util.js';
  * as replaced.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const RepairComponentChipBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const RepairComponentChipBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class RepairComponentChip extends RepairComponentChipBase {
   static get is() {
-    return 'repair-component-chip';
+    return 'repair-component-chip' as const;
   }
 
   static get template() {
@@ -40,13 +41,11 @@ export class RepairComponentChip extends RepairComponentChipBase {
 
   static get properties() {
     return {
-      /** @type {boolean} */
       disabled: {
         type: Boolean,
         value: false,
       },
 
-      /** @type {boolean} */
       checked: {
         notify: true,
         reflectToAttribute: true,
@@ -54,20 +53,16 @@ export class RepairComponentChip extends RepairComponentChipBase {
         value: false,
       },
 
-      /** @type {string} */
       componentName: {type: String, value: ''},
 
-      /** @type {string} */
       componentIdentifier: {type: String, value: ''},
 
-      /** @type {number} */
       uniqueId: {
         reflectToAttribute: true,
         type: Number,
         value: '',
       },
 
-      /** @type {boolean} */
       isFirstClickableComponent: {
         type: Boolean,
         value: false,
@@ -78,35 +73,38 @@ export class RepairComponentChip extends RepairComponentChipBase {
     };
   }
 
-  /** @protected */
-  onComponentButtonClicked() {
+  disabled: boolean;
+  checked: boolean;
+  componentName: string;
+  componentIdentifier: string;
+  uniqueId: number;
+  isFirstClickableComponent: boolean;
+
+  protected onComponentButtonClicked(): void {
     this.checked = !this.checked;
 
     // Notify the page that the component chip was clicked, so that the page can
     // put the focus on it.
-    this.dispatchEvent(new CustomEvent('click-repair-component-button', {
-      bubbles: true,
-      composed: true,
-      detail: this.uniqueId,
-    }));
+    this.dispatchEvent(
+        createCustomEvent(CLICK_REPAIR_COMPONENT_BUTTON, this.uniqueId));
   }
 
-  /** @private */
-  onIsFirstClickableComponentChanged() {
+  private onIsFirstClickableComponentChanged(): void {
     // Tab should go to the first non-disabled component in the list,
     // not individual component.
     modifyTabbableElement(
-        /** @type {!HTMLElement} */ (
-            this.shadowRoot.querySelector('#componentButton')),
+        this.shadowRoot!.querySelector('#componentButton') as HTMLElement,
         this.isFirstClickableComponent);
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  isAriaPressed() {
+  protected isAriaPressed(): string {
     return this.checked.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [RepairComponentChip.is]: RepairComponentChip;
   }
 }
 
