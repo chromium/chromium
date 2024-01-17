@@ -247,6 +247,11 @@ class ViewAXPlatformNodeDelegateTableTest
         TableView::CreateScrollViewWithTable(std::move(table)));
   }
 
+  void TearDown() override {
+    table_ = nullptr;
+    ViewAXPlatformNodeDelegateTest::TearDown();
+  }
+
   ui::TableColumn TestTableColumn(int id, const std::string& title) {
     ui::TableColumn column;
     column.id = id;
@@ -261,8 +266,7 @@ class ViewAXPlatformNodeDelegateTableTest
 
  private:
   std::unique_ptr<TestTableModel> model_;
-  raw_ptr<TableView, AcrossTasksDanglingUntriaged> table_ =
-      nullptr;  // Owned by parent.
+  raw_ptr<TableView> table_ = nullptr;
 };
 
 class ViewAXPlatformNodeDelegateMenuTest
@@ -319,9 +323,9 @@ class ViewAXPlatformNodeDelegateMenuTest
   }
 
  private:
-  raw_ptr<SubmenuView, AcrossTasksDanglingUntriaged> submenu_ = nullptr;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> runner_;
+  raw_ptr<SubmenuView> submenu_ = nullptr;
   // Owned by runner_.
   raw_ptr<views::TestMenuItemView> menu_ = nullptr;
   UniqueWidgetPtr owner_;
