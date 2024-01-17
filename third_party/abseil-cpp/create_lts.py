@@ -96,6 +96,11 @@ def main(argv):
 
   # Replacement directives go here.
   ReplaceStringsInFile(
+      'MODULE.bazel', {
+          'version = "head"':
+              'version = "{}.0"'.format(datestamp)
+      })
+  ReplaceStringsInFile(
       'absl/base/config.h', {
           '#undef ABSL_LTS_RELEASE_VERSION':
               '#define ABSL_LTS_RELEASE_VERSION {}'.format(datestamp),

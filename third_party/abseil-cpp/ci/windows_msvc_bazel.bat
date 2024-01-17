@@ -41,7 +41,7 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
   --copt=/std:%STD% ^
   --define=absl=1 ^
   --distdir=%KOKORO_GFILE_DIR%\distdir ^
-  --enable_bzlmod=false ^
+  --enable_bzlmod=true ^
   --keep_going ^
   --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1" ^
   --test_env=TZDIR="%CD%\absl\time\internal\cctz\testdata\zoneinfo" ^

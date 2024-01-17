@@ -64,6 +64,7 @@ absl_source_set("globals") {
     "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/hash",
+    "//third_party/abseil-cpp/absl/log/internal:vlog_config",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
@@ -180,6 +181,7 @@ absl_test("vlog_is_on_test") {
   sources = [ "vlog_is_on_test.cc" ]
   deps = [
     ":flags",
+    ":globals",
     ":log",
     ":scoped_mock_log",
     ":vlog_is_on",

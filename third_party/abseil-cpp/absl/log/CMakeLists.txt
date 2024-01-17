@@ -461,6 +461,11 @@ absl_cc_library(
   PUBLIC
 )
 
+# Warning: Many linkers will strip the contents of this library because its
+# symbols are only used in a global constructor. A workaround is for clients
+# to link this using $<LINK_LIBRARY:WHOLE_ARCHIVE,absl::log_flags> instead of
+# the plain absl::log_flags.
+# TODO(b/320467376): Implement the equivalent of Bazel's alwayslink=True.
 absl_cc_library(
   NAME
     log_flags
@@ -505,6 +510,7 @@ absl_cc_library(
     absl::log_severity
     absl::raw_logging_internal
     absl::strings
+    absl::vlog_config_internal
 )
 
 absl_cc_library(
@@ -737,8 +743,9 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::log_flags
     absl::log
+    absl::log_flags
+    absl::log_globals
     absl::scoped_mock_log
     absl::vlog_is_on
     absl::log_severity

@@ -90,26 +90,4 @@
    }()                                                                     \
        ->IsEnabled(verbose_level))
 
-namespace absl {
-ABSL_NAMESPACE_BEGIN
-
-// Sets the global `(ABSL_)VLOG(_IS_ON)` level to `log_level`.  This level is
-// applied to any sites whose filename doesn't match any `module_pattern`.
-// Returns the prior value.
-inline int SetGlobalVLogLevel(int log_level) {
-  return absl::log_internal::UpdateGlobalVLogLevel(log_level);
-}
-
-// Sets `(ABSL_)VLOG(_IS_ON)` level for `module_pattern` to `log_level`.
-// This lets us dynamically control what is normally set by the --vmodule flag.
-// Returns the level that previously applied to module_pattern.
-// Calling this with `log_level` of kUseFlag will have all sites for that
-// pattern use the value of --v.
-inline int SetVLogLevel(absl::string_view module_pattern, int log_level) {
-  return absl::log_internal::PrependVModule(module_pattern, log_level);
-}
-
-ABSL_NAMESPACE_END
-}  // namespace absl
-
 #endif  // ABSL_LOG_ABSL_VLOG_IS_ON_H_

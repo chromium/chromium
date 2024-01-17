@@ -82,7 +82,7 @@ for std in ${STD}; do
           --copt="-fsanitize=thread" \
           --copt="-fno-sanitize-blacklist" \
           --copt=-Werror \
-          --enable_bzlmod=false \
+          --enable_bzlmod=true \
           --features=external_include_paths \
           --keep_going \
           --linkopt="-fsanitize=thread" \

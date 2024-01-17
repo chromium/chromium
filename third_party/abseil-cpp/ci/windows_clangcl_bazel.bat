@@ -48,7 +48,7 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
   --copt=-Wno-microsoft-cast ^
   --define=absl=1 ^
   --distdir=%KOKORO_GFILE_DIR%\distdir ^
-  --enable_bzlmod=false ^
+  --enable_bzlmod=true ^
   --extra_execution_platforms=//absl:x64_windows-clang-cl ^
   --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl ^
   --keep_going ^
