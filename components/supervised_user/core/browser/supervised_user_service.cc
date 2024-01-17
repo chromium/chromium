@@ -285,8 +285,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
     observer.OnURLFilterChanged();
   }
 
-  SupervisedUserURLFilter::WebFilterType filter_type =
-      url_filter_->GetWebFilterType();
+  WebFilterType filter_type = url_filter_->GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
     url_filter_->ReportWebFilterTypeMetrics();
@@ -297,8 +296,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 void SupervisedUserService::OnSafeSitesSettingChanged() {
   UpdateAsyncUrlChecker();
 
-  SupervisedUserURLFilter::WebFilterType filter_type =
-      url_filter_->GetWebFilterType();
+  WebFilterType filter_type = url_filter_->GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
     url_filter_->ReportWebFilterTypeMetrics();

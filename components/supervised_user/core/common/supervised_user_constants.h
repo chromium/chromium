@@ -11,6 +11,26 @@
 
 namespace supervised_user {
 
+// This enum describes the filter types of Chrome, which is
+// set by Family Link App or at families.google.com/families. These values
+// are logged to UMA. Entries should not be renumbered and numeric values
+// should never be reused. Please keep in sync with "FamilyLinkWebFilterType"
+// in src/tools/metrics/histograms/enums.xml.
+enum class WebFilterType {
+  // The web filter is set to "Allow all sites".
+  kAllowAllSites = 0,
+
+  // The web filter is set to "Try to block mature sites".
+  kTryToBlockMatureSites = 1,
+
+  // The web filter is set to "Only allow certain sites".
+  kCertainSites = 2,
+
+  // Used for UMA. Update kMaxValue to the last value. Add future entries
+  // above this comment. Sync with enums.xml.
+  kMaxValue = kCertainSites,
+};
+
 // These values corresponds to SupervisedUserSafetyFilterResult in
 // tools/metrics/histograms/enums.xml. If you change anything here, make
 // sure to also update enums.xml accordingly.
