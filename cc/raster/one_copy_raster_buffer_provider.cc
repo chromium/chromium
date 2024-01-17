@@ -457,8 +457,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   bool needs_clear = false;
 
   if (!shared_image) {
-    uint32_t usage =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_RASTER;
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                     gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     if (mailbox_texture_is_overlay_candidate)
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     shared_image = sii->CreateSharedImage(
