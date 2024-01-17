@@ -42,7 +42,8 @@ bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
   // subtree roots.
   return !old_style ||
          (RecalcSizeContainerQueryDependent() &&
-          old_style->DependsOnSizeContainerQueries()) ||
+          (old_style->DependsOnSizeContainerQueries() ||
+           old_style->HighlightPseudoElementStylesDependOnContainerUnits())) ||
          (RecalcStyleContainerQueryDependent() &&
           old_style->DependsOnStyleContainerQueries()) ||
          (RecalcStateContainerQueryDependent() &&

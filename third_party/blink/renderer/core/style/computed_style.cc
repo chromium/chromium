@@ -618,6 +618,35 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
   return false;
 }
 
+bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
+  const StyleHighlightData& highlight_data = HighlightData();
+  if (highlight_data.Selection() &&
+      highlight_data.Selection()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.TargetText() &&
+      highlight_data.TargetText()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.SpellingError() &&
+      highlight_data.SpellingError()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  if (highlight_data.GrammarError() &&
+      highlight_data.GrammarError()->HasContainerRelativeUnits()) {
+    return true;
+  }
+  const CustomHighlightsStyleMap& custom_highlights =
+      highlight_data.CustomHighlights();
+  for (auto custom_highlight : custom_highlights) {
+    if (custom_highlight.value->HasContainerRelativeUnits()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {

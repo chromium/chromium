@@ -114,14 +114,19 @@ void StyleHighlightData::SetCustomHighlight(const AtomicString& highlight_name,
 }
 
 bool StyleHighlightData::DependsOnSizeContainerQueries() const {
-  if ((selection_ && selection_->DependsOnSizeContainerQueries()) ||
-      (target_text_ && target_text_->DependsOnSizeContainerQueries()) ||
-      (spelling_error_ && spelling_error_->DependsOnSizeContainerQueries()) ||
-      (grammar_error_ && grammar_error_->DependsOnSizeContainerQueries())) {
+  if ((selection_ && (selection_->DependsOnSizeContainerQueries() ||
+                      selection_->HasContainerRelativeUnits())) ||
+      (target_text_ && (target_text_->DependsOnSizeContainerQueries() ||
+                        target_text_->HasContainerRelativeUnits())) ||
+      (spelling_error_ && (spelling_error_->DependsOnSizeContainerQueries() ||
+                           spelling_error_->HasContainerRelativeUnits())) ||
+      (grammar_error_ && (grammar_error_->DependsOnSizeContainerQueries() ||
+                          grammar_error_->HasContainerRelativeUnits()))) {
     return true;
   }
   for (auto style : custom_highlights_) {
-    if (style.value->DependsOnSizeContainerQueries()) {
+    if (style.value->DependsOnSizeContainerQueries() ||
+        style.value->HasContainerRelativeUnits()) {
       return true;
     }
   }
