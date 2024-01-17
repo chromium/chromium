@@ -238,9 +238,10 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   //      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   //        <rdf:Description rdf:about=""
   //        xmlns:dc="http://purl.org/dc/elements/1.1/">
-  //          <dc:description>
-  //            {"creation_time":"123456789",
-  //             "query_info":"options":{"6":"48","7":"61"},"template_id":"3"}
+  //          <dc:description>{"creation_time":"123456789",
+  //          "user_visible_query_text":"some query",
+  //          "user_visible_query_template":"some template",
+  //          "options":{"6":"48","7":"61"}, "template_id":"3"}
   //          </dc:description>
   //        </rdf:Description>
   //      </rdf:RDF>

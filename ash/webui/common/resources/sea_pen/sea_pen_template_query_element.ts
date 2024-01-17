@@ -17,7 +17,7 @@ import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
-import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen.mojom-webui.js';
+import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
@@ -179,6 +179,16 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     return selectedChip ? 'unselected' : '';
   }
 
+  private getUserVisibleQueryInfo_(): SeaPenUserVisibleQuery {
+    const translatedTokens: string[] = this.templateTokens_.map((token) => {
+      return this.isChip_(token) ? token.translation : token;
+    });
+    return {
+      text: translatedTokens.join(' '),
+      templateTitle: this.seaPenTemplate_.title,
+    };
+  }
+
   private getTemplateRequest_(): SeaPenQuery {
     const optionMap = new Map<SeaPenTemplateChip, SeaPenTemplateOption>();
     this.selectedOptions_.forEach((option, chip) => {
@@ -190,6 +200,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
       templateQuery: {
         id,
         options: Object.fromEntries(optionMap),
+        userVisibleQuery: this.getUserVisibleQueryInfo_(),
       },
     };
   }

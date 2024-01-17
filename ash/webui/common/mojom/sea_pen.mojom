@@ -463,6 +463,18 @@ struct SeaPenThumbnail {
     uint32 id;
 };
 
+// The query information that was recently used to search for Sea Pen
+// images including the visible prompt text and template title from the UI.
+// The strings were translated based on the localization that the user was in
+// when they ran the query.
+struct SeaPenUserVisibleQuery {
+  // The user visible prompt used to search for images.
+  string text;
+
+  // The visible title of the selected template used to search for images.
+  string template_title;
+};
+
 // The information needed to query template wallpapers. The possible `id` and
 // `options` values are defined in cs/ChromeOsWallpaperQueryProcessor.kt. They
 // are not controlled by the renderer. The browser is responsible for validating
@@ -473,6 +485,11 @@ struct SeaPenTemplateQuery {
 
   // The chips and their selected options.
   map<SeaPenTemplateChip, SeaPenTemplateOption> options;
+
+  // The visible template query information including the prompt and template
+  // title that the user selected, saved in the localization that the user
+  // was in when they ran the query.
+  SeaPenUserVisibleQuery user_visible_query;
 };
 
 // A text or template query for constructing a Manta request.

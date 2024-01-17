@@ -34,11 +34,16 @@ namespace {
 constexpr int kSeaPenImageThumbnailSizeDip = 512;
 
 /**
- * Serializes a sea pen query into json string format based on the query type
- * such as {freeform_query: <string>} or {template_id: <number>, options:
- * {<chip_number>:<option_number>, ...}}. For example:
- * {"creation_time":"123456789","freeform_query":"test query"}
- * {"creation_time":"123456789","template_id":"2","options":{"4":"34","5":"40"}}
+ * Serializes a sea pen query information `query` into json
+ * string format based on the query type. Such as {creation_time:<number>,
+ * freeform_query:<string>} or {creation_time:<number>,
+ * user_visible_query_text:<string>, user_visible_query_template:<string>,
+ * template_id:<number>, options:{<chip_number>:<option_number>, ...}}. For
+ * example:
+ * {"creation_time":"13349580387513653", "freeform_query":"test freeform query"}
+ * {"creation_time":"13349580387513653", "user_visible_query_text": "test
+ * template query", "user_visible_query_template": "test template",
+ * "template_id":"2","options":{"4":"34","5":"40"}}
  *
  * @param query  pointer to the sea pen query
  * @return query information in string format
@@ -61,6 +66,11 @@ std::string SeaPenQueryToJsonString(const mojom::SeaPenQueryPtr& query) {
                          base::NumberToString(static_cast<int32_t>(option)));
       }
       query_dict.Set("options", std::move(options_dict));
+      query_dict.Set("user_visible_query_text",
+                     query->get_template_query()->user_visible_query->text);
+      query_dict.Set(
+          "user_visible_query_template",
+          query->get_template_query()->user_visible_query->template_title);
       break;
   }
 

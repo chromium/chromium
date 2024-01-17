@@ -201,7 +201,9 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
                 mojom::SeaPenTemplateOption::kFlowerTypeRose}});
   mojom::SeaPenQueryPtr search_query =
       mojom::SeaPenQuery::NewTemplateQuery(mojom::SeaPenTemplateQuery::New(
-          mojom::SeaPenTemplateId::kFlower, options));
+          mojom::SeaPenTemplateId::kFlower, options,
+          mojom::SeaPenUserVisibleQuery::New("test template query",
+                                             "test template title")));
 
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(search_query), search_wallpaper_future.GetCallback());
@@ -344,7 +346,9 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
   mojom::SeaPenQueryPtr search_query =
       mojom::SeaPenQuery::NewTemplateQuery(mojom::SeaPenTemplateQuery::New(
-          mojom::SeaPenTemplateId::kCharacters, chosen_options));
+          mojom::SeaPenTemplateId::kCharacters, chosen_options,
+          mojom::SeaPenUserVisibleQuery::New("test template query",
+                                             "test template title")));
 
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(search_query), search_wallpaper_future.GetCallback());
@@ -361,7 +365,8 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   // `time_override` is still in effect so `base::Time::Now()` should always
   // return the same value.
   expected_metadata.Set("creation_time", base::TimeToValue(base::Time::Now()));
-
+  expected_metadata.Set("user_visible_query_text", "test template query");
+  expected_metadata.Set("user_visible_query_template", "test template title");
   {
     base::Value::Dict options;
     for (const auto& [chip, option] : chosen_options) {
