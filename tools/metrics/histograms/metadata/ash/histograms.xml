@@ -2203,7 +2203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.CustomNameCreated" enum="BooleanHit"
-    expires_after="2023-11-08">
+    expires_after="2025-01-17">
   <owner>benbecker@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
