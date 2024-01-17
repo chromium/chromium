@@ -51,12 +51,12 @@
   return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
-#pragma mark - InfobarOverlayRequestMediator
+#pragma mark - InfobarBannerDelegate
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
   // This can happen if the user quickly navigates to another website while the
-  // banner is still appearing, causing the banner to be triggered before being
-  // removed.
+  // banner is still appearing, where the infobar owning the delegate is deleted
+  // before handling the button action.
   if (!self.passwordDelegate) {
     return;
   }
@@ -73,6 +73,23 @@
     }
   }
   [self dismissOverlay];
+}
+
+#pragma mark - InfobarBannerOverlayMediator
+
+- (void)finishDismissal {
+  if (self.passwordDelegate) {
+    // If the infobar owning the delegate isn't yet deleted, report the infobar
+    // as gone right now. The infobar outlives the banner UI when the state of
+    // the page hasn't changed after dimissing the banner.
+    //
+    // Not having a delegate at this moment happens when navigating away from
+    // the page on which the banner is displayed, where the infobar delegate is
+    // deleted before the dismiss callback is called.
+    self.passwordDelegate->InfobarGone();
+  }
+
+  [super finishDismissal];
 }
 
 #pragma mark - Private

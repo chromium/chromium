@@ -157,3 +157,24 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }
+
+// Tests that the infobar delegate is called on -finishDismissal when the
+// delegate is set.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest, InfobarDone) {
+  InitInfobar();
+  EXPECT_CALL(mock_delegate(), InfobarGone).Times(1);
+  [mediator_ finishDismissal];
+}
+
+// Tests that the infobar delegate isn't called on -finishDismissal when the
+// infobar delegate is deleted.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest,
+       InfobarDoneWhenInfobarDelegateDeleted) {
+  InitInfobar();
+  EXPECT_CALL(mock_delegate(), InfobarGone).Times(0);
+
+  // Delete the infobar to return a nullptr delegate.
+  infobar_.reset();
+
+  [mediator_ finishDismissal];
+}

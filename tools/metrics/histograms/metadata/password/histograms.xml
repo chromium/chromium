@@ -1704,6 +1704,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.iOS.InfoBar.{Type}Duration.{Moment}"
+    units="ms" expires_after="2024-06-12">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the duration of the password save/update infobar that is presented
+    after using new credentials. Recorded when the password infobar banner is
+    dismissed.
+  </summary>
+  <token key="Type">
+    <variant name="Save" summary="the save infobar"/>
+    <variant name="Update" summary="the update infobar"/>
+  </token>
+  <token key="Moment">
+    <variant name="All" summary="all moments"/>
+    <variant name="OnDeletion" summary="when deleting the infobar delegate"/>
+    <variant name="OnDismiss" summary="when dismissing the infobar"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.iOS.ReauthenticationUI.Event"
     enum="ReauthenticationEvent" expires_after="2024-07-21">
   <owner>eic@google.com</owner>
