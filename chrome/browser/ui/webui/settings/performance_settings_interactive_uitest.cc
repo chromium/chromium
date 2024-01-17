@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 
-#elif BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 class MemorySettingsCrosInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveAshTest> {};
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
       WaitForShow(kOsFeedbackDialogElementId));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class MemorySaverSettingsMultiStateModeInteractiveTest
