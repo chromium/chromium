@@ -547,6 +547,16 @@ base::StringPiece HostResolver::GetHostname(
   return absl::get<std::string>(host);
 }
 
+// static
+bool HostResolver::MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
+                                             HostResolverSource source,
+                                             const IPAddress& ip_address) {
+  return !(flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6) &&
+         ip_address.IsValid() && ip_address.IsIPv4() &&
+         base::FeatureList::IsEnabled(features::kUseNAT64ForIPv4Literal) &&
+         (source != HostResolverSource::LOCAL_ONLY);
+}
+
 HostResolver::HostResolver() = default;
 
 // static

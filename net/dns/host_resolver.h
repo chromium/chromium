@@ -530,6 +530,12 @@ class NET_EXPORT HostResolver {
   static base::StringPiece GetHostname(
       const absl::variant<url::SchemeHostPort, std::string>& host);
 
+  // Returns true if NAT64 can be used in place of an IPv4 address during host
+  // resolution.
+  static bool MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
+                                        HostResolverSource source,
+                                        const IPAddress& ip_address);
+
  protected:
   HostResolver();
 

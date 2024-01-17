@@ -106,6 +106,10 @@ class NET_EXPORT HostResolverManager
   using ResolveHostParameters = HostResolver::ResolveHostParameters;
   using PassKey = base::PassKey<HostResolverManager>;
 
+  struct NET_EXPORT_PRIVATE JobKey;
+  class NET_EXPORT_PRIVATE Job;
+  class NET_EXPORT_PRIVATE RequestImpl;
+
   // Creates a HostResolver as specified by |options|. Blocking tasks are run in
   // ThreadPool.
   //
@@ -271,10 +275,7 @@ class NET_EXPORT HostResolverManager
  private:
   friend class HostResolverManagerTest;
   friend class HostResolverManagerDnsTest;
-  class Job;
-  struct JobKey;
   class LoopbackProbeJob;
-  class RequestImpl;
   class ProbeRequestImpl;
   using JobMap = std::map<JobKey, std::unique_ptr<Job>>;
 
