@@ -98,7 +98,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:session_restoration_service",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",
-    "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

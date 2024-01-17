@@ -58,16 +58,22 @@ void LegacySessionRestorationService::RemoveObserver(
 void LegacySessionRestorationService::SaveSessions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Browser* browser : browsers_) {
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /* immediately*/ true);
+    // SessionRestorationBrowserAgent is not created for backup Browsers.
+    if (SessionRestorationBrowserAgent* browser_agent =
+            SessionRestorationBrowserAgent::FromBrowser(browser)) {
+      browser_agent->SaveSession(/*immediately=*/true);
+    }
   }
 }
 
 void LegacySessionRestorationService::ScheduleSaveSessions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Browser* browser : browsers_) {
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /* immediately*/ false);
+    // SessionRestorationBrowserAgent is not created for backup Browsers.
+    if (SessionRestorationBrowserAgent* browser_agent =
+            SessionRestorationBrowserAgent::FromBrowser(browser)) {
+      browser_agent->SaveSession(/*immediately=*/false);
+    }
   }
 }
 
@@ -112,10 +118,33 @@ void LegacySessionRestorationService::LoadWebStateStorage(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(storage)));
 }
 
+void LegacySessionRestorationService::AttachBackup(Browser* browser,
+                                                   Browser* backup) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(base::Contains(browsers_, browser));
+  DCHECK(!base::Contains(browsers_, backup));
+  DCHECK(!base::Contains(browsers_to_backup_, browser));
+
+  browsers_.insert(backup);
+  browsers_to_backup_.insert(std::make_pair(browser, backup));
+  backups_to_browser_.insert(std::make_pair(backup, browser));
+}
+
 void LegacySessionRestorationService::Disconnect(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(browsers_, browser));
   browsers_.erase(browser);
+
+  // Deal with backup Browser.
+  if (base::Contains(backups_to_browser_, browser)) {
+    Browser* original = backups_to_browser_[browser];
+    backups_to_browser_.erase(browser);
+    browsers_to_backup_.erase(original);
+    return;
+  }
+
+  // Must disconnect the backup Browser before the original Browser.
+  DCHECK(!base::Contains(browsers_to_backup_, browser));
 
   SessionRestorationBrowserAgent* browser_agent =
       SessionRestorationBrowserAgent::FromBrowser(browser);
