@@ -5,19 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTROLS_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
-#include "extensions/browser/permissions_manager.h"
+#include "url/origin.h"
 
-namespace content {
-class WebContents;
-}
-
-class Browser;
 class ExtensionsToolbarButton;
 class ExtensionsRequestAccessButton;
-class ToolbarActionViewController;
 
 class ExtensionsToolbarControls {
  public:
@@ -29,22 +21,6 @@ class ExtensionsToolbarControls {
       delete;
   ~ExtensionsToolbarControls();
 
-  // Update the controls given whether `is_restricted_url`, the `actions` and
-  // the user `site_setting` in the `current_web_contents`.
-  void UpdateControls(
-      bool is_restricted_url,
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
-      extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* current_web_contents,
-      Browser* browser);
-
-  // Updates `request_access_button_` visibility given the user `site_setting`
-  // and `actions` in `web_contents`.
-  void UpdateRequestAccessButton(
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
-      extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* web_contents);
-
   // Hides the confirmation message in the request access button.
   void ResetConfirmation();
 
@@ -55,14 +31,6 @@ class ExtensionsToolbarControls {
   bool IsShowingConfirmationFor(const url::Origin& origin) const;
 
  private:
-  // Updates `extensions_button_` icon given `actions`, the user `site_setting`
-  // and whether `is_restricted_url` in `web_contents`.
-  void UpdateExtensionsButton(
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
-      extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* web_contents,
-      bool is_restricted_url);
-
   const raw_ptr<ExtensionsRequestAccessButton> request_access_button_;
   const raw_ptr<ExtensionsToolbarButton> extensions_button_;
 };

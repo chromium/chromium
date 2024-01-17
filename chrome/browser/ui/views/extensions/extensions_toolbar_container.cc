@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -331,11 +332,72 @@ void ExtensionsToolbarContainer::UpdatePinnedActions() {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void ExtensionsToolbarContainer::UpdateExtensionsButton(
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    content::WebContents* web_contents,
+    bool is_restricted_url) {
+  // Extensions button state can only change when feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
+  ExtensionsToolbarButton::State extensions_button_state =
+      ExtensionsToolbarButton::State::kDefault;
+
+  if (is_restricted_url || site_setting ==
+                               extensions::PermissionsManager::UserSiteSetting::
+                                   kBlockAllExtensions) {
+    extensions_button_state =
+        ExtensionsToolbarButton::State::kAllExtensionsBlocked;
+  } else if (ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+                 actions_, web_contents)) {
+    extensions_button_state =
+        ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
+  }
+
+  extensions_button_->UpdateState(extensions_button_state);
+}
+
 void ExtensionsToolbarContainer::UpdateRequestAccessButton(
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* web_contents) {
-  extensions_controls_->UpdateRequestAccessButton(actions_, site_setting,
-                                                  web_contents);
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+
+  // Don't update the button if the confirmation message is currently showing;
+  // it'll go away after a few seconds. Once the confirmation is collapsed,
+  // button should be updated again.
+  if (request_access_button_->IsShowingConfirmation()) {
+    return;
+  }
+
+  // Extensions are included in the request access button only when the site
+  // allows customizing site access by extension, and when the extension
+  // itself can show access requests in the toolbar and hasn't been dismissed.
+  std::vector<extensions::ExtensionId> extensions;
+  if (site_setting ==
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
+    for (const auto& action : actions_) {
+      bool dismissed_requests =
+          extensions::TabHelper::FromWebContents(web_contents)
+              ->HasExtensionDismissedRequests(action->GetId());
+      if (action->ShouldShowSiteAccessRequestInToolbar(web_contents) &&
+          !dismissed_requests) {
+        extensions.push_back(action->GetId());
+      }
+    }
+  }
+
+  request_access_button_->Update(extensions);
+
+  // Extensions button has left flat edge iff request access button is visible.
+  // This will also update the button's background.
+  absl::optional<ToolbarButton::Edge> extensions_button_edge =
+      request_access_button_->GetVisible()
+          ? absl::optional<ToolbarButton::Edge>(ToolbarButton::Edge::kLeft)
+          : absl::nullopt;
+  extensions_button_->SetFlatEdge(extensions_button_edge);
 }
 
 void ExtensionsToolbarContainer::UpdateAllIcons() {
@@ -982,8 +1044,8 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
           ->GetUserSiteSetting(
               web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
-  extensions_controls_->UpdateControls(is_restricted_url, actions_,
-                                       site_setting, web_contents, browser_);
+  UpdateExtensionsButton(site_setting, web_contents, is_restricted_url);
+  UpdateRequestAccessButton(site_setting, web_contents);
 }
 
 void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {
