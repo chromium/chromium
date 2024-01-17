@@ -21,11 +21,13 @@ public class ViewResizerUtil {
     public static int computePaddingForWideDisplay(
             Context context, @Nullable View view, int minWidePaddingPixels) {
         Resources resources = context.getResources();
-        int screenWidthDp;
         float dpToPx = resources.getDisplayMetrics().density;
+
+        int screenWidthDp = 0;
         if (BuildInfo.getInstance().isAutomotive && view != null) {
             screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
-        } else {
+        }
+        if (screenWidthDp == 0) {
             screenWidthDp = resources.getConfiguration().screenWidthDp;
         }
 
