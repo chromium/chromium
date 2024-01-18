@@ -91,6 +91,11 @@ const char kOnDeviceModelExecutionOverride[] =
 // Triggers validation of the model. Used for manual testing.
 const char kModelValidate[] = "optimization-guide-model-validate";
 
+// Triggers validation of the server-side AI model execution. Used for
+// integration testing.
+const char kModelExecutionValidate[] =
+    "optimization-guide-model-execution-validate";
+
 const char kPageContentAnnotationsLoggingEnabled[] =
     "enable-page-content-annotations-logging";
 
@@ -228,6 +233,11 @@ bool IsModelOverridePresent() {
 bool ShouldValidateModel() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kModelValidate);
+}
+
+bool ShouldValidateModelExecution() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kModelExecutionValidate);
 }
 
 absl::optional<std::string> GetModelOverride() {

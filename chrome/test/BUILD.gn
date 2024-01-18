@@ -2460,6 +2460,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ntp_tiles/ntp_tiles_browsertest.cc",
       "../browser/optimization_guide/hints_fetcher_browsertest.cc",
       "../browser/optimization_guide/model_execution/model_execution_browsertest.cc",
+      "../browser/optimization_guide/model_execution/model_execution_validation_browsertest.cc",
       "../browser/optimization_guide/optimization_guide_keyed_service_browsertest.cc",
       "../browser/optimization_guide/page_content_annotations_service_browsertest.cc",
       "../browser/optimization_guide/page_text_observer_browsertest.cc",

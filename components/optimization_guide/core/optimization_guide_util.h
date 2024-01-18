@@ -112,6 +112,11 @@ void PopulateAuthorizationRequestHeader(
 void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
                                  std::string_view api_key);
 
+// Returns whether model validator service should be started to validate various
+// model executions such as, TFLite, server-side AI, on-device AI models. Used
+// for integration testing purposes.
+bool ShouldStartModelValidator();
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_

@@ -207,4 +207,9 @@ int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
   return GetHashedModelQualityClientId(feature, base::Time::Now(), client_id);
 }
 
+bool ShouldStartModelValidator() {
+  return switches::ShouldValidateModel() ||
+         switches::ShouldValidateModelExecution();
+}
+
 }  // namespace optimization_guide

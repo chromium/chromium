@@ -216,7 +216,7 @@
 #include "components/media_effects/media_effects_service_factory.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
@@ -962,7 +962,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   OpenerHeuristicServiceFactory::GetInstance();
-  if (optimization_guide::switches::ShouldValidateModel()) {
+  if (optimization_guide::ShouldStartModelValidator()) {
     optimization_guide::ModelValidatorKeyedServiceFactory::GetInstance();
   }
   OptimizationGuideKeyedServiceFactory::GetInstance();
