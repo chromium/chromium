@@ -11360,7 +11360,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
   const GURL kRenderUrl = GURL("https://ad1.com");
 
   for (size_t num_components = 1;
-       num_components < blink::kMaxAdAuctionAdComponents + 2;
+       num_components < blink::MaxAdAuctionAdComponents() + 2;
        num_components++) {
     std::vector<GURL> ad_component_urls;
     std::vector<blink::AdDescriptor> ad_component_descriptors;
@@ -11391,7 +11391,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
         /*mojo_kanon_bid=*/nullptr, ad_component_descriptors,
         base::TimeDelta());
 
-    if (num_components <= blink::kMaxAdAuctionAdComponents) {
+    if (num_components <= blink::MaxAdAuctionAdComponents()) {
       // Since the bid was valid, it should be scored.
       auto score_ad_params = seller_worklet->WaitForScoreAd();
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);

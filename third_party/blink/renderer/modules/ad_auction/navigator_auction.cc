@@ -3546,10 +3546,11 @@ Vector<String> NavigatorAuction::adAuctionComponents(
     return out;
   }
 
-  // Clamp the number of ad components at blink::kMaxAdAuctionAdComponents.
-  if (num_ad_components >
-      static_cast<int16_t>(blink::kMaxAdAuctionAdComponents)) {
-    num_ad_components = blink::kMaxAdAuctionAdComponents;
+  // Clamp the number of ad components at blink::MaxAdAuctionAdComponents().
+  const uint16_t kMaxAdAuctionAdComponents =
+      static_cast<uint16_t>(blink::MaxAdAuctionAdComponents());
+  if (num_ad_components > kMaxAdAuctionAdComponents) {
+    num_ad_components = kMaxAdAuctionAdComponents;
   }
 
   DCHECK_EQ(kMaxAdAuctionAdComponents, ad_auction_components->size());

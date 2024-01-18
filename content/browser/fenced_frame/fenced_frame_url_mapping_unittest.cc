@@ -37,7 +37,7 @@ namespace {
 //
 // `expected_mapped_ad_descriptors` contains the URLs the first URNs are
 // expected to map to, and will be padded with "about:blank" URLs until it's
-// blink::kMaxAdAuctionAdComponents in length.
+// blink::MaxAdAuctionAdComponents() in length.
 // TODO(crbug.com/1262022): the ShadowDOM implementation is deprecated, and
 // these tests should be cleaned up to only reflect MPArch behavior.
 void ValidatePendingAdComponentsMap(
@@ -55,7 +55,7 @@ void ValidatePendingAdComponentsMap(
   for (auto& urn_config_pair : nested_urn_config_pairs) {
     ad_component_urns.push_back(urn_config_pair.first);
   }
-  ASSERT_EQ(blink::kMaxAdAuctionAdComponents, ad_component_urns.size());
+  ASSERT_EQ(blink::MaxAdAuctionAdComponents(), ad_component_urns.size());
   for (size_t i = 0; i < ad_component_urns.size(); ++i) {
     // All entries in `ad_component_urns` should be distinct URNs.
     EXPECT_EQ(url::kUrnScheme, ad_component_urns[i].scheme_piece());
@@ -382,7 +382,8 @@ TEST_F(FencedFrameURLMappingTest,
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
   std::vector<blink::AdDescriptor> ad_component_descriptors;
-  for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents; ++i) {
+  const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+  for (size_t i = 0; i < kMaxAdAuctionAdComponents; ++i) {
     ad_component_descriptors.emplace_back(
         GURL(base::StringPrintf("https://%zu.test/", i)));
   }
@@ -429,7 +430,7 @@ TEST_F(FencedFrameURLMappingTest,
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
   std::vector<blink::AdDescriptor> ad_component_descriptors(
-      blink::kMaxAdAuctionAdComponents,
+      blink::MaxAdAuctionAdComponents(),
       blink::AdDescriptor(GURL("https://bar.test/")));
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);

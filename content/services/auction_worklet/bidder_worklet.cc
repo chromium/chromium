@@ -1361,6 +1361,14 @@ BidderWorklet::V8State::GenerateSingleBid(
            "forDebuggingOnlyInCooldownOrLockout",
            bidding_browser_signals
                ->for_debugging_only_in_cooldown_or_lockout)) ||
+      // `adComponentsLimit` is reported only when the corresponding change
+      // is rolled out, to avoid affecting behavior if it's not.
+      (base::FeatureList::IsEnabled(
+           blink::features::kFledgeCustomMaxAuctionAdComponents) &&
+       !browser_signals_dict.Set(
+           "adComponentsLimit",
+           // Cast to help gin on mac.
+           static_cast<uint64_t>(blink::MaxAdAuctionAdComponents()))) ||
       (base::FeatureList::IsEnabled(
            blink::features::kFledgePassRecencyToGenerateBid) &&
        !browser_signals_dict.Set("recency",

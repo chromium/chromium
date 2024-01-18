@@ -362,7 +362,8 @@ std::vector<std::pair<GURL, FencedFrameConfig>>
 FencedFrameProperties::GenerateURNConfigVectorForConfigs(
     const std::vector<FencedFrameConfig>& nested_configs) {
   std::vector<std::pair<GURL, FencedFrameConfig>> nested_urn_config_pairs;
-  DCHECK_LE(nested_configs.size(), blink::kMaxAdAuctionAdComponents);
+  const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+  DCHECK_LE(nested_configs.size(), kMaxAdAuctionAdComponents);
   for (const FencedFrameConfig& config : nested_configs) {
     // Give each config its own urn:uuid. This ensures that if the same config
     // is loaded into multiple fenced frames, they will not share the same
@@ -373,10 +374,10 @@ FencedFrameProperties::GenerateURNConfigVectorForConfigs(
     nested_urn_config_pairs.emplace_back(urn_uuid, config_with_urn);
   }
 
-  // Pad `component_ads_` to contain exactly kMaxAdAuctionAdComponents ads, to
+  // Pad `component_ads_` to contain exactly MaxAdAuctionAdComponents() ads, to
   // avoid leaking any data to the fenced frame the component ads array is
   // exposed to.
-  while (nested_urn_config_pairs.size() < blink::kMaxAdAuctionAdComponents) {
+  while (nested_urn_config_pairs.size() < kMaxAdAuctionAdComponents) {
     GURL urn_uuid = GenerateUrnUuid();
     nested_urn_config_pairs.emplace_back(
         urn_uuid, FencedFrameConfig(urn_uuid, GURL(url::kAboutBlankURL)));

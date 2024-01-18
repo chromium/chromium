@@ -986,6 +986,18 @@ class BidderWorkletTest : public testing::Test {
   mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
 };
 
+class BidderWorkletCustomAdComponentLimitTest : public BidderWorkletTest {
+ public:
+  BidderWorkletCustomAdComponentLimitTest() {
+    const std::map<std::string, std::string> params = {{"value", "25"}};
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeCustomMaxAuctionAdComponents, params);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test the case the BidderWorklet pipe is closed before invoking the
 // GenerateBidCallback. The invocation of the GenerateBidCallback is not
 // observed, since the callback is on the pipe that was just closed. There
@@ -1584,10 +1596,10 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       {"https://url.test/ generateBid() adComponents entry: Required field "
        "'url' is undefined."});
 
-  // Up to 20 values in the output adComponents output array are allowed (And
-  // they can all be the same URL).
-  static_assert(blink::kMaxAdAuctionAdComponents == 20,
-                "Unexpected value of kMaxAdAuctionAdComponents");
+  // By default up to 20 values in the output adComponents output array are
+  // allowed (And they can all be the same URL).
+  ASSERT_EQ(blink::MaxAdAuctionAdComponents(), 20u)
+      << "Unexpected value of MaxAdAuctionAdComponents()";
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad",
         bid:1,
@@ -1674,6 +1686,115 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid adComponents with over 20 "
+       "items."});
+}
+
+TEST_F(BidderWorkletCustomAdComponentLimitTest, AdComponentsLimit) {
+  // The fixture sets the limit to max of 25 output adComponents.
+  ASSERT_EQ(blink::MaxAdAuctionAdComponents(), 25u)
+      << "Unexpected value of MaxAdAuctionAdComponents()";
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad",
+        bid:1,
+        render:"https://response.test/",
+        adComponents:[
+          "https://ad_component.test/" /* 1 */,
+          "https://ad_component.test/" /* 2 */,
+          "https://ad_component.test/" /* 3 */,
+          "https://ad_component.test/" /* 4 */,
+          "https://ad_component.test/" /* 5 */,
+          "https://ad_component.test/" /* 6 */,
+          "https://ad_component.test/" /* 7 */,
+          "https://ad_component.test/" /* 8 */,
+          "https://ad_component.test/" /* 9 */,
+          "https://ad_component.test/" /* 10 */,
+          "https://ad_component.test/" /* 11 */,
+          "https://ad_component.test/" /* 12 */,
+          "https://ad_component.test/" /* 13 */,
+          "https://ad_component.test/" /* 14 */,
+          "https://ad_component.test/" /* 15 */,
+          "https://ad_component.test/" /* 16 */,
+          "https://ad_component.test/" /* 17 */,
+          "https://ad_component.test/" /* 18 */,
+          "https://ad_component.test/" /* 19 */,
+          "https://ad_component.test/" /* 20 */,
+          "https://ad_component.test/" /* 21 */,
+          "https://ad_component.test/" /* 22 */,
+          "https://ad_component.test/" /* 23 */,
+          "https://ad_component.test/" /* 24 */,
+          "https://ad_component.test/" /* 25 */
+        ]})",
+      mojom::BidderWorkletBid::New(
+          "\"ad\"", 1, /*bid_currency=*/std::nullopt,
+          /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 1 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 2 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 3 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 4 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 5 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 6 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 7 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 8 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 9 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 10 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 11 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 12 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 13 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 14 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 15 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 16 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 17 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 18 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 19 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 20 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 21 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 22 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 23 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 24 */,
+              blink::AdDescriptor(GURL("https://ad_component.test/")) /* 25 */,
+          },
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+
+  // Results with 26 or more values are rejected.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad",
+        bid:1,
+        render:"https://response.test/",
+        adComponents:[
+          "https://ad_component.test/" /* 1 */,
+          "https://ad_component.test/" /* 2 */,
+          "https://ad_component.test/" /* 3 */,
+          "https://ad_component.test/" /* 4 */,
+          "https://ad_component.test/" /* 5 */,
+          "https://ad_component.test/" /* 6 */,
+          "https://ad_component.test/" /* 7 */,
+          "https://ad_component.test/" /* 8 */,
+          "https://ad_component.test/" /* 9 */,
+          "https://ad_component.test/" /* 10 */,
+          "https://ad_component.test/" /* 11 */,
+          "https://ad_component.test/" /* 12 */,
+          "https://ad_component.test/" /* 13 */,
+          "https://ad_component.test/" /* 14 */,
+          "https://ad_component.test/" /* 15 */,
+          "https://ad_component.test/" /* 16 */,
+          "https://ad_component.test/" /* 17 */,
+          "https://ad_component.test/" /* 18 */,
+          "https://ad_component.test/" /* 19 */,
+          "https://ad_component.test/" /* 20 */,
+          "https://ad_component.test/" /* 21 */,
+          "https://ad_component.test/" /* 21 */,
+          "https://ad_component.test/" /* 22 */,
+          "https://ad_component.test/" /* 23 */,
+          "https://ad_component.test/" /* 24 */,
+          "https://ad_component.test/" /* 25 */,
+          "https://ad_component.test/" /* 26 */
+        ]})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      {"https://url.test/ generateBid() bid adComponents with over 25 "
        "items."});
 }
 
@@ -2068,8 +2189,8 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
-  static_assert(blink::kMaxAdAuctionAdComponents == 20,
-                "Unexpected value of kMaxAdAuctionAdComponents");
+  ASSERT_EQ(blink::MaxAdAuctionAdComponents(), 20u)
+      << "Unexpected value of MaxAdAuctionAdComponents";
 
   // Results with 21 or more values are rejected.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -3501,6 +3622,19 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidBrowserSignalsAdComponentsLimit) {
+  // Without limit changed, the feature detection signal is not set, for best
+  // backwards compatibility.
+  RunGenerateBidExpectingExpressionIsTrue(
+      "!('adComponentsLimit' in browserSignals)");
+}
+
+TEST_F(BidderWorkletCustomAdComponentLimitTest,
+       GenerateBidBrowserSignalsAdComponentsLimit) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.adComponentsLimit === 25");
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {

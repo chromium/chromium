@@ -2005,7 +2005,7 @@ class InterestGroupAuction::BuyerHelper
       }
 
       if (mojo_bid->ad_component_descriptors->size() >
-          blink::kMaxAdAuctionAdComponents) {
+          blink::MaxAdAuctionAdComponents()) {
         generate_bid_client_receiver_set_.ReportBadMessage(
             "Too many ad component URLs");
         return nullptr;

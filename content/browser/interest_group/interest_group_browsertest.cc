@@ -2010,22 +2010,22 @@ try {
 
   // Validates that navigator.adAuctionComponents() returns URNs that map to
   // `expected_ad_component_urls`. `expected_ad_component_urls` is padded with
-  // about:blank URLs up to blink::kMaxAdAuctionAdComponents. Calls
+  // about:blank URLs up to blink::MaxAdAuctionAdComponents(). Calls
   // adAuctionComponents() with a number of different input parameters to get a
   // list of URNs and checks them against FencedFrameURLMapping to make sure
   // they're mapped to `expected_ad_component_urls`, and in the same order.
   void CheckAdComponents(std::vector<GURL> expected_ad_component_urls,
                          RenderFrameHostImpl* render_frame_host) {
-    while (expected_ad_component_urls.size() <
-           blink::kMaxAdAuctionAdComponents) {
+    size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+    while (expected_ad_component_urls.size() < kMaxAdAuctionAdComponents) {
       expected_ad_component_urls.emplace_back(url::kAboutBlankURL);
     }
 
     std::optional<std::vector<GURL>> all_component_urls =
         GetAdAuctionComponentsInJS(render_frame_host,
-                                   blink::kMaxAdAuctionAdComponents);
+                                   kMaxAdAuctionAdComponents);
     ASSERT_TRUE(all_component_urls);
-    ASSERT_EQ(blink::kMaxAdAuctionAdComponents, all_component_urls->size());
+    ASSERT_EQ(kMaxAdAuctionAdComponents, all_component_urls->size());
     for (size_t i = 0; i < all_component_urls->size(); ++i) {
       // All ad component URLs should use the URN scheme.
       EXPECT_EQ(url::kUrnScheme, (*all_component_urls)[i].scheme_piece());
@@ -2046,7 +2046,7 @@ try {
     // Make sure smaller values passed to GetAdAuctionComponentsInJS() return
     // the first elements of the full kMaxAdAuctionAdComponents element list
     // retrieved above.
-    for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents; ++i) {
+    for (size_t i = 0; i < kMaxAdAuctionAdComponents; ++i) {
       std::optional<std::vector<GURL>> component_urls =
           GetAdAuctionComponentsInJS(render_frame_host, i);
       ASSERT_TRUE(component_urls);
@@ -2064,10 +2064,10 @@ try {
               GetAdAuctionComponentsInJS(render_frame_host, -1));
     EXPECT_EQ(all_component_urls,
               GetAdAuctionComponentsInJS(render_frame_host,
-                                         blink::kMaxAdAuctionAdComponents + 1));
+                                         kMaxAdAuctionAdComponents + 1));
     EXPECT_EQ(all_component_urls,
               GetAdAuctionComponentsInJS(render_frame_host,
-                                         blink::kMaxAdAuctionAdComponents + 2));
+                                         kMaxAdAuctionAdComponents + 2));
     EXPECT_EQ(all_component_urls,
               GetAdAuctionComponentsInJS(render_frame_host, 32768));
   }
@@ -11246,13 +11246,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
                     ad_frame);
 
   std::optional<std::vector<GURL>> all_component_urls =
-      GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
+      GetAdAuctionComponentsInJS(ad_frame, blink::MaxAdAuctionAdComponents());
   ASSERT_TRUE(all_component_urls);
   NavigateFencedFrameAndWait((*all_component_urls)[0],
                              GURL(url::kAboutBlankURL),
                              GetFencedFrameRenderFrameHost(shell()));
   NavigateFencedFrameAndWait(
-      (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+      (*all_component_urls)[blink::MaxAdAuctionAdComponents() - 1],
       GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
 }
 
@@ -11276,13 +11276,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, AdComponents) {
       ad_frame);
 
   std::optional<std::vector<GURL>> all_component_urls =
-      GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
+      GetAdAuctionComponentsInJS(ad_frame, blink::MaxAdAuctionAdComponents());
   ASSERT_TRUE(all_component_urls);
   NavigateFencedFrameAndWait((*all_component_urls)[1],
                              GURL(url::kAboutBlankURL),
                              GetFencedFrameRenderFrameHost(shell()));
   NavigateFencedFrameAndWait(
-      (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+      (*all_component_urls)[blink::MaxAdAuctionAdComponents() - 1],
       GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
 }
 
@@ -11314,12 +11314,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   // some of the URNs, which should navigate it to about:blank.
   std::optional<std::vector<GURL>> all_component_urls =
       GetAdAuctionComponentsInJS(ad_component_frame,
-                                 blink::kMaxAdAuctionAdComponents);
+                                 blink::MaxAdAuctionAdComponents());
   ASSERT_TRUE(all_component_urls);
   NavigateFencedFrameAndWait((*all_component_urls)[0],
                              GURL(url::kAboutBlankURL), ad_component_frame);
   NavigateFencedFrameAndWait(
-      (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+      (*all_component_urls)[blink::MaxAdAuctionAdComponents() - 1],
       GURL(url::kAboutBlankURL), ad_component_frame);
 
   // Load a new URL in the top-level fenced frame, which should cause future

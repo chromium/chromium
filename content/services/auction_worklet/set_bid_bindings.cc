@@ -376,13 +376,14 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
 
     // We want < rather than <= here so the semantic check is testable and not
     // hidden by implementation details of DictConverter.
-    static_assert(blink::kMaxAdAuctionAdComponents <
+    static_assert(blink::kMaxAdAuctionAdComponentsConfigLimit <
                   DictConverter::kSequenceLengthLimit);
 
-    if (idl.ad_components->size() > blink::kMaxAdAuctionAdComponents) {
-      return IdlConvert::Status::MakeErrorMessage(base::StringPrintf(
-          "%sbid adComponents with over %zu items.", error_prefix.c_str(),
-          blink::kMaxAdAuctionAdComponents));
+    const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+    if (idl.ad_components->size() > kMaxAdAuctionAdComponents) {
+      return IdlConvert::Status::MakeErrorMessage(
+          base::StringPrintf("%sbid adComponents with over %zu items.",
+                             error_prefix.c_str(), kMaxAdAuctionAdComponents));
     }
 
     ad_component_descriptors.emplace();

@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace blink {
@@ -932,6 +933,13 @@ const base::FeatureParam<int>
 BASE_FEATURE(kFledgeDebugReportFilterAfterSampling,
              "FledgeDebugReportFilterAfterSampling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFledgeCustomMaxAuctionAdComponents,
+             "FledgeCustomMaxAuctionAdComponents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
+    &kFledgeCustomMaxAuctionAdComponents, "value",
+    kMaxAdAuctionAdComponentsDefault};
 
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",

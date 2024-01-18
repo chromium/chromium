@@ -501,6 +501,13 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDebugReportFilterAfterSampling);
 
+// If enabled, the limit on number of component ads will be taken from
+// `kFledgeCustomMaxAuctionAdComponentsValue`
+// (up to kMaxAdAuctionAdComponentsConfigLimit) rather than default.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeCustomMaxAuctionAdComponents);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeCustomMaxAuctionAdComponentsValue;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
     kForceDarkInversionMethodParam;

@@ -275,7 +275,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
           {"Additional bid on auction with seller '", seller.Serialize(),
            "' rejected due to invalid adComponents."}));
     }
-    if (ad_components_list->size() > blink::kMaxAdAuctionAdComponents) {
+    if (ad_components_list->size() > blink::MaxAdAuctionAdComponents()) {
       return base::unexpected(base::StrCat(
           {"Additional bid on auction with seller '", seller.Serialize(),
            "' rejected due to too many ad component URLs."}));

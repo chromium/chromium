@@ -718,7 +718,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdComponentsEntry) {
 TEST_F(AdditionalBidsUtilTest, TooManyAdComponents) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   base::Value::List ad_components_list;
-  for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents + 1; ++i) {
+  const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+  for (size_t i = 0; i < kMaxAdAuctionAdComponents + 1; ++i) {
     ad_components_list.Append("https://en.wikipedia.test/wiki/Locomotive");
   }
   additional_bid_dict.SetByDottedPath("bid.adComponents",
