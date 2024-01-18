@@ -33,7 +33,7 @@ void ScriptsRunInfo::LogRun(bool send_script_activity) {
     if (auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token_)) {
       frame = content::RenderFrame::FromWebFrame(web_frame);
     }
-    if (!frame) {
+    if (frame) {
       // We can't convert a map of sets into a flat_map of vectors with mojo
       // bindings so we need to do it manually. The set property is useful for
       // this class so we can't convert the class storage type.

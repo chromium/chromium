@@ -2317,4 +2317,33 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
   EXPECT_EQ("done", listener.message());
 }
 
+class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    ContentScriptApiTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Tests Activity Log for content script executions.
+// Regression test for https://crbug.com/1519380.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithActivityLog,
+                       ActivityLogRecorded) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an extension that injects content scripts.
+  base::FilePath data_dir = test_data_dir_.AppendASCII("content_scripts");
+  const Extension* extension =
+      LoadExtension(data_dir.AppendASCII("script_a_com"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page where content scripts would be executed.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("a.com", "/extensions/test_file.html")));
+
+  // Execute the test which passes when it sees exactly 1 content_script entry
+  // in the activity log.
+  ASSERT_TRUE(RunExtensionTest("content_scripts/activity_log/"));
+}
+
 }  // namespace extensions
