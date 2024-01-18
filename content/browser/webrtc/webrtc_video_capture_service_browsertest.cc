@@ -206,7 +206,8 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
                                  kDummyFrameCodedSize,
                                  gfx::ColorSpace::CreateSRGB(),
                                  kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_RASTER |
+                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
                                  "TestLabel", gpu::kNullSurfaceHandle)
               ->mailbox();
