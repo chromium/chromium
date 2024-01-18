@@ -2121,6 +2121,9 @@ void StoragePartitionImpl::OnAuthRequired(
         process_id = render_frame_host->GetGlobalId().child_id;
       }
     }
+  } else if (context.type() ==
+             URLLoaderNetworkContext::Type::kServiceWorkerContext) {
+    process_id = context.process_id();
   }
 
   WebContents* current_web_contents = GetWebContents(context);
@@ -2395,11 +2398,11 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-StoragePartitionImpl::CreateAuthCertObserverForServiceWorker() {
+StoragePartitionImpl::CreateAuthCertObserverForServiceWorker(int process_id) {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
-  url_loader_network_observers_.Add(
-      this, remote.InitWithNewPipeAndPassReceiver(),
-      URLLoaderNetworkContext::CreateForServiceWorker());
+  url_loader_network_observers_.Add(this,
+                                    remote.InitWithNewPipeAndPassReceiver(),
+                                    URLLoaderNetworkContext(process_id));
   return remote;
 }
 
@@ -3426,12 +3429,14 @@ network::mojom::URLLoaderFactoryParamsPtr
 StoragePartitionImpl::CreateURLLoaderFactoryParams() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
+  // This method is used for browser-process initiated requests for which there
+  // is no corresponding RenderProcessHost.
   params->process_id = network::mojom::kBrowserProcessId;
   params->automatically_assign_isolation_info = true;
   params->is_corb_enabled = false;
   params->is_trusted = true;
   params->url_loader_network_observer =
-      CreateAuthCertObserverForServiceWorker();
+      CreateAuthCertObserverForServiceWorker(params->process_id);
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);
@@ -3551,13 +3556,8 @@ std::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
-    URLLoaderNetworkContext::Type type,
     GlobalRenderFrameHostId render_frame_host_id)
-    : type_(type) {
-  // `render_frame_host_id` can be invalid for `kServiceWorkerContext`.
-  if (!render_frame_host_id) {
-    return;
-  }
+    : type_(Type::kRenderFrameHostContext) {
   auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id);
   if (!render_frame_host) {
     return;
@@ -3573,6 +3573,10 @@ StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
+    int process_id)
+    : type_(Type::kServiceWorkerContext), process_id_(process_id) {}
+
+StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     const URLLoaderNetworkContext& other) = default;
 
 StoragePartitionImpl::URLLoaderNetworkContext&
@@ -3586,7 +3590,6 @@ StoragePartitionImpl::URLLoaderNetworkContext
 StoragePartitionImpl::URLLoaderNetworkContext::CreateForRenderFrameHost(
     GlobalRenderFrameHostId render_frame_host_id) {
   return StoragePartitionImpl::URLLoaderNetworkContext(
-      URLLoaderNetworkContext::Type::kRenderFrameHostContext,
       render_frame_host_id);
 }
 
@@ -3594,13 +3597,6 @@ StoragePartitionImpl::URLLoaderNetworkContext
 StoragePartitionImpl::URLLoaderNetworkContext::CreateForNavigation(
     NavigationRequest& navigation_request) {
   return StoragePartitionImpl::URLLoaderNetworkContext(navigation_request);
-}
-
-StoragePartitionImpl::URLLoaderNetworkContext
-StoragePartitionImpl::URLLoaderNetworkContext::CreateForServiceWorker() {
-  return StoragePartitionImpl::URLLoaderNetworkContext(
-      URLLoaderNetworkContext::Type::kServiceWorkerContext,
-      GlobalRenderFrameHostId());
 }
 
 bool StoragePartitionImpl::URLLoaderNetworkContext::IsNavigationRequestContext()

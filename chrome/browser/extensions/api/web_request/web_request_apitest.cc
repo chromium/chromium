@@ -6416,6 +6416,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
               const response = await fetch($1);
               if (response.ok) {
                  chrome.test.assertTrue(didInterceptAuth);
+                 chrome.test.succeed();
               } else {
                  chrome.test.fail();
               }
@@ -6430,9 +6431,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
   ResultCatcher result_catcher;
   LoadExtensionWithAdditionalJs(additional_js);
 
-  // TODO(https://crbug.com/1371177): When the bug is fixed, this should become
-  // an ASSERT_TRUE.
-  ASSERT_FALSE(result_catcher.GetNextResult());
+  ASSERT_TRUE(result_catcher.GetNextResult());
 }
 
 // This test is similar to TestOnAuthRequiredExtensionServiceWorker but the
@@ -6454,9 +6453,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
       content::EvalJs(web_contents,
                       content::JsReplace("doFetchInWorker($1);", MakeAuthUrl()))
           .ExtractString();
-  // TODO(https://crbug.com/1371177): When the bug is fixed, this should become
-  // an EXPECT_THAT with a different value.
-  EXPECT_THAT(fetch_response, testing::HasSubstr("Denied"));
+  EXPECT_THAT(fetch_response, testing::HasSubstr("<title>"));
 }
 
 // Tests the behavior of an extension that registers an event listener

@@ -448,7 +448,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateSharedDictionaryAccessObserverForServiceWorker();
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-  CreateAuthCertObserverForServiceWorker();
+  CreateAuthCertObserverForServiceWorker(int process_id);
 
   std::vector<std::string> GetCorsExemptHeaderList();
 
@@ -490,15 +490,12 @@ class CONTENT_EXPORT StoragePartitionImpl
     static StoragePartitionImpl::URLLoaderNetworkContext CreateForNavigation(
         NavigationRequest& navigation_request);
 
-    // Creates a URLLoaderNetworkContext for the service worker.
-    static StoragePartitionImpl::URLLoaderNetworkContext
-    CreateForServiceWorker();
-
-    // Used when `type` is `kRenderFrameHostContext` or
-    // `kServiceWorkerContext`.
-    URLLoaderNetworkContext(
-        URLLoaderNetworkContext::Type type,
+    // Used when `type` is `kRenderFrameHostContext`.
+    explicit URLLoaderNetworkContext(
         GlobalRenderFrameHostId global_render_frame_host_id);
+
+    // Used when `type` is `kServiceWorkerContext`.
+    explicit URLLoaderNetworkContext(int process_id);
 
     // Used when `type` is `kNavigationRequestContext`.
     explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
@@ -512,9 +509,14 @@ class CONTENT_EXPORT StoragePartitionImpl
       return navigation_or_document_.get();
     }
 
+    int process_id() const { return process_id_; }
+
    private:
     Type type_;
     scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
+
+    // Only valid when `type_` is kServiceWorkerContext.
+    int process_id_ = content::ChildProcessHost::kInvalidUniqueID;
   };
 
  private:
