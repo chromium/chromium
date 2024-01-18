@@ -225,6 +225,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck"
+    enum="BooleanYesNo" expires_after="2024-07-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs true if the browser throttle's async checks completed faster than its
+    sync checks, and false if the sync checks completed faster. Is not logged if
+    there is a tie, which can happen for skipped checks. Logged when the browser
+    throttle destructs. Only logged if async checks are eligible.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
     enum="BooleanCompleted" expires_after="2024-06-30">

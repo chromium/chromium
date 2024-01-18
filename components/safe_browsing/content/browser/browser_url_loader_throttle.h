@@ -176,6 +176,14 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
 
+  // When async checks are eligible, this is set either to true or false when
+  // one of |pending_sync_checks_| or |pending_async_checks_| is decremented to
+  // 0, unless they are both set to 0 at once, in which case it is considered a
+  // tie and the value remains |std::nullopt|. It is reset to |std::nullopt| any
+  // time the pending check counters are incremented. This value is used for
+  // logging purposes only.
+  std::optional<bool> was_async_faster_than_sync_;
+
   // Used to decide whether the check can be skipped on the SB thread.
   std::unique_ptr<SkipCheckCheckerOnSB> skip_check_checker_;
 

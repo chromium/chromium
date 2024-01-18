@@ -470,6 +470,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   raw_ptr<content::WebContents> web_contents_;
   base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
       mock_web_contents_getter_;
+  base::HistogramTester histogram_tester_;
 };
 
 class SBBrowserUrlLoaderThrottleTest
@@ -603,6 +604,14 @@ TEST_P(SBBrowserUrlLoaderThrottleTest,
   bool defer = CallWillProcessResponse();
   // The loader is not deferred because the check has skipped.
   EXPECT_FALSE(defer);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  // No histogram is logged because it's a skipped check (or because async
+  // checks are not eligible).
+  histogram_tester_.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*expected_count=*/0);
 }
 
 TEST_P(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnKnownSafeUrl) {
@@ -911,6 +920,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyDefer_AsyncNotDeferred) {
   EXPECT_FALSE(async_url_checker_.WasInvalidated());
   async_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 // WillProcessResponse called -> Sync check completed.
@@ -932,6 +948,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyDefer_SyncResumed) {
   sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 // Async check completed -> WillProcessResponse called -> Sync check completed.
@@ -957,6 +980,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   EXPECT_TRUE(throttle_delegate_->IsResumed());
   // Async check already completed, so it is not transferred to the tracker.
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 // URL redirected -> Sync check completed -> WillProcessResponse called.
@@ -980,6 +1010,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   bool defer = CallWillProcessResponse();
   EXPECT_FALSE(defer);
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 // Async check completed -> Sync check completed -> WillProcessResponse called.
@@ -1001,6 +1038,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   bool defer = CallWillProcessResponse();
   EXPECT_FALSE(defer);
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 // WillProcessResponse called -> Async check completed -> Sync check completed.
@@ -1025,6 +1069,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(throttle_delegate_->IsResumed());
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
@@ -1045,6 +1096,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   // loader is already blocked by sync check.
   EXPECT_TRUE(async_url_checker_.WasInvalidated());
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
@@ -1071,6 +1129,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   // loader is already blocked by sync check.
   EXPECT_TRUE(async_url_checker_.WasInvalidated());
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
@@ -1091,6 +1156,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   bool defer = CallWillProcessResponse();
   EXPECT_TRUE(defer);
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 0u);
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
@@ -1107,6 +1179,13 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(throttle_delegate_->IsResumed());
+
+  // Reset throttle to test histogram below, which only logs on destruct.
+  throttle_.reset();
+  // No histogram is logged because async checks are not eligible.
+  histogram_tester_.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+      /*expected_count=*/0);
 }
 
 class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest

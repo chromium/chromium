@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -164,7 +165,15 @@ BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
     TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
                                     TRACE_ID_LOCAL(this));
   }
-
+  // TODO(crbug.com/1501194): If a warning page is opened in a new tab,
+  // `OnCompleteSyncCheck` may not be called, in which case this metric won't
+  // be logged. Once this is fixed, confirm that this metric logs correctly in
+  // this case.
+  if (was_async_faster_than_sync_.has_value()) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
+        was_async_faster_than_sync_.value());
+  }
   DeleteUrlCheckerOnSB();
 }
 
@@ -276,6 +285,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   if (async_sb_checker_) {
     pending_async_checks_++;
   }
+  was_async_faster_than_sync_ = std::nullopt;
   start_request_time_ = base::TimeTicks::Now();
   is_start_request_called_ = true;
 
@@ -360,6 +370,7 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
   if (async_sb_checker_) {
     pending_async_checks_++;
   }
+  was_async_faster_than_sync_ = std::nullopt;
 
   // The check to |skip_check_checker| cannot be skipped because
   // WillRedirectRequest may be called while |skip_check_checker| is still in
@@ -501,6 +512,10 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
 
   DCHECK_LT(0u, pending_sync_checks_);
   pending_sync_checks_--;
+  if (async_sb_checker_ && pending_sync_checks_ == 0 &&
+      !was_async_faster_than_sync_.has_value()) {
+    was_async_faster_than_sync_ = false;
+  }
 
   // If the resource load is going to finish (either being cancelled or
   // resumed), record the total delay.
@@ -541,14 +556,15 @@ void BrowserURLLoaderThrottle::OnCompleteAsyncCheck(
 
   DCHECK_LT(0u, pending_async_checks_);
   pending_async_checks_--;
+  if (pending_async_checks_ == 0 && !was_async_faster_than_sync_.has_value()) {
+    was_async_faster_than_sync_ = true;
+  }
 
   if (!result.proceed) {
     BlockUrlLoader(result.showed_interstitial);
   }
   // There is no need to set |deferred_| for async check because it never defers
   // URL loader.
-  // TODO(crbug.com/1501194): Add a histogram to see how often async check is
-  // completed before sync check.
 }
 
 void BrowserURLLoaderThrottle::BlockUrlLoader(bool showed_interstitial) {
@@ -587,6 +603,9 @@ void BrowserURLLoaderThrottle::SkipChecks() {
   pending_sync_checks_--;
   if (async_sb_checker_) {
     pending_async_checks_--;
+    // Don't set |was_async_faster_than_sync_| if the counter reaches 0,
+    // because the checks being skipped is considered a tie between sync and
+    // async checks.
   }
   if (pending_sync_checks_ == 0 && deferred_) {
     delegate_->Resume();
