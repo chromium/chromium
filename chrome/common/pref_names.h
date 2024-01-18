@@ -2806,6 +2806,16 @@ inline constexpr char kDeviceRegistered[] = "DeviceRegistered";
 inline constexpr char kEnrollmentRecoveryRequired[] =
     "EnrollmentRecoveryRequired";
 
+// String pref with the data about the OS version and browser version at the
+// time of enrollment. The format is established by release management team.
+// The Chrome OS version format is
+// [Milestone.]TIP_BUILD.BRANCH_BUILD.BRANCH_BRANCH_BUILD.
+// Example: 15711.0.0
+// For browser version the format is MAJOR.MINOR.BRANCH.BUILD.
+// Example: 122.0.6252.0
+inline constexpr char kEnrollmentVersionOS[] = "EnrollmentVersionOS";
+inline constexpr char kEnrollmentVersionBrowser[] = "EnrollmentVersionBrowser";
+
 // Pref name for whether we should show the Getting Started module in the Help
 // app.
 inline constexpr char kHelpAppShouldShowGetStarted[] =
