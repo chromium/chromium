@@ -10,7 +10,6 @@ GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -96,57 +95,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
        'ash::features::kPasspointARCSupport',
      ]
    }
- ],
- ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
- [
-   'OsFilesPageFilesSettingsCard',
-   'os_files_page/files_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
- ['OsFilesPageOneDrivePage', 'os_files_page/one_drive_page_test.js'],
- ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
- ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
- [
-   'OsFilesPageSmbSharesPageJelly',
-   'os_files_page/smb_shares_page_test.js',
-   {
-     enabled:
-         ['chromeos::features::kCrosComponents', 'chromeos::features::kJelly']
-   },
- ],
- [
-   'OsLanguagesPageAppLanguagesPage',
-   'os_languages_page/app_languages_page_test.js',
- ],
- [
-   'OsLanguagesPageInputMethodOptionsPage',
-   'os_languages_page/input_method_options_page_test.js'
- ],
- ['OsLanguagesPageInputPage', 'os_languages_page/input_page_test.js'],
- [
-   'OsLanguagesPageLanguageSettingsCard',
-   'os_languages_page/language_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsLanguagesPageOsClearPersonalizationDataPage',
-   'os_languages_page/os_clear_personalization_data_page_test.js'
- ],
- ['OsLanguagesPageV2', 'os_languages_page/os_languages_page_v2_test.js'],
- [
-   'OsLanguagesPageOsEditDictionaryPage',
-   'os_languages_page/os_edit_dictionary_page_test.js'
- ],
- [
-   'OsPageAvailability',
-   'os_page_availability_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- [
-   'OsPageAvailabilityRevamp',
-   'os_page_availability_test.js',
-   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsPeoplePage',

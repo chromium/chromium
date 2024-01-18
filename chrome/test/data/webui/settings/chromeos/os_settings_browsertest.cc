@@ -10,6 +10,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
@@ -1082,6 +1083,95 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsBluetoothPageOsPairedBluetoothListItem) {
   RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPage) {
+  RunSettingsTest("os_files_page/os_files_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsFilesPageFilesSettingsCard) {
+  RunSettingsTest("os_files_page/files_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageGoogleDrivePage) {
+  RunSettingsTest("os_files_page/google_drive_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageOneDrivePage) {
+  RunSettingsTest("os_files_page/one_drive_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageOfficePage) {
+  RunSettingsTest("os_files_page/office_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageSmbSharesPage) {
+  RunSettingsTest("os_files_page/smb_shares_page_test.js");
+}
+
+class OSSettingsFilesTestCrosComponentsAndJellyEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsFilesTestCrosComponentsAndJellyEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            chromeos::features::kCrosComponents,
+            chromeos::features::kJelly,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsFilesTestCrosComponentsAndJellyEnabled,
+                       OsFilesPageSmbSharesPageJelly) {
+  RunSettingsTest("os_files_page/smb_shares_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsLanguagesPageAppLanguagesPage) {
+  RunSettingsTest("os_languages_page/app_languages_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsLanguagesPageInputMethodOptionsPage) {
+  RunSettingsTest("os_languages_page/input_method_options_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsLanguagesPageInputPage) {
+  RunSettingsTest("os_languages_page/input_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsLanguagesPageLanguageSettingsCard) {
+  RunSettingsTest("os_languages_page/language_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsLanguagesPageOsClearPersonalizationDataPage) {
+  RunSettingsTest(
+      "os_languages_page/os_clear_personalization_data_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsLanguagesPageV2) {
+  RunSettingsTest("os_languages_page/os_languages_page_v2_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsLanguagesPageOsEditDictionaryPage) {
+  RunSettingsTest("os_languages_page/os_edit_dictionary_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsPageAvailability) {
+  RunSettingsTest("os_page_availability_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsPageAvailabilityRevamp) {
+  RunSettingsTest("os_page_availability_test.js");
 }
 
 }  // namespace ash::settings
