@@ -439,20 +439,15 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
   // SpdySession pool, and uses it directly (completely ignoring the result of
   // the ConnectJob, and in fact cancelling it). So we need to create the same
   // key used by the HttpProxyConnectJob for the last proxy in the chain.
-  if (proxy_chain.is_get_to_proxy_allowed() &&
-      proxy_chain.GetProxyServer(proxy_chain.length() - 1).is_https() &&
+  if (proxy_chain.is_get_to_proxy_allowed() && proxy_chain.Last().is_https() &&
       origin_url.SchemeIs(url::kHttpScheme)) {
     // For this to work as expected, the whole chain should be HTTPS.
     for (const auto& proxy_server : proxy_chain.proxy_servers()) {
       CHECK(proxy_server.is_https());
     }
-    const auto& last_proxy_host_port_pair =
-        proxy_chain.GetProxyServer(proxy_chain.length() - 1).host_port_pair();
-    ProxyChain last_proxy_partial_chain(
-        {proxy_chain.proxy_servers().begin(),
-         proxy_chain.proxy_servers().end() - 1});
-    // If `proxy_chain` only contains one proxy server, then
-    // `last_proxy_partial_chain` will be a direct proxy chain.
+    auto [last_proxy_partial_chain, last_proxy_server] =
+        proxy_chain.SplitLast();
+    const auto& last_proxy_host_port_pair = last_proxy_server.host_port_pair();
     return SpdySessionKey(last_proxy_host_port_pair, last_proxy_partial_chain,
                           PRIVACY_MODE_DISABLED,
                           SpdySessionKey::IsProxySession::kTrue, socket_tag,
@@ -910,9 +905,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     // multiple proxies and add tests.
     CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
     const HostPortPair& proxy_endpoint =
-        proxy_info_.proxy_chain()
-            .GetProxyServer(proxy_info_.proxy_chain().length() - 1)
-            .host_port_pair();
+        proxy_info_.proxy_chain().Last().host_port_pair();
     destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
                                       proxy_endpoint.port());
     url = destination.GetURL();

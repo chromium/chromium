@@ -62,6 +62,21 @@ const std::vector<ProxyServer>& ProxyChain::proxy_servers() const {
   return proxy_server_list_.value();
 }
 
+std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
+  DCHECK(IsValid());
+  DCHECK_NE(length(), 0u);
+  ProxyChain new_chain =
+      ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1});
+  new_chain.is_for_ip_protection_ = is_for_ip_protection_;
+  return std::make_pair(new_chain, std::ref(proxy_server_list_->back()));
+}
+
+const ProxyServer& ProxyChain::Last() const {
+  DCHECK(IsValid());
+  DCHECK_NE(length(), 0u);
+  return proxy_server_list_->back();
+}
+
 ProxyChain&& ProxyChain::ForIpProtection() && {
   CHECK(IsValid());
   is_for_ip_protection_ = true;

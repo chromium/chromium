@@ -238,6 +238,43 @@ TEST(ProxyChainTest, MultiProxyChain) {
   ASSERT_EQ(proxy.GetProxyServer(2), proxy_server3);
 }
 
+TEST(ProxyChainTest, SplitLast) {
+  auto proxy_server1 =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server2 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server3 =
+      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+
+  auto chain3 = ProxyChain({proxy_server1, proxy_server2, proxy_server3})
+                    .ForIpProtection();
+  EXPECT_EQ(chain3.SplitLast(),
+            std::make_pair(
+                ProxyChain({proxy_server1, proxy_server2}).ForIpProtection(),
+                proxy_server3));
+
+  auto chain2 = ProxyChain({proxy_server1, proxy_server2});
+  EXPECT_EQ(chain2.SplitLast(),
+            std::make_pair(ProxyChain({proxy_server1}), proxy_server2));
+
+  auto chain1 = ProxyChain({proxy_server1});
+  EXPECT_EQ(chain1.SplitLast(),
+            std::make_pair(ProxyChain::Direct(), proxy_server1));
+}
+
+TEST(ProxyChainTest, Last) {
+  auto proxy_server1 =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server2 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+
+  auto chain = ProxyChain({proxy_server1, proxy_server2});
+  EXPECT_EQ(chain.Last(), proxy_server2);
+
+  chain = ProxyChain({proxy_server1});
+  EXPECT_EQ(chain.Last(), proxy_server1);
+}
+
 TEST(ProxyChainTest, IsForIpProtection) {
   auto regular_proxy_chain1 = ProxyChain::Direct();
   EXPECT_FALSE(regular_proxy_chain1.is_for_ip_protection());
