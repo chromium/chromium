@@ -794,12 +794,18 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
       const std::string* thumbnail_image =
           image_dict.FindString("thumbnail_image");
       const std::string* description = image_dict.FindString("description");
-      if (!background_image || !thumbnail_image || !description) {
+      const std::string* id_string = image_dict.FindString("id");
+      if (!background_image || !thumbnail_image || !description || !id_string) {
+        continue;
+      }
+      const absl::optional<base::Token> id_token =
+          base::Token::FromString(*id_string);
+      if (!id_token.has_value()) {
         continue;
       }
       auto mojo_inspiration =
           side_panel::customize_chrome::mojom::Inspiration::New();
-      mojo_inspiration->id = base::Token::CreateRandom();
+      mojo_inspiration->id = id_token.value();
       mojo_inspiration->background_url =
           GURL(base::StrCat({kGstaticBaseURL, *background_image}));
       mojo_inspiration->thumbnail_url =

@@ -1492,11 +1492,13 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             "descriptor_a": "foobar",
             "images": [
                 {
+                    "id": "00000000000000000000000000000000",
                     "description": "Description foo",
                     "background_image": "foo_1.png",
                     "thumbnail_image": "foo_2.png"
                 },
                 {
+                    "id": "10000000000000000000000000000000",
                     "description": "Description bar",
                     "background_image": "bar_1.png",
                     "thumbnail_image": "bar_2.png"
@@ -1507,6 +1509,7 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
             "descriptor_a": "baz",
             "images": [
                 {
+                    "id": "20000000000000000000000000000000",
                     "description": "Description baz",
                     "background_image": "baz_1.png",
                     "thumbnail_image": "baz_2.png"
@@ -1530,12 +1533,18 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
   EXPECT_EQ(foo_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "foo_2.png"}));
   EXPECT_EQ(foo_inspiration->description, "Description foo");
+  EXPECT_EQ(
+      foo_inspiration->id,
+      base::Token::FromString("00000000000000000000000000000000").value());
   const auto& bar_inspiration = inspiration_a[1];
   EXPECT_EQ(bar_inspiration->background_url,
             base::StrCat({kGstaticBaseURL, "bar_1.png"}));
   EXPECT_EQ(bar_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "bar_2.png"}));
   EXPECT_EQ(bar_inspiration->description, "Description bar");
+  EXPECT_EQ(
+      bar_inspiration->id,
+      base::Token::FromString("10000000000000000000000000000000").value());
   const auto& inspiration_group_b = inspiration_groups[1];
   EXPECT_EQ("baz", inspiration_group_b->descriptors->subject);
   const auto& inspiration_b = inspiration_group_b->inspirations;
@@ -1546,6 +1555,9 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
   EXPECT_EQ(baz_inspiration->thumbnail_url,
             base::StrCat({kGstaticBaseURL, "baz_2.png"}));
   EXPECT_EQ(baz_inspiration->description, "Description baz");
+  EXPECT_EQ(
+      baz_inspiration->id,
+      base::Token::FromString("20000000000000000000000000000000").value());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
@@ -1573,6 +1585,7 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
             },
             "images": [
                 {
+                    "id": "00000000000000000000000000000000",
                     "description": "test inspiration",
                     "background_image": "foo_1.png",
                     "thumbnail_image": "foo_2.png"
@@ -1617,25 +1630,35 @@ TEST_F(WallpaperSearchHandlerTest,
             "descriptor_a": "foo",
             "images": [
             {
+                "id": "00000000000000000000000000000000",
                 "description": "test inspiration 1",
                 "background_image": "foo_1.png",
                 "thumbnail_image": "foo_2.png"
             },
             {
+                "description": "test inspiration 2",
+                "background_image": "bar_1.png",
+                "thumbnail_image": "bar_2.png"
+            },
+            {
+                "id": "20000000000000000000000000000000",
                 "background_image": "baz_1.png",
                 "thumbnail_image": "baz_2.png"
             },
             {
-                "description": "test inspiration 3",
+                "id": "30000000000000000000000000000000",
+                "description": "test inspiration 4",
                 "thumbnail_image": "qux_2.png"
             },
             {
-                "description": "test inspiration 4",
+                "id": "40000000000000000000000000000000",
+                "description": "test inspiration 5",
                 "background_image": "qux_1.png"
             }
             ]
         },
         {
+            "id": "00000000000000000000000000000000",
             "descriptor_b": "bar",
             "descriptor_c": "baz",
             "descriptor_d": {
