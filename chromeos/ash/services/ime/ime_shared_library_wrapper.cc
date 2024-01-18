@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/system/sys_info.h"
 #include "chromeos/ash/services/ime/constants.h"
 
 namespace ash {
@@ -64,8 +65,9 @@ ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
   // Add dlopen flags (RTLD_LAZY | RTLD_NODELETE) later.
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
   if (!library.is_valid()) {
-    LOG(ERROR) << "Failed to load decoder shared library from: " << path
-               << ", error: " << library.GetError()->ToString();
+    LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
+        << "Failed to load decoder shared library from: " << path
+        << ", error: " << library.GetError()->ToString();
     return std::nullopt;
   }
 
