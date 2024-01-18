@@ -22,6 +22,10 @@ namespace blink {
 class ScriptState;
 class V8SchedulerPostTaskCallback;
 
+namespace scheduler {
+class TaskAttributionInfo;
+}
+
 // DOMTask represents a task scheduled via the web scheduling API. It will
 // keep itself alive until DOMTask::Invoke is called, which may be after the
 // callback's v8 context is invalid, in which case, the task will not be run.

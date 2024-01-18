@@ -488,7 +488,6 @@ component("platform") {
     "bindings/thread_debugger.h",
     "bindings/to_blink_string.cc",
     "bindings/to_blink_string.h",
-    "bindings/to_v8.h",
     "bindings/trace_wrapper_v8_reference.h",
     "bindings/union_base.cc",
     "bindings/union_base.h",

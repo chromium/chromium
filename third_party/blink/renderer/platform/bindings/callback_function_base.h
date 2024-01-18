@@ -11,9 +11,11 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 
 namespace blink {
+namespace scheduler {
+class TaskAttributionInfo;
+}
 
 // CallbackFunctionBase is the common base class of all the callback function
 // classes. Most importantly this class provides a way of type dispatching (e.g.
@@ -134,10 +136,7 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
     parent_task_ = task;
   }
 
-  void Trace(Visitor* visitor) const override {
-    CallbackFunctionBase::Trace(visitor);
-    visitor->Trace(parent_task_);
-  }
+  void Trace(Visitor* visitor) const override;
 
  protected:
   explicit CallbackFunctionWithTaskAttributionBase(v8::Local<v8::Object> object)
