@@ -78839,7 +78839,7 @@
       ]
      ],
      "inset-area-abs-inline-container.html": [
-      "368a227d731730c3bbb6fd5f71b5c38a4c37d2fe",
+      "52344614f0b31a57d470ab773420295e53f1cb49",
       [
        null,
        [
@@ -440628,7 +440628,7 @@
       ]
      ],
      "inset-area-basic.html": [
-      "dcb2c153308d80a35c5ac01345665b636297262f",
+      "4a636355583d4a41d168f5128b67ce5451fc112f",
       [
        null,
        {}
@@ -440663,7 +440663,7 @@
       ]
      ],
      "inset-area-wm-dir.html": [
-      "3acec2b10d6c0f36b275279d83233344dd7ada9d",
+      "5268cba7e5ec5dfbd1b0d0b675bb94c19fee3cdd",
       [
        null,
        {}
@@ -458252,6 +458252,13 @@
        {}
       ]
      ],
+     "adjustment-followed-by-scrollBy.html": [
+      "7428147b83562412903b8f9bfa76d37879a400ba",
+      [
+       null,
+       {}
+      ]
+     ],
      "adjustments-in-scroll-event-handler.tentative.html": [
       "84fd79cbcb91e2e906bfabca59941e42ea5db2d3",
       [
@@ -473516,7 +473523,7 @@
       ]
      ],
      "getClientRects-zoom.html": [
-      "d4c249eadb0445b668213acf01892899a149529b",
+      "93d42aee87b5c401fe53e2b9ec389e8930277dbd",
       [
        null,
        {}
@@ -630286,9 +630293,15 @@
       ]
      ],
      "local-storage.html": [
-      "59ba3a6d79cc0024be2a69a5aeb7237858fe612c",
+      "73f760cfb089e5fa03a1aae42f654d5ef11d51ff",
       [
-       null,
+       "speculation-rules/prerender/local-storage.html?target_hint=_blank",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prerender/local-storage.html?target_hint=_self",
        {
         "timeout": "long"
        }
