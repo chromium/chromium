@@ -123,6 +123,11 @@ class FloatingWorkspaceService : public KeyedService,
   // service shutdown.
   void ShutDownServicesAndObservers();
 
+  // Capture the current active desk task, running every ~30(TBD) seconds.
+  // Upload captured desk to chrome sync and record the randomly generated
+  // UUID key to `floating_workspace_template_uuid_`.
+  void CaptureAndUploadActiveDesk();
+
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
@@ -163,11 +168,6 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Handles the updating of progress bar notification.
   void HandleProgressBarStatus();
-
-  // Capture the current active desk task, running every ~30(TBD) seconds.
-  // Upload captured desk to chrome sync and record the randomly generated
-  // UUID key to `floating_workspace_template_uuid_`.
-  void CaptureAndUploadActiveDesk();
 
   // Stops the progress bar and resumes the latest floating workspace. This is
   // called when the app cache is ready and we have received `kUpToDate` from

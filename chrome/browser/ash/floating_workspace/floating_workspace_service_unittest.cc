@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+
 #include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desk.h"
@@ -23,9 +25,12 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
@@ -35,6 +40,7 @@
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/fake_desk_sync_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -340,6 +346,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    testing::Test::SetUp();
+    ash::LoginState::Initialize();
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -385,6 +394,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     }
     profile_ = nullptr;
     profile_manager_ = nullptr;
+    ash::LoginState::Shutdown();
+    testing::Test::TearDown();
   }
 
  private:
@@ -402,6 +413,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   std::unique_ptr<MockDesksClient> mock_desks_client_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+  session_manager::SessionManager session_manager_;
+  ash::SessionTerminationManager session_termination_manager_;
+
   raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
@@ -1529,6 +1543,46 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureImmediatelyAfterRestore) {
   ASSERT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
+  ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
+  EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
+                ->created_time(),
+            creation_time);
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       CaptureFloatingWorkspaceTemplateOnLockScreen) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+  SessionControllerClientImpl client;
+  TestSessionController session_controller;
+  client.Init();
+  PopulateAppsCache();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceService::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
+  // Set the captured desk template after the sync service has fire the
+  // `kUpToDate` signal. This is because a capture and upload happens after the
+  // fire event. We want to instead set the captured template after this so we
+  // can test that a new template was captured and uploaded.
+  mock_desks_client()->SetCapturedDeskTemplate(
+      std::move(floating_workspace_template));
+  base::RunLoop run_loop;
+  client.PrepareForLock(run_loop.QuitClosure());
+  run_loop.Run();
   ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
