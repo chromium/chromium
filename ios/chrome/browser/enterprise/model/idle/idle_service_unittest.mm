@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/enterprise/idle/metrics.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -204,6 +206,9 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunOnStartup_NoBackgroundTimeout) {
 // Start-up Case: base::Time::Now() > last_active_time + idle threshold.
 // Last idle time is not set.
 TEST_F(IdleTimeoutServiceTest, ActionsRunOnStartup_PostBackgroundTimeout) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
+
   SetLastActiveTime(base::Time::Now() - base::Seconds(90));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
@@ -211,8 +216,19 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunOnStartup_PostBackgroundTimeout) {
   EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);
   idle_service_->OnApplicationWillEnterForeground();
+  // The background case should by recorded at this point.
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.IdleTimeoutCase",
+      metrics::IdleTimeoutCase::kBackground, 1);
   EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(2);
   task_environment_.FastForwardBy(base::Minutes(2));
+  // The histogram should now have the previous timeout in background case and
+  // the last two foreground cases.
+  EXPECT_THAT(histogram_tester->GetAllSamples(
+                  "Enterprise.IdleTimeoutPolicies.IdleTimeoutCase"),
+              testing::ElementsAre(
+                  base::Bucket(metrics::IdleTimeoutCase::kForeground, 2),
+                  base::Bucket(metrics::IdleTimeoutCase::kBackground, 1)));
 }
 
 // Backgrund then reforeground case:

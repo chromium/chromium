@@ -14,6 +14,7 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -185,6 +186,43 @@ void VerifyActivityOverlayShownInWindowNumber(int window_number) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Verifies that the metric for the confirmation dialog appearance has been
+// logged as expected.
+void VerifyDialogShownMetricsLogged() {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:0
+          forHistogram:
+              @"Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"],
+      @"IdleTimeoutDialogEvent metrics count was incorrect for "
+      @"kDialogShown.");
+}
+
+// Verifies that the dialog dismissal metrics have
+// been logged correctly based on whether rhe dialog was closed by the user or
+// due to expiry.
+void VerifyDialogDismissalMetricsLogged(int dismissed_by_user_bucket_count,
+                                        int expired_count) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:dismissed_by_user_bucket_count
+             forBucket:1
+          forHistogram:
+              @"Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"],
+      @"IdleTimeoutDialogEvent metrics count was incorrect for "
+      @"kDialogDismissedByUser.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:expired_count
+             forBucket:2
+          forHistogram:
+              @"Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"],
+      @"IdleTimeoutDialogEvent metrics count was incorrect for "
+      @"kDialogExpired.");
+}
+
 void SignIn() {
   // Sign into a fake identity.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
@@ -240,8 +278,20 @@ void VerifyNoActionsRan() {
   return config;
 }
 
+- (void)setUp {
+  [super setUp];
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+}
+
 - (void)tearDown {
   [PolicyAppInterface clearPolicies];
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
+
   [super tearDown];
 }
 
@@ -256,8 +306,12 @@ void VerifyNoActionsRan() {
   [ChromeEarlGrey openNewIncognitoTab];
 
   VerifyIdleDialogShownOnTimeout();
+  VerifyDialogShownMetricsLogged();
+
   WaitForIdleTimeoutScreenAndClickContinue();
   VerifyIdleTimeoutDialogDismissed();
+  VerifyDialogDismissalMetricsLogged(1, 0);
+
   VerifySnackbarDoesNotAppear();
   VerifyNoActionsRan();
 }
@@ -271,7 +325,11 @@ void VerifyNoActionsRan() {
   [ChromeEarlGrey openNewIncognitoTab];
 
   VerifyIdleDialogShownOnTimeout();
+  VerifyDialogShownMetricsLogged();
+
   VerifyIdleTimeoutDialogDismissedOnDialogExpiry();
+  VerifyDialogDismissalMetricsLogged(0, 1);
+
   VerifyActionsSnackbarShown(IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE);
   VerifyActionsRan();
 }

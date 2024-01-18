@@ -19,6 +19,7 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
@@ -53,6 +54,9 @@ class CloseTabsAction : public Action {
       browser->GetWebStateList()->CloseAllWebStates(
           WebStateList::CLOSE_NO_FLAGS);
     }
+
+    metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kCloseTabs,
+                                  true);
     std::move(continuation).Run(true);
   }
 };
@@ -68,15 +72,30 @@ class SignOutAction : public Action {
         AuthenticationServiceFactory::GetForBrowserState(browser_state);
     if (authentication_service->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
+      signout_start_time_ = base::TimeTicks::Now();
       authentication_service->SignOut(
           signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
           /*force_clear_browsing_data=*/false,
-          base::CallbackToBlock(base::BindOnce(std::move(continuation), true)));
+          base::CallbackToBlock(
+              base::BindOnce(&SignOutAction::OnSignOutCompleted,
+                             base::Unretained(this), std::move(continuation))));
       return;
     }
     // Run continuation right away if user is not signed in.
     std::move(continuation).Run(true);
   }
+
+  void OnSignOutCompleted(Continuation continuation) {
+    metrics::RecordIdleTimeoutActionTimeTaken(
+        metrics::IdleTimeoutActionType::kSignOut,
+        base::TimeTicks::Now() - signout_start_time_);
+    metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kSignOut,
+                                  true);
+    std::move(continuation).Run(true);
+  }
+
+ private:
+  base::TimeTicks signout_start_time_;
 };
 
 // Action that clears one or more types of data via BrowsingDataRemover.
@@ -113,6 +132,7 @@ class ClearBrowsingDataAction : public Action,
           ->BrowsingHistoryCleared();
     }
 
+    deletion_start_time_ = base::TimeTicks::Now();
     ClearDataForBrowserState(browser_state);
   }
 
@@ -129,6 +149,13 @@ class ClearBrowsingDataAction : public Action,
         removals_completed_count_ == 2) {
       main_scoped_observer_.Reset();
       incognito_scoped_observer_.Reset();
+
+      metrics::RecordActionsSuccess(
+          metrics::IdleTimeoutActionType::kClearBrowsingData, removal_sucess_);
+      metrics::RecordIdleTimeoutActionTimeTaken(
+          metrics::IdleTimeoutActionType::kClearBrowsingData,
+          base::TimeTicks::Now() - deletion_start_time_);
+
       std::move(continuation_).Run(removal_sucess_);
     }
   }
@@ -167,6 +194,7 @@ class ClearBrowsingDataAction : public Action,
     return result;
   }
 
+  base::TimeTicks deletion_start_time_;
   base::flat_set<ActionType> action_types_;
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>
       main_scoped_observer_{this};

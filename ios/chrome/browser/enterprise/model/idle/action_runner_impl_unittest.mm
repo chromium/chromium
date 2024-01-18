@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
 
 #import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
@@ -140,6 +141,8 @@ TEST_F(IdleActionRunnerTest, PrefOrderDoesNotMatter) {
 // Tests that when a higher-priority action fails, the lower-priority actions
 // don't run.
 TEST_F(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
+  std::unique_ptr<base::HistogramTester> histogram_tester =
+      std::make_unique<base::HistogramTester>();
   std::unique_ptr<FakeActionFactory> action_factory =
       std::make_unique<FakeActionFactory>();
   ActionRunnerImpl runner(browser_state());
@@ -162,6 +165,8 @@ TEST_F(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
   EXPECT_CALL(actions_completed_callback, Run()).Times(0);
   runner.SetActionFactoryForTesting(std::move(action_factory));
   runner.Run(actions_completed_callback.Get());
+  histogram_tester->ExpectUniqueSample(
+      "Enterprise.IdleTimeoutPolicies.Success.AllActions", false, 1);
 }
 
 // Tests that it does nothing when the "IdleTimeoutActions" pref is empty.

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -167,10 +168,16 @@
 - (void)stopPresentingAndRunActionsAfterwards:(BOOL)doRunActions {
   _idleService->OnIdleTimeoutDialogPresented();
   [self stopIdleTimeoutConfirmationCoordinator];
+
   if (doRunActions) {
+    enterprise_idle::metrics::RecordIdleTimeoutDialogEvent(
+        enterprise_idle::metrics::IdleTimeoutDialogEvent::kDialogExpired);
     _pendingDisplayingSnackbar = YES;
     _idleService->RunActions();
   } else {
+    enterprise_idle::metrics::RecordIdleTimeoutDialogEvent(
+        enterprise_idle::metrics::IdleTimeoutDialogEvent::
+            kDialogDismissedByUser);
     _pendingDisplayingSnackbar = NO;
   }
 }
@@ -330,6 +337,8 @@
   _idleTimeoutConfirmationCoordinator.triggerTime =
       _idleService->GetIdleTriggerTime();
   [_idleTimeoutConfirmationCoordinator start];
+  enterprise_idle::metrics::RecordIdleTimeoutDialogEvent(
+      enterprise_idle::metrics::IdleTimeoutDialogEvent::kDialogShown);
 }
 
 // Dismisses the idle timeout confirmation dialog.
@@ -362,13 +371,22 @@
 }
 
 - (void)maybeDismissExtendedLaunchScreenWindowIfDisplayed {
+  if (![self isLaunchScreenDisplayed]) {
+    // Nothing needs to be done here, so we can return.
+    return;
+  }
+
+  enterprise_idle::metrics::RecordIdleTimeoutLaunchScreenEvent(
+      enterprise_idle::metrics::IdleTimeoutLaunchScreenEvent::
+          kLaunchScreenDismissedAfterActionCompletion);
+
   if (!_idleService->GetLastActionSet().close) {
     // Dismiss right away if tabs will not be closing, which is often delayed.
     [self dismissExtendedLaunchScreenWindowIfDisplayed];
     return;
   }
 
-  // Remove after 2 more seconds to give the UI enough time to update behind the
+  // Remove after 1 more second to give the UI enough time to update behind the
   // screen after actions have run. If the screen is dimssed right away, the
   // tabs will be seen closing.
   __weak __typeof(self) weakSelf = self;
@@ -417,6 +435,9 @@
   __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
+        enterprise_idle::metrics::RecordIdleTimeoutLaunchScreenEvent(
+            enterprise_idle::metrics::IdleTimeoutLaunchScreenEvent::
+                kLaunchScreenExpired);
         [weakSelf dismissExtendedLaunchScreenWindowIfDisplayed];
       }),
       base::Seconds(5));
