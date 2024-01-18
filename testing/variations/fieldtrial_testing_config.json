@@ -10050,6 +10050,27 @@
             ]
         }
     ],
+    "KeepAliveInBrowserMigration": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240117",
+                    "enable_features": [
+                        "KeepAliveInBrowserMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardAccessoryAddressIPH": [
         {
             "platforms": [
