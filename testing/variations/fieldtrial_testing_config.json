@@ -12310,6 +12310,30 @@
             ]
         }
     ],
+    "OmniboxOnDeviceHeadModelSelectionFix": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Fix",
+                    "params": {
+                        "SelectionFix ": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxOnDeviceHeadProviderNonIncognito"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnDeviceTailSuggest": [
         {
             "platforms": [
