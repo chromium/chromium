@@ -2164,10 +2164,10 @@ FindFormAndFieldForFormControlElement(
 
 std::optional<FormData> FindFormForContentEditable(
     const blink::WebElement& content_editable) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kAutofillUseDomNodeIdForRendererId));
   CHECK(base::FeatureList::IsEnabled(features::kAutofillContentEditables));
-  if (!content_editable.DynamicTo<WebFormElement>().IsNull() ||
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId) ||
+      !content_editable.DynamicTo<WebFormElement>().IsNull() ||
       !content_editable.DynamicTo<WebFormControlElement>().IsNull() ||
       !content_editable.IsContentEditable() ||
       (!content_editable.ParentNode().IsNull() &&
