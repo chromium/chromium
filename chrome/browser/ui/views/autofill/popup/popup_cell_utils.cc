@@ -169,7 +169,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
               : vector_icons::kLocationOnIcon,
           kIconSize);
     case Suggestion::Icon::kDelete:
-      return ImageViewFromVectorIcon(kTrashCanLightIcon, kIconSize);
+      return ImageViewFromVectorIcon(kTrashCanRefreshIcon, kIconSize);
     case Suggestion::Icon::kClear:
       return ImageViewFromVectorIcon(kBackspaceIcon, kIconSize);
     case Suggestion::Icon::kUndo:
