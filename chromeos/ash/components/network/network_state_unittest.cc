@@ -538,12 +538,6 @@ TEST_F(NetworkStateTest, UpdateCaptivePortalState) {
   UpdateCaptivePortalState(shill_properties);
   EXPECT_EQ(GetShillPortalState(), NetworkState::PortalState::kPortalSuspected);
 
-  shill_properties.Set(shill::kPortalDetectionFailedStatusCodeProperty,
-                       net::HTTP_PROXY_AUTHENTICATION_REQUIRED);
-  UpdateCaptivePortalState(shill_properties);
-  EXPECT_EQ(GetShillPortalState(),
-            NetworkState::PortalState::kProxyAuthRequired);
-
   SetConnectionState(shill::kStateOnline);
   UpdateCaptivePortalState(shill_properties);
   EXPECT_EQ(GetShillPortalState(), NetworkState::PortalState::kOnline);

@@ -804,9 +804,9 @@ chromium-metrics-reviews@google.com.
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
-    Captive portal status code reported by Shill and received by NetworkState.
-    NOTE: This metric used to be CaptivePortal.NetworkStateStatusCode which was
-    expired from 2021-04-01 to 2022-09-18.
+    DEPRECATED: This metric is is invalid starting with M122 after the shill
+    change: https://crrev.com/c/5186197 Captive portal status code reported by
+    Shill and received by NetworkState.
   </summary>
 </histogram>
 
