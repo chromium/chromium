@@ -333,7 +333,7 @@
     },
     {
       name: "AsyncClipboardImplicitPermission",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AttributionReporting",
