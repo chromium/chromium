@@ -12,7 +12,6 @@
 
 namespace blink {
 
-class FragmentItem;
 class LineBoxFragmentBuilder;
 
 class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
@@ -60,19 +59,6 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
 
   // Compute the baseline metrics for this linebox.
   FontHeight BaselineMetrics() const;
-
-  // Em height box. including contents, in the local coordinate.
-  // |ComputeRubyEmHeightBox| is not precomputed/cached because it cannot be
-  // computed when LineBox is generated because it needs container dimensions
-  // to resolve relative position of its children.
-  PhysicalRect ComputeRubyEmHeightBox(
-      const PhysicalBoxFragment& container,
-      const ComputedStyle& container_style) const;
-  PhysicalRect ComputeRubyEmHeightBoxForLine(
-      const PhysicalBoxFragment& container,
-      const ComputedStyle& container_style,
-      const FragmentItem& line,
-      const InlineCursor& cursor) const;
 
   // Whether the content soft-wraps to the next line.
   bool HasSoftWrapToNextLine() const;

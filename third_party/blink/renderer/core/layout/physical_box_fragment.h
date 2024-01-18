@@ -314,9 +314,6 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // supported for CSS boxes (i.e. not for fragmentainers, for instance).
   PhysicalOffset OffsetFromOwnerLayoutBox() const;
 
-  PhysicalRect ComputeRubyEmHeightBox() const;
-  PhysicalRect ComputeRubyEmHeightBoxFromChildren() const;
-
   // TODO(layout-dev): These three methods delegate to legacy layout for now,
   // update them to use LayoutNG based overflow information from the fragment
   // and change them to use NG geometry types once LayoutNG supports overflow.

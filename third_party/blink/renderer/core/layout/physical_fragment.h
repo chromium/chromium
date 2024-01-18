@@ -33,7 +33,6 @@ namespace blink {
 class ComputedStyle;
 class FragmentBuilder;
 class FragmentData;
-class FragmentItem;
 class Node;
 class PaintLayer;
 enum class OutlineType;
@@ -481,17 +480,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // check if there were newer generations.
   const PhysicalFragment* PostLayout() const;
 
-  // Em height box. including contents, in the local coordinate.
-  PhysicalRect ComputeRubyEmHeightBox(
-      const PhysicalBoxFragment& container) const;
-
-  // ComputeRubyEmHeightBox(), with transforms applied wrt container if needed.
-  // This does not include any offsets from the parent (including relpos).
-  PhysicalRect ComputeRubyEmHeightBoxForPropagation(
-      const PhysicalBoxFragment& container) const;
-  void AdjustRubyEmHeightBoxForPropagation(const PhysicalBoxFragment& container,
-                                           PhysicalRect* overflow) const;
-
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
   LogicalRect ConvertChildToLogical(const PhysicalRect& physical_rect) const;
@@ -722,18 +710,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
-
-  void AddRubyEmHeightBoxForInlineChild(const PhysicalBoxFragment& container,
-                                        const ComputedStyle& container_style,
-                                        const FragmentItem& line,
-                                        bool has_hanging,
-                                        const InlineCursor& cursor,
-                                        PhysicalRect* overflow) const;
-
-  static void AdjustRubyEmHeightBoxForHanging(
-      const PhysicalRect& rect,
-      const WritingMode container_writing_mode,
-      PhysicalRect* overflow);
 
   void AddOutlineRectsForNormalChildren(
       OutlineRectCollector& collector,
