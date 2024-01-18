@@ -81,6 +81,11 @@ void RepostFormTabHelper::SetDelegate(
   delegate_ = delegate;
 }
 
+void RepostFormTabHelper::WasHidden(web::WebState* web_state) {
+  DCHECK_EQ(web_state_, web_state);
+  DismissReportFormDialog();
+}
+
 void RepostFormTabHelper::DidStartNavigation(web::WebState* web_state,
                                              web::NavigationContext*) {
   DCHECK_EQ(web_state_, web_state);

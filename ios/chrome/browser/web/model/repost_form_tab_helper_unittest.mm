@@ -133,6 +133,15 @@ TEST_F(RepostFormTabHelperTest, AllowRepost) {
   EXPECT_TRUE(callback_called);
 }
 
+// Tests that dialog is dismissed when WebState is hidden.
+TEST_F(RepostFormTabHelperTest, DismissingOnWebStateHidden) {
+  ASSERT_FALSE(delegate_.presentingDialog);
+  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
+  EXPECT_TRUE(delegate_.presentingDialog);
+  web_state_->WasHidden();
+  EXPECT_FALSE(delegate_.presentingDialog);
+}
+
 // Tests that dialog is dismissed when WebState is destroyed.
 TEST_F(RepostFormTabHelperTest, DismissingOnWebStateDestruction) {
   ASSERT_FALSE(delegate_.presentingDialog);

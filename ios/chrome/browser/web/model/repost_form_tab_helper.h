@@ -44,6 +44,7 @@ class RepostFormTabHelper : public web::WebStateUserData<RepostFormTabHelper>,
   void OnDialogPresented();
 
   // web::WebStateObserver overrides:
+  void WasHidden(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;

@@ -708,6 +708,8 @@ enum class ToolbarKind {
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
 
+  [self stopRepostFormCoordinator];
+
   [_formInputAccessoryCoordinator clearPresentedState];
 
   [self.viewController clearPresentedStateWithCompletion:completion
