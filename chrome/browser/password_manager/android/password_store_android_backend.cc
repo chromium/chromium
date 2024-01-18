@@ -713,10 +713,13 @@ void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
 void PasswordStoreAndroidBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  CHECK(!form.blocked_by_user ||
-        (form.username_value.empty() && form.password_value.empty()));
-  JobId job_id =
-      bridge_helper_->AddLogin(form, GetSyncingAccount(sync_service_));
+  PasswordForm sanitized_form = form;
+  if (sanitized_form.blocked_by_user) {
+    sanitized_form.username_value.clear();
+    sanitized_form.password_value.clear();
+  }
+  JobId job_id = bridge_helper_->AddLogin(sanitized_form,
+                                          GetSyncingAccount(sync_service_));
   QueueNewJob(job_id, std::move(callback), MetricInfix("AddLoginAsync"),
               PasswordStoreOperation::kAddLoginAsync,
               /*delay=*/base::Seconds(0));
@@ -725,9 +728,12 @@ void PasswordStoreAndroidBackend::AddLoginAsync(
 void PasswordStoreAndroidBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  CHECK(!form.blocked_by_user ||
-        (form.username_value.empty() && form.password_value.empty()));
-  UpdateLoginInternal(GetSyncingAccount(sync_service_), form,
+  PasswordForm sanitized_form = form;
+  if (sanitized_form.blocked_by_user) {
+    sanitized_form.username_value.clear();
+    sanitized_form.password_value.clear();
+  }
+  UpdateLoginInternal(GetSyncingAccount(sync_service_), sanitized_form,
                       std::move(callback));
 }
 

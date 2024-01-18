@@ -643,6 +643,37 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreAndroidBackendTest,
+       SanitizedFormBeforeCallingBridgeAddLogin) {
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::NullCallback(), base::DoNothing());
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  const JobId kAddLoginJobId{13388};
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
+  form.blocked_by_user = true;
+
+  PasswordForm expected_form = form;
+  expected_form.username_value.clear();
+  expected_form.password_value.clear();
+
+  EXPECT_CALL(*bridge_helper(), AddLogin(expected_form, kTestAccount))
+      .WillOnce(Return(kAddLoginJobId));
+  backend().AddLoginAsync(form, mock_reply.Get());
+
+  PasswordStoreChangeList expected_changes;
+  expected_changes.emplace_back(
+      PasswordStoreChange(PasswordStoreChange::ADD, form));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
+  RunUntilIdle();
+}
+
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   DisableSyncFeature();
   backend().InitBackend(/*affiliated_match_helper=*/nullptr,
@@ -659,6 +690,37 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::UPDATE, form));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       SanitizedFormBeforeCallingBridgeUpdateLogin) {
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::NullCallback(), base::DoNothing());
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  const JobId kUpdateLoginJobId{13388};
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
+  form.blocked_by_user = true;
+
+  PasswordForm expected_form = form;
+  expected_form.username_value.clear();
+  expected_form.password_value.clear();
+
+  EXPECT_CALL(*bridge_helper(), UpdateLogin(expected_form, kTestAccount))
+      .WillOnce(Return(kUpdateLoginJobId));
+  backend().UpdateLoginAsync(form, mock_reply.Get());
+
+  PasswordStoreChangeList expected_changes;
+  expected_changes.emplace_back(
+      PasswordStoreChange(PasswordStoreChange::ADD, form));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
