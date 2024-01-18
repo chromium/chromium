@@ -7,10 +7,7 @@
 namespace ash {
 namespace input_method {
 
-FakeInputMethodDelegate::FakeInputMethodDelegate()
-    : active_locale_("en") {
-}
-
+FakeInputMethodDelegate::FakeInputMethodDelegate() = default;
 FakeInputMethodDelegate::~FakeInputMethodDelegate() = default;
 
 std::string FakeInputMethodDelegate::GetHardwareKeyboardLayouts() const {
@@ -26,7 +23,7 @@ std::u16string FakeInputMethodDelegate::GetLocalizedString(
 
 void FakeInputMethodDelegate::SetHardwareKeyboardLayoutForTesting(
     const std::string& layout) {
-  set_hardware_keyboard_layout(layout);
+  hardware_keyboard_layout_ = layout;
 }
 
 }  // namespace input_method
