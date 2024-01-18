@@ -19,8 +19,11 @@ const char* GetAcceleratorActionName(AcceleratorAction action) {
       base::MakeFixedFlatMap<AcceleratorAction, const char*>({
 #define ACCELERATOR_ACTION_ENTRY(action) \
   {AcceleratorAction::k##action, #action},
+#define ACCELERATOR_ACTION_ENTRY_FIXED_VALUE(action, value) \
+  {AcceleratorAction::k##action, #action},
           ACCELERATOR_ACTIONS
 #undef ACCELERATOR_ACTION_ENTRY
+#undef ACCELERATOR_ACTION_ENTRY_FIXED_VALUE
       });
   auto* iter = kAcceleratorActionToName.find(action);
   CHECK(iter != kAcceleratorActionToName.end());
