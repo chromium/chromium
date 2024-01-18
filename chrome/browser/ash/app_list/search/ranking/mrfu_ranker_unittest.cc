@@ -40,7 +40,7 @@ TEST_F(MrfuResultRankerTest, TrainAndRank) {
   CategoriesList categories;
 
   // Rank them, expecting ordering a > c > b > d.
-  ranker.Start(u"query", results, categories);
+  ranker.Start(u"query", categories);
   auto ab_scores = ranker.GetResultRanks(results, ResultType::kInstalledApp);
   auto cd_scores = ranker.GetResultRanks(results, ResultType::kOsSettings);
   EXPECT_GT(ab_scores[0], cd_scores[0]);
@@ -86,7 +86,7 @@ TEST_F(MrfuCategoryRankerTest, DefaultCategoryScores) {
                              {.category = Category::kHelp},
                              {.category = Category::kSearchAndAssistant},
                              {.category = Category::kAppShortcuts}});
-  ranker.Start(u"query", results, categories);
+  ranker.Start(u"query", categories);
   auto scores =
       ranker.GetCategoryRanks(results, categories, ResultType::kInstalledApp);
   ASSERT_EQ(scores.size(), 8u);
@@ -128,7 +128,7 @@ TEST_F(MrfuCategoryRankerTest, TrainAndRank) {
                              {.category = Category::kFiles}});
 
   // Expect a ranking of kInstalledApp > kOsSettings > kFileSearch.
-  ranker.Start(u"query", results, categories);
+  ranker.Start(u"query", categories);
   auto scores =
       ranker.GetCategoryRanks(results, categories, ResultType::kInstalledApp);
   ASSERT_EQ(scores.size(), 3u);

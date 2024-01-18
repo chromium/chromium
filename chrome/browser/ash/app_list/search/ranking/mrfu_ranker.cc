@@ -58,7 +58,6 @@ MrfuCategoryRanker::MrfuCategoryRanker(MrfuCache::Params params,
 MrfuCategoryRanker::~MrfuCategoryRanker() = default;
 
 void MrfuCategoryRanker::Start(const std::u16string& query,
-                               ResultsMap& results,
                                CategoriesList& categories) {
   if (mrfu_->initialized() && mrfu_->empty())
     SetDefaultCategoryScores();

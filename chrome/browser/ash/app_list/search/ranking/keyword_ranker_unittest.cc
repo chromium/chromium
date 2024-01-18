@@ -47,7 +47,7 @@ TEST_F(KeywordRankerTest, NoMatchedKeywords) {
   results[ResultType::kInstalledApp] =
       MakeScoredResults({"app_a", "app_b"}, {0.7, 0.5});
   KeywordRanker ranker;
-  ranker.Start(u"ABC", results, categories);
+  ranker.Start(u"ABC", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
 
   // Check the number of result and the keyword_multiplier of the result.
@@ -71,7 +71,7 @@ TEST_F(KeywordRankerTest, OneMatchedKeyword) {
       MakeScoredResults({"help_a", "help_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"explore", results, categories);
+  ranker.Start(u"explore", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
   ranker.UpdateResultRanks(results, ProviderType::kHelpApp);
 
@@ -99,7 +99,7 @@ TEST_F(KeywordRankerTest, KeywordMatchesMultipleProviders) {
       MakeScoredResults({"drive_a", "drive_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"file", results, categories);
+  ranker.Start(u"file", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
   ranker.UpdateResultRanks(results, ProviderType::kDriveSearch);
@@ -129,7 +129,7 @@ TEST_F(KeywordRankerTest, OneTokenMatchOneProvider) {
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"seach", results, categories);
+  ranker.Start(u"seach", categories);
   ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
 
@@ -157,7 +157,7 @@ TEST_F(KeywordRankerTest, MultipleTokensMatchOneProvider) {
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"seach search", results, categories);
+  ranker.Start(u"seach search", categories);
   ranker.UpdateResultRanks(results, ProviderType::kOmnibox);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
 
@@ -187,7 +187,7 @@ TEST_F(KeywordRankerTest, OneTokenMatchMultipleProviders) {
       MakeScoredResults({"drive_a", "drive_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"fil", results, categories);
+  ranker.Start(u"fil", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
   ranker.UpdateResultRanks(results, ProviderType::kDriveSearch);
@@ -219,7 +219,7 @@ TEST_F(KeywordRankerTest, MultipleTokensMatchMultipleProviders) {
       MakeScoredResults({"drive_a", "drive_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"fil drive app", results, categories);
+  ranker.Start(u"fil drive app", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
   ranker.UpdateResultRanks(results, ProviderType::kDriveSearch);
@@ -254,7 +254,7 @@ TEST_F(KeywordRankerTest, TestTrainBoostFactorIncrease) {
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"app", results, categories);
+  ranker.Start(u"app", categories);
 
   // Set the ftrl score of each result from the providers.
   SetFtrlScore(results, ProviderType::kInstalledApp, {0.7, 0.5});
@@ -279,7 +279,7 @@ TEST_F(KeywordRankerTest, TestTrainBoostFactorIncrease) {
   ranker.Train(MakeLaunchData("app_b"));
   Wait();
 
-  ranker.Start(u"app", results, categories);
+  ranker.Start(u"app", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
 
@@ -308,7 +308,7 @@ TEST_F(KeywordRankerTest, TestTrainBoostFactorDecrease) {
       MakeScoredResults({"local_a", "local_b"}, {0.7, 0.5});
 
   KeywordRanker ranker;
-  ranker.Start(u"app", results, categories);
+  ranker.Start(u"app", categories);
 
   // Set the ftrl score of each result from the providers.
   SetFtrlScore(results, ProviderType::kInstalledApp, {0.7, 0.4});
@@ -333,7 +333,7 @@ TEST_F(KeywordRankerTest, TestTrainBoostFactorDecrease) {
   ranker.Train(MakeLaunchData("local_b"));
   Wait();
 
-  ranker.Start(u"app", results, categories);
+  ranker.Start(u"app", categories);
   ranker.UpdateResultRanks(results, ProviderType::kInstalledApp);
   ranker.UpdateResultRanks(results, ProviderType::kFileSearch);
 

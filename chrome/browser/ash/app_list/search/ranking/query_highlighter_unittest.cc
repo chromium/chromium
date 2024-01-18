@@ -33,7 +33,7 @@ TEST(QueryHighlighterTest, KeepExistingNonMatchTags) {
 
   ResultsMap results;
   CategoriesList categories({{.category = Category::kWeb}});
-  highlighter.Start(u"example", results, categories);
+  highlighter.Start(u"example", categories);
 
   results[ResultType::kOmnibox] = MakeResults({u"example_result"});
 
@@ -56,7 +56,7 @@ TEST(QueryHighlighterTest, RemoveExistingMatchTags) {
 
   ResultsMap results;
   CategoriesList categories({{.category = Category::kWeb}});
-  highlighter.Start(u"example", results, categories);
+  highlighter.Start(u"example", categories);
 
   results[ResultType::kOmnibox] = MakeResults({u"example_result"});
 
@@ -79,7 +79,7 @@ TEST(QueryHighlighterTest, AppendMatchTags) {
 
   ResultsMap results;
   CategoriesList categories({{.category = Category::kWeb}});
-  highlighter.Start(u"example", results, categories);
+  highlighter.Start(u"example", categories);
 
   results[ResultType::kOmnibox] = MakeResults({u"example_result"});
 
