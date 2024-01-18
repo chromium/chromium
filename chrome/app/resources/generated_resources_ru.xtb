@@ -1565,7 +1565,7 @@
 <translation id="2190069059097339078">Получение параметров доступа по Wi-Fi</translation>
 <translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пусто)</translation>
-<translation id="2191754378957563929">ВКЛ</translation>
+<translation id="2191754378957563929">Включено</translation>
 <translation id="2192505247865591433">Из:</translation>
 <translation id="2193365732679659387">Настройки доверия</translation>
 <translation id="2194856509914051091">Важная информация</translation>
@@ -1911,7 +1911,7 @@
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Обычно сайты подключаются к последовательным портам для передачи данных, например настройки сети.</translation>
 <translation id="2453706416476934374">Чтобы пользователь <ph name="SUPERVISED_USER_NAME" /> получал персонализированные ответы, предоставьте Ассистенту доступ к скриншоту экрана ребенка (<ph name="SUPERVISED_USER_NAME" />), в том числе к сведениям о воспроизводимых треках и видеороликах.</translation>
-<translation id="2453860139492968684">Закрыть</translation>
+<translation id="2453860139492968684">Завершить</translation>
 <translation id="2454206500483040640">Изолированные</translation>
 <translation id="2454247629720664989">Ключевое слово</translation>
 <translation id="2454524890947537054">Одобрить запрос на доступ к сайту?</translation>
@@ -3095,7 +3095,7 @@
 <translation id="3406290648907941085">Разрешить сайтам использовать устройства и данные виртуальной реальности</translation>
 <translation id="3406396172897554194">Укажите язык или способ ввода</translation>
 <translation id="3406605057700382950">Показывать панель &amp;закладок</translation>
-<translation id="3407392651057365886">Предзагружается больше страниц. Этот процесс может выполняться через серверы Google по запросу других сайтов.</translation>
+<translation id="3407392651057365886">Заранее загружается больше страниц. По запросу сайтов этот процесс может выполняться через серверы Google.</translation>
 <translation id="3407967630066378878">Чтобы настроить разблокировку по отпечатку, попросите ребенка приложить палец к сканеру отпечатков на левой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев ребенка надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409513286451883969">Перевести выделенный текст на <ph name="LANGUAGE" /></translation>
 <translation id="3409785640040772790">Карты</translation>
@@ -3458,7 +3458,7 @@
 <translation id="3697716475445175867">по дате использования</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Вы можете запретить этому сайту отправлять уведомления}one{Вы можете запретить этому  сайту отправлять уведомления}few{Вы можете запретить этим сайтам отправлять уведомления}many{Вы можете запретить этим сайтам отправлять уведомления}other{Вы можете запретить этим сайтам отправлять уведомления}}</translation>
 <translation id="3697952514309507634">Другие профили Chrome</translation>
-<translation id="3698471669415859717">Проверка выполнена</translation>
+<translation id="3698471669415859717">Проверка завершена</translation>
 <translation id="3699624789011381381">Адрес электронной почты</translation>
 <translation id="3699920817649120894">Отключить синхронизацию и персонализацию?</translation>
 <translation id="3700888195348409686">Показ на другом экране (<ph name="PAGE_ORIGIN" />)</translation>
@@ -3720,7 +3720,7 @@
 <translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Диспетчер загрузки</translation>
-<translation id="3880513902716032002">Некоторые посещаемые вами страницы загружаются предварительно.</translation>
+<translation id="3880513902716032002">Некоторые страницы, которые вы посещаете, загружаются заранее</translation>
 <translation id="3883482240657453056">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />" и "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Обновлениями управляет администратор</translation>
@@ -6866,7 +6866,7 @@
 <translation id="6438234780621650381">Сброс настроек</translation>
 <translation id="6438475350605608554">Пароли уже импортируются в другой вкладке.</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: воспроизводится аудио</translation>
-<translation id="6440291723980579689">Страницы загружаются только после того, как вы их откроете.</translation>
+<translation id="6440291723980579689">Страницы загружаются только после того, как вы их откроете</translation>
 <translation id="6441377161852435370">Добавить вкладку в список для чтения</translation>
 <translation id="6442187272350399447">Супер</translation>
 <translation id="6442445294758185945">Не удалось скачать обновление. Повторите попытку.</translation>
@@ -7378,7 +7378,7 @@
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="6832218595502288407">Выровнять по левому краю</translation>
 <translation id="6833479554815567477">Вкладка удалена из группы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Пробная версия Privacy Sandbox</translation>
+<translation id="6833996806551876956">Эксперимент Privacy Sandbox</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
