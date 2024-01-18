@@ -14945,6 +14945,28 @@
             ]
         }
     ],
+    "ReadAnythingIPHRollout": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "distillable_urls": "support.google.com,docs.google.com"
+                    },
+                    "enable_features": [
+                        "IPH_ReadingModeSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingOmniboxIconRollout": [
         {
             "platforms": [
@@ -14957,29 +14979,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "distillable_urls": "support.google.com,docs.google.com"
+                    },
                     "enable_features": [
                         "ReadAnythingOmniboxIcon"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReadAnythingRollout": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_ReadingModeSidePanel",
-                        "ReadAnything",
-                        "ReadAnythingWithScreen2x"
                     ]
                 }
             ]
