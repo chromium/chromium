@@ -22,6 +22,7 @@
 #include "base/containers/checked_iterators.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -188,6 +189,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - as_writable_chars() function.
 // - as_byte_span() function.
 // - copy_from() method.
+// - span_from_ref() function.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -635,6 +637,15 @@ constexpr auto make_span(Container&& container) noexcept {
   using T =
       std::remove_pointer_t<decltype(std::data(std::declval<Container>()))>;
   return span<T, N>(std::data(container), std::size(container));
+}
+
+// `span_from_ref` converts a reference to T into a span of length 1.  This is a
+// non-std helper that is inspired by the `std::slice::from_ref()` function from
+// Rust.
+template <typename T>
+static constexpr span<T, 1u> span_from_ref(
+    T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+  return span<T, 1u>(&single_object, 1u);
 }
 
 // Convenience function for converting an object which is itself convertible

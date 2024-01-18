@@ -178,4 +178,25 @@ void FixedSizeCopyTooSmall() {
   base::make_span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{span size mismatch}}
 }
 
+void FromRefNoSuchFunctionForIntLiteral() {
+  // Expectations of this test just capture the current behavior which is not
+  // necessarily desirable or required. This test expects that when we ask the
+  // compiler to deduce the template arguments for `span_from_ref` (the only
+  // difference from `FromRefLifetimeBoundErrorForIntLiteral` below) then it
+  // will fail to find a suitable function to invoke.
+  auto wont_work = span_from_ref(123);  // expected-error@*:* {{no matching function for call to 'span_from_ref'}}
+}
+
+void FromRefLifetimeBoundErrorForIntLiteral() {
+  // Testing that `ABSL_ATTRIBUTE_LIFETIME_BOUND` works as intended.
+  [[maybe_unused]] auto wont_work =
+      span_from_ref<const int>(123);  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+}
+
+void FromRefLifetimeBoundErrorForTemporaryStringObject() {
+  // Testing that `ABSL_ATTRIBUTE_LIFETIME_BOUND` works as intended.
+  [[maybe_unused]] auto wont_work =
+      span_from_ref<const std::string>("temporary string");  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+}
+
 }  // namespace base

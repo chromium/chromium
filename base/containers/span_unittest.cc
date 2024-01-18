@@ -512,6 +512,32 @@ TEST(SpanTest, ConstructFromContainer) {
     EXPECT_EQ(vector[i], static_span[i]);
 }
 
+TEST(SpanTest, FromRefOfMutableStackVariable) {
+  int x = 123;
+
+  auto s = span_from_ref(x);
+  static_assert(std::is_same_v<decltype(s), span<int, 1u>>);
+  EXPECT_EQ(&x, s.data());
+  EXPECT_EQ(1u, s.size());
+  EXPECT_EQ(sizeof(int), s.size_bytes());
+  EXPECT_EQ(123, s[0]);
+
+  s[0] = 456;
+  EXPECT_EQ(456, x);
+  EXPECT_EQ(456, s[0]);
+}
+
+TEST(SpanTest, FromRefOfConstStackVariable) {
+  const int x = 123;
+
+  auto s = span_from_ref(x);
+  static_assert(std::is_same_v<decltype(s), span<const int, 1u>>);
+  EXPECT_EQ(&x, s.data());
+  EXPECT_EQ(1u, s.size());
+  EXPECT_EQ(sizeof(int), s.size_bytes());
+  EXPECT_EQ(123, s[0]);
+}
+
 TEST(SpanTest, ConvertNonConstIntegralToConst) {
   std::vector<int> vector = {1, 1, 2, 3, 5, 8};
 
