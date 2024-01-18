@@ -1,0 +1,65 @@
+// Copyright (c) 2018, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification.CoreMLModels;
+
+/*
+ * A model which takes an input image and outputs array(s) of features
+ * according to the specified feature types
+ */
+message VisionFeaturePrint {
+  // Specific vision feature print types
+
+  // Scene extracts features useful for identifying contents of natural images
+  // in both indoor and outdoor environments
+  message Scene {
+    enum SceneVersion {
+      SCENE_VERSION_INVALID = 0;
+      // VERSION_1 is available on iOS,tvOS 12.0+, macOS 10.14+
+      // It uses a 299x299 input image and yields a 2048 float feature vector
+      SCENE_VERSION_1 = 1;
+
+      // VERSION_2 is available on iOS,tvOS 17.0+, macOS 14.0+
+      // It uses a 360x360 input image and yields a 768 float feature vector
+      SCENE_VERSION_2 = 2;
+    }
+
+    SceneVersion version = 1;
+  }
+
+  // Objects extracts features useful for identifying and localizing
+  // objects in natural images
+  message Objects {
+    enum ObjectsVersion {
+      OBJECTS_VERSION_INVALID = 0;
+      // VERSION_1 is available on iOS,tvOS 14.0+, macOS 11.0+
+      // It uses a 299x299 input image and yields two multiarray
+      // features: one at high resolution of shape (288, 35, 35)
+      // the other at low resolution of shape (768, 17, 17)
+      OBJECTS_VERSION_1 = 1;
+    }
+
+    ObjectsVersion version = 1;
+
+    /*
+     * Stores the names of the output features according to the
+     * order of them being computed from the neural network, i.e.,
+     * the first element in the output is the earliest being
+     * computed, while the last is the latest being computed. In
+     * general, the order reflects the resolution of the feature.
+     * The earlier it is computed, the higher the feature resolution.
+     */
+    repeated string output = 100;
+  }
+
+  // Vision feature print type
+  oneof VisionFeaturePrintType {
+    Scene scene = 20;
+    Objects objects = 21;
+  }
+}

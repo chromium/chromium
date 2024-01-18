@@ -1,0 +1,38 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+/*
+ * A categorical mapping.
+ *
+ * This allows conversion from integers to strings, or from strings to integers.
+ */
+message CategoricalMapping {
+  oneof MappingType {
+    // Conversion from strings to integers
+    StringToInt64Map stringToInt64Map = 1;
+
+    // Conversion from integer to string
+    Int64ToStringMap int64ToStringMap = 2;
+  }
+
+  /*
+   * The value returned if an input is not contained in the map above.
+   * If one of these is not set, then an error is raised on an unknown input.
+   */
+  oneof ValueOnUnknown {
+    // Default output when converting from an integer to a string.
+    string strValue = 101;
+
+    // Default output when converting from a string to an integer.
+    int64 int64Value = 102;
+  }
+}

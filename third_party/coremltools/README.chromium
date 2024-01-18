@@ -1,0 +1,27 @@
+Name: Core ML Tools
+Short Name: coremltools
+URL: https://github.com/apple/coremltools
+Version: 7.1
+Date: 2023-10-18
+License: BSD
+License File: mlmodel/format/LICENSE
+Shipped: yes
+Security Critical: no
+
+Description:
+This folder is snapshot of part of the Core ML Tools library.
+It is required to implement support for WebNN on macOS.
+
+To avoid pulling in unnecessary files this snapshot only contains the
+protocol buffer definitions of the Core ML Model Format Specification.
+
+Local Modifications:
+git cl format as been run on the .proto files, in order to pass
+the Chromium presubmit checks. LICENSE.txt has been renamed to 
+LICENSE as per Chromium requirements.
+
+The snapshot of this repository can be regenerated or updated
+by running Update.py. Update.py also documents exactly how
+this current snapshot was produced.
+
+-------------------- DEPENDENCY DIVIDER --------------------

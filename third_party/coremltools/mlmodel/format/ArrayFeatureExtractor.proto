@@ -1,0 +1,19 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package CoreML.Specification;
+
+/*
+ * An array feature extractor.
+ *
+ * Given an index, extracts the value at that index from its array input.
+ * Indexes are zero-based.
+ */
+message ArrayFeatureExtractor {
+  repeated uint64 extractIndex = 1;
+}

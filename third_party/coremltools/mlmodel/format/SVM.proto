@@ -1,0 +1,193 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+// Kernel Definitions
+// ------------------
+
+/*
+ * A linear kernel.
+ *
+ * This function has the following formula:
+ *
+ * .. math::
+ *     K(\boldsymbol{x}, \boldsymbol{x'}) = \boldsymbol{x}^T \boldsymbol{x'}
+ */
+message LinearKernel {}
+
+/*
+ * A Gaussian radial basis function (RBF) kernel.
+ *
+ * This function has the following formula:
+ *
+ * .. math::
+ *     K(\boldsymbol{x}, \boldsymbol{x'}) = \
+ *          \exp(-\gamma || \boldsymbol{x} - \boldsymbol{x'} ||^2 )
+ *
+ */
+message RBFKernel {
+  double gamma = 1;
+}
+
+/*
+ * A polynomial kernel.
+ *
+ * This function has the following formula:
+ *
+ * .. math::
+ *     K(\boldsymbol{x}, \boldsymbol{x'}) = \
+ *           (\gamma \boldsymbol{x}^T \boldsymbol{x'} + c)^{degree}
+ */
+message PolyKernel {
+  int32 degree = 1;
+  double c = 2;
+  double gamma = 3;
+}
+
+/*
+ * A sigmoid kernel.
+ *
+ * This function has the following formula:
+ *
+ * .. math::
+ *     K(\boldsymbol{x}, \boldsymbol{x'}) = \
+ *           \tanh(\gamma \boldsymbol{x}^T \boldsymbol{x'} + c)
+ */
+message SigmoidKernel {
+  double gamma = 1;
+  double c = 2;
+}
+
+/*
+ * A kernel.
+ */
+message Kernel {
+  oneof kernel {
+    LinearKernel linearKernel = 1;
+    RBFKernel rbfKernel = 2;
+    PolyKernel polyKernel = 3;
+    SigmoidKernel sigmoidKernel = 4;
+  }
+}
+
+// Support Vector Definitions
+// --------------------------
+
+/*
+ * A sparse node.
+ */
+message SparseNode {
+  int32 index = 1;  // 1-based indexes, like libsvm
+  double value = 2;
+}
+
+/*
+ * A sparse vector.
+ */
+message SparseVector {
+  repeated SparseNode nodes = 1;
+}
+
+/*
+ * One or more sparse support vectors.
+ */
+message SparseSupportVectors {
+  repeated SparseVector vectors = 1;
+}
+
+/*
+ * A dense vector.
+ */
+message DenseVector {
+  repeated double values = 1;
+}
+
+/*
+ * One or more dense support vectors.
+ */
+message DenseSupportVectors {
+  repeated DenseVector vectors = 1;
+}
+
+/*
+ * One or more coefficients.
+ */
+message Coefficients {
+  repeated double alpha = 1;
+}
+
+/*
+ * A support vector regressor.
+ */
+message SupportVectorRegressor {
+  Kernel kernel = 1;
+
+  // Support vectors, either sparse or dense format
+  oneof supportVectors {
+    SparseSupportVectors sparseSupportVectors = 2;
+    DenseSupportVectors denseSupportVectors = 3;
+  }
+
+  // Coefficients, one for each support vector
+  Coefficients coefficients = 4;
+
+  double rho = 5;
+}
+
+/*
+ * A support vector classifier
+ */
+message SupportVectorClassifier {
+  Kernel kernel = 1;
+
+  /*
+   * The number of support vectors for each class.
+   */
+  repeated int32 numberOfSupportVectorsPerClass = 2;
+
+  /*
+   * The support vectors, in either sparse or dense format.
+   */
+  oneof supportVectors {
+    SparseSupportVectors sparseSupportVectors = 3;
+    DenseSupportVectors denseSupportVectors = 4;
+  }
+
+  /*
+   * The coefficients, essentially a two dimensional array of
+   * size: (numberOfClasses-1) by (total number of support vectors)
+   */
+  repeated Coefficients coefficients = 5;
+
+  /*
+   * Constants for decision function,
+   * with K*(K-1) / 2 elements,
+   * where K is the number of classes.
+   */
+  repeated double rho = 6;
+
+  /*
+   * Pairwise probability information for A vs B classifier.
+   * Total of K*(K-1)/2 elements where K is the number of classes.
+   * These fields are optional,
+   * and only required if you want probabilities or multi class predictions.
+   */
+  repeated double probA = 7;
+  repeated double probB = 8;
+
+  /*
+   * Class label mapping.
+   */
+  oneof ClassLabels {
+    StringVector stringClassLabels = 100;
+    Int64Vector int64ClassLabels = 101;
+  }
+}

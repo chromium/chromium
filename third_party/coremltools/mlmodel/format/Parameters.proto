@@ -1,0 +1,52 @@
+// Copyright (c) 2017, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification;
+
+/*
+ * Int64 parameter,
+ * consisting of a default int64 value, and allowed range or set of values
+ * value is unbounded if AllowedValues is not set.
+ */
+message Int64Parameter {
+  int64 defaultValue = 1;
+  oneof AllowedValues {
+    Int64Range range = 10;
+    Int64Set set = 11;
+  }
+}
+
+/*
+ * Double parameter,
+ * consisting of a default double value, and allowed range of values
+ * value is unbounded if AllowedValues is not set.
+ */
+message DoubleParameter {
+  double defaultValue = 1;
+  oneof AllowedValues {
+    DoubleRange range = 10;
+  }
+}
+
+/*
+ * String parameter,
+ * A default string value must be provided
+ */
+message StringParameter {
+  string defaultValue = 1;
+}
+
+/*
+ * String parameter,
+ * A default bool value must be provided
+ */
+message BoolParameter {
+  bool defaultValue = 1;
+}

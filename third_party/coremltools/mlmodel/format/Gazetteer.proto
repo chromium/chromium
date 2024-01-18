@@ -1,0 +1,41 @@
+// Copyright (c) 2019, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification.CoreMLModels;
+
+/*
+ * A model which uses an efficient probabilistic representation
+ * for assigning labels to a set of strings.
+ */
+message Gazetteer {
+  /*
+   * Stores the revision number for the model, revision 2 is available on
+   * iOS, tvOS 13.0+, macOS 10.15+
+   */
+  uint32 revision = 1;
+
+  /*
+   * Stores the language of the model, as specified in BCP-47 format,
+   * e.g. "en-US". See https://tools.ietf.org/html/bcp47
+   */
+  string language = 10;
+
+  /*
+   * Natural Lanaguge framework's efficient representation of a gazetter.
+   */
+  bytes modelParameterData = 100;
+
+  /*
+   * Stores the set of output class labels
+   */
+  oneof ClassLabels {
+    StringVector stringClassLabels = 200;
+  }
+}

@@ -1,0 +1,38 @@
+// Copyright (c) 2019, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+import public "Parameters.proto";
+
+package CoreML.Specification;
+
+/*
+ * A model which wraps another (compiled) model external to this one
+ */
+message LinkedModel {
+  oneof LinkType {
+    // A model located via a file system path
+    LinkedModelFile linkedModelFile = 1;
+  }
+}
+
+// Model is referenced by a model file name and search path
+message LinkedModelFile {
+  // Model file name: e.g. "MyFetureExtractor.mlmodelc"
+  StringParameter linkedModelFileName = 1;
+
+  // Search path to find the linked model file
+  // Multiple paths can be searched using the unix-style path separator ":"
+  // Each path can be relative (to this model) or absolute
+  //
+  // An empty string is the same as teh relative search path "."
+  // which searches in the same location as this model file
+  //
+  // There are some special paths which start with $
+  // - $BUNDLE_MAIN - Indicates to look in the main bundle
+  // - $BUNDLE_IDENTIFIER(identifier) - Looks in Bunde with given identifer
+  StringParameter linkedModelSearchPath = 2;
+}

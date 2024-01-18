@@ -1,0 +1,70 @@
+// Copyright (c) 2018, Apple Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-3-clause license that can be
+// found in LICENSE.txt or at https://opensource.org/licenses/BSD-3-Clause
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+import public "DataStructures.proto";
+
+package CoreML.Specification.CoreMLModels;
+
+/*
+ * A model which takes a single input string and outputs a
+ * sequence of tokens, tags for tokens, along with their
+ * locations and lengths, in the original string.
+ */
+message WordTagger {
+  /*
+   * Stores the resivion number for the model, revision 1 is available on
+   * iOS, tvOS 12.0+, macoOS 10.14+
+   */
+  uint32 revision = 1;
+
+  /*
+   * Stores the language of the model, as specified in BCP-47 format,
+   * e.g. "en-US". See https://tools.ietf.org/html/bcp47
+   */
+  string language = 10;
+
+  /*
+   * Stores the name of tokens output. The output will be
+   * a sequence of strings that contains the tokens in the
+   * input string
+   */
+  string tokensOutputFeatureName = 20;
+
+  /*
+   * Stores the name of token tags output. The output will be
+   * a sequence of strings that contains the tags for each
+   * token in the input string
+   */
+  string tokenTagsOutputFeatureName = 21;
+
+  /*
+   * Stores the name of token locations output. The output will be
+   * a sequence of integers that contains the locations (indices)
+   * for each token in the input string, location starts from 0
+   */
+  string tokenLocationsOutputFeatureName = 22;
+
+  /*
+   * Stores the name of token lengths output. The output will be
+   * a sequence of integers that contains the lengths for each
+   * token in the input string
+   */
+  string tokenLengthsOutputFeatureName = 23;
+
+  /*
+   * Stores the byte representation of learned model parameters
+   */
+  bytes modelParameterData = 100;
+
+  /*
+   * Stores the set of output tags
+   */
+  oneof Tags {
+    StringVector stringTags = 200;
+  }
+}
