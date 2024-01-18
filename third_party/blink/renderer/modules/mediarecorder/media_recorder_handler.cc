@@ -750,6 +750,12 @@ void MediaRecorderHandler::OnEncodedVideo(
   if (invalidated_)
     return;
 
+  if (encoded_data.empty() && encoded_alpha.empty()) {
+    // An encoder drops a frame. This can happen with VideoToolBox encoder as
+    // there is no way to disallow the frame dropping with it.
+    return;
+  }
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // TODO(crbug.com/1441395). Once Encoder supports VideoEncoder, then the
   // below code could go away.

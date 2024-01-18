@@ -260,6 +260,8 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
                                       codec_config->rc_target_bitrate /
                                       codec_config->g_w / codec_config->g_h;
   }
+  // Don't drop a frame.
+  DCHECK_EQ(codec_config->rc_dropframe_thresh, 0u);
   // Both VP8/VP9 configuration should be Variable BitRate by default.
   DCHECK_EQ(VPX_VBR, codec_config->rc_end_usage);
   if (use_vp9_) {
