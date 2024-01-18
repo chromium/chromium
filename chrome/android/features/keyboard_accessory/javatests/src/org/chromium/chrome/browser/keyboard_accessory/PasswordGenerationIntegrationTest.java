@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -53,7 +54,6 @@ import org.chromium.chrome.browser.password_manager.PasswordSyncControllerDelega
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;

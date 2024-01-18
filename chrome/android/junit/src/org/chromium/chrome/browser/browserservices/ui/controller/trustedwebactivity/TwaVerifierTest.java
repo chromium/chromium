@@ -28,12 +28,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;

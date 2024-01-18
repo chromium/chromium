@@ -21,10 +21,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
 

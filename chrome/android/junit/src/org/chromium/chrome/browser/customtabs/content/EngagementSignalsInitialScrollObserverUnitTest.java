@@ -24,10 +24,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;

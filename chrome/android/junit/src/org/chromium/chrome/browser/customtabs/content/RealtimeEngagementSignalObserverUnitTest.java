@@ -43,6 +43,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
@@ -51,7 +52,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureStateListener;

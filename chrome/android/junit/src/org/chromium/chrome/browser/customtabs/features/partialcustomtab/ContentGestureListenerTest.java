@@ -25,10 +25,10 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHandleStrategy.DragEventCallback;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 

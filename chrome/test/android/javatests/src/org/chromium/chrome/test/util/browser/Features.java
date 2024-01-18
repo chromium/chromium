@@ -13,13 +13,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
- * Helps with setting Feature flags during tests. Relies on registering the appropriate
- * {@code Processor} rule on the test class.
- **
- * Use {@link EnableFeatures} and {@link DisableFeatures} to specify the features to register and
+ * Helps with setting Feature flags during tests. Relies on registering the appropriate {@code
+ * Processor} rule on the test class.
+ *
+ * <p>Use {@link EnableFeatures} and {@link DisableFeatures} to specify the features to register and
  * whether they should be enabled.
  *
- * Sample code:
+ * <p>Sample code:
  *
  * <pre>
  * public class Test {
@@ -34,8 +34,11 @@ import java.util.List;
  * This class also offers Singleton access to enable and disable features, letting other rules
  * affect the final configuration before the start of the test.
  *
- * See {@link FeaturesBase} for more details.
+ * <p>See {@link FeaturesBase} for more details.
+ *
+ * @deprecated Use org.chromium.base.Features instead.
  */
+@Deprecated
 public class Features extends FeaturesBase {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface EnableFeatures {

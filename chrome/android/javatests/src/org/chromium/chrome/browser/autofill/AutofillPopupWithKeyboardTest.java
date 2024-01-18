@@ -20,13 +20,13 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -59,22 +59,22 @@ public class AutofillPopupWithKeyboardTest {
         mActivityTestRule.startMainActivityWithURL(
                 UrlUtils.encodeHtmlDataUri(
                         "<html><head><meta name=\"viewport\"content=\"width=device-width,"
-                                + " initial-scale=1.0, maximum-scale=1.0\" /></head><body><form"
-                                + " method=\"POST\"><input type=\"text\" id=\"fn\""
-                                + " autocomplete=\"given-name\" /><br><input type=\"text\" id=\"ln\""
-                                + " autocomplete=\"family-name\" /><br><textarea id=\"sa\""
-                                + " autocomplete=\"street-address\"></textarea><br><input type=\"text\""
-                                + " id=\"a1\" autocomplete=\"address-line1\" /><br><input type=\"text\""
-                                + " id=\"a2\" autocomplete=\"address-line2\" /><br><input type=\"text\""
-                                + " id=\"ct\" autocomplete=\"locality\" /><br><input type=\"text\""
-                                + " id=\"zc\" autocomplete=\"postal-code\" /><br><input type=\"text\""
-                                + " id=\"em\" autocomplete=\"email\" /><br><input type=\"text\""
-                                + " id=\"ph\" autocomplete=\"tel\" /><br><input type=\"text\" id=\"fx\""
-                                + " autocomplete=\"fax\" /><br><select id=\"co\""
-                                + " autocomplete=\"country\"><br><option"
-                                + " value=\"BR\">Brazil</option><option value=\"US\">United"
-                                + " States</option></select><input type=\"submit\" />"
-                                + "</form></body></html>"));
+                            + " initial-scale=1.0, maximum-scale=1.0\" /></head><body><form"
+                            + " method=\"POST\"><input type=\"text\" id=\"fn\""
+                            + " autocomplete=\"given-name\" /><br><input type=\"text\" id=\"ln\""
+                            + " autocomplete=\"family-name\" /><br><textarea id=\"sa\""
+                            + " autocomplete=\"street-address\"></textarea><br><input type=\"text\""
+                            + " id=\"a1\" autocomplete=\"address-line1\" /><br><input type=\"text\""
+                            + " id=\"a2\" autocomplete=\"address-line2\" /><br><input type=\"text\""
+                            + " id=\"ct\" autocomplete=\"locality\" /><br><input type=\"text\""
+                            + " id=\"zc\" autocomplete=\"postal-code\" /><br><input type=\"text\""
+                            + " id=\"em\" autocomplete=\"email\" /><br><input type=\"text\""
+                            + " id=\"ph\" autocomplete=\"tel\" /><br><input type=\"text\" id=\"fx\""
+                            + " autocomplete=\"fax\" /><br><select id=\"co\""
+                            + " autocomplete=\"country\"><br><option"
+                            + " value=\"BR\">Brazil</option><option value=\"US\">United"
+                            + " States</option></select><input type=\"submit\" />"
+                            + "</form></body></html>"));
         new AutofillTestHelper()
                 .setProfile(
                         AutofillProfile.builder()

@@ -2,8 +2,7 @@ noparent = True
 
 include_rules = [
   "+base/android/java",
-  "+base/test/android/junit",
+  "+base/test/android",
   "+chrome/browser/tab/java",
   "+chrome/browser/tabmodel/android/java",
-  "+chrome/test/android/javatests/src/org/chromium/chrome/test/util/browser/Features.java",
 ]

@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache.LastSearchTermProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;

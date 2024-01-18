@@ -41,6 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.BottomSheetOpenedSource;
@@ -49,7 +50,6 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;

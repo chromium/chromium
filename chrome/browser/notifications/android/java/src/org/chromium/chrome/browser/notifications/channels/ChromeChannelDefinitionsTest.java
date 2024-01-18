@@ -15,7 +15,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 
 /** Java unit tests for ChannelDefinitions. */
 @RunWith(BlockJUnit4ClassRunner.class)

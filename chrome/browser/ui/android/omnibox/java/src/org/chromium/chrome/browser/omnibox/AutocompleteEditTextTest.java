@@ -41,7 +41,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.concurrent.atomic.AtomicInteger;

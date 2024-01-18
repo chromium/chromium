@@ -27,8 +27,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Tests for {@link TabGroupTitleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)

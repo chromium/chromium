@@ -28,7 +28,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 import org.chromium.components.embedder_support.util.Origin;
 
 /** Tests for {@link PermissionUpdater}. */

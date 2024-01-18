@@ -28,7 +28,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.base.test.util.Features;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;

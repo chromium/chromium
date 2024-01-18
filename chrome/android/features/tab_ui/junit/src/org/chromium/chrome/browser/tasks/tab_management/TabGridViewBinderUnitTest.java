@@ -39,10 +39,10 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 

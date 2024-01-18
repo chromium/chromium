@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Unit tests for {@link PriceMessageService}. */
 @RunWith(BaseRobolectricTestRunner.class)

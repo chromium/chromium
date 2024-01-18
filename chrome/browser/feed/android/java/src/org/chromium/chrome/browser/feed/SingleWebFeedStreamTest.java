@@ -40,6 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -61,7 +62,6 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.WebFeedFollowU
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.content_public.browser.LoadUrlParams;

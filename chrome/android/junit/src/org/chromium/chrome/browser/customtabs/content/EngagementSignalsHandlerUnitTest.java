@@ -29,12 +29,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager.Observer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.test.util.browser.Features;
 
 /** Unit tests for {@link EngagementSignalsHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)

@@ -46,6 +46,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -72,7 +73,6 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsi
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;

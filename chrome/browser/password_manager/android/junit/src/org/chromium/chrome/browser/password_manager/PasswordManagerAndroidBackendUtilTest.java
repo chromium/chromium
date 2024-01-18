@@ -26,8 +26,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
-import org.chromium.chrome.test.util.browser.Features;
 
 /**
  * Tests for the utility methods used by various parts of the password manager backend (e.g. the

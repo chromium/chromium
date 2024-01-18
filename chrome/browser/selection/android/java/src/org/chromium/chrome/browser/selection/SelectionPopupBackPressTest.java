@@ -16,6 +16,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -27,8 +29,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -51,8 +51,8 @@ public class SelectionPopupBackPressTest {
     private static final String TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head>  <meta name=viewport content='width=device-width,"
-                            + " initial-scale=1.0'></head><body><p id=\"selection_popup_text\">Test</p>"
-                            + "</body></html>");
+                        + " initial-scale=1.0'></head><body><p id=\"selection_popup_text\">Test</p>"
+                        + "</body></html>");
 
     @Test
     @MediumTest

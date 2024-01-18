@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotificatio
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 
 /** Tests for {@link DisclosureUiPicker}. */

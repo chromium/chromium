@@ -36,6 +36,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -44,7 +45,6 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControll
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControllerUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;

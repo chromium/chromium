@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -25,7 +26,6 @@ import org.chromium.chrome.test.transit.HubAppMenuFacility;
 import org.chromium.chrome.test.transit.HubStation;
 import org.chromium.chrome.test.transit.NewTabPageStation;
 import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)

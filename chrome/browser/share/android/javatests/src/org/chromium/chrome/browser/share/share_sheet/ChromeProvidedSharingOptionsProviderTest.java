@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -48,7 +49,6 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordin
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
