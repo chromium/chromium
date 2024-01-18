@@ -76,13 +76,6 @@ void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
   Log(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, form);
 }
 
-void AddressFormEventLogger::OnDidRefill(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-  Log(FORM_EVENT_DID_DYNAMIC_REFILL, form);
-}
-
 void AddressFormEventLogger::OnSubsequentRefillAttempt(
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const FormStructure& form) {

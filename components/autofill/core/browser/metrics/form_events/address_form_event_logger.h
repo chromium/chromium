@@ -58,10 +58,6 @@ class AddressFormEventLogger : public FormEventLoggerBase {
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const FormStructure& form);
 
-  void OnDidRefill(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
-
   void OnSubsequentRefillAttempt(
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const FormStructure& form);
