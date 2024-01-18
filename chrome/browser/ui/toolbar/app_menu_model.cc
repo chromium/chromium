@@ -596,6 +596,12 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
                                          ui::kColorMenuIcon, kDefaultIconSize));
     }
   }
+  if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser->profile())) {
+    AddItemWithStringIdAndIcon(
+        IDC_SHARING_HUB_SCREENSHOT, IDS_SHARING_HUB_SCREENSHOT_LABEL,
+        ui::ImageModel::FromVectorIcon(kSharingHubScreenshotIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+  }
 }
 
 }  // namespace

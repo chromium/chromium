@@ -7404,8 +7404,12 @@
   },
   {
     "name": "sharing-desktop-screenshots",
-    "owners": ["skare@chromium.org", "jeffreycohen@chromium.org", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 114
+    "owners": [
+      "bryantchandler@chromium.org",
+      "jeffreycohen@chromium.org",
+      "chrome-with-friends-robots@google.com"
+    ],
+    "expiry_milestone": 134
   },
   {
     "name": "shelf-auto-hide-separation",
