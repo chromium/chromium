@@ -538,12 +538,12 @@ void ChromeShelfPrefs::SetPinPosition(
   syncable_service->SetPinPosition(app_id, pin_position, pinned_by_policy);
 }
 
-void ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest() {
-  skip_pinned_apps_from_sync_for_test = true;
+void ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(bool value) {
+  skip_pinned_apps_from_sync_for_test = value;
 }
 
-void ChromeShelfPrefs::SetShouldAddDefaultAppsForTest() {
-  should_add_default_apps_for_test = true;
+void ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(bool value) {
+  should_add_default_apps_for_test = value;
 }
 
 void ChromeShelfPrefs::MigrateFilesChromeAppToSWA() {

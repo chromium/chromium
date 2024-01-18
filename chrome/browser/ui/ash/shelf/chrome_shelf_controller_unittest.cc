@@ -1514,6 +1514,12 @@ class ChromeShelfControllerLacrosOnlyTest
     ASSERT_TRUE(proxy_);
   }
 
+  void TearDown() override {
+    ChromeShelfControllerLacrosTest::TearDown();
+    // Some test sets this so unsetting.
+    ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(false);
+  }
+
   void AddChromeAppItem(const std::string& app_id, aura::Window* window) {
     ash::ShelfItem item;
     item.id = ash::ShelfID(app_id);
@@ -2083,7 +2089,7 @@ TEST_F(ChromeShelfControllerLacrosOnlyTest, WithoutAppService) {
   EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       controller_profile));
 
-  ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
+  ChromeShelfPrefs::SetSkipPinnedAppsFromSyncForTest(true);
   ash::ShelfModel model;
   ChromeShelfController(controller_profile, &model).Init();
 }

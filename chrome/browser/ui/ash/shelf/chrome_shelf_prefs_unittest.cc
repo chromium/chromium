@@ -133,7 +133,7 @@ class ChromeShelfPrefsTest : public testing::Test {
                       Profile::FromBrowserContext(browser_context));
                 }))
             .Build();
-    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest();
+    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(true);
     shelf_prefs_ = std::make_unique<ChromeShelfPrefs>(profile_.get());
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
@@ -143,6 +143,7 @@ class ChromeShelfPrefsTest : public testing::Test {
   void TearDown() override {
     shelf_prefs_.reset();
     scoped_user_manager_.reset();
+    ChromeShelfPrefs::SetShouldAddDefaultAppsForTest(false);
     profile_.reset();
   }
 
