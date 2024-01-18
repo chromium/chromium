@@ -152,13 +152,6 @@ class DropdownBarHost : public ui::AcceleratorTarget,
   const views::Widget* GetWidget() const override;
 
  private:
-  // Set the view whose position in the |browser_view_| view hierarchy
-  // determines the z-order of |host_| relative to views with layers and
-  // views with associated NativeViews.
-  //
-  // Implemented in platform-specific files.
-  void SetHostViewNative(views::View* host_view);
-
   // The BrowserView that created us.
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
 
