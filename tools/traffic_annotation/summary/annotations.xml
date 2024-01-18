@@ -446,4 +446,7 @@ Refer to README.md for content description and update process.
  <item id="admin_specified_ppd_fetch" added_in_milestone="122" content_hash_code="009beea1" os_list="chromeos" file_path="chromeos/printing/remote_ppd_fetcher.cc" />
  <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="068247d7" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/commerce/price_tracking_page_action_controller.cc" />
  <item id="model_quality_logging" added_in_milestone="121" content_hash_code="0282aed0" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.cc" />
+ <item id="wallpaper_create_themes_model_execution" added_in_milestone="121" content_hash_code="01b58bbb" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="tab_organizer_model_execution" added_in_milestone="121" content_hash_code="06b6c6d3" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="help_me_write_model_execution" added_in_milestone="121" content_hash_code="069a7ee5" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
 </annotations>

@@ -304,6 +304,9 @@ after discussions on the right group.
       <annotation id="wallpaper_search_handler_inspirations_fetcher"/>
       <annotation id="wallpaper_search_handler_inspiration_image_downloader"/>
       <annotation id="model_quality_logging"/>
+      <annotation id="wallpaper_create_themes_model_execution"/>
+      <annotation id="tab_organizer_model_execution"/>
+      <annotation id="help_me_write_model_execution"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
