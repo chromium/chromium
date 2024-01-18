@@ -409,7 +409,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
                         Object alphaValue = animation.getAnimatedValue();
                         if (mToolbarAlphaInOverviewObserver != null
                                 && alphaValue instanceof Float) {
-                            mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
+                            mToolbarAlphaInOverviewObserver.onOverviewAlphaChanged(
                                     (Float) alphaValue);
                         }
                     });
