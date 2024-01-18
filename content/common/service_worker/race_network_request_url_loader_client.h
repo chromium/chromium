@@ -206,7 +206,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // process, and there could be the case if the response is not returned due to
   // the long fetch handler execution. and test case the mechanism to wait for
   // the fetch handler
-  void ReadAndWrite(MojoResult);
+  void ReadAndWrite(MojoResult mojo_result);
   void WatchDataUpdate();
   std::pair<MojoResult, base::span<const char>> BeginReadData();
   MojoResult BeginWriteData(DataPipeInfo& data_pipe_info,

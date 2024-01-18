@@ -439,6 +439,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Subresource" summary="subresource"/>
   </token>
   <token key="Action">
+    <variant name="Initial"
+        summary="the value passed as a callback value in SimpleWatcher"/>
     <variant name="Read" summary="read"/>
     <variant name="WriteForFetchHandler" summary="write for fetch handler"/>
     <variant name="WriteForRaceNetworkRequset"

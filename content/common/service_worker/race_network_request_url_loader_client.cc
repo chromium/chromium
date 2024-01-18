@@ -422,7 +422,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
-    MojoResult aresult) {
+    MojoResult mojo_result) {
   if (!owner_) {
     return;
   }
@@ -434,6 +434,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       {"ServiceWorker.FetchEvent",
        owner_->IsMainResourceLoader() ? ".MainResource" : ".Subresource",
        ".RaceNetworkRequest.DataTransfer"});
+
+  base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Initial"}),
+                                ConvertMojoResultForUMA(mojo_result));
+  if (mojo_result != MOJO_RESULT_OK) {
+    return;
+  }
 
   uint32_t num_bytes_to_consume = 0;
   auto [result, read_buffer] = BeginReadData();
