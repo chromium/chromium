@@ -4548,18 +4548,24 @@ KURL Document::FallbackBaseURL() const {
     if (fallback_base_url_.IsValid()) {
       return fallback_base_url_;
     }
-    // We only use the parent document's base URL in legacy behavior. There are
-    // cases where fallback_base_url_for_srcdoc_ may not be set in the new base
-    // URL inheritance mode (e.g., browser-initiated navigations as in
-    // NavigationBrowserTest.BlockedSrcDocBrowserInitiated), but we should avoid
-    // trying to look at the parent document's current value in those cases. In
-    // legacy behavior, we still use the parent document's base URL (unless
-    // ParentDocument() is null, such as for detached documents).
-    // TODO(https://crbug.com/1408782): handle cases where
-    // NewBaseUrlInheritanceBehavior is enabled, but legacy session-history is
-    // missing initiator_base_url information.
-    if (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-        ParentDocument()) {
+    // The fallback base URL can be missing in some cases (e.g., for
+    // browser-initiated navigations like
+    // NavigationBrowserTest.BlockedSrcDocBrowserInitiated, or for cases where
+    // the srcdoc's initiator origin does not match the parent origin, which
+    // should be removed in https://crbug.com/1169736).
+    //
+    // In these cases, use the parent frame's base URL, because the srcdoc value
+    // and origin both come from the parent frame.
+    // In NewBaseUrlInheritanceBehavior mode, make this stricter by only using
+    // the parent frame if it is same-origin.
+    // TODO(https://crbug.com/1169736): Enforce that the parent is same-origin,
+    // which should already be true.
+    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      if (same_origin_parent) {
+        return same_origin_parent->BaseURL();
+      }
+    } else if (ParentDocument()) {
+      // In legacy mode, use the parent without checking the origin.
       // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
       // ParentDocument() is not correct.
       return ParentDocument()->BaseURL();

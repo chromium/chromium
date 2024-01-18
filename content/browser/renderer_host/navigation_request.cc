@@ -5777,6 +5777,24 @@ void NavigationRequest::CommitNavigation() {
           origin_to_commit, is_credentialless(), ComputeFencedFrameNonce());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
+  // If this is a srcdoc document, the content comes from the parent frame, so
+  // the origin must be the parent and not the initiator. In this case, do not
+  // inherit the base URI from the initiator if the origins do not agree
+  // (accounting for the case that the chosen origin might be opaque with a
+  // precursor of the parent's origin, in a sandboxed case). There should also
+  // not be an initiator base URL if there is no initiator origin, such as in a
+  // browser-initiated navigation.
+  if (GetURL().IsAboutSrcdoc() &&
+      (!common_params().initiator_origin ||
+       origin_to_commit.GetTupleOrPrecursorTupleIfOpaque() !=
+           common_params()
+               .initiator_origin->GetTupleOrPrecursorTupleIfOpaque())) {
+    // TODO(https://crbug.com/1169736): Make this unreachable by blocking
+    // cross-origin about:srcdoc navigations. Then enforce that the chosen
+    // origin for srcdoc cases agrees with the parent frame's origin.
+    common_params_->initiator_base_url = absl::nullopt;
+  }
+
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
   // moment. We will be able to use it once the browser can compute the origin
   // to commit.

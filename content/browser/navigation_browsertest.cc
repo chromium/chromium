@@ -97,6 +97,7 @@
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -2064,6 +2065,86 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BlockedSrcDocRendererInitiated) {
     EXPECT_FALSE(handle_observer.is_error());
     EXPECT_EQ(net::OK, handle_observer.net_error_code());
   }
+}
+
+// Ensure that about:srcdoc navigations get their origin and base URL from their
+// parent frame (since that's where the content comes from) and not from the
+// initiator of the navigation (like about:blank cases). See also the
+// NavigateGrandchildToAboutBlank test. See https://crbug.com/1515381.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, GrandchildToAboutSrcdoc_BaseUrl) {
+  GURL url_a = embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_one_frame.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  FrameTreeNode* subframe = main_frame()->child_at(0);
+
+  // Navigate the subframe to a cross-site URL with a srcdoc subframe.
+  GURL url_b = embedded_test_server()->GetURL(
+      "b.com", "/frame_tree/page_with_srcdoc_frame.html");
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(subframe, JsReplace("location.href = $1", url_b)));
+  observer.Wait();
+  EXPECT_EQ(url_b, subframe->current_frame_host()->GetLastCommittedURL());
+  FrameTreeNode* grandchild = subframe->child_at(0);
+  EXPECT_EQ("hello",
+            EvalJs(grandchild, "document.body.innerHTML").ExtractString());
+
+  // From the main frame, navigate the grandchild frame to about:srcdoc.
+  TestNavigationObserver srcdoc_observer(web_contents());
+  // TODO(https://crbug.com/1169736): It shouldn't be possible to navigate to
+  // about:srcdoc by executing location.href = "about:srcdoc".
+  EXPECT_TRUE(
+      ExecJs(main_frame(), "frames[0][0].location.href = 'about:srcdoc';"));
+  srcdoc_observer.Wait();
+
+  // The content comes from the parent frame and not the initiator.
+  EXPECT_EQ("hello",
+            EvalJs(grandchild, "document.body.innerHTML").ExtractString());
+
+  // The origin and base URI should be inherited from the parent frame and not
+  // the initiator, unlike navigations to about:blank.
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            grandchild->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(url_b),
+            grandchild->current_frame_host()->GetLastCommittedOrigin());
+  EXPECT_EQ(url_b, EvalJs(grandchild, "document.baseURI").ExtractString());
+}
+
+// Ensure that about:blank navigations get their origin and base URL from the
+// initiator of the navigation, and not from their parent frame (like
+// about:srcdoc cases). See also the NavigateGrandchildToAboutSrcdoc test.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, GrandchildToAboutBlank_BaseUrl) {
+  GURL url_a = embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_one_frame.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  FrameTreeNode* subframe = main_frame()->child_at(0);
+
+  // Navigate the subframe to a cross-site URL with a srcdoc subframe.
+  GURL url_b = embedded_test_server()->GetURL(
+      "b.com", "/frame_tree/page_with_srcdoc_frame.html");
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(subframe, JsReplace("location.href = $1", url_b)));
+  observer.Wait();
+  EXPECT_EQ(url_b, subframe->current_frame_host()->GetLastCommittedURL());
+  FrameTreeNode* grandchild = subframe->child_at(0);
+  EXPECT_EQ("hello",
+            EvalJs(grandchild, "document.body.innerHTML").ExtractString());
+
+  // From the main frame, navigate the grandchild frame to about:blank.
+  TestNavigationObserver srcdoc_observer(web_contents());
+  EXPECT_TRUE(
+      ExecJs(main_frame(), "frames[0][0].location.href = 'about:blank';"));
+  srcdoc_observer.Wait();
+
+  // There is no content when navigating to about:blank.
+  EXPECT_EQ("", EvalJs(grandchild, "document.body.innerHTML").ExtractString());
+
+  // The origin and base URI should be inherited from the initiator of the
+  // navigation and not the parent frame, unlike navigations to about:srcdoc.
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            grandchild->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(url_a),
+            grandchild->current_frame_host()->GetLastCommittedOrigin());
+  EXPECT_EQ(url_a, EvalJs(grandchild, "document.baseURI").ExtractString());
 }
 
 // Test renderer initiated navigations to about:srcdoc are routed through the
