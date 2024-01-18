@@ -24,7 +24,8 @@ namespace {
 // thread with either `success_callback` or `failure_callback`.
 void PrepareFileToAnalyze(
     base::FilePath file_path,
-    base::OnceCallback<void(base::File)> success_callback,
+    base::OnceCallback<void(SandboxedRarAnalyzer::WrappedFilePtr)>
+        success_callback,
     base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult reason)>
         failure_callback) {
   if (file_path.value().empty()) {
@@ -37,9 +38,13 @@ void PrepareFileToAnalyze(
     return;
   }
 
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WIN_SHARE_DELETE);
-  if (!file.IsValid()) {
+  SandboxedRarAnalyzer::WrappedFilePtr file(
+      new base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_WIN_SHARE_DELETE),
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
+
+  if (!file->IsValid()) {
     // TODO(vakh): Add UMA metrics here to check how often this happens.
     DLOG(ERROR) << "Could not open file: " << file_path.value();
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -52,9 +57,6 @@ void PrepareFileToAnalyze(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
 }
-
-// Helper for destroying a file on another sequence
-void DestroyFile(base::File file) {}
 
 }  // namespace
 
@@ -79,7 +81,10 @@ SandboxedRarAnalyzer::SandboxedRarAnalyzer(
     : file_path_(rar_file_path),
       password_(password.CopyAsOptional()),
       callback_(std::move(callback)),
-      service_(std::move(service)) {
+      service_(std::move(service)),
+      file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(callback_);
   DCHECK(!file_path_.value().empty());
   service_->BindSafeArchiveAnalyzer(
@@ -92,10 +97,8 @@ SandboxedRarAnalyzer::SandboxedRarAnalyzer(
 void SandboxedRarAnalyzer::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::ThreadPool::PostTask(
+  file_task_runner_->PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           &PrepareFileToAnalyze, file_path_,
           base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFile, GetWeakPtr()),
@@ -105,7 +108,8 @@ void SandboxedRarAnalyzer::Start() {
 
 SandboxedRarAnalyzer::~SandboxedRarAnalyzer() = default;
 
-void SandboxedRarAnalyzer::AnalyzeFile(base::File file) {
+void SandboxedRarAnalyzer::AnalyzeFile(
+    SandboxedRarAnalyzer::WrappedFilePtr file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!file_path_.value().empty());
   if (remote_analyzer_) {
@@ -113,12 +117,9 @@ void SandboxedRarAnalyzer::AnalyzeFile(base::File file) {
         temp_file_getter_remote =
             temp_file_getter_.GetRemoteTemporaryFileGetter();
     remote_analyzer_->AnalyzeRarFile(
-        std::move(file), password_, std::move(temp_file_getter_remote),
+        std::move(*file), password_, std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, GetWeakPtr()));
   } else {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&DestroyFile, std::move(file)));
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
   }
 }

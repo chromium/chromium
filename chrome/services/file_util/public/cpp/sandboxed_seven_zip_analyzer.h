@@ -29,6 +29,7 @@ class SandboxedSevenZipAnalyzer {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>;
+  using WrappedFilePtr = std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
 
   // Factory function for creating SandboxedSevenZipAnalyzers with the
   // appropriate deleter.
@@ -56,7 +57,7 @@ class SandboxedSevenZipAnalyzer {
   void ReportFileFailure(safe_browsing::ArchiveAnalysisResult reason);
 
   // Starts the utility process and sends it a file analyze request.
-  void AnalyzeFile(base::File file);
+  void AnalyzeFile(WrappedFilePtr file);
 
   // The response containing the file analyze results.
   void AnalyzeFileDone(const safe_browsing::ArchiveAnalyzerResults& results);
@@ -74,6 +75,9 @@ class SandboxedSevenZipAnalyzer {
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
   TemporaryFileGetter temp_file_getter_;
+
+  // Task runner for blocking file operations
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   base::WeakPtrFactory<SandboxedSevenZipAnalyzer> weak_ptr_factory_{this};
 };
