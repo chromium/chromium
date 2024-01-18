@@ -4050,12 +4050,6 @@ const char kEnableEncryptedAV1Name[] = "Enable encrypted AV1 playback";
 const char kEnableEncryptedAV1Description[] =
     "Enable support to playback encrypted AV1 content.";
 
-const char kEnablePasswordsAccountStorageName[] =
-    "Enable the account data storage for passwords";
-const char kEnablePasswordsAccountStorageDescription[] =
-    "Enables storing passwords in a second, Gaia-account-scoped storage for "
-    "signed-in but not syncing users";
-
 const char kEnablePixDetectionName[] = "Enable PIX detection";
 const char kEnablePixDetectionDescription[] =
     "Enables PIX code detection on allow-listed merchant websites.";

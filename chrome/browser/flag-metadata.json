@@ -3241,11 +3241,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-passwords-account-storage",
-    "owners": [ "victorvianna@google.com", "chrome-sync-dev+finch@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "enable-per-desk-z-order",
     "owners": [ "dandersson@chromium.org", "janetmac@chromium.org" ],
     "expiry_milestone": 130

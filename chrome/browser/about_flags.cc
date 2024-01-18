@@ -9989,14 +9989,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseNAT64ForIPv4LiteralDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kUseNAT64ForIPv4Literal)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-passwords-account-storage",
-     flag_descriptions::kEnablePasswordsAccountStorageName,
-     flag_descriptions::kEnablePasswordsAccountStorageDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kEnablePasswordsAccountStorage)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-per-desk-z-order", flag_descriptions::kEnablePerDeskZOrderName,
      flag_descriptions::kEnablePerDeskZOrderDescription, kOsCrOS,
