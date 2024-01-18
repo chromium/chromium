@@ -155,7 +155,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     pending_fetch_thumbnails_callback_ = std::move(callback);
     auto target_resolution = manta::proto::ImageResolution::RESOLUTION_1024;
     auto request = CreateMantaRequest(query, std::nullopt,
-                                      /*num_output=*/6, target_resolution);
+                                      /*num_output=*/8, target_resolution);
     snapper_provider_->Call(
         request, base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
                                 weak_ptr_factory_.GetWeakPtr(), query.Clone(),
