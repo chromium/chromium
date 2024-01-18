@@ -604,18 +604,25 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private failedResponseErrorText_(): string {
     switch (this.response_?.status) {
-      case ComposeStatus.kNotSuccessful:
-        return this.i18n('errorRequestNotSuccessful');
-      case ComposeStatus.kTryAgain:
-        return this.i18n('errorTryAgain');
-      case ComposeStatus.kTryAgainLater:
-        return this.i18n('errorTryAgainLater');
+      case ComposeStatus.kFiltered:
+        return this.i18n('errorFiltered');
+      case ComposeStatus.kUnsupportedLanguage:
+        return this.i18n('errorUnsupportedLanguage');
       case ComposeStatus.kPermissionDenied:
         return this.i18n('errorPermissionDenied');
-      case ComposeStatus.kError:
+      case ComposeStatus.kRequestThrottled:
+        return this.i18n('errorRequestThrottled');
+      case ComposeStatus.kClientError:
       case ComposeStatus.kMisconfiguration:
+      case ComposeStatus.kServerError:
+      case ComposeStatus.kInvalidRequest:
+      case ComposeStatus.kRetryableError:
+      case ComposeStatus.kNonRetryableError:
+      case ComposeStatus.kDisabled:
+      case ComposeStatus.kCancelled:
+      case ComposeStatus.kNoResponse:
       default:
-        return this.i18n('errorGeneric');
+        return this.i18n('errorTryAgain');
     }
   }
 

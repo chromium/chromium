@@ -66,13 +66,24 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ComposeResponseStatus">
   <int value="0" label="Success"/>
-  <int value="1" label="Generic error, not specified"/>
-  <int value="2" label="Request was unable to be processed"/>
-  <int value="3" label="Server may have not responded"/>
+  <int value="1" label="Generic client error, not specified"/>
+  <int value="2" label="DEPRECATED: Request was unable to be processed"/>
+  <int value="3" label="DEPRECATED: Server may have not responded"/>
   <int value="4"
-      label="Server is likely overloaded, cannot handle a response right now"/>
+      label="DEPRECATED: Server is likely overloaded, cannot handle a
+             response right now"/>
   <int value="5" label="The feature is disabled"/>
   <int value="6" label="User permission is denied"/>
+  <int value="7" label="Generic server error, not specified"/>
+  <int value="8" label="Invalid request sent"/>
+  <int value="9" label="Request was throttled"/>
+  <int value="10" label="Retryable error occurred in the server"/>
+  <int value="11" label="Non-retryable error occured in the server"/>
+  <int value="12" label="Unsupported language used"/>
+  <int value="13" label="Request was filtered"/>
+  <int value="14" label="Compose service was disabled"/>
+  <int value="15" label="Request was cancelled"/>
+  <int value="16" label="No response received from the server"/>
 </enum>
 
 <enum name="ComposeSessionCloseReasonType">

@@ -466,12 +466,19 @@ suite('ComposeApp', () => {
       assertTrue(app.$.errorFooter.textContent!.includes(errorMessage));
     }
 
-    testError(ComposeStatus.kError, 'errorGeneric');
-    testError(ComposeStatus.kNotSuccessful, 'errorRequestNotSuccessful');
-    testError(ComposeStatus.kTryAgainLater, 'errorTryAgainLater');
-    testError(ComposeStatus.kTryAgain, 'errorTryAgain');
+    testError(ComposeStatus.kFiltered, 'errorFiltered');
+    testError(ComposeStatus.kUnsupportedLanguage, 'errorUnsupportedLanguage');
     testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
-    testError(ComposeStatus.kMisconfiguration, 'errorGeneric');
+    testError(ComposeStatus.kRequestThrottled, 'errorRequestThrottled');
+    testError(ComposeStatus.kClientError, 'errorTryAgain');
+    testError(ComposeStatus.kMisconfiguration, 'errorTryAgain');
+    testError(ComposeStatus.kServerError, 'errorTryAgain');
+    testError(ComposeStatus.kInvalidRequest, 'errorTryAgain');
+    testError(ComposeStatus.kRetryableError, 'errorTryAgain');
+    testError(ComposeStatus.kNonRetryableError, 'errorTryAgain');
+    testError(ComposeStatus.kDisabled, 'errorTryAgain');
+    testError(ComposeStatus.kCancelled, 'errorTryAgain');
+    testError(ComposeStatus.kNoResponse, 'errorTryAgain');
   });
 
   test('AllowsEditingPrompt', async () => {

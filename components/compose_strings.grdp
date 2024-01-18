@@ -142,14 +142,17 @@
   <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later.">
     Something went wrong. Try again later.
   </message>
-  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled.">
-    Your request wasn't understood. Try a different request.
+  <message name="IDS_COMPOSE_ERROR_FILTERED" desc="Error indicating that the request was filtered.">
+    Couldn't help with that. Try again.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE" desc="Error that the language is not yet supported.">
+    This language is not yet supported.
   </message>
   <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission.">
     Sign in again, then come back to this tab to get writing help
   </message>
-  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details.">
-    Something went wrong.
+  <message name="IDS_COMPOSE_ERROR_REQUEST_THROTTLED" desc="Error that the request was throttled.">
+    You've reached your writing help limit for now. Try again later.
   </message>
 
   <!-- Cross-dialog -->

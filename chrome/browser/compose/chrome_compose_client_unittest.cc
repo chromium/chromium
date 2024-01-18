@@ -563,7 +563,7 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
 }
 
-TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
+TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
   ShowDialogAndBindMojo();
   EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -604,7 +604,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
   page_handler()->Compose("a user typed this", false);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgainLater, result->status);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kServerError, result->status);
   // Check that the quality modeling log is still correct
 
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
@@ -648,11 +648,12 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   page_handler()->Compose("a user typed this", false);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgain, result->status);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kNoResponse, result->status);
 
-  // Check that a response result Try-Again metric was emitted.
+  // Check that a response result No Response metric was emitted.
   histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
-                                  compose::mojom::ComposeStatus::kTryAgain, 1);
+                                  compose::mojom::ComposeStatus::kNoResponse,
+                                  1);
   // Check that a response duration Error metric was emitted.
   histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 1);
   // Check that a no response duration OK metric was emitted.

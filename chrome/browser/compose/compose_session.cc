@@ -422,7 +422,7 @@ void ComposeSession::ModelExecutionComplete(
 
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
-    ProcessError(compose::mojom::ComposeStatus::kTryAgain);
+    ProcessError(compose::mojom::ComposeStatus::kNoResponse);
     SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     return;
