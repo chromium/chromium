@@ -64,6 +64,8 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
   bool ClearDatabase();
 
+  void CloseDatabaseForTesting();
+
   // On a delete operation, check if database is empty. If empty, then clear the
   // database.
   bool DeleteIfEmptyDatabase(bool last_operation_success);

@@ -228,6 +228,15 @@ TEST_F(CdmStorageDatabaseV1Test, V1UpgradeWorks) {
   EXPECT_EQ(cdm_storage_database_->GetSizeForFile(kTestStorageKeyTwo, kCdmType,
                                                   kFileNameTwo),
             1u);
+
+  cdm_storage_database_->CloseDatabaseForTesting();
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, kPopulatedFileValue));
+
+  EXPECT_EQ(cdm_storage_database_->GetSizeForFile(kTestStorageKey, kCdmType,
+                                                  kFileName),
+            kPopulatedFileValue.size());
 }
 
 TEST_F(CdmStorageDatabaseV2Test, V2Works) {
