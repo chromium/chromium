@@ -146,7 +146,18 @@ FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type)
   }
 }
 
-FrameSequenceMetrics::~FrameSequenceMetrics() = default;
+FrameSequenceMetrics::~FrameSequenceMetrics() {
+  // If we did not see sufficient frames to report we will be kept around to
+  // have the data `Merge` into the next sequence of `type_`. We do not
+  // terminate active traces immediately when we stop, as the sequence may
+  // restart, leading to `AdoptTrace`.
+  //
+  // However we may not be merged before teardown, if so terminate the trace
+  // now.
+  if (trace_data_v3_.trace_id) {
+    trace_data_v3_.TerminateV3(v3_, GetEffectiveThread());
+  }
+}
 
 void FrameSequenceMetrics::ReportLeftoverData() {
   if (HasDataLeftForReporting() || type_ == FrameSequenceTrackerType::kCustom)
@@ -247,6 +258,10 @@ void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
   DCHECK(!trace_data_.trace_id);
   trace_data_.trace_id = adopt_from->trace_data_.trace_id;
   trace_data_v3_.trace_id = adopt_from->trace_data_v3_.trace_id;
+  trace_data_v3_.last_presented_sequence_number =
+      adopt_from->trace_data_v3_.trace_id;
+  trace_data_v3_.last_timestamp = adopt_from->trace_data_v3_.last_timestamp;
+  trace_data_v3_.frame_count = adopt_from->trace_data_v3_.frame_count;
   adopt_from->trace_data_.trace_id = 0u;
   adopt_from->trace_data_v3_.trace_id = 0u;
 }
@@ -690,7 +705,16 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
       v3_.last_frame_delta = current_frame_delta;
       v3_.no_update_duration = base::TimeDelta();
       v3_.no_update_count = 0;
-      v3_.last_presented_frame = frame_info;
+      // It is possible for `frame_info` to have been terminated without
+      // presentation before `last_presented_frame` was presented. We do not
+      // update `last_presented_frame` in these cases so that the nested frames
+      // in the trace are all aligned on presentations.
+      if (v3_.last_presented_frame.GetTerminationTimeForThread(
+              GetEffectiveThread()) >
+          frame_info.GetTerminationTimeForThread(GetEffectiveThread())) {
+      } else {
+        v3_.last_presented_frame = frame_info;
+      }
       break;
   }
 }

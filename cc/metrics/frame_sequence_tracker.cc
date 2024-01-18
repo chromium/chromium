@@ -613,6 +613,10 @@ void FrameSequenceTracker::CleanUp() {
 
 void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
                                           const FrameInfo& frame_info) {
+  // Do not process any frames once we are terminated.
+  if (termination_status_ == TerminationStatus::kReadyForTermination) {
+    return;
+  }
   last_sorted_frame_id_ = args.frame_id;
   // For trackers that scheduled for termination, only proceed to update
   // metrics for the frame if it is before the last ended frame.
@@ -638,6 +642,11 @@ void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
     }
   }
 
+  // Don't count drops from after the sequence has begun termination.
+  if (frame_info.final_state == FrameInfo::FrameFinalState::kDropped &&
+      last_ended_frame_id_.sequence_number < args.frame_id.sequence_number) {
+    return;
+  }
   if (metrics_)
     metrics_->AddSortedFrame(args, frame_info);
 }
