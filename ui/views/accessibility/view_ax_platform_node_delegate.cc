@@ -577,7 +577,7 @@ bool ViewAXPlatformNodeDelegate::IsLeaf() const {
 }
 
 bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
-  return IsIgnored() || !view()->GetVisible();
+  return IsIgnored() || GetData().IsInvisible();
 }
 
 bool ViewAXPlatformNodeDelegate::IsAccessibilityEnabled() const {

@@ -396,6 +396,31 @@ TEST_F(ViewAXPlatformNodeDelegateTest, InvisibleViews) {
   EXPECT_TRUE(label_accessibility()->HasState(ax::mojom::State::kInvisible));
 }
 
+// Verify Views with invisible ancestors have correct values for
+// IsInvisibleOrIgnored().
+TEST_F(ViewAXPlatformNodeDelegateTest, IsInvisibleOrIgnored) {
+  // Add a view with a focusable child.
+  View* container =
+      widget_->GetRootView()->AddChildView(std::make_unique<View>());
+  View* test_button = container->AddChildView(std::make_unique<TestButton>());
+
+  ViewAXPlatformNodeDelegate* container_accessibility =
+      static_cast<ViewAXPlatformNodeDelegate*>(
+          &container->GetViewAccessibility());
+  ViewAXPlatformNodeDelegate* test_button_accessibility =
+      static_cast<ViewAXPlatformNodeDelegate*>(
+          &test_button->GetViewAccessibility());
+
+  // Pre-conditions.
+  ASSERT_FALSE(container_accessibility->IsInvisibleOrIgnored());
+  ASSERT_FALSE(test_button_accessibility->IsInvisibleOrIgnored());
+
+  // Hide the container.
+  container->SetVisible(false);
+  EXPECT_TRUE(container_accessibility->IsInvisibleOrIgnored());
+  EXPECT_TRUE(test_button_accessibility->IsInvisibleOrIgnored());
+}
+
 TEST_F(ViewAXPlatformNodeDelegateTest, SetFocus) {
   // Make |button_| focusable, and focus/unfocus it via
   // ViewAXPlatformNodeDelegate.
