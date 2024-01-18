@@ -359,7 +359,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     switch (result.result) {
       // Shift is the only modifier.
       case AcceleratorConfigResult.kShiftOnlyNotAllowed: {
-        this.statusMessage = this.i18n('shiftOnlyNotAllowedStatusMessage');
+        this.statusMessage = this.i18n(
+            'shiftOnlyNotAllowedStatusMessage', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -369,22 +370,25 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         // This is a backup check, since only valid accelerators are processed
         // and a valid accelerator will have modifier(s) and a key or is
         // function key.
-        this.statusMessage = this.i18n('missingModifierStatusMessage');
+        this.statusMessage =
+            this.i18n('missingModifierStatusMessage', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
       // Top row key used as activation keys(no search key pressed).
       case AcceleratorConfigResult.kKeyNotAllowed: {
-        this.statusMessage = this.i18n('keyNotAllowedStatusMessage');
+        this.statusMessage =
+            this.i18n('keyNotAllowedStatusMessage', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
       // Search with function keys are not allowed.
       case AcceleratorConfigResult.kSearchWithFunctionKeyNotAllowed: {
-        this.statusMessage =
-            this.i18n('searchWithFunctionKeyNotAllowedStatusMessage');
+        this.statusMessage = this.i18n(
+            'searchWithFunctionKeyNotAllowedStatusMessage',
+            this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -417,7 +421,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       case AcceleratorConfigResult.kNonSearchAcceleratorWarning: {
         // TODO(jimmyxgong): Add the "Learn More" link when available.
-        this.statusMessage = this.i18n('warningSearchNotIncluded');
+        this.statusMessage =
+            this.i18n('warningSearchNotIncluded', this.getMetaKeyDisplay());
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -557,6 +562,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     if (!this.recordedError && this.hasError) {
       this.recordedError = true;
     }
+  }
+
+  private getMetaKeyDisplay(): string {
+    return this.lookupManager.getHasLauncherButton() ?
+        this.i18n('iconLabelOpenLauncher') :
+        this.i18n('iconLabelOpenSearch');
   }
 }
 
