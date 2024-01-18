@@ -42,10 +42,12 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -168,6 +170,12 @@ public class SearchActivity extends AsyncInitializationActivity
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
             new InsetObserverSupplier();
+
+    private final UmaActivityObserver mUmaActivityObserver;
+
+    public SearchActivity() {
+        mUmaActivityObserver = new UmaActivityObserver(this);
+    }
 
     @Override
     protected boolean isStartedUpCorrectly(Intent intent) {
@@ -514,6 +522,34 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResume() {
         super.onResume();
         mSearchBox.focusTextBox();
+    }
+
+    @Override
+    public void onPauseWithNative() {
+        umaSessionEnd();
+        super.onPauseWithNative();
+    }
+
+    @Override
+    public void onResumeWithNative() {
+        // Start a new UMA session for the new activity.
+        umaSessionResume();
+
+        // Inform the actity lifecycle observers. Among other things, the observers record
+        // metrics pertaining to the "resumed" activity. This needs to happens after
+        // umaSessionResume has closed the old UMA record, pertaining to the previous
+        // (backgrounded) activity, and opened a new one pertaining to the "resumed" activity.
+        super.onResumeWithNative();
+    }
+
+    /** Mark that the UMA session has ended. */
+    private void umaSessionResume() {
+        mUmaActivityObserver.startUmaSession(ActivityType.TABBED, null, getWindowAndroid());
+    }
+
+    /** Mark that the UMA session has ended. */
+    private void umaSessionEnd() {
+        mUmaActivityObserver.endUmaSession();
     }
 
     @Override
