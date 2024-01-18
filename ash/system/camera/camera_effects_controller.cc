@@ -629,12 +629,11 @@ void CameraEffectsController::OnEffectControlActivated(
           MapBackgroundBlurPrefValueToCameraHalState(state.value());
       new_effects->blur_level = blur_level;
       new_effects->blur_enabled = blur_enabled;
-      if (new_effects->blur_enabled) {
-        // background replace should be disabled since background blur is
-        // enabled.
-        new_effects->replace_enabled = false;
-        new_effects->background_filepath.reset();
-      }
+
+      // No matter which background blur button the user clicked on, we should
+      // always turn off background replace.
+      new_effects->replace_enabled = false;
+      new_effects->background_filepath.reset();
       break;
     }
     case VcEffectId::kPortraitRelighting: {

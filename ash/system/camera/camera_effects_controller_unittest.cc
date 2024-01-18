@@ -560,6 +560,23 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
   EXPECT_FALSE(camera_effects_controller()
                    ->GetCameraEffects()
                    ->background_filepath.has_value());
+
+  // Set background image again.
+  camera_effects_controller()->SetBackgroundImage(
+      base::FilePath(relative_path),
+      base::BindOnce([](bool call_succeeded) { EXPECT_TRUE(call_succeeded); }));
+  task_environment()->RunUntilIdle();
+
+  // Check background replace result from pref.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(true, relative_path));
+
+  // Turn off backgroundblur or replace.
+  const auto off_state = CameraEffectsController::BackgroundBlurPrefValue::kOff;
+  SetBackgroundBlurEffectState(off_state);
+  EXPECT_EQ(GetBackgroundBlurPref(), off_state);
+
+  // Background replace should be turned off.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(false, ""));
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
