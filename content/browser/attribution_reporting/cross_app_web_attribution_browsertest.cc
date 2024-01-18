@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/features.h"
 #include "content/browser/fenced_frame/fenced_document_data.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -22,7 +26,6 @@ namespace content {
 
 namespace {
 constexpr char kBaseDataDir[] = "content/test/data/attribution_reporting/";
-}  // namespace
 
 class CrossAppWebAttributionBrowserTestBase : public ContentBrowserTest {
  public:
@@ -51,6 +54,14 @@ class CrossAppWebAttributionBrowserTestBase : public ContentBrowserTest {
 
   void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
 
+  // Helper function that returns whether the ARA cross app web feature is set
+  // on the browser-side.
+  bool CheckBrowserSideCrossAppWebRuntimeFeature() {
+    RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+    return FencedDocumentData::GetForCurrentDocument(rfh)->features().Has(
+        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
+  }
+
  protected:
   network::mojom::AttributionReportingEligibility
       last_request_attribution_reporting_eligibility_;
@@ -65,14 +76,6 @@ class CrossAppWebAttributionEnabledBrowserTest
   CrossAppWebAttributionEnabledBrowserTest() {
     feature_list_.InitAndEnableFeature(
         network::features::kAttributionReportingCrossAppWeb);
-  }
-
-  // Helper function that returns whether the ARA cross app web feature is set
-  // on the browser-side.
-  bool CheckBrowserSideCrossAppWebRuntimeFeature() {
-    RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
-    return FencedDocumentData::GetForCurrentDocument(rfh)->features().Has(
-        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
   }
 
  private:
@@ -235,4 +238,84 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionDisabledBrowserTest,
                           "attribution-reporting')"));
 }
 
+struct OverrideTestCase {
+  bool conversion_measurement_enabled;
+  bool attribution_reporting_cross_app_web_enabled;
+  bool expected;
+};
+
+class CrossAppWebAttributionOverrideBrowserTest
+    : public CrossAppWebAttributionBrowserTestBase,
+      public ::testing::WithParamInterface<OverrideTestCase> {
+ public:
+  CrossAppWebAttributionOverrideBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.emplace_back(
+        features::kAttributionReportingCrossAppWebOverride);
+
+    if (GetParam().conversion_measurement_enabled) {
+      enabled_features.emplace_back(
+          attribution_reporting::features::kConversionMeasurement);
+    } else {
+      disabled_features.emplace_back(
+          attribution_reporting::features::kConversionMeasurement);
+    }
+
+    if (GetParam().attribution_reporting_cross_app_web_enabled) {
+      enabled_features.emplace_back(
+          network::features::kAttributionReportingCrossAppWeb);
+    } else {
+      disabled_features.emplace_back(
+          network::features::kAttributionReportingCrossAppWeb);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CrossAppWebAttributionOverrideBrowserTest,
+    ::testing::Values(
+        OverrideTestCase{
+            .conversion_measurement_enabled = true,
+            .attribution_reporting_cross_app_web_enabled = true,
+            .expected = true,
+        },
+        OverrideTestCase{
+            .conversion_measurement_enabled = false,
+            .attribution_reporting_cross_app_web_enabled = true,
+            .expected = false,
+        },
+        OverrideTestCase{
+            .conversion_measurement_enabled = true,
+            .attribution_reporting_cross_app_web_enabled = false,
+            .expected = false,
+        },
+        OverrideTestCase{
+            .conversion_measurement_enabled = false,
+            .attribution_reporting_cross_app_web_enabled = false,
+            .expected = false,
+        }));
+
+IN_PROC_BROWSER_TEST_P(CrossAppWebAttributionOverrideBrowserTest, NoOT) {
+  // Navigate to a page without an OT token.
+  ASSERT_TRUE(NavigateToURL(
+      shell(),
+      GURL("https://example.test/page_without_cross_app_web_ot.html")));
+
+  EXPECT_EQ(GetParam().expected,
+            EvalJs(shell(),
+                   "document.featurePolicy.features().includes('"
+                   "attribution-reporting')"));
+
+  EXPECT_EQ(GetParam().expected, CheckBrowserSideCrossAppWebRuntimeFeature());
+}
+
+}  // namespace
 }  // namespace content
