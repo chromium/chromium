@@ -1275,6 +1275,54 @@ TEST_P(ScrollbarsTest, MouseOverCustomScrollbarCornerTrackWithCustomCursor) {
   EXPECT_EQ(ui::mojom::blink::CursorType::kHelp, CursorType());
 }
 
+TEST_P(ScrollbarsTest, MouseOverCustomScrollbarCornerFrame) {
+  // Skip this test if scrollbars don't allow hit testing on the platform.
+  if (!WebView().GetPage()->GetScrollbarTheme().AllowsHitTest()) {
+    return;
+  }
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(250, 250));
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body {
+      margin: 0;
+    }
+    iframe {
+      width: 200px;
+      height: 200px;
+    }
+    </style>
+    <iframe id="iframe" srcdoc="<style>
+        body { width: 200vw; height: 200vh; }
+        ::-webkit-scrollbar { cursor: pointer; }
+        ::-webkit-scrollbar-corner { cursor: help; }
+    </style>"></iframe>
+  )HTML");
+
+  // Wait for load.
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  Document& iframe_document =
+      *To<HTMLIFrameElement>(
+           GetDocument().getElementById(AtomicString("iframe")))
+           ->contentDocument();
+
+  // Ensure hittest has DIV and scrollbar.
+  HitTestResult hit_test_result = HitTest(195, 195);
+
+  EXPECT_EQ(hit_test_result.InnerElement(), iframe_document.documentElement());
+  EXPECT_TRUE(hit_test_result.IsOverScrollCorner());
+
+  HandleMouseMoveEvent(195, 195);
+
+  EXPECT_EQ(ui::mojom::blink::CursorType::kHelp, CursorType());
+}
+
 // Makes sure that mouse hover over an overlay scrollbar doesn't activate
 // elements below (except the Element that owns the scrollbar) unless the
 // scrollbar is faded out.

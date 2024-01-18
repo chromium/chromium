@@ -210,6 +210,14 @@ const ComputedStyle* GetComputedStyleFromScrollbar(
   if (result.IsOverScrollCorner()) {
     PaintLayerScrollableArea* scrollable_area =
         To<LayoutBox>(layout_object).GetScrollableArea();
+
+    // For a frame, hit tests over scroll controls are considered to be over
+    // the document element, but the scrollable area belongs to the LayoutView,
+    // not the document element's LayoutObject.
+    if (layout_object.IsDocumentElement()) {
+      scrollable_area = layout_object.View()->GetScrollableArea();
+    }
+
     CHECK(scrollable_area);
     LayoutCustomScrollbarPart* scroll_corner_layout_object =
         scrollable_area->ScrollCorner();
