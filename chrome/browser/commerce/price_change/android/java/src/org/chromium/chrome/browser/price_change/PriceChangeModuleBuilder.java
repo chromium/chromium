@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
@@ -22,16 +23,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** {@link ModuleProviderBuilder} that builds the price change module. */
 public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
     private final Context mContext;
-    private final Profile mProfile;
+    private final ObservableSupplier<Profile> mProfileSupplier;
     private final TabModelSelector mTabModelSelector;
 
     /** Pass in the dependencies needed to build {@link PriceChangeModuleCoordinator}. */
     public PriceChangeModuleBuilder(
             @NonNull Context context,
-            @NonNull Profile profile,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
-        mProfile = profile;
+        mProfileSupplier = profileSupplier;
         mTabModelSelector = tabModelSelector;
     }
 
@@ -42,7 +43,7 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
             @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
         PriceChangeModuleCoordinator coordinator =
                 new PriceChangeModuleCoordinator(
-                        mContext, mProfile, mTabModelSelector, moduleDelegate);
+                        mContext, mProfileSupplier.get(), mTabModelSelector, moduleDelegate);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }

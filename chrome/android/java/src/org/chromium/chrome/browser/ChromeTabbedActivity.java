@@ -149,6 +149,7 @@ import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSuppli
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_change.PriceChangeModuleBuilder;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -2246,17 +2247,23 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
         getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
 
-        mayRegisterHomeModules();
+        maybeRegisterHomeModules();
     }
 
-    private void mayRegisterHomeModules() {
+    private void maybeRegisterHomeModules() {
         if (!StartSurfaceConfiguration.useMagicStack()) return;
 
         ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        SingleTabSwitcherBuilder builder =
+        SingleTabSwitcherBuilder singleTabSwitcherBuilder =
                 new SingleTabSwitcherBuilder(
                         this, getTabModelSelectorSupplier(), getTabContentManagerSupplier());
-        moduleRegistry.registerModule(ModuleType.SINGLE_TAB, builder);
+        moduleRegistry.registerModule(ModuleType.SINGLE_TAB, singleTabSwitcherBuilder);
+
+        if (ChromeFeatureList.sPriceChangeModule.isEnabled()) {
+            PriceChangeModuleBuilder priceChangeModuleBuilder =
+                    new PriceChangeModuleBuilder(this, mTabModelProfileSupplier, mTabModelSelector);
+            moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, priceChangeModuleBuilder);
+        }
     }
 
     private boolean shouldIgnoreIntent() {
