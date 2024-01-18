@@ -152,9 +152,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
     }
 
     if (this.updateOnKeyPress) {
-      console.log('keyevent', keyEvent);
-
-
       const updatedKeyEvent = {...keyEvent};
       const updatedPrerewrittenKeyEvent = {...prerewrittenKeyEvent};
 
