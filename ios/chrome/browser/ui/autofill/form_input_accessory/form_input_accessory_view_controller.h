@@ -12,7 +12,6 @@
 @class BrandingViewController;
 @protocol FormSuggestionClient;
 @class LayoutGuideCenter;
-@class ManualFillAccessoryViewController;
 @protocol ManualFillAccessoryViewControllerDelegate;
 
 // Creates and manages a custom input accessory view while the user is

@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller_delegate.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -301,7 +302,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 - (void)keyboardButtonPressed {
   base::RecordAction(base::UserMetricsAction("ManualFallback_Close"));
   [self resetAnimated:YES];
-  [self.delegate keyboardButtonPressed];
+  [self.delegate manualFillAccessoryViewControllerKeyboardButtonPressed:self];
 }
 
 - (void)passwordButtonPressed:(UIButton*)sender {
@@ -310,7 +311,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   [self resetIcons];
   self.passwordButton.userInteractionEnabled = NO;
   self.passwordButton.tintColor = IconHighlightTintColor();
-  [self.delegate passwordButtonPressed:sender];
+  [self.delegate manualFillAccessoryViewControllerPasswordButtonPressed:self
+                                                                 sender:sender];
 }
 
 - (void)cardButtonPressed:(UIButton*)sender {
@@ -319,7 +321,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   [self resetIcons];
   self.cardsButton.userInteractionEnabled = NO;
   self.cardsButton.tintColor = IconHighlightTintColor();
-  [self.delegate cardButtonPressed:sender];
+  [self.delegate manualFillAccessoryViewControllerCardButtonPressed:self
+                                                             sender:sender];
 }
 
 - (void)accountButtonPressed:(UIButton*)sender {
@@ -328,7 +331,8 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   [self resetIcons];
   self.accountButton.userInteractionEnabled = NO;
   self.accountButton.tintColor = IconHighlightTintColor();
-  [self.delegate accountButtonPressed:sender];
+  [self.delegate manualFillAccessoryViewControllerAccountButtonPressed:self
+                                                                sender:sender];
 }
 
 @end

@@ -50,7 +50,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
@@ -350,25 +350,35 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
 
-- (void)keyboardButtonPressed {
+- (void)manualFillAccessoryViewControllerKeyboardButtonPressed:
+    (ManualFillAccessoryViewController*)manualFillAccessoryViewController {
   [self reset];
 }
 
-- (void)accountButtonPressed:(UIButton*)sender {
+- (void)
+    manualFillAccessoryViewControllerAccountButtonPressed:
+        (ManualFillAccessoryViewController*)manualFillAccessoryViewController
+                                                   sender:(UIButton*)sender {
   [self stopChildren];
   [self startAddressFromButton:sender];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }
 
-- (void)cardButtonPressed:(UIButton*)sender {
+- (void)manualFillAccessoryViewControllerCardButtonPressed:
+            (ManualFillAccessoryViewController*)
+                manualFillAccessoryViewController
+                                                    sender:(UIButton*)sender {
   [self stopChildren];
   [self startCardsFromButton:sender];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }
 
-- (void)passwordButtonPressed:(UIButton*)sender {
+- (void)
+    manualFillAccessoryViewControllerPasswordButtonPressed:
+        (ManualFillAccessoryViewController*)manualFillAccessoryViewController
+                                                    sender:(UIButton*)sender {
   [self stopChildren];
   BOOL invokedOnPasswordField =
       [self.formInputAccessoryMediator lastFocusedFieldWasPassword];

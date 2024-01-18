@@ -91,6 +91,7 @@ source_set("manual_fill_ui") {
     "fallback_view_controller.mm",
     "manual_fill_accessory_view_controller.h",
     "manual_fill_accessory_view_controller.mm",
+    "manual_fill_accessory_view_controller_delegate.h",
     "manual_fill_action_cell.h",
     "manual_fill_action_cell.mm",
     "manual_fill_address.h",
