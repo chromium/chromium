@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -657,6 +658,11 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
   optimization_guide::proto::ModelExecutionFeature feature =
       optimization_guide::GetModelExecutionFeature(
           log_entry->log_ai_data_request()->feature_case());
+
+  TRACE_EVENT1(
+      "browser", "OptimizationGuideKeyedService::UploadModelQualityLogs",
+      "feature",
+      optimization_guide::GetStringNameForModelExecutionFeature(feature));
 
   // Model quality logging requires user consent. Skip upload if consent is
   // missing.

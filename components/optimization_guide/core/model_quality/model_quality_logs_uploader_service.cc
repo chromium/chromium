@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -95,6 +96,9 @@ void OnURLLoadComplete(
     proto::ModelExecutionFeature feature,
     std::unique_ptr<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
+  TRACE_EVENT1("browser", "ModelQualityLogsUploaderService::OnURLLoadComplete",
+               "feature", GetStringNameForModelExecutionFeature(feature));
+
   auto net_error = active_url_loader->NetError();
   int response_code = -1;
   if (active_url_loader->ResponseInfo() &&
@@ -188,6 +192,10 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
 
   proto::ModelExecutionFeature feature =
       GetModelExecutionFeature(log_ai_data_request->feature_case());
+
+  TRACE_EVENT1("browser",
+               "ModelQualityLogsUploaderService::UploadModelQualityLogs",
+               "feature", GetStringNameForModelExecutionFeature(feature));
 
   // Don't do anything if logging is disabled for the feature. Nothing to
   // upload.
