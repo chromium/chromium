@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -328,6 +329,13 @@ void PrintViewManager::SetupScriptedPrintPreview(
     // didn't happen for some reason.
     bad_message::ReceivedBadMessage(
         rph, bad_message::PVM_SCRIPTED_PRINT_FENCED_FRAME);
+    std::move(callback).Run();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kCheckPrintRfhIsActive) &&
+      !rfh->IsActive()) {
+    // Only active RFHs should show UI elements.
     std::move(callback).Run();
     return;
   }
