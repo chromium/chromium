@@ -268,7 +268,6 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/web_apk/histograms.xml",
       "//tools/metrics/histograms/metadata/web_audio/enums.xml",
       "//tools/metrics/histograms/metadata/web_audio/histograms.xml",
-      "//tools/metrics/histograms/metadata/web_core/enums.xml",
       "//tools/metrics/histograms/metadata/web_core/histograms.xml",
       "//tools/metrics/histograms/metadata/web_rtc/enums.xml",
       "//tools/metrics/histograms/metadata/web_rtc/histograms.xml",

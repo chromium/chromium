@@ -14992,6 +14992,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="Shared library error"/>
 </enum>
 
+<enum name="FullscreenLockState">
+  <int value="0" label="Unlocked"/>
+  <int value="1" label="Keyboard locked"/>
+  <int value="2" label="Pointer locked"/>
+  <int value="3" label="Keyboard and pointer locked"/>
+</enum>
+
 <enum name="FuseArchiveError">
   <int value="0" label="Success">EXIT_SUCCESS</int>
   <int value="1" label="Generic error">EXIT_CODE_GENERIC_FAILURE</int>

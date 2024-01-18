@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using content::WebContents;
@@ -181,4 +183,12 @@ void ExclusiveAccessManager::RecordLockStateOnEnteringFullscreen(
     lock_state = LockState::kPointerLocked;
   }
   base::UmaHistogramEnumeration(histogram_name, lock_state);
+  if (fullscreen_controller_.exclusive_access_tab()) {
+    ukm::SourceId source_id = fullscreen_controller_.exclusive_access_tab()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetPageUkmSourceId();
+    ukm::builders::Fullscreen_Enter(source_id)
+        .SetLockState(static_cast<int64_t>(lock_state))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }

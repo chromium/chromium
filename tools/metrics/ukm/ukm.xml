@@ -9544,6 +9544,46 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Fullscreen.Enter">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    The browser enters the fullscreen mode.
+  </summary>
+  <metric name="LockState" enum="FullscreenLockState">
+    <summary>
+      The keyboard and pointer lock states.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Fullscreen.Exit">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    The browser exits the fullscreen mode.
+  </summary>
+  <metric name="SessionDuration">
+    <summary>
+      Duration of the fullscreen session.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="GamingInputOverlay.ActionRepositionOperationType">
   <owner>pjlee@google.com</owner>
   <owner>cuicuiruan@google.com</owner>
