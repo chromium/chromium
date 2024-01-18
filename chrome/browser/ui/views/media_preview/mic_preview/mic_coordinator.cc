@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -14,6 +15,22 @@
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+
+namespace {
+
+std::optional<std::string> GetRealDefaultDeviceId(
+    const std::vector<media::AudioDeviceDescription>& infos) {
+  auto real_default_device =
+      std::find_if(infos.begin(), infos.end(), [](const auto& info) {
+        return !media::AudioDeviceDescription::IsDefaultDevice(
+                   info.unique_id) &&
+               info.is_system_default;
+      });
+  return real_default_device == infos.end()
+             ? std::nullopt
+             : std::make_optional(real_default_device->unique_id);
+}
+}  // namespace
 
 MicCoordinator::MicCoordinator(views::View& parent_view,
                                bool needs_borders,
@@ -52,15 +69,22 @@ void MicCoordinator::OnAudioSourceInfosReceived(
     return;
   }
 
-  eligible_device_infos_.clear();
+  auto real_default_device_id = GetRealDefaultDeviceId(device_infos);
+  auto eligible_mic_ids = eligible_mic_ids_;
+  if (real_default_device_id &&
+      eligible_mic_ids.contains(
+          media::AudioDeviceDescription::kDefaultDeviceId)) {
+    eligible_mic_ids.insert(*real_default_device_id);
+  }
 
+  eligible_device_infos_.clear();
   for (const auto& device_info : device_infos) {
-    if (device_info.unique_id ==
-        media::AudioDeviceDescription::kDefaultDeviceId) {
+    if (real_default_device_id &&
+        media::AudioDeviceDescription::IsDefaultDevice(device_info.unique_id)) {
       continue;
     }
-    if (!eligible_mic_ids_.empty() &&
-        !eligible_mic_ids_.contains(device_info.unique_id)) {
+    if (!eligible_mic_ids.empty() &&
+        !eligible_mic_ids.contains(device_info.unique_id)) {
       continue;
     }
     eligible_device_infos_.emplace_back(device_info);

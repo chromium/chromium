@@ -39,12 +39,19 @@ std::vector<ui::SimpleComboboxModel::Item> GetComboboxItems(
   std::vector<ui::SimpleComboboxModel::Item> items;
   items.reserve(audio_source_infos.size());
   for (const auto& info : audio_source_infos) {
+    auto device_name = base::UTF8ToUTF16(info.device_name);
+    const auto is_virtual_default_device =
+        media::AudioDeviceDescription::IsDefaultDevice(info.unique_id);
+    if (is_virtual_default_device) {
+      device_name =
+          l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC);
+    }
     const auto secondary_text =
-        info.is_system_default
+        info.is_system_default && !is_virtual_default_device
             ? l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC)
             : std::u16string();
     items.emplace_back(
-        /*text=*/base::UTF8ToUTF16(info.device_name),
+        /*text=*/device_name,
         /*dropdown_secondary_text=*/secondary_text, /*icon=*/ui::ImageModel{});
   }
   return items;

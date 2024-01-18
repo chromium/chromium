@@ -35,22 +35,6 @@ constexpr char kDeviceId2[] = "device_id_2";
 constexpr char kDeviceName2[] = "device_name_2";
 constexpr char kGroupId2[] = "group_id2";
 
-MATCHER_P(HasItems, items, "") {
-  if (arg.GetItemCount() != items.size()) {
-    *result_listener << "item count is " << arg.GetItemCount();
-    return false;
-  }
-
-  for (size_t i = 0; i < items.size(); ++i) {
-    if (base::UTF8ToUTF16(items[i]) != arg.GetItemAt(i)) {
-      *result_listener << "item at index " << i << " is " << arg.GetItemAt(i);
-      return false;
-    }
-  }
-
-  return true;
-}
-
 }  // namespace
 
 class MicCoordinatorTest : public TestWithBrowserView {
@@ -63,6 +47,7 @@ class MicCoordinatorTest : public TestWithBrowserView {
         on_input_stream_id_future_.GetRepeatingCallback());
     fake_audio_service_.SetBindStreamFactoryCallback(
         on_bind_stream_factory_future_.GetRepeatingCallback());
+
     fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
         replied_with_device_descriptions_future_.GetCallback());
 
@@ -77,6 +62,7 @@ class MicCoordinatorTest : public TestWithBrowserView {
   }
 
   void InitializeCoordinator(std::vector<std::string> eligible_mic_ids) {
+    CHECK(profile()->GetPrefs());
     coordinator_.emplace(*parent_view_,
                          /*needs_borders=*/true, eligible_mic_ids,
                          *profile()->GetPrefs());
@@ -84,6 +70,23 @@ class MicCoordinatorTest : public TestWithBrowserView {
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {
     return coordinator_->GetComboboxModelForTest();
+  }
+
+  std::vector<std::string> GetComboboxItems() const {
+    std::vector<std::string> items;
+    for (size_t i = 0; i < GetComboboxModel().GetItemCount(); ++i) {
+      items.emplace_back(base::UTF16ToUTF8(GetComboboxModel().GetItemAt(i)));
+    }
+    return items;
+  }
+
+  std::vector<std::string> GetComboboxSecondaryTexts() const {
+    std::vector<std::string> secondary_texts;
+    for (size_t i = 0; i < GetComboboxModel().GetItemCount(); ++i) {
+      secondary_texts.emplace_back(
+          base::UTF16ToUTF8(GetComboboxModel().GetDropDownSecondaryTextAt(i)));
+    }
+    return secondary_texts;
   }
 
   void VerifyEmptyCombobox() const {
@@ -134,31 +137,29 @@ TEST_F(MicCoordinatorTest, RelevantAudioInputDeviceInfoExtraction) {
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
-  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName));
 
   // Add second mic and connection to the first is not affected.
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2}));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
-  EXPECT_THAT(GetComboboxModel(),
-              HasItems(std::vector{kDeviceName, kDeviceName2}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName, kDeviceName2));
 
   // Remove first mic, and connect to the second one.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId2);
-  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName2));
 
   // Re-add first mic and connect to it.
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
-  EXPECT_THAT(GetComboboxModel(),
-              HasItems(std::vector{kDeviceName, kDeviceName2}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName, kDeviceName2));
 
   // Remove second mic, and connection to the first is not affected.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId2));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
-  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName));
 
   // Remove first mic.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
@@ -180,12 +181,12 @@ TEST_F(MicCoordinatorTest,
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId2);
-  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName2));
 
   // Remove first mic, nothing changes since it wasn't in the combobox.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
-  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName2));
 
   // Remove second mic.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId2));
@@ -237,16 +238,30 @@ TEST_F(MicCoordinatorTest, TryConnectToSameDevice) {
 TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   VerifyEmptyCombobox();
 
-  // Add two mics, one that's the default and one that isn't.
+  const auto kDefaultDeviceName =
+      l10n_util::GetStringUTF8(IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC);
+
+  // Add 2 mics. The virtual system default, and one other.
+  ASSERT_TRUE(AddFakeInputDevice(
+      {/*device_name=*/"default_name",
+       media::AudioDeviceDescription::kDefaultDeviceId, "default_group_id"}));
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
+  // The virtual default device should be included because there's no mapping
+  // for the real system default device.
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDefaultDeviceName, kDeviceName));
+  EXPECT_THAT(GetComboboxSecondaryTexts(),
+              ElementsAre(std::string{}, std::string{}));
+  on_input_stream_id_future_.Clear();
+
+  // Add another mic marked with `is_system_default`.
   ASSERT_TRUE(AddFakeInputDevice(
       {kDeviceName2, kDeviceId2, kGroupId2, /*is_system_default=*/true}));
-  EXPECT_THAT(GetComboboxModel(),
-              HasItems(std::vector{kDeviceName, kDeviceName2}));
-  EXPECT_EQ(GetComboboxModel().GetDropDownSecondaryTextAt(/*index=*/0),
-            std::u16string{});
-  EXPECT_EQ(GetComboboxModel().GetDropDownSecondaryTextAt(/*index=*/1),
-            l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC));
+  // The virtual default device should be excluded because the real system
+  // default was found in the list.
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName, kDeviceName2));
+  // The system default device should have the secondary text.
+  EXPECT_THAT(GetComboboxSecondaryTexts(),
+              ElementsAre(std::string{}, kDefaultDeviceName));
 }
 
 TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {
