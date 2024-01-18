@@ -2717,7 +2717,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 + " AsyncInitializationActivity#onCreate() that could potentially"
                                 + " create a new Chrome instance.\n"
                                 + logMessage;
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+                ChromePureJavaExceptionReporter.reportJavaException(
+                        new Throwable(logMessage), /* withLogWarning= */ true);
             } else if (isMainIntent) {
                 logMessage =
                         "This is not a crash. Logging info for MAIN intent received in"
@@ -2725,7 +2726,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 + " AsyncInitializationActivity#onCreate() that could potentially"
                                 + " create a new Chrome instance.\n"
                                 + logMessage;
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+                ChromePureJavaExceptionReporter.reportJavaException(
+                        new Throwable(logMessage), /* withLogWarning= */ true);
             }
         }
     }
