@@ -203,6 +203,9 @@ In window environments, the script will be included using a classic `<script>` t
 worker environments, the script will be imported using `importScripts()`. In module worker
 environments, the script will be imported using a static `import`.
 
+wptserve generates markup with `/resources/testharness.js` and `/resources/testharnessreport.js`
+included automatically, so there's no need to include those scripts from the `.js` test file.
+
 ### Specifying a timeout of long
 
 Use `// META: timeout=long` at the beginning of the resource.

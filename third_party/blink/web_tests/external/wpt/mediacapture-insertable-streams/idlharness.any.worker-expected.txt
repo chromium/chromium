@@ -13,6 +13,12 @@ This is a testharness.js-based test.
   assert_own_property: self does not have own property "MediaStreamTrackProcessor" expected property "MediaStreamTrackProcessor" missing
 [FAIL] MediaStreamTrackProcessor interface: attribute readable
   assert_own_property: self does not have own property "MediaStreamTrackProcessor" expected property "MediaStreamTrackProcessor" missing
+[FAIL] MediaStreamTrackProcessor must be primary interface of new MediaStreamTrackProcessor({ track: new VideoTrackGenerator() })
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaStreamTrackProcessor is not defined"
+[FAIL] Stringification of new MediaStreamTrackProcessor({ track: new VideoTrackGenerator() })
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaStreamTrackProcessor is not defined"
+[FAIL] MediaStreamTrackProcessor interface: new MediaStreamTrackProcessor({ track: new VideoTrackGenerator() }) must inherit property "readable" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaStreamTrackProcessor is not defined"
 [FAIL] VideoTrackGenerator interface: existence and properties of interface object
   assert_own_property: self does not have own property "VideoTrackGenerator" expected property "VideoTrackGenerator" missing
 [FAIL] VideoTrackGenerator interface object length

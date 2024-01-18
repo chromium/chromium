@@ -2,8 +2,6 @@ import pytest
 import webdriver.bidi.error as error
 from webdriver.bidi.undefined import UNDEFINED
 
-from . import get_permission_state
-
 pytestmark = pytest.mark.asyncio
 
 @pytest.mark.parametrize("descriptor", [False, "SOME_STRING", 42, {}, [], {"name": 23}, None, UNDEFINED])
