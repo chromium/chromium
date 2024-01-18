@@ -553,6 +553,19 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the back-forward navigation was served from cache.</summary>
 </histogram>
 
+<histogram name="Navigation.BrowserInitiatedSessionHistoryCount"
+    enum="HistoryNavType" expires_after="M130">
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>chrome-seamless-core@google.com</owner>
+  <summary>
+    Counts the different types of browser-initiated session history navigations.
+    The counts are recorded when the respective NavigationRequests are first
+    created, and before the requests are owned by their respective
+    RenderFrameHost. The metric is recorded once per browser-initiated history
+    navigation.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame"
     enum="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame"
     expires_after="2024-03-03">

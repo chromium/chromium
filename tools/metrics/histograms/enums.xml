@@ -15818,6 +15818,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Commit"/>
 </enum>
 
+<enum name="HistoryNavType">
+  <int value="0" label="kMainFrame"/>
+  <int value="1" label="kMainFrameAndSubframe"/>
+  <int value="2" label="kSubframe"/>
+</enum>
+
 <enum name="HistoryPageView">
   <int value="0" label="History"/>
   <int value="1" label="Grouped Week (Obsolete Feb. 2017)"/>

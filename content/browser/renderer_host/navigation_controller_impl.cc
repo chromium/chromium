@@ -510,6 +510,65 @@ bool DoesSandboxNavigationStayWithinSubtree(
   return true;
 }
 
+// Used for "Navigation.SessionHistoryCount" histogram.
+enum class HistoryNavTypeForHistogram {
+  // A same-doc or cross-doc navigation of the main frame. We can only have one
+  // main frame request per `NavigationController::GoToIndex()`.
+  kMainFrame = 0,
+  // `NavigationController::GoToIndex()` creates one main frame request and
+  // one or more subframe requests.
+  kMainFrameAndSubframe,
+  // `NavigationController::GoToIndex()` creates one or more subframe requests.
+  kSubframe,
+  // Used for histogram boundary.
+  kCount
+};
+
+void CountRequests(
+    const std::vector<std::unique_ptr<NavigationRequest>>& requests,
+    int& mutable_main_frame_cnt,
+    int& mutable_subframe_cnt) {
+  for (const auto& req : requests) {
+    if (req->IsInPrimaryMainFrame()) {
+      // We can only have one main frame navigation at a time.
+      CHECK_EQ(mutable_main_frame_cnt, 0);
+      ++mutable_main_frame_cnt;
+    } else if (req->GetNavigatingFrameType() == FrameType::kSubframe) {
+      ++mutable_subframe_cnt;
+    }
+  }
+}
+
+// Record the number of different types of navigations as histograms. See
+// `HistoryNavTypeForHistogram` for the types.
+void CountBrowserInitiatedMainframeAndSubframeHistoryNavigaions(
+    const std::vector<std::unique_ptr<NavigationRequest>>& cross_doc_requests,
+    const std::vector<std::unique_ptr<NavigationRequest>>& same_doc_requests) {
+  // We must have one request.
+  CHECK(!cross_doc_requests.empty() || !same_doc_requests.empty());
+
+  int main_frame_cnt = 0;
+  int subframe_cnt = 0;
+  CountRequests(cross_doc_requests, main_frame_cnt, subframe_cnt);
+  CountRequests(same_doc_requests, main_frame_cnt, subframe_cnt);
+
+  std::optional<HistoryNavTypeForHistogram> history_nav_type;
+  if (main_frame_cnt > 0) {
+    if (subframe_cnt == 0) {
+      history_nav_type = HistoryNavTypeForHistogram::kMainFrame;
+    } else {
+      history_nav_type = HistoryNavTypeForHistogram::kMainFrameAndSubframe;
+    }
+  } else if (subframe_cnt > 0) {
+    history_nav_type = HistoryNavTypeForHistogram::kSubframe;
+  }
+  if (history_nav_type.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("Navigation.BrowserInitiatedSessionHistoryCount",
+                              history_nav_type.value(),
+                              HistoryNavTypeForHistogram::kCount);
+  }
+}
+
 }  // namespace
 
 // NavigationControllerImpl::PendingEntryRef------------------------------------
@@ -3330,6 +3389,12 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
             main_frame_same_document_token);
       }
     }
+  }
+
+  if (!initiator_rfh) {
+    // A browser-initiated navigation won't have a `initiator_rfh`.
+    CountBrowserInitiatedMainframeAndSubframeHistoryNavigaions(
+        different_document_loads, same_document_loads);
   }
 
   // Send all the same document frame loads before the different document loads.
