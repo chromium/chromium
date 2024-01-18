@@ -78,7 +78,13 @@ class ASH_EXPORT FederatedClientManager {
   bool initialized_ = false;
   static inline bool use_fake_controller_for_testing_ = false;
   mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service_;
-  raw_ptr<FederatedServiceController> controller_ = nullptr;
+  // Reason for `DisableDanglingPtrDetection`:
+  // In prod: controller_ not owned by this class.
+  // In non-ash unit tests: controller_ can be owned by this class.
+  // TODO(b/299186135): Consider refactoring test management of ash and non-ash
+  // environments, and the impact on management of ownership of this controller.
+  raw_ptr<FederatedServiceController, DisableDanglingPtrDetection> controller_ =
+      nullptr;
 };
 
 }  // namespace ash::federated

@@ -95,13 +95,7 @@ class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1478953): Disabled due to memory leak caught by sanitizer.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_ServicesAvailable DISABLED_ServicesAvailable
-#else
-#define MAYBE_ServicesAvailable ServicesAvailable
-#endif
-TEST_F(FederatedClientManagerFakeAshInteractionTest, MAYBE_ServicesAvailable) {
+TEST_F(FederatedClientManagerFakeAshInteractionTest, ServicesAvailable) {
   EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
   EXPECT_TRUE(manager_->IsFederatedStringsServiceAvailable());
 }

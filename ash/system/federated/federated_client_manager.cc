@@ -33,7 +33,11 @@ ExamplePtr CreateStringsServiceExamplePtr(const std::string& query) {
 
 FederatedClientManager::FederatedClientManager() {}
 
-FederatedClientManager::~FederatedClientManager() = default;
+FederatedClientManager::~FederatedClientManager() {
+  if (use_fake_controller_for_testing_) {
+    delete controller_;
+  }
+}
 
 void FederatedClientManager::UseFakeAshInteractionForTest() {
   use_fake_controller_for_testing_ = true;
