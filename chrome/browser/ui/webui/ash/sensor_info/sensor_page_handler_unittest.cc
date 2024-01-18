@@ -49,9 +49,9 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
 class SensorPageHandlerTest : public testing::Test {
  public:
   SensorPageHandlerTest()
-      : profile_(MakeTestingProfile(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_))) {}
+      : profile_(
+            MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper())) {
+  }
   ~SensorPageHandlerTest() override = default;
 
  protected:
