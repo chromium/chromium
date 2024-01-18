@@ -127,37 +127,6 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// The helper class to wait for the observed view's bounds update.
-class ViewBoundsWaiter : public views::ViewObserver {
- public:
-  explicit ViewBoundsWaiter(views::View* observed_view)
-      : observed_view_(observed_view) {
-    observed_view_->AddObserver(this);
-  }
-
-  ViewBoundsWaiter(const ViewBoundsWaiter&) = delete;
-  ViewBoundsWaiter& operator=(const ViewBoundsWaiter&) = delete;
-  ~ViewBoundsWaiter() override { observed_view_->RemoveObserver(this); }
-
-  void WaitForMeaningfulBounds() {
-    // No-op if `observed_view_` already has meaningful bounds.
-    if (!observed_view_->bounds().IsEmpty())
-      return;
-
-    run_loop_.Run();
-  }
-
- private:
-  // views::ViewObserver:
-  void OnViewBoundsChanged(views::View* observed_view) override {
-    EXPECT_FALSE(observed_view->bounds().IsEmpty());
-    run_loop_.Quit();
-  }
-
-  const raw_ptr<views::View> observed_view_;
-  base::RunLoop run_loop_;
-};
-
 // Helpers ---------------------------------------------------------------------
 
 std::unique_ptr<views::Widget> CreateTestWidget() {
@@ -361,8 +330,8 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
 
     // Wait until `delete_button` has meaningful bounds. Note that the bounds
     // are set by the layout manager asynchronously.
-    ViewBoundsWaiter waiter(delete_button);
-    waiter.WaitForMeaningfulBounds();
+    ui_test_utils::ViewBoundsWaiter delete_button_waiter(delete_button);
+    delete_button_waiter.WaitForNonEmptyBounds();
 
     EXPECT_TRUE(delete_button->GetVisible());
     EXPECT_TRUE(item_view->IsSelected());
