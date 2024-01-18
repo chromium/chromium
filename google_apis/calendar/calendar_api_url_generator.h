@@ -26,18 +26,21 @@ class CalendarApiUrlGenerator {
   ~CalendarApiUrlGenerator();
 
   // Returns a URL to fetch a list of calendar events.
+  // |calendar_id|   ID of the calendar to fetch events from. If empty,
+  //                 kPrimaryCalendarID is used in its place.
   // |start_time|    Start time of the event window
   // |end_time|      End time of the aforementioned window
   // |single_events| If true, expand recurring events into instances and only
   //                 return single one-off events and instances of recurring
   //                 events, but not the underlying recurring events
-  //                 themselves
+  //                 themselves.
   // |max_attendees| The maximum number of attendees to include in the response.
   //                 If there are more than the specified number of attendees,
   //                 only the participant is returned. Optional.
   // |max_results|   Maximum number of events returned on one result page.
   //                 Optional.
-  GURL GetCalendarEventListUrl(const base::Time& start_time,
+  GURL GetCalendarEventListUrl(const std::string& calendar_id,
+                               const base::Time& start_time,
                                const base::Time& end_time,
                                bool single_events,
                                std::optional<int> max_attendees,
