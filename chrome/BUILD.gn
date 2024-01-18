@@ -466,7 +466,8 @@ if (is_win) {
   chrome_framework_name = chrome_product_full_name + " Framework"
   chrome_framework_version = chrome_version_full
 
-  verify_dynamic_libraries = !is_component_build && !is_asan
+  verify_dynamic_libraries = !is_component_build && !is_asan && !is_ubsan &&
+                             !is_ubsan_vptr && !is_ubsan_security
   if (host_os == "mac") {
     objdump_path = mac_bin_path
   } else {
