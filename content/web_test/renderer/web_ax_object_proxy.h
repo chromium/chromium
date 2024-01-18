@@ -64,12 +64,13 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
 
   Factory* factory() const { return factory_; }
 
-  bool IsDetached() const { return !factory_; }
+  bool IsDetached() const { return !factory_ || !factory_->GetAXContext(); }
 
  private:
   friend class WebAXObjectProxyBindings;
 
-  void UpdateLayout();
+  // Returns true if successful.
+  bool UpdateLayout();
   ui::AXNodeData GetAXNodeData() const;
 
   // Bound properties.
