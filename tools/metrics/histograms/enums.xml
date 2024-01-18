@@ -41454,6 +41454,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-372127353" label="/content/paymentHandler"/>
   <int value="-327540120" label="/content/javascript"/>
   <int value="-319293467" label="/multidevice"/>
+  <int value="-308222292" label="/trackingProtection"/>
   <int value="-300300075" label="/system"/>
   <int value="-295702530" label="/smbShares"/>
   <int value="-237154443" label="/manageAccessibility/tts/googleTtsEngine"/>
