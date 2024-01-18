@@ -63,3 +63,22 @@ interface Window {
   // Added to window by launch.js for integration testing.
   advance: (direction: number, currentFileToken?: number) => void;
 }
+
+
+/**
+ * Types for
+ * https://crsrc.org/c/chrome/common/extensions/api/crash_report_private.idl.
+ */
+declare namespace chrome.crashReportPrivate {
+  interface ErrorInfo {
+    message: string;
+    url: string;
+    product?: string;
+    version?: string;
+    lineNumber?: number;
+    columnNumber?: number;
+    debugId?: string;
+    stackTrace?: string;
+  }
+  function reportError(info: ErrorInfo, callback: () => void): void;
+}

@@ -129,14 +129,7 @@ group("closure_compile") {
 
 js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
-  deps = [
-    ":error_reporter",
-    ":mojo_api_bootstrap",
-  ]
-}
-
-js_library("error_reporter") {
-  externs_list = [ "$externs_path/crash_report_private.js" ]
+  deps = [ ":mojo_api_bootstrap" ]
 }
 
 js_library("mojo_api_bootstrap") {
