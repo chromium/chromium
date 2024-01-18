@@ -2375,8 +2375,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Drag and drop -------------------------------------------------------------
 
-  raw_ptr<DragController, AcrossTasksDanglingUntriaged> drag_controller_ =
-      nullptr;
+  raw_ptr<DragController> drag_controller_ = nullptr;
 
   // Input  --------------------------------------------------------------------
 

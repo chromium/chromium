@@ -213,6 +213,7 @@ bool HoldingSpaceItemView::IsInstance(const views::View* view) {
 
 void HoldingSpaceItemView::Reset() {
   set_context_menu_controller(nullptr);
+  set_drag_controller(nullptr);
   delegate_ = nullptr;
 }
 
