@@ -7,6 +7,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/shell.h"
+#include "ash/system/tray/system_tray_notifier.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -295,7 +298,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   ui::UserActivityDetector* user_activity_detector() {
-    return user_activity_detector_.get();
+    return ui::UserActivityDetector::Get();
   }
 
   user_manager::FakeUserManager* fake_user_manager() const {
@@ -354,9 +357,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    testing::Test::SetUp();
-    ash::LoginState::Initialize();
-
+    ash::AshTestHelper::InitParams params;
+    ash_test_helper_.SetUp(std::move(params));
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -377,8 +379,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     AddTestNetworkDevice();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
-    user_activity_detector_->set_last_activity_time_for_test(
+    user_activity_detector()->set_last_activity_time_for_test(
         base::TimeTicks::Now());
     cache_ = std::make_unique<apps::AppRegistryCache>();
     account_id_ = AccountId::FromUserEmail(kTestAccount);
@@ -402,8 +403,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     }
     profile_ = nullptr;
     profile_manager_ = nullptr;
-    ash::LoginState::Shutdown();
-    testing::Test::TearDown();
+    mock_desks_client_ = nullptr;
+    ash_test_helper_.TearDown();
   }
 
  private:
@@ -414,21 +415,52 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
+  ash::AshTestHelper ash_test_helper_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<MockDesksClient> mock_desks_client_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
-  session_manager::SessionManager session_manager_;
   ash::SessionTerminationManager session_termination_manager_;
 
   raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
-TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
-  scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+class FloatingWorkspaceServiceV1Test : public FloatingWorkspaceServiceTest {
+ protected:
+  FloatingWorkspaceServiceV1Test() = default;
+  ~FloatingWorkspaceServiceV1Test() override = default;
+
+  void SetUp() override {
+    scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+    FloatingWorkspaceServiceTest::SetUp();
+  }
+
+  void TearDown() override {
+    FloatingWorkspaceServiceTest::TearDown();
+    scoped_feature_list().Reset();
+  }
+};
+
+class FloatingWorkspaceServiceV2Test : public FloatingWorkspaceServiceTest {
+ protected:
+  FloatingWorkspaceServiceV2Test() = default;
+  ~FloatingWorkspaceServiceV2Test() override = default;
+
+  void SetUp() override {
+    scoped_feature_list().InitWithFeatures(
+        {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+    FloatingWorkspaceServiceTest::SetUp();
+  }
+
+  void TearDown() override {
+    FloatingWorkspaceServiceTest::TearDown();
+    scoped_feature_list().Reset();
+  }
+};
+
+TEST_F(FloatingWorkspaceServiceV1Test, RestoreRemoteSession) {
   PopulateAppsCache();
   TestFloatingWorkSpaceService test_floating_workspace_service(
       profile(), /*fake_desk_sync_service=*/nullptr,
@@ -462,11 +494,9 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
   EXPECT_EQ(
       kRemoteSessionOneName,
       test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
-  scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+TEST_F(FloatingWorkspaceServiceV1Test, RestoreLocalSession) {
   PopulateAppsCache();
   TestFloatingWorkSpaceService test_floating_workspace_service(
       profile(), /*fake_desk_sync_service=*/nullptr,
@@ -500,11 +530,9 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
   EXPECT_EQ(
       kLocalSessionName,
       test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
-  scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+TEST_F(FloatingWorkspaceServiceV1Test, RestoreRemoteSessionAfterUpdated) {
   PopulateAppsCache();
   TestFloatingWorkSpaceService test_floating_workspace_service(
       profile(), /*fake_desk_sync_service=*/nullptr,
@@ -549,11 +577,9 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   EXPECT_EQ(
       less_recent_remote_session->GetSessionName(),
       test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
-  scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+TEST_F(FloatingWorkspaceServiceV1Test, NoLocalSession) {
   PopulateAppsCache();
   TestFloatingWorkSpaceService test_floating_workspace_service(
       profile(), /*fake_desk_sync_service=*/nullptr,
@@ -583,11 +609,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
   EXPECT_EQ(
       most_recent_remote_session->GetSessionName(),
       test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
-  scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+TEST_F(FloatingWorkspaceServiceV1Test, NoRemoteSession) {
   PopulateAppsCache();
   TestFloatingWorkSpaceService test_floating_workspace_service(
       profile(), /*fake_desk_sync_service=*/nullptr,
@@ -609,11 +633,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
   EXPECT_EQ(
       kLocalSessionName,
       test_floating_workspace_service.GetRestoredSession()->GetSessionName());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, NoSession) {
-  scoped_feature_list().InitWithFeatures({features::kFloatingWorkspace}, {});
+TEST_F(FloatingWorkspaceServiceV1Test, NoSession) {
   PopulateAppsCache();
   TestFloatingWorkSpaceService test_floating_workspace_service(
       profile(), /*fake_desk_sync_service=*/nullptr,
@@ -628,12 +650,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoSession) {
           .Get());
 
   EXPECT_FALSE(test_floating_workspace_service.GetRestoredSession());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, RestoreFloatingWorkspaceTemplate) {
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -660,12 +679,9 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
   ASSERT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, NoNetworkForFloatingWorkspaceTemplate) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkForFloatingWorkspaceTemplate) {
   PopulateAppsCache();
   CleanUpTestNetworkDevices();
   CreateFloatingWorkspaceServiceForTesting(profile());
@@ -676,13 +692,10 @@ TEST_F(FloatingWorkspaceServiceTest, NoNetworkForFloatingWorkspaceTemplate) {
 
   task_environment().RunUntilIdle();
   EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        NoNetworkForFloatingWorkspaceTemplateAfterLongDelay) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -699,14 +712,11 @@ TEST_F(FloatingWorkspaceServiceTest,
   CleanUpTestNetworkDevices();
   task_environment().RunUntilIdle();
   EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
-  scoped_feature_list().Reset();
 }
 
 TEST_F(
-    FloatingWorkspaceServiceTest,
+    FloatingWorkspaceServiceV2Test,
     NoNetworkForFloatingWorkspaceTemplateNotificationGoneAfterNetworkIsConnected) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   CleanUpTestNetworkDevices();
   CreateFloatingWorkspaceServiceForTesting(profile());
@@ -727,13 +737,10 @@ TEST_F(
   floating_workspace_service->DefaultNetworkChanged(
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
   EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateRestoreAfterTimeOut) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -773,13 +780,10 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateDiscardAfterTimeOut) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -819,12 +823,9 @@ TEST_F(FloatingWorkspaceServiceTest,
       static_cast<int>(RestoreFromErrorNotificationButtonIndex::kCancel),
       std::nullopt);
   EXPECT_FALSE(mock_desks_client()->restored_desk_template());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLoadMetric) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLoadMetric) {
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -855,12 +856,9 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLoadMetric) {
   histogram_tester.ExpectTotalCount(
       floating_workspace_metrics_util::kFloatingWorkspaceV2TemplateLoadTime,
       1u);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLaunchTimeout) {
   PopulateAppsCache();
   base::HistogramTester histogram_tester;
 
@@ -898,12 +896,9 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
       static_cast<int>(floating_workspace_metrics_util::
                            LaunchTemplateTimeoutType::kPassedWaitPeriod),
       1u);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, CaptureFloatingWorkspaceTemplate) {
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -930,13 +925,11 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             creation_time);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CaptureSameFloatingWorkspaceTemplate) {
+TEST_F(FloatingWorkspaceServiceV2Test, CaptureSameFloatingWorkspaceTemplate) {
   // Upload should be skipped if two captured templates are the same.
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -980,14 +973,12 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureSameFloatingWorkspaceTemplate) {
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             first_captured_template_creation_time);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        CaptureDifferentFloatingWorkspaceTemplate) {
   // Upload should be executed if two captured templates are the different.
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1036,12 +1027,9 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             second_captured_template_creation_time);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, PopulateFloatingWorkspaceTemplate) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, PopulateFloatingWorkspaceTemplate) {
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -1068,13 +1056,10 @@ TEST_F(FloatingWorkspaceServiceTest, PopulateFloatingWorkspaceTemplate) {
   EXPECT_EQ(
       floating_workspace_service->GetFloatingWorkspaceTemplateEntries().size(),
       1u);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        PopulateFloatingWorkspaceTemplateWithUpdates) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   std::unique_ptr<ash::DeskTemplate> template_1 =
       MakeTestFloatingWorkspaceDeskTemplate("Template 1", base::Time::Now());
@@ -1142,14 +1127,10 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_EQ(floating_workspace_service->GetFloatingWorkspaceTemplateEntries()[0]
                 ->uuid(),
             template_2_uuid);
-
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        DoNotPerformGarbageCollectionOnSingleEntryBeyondThreshold) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   const std::string fws_name = "Template 1";
   std::unique_ptr<ash::DeskTemplate> fws_template =
@@ -1166,8 +1147,7 @@ TEST_F(FloatingWorkspaceServiceTest,
             loop.Quit();
           }));
   loop.Run();
-
-  task_environment().FastForwardBy(base::Days(31));
+  task_environment().AdvanceClock(base::Days(31));
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
       FloatingWorkspaceService::GetForProfile(profile());
@@ -1184,12 +1164,9 @@ TEST_F(FloatingWorkspaceServiceTest,
 
   EXPECT_EQ(
       1ul, fake_desk_sync_service()->GetDeskModel()->GetAllEntryUuids().size());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, PerformGarbageCollectionOnStaleEntries) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, PerformGarbageCollectionOnStaleEntries) {
   PopulateAppsCache();
   const std::string fws_one_name = "Template 1";
   const std::string fws_two_name = "Template 2";
@@ -1222,7 +1199,7 @@ TEST_F(FloatingWorkspaceServiceTest, PerformGarbageCollectionOnStaleEntries) {
             loop2.Quit();
           }));
   loop2.Run();
-  task_environment().FastForwardBy(base::Days(31));
+  task_environment().AdvanceClock(base::Days(31));
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
       FloatingWorkspaceService::GetForProfile(profile());
@@ -1240,13 +1217,10 @@ TEST_F(FloatingWorkspaceServiceTest, PerformGarbageCollectionOnStaleEntries) {
 
   EXPECT_EQ(
       1ul, fake_desk_sync_service()->GetDeskModel()->GetAllEntryUuids().size());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateHasProgressStatus) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1263,14 +1237,10 @@ TEST_F(FloatingWorkspaceServiceTest,
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
-
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateProgressStatusGoneAfterTimeOut) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1287,13 +1257,10 @@ TEST_F(FloatingWorkspaceServiceTest,
       base::Seconds(1));
   EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
   EXPECT_TRUE(HasNotificationFor(kNotificationForSyncErrorOrTimeOut));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateProgressStatusGoneAfterSyncError) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1310,13 +1277,10 @@ TEST_F(FloatingWorkspaceServiceTest,
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
   EXPECT_TRUE(HasNotificationFor(kNotificationForSyncErrorOrTimeOut));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateRestoreAfterTimeOutWithNewCapture) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -1379,13 +1343,10 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        RestoreWhenNoFloatingWorkspaceTemplateIsAvailable) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1398,12 +1359,9 @@ TEST_F(FloatingWorkspaceServiceTest,
       syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(mock_desks_client()->restored_desk_template());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateNotFoundMetric) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateNotFoundMetric) {
   PopulateAppsCache();
   base::HistogramTester histogram_tester;
   CreateFloatingWorkspaceServiceForTesting(profile());
@@ -1420,12 +1378,9 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateNotFoundMetric) {
   histogram_tester.ExpectTotalCount(
       floating_workspace_metrics_util::kFloatingWorkspaceV2TemplateNotFound,
       1u);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CanRecordFloatingWorkspaceV2InitMetric) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, CanRecordFloatingWorkspaceV2InitMetric) {
   PopulateAppsCache();
   base::HistogramTester histogram_tester;
   CreateFloatingWorkspaceServiceForTesting(profile());
@@ -1436,14 +1391,12 @@ TEST_F(FloatingWorkspaceServiceTest, CanRecordFloatingWorkspaceV2InitMetric) {
 
   histogram_tester.ExpectTotalCount(
       floating_workspace_metrics_util::kFloatingWorkspaceV2Initialized, 1u);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        CaptureButDontUploadIfNoUserActionAfterkUpToDate) {
   // Upload should be executed if two captured templates are the different.
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
   PopulateAppsCache();
   user_activity_detector()->set_last_activity_time_for_test(
       base::TimeTicks::Now());
@@ -1475,13 +1428,10 @@ TEST_F(FloatingWorkspaceServiceTest,
 
   EXPECT_FALSE(
       floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        WaitForAppCacheBeforeRestoringFloatingWorkspaceTemplate) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   apps::AppRegistryCacheWrapper& wrapper = apps::AppRegistryCacheWrapper::Get();
   wrapper.RemoveAppRegistryCache(cache());
   const std::string template_name = "floating_workspace_template";
@@ -1512,14 +1462,12 @@ TEST_F(FloatingWorkspaceServiceTest,
   PopulateAppsCache();
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
        CaptureButDontUploadIfNoUserActionAfterLastUpload) {
   // Upload should be executed if two captured templates are the different.
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
   PopulateAppsCache();
   // Idle for a while.
   task_environment().FastForwardBy(
@@ -1563,12 +1511,9 @@ TEST_F(FloatingWorkspaceServiceTest,
       base::Seconds(1));
   EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                   ->template_name() != base::UTF8ToUTF16(template_name2));
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest, CaptureImmediatelyAfterRestore) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+TEST_F(FloatingWorkspaceServiceV2Test, CaptureImmediatelyAfterRestore) {
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";
   base::RunLoop loop;
@@ -1606,15 +1551,37 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureImmediatelyAfterRestore) {
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             creation_time);
-  scoped_feature_list().Reset();
 }
 
-TEST_F(FloatingWorkspaceServiceTest,
+TEST_F(FloatingWorkspaceServiceV2Test,
+       CaptureFloatingWorkspaceTemplateOnSystemTrayVisible) {
+  PopulateAppsCache();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceService::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  mock_desks_client()->SetCapturedDeskTemplate(
+      std::move(floating_workspace_template));
+  ash::Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
+  ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
+  EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
+                ->created_time(),
+            creation_time);
+}
+
+TEST_F(FloatingWorkspaceServiceV2Test,
        CaptureFloatingWorkspaceTemplateOnLockScreen) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   SessionControllerClientImpl client;
-  TestSessionController session_controller;
   client.Init();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
@@ -1646,11 +1613,10 @@ TEST_F(FloatingWorkspaceServiceTest,
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             creation_time);
-  scoped_feature_list().Reset();
 }
 
 class FloatingWorkspaceServiceMultiUserTest
-    : public FloatingWorkspaceServiceTest {
+    : public FloatingWorkspaceServiceV2Test {
  protected:
   FloatingWorkspaceServiceMultiUserTest() = default;
   ~FloatingWorkspaceServiceMultiUserTest() override { profile2_ = nullptr; }
@@ -1676,7 +1642,7 @@ class FloatingWorkspaceServiceMultiUserTest
   }
 
   void SetUp() override {
-    FloatingWorkspaceServiceTest::SetUp();
+    FloatingWorkspaceServiceV2Test::SetUp();
     EXPECT_TRUE(temp_dir2_.CreateUniqueTempDir());
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -1711,7 +1677,7 @@ class FloatingWorkspaceServiceMultiUserTest
       floating_workspace_service2->ShutDownServicesAndObservers();
     }
     profile2_ = nullptr;
-    FloatingWorkspaceServiceTest::TearDown();
+    FloatingWorkspaceServiceV2Test::TearDown();
   }
 
  private:
@@ -1725,8 +1691,6 @@ class FloatingWorkspaceServiceMultiUserTest
 };
 
 TEST_F(FloatingWorkspaceServiceMultiUserTest, TwoUserLoggedInAndCaptureStops) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   PopulateAppsCache2();
   CreateFloatingWorkspaceServiceForTesting(profile());
@@ -1784,13 +1748,10 @@ TEST_F(FloatingWorkspaceServiceMultiUserTest, TwoUserLoggedInAndCaptureStops) {
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->template_name(),
             base::UTF8ToUTF16(template_name));
-  scoped_feature_list().Reset();
 }
 
 TEST_F(FloatingWorkspaceServiceMultiUserTest,
        TwoUserLoggedInAndUploadsToCorrectAccount) {
-  scoped_feature_list().InitWithFeatures(
-      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
   PopulateAppsCache();
   PopulateAppsCache2();
   fake_user_manager()->SwitchActiveUser(account_id());
@@ -1828,7 +1789,5 @@ TEST_F(FloatingWorkspaceServiceMultiUserTest,
   EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
   EXPECT_FALSE(
       floating_workspace_service2->GetLatestFloatingWorkspaceTemplate());
-  scoped_feature_list().Reset();
 }
-
 }  // namespace ash::floating_workspace

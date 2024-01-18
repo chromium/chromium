@@ -13,6 +13,8 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/shell.h"
+#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -1011,6 +1013,12 @@ void FloatingWorkspaceService::OnActiveUserSessionChanged(
   }
 }
 
+void FloatingWorkspaceService::OnFocusLeavingSystemTray(bool reverse) {}
+
+void FloatingWorkspaceService::OnSystemTrayBubbleShown() {
+  CaptureAndUploadActiveDesk();
+}
+
 void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   // Remove `this` service as an observer so we do not run into an issue where
   // chrome sync data is downloaded and the capture is kicked started after we
@@ -1028,6 +1036,9 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   if (timer_.IsRunning()) {
     StopCaptureAndUploadActiveDesk();
   }
+  if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
+    Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
+  }
 }
 
 void FloatingWorkspaceService::SetUpServiceAndObservers(
@@ -1040,6 +1051,9 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
     if (!network_handler->network_state_handler()->HasObserver(this)) {
       network_handler->network_state_handler()->AddObserver(this);
     }
+  }
+  if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
+    Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
   }
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);

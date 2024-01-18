@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -70,7 +71,8 @@ class FloatingWorkspaceService : public KeyedService,
                                  public apps::AppRegistryCache::Observer,
                                  public apps::AppRegistryCacheWrapper::Observer,
                                  public ash::SessionObserver,
-                                 public NetworkStateHandlerObserver {
+                                 public NetworkStateHandlerObserver,
+                                 public ash::SystemTrayObserver {
  public:
   static FloatingWorkspaceService* GetForProfile(Profile* profile);
 
@@ -107,13 +109,17 @@ class FloatingWorkspaceService : public KeyedService,
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override;
 
-  // ash::SessionObserver:
+  // ash::SessionObserver overrides:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // NetworkStateHandlerObserver:
   void OnShuttingDown() override;
   void NetworkConnectionStateChanged(const NetworkState* network) override;
   void DefaultNetworkChanged(const NetworkState* network) override;
+
+  // ash::SystemTrayObserver overrides:
+  void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
 
   void MaybeCloseNotification();
 
