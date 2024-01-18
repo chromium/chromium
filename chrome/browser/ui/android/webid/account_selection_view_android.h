@@ -42,6 +42,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
                        const std::optional<TokenError>& error) override;
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
+  void ShowUrl(LinkType link_type, const GURL& url) override;
   content::WebContents* ShowModalDialog(const GURL& url) override;
   void CloseModalDialog() override;
 

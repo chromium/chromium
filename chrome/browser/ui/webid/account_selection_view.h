@@ -12,6 +12,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 using Account = content::IdentityRequestAccount;
+using LinkType = content::IdentityRequestDialogController::LinkType;
 using TokenError = content::IdentityCredentialTokenError;
 
 // This class represents the interface used for communicating between the
@@ -90,6 +91,7 @@ class AccountSelectionView {
   virtual std::string GetTitle() const = 0;
   virtual std::optional<std::string> GetSubtitle() const = 0;
 
+  virtual void ShowUrl(LinkType type, const GURL& url) = 0;
   virtual content::WebContents* ShowModalDialog(const GURL& url) = 0;
   virtual void CloseModalDialog() = 0;
 

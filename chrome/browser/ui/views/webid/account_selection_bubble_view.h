@@ -17,6 +17,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
+using LinkType = content::IdentityRequestDialogController::LinkType;
 using TokenError = content::IdentityCredentialTokenError;
 
 namespace views {
@@ -42,8 +43,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Used to observe changes to the account selection bubble.
   class Observer {
    public:
-    enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
-
     // Called when a user either selects the account from the multi-account
     // chooser or clicks the "continue" button.
     // Takes `account` as well as `idp_display_data` since passing `account_id`

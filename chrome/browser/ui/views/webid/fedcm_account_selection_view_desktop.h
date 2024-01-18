@@ -70,6 +70,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                        const blink::mojom::RpContext& rp_context,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
+  void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
 

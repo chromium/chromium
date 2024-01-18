@@ -94,6 +94,11 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kMaxValue = kMoreDetailsButton,
   };
 
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogLinkType
+  enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
+
   using AccountSelectionCallback =
       base::OnceCallback<void(const GURL& idp_config_url,
                               const std::string& /*account_id*/,
@@ -167,6 +172,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Show dialog notifying user that IdP sign-in failed.
   virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
+
+  // Open a popup or similar that shows the specified URL.
+  virtual void ShowUrl(LinkType type, const GURL& url);
 
   // Show a modal dialog that loads content from the IdP.
   virtual WebContents* ShowModalDialog(const GURL& url,

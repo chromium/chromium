@@ -28,7 +28,6 @@ import androidx.annotation.StringRes;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -53,6 +52,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Provides functions that map {@link AccountSelectionProperties} changes in a {@link PropertyModel}
@@ -174,15 +174,14 @@ class AccountSelectionViewBinder {
     }
 
     static SpanApplier.SpanInfo createLink(
-            Context context, String tag, GURL url, Runnable clickRunnable) {
+            Context context, String tag, GURL url, Consumer<Context> clickCallback) {
         if (GURL.isEmptyOrInvalid(url)) return null;
 
         String startTag = "<" + tag + ">";
         String endTag = "</" + tag + ">";
         Callback<View> onClickCallback =
                 v -> {
-                    CustomTabActivity.showInfoPage(context, url.getSpec());
-                    clickRunnable.run();
+                    clickCallback.accept(context);
                 };
         return new SpanApplier.SpanInfo(
                 startTag, endTag, new NoUnderlineClickableSpan(context, onClickCallback));
@@ -205,13 +204,13 @@ class AccountSelectionViewBinder {
                             context,
                             "link_privacy_policy",
                             properties.mPrivacyPolicyUrl,
-                            properties.mPrivacyPolicyClickRunnable);
+                            properties.mPrivacyPolicyClickCallback);
             SpanApplier.SpanInfo termsOfServiceSpan =
                     createLink(
                             context,
                             "link_terms_of_service",
                             properties.mTermsOfServiceUrl,
-                            properties.mTermsOfServiceClickRunnable);
+                            properties.mTermsOfServiceClickCallback);
 
             int consentTextId;
             if (privacyPolicySpan == null && termsOfServiceSpan == null) {

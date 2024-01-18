@@ -112,6 +112,8 @@ void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
   }
 }
 
+void IdentityRequestDialogController::ShowUrl(LinkType type, const GURL& url) {}
+
 WebContents* IdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
     DismissCallback dismiss_callback) {

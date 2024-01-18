@@ -131,6 +131,13 @@ content::WebContents* IdentityDialogController::GetWebContents() {
   return rp_web_contents_;
 }
 
+void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {
+  if (!account_view_) {
+    return;
+  }
+  account_view_->ShowUrl(type, url);
+}
+
 content::WebContents* IdentityDialogController::ShowModalDialog(
     const GURL& url,
     DismissCallback dismiss_callback) {

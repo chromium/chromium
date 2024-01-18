@@ -257,6 +257,13 @@ std::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
   return ConvertJavaStringToUTF8(subtitle);
 }
 
+void AccountSelectionViewAndroid::ShowUrl(LinkType link_type, const GURL& url) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AccountSelectionBridge_showUrl(
+      env, java_object_internal_, static_cast<int>(link_type),
+      url::GURLAndroid::FromNativeGURL(env, url));
+}
+
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
     const GURL& url) {
   if (!MaybeCreateJavaObject()) {

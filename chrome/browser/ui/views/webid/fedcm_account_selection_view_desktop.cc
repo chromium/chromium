@@ -268,6 +268,25 @@ void FedCmAccountSelectionView::ShowErrorDialog(
   // associated web contents are hidden.
 }
 
+void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
+  Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+
+  DCHECK(tab_strip_model);
+  // Add a tab for the URL at the end of the tab strip, in the foreground.
+  tab_strip_model->delegate()->AddTabAt(url, -1, true);
+
+  switch (link_type) {
+    case LinkType::TERMS_OF_SERVICE:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.TermsOfServiceClicked", true);
+      break;
+
+    case LinkType::PRIVACY_POLICY:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
+      break;
+  }
+}
+
 std::string FedCmAccountSelectionView::GetTitle() const {
   return GetBubbleView()->GetDialogTitle();
 }
@@ -423,22 +442,7 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
-  Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-
-  DCHECK(tab_strip_model);
-  // Add a tab for the URL at the end of the tab strip, in the foreground.
-  tab_strip_model->delegate()->AddTabAt(url, -1, true);
-
-  switch (link_type) {
-    case LinkType::TERMS_OF_SERVICE:
-      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.TermsOfServiceClicked", true);
-      break;
-
-    case LinkType::PRIVACY_POLICY:
-      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
-      break;
-  }
+  ShowUrl(link_type, url);
 }
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -175,6 +176,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private String getSubtitle() {
         return mAccountSelectionComponent.getSubtitle();
+    }
+
+    @CalledByNative
+    private void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url) {
+        mAccountSelectionComponent.showUrl(linkType, url);
     }
 
     @CalledByNative

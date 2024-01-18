@@ -41,6 +41,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
@@ -234,6 +235,12 @@ public class AccountSelectionCoordinator
         TextView subtitle = mBottomSheetContent.getContentView().findViewById(R.id.header_subtitle);
         if (subtitle == null || subtitle.getText().length() == 0) return null;
         return String.valueOf(subtitle.getText());
+    }
+
+    @Override
+    public void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url) {
+        Context context = mWindowAndroid.getContext().get();
+        mMediator.showUrl(context, linkType, url);
     }
 
     @Override
