@@ -442,7 +442,6 @@ public class PersonalDataManagerTest {
         AutofillProfile profileWithDifferentStatuses =
                 AutofillProfile.builder()
                         .setGUID("")
-                        .setHonorificPrefix("", VerificationStatus.NO_STATUS)
                         .setFullName("John Smith", VerificationStatus.PARSED)
                         .setCompanyName("", VerificationStatus.NO_STATUS)
                         .setStreetAddress("1 Main\nApt A", VerificationStatus.FORMATTED)

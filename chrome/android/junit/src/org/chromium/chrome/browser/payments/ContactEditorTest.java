@@ -57,7 +57,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ContactEditorTest {
     private static final AutofillProfile sProfile =
             AutofillProfile.builder()
-                    .setHonorificPrefix("Mr")
                     .setFullName("John Doe")
                     .setCompanyName("Google")
                     .setStreetAddress("Lake Street 123")
