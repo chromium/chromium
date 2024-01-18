@@ -10,6 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
@@ -51,6 +53,22 @@ std::optional<base::Value::Dict> ReadCampaignsFile(
   RecordCampaignsComponentReadDuration(base::TimeTicks::Now() -
                                        campaigns_load_start_time);
   return std::move(value->GetDict());
+}
+
+void LogCampaignInSystemLog(const Campaign* campaign, Slot slot) {
+  if (!campaign) {
+    return;
+  }
+
+  std::optional<int> id = growth::GetCampaignId(campaign);
+  if (!id) {
+    // TODO(b/308684443): Add error metrics in a follow up CL.
+    LOG(ERROR) << "Growth campaign id not found";
+    return;
+  }
+
+  SYSLOG(INFO) << "Growth Campaign " << *id
+               << " is selected for slot: " << base::NumberToString(int(slot));
 }
 
 }  // namespace
@@ -101,9 +119,12 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   if (match_result) {
     RecordGetCampaignBySlot(slot);
   }
+
   RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  LogCampaignInSystemLog(match_result, slot);
 
   RegisterTrialForCampaign(match_result);
+
   return match_result;
 }
 
