@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.4](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.3...chromium-bidi-v0.5.4) (2024-01-17)
+
+
+### Features
+
+* implement `Input.setFiles` ([#1705](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1705)) ([50d1921](https://github.com/GoogleChromeLabs/chromium-bidi/commit/50d1921180af38aa06b45968a57919a0233f6865))
+* implement `storage.getCookies` and `storage.setCookie` ([#1593](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1593)) ([2b08660](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2b08660200dfa08362660756356399734ecd3015))
+* implement permissions ([#1645](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1645)) ([29c7b0b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/29c7b0b6ce6fb1bcfc3053c92bd24c7c7d580fa4))
+
 ## [0.5.3](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.2...chromium-bidi-v0.5.3) (2024-01-10)
 
 
