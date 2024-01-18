@@ -146,9 +146,9 @@ BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable back/forward cache when a page which has subframe(s) with ongoing
-// navigation(s) is navigated. Currently, this is only for navigations without
-// URLLoaders. This flag should be removed once the https://crbug.com/1511153 is
-// resolved.
+// navigation(s) is navigated. Currently, this is only for navigations which
+// don't need URLLoaders or haven't yet sent network requests. This flag should
+// be removed once the https://crbug.com/1511153 is resolved.
 BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
              "EnableBackForwardCacheForOngoingSubframeNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);

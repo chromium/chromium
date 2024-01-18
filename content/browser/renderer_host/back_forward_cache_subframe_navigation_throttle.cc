@@ -37,18 +37,57 @@ const char* BackForwardCacheSubframeNavigationThrottle::GetNameForLogging() {
 }
 
 NavigationThrottle::ThrottleCheckResult
-BackForwardCacheSubframeNavigationThrottle::WillCommitWithoutUrlLoader() {
+BackForwardCacheSubframeNavigationThrottle::DeferNavigationIfNeeded() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   // Defer this navigation if the frame is in BackForwardCache. Otherwise, we
   // enable it to proceed.
-  CHECK(!navigation_request->NeedsUrlLoader());
   if (frame_tree_node->current_frame_host()->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kInBackForwardCache) {
     is_deferred_ = true;
     return NavigationThrottle::DEFER;
   }
   return NavigationThrottle::PROCEED;
+}
+
+void BackForwardCacheSubframeNavigationThrottle::
+    ConfirmNavigationIsNotInBFCachedFrame() {
+  auto* navigation_request = NavigationRequest::From(navigation_handle());
+  FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+  // We don't bfcache pages with subframe navigations that have sent network
+  // requests, so it's impossible for subframe navigations in bfcached pages to
+  // reach `WillRedirectRequest`, `WillProcessResponse`, and `WillFailRequest`
+  // while bfcached.
+  CHECK_NE(frame_tree_node->current_frame_host()->GetLifecycleState(),
+           RenderFrameHost::LifecycleState::kInBackForwardCache);
+}
+
+NavigationThrottle::ThrottleCheckResult
+BackForwardCacheSubframeNavigationThrottle::WillStartRequest() {
+  return DeferNavigationIfNeeded();
+}
+
+NavigationThrottle::ThrottleCheckResult
+BackForwardCacheSubframeNavigationThrottle::WillRedirectRequest() {
+  ConfirmNavigationIsNotInBFCachedFrame();
+  return NavigationThrottle::PROCEED;
+}
+
+NavigationThrottle::ThrottleCheckResult
+BackForwardCacheSubframeNavigationThrottle::WillFailRequest() {
+  ConfirmNavigationIsNotInBFCachedFrame();
+  return NavigationThrottle::PROCEED;
+}
+
+NavigationThrottle::ThrottleCheckResult
+BackForwardCacheSubframeNavigationThrottle::WillProcessResponse() {
+  ConfirmNavigationIsNotInBFCachedFrame();
+  return NavigationThrottle::PROCEED;
+}
+
+NavigationThrottle::ThrottleCheckResult
+BackForwardCacheSubframeNavigationThrottle::WillCommitWithoutUrlLoader() {
+  return DeferNavigationIfNeeded();
 }
 
 void BackForwardCacheSubframeNavigationThrottle::RenderFrameHostStateChanged(

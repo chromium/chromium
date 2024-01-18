@@ -1083,9 +1083,13 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
 
   // Handle ongoing navigations in subframes.
   // - When kEnableBackForwardCacheForOngoingSubframeNavigation is enabled, we
-  // only allow the page to be cached if subframe navigations don't need URL
-  // loaders and haven't reached the pending commit stage (if there are
-  // other type of navigations in any of the subframes, we disallow BFCache).
+  // allow the following cases to be cached:
+  //   - 1) Subframe navigations that don't need URLLoaders and haven't reached
+  //   the pending commit stage.
+  //   - 2) Subframe navigations that need URLLoaders and haven't sent any
+  //   network requests.
+  // If there are other type of navigations in any of the subframes, we disallow
+  // BFCache.
   // - When kEnableBackForwardCacheForOngoingSubframeNavigation is disabled, do
   // not cache if any navigation is ongoing in any of the subframes.
   if (rfh->GetParentOrOuterDocument()) {
@@ -1093,7 +1097,15 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
             features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
       NavigationRequest* nav_request =
           rfh->frame_tree_node()->navigation_request();
-      if ((nav_request && nav_request->NeedsUrlLoader()) ||
+      // Prevent BFCache if the navigation needs a URLLoader and already sent a
+      // network request. It is not enough to check that URLLoader exists,
+      // because it is reset when the request receives its response, so we must
+      // check if navigation state has already passed `WillStartRequest` to
+      // cover the navigations between sending request and starting commit.
+      if ((nav_request && nav_request->NeedsUrlLoader() &&
+           (nav_request->HasLoader() ||
+            nav_request->state() >
+                NavigationRequest::NavigationState::WILL_START_REQUEST)) ||
           rfh->frame_tree_node()->HasPendingCommitNavigation()) {
         result.No(
             BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
