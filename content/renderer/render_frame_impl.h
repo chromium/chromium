@@ -248,8 +248,10 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::PolicyContainerPtr policy_container,
       bool is_for_nested_main_frame);
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Returns the RenderFrameImpl for the given routing ID.
   static RenderFrameImpl* FromRoutingID(int routing_id);
+#endif
 
   // Just like RenderFrame::FromWebFrame but returns the implementation.
   static RenderFrameImpl* FromWebFrame(blink::WebFrame* web_frame);
@@ -1249,7 +1251,11 @@ class CONTENT_EXPORT RenderFrameImpl
   bool in_frame_tree_;
 
   blink::LocalFrameToken frame_token_;
+
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   const int routing_id_;
+#endif
+
   const int process_label_id_;
 
   // Keeps track of which future subframes the browser process has history items

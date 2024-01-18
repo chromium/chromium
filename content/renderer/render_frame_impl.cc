@@ -325,9 +325,11 @@ constexpr base::TimeDelta kDelaySecondsForContentStateSyncHidden =
     base::Seconds(5);
 constexpr base::TimeDelta kDelaySecondsForContentStateSync = base::Seconds(1);
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 typedef std::map<int, RenderFrameImpl*> RoutingIDFrameMap;
 static base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit
     g_routing_id_frame_map = LAZY_INSTANCE_INITIALIZER;
+#endif
 
 typedef std::map<blink::WebFrame*, RenderFrameImpl*> FrameMap;
 base::LazyInstance<FrameMap>::DestructorAtExit g_frame_map =
@@ -1503,7 +1505,6 @@ RenderFrameImpl* RenderFrameImpl::Create(
 RenderFrame* RenderFrame::FromRoutingID(int routing_id) {
   return RenderFrameImpl::FromRoutingID(routing_id);
 }
-#endif
 
 // static
 RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
@@ -1513,6 +1514,7 @@ RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
     return iter->second;
   return nullptr;
 }
+#endif
 
 // static
 RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
@@ -1855,7 +1857,9 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       unique_name_helper_(&unique_name_frame_adapter_),
       in_frame_tree_(false),
       frame_token_(params.frame_token),
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
       routing_id_(params.routing_id),
+#endif
       process_label_id_(
           base::trace_event::TraceLog::GetInstance()->GetNewProcessLabelId()),
       selection_text_offset_(0),
@@ -1898,9 +1902,11 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   // Must call after binding our own remote interfaces.
   media_factory_.SetupMojo();
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   std::pair<RoutingIDFrameMap::iterator, bool> result =
       g_routing_id_frame_map.Get().insert(std::make_pair(routing_id_, this));
   CHECK(result.second) << "Inserting a duplicate item.";
+#endif
 
   // Everything below subclasses RenderFrameObserver and is automatically
   // deleted when the RenderFrame gets deleted.
@@ -1930,7 +1936,9 @@ RenderFrameImpl::~RenderFrameImpl() {
 
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(
       process_label_id_);
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   g_routing_id_frame_map.Get().erase(routing_id_);
+#endif
   agent_scheduling_group_->RemoveFrameRoute(frame_token_
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
                                             ,
@@ -3631,7 +3639,7 @@ void RenderFrameImpl::DidCreateFencedFrame(
 
 blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
   if (GetBlinkPreferences().renderer_wide_named_frame_lookup) {
-    for (const auto& it : g_routing_id_frame_map.Get()) {
+    for (const auto& it : g_frame_map.Get()) {
       WebLocalFrame* frame = it.second->GetWebFrame();
       if (frame->AssignedName() == name)
         return frame;
