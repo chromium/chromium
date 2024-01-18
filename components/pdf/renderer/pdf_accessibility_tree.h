@@ -130,8 +130,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     void ResetRemainingPageCountForTesting();
     uint32_t pages_per_batch_for_testing() const { return pages_per_batch_; }
 
-    uint32_t GetOcrCancelCount() const { return ocr_cancel_count_; }
-
    private:
     static uint32_t ComputePagesPerBatch(uint32_t page_count);
     void OcrNextImage();
@@ -152,10 +150,6 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     // `ReceiveOcrResultsForImage` should do it instead. This avoids the
     // possibility of processing requests in the wrong order.
     bool is_ocr_in_progress_ = false;
-
-    // TODO(crbug.com/1508404): Remove after crash root cause is ensured. Only
-    // used for debug dump.
-    uint32_t ocr_cancel_count_ = 0;
 
     // A PDF is made up of a number of pages, and each page might have one or
     // more inaccessible images that need to be OCRed. This queue could contain
