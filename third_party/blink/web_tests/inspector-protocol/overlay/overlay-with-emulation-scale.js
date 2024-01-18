@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <div id="target" style="width: 180px; height: 280px; background: red"></div>

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {page, session, dp} = await testRunner.startHTML(`
         <style>
             @keyframes foo { from { opacity: 0.5; } }

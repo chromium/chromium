@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // Needs to successively refer to an iframe relative to the source file, so
   // the test runner will launch multiple sessions against this URL.
   const testUrl = 'resources/dom-request-node-test.html';

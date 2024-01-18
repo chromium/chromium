@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`<link rel='stylesheet'>some text`, 'Verifies that CSS.fontsUpdated events are sent as the web font is loaded.');
 
   await dp.DOM.enable();

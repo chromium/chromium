@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       'Tests that tasks order is not changed when worker is resumed.');
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true,

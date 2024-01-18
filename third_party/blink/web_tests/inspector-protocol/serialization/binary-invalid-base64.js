@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests that passing an invalid base64 string as binary casues an error to be reported`);
 

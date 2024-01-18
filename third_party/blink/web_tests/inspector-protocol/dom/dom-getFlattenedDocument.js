@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('resources/dom-getFlattenedDocument.html', 'Tests DOM.getFlattenedDocument method.');
 
   await session.evaluate(() => {

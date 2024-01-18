@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {page, session, dp} = await testRunner.startBlank(`Tests that Input.imeSetComposition works and waits for JavaScript event handlers to finish.`);
   let { init } = await testRunner.loadScript('resources/composition-test-helper.js');
   init(session, 'abcd');

@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { page, session, dp } = await testRunner.startBlank(
     'Tests Page.domContentEventFired is triggered before Page.loadEventFired for a non-blank page');
 

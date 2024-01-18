@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests that Runtime.evaluate returns an error for non serialable types.`);
   testRunner.runTestSuite([
     async function testSymbol() {

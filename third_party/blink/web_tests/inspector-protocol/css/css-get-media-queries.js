@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel='stylesheet' media='print and (min-width: 8.5in)' href='${testRunner.url('./resources/media-queries.css')}'></link>
 <link rel='stylesheet' href='${testRunner.url('./resources/active-media-queries.css')}'></link>

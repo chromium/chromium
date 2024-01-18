@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(`
     <svg></svg>
   `, 'Test that SVG-in-HTML attribute modifications are treated as HTML, not XML');

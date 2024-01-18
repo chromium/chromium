@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('resources/css-get-background-colors.html', 'Test css.getBackgroundColors method');
 
   var CSSHelper = await testRunner.loadScript('../resources/css-helper.js');

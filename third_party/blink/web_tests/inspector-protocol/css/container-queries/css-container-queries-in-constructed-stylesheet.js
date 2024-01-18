@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, page} = await testRunner.startBlank(
       'Test CSS.getMatchedStylesForNode and CSS.setContainerQueryText methods for container queries in a constructed stylesheet');
 

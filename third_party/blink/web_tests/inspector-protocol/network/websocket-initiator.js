@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL('../resources/websocket-initiator.html', `Initiator for Websockets check fixes http://crbug.com/457811`);
 
   function cleanUrl(url) {

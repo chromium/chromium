@@ -15,7 +15,7 @@ const HTML = `<body>
   </div>
 </body>`;
 
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { findBodyNode, searchNodesByAttributeValue, searchNodesByNodeId } =
     await testRunner.loadScript('resources/dom-test-helper.js');
 

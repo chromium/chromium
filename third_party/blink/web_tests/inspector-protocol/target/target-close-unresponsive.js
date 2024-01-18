@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, page} = await testRunner.startHTML(`
     <script>setTimeout(() => { while (true) {} }, 0)</script>
   `,'Tests that Target.closeTarget works for unresponsive renderer');

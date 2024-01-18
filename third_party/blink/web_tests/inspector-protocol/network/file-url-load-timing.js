@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that there is no ResourceTiming object in responseReceived for file urls.`);
 

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests that \\0x7f passes through the protocol as is');
   const page = await testRunner.createPage();
   const session = await page.createSession();

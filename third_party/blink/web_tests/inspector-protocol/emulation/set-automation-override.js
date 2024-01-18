@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var { session, dp } = await testRunner.startBlank(
     'Testing that automation emulation sets the webdriver flag');
 

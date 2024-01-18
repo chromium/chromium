@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests Input.dispatchMouseEvent method.`);
 
   await session.evaluate(`

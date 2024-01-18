@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel='stylesheet' href='${testRunner.url('resources/set-style-text.css')}'/>
   `, 'Verifies that the range of i-th payload corresponds to the state at the end of i-th edit; not the state at the end of all edits in setStyleTexts operation.');

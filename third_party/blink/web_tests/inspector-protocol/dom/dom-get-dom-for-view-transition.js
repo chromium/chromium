@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
       <div style='width:100px; height:100px; view-transition-name: shared;'></div>`,
       'The test verifies functionality of querying DOM structure for view-transition pseudo elements');

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
     'Test that heap profiler doesn\'t crash while taking snapshot on a page where iframe was navigated to a new location after ' +
     'storing a hold of a function from the previous page. Bug 103076.');

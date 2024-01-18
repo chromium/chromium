@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests that Command Line API doesn't override defined on window methods and can be overridden during evaluation.`);
 
   await session.evaluate(`

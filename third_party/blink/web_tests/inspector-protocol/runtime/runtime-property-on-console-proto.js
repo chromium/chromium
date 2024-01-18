@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests that property defined on console.__proto__ doesn't observable on other Objects.`);
   testRunner.log(await dp.Runtime.evaluate({expression: `
     var amountOfProperties = 0;

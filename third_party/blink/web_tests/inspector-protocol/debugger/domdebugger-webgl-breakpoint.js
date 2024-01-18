@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML('<canvas id="cvn"></div>', 'Tests instrumentation breakpoint on webgl error');
 
   dp.Debugger.enable();

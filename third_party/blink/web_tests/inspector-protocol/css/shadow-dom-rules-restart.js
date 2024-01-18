@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session} = await testRunner.startHTML(`
     <div id="host"></div>
     <template id="tmpl">

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests that form controls are rendered with correct theme. See crbug.com/591315.');
 
   var DeviceEmulator = await testRunner.loadScript('../resources/device-emulator.js');

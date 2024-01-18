@@ -1,5 +1,5 @@
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startHTML(
     `<div id='div'></div>`,
     'Tests that DOM.describeNode returns a nodeId iff one is currently assigned.');

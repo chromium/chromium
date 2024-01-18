@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank('Tests scriptToEvaluateOnLoad passed to Page.reload is executed appopriately');
 
   dp.Runtime.enable(),

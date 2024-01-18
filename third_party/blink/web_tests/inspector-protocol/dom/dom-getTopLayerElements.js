@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     const {page, session, dp} = await testRunner.startURL('resources/dom-get-top-layer-elements.html', 'Tests DOM.getTopLayerElements command.');
 
   await dp.DOM.enable();

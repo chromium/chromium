@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <div id='divUnderTest'></div>
   `, `Tests pausing on setInnerHTML breakpoint.`);

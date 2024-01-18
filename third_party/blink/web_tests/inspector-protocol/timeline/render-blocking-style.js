@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // The number includes the imported CSS files
   const numberOfURLs = 18;
 
