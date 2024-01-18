@@ -157,6 +157,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_HUB = "AndroidHub";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
     public static final String ANDROID_VISIBLE_URL_TRUNCATION = "AndroidVisibleUrlTruncation";
+    public static final String ANDROID_VISIBLE_URL_TRUNCATION_V2 = "AndroidVisibleUrlTruncationV2";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_TABLETS =
             "AndroidNoVisibleHintForTablets";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
@@ -756,6 +757,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVisibleUrlTruncation =
             newMutableFlagWithSafeDefault(ANDROID_VISIBLE_URL_TRUNCATION, false);
+    public static final MutableFlagWithSafeDefault sVisibleUrlTruncationV2 =
+            newMutableFlagWithSafeDefault(ANDROID_VISIBLE_URL_TRUNCATION_V2, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
             newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 }

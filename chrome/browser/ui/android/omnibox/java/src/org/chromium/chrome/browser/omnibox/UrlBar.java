@@ -78,6 +78,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     // over truncating text for large tablets and external displays. Also, tests can continue to
     // check for text equality, instead of worrying about partial equality with truncated text.
     static final int MIN_LENGTH_FOR_TRUNCATION = 500;
+    static final int MIN_LENGTH_FOR_TRUNCATION_V2 = 100;
 
     /**
      * The text direction of the URL or query: LAYOUT_DIRECTION_LOCALE, LAYOUT_DIRECTION_LTR, or
@@ -126,7 +127,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private int mOriginEndIndex;
 
     // TODO (peilinwang) Currently only used for logging the cases where truncation was incorrect.
-    // Remove once the kAndroidVisibleUrlTruncation experiment is complete.
+    // Remove once the kAndroidVisibleUrlTruncationV2 experiment is complete.
     private boolean mIsTextTruncated;
     private boolean mDidJustTruncate;
 
@@ -560,9 +561,13 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     public void setTextWithTruncation(
             CharSequence text, @ScrollType int scrollType, int scrollToIndex) {
+        int min_length =
+                OmniboxFeatures.shouldTruncateVisibleUrlV2()
+                        ? MIN_LENGTH_FOR_TRUNCATION_V2
+                        : MIN_LENGTH_FOR_TRUNCATION;
         if (mFocused
                 || TextUtils.isEmpty(text)
-                || text.length() < MIN_LENGTH_FOR_TRUNCATION
+                || text.length() < min_length
                 || getLayoutParams().width == LayoutParams.WRAP_CONTENT
                 || containsRtl(text)) {
             mIsTextTruncated = false;

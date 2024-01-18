@@ -570,7 +570,7 @@
             ]
         }
     ],
-    "AndroidVisibleUrlTruncation": [
+    "AndroidVisibleUrlTruncationV2": [
         {
             "platforms": [
                 "android"
@@ -579,7 +579,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AndroidVisibleUrlTruncation"
+                        "AndroidVisibleUrlTruncationV2"
                     ]
                 }
             ]
