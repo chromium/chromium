@@ -35,18 +35,16 @@ void RecordErrorTypeMetrics(PasswordStoreBackendErrorType error_type) {
 
 void SetMessageStrings(messages::MessageWrapper* message,
                        password_manager::ErrorMessageFlowType flow_type) {
-  int title_message_id =
-      flow_type == password_manager::ErrorMessageFlowType::kSaveFlow
-          ? IDS_SIGN_IN_TO_SAVE_PASSWORDS
-          : IDS_SIGN_IN_TO_USE_PASSWORDS;
-  message->SetTitle(l10n_util::GetStringUTF16(title_message_id));
+  message->SetTitle(l10n_util::GetStringUTF16(IDS_VERIFY_IT_IS_YOU));
 
-  std::u16string description =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION);
+  std::u16string description = l10n_util::GetStringUTF16(
+      flow_type == password_manager::ErrorMessageFlowType::kSaveFlow
+          ? IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_UP
+          : IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_IN);
   message->SetDescription(description);
 
   message->SetPrimaryButtonText(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE));
+      l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE));
 
   message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
       IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR));

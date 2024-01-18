@@ -128,11 +128,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::kAuthErrorResolvable);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_SAVE_PASSWORDS),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_VERIFY_IT_IS_YOU),
             GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_UP),
             GetMessageWrapper()->GetDescription());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
@@ -152,11 +152,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::ErrorMessageFlowType::kFillFlow,
       password_manager::PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
 
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_USE_PASSWORDS),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_VERIFY_IT_IS_YOU),
             GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION_SIGN_IN),
             GetMessageWrapper()->GetDescription());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_VERIFY_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
