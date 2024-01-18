@@ -551,8 +551,6 @@ def BuildLLVMLibraries(skip_build, build_mac_arm):
         if sys.platform.startswith('linux'):
             build_cmd.append('--without-android')
             build_cmd.append('--without-fuchsia')
-        if sys.platform == 'darwin':
-            build_cmd.append('--without-fuchsia')
         RunCommand(build_cmd + [
             '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
             RUST_HOST_LLVM_INSTALL_DIR

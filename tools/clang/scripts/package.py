@@ -296,20 +296,17 @@ def main():
         # llvm-ml for Windows cross builds.
         'bin/llvm-ml',
 
-        # Include libclang_rt.builtins.a for Fuchsia targets.
-        'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
-        'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
-
         # Add llvm-readobj (symlinked from llvm-readelf) for extracting SONAMEs.
         'bin/llvm-readobj',
     ])
-    if not args.build_mac_arm:
-      # TODO(thakis): Figure out why this doesn't build in --build-mac-arm
-      # builds.
+    if sys.platform != 'darwin':
+      # The Fuchsia runtimes are only built on non-Mac platforms.
+      want.append(
+          'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a')
+      want.append(
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a')
       want.append(
           'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.profile.a')
-    if sys.platform != 'darwin':
-      # The Fuchsia asan runtime is only built on non-Mac platforms.
       want.append('lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so')
       want.append(
           'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan-preinit.a')
