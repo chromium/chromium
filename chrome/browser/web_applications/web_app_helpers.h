@@ -83,6 +83,12 @@ webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url);
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
                                        const GURL& start_url);
 
+// Same as above but does not CHECK that the resulting id is valid. Only used
+// for sync parsing to avoid crashes, and ignore bad sync data.
+webapps::ManifestId GenerateManifestIdUnsafe(
+    const std::string& manifest_id_path,
+    const GURL& start_url);
+
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);
 

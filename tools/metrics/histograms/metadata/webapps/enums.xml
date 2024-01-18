@@ -334,6 +334,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FocusExisting"/>
 </enum>
 
+<enum name="WebAppManifestIdParseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid Manifest Id"/>
+  <int value="2" label="Manifest ID Resolution Failure"/>
+  <int value="3" label="Manifest ID Mismatch"/>
+</enum>
+
 <enum name="WebAppManifestUpdateResult">
   <int value="0" label="No app in scope"/>
   <int value="1" label="Updating throttled"/>
@@ -396,6 +403,13 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="ParseSucceed"/>
   <int value="1" label="ParseFailedNotADictionary"/>
   <int value="2" label="ParseFailedInvalidJson"/>
+</enum>
+
+<enum name="WebAppStorageKeyParseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Start URL"/>
+  <int value="2" label="Invalid Start URL"/>
+  <int value="3" label="Invalid Manifest Id"/>
 </enum>
 
 <enum name="WebappUninstallDialogAction">

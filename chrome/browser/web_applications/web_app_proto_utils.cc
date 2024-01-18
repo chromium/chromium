@@ -229,8 +229,8 @@ ParseAppImageResource(const char* container_name_for_logging,
 }
 
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
-  DCHECK(!app.start_url().is_empty());
-  DCHECK(app.start_url().is_valid());
+  CHECK(app.start_url().is_valid(), base::NotFatalUntil::M124);
+  CHECK(app.manifest_id().is_valid(), base::NotFatalUntil::M124);
 
   sync_pb::WebAppSpecifics sync_proto;
   // The relative id does not include the initial '/' character.

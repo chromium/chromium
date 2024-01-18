@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "crypto/sha2.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -107,14 +108,23 @@ webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
 
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
                                        const GURL& start_url) {
-  // When manifest_id is specified, the app id is generated from
+  const webapps::ManifestId manifest_id =
+      GenerateManifestIdUnsafe(manifest_id_path, start_url);
+  CHECK(manifest_id.is_valid())
+      << "start_url: " << start_url << ", manifest_id = " << manifest_id_path;
+  return manifest_id;
+}
+
+webapps::ManifestId GenerateManifestIdUnsafe(
+    const std::string& manifest_id_path,
+    const GURL& start_url) {
+  // When manifest_id_path is specified, the manifest_id is generated from
   // <start_url_origin>/<manifest_id_path>.
   // Note: start_url.DeprecatedGetOriginAsURL().spec() returns the origin ending
   // with slash.
-  GURL app_id(start_url.DeprecatedGetOriginAsURL().spec() + manifest_id_path);
-  CHECK(app_id.is_valid()) << "start_url: " << start_url
-                           << ", manifest_id = " << manifest_id_path;
-  return app_id.GetWithoutRef();
+  const GURL manifest_id(start_url.DeprecatedGetOriginAsURL().spec() +
+                         manifest_id_path);
+  return manifest_id.GetWithoutRef();
 }
 
 bool IsValidWebAppUrl(const GURL& app_url) {

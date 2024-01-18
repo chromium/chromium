@@ -8,11 +8,13 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -52,6 +54,35 @@ class WebAppDatabase;
 class WebAppRegistryUpdate;
 class WebAppInstallManager;
 struct RegistryUpdateData;
+
+// These errors cause the sync entity to no longer be parsable, and results in
+// `IsEntityDataValid` returning false below.
+//
+// Used in metrics, do not re-number or remove entities.
+enum class StorageKeyParseResult {
+  // This is needed for normalization
+  kSuccess = 0,
+  kNoStartUrl = 1,
+  kInvalidStartUrl = 2,
+  kInvalidManifestId = 3,
+  kMaxValue = kInvalidManifestId
+};
+
+// After parsing the storage key, other problems with parsing the manifest id
+// can occur. In the future, these errors could result in deletion of sync
+// and/or local data to clean things up.
+//
+// Used in metrics, do not re-number or remove entities.
+enum class ManifestIdParseResult {
+  // This is needed for normalization.
+  kSuccess = 0,
+  // The origin of the start_url and resolved manifest_id do not match.
+  kManifestIdResolutionFailure = 1,
+  // The manifest_id resolved from sync doesn't match the local app's
+  // manifest_id.
+  kManifestIdDoesNotMatchLocalData = 2,
+  kMaxValue = kManifestIdDoesNotMatchLocalData
+};
 
 // A unified sync and storage controller.
 //
@@ -176,6 +207,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // Signals that the sync system has received data from the server at some
   // point, potentially on a previous startup. Apps may still be installing or

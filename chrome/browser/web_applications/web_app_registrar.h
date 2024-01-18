@@ -592,6 +592,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // registrar-evaluated effective fields.
   base::Value AsDebugValue() const;
 
+  const Registry& registry_for_testing() { return registry_; }
+
  protected:
   Profile* profile() const { return profile_; }
 
@@ -665,7 +667,9 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 };
 
 // For testing and debug purposes.
-bool IsRegistryEqual(const Registry& registry, const Registry& registry2);
+bool IsRegistryEqual(const Registry& registry,
+                     const Registry& registry2,
+                     bool exclude_current_os_integration = false);
 
 }  // namespace web_app
 

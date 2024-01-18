@@ -16,6 +16,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -49,6 +51,62 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
+namespace {
+// Returns the manifest id from the sync entity. Does not validate whether the
+// manifest_id is valid.
+base::expected<webapps::ManifestId, StorageKeyParseResult>
+ParseManifestIdFromSyncEntity(const sync_pb::WebAppSpecifics& specifics) {
+  // Validate the entity is not corrupt.
+  if (!specifics.has_start_url()) {
+    return base::unexpected(StorageKeyParseResult::kNoStartUrl);
+  }
+
+  const GURL start_url = GURL(specifics.start_url());
+  if (!start_url.is_valid()) {
+    return base::unexpected(StorageKeyParseResult::kInvalidStartUrl);
+  }
+
+  // Set the manifest id first, as ApplySyncDataToApp verifies that the
+  // computed manifest ids match.
+  webapps::ManifestId manifest_id;
+  if (specifics.has_relative_manifest_id()) {
+    manifest_id =
+        GenerateManifestIdUnsafe(specifics.relative_manifest_id(), start_url);
+  } else {
+    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
+  if (!manifest_id.is_valid()) {
+    return base::unexpected(StorageKeyParseResult::kInvalidManifestId);
+  }
+  return base::ok(manifest_id);
+}
+
+base::expected<webapps::ManifestId, ManifestIdParseResult>
+ValidateManifestIdFromParsableSyncEntity(
+    const sync_pb::WebAppSpecifics& specifics,
+    const WebApp* existing_web_app) {
+  base::expected<webapps::ManifestId, StorageKeyParseResult> manifest_id =
+      ParseManifestIdFromSyncEntity(specifics);
+  // These are guaranteed to be true, as it is checked in IsEntityDataValid,
+  // which prevents the entity from ever being given to our system.
+  CHECK(manifest_id.has_value());
+  CHECK(manifest_id->is_valid());
+  GURL start_url = GURL(specifics.start_url());
+  CHECK(start_url.is_valid());
+
+  if (!url::IsSameOriginWith(start_url, manifest_id.value())) {
+    return base::unexpected(
+        ManifestIdParseResult::kManifestIdResolutionFailure);
+  }
+
+  if (existing_web_app && existing_web_app->manifest_id() != manifest_id) {
+    return base::unexpected(
+        ManifestIdParseResult::kManifestIdDoesNotMatchLocalData);
+  }
+
+  return base::ok(manifest_id.value());
+}
+}  // namespace
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
@@ -67,41 +125,6 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
 void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
                         WebApp* app) {
   app->AddSource(WebAppManagement::kSync);
-
-  // app_id is a hash of start_url. Parse start_url first:
-  const GURL start_url(sync_data.start_url());
-  if (!start_url.is_valid()) {
-    DLOG(ERROR) << "ApplySyncDataToApp: start_url parse error.";
-    return;
-  }
-  webapps::ManifestId manifest_id;
-  if (sync_data.has_relative_manifest_id()) {
-    manifest_id =
-        GenerateManifestId(sync_data.relative_manifest_id(), start_url);
-  } else {
-    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
-  }
-
-  if (app->app_id() != GenerateAppIdFromManifestId(manifest_id)) {
-    DLOG(ERROR) << "ApplySyncDataToApp: app_id doesn't match id generated "
-                   "from manifest id or start_url.";
-    return;
-  }
-
-  if (app->start_url().is_empty()) {
-    app->SetStartUrl(start_url);
-  } else if (app->start_url() != start_url) {
-    DLOG(ERROR)
-        << "ApplySyncDataToApp: existing start_url doesn't match start_url.";
-    return;
-  }
-
-  if (app->manifest_id() != manifest_id) {
-    DLOG(ERROR) << "ApplySyncDataToApp: existing manifest_id doesn't match "
-                   "manifest_id. "
-                << app->manifest_id().spec() << " vs " << manifest_id.spec();
-    return;
-  }
 
   // Always override user_display mode with a synced value.
   app->SetUserDisplayMode(
@@ -469,6 +492,7 @@ void WebAppSyncBridge::UpdateSync(
 
   for (const std::unique_ptr<WebApp>& new_app : update_data.apps_to_create) {
     if (new_app->IsSynced()) {
+      CHECK(new_app->manifest_id().is_valid(), base::NotFatalUntil::M125);
       change_processor()->Put(new_app->app_id(), CreateSyncEntityData(*new_app),
                               metadata_change_list);
     }
@@ -484,6 +508,7 @@ void WebAppSyncBridge::UpdateSync(
     // the app if IsSynced flag stays true. Exclude the app from the sync "view"
     // if IsSynced flag becomes false.
     if (new_state->IsSynced()) {
+      CHECK(new_state->manifest_id().is_valid(), base::NotFatalUntil::M125);
       change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
                               metadata_change_list);
     } else if (current_state->IsSynced()) {
@@ -576,7 +601,6 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
       DLOG(ERROR) << "ApplySyncDataChange error: no app to delete";
       return;
     }
-    // Do copy on write:
     auto app_copy = std::make_unique<WebApp>(*existing_web_app);
     app_copy->RemoveSource(WebAppManagement::kSync);
     if (!app_copy->HasAnySources()) {
@@ -591,8 +615,46 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   }
 
   // Handle EntityChange::ACTION_ADD and EntityChange::ACTION_UPDATE.
-  DCHECK(change.data().specifics.has_web_app());
+  CHECK(change.data().specifics.has_web_app());
   const sync_pb::WebAppSpecifics& specifics = change.data().specifics.web_app();
+
+  base::expected<webapps::ManifestId, ManifestIdParseResult> manifest_id =
+      ValidateManifestIdFromParsableSyncEntity(specifics, existing_web_app);
+
+  if (!manifest_id.has_value()) {
+    base::UmaHistogramEnumeration("WebApp.Sync.CorruptSyncEntity",
+                                  manifest_id.error());
+    return;
+  }
+  base::UmaHistogramEnumeration("WebApp.Sync.CorruptSyncEntity",
+                                ManifestIdParseResult::kSuccess);
+
+  std::unique_ptr<WebApp> web_app;
+
+  if (!existing_web_app) {
+    // Any remote entities that don’t exist locally must be written to local
+    // storage.
+    web_app = std::make_unique<WebApp>(app_id);
+    web_app->SetStartUrl(GURL(specifics.start_url()));
+    web_app->SetManifestId(manifest_id.value());
+
+    // Request a followup sync-initiated install for this stub app to fetch
+    // full local data and all the icons.
+    web_app->SetIsFromSyncAndPendingInstallation(true);
+    // The sync system requires non-empty name, populate temp name from
+    // the fallback sync data name.
+    if (specifics.name().empty()) {
+      web_app->SetName(change.data().name);
+    } else {
+      web_app->SetName(specifics.name());
+    }
+    // For a new app, automatically choose if we want to install it locally.
+    web_app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
+  } else {
+    web_app = std::make_unique<WebApp>(*existing_web_app);
+  }
+
+  ApplySyncDataToApp(specifics, web_app.get());
 
   if (existing_web_app) {
     if (specifics.has_user_display_mode() &&
@@ -601,52 +663,8 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
                 existing_web_app->user_display_mode().value())) {
       apps_display_mode_changed.push_back(app_id);
     }
-    // Any entities that appear in both sets must be merged.
-    // Do copy on write:
-    auto app_copy = std::make_unique<WebApp>(*existing_web_app);
-    ApplySyncDataToApp(specifics, app_copy.get());
-    // Preserve web_app->is_locally_installed user's choice here.
-
-    update_local_data->apps_to_update.push_back(std::move(app_copy));
+    update_local_data->apps_to_update.push_back(std::move(web_app));
   } else {
-    // Any remote entities that don’t exist locally must be written to local
-    // storage.
-    auto web_app = std::make_unique<WebApp>(app_id);
-
-    const GURL start_url(specifics.start_url());
-    if (!start_url.is_valid()) {
-      DLOG(ERROR) << "WebAppSyncBridge: start_url parse error.";
-      return;
-    }
-
-    // Set the manifest id first, as ApplySyncDataToApp verifies that the
-    // computed manifest ids match.
-    webapps::ManifestId manifest_id;
-    if (specifics.has_relative_manifest_id()) {
-      manifest_id =
-          GenerateManifestId(specifics.relative_manifest_id(), start_url);
-    } else {
-      manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
-    }
-
-    web_app->SetManifestId(manifest_id);
-
-    // Request a followup sync-initiated install for this stub app to fetch
-    // full local data and all the icons.
-    web_app->SetIsFromSyncAndPendingInstallation(true);
-
-    // The sync system requires non-empty name, populate temp name from
-    // the fallback sync data name:
-    web_app->SetName(specifics.name());
-    // Or use syncer::EntityData::name as a last resort.
-    if (web_app->untranslated_name().empty())
-      web_app->SetName(change.data().name);
-
-    ApplySyncDataToApp(specifics, web_app.get());
-
-    // For a new app, automatically choose if we want to install it locally.
-    web_app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
-
     update_local_data->apps_to_create.push_back(std::move(web_app));
   }
 }
@@ -806,28 +824,41 @@ void WebAppSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
 std::string WebAppSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  DCHECK(entity_data.specifics.has_web_app());
-
-  const sync_pb::WebAppSpecifics& specifics = entity_data.specifics.web_app();
-  const GURL start_url(specifics.start_url());
-  if (start_url.is_empty() || !start_url.is_valid()) {
-    DLOG(ERROR) << "GetClientTag: start_url parse error.";
-    return std::string();
-  }
-
-  webapps::ManifestId manifest_id;
-  if (specifics.has_relative_manifest_id()) {
-    manifest_id =
-        GenerateManifestId(specifics.relative_manifest_id(), start_url);
-  } else {
-    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
-  }
-  return GenerateAppIdFromManifestId(manifest_id);
+  CHECK(entity_data.specifics.has_web_app(), base::NotFatalUntil::M125);
+  base::expected<webapps::ManifestId, StorageKeyParseResult> manifest_id =
+      ParseManifestIdFromSyncEntity(entity_data.specifics.web_app());
+  // This is guaranteed to be true, as the contract for this function is that
+  // IsEntityDataValid must be true.
+  CHECK(manifest_id.has_value(), base::NotFatalUntil::M125);
+  return GenerateAppIdFromManifestId(manifest_id.value());
 }
 
 std::string WebAppSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   return GetClientTag(entity_data);
+}
+
+bool WebAppSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  if (!entity_data.specifics.has_web_app()) {
+    return false;
+  }
+  const sync_pb::WebAppSpecifics& specifics = entity_data.specifics.web_app();
+
+  base::expected<webapps::ManifestId, StorageKeyParseResult> manifest_id =
+      ParseManifestIdFromSyncEntity(specifics);
+  if (manifest_id.has_value()) {
+    base::UmaHistogramEnumeration("WebApp.Sync.InvalidEntity",
+                                  StorageKeyParseResult::kSuccess);
+    return true;
+  }
+  // Note: The GetClientTag function relies on this function to always return
+  // `false` if the manifest id is not parsable, and otherwise will CHECK-fail.
+  base::UmaHistogramEnumeration("WebApp.Sync.InvalidEntity",
+                                manifest_id.error());
+  DLOG(ERROR) << "Cannot parse sync entity: "
+              << base::ToString(manifest_id.error());
+  return false;
 }
 
 void WebAppSyncBridge::SetRetryIncompleteUninstallsCallbackForTesting(
