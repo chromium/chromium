@@ -99,7 +99,7 @@ enum class TestFileSystemType {
          promiseResolve([]);   \
        }, $1);                 \
        return await promise;", \
-      base::Int64ToValue(TestTimeouts::tiny_timeout().InMilliseconds())) +
+      base::Int64ToValue(TestTimeouts::action_timeout().InMilliseconds())) +
 
 // TODO(https://crbug.com/1019297): Consider making these WPTs, and adding a
 // lot more of them. For example:
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
 
 /// TODO(crbug/1499075): Re-enable after fixing flakiness.
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       DISABLED_ObserveDirectoryRecursively) {
+                       ObserveDirectoryRecursively) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   // Set up the directory structure.
