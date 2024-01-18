@@ -358,8 +358,9 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
 }
 
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
-  return base::FeatureList::IsEnabled(
-      kMicrosoftOneDriveIntegrationForEnterprise);
+  return IsUploadOfficeToCloudEnabled() &&
+         base::FeatureList::IsEnabled(
+             kMicrosoftOneDriveIntegrationForEnterprise);
 }
 
 bool IsRoundedWindowsEnabled() {
