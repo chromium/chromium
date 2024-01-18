@@ -19,6 +19,12 @@ void PaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
     const std::string& user_email,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     LocalCardMigrationCallback start_migrating_cards_callback) {}
+
+void PaymentsAutofillClient::ShowLocalCardMigrationResults(
+    bool has_server_error,
+    const std::u16string& tip_message,
+    const std::vector<MigratableCreditCard>& migratable_credit_cards,
+    MigrationDeleteCardCallback delete_local_card_callback) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::payments

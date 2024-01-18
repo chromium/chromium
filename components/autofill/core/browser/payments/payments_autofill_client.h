@@ -32,6 +32,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
   using LocalCardMigrationCallback =
       base::OnceCallback<void(const std::vector<std::string>&)>;
 
+  // Callback to run if the user presses the trash can button in the
+  // action-required dialog. Will pass to LocalCardMigrationManager a
+  // string of GUID of the card that the user selected to delete from local
+  // storage.
+  using MigrationDeleteCardCallback =
+      base::RepeatingCallback<void(const std::string&)>;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Runs `show_migration_dialog_closure` if the user accepts the card migration
   // offer. This causes the card migration dialog to be shown.
@@ -46,6 +53,19 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const std::string& user_email,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       LocalCardMigrationCallback start_migrating_cards_callback);
+
+  // Will show a dialog containing a error message if `has_server_error`
+  // is true, or the migration results for cards in
+  // `migratable_credit_cards` otherwise. If migration succeeds the dialog will
+  // contain a `tip_message`. `migratable_credit_cards` will be used when
+  // constructing the dialog. The dialog is invoked when the migration process
+  // is finished. Runs `delete_local_card_callback` if the user chose to delete
+  // one invalid card from local storage.
+  virtual void ShowLocalCardMigrationResults(
+      bool has_server_error,
+      const std::u16string& tip_message,
+      const std::vector<MigratableCreditCard>& migratable_credit_cards,
+      MigrationDeleteCardCallback delete_local_card_callback);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 };
 

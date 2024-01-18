@@ -691,19 +691,6 @@ void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::ShowLocalCardMigrationResults(
-    const bool has_server_error,
-    const std::u16string& tip_message,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    MigrationDeleteCardCallback delete_local_card_callback) {
-  ManageMigrationUiController::CreateForWebContents(web_contents());
-  ManageMigrationUiController* controller =
-      ManageMigrationUiController::FromWebContents(web_contents());
-  controller->UpdateCreditCardIcon(has_server_error, tip_message,
-                                   migratable_credit_cards,
-                                   delete_local_card_callback);
-}
-
 void ChromeAutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
   WebauthnDialogControllerImpl::GetOrCreateForPage(

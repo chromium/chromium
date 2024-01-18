@@ -102,7 +102,6 @@ class IbanAccessManager;
 class IbanManager;
 class LogManager;
 class MerchantPromoCodeManager;
-class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
@@ -359,13 +358,6 @@ class AutofillClient {
 
   using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
 
-  // Callback to run if the user presses the trash can button in the
-  // action-required dialog. Will pass to LocalCardMigrationManager a
-  // string of GUID of the card that the user selected to delete from local
-  // storage.
-  using MigrationDeleteCardCallback =
-      base::RepeatingCallback<void(const std::string&)>;
-
   // Callback to run after local/upload IBAN save is offered. The callback runs
   // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
@@ -599,19 +591,6 @@ class AutofillClient {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
-
-  // Will show a dialog containing a error message if |has_server_error|
-  // is true, or the migration results for cards in
-  // |migratable_credit_cards| otherwise. If migration succeeds the dialog will
-  // contain a |tip_message|. |migratable_credit_cards| will be used when
-  // constructing the dialog. The dialog is invoked when the migration process
-  // is finished. Runs |delete_local_card_callback| if the user chose to delete
-  // one invalid card from local storage.
-  virtual void ShowLocalCardMigrationResults(
-      const bool has_server_error,
-      const std::u16string& tip_message,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrationDeleteCardCallback delete_local_card_callback);
 
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be

@@ -61,7 +61,8 @@ void ManageMigrationUiController::UpdateCreditCardIcon(
     const bool has_server_error,
     const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    AutofillClient::MigrationDeleteCardCallback delete_local_card_callback) {
+    payments::PaymentsAutofillClient::MigrationDeleteCardCallback
+        delete_local_card_callback) {
   if (!GetDialogController()) {
     return;
   }

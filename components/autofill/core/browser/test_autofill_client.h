@@ -330,13 +330,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void ShowLocalCardMigrationResults(
-      const bool has_server_error,
-      const std::u16string& tip_message,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      AutofillClient::MigrationDeleteCardCallback delete_local_card_callback)
-      override {}
-
   void ConfirmSaveIbanLocally(
       const Iban& iban,
       bool should_show_prompt,

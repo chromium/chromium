@@ -346,7 +346,7 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
     personal_data_manager_->DeleteLocalCreditCards(migrated_cards);
   }
 
-  client_->ShowLocalCardMigrationResults(
+  client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationResults(
       result != AutofillClient::PaymentsRpcResult::kSuccess,
       base::UTF8ToUTF16(display_text), migratable_credit_cards_,
       base::BindRepeating(

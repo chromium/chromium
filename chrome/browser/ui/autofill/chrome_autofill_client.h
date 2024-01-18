@@ -180,11 +180,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-  void ShowLocalCardMigrationResults(
-      const bool has_server_error,
-      const std::u16string& tip_message,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrationDeleteCardCallback delete_local_card_callback) override;
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(

@@ -162,13 +162,6 @@ void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 }
 
-void AutofillClient::ShowLocalCardMigrationResults(
-    const bool has_server_error,
-    const std::u16string& tip_message,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    MigrationDeleteCardCallback delete_local_card_callback) {
-}
-
 void AutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
 }
