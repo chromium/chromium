@@ -353,9 +353,11 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     ParsingContext& context,
     base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
-    const char* regex_name) {
+    const char* regex_name,
+    MatchingPattern (*projection)(const MatchingPattern&)) {
   for (MatchPatternRef pattern_ref : patterns) {
-    MatchingPattern pattern = *pattern_ref;
+    MatchingPattern pattern =
+        projection ? (*projection)(*pattern_ref) : *pattern_ref;
     if (!MatchesFormControlType(field.form_control_type,
                                 pattern.form_control_types)) {
       continue;
@@ -370,9 +372,9 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
-        if (FormFieldParser::Match(
-                context, &field, pattern.negative_pattern,
-                MatchParams({attribute}, match_type.field_types), regex_name)) {
+        if (Match(context, &field, pattern.negative_pattern,
+                  MatchParams({attribute}, match_type.field_types),
+                  regex_name)) {
           match_type.attributes.erase(attribute);
         }
       }
@@ -383,8 +385,8 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     }
 
     if (!IsEmpty(pattern.positive_pattern) &&
-        FormFieldParser::Match(context, &field, pattern.positive_pattern,
-                               match_type, regex_name)) {
+        Match(context, &field, pattern.positive_pattern, match_type,
+              regex_name)) {
       return true;
     }
   }
@@ -413,16 +415,19 @@ bool FormFieldParser::ParseFieldSpecificsWithLegacyPattern(
   if (scanner->IsEnd()) {
     return false;
   }
-
-  const AutofillField* field = scanner->Cursor();
-
+  AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(field->form_control_type,
                               match_type.field_types)) {
     return false;
   }
-
-  return MatchAndAdvance(context, scanner, pattern, match_type, match,
-                         regex_name);
+  if (Match(context, field, pattern, match_type, regex_name)) {
+    if (match) {
+      *match = field;
+    }
+    scanner->Advance();
+    return true;
+  }
+  return false;
 }
 
 // static
@@ -436,44 +441,14 @@ bool FormFieldParser::ParseFieldSpecificsWithNewPatterns(
   if (scanner->IsEnd()) {
     return false;
   }
-
-  const AutofillField* field = scanner->Cursor();
-
-  for (MatchPatternRef pattern_ref : patterns) {
-    MatchingPattern pattern =
-        projection ? (*projection)(*pattern_ref) : *pattern_ref;
-    if (!MatchesFormControlType(field->form_control_type,
-                                pattern.form_control_types)) {
-      continue;
+  AutofillField* field = scanner->Cursor();
+  if (FieldMatchesMatchPatternRef(context, patterns, *field, regex_name,
+                                  projection)) {
+    if (match) {
+      *match = field;
     }
-
-    // For each of the two match field attributes, kName and kLabel,
-    // that are active for the current pattern, test if it matches the negative
-    // pattern. If yes, remove it from the attributes that are considered for
-    // positive matching.
-    MatchParams match_type(pattern.match_field_attributes,
-                           pattern.form_control_types);
-
-    if (!IsEmpty(pattern.negative_pattern)) {
-      for (MatchAttribute attribute : pattern.match_field_attributes) {
-        if (FormFieldParser::Match(
-                context, field, pattern.negative_pattern,
-                MatchParams({attribute}, match_type.field_types), regex_name)) {
-          match_type.attributes.erase(attribute);
-        }
-      }
-    }
-
-    if (match_type.attributes.empty()) {
-      continue;
-    }
-
-    // Apply the positive matching against all remaining match field attributes.
-    if (!IsEmpty(pattern.positive_pattern) &&
-        MatchAndAdvance(context, scanner, pattern.positive_pattern, match_type,
-                        match, regex_name)) {
-      return true;
-    }
+    scanner->Advance();
+    return true;
   }
   return false;
 }
@@ -592,25 +567,6 @@ FormFieldParser::RemoveCheckableFields(
     processed_fields.push_back(field.get());
   }
   return processed_fields;
-}
-
-// static
-bool FormFieldParser::MatchAndAdvance(ParsingContext& context,
-                                      AutofillScanner* scanner,
-                                      base::StringPiece16 pattern,
-                                      MatchParams match_type,
-                                      raw_ptr<AutofillField>* match,
-                                      const char* regex_name) {
-  AutofillField* field = scanner->Cursor();
-  if (FormFieldParser::Match(context, field, pattern, match_type, regex_name)) {
-    if (match) {
-      *match = field;
-    }
-    scanner->Advance();
-    return true;
-  }
-
-  return false;
 }
 
 bool FormFieldParser::Match(ParsingContext& context,

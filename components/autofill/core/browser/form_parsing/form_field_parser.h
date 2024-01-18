@@ -175,7 +175,8 @@ class FormFieldParser {
       ParsingContext& context,
       base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
-      const char* regex_name = "");
+      const char* regex_name = "",
+      MatchingPattern (*projection)(const MatchingPattern&) = nullptr);
 
 #if defined(UNIT_TEST)
   static bool MatchForTesting(ParsingContext& context,
@@ -345,17 +346,6 @@ class FormFieldParser {
   static std::vector<raw_ptr<AutofillField, VectorExperimental>>
   RemoveCheckableFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
-
-  // Matches |pattern| to the contents of the field at the head of the
-  // |scanner|.
-  // Returns |true| if a match is found according to |match_type|, and |false|
-  // otherwise.
-  static bool MatchAndAdvance(ParsingContext& context,
-                              AutofillScanner* scanner,
-                              base::StringPiece16 pattern,
-                              MatchParams match_type,
-                              raw_ptr<AutofillField>* match,
-                              const char* regex_name = "");
 
   // Matches the regular expression |pattern| against the components of
   // |field| as specified in |match_type|.
