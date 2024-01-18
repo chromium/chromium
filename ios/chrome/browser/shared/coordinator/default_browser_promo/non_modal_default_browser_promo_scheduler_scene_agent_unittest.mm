@@ -56,7 +56,6 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information];
-    app_state_.mainBrowserState = chrome_browser_state.get();
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state.get()];

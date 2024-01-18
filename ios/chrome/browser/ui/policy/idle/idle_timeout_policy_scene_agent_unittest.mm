@@ -101,7 +101,6 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     startup_information_ = [[FakeStartupInformation alloc] init];
     app_state_ = [[FakeAppStateForAgent alloc]
         initWithStartupInformation:startup_information_];
-    app_state_.mainBrowserState = browser_state_.get();
   }
 
   void InitIdleService() {
@@ -109,8 +108,6 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
         browser_state_->GetOriginalChromeBrowserState());
     idle_service_->SetActionRunnerForTesting(
         base::WrapUnique(new MockActionRunner()));
-    action_runner_ = static_cast<MockActionRunner*>(
-        idle_service_->GetActionRunnerForTesting());
   }
 
   void SetIdleTimeoutPolicies() {
@@ -173,7 +170,6 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<enterprise_idle::IdleService> idle_service_;
-  MockActionRunner* action_runner_;
   FakeStartupInformation* startup_information_;
   FakeAppStateForAgent* app_state_;
   // The scene state that the agent works with.
