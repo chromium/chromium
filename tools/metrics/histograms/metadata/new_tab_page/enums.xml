@@ -233,6 +233,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Third party theme"/>
   <int value="4" label="Uploaded image"/>
   <int value="5" label="Wallpaper search image"/>
+  <int value="6" label="Wallpaper search inspiration image"/>
 </enum>
 
 <enum name="NTPChromeWebStoreOpen">

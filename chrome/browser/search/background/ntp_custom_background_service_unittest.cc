@@ -1074,4 +1074,5 @@ TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpCustomBackgroundInspiration));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
+  EXPECT_TRUE(custom_background->is_inspiration_image);
 }

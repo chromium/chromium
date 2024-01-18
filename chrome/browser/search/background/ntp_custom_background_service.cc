@@ -451,6 +451,8 @@ NtpCustomBackgroundService::GetCustomBackground() {
     custom_background->is_uploaded_image = true;
     custom_background->local_background_id =
         base::Token::FromString(local_background_id);
+    custom_background->is_inspiration_image =
+        pref_service_->GetBoolean(prefs::kNtpCustomBackgroundInspiration);
     custom_background->custom_background_snapshot_url = GURL();
     custom_background->custom_background_attribution_line_1 = std::string();
     custom_background->custom_background_attribution_line_2 = std::string();
