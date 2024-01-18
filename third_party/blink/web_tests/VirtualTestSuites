@@ -2329,6 +2329,7 @@
       "external/wpt/content-security-policy/connect-src/connect-src-beacon-allowed.sub.html",
       "external/wpt/content-security-policy/connect-src/connect-src-beacon-blocked.sub.html",
       "external/wpt/content-security-policy/connect-src/connect-src-beacon-redirect-to-blocked.sub.html",
+      "external/wpt/content-security-policy/reporting/",
       "external/wpt/fetch/",
       "external/wpt/xhr/"
     ],
