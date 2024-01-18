@@ -117,6 +117,11 @@ views::ClientView* AssistantWebContainerView::CreateClientView(
   return new AssistantWebContainerClientView(widget, this);
 }
 
+void AssistantWebContainerView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateBackground();
+}
+
 void AssistantWebContainerView::DidStopLoading() {
   // We should only respond to the `DidStopLoading` event the first time, to add
   // the view for contents to our view hierarchy and perform other one-time view
@@ -232,9 +237,11 @@ void AssistantWebContainerView::RemoveContents() {
 }
 
 void AssistantWebContainerView::UpdateBackground() {
-  // Paint a background to be displayed while the web content is still loading.
-  SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorWHITE, background_radii_));
+  // Paint a theme aware background to be displayed while the web content is
+  // still loading.
+  const SkColor color =
+      GetColorProvider()->GetColor(ui::kColorEndpointBackground);
+  SetBackground(views::CreateRoundedRectBackground(color, background_radii_));
 }
 
 BEGIN_METADATA(AssistantWebContainerView, views::WidgetDelegateView)
