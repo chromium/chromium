@@ -203,7 +203,6 @@ group("closure_compile") {
     ":closure_compile_local",
     "components:closure_compile",
     "screens/common:closure_compile",
-    "screens/login:closure_compile",
     "screens/oobe:closure_compile",
     "screens/osauth:closure_compile",
     "test_api:closure_compile",

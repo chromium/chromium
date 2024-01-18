@@ -2,47 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("../../login.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args
-  deps = [
-    ":checking_downloading_update",
-    ":update_required_card",
-  ]
-}
-
-###############################
-# Closure compiler libraries below
-
-js_library("update_required_card") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/update_required_card.js" ]
-  deps = [
-    ":checking_downloading_update",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_modal_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [ "$externs_path/tts.js" ]
-}
-
-js_library("checking_downloading_update") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/checking_downloading_update.js" ]
-  deps = [
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [ "$externs_path/tts.js" ]
-}
 
 group("web_components") {
   public_deps = [
