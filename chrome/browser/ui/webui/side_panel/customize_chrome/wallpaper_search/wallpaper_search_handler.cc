@@ -807,8 +807,10 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
       mojo_inspiration->description = *description;
       mojo_inspiration_list.push_back(std::move(mojo_inspiration));
     }
-    mojo_inspiration_group->inspirations = std::move(mojo_inspiration_list);
-    mojo_inspiration_groups.push_back(std::move(mojo_inspiration_group));
+    if (mojo_inspiration_list.size() > 0) {
+      mojo_inspiration_group->inspirations = std::move(mojo_inspiration_list);
+      mojo_inspiration_groups.push_back(std::move(mojo_inspiration_group));
+    }
   }
   if (mojo_inspiration_groups.size() > 0) {
     std::move(callback).Run(std::move(mojo_inspiration_groups));

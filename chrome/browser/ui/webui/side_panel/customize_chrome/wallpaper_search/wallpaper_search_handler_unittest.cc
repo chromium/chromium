@@ -1557,8 +1557,8 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
             inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
           }));
   SetUpInspirationsResponseWithData(
-      R"()]}'
-        [{
+      R"()]}'[
+        {
             "descriptor_a": "foo",
             "descriptor_b": "bar",
             "descriptor_c": "baz",
@@ -1568,12 +1568,13 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
             },
             "images": [
                 {
+                    "description": "test inspiration",
                     "background_image": "foo_1.png",
                     "thumbnail_image": "foo_2.png"
                 }
             ]
-        }]
-      )");
+        }
+      ])");
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
@@ -1590,9 +1591,8 @@ TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success_Descriptors) {
 }
 
 TEST_F(WallpaperSearchHandlerTest,
-       GetInspirations_Failure_InspirationsFormatIncorrect) {
-  std::optional<
-      std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>>
+       GetInspirations_InspirationsFormatIncorrect) {
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
       inspiration_groups;
   base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
   EXPECT_CALL(callback, Run(_))
@@ -1602,37 +1602,65 @@ TEST_F(WallpaperSearchHandlerTest,
               std::optional<std::vector<
                   side_panel::customize_chrome::mojom::InspirationGroupPtr>>
                   inspiration_groups_ptr_arg) {
-            inspiration_groups = std::move(inspiration_groups_ptr_arg);
+            inspiration_groups = std::move(inspiration_groups_ptr_arg.value());
           }));
+  // First group has one valid inspiration. Second group has no "descriptor_a".
+  // Third group has no images.
   SetUpInspirationsResponseWithData(
-      R"()]}'
-        [{
+      R"()]}'[
+        {
             "descriptor_a": "foo",
             "images": [
-                {
-                    "background_image": "foo_1.png",
-                },
-                {
-                    "thumbnail_image": "bar_2.png"
-                }
+            {
+                "description": "test inspiration 1",
+                "background_image": "foo_1.png",
+                "thumbnail_image": "foo_2.png"
+            },
+            {
+                "background_image": "baz_1.png",
+                "thumbnail_image": "baz_2.png"
+            },
+            {
+                "description": "test inspiration 3",
+                "thumbnail_image": "qux_2.png"
+            },
+            {
+                "description": "test inspiration 4",
+                "background_image": "qux_1.png"
+            }
             ]
         },
         {
+            "descriptor_b": "bar",
+            "descriptor_c": "baz",
+            "descriptor_d": {
+            "hex": "#f9cc18",
+            "name": "Yellow"
+            },
             "images": [
-                {
-                    "background_image": "baz_1.png",
-                    "thumbnail_image": "baz_2.png"
-                }
+            {
+                "description": "test inspiration 6",
+                "background_image": "foo_1.png",
+                "thumbnail_image": "foo_2.png"
+            }
             ]
-        }]
-      )");
-  ASSERT_FALSE(inspiration_groups.has_value());
+        },
+        {
+            "descriptor_a": "qux"
+        }
+    ])");
 
   auto handler = MakeHandler(/*session_id=*/123);
   handler->GetInspirations(callback.Get());
   task_environment().RunUntilIdle();
 
-  EXPECT_FALSE(inspiration_groups.has_value());
+  // There should only be one inspiration.
+  EXPECT_EQ(1u, inspiration_groups.size());
+  const auto& inspiration_group_a = inspiration_groups[0];
+  EXPECT_EQ("foo", inspiration_group_a->descriptors->subject);
+  const auto& inspiration_a = inspiration_group_a->inspirations;
+  EXPECT_EQ(1u, inspiration_a.size());
+  EXPECT_EQ(inspiration_a[0]->description, "test inspiration 1");
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetInspirations_Failure_DataUnreachable) {
