@@ -13,6 +13,8 @@
 
 namespace ash::input_method {
 
+EditorStates ToEditorStatesMetric(EditorBlockedReason reason);
+
 class EditorMetricsRecorder {
  public:
   explicit EditorMetricsRecorder(EditorOpportunityMode mode);

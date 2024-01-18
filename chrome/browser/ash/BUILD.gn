@@ -5584,6 +5584,7 @@ source_set("unit_tests") {
     "input_method/editor_feedback_unittest.cc",
     "input_method/editor_helpers_unittest.cc",
     "input_method/editor_metrics_recorder_unittest.cc",
+    "input_method/editor_panel_manager_unittest.cc",
     "input_method/editor_switch_unittest.cc",
     "input_method/emoji_suggester_unittest.cc",
     "input_method/fake_suggestion_handler.cc",

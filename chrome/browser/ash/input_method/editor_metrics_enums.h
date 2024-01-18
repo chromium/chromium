@@ -66,7 +66,44 @@ enum class EditorStates {
   kApproveConsent = 16,
   // Increase by 1 when a user clicks to decline the consent.
   kDeclineConsent = 17,
-  kMaxValue = kDeclineConsent,
+  // Increase by 1 when the feature is blocked.
+  kBlocked = 18,
+  // Increase by 1 when the feature is blocked because user is in an unsupported
+  // country.
+  kBlockedByUnsupportedRegion = 19,
+  // Increase by 1 when the feature is blocked because user is using a managed
+  // device.
+  kBlockedByManagedStatus = 20,
+  // Increase by 1 when the feature is blocked because the consent status does
+  // not satisfy.
+  kBlockedByConsent = 21,
+  // Increase by 1 when the feature is blocked because the setting toggle is
+  // switched off.
+  kBlockedBySetting = 22,
+  // Increase by 1 when the feature is blocked because the text is too long.
+  kBlockedByTextLength = 23,
+  // Increase by 1 when the feature is blocked because the focused text input
+  // residing in a url found in the url denylist.
+  kBlockedByUrl = 24,
+  // Increase by 1 when the feature is blocked because the focused text input
+  // residing in an app found in the app denylist.
+  kBlockedByApp = 25,
+  // Increase by 1 when the feature is blocked because the current active input
+  // method is not supported.
+  kBlockedByInputMethod = 26,
+  // Increase by 1 when the feature is blocked because the current active input
+  // type is not allowed.
+  kBlockedByInputType = 27,
+  // Increase by 1 when the feature is blocked because the current app type is
+  // not supported.
+  kBlockedByAppType = 28,
+  // Increase by 1 when the feature is blocked because the current form factor
+  // is not supported.
+  kBlockedByInvalidFormFactor = 29,
+  // Increase by 1 when the feature is blocked because user is not connected to
+  // internet.
+  kBlockedByNetworkStatus = 30,
+  kMaxValue = kBlockedByNetworkStatus,
 };
 
 }  // namespace ash::input_method

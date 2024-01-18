@@ -72,8 +72,9 @@ class EditorMediator : public EditorEventSink,
   // of requests being blocked vs. the potential requests that can be
   // accommodated.
   EditorOpportunityMode GetEditorOpportunityMode() const override;
+  std::vector<EditorBlockedReason> GetBlockedReasons() const override;
   void CacheContext() override;
-  EditorMetricsRecorder* GetMetricsRecorder() const override;
+  EditorMetricsRecorder* GetMetricsRecorder() override;
 
   // display::DisplayObserver overrides
   void OnDisplayTabletStateChanged(display::TabletState state) override;

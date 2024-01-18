@@ -204,7 +204,8 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(
 void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
     const gfx::Rect& anchor_bounds,
     crosapi::mojom::EditorPanelContextPtr context) {
-  switch (context->editor_panel_mode) {
+  auto editor_panel_mode = context->editor_panel_mode;
+  switch (editor_panel_mode) {
     case EditorPanelMode::kBlocked:
       break;
     case EditorPanelMode::kWrite:
@@ -225,8 +226,9 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
       editor_menu_widget_->ShowInactive();
       break;
   }
-  if (card_session_ != nullptr) {
-    card_session_->panel_manager.LogEditorMode(context->editor_panel_mode);
+  if (card_session_ != nullptr &&
+      editor_panel_mode != EditorPanelMode::kBlocked) {
+    card_session_->panel_manager.LogEditorMode(editor_panel_mode);
   }
 }
 

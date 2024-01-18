@@ -27,7 +27,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
-    virtual EditorMetricsRecorder* GetMetricsRecorder() const = 0;
+    virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual size_t GetSelectedTextLength() = 0;
   };
 

@@ -46,6 +46,8 @@ class EditorSwitch {
 
   EditorOpportunityMode GetEditorOpportunityMode() const;
 
+  std::vector<EditorBlockedReason> GetBlockedReasons() const;
+
  private:
   raw_ptr<Profile> profile_;
 

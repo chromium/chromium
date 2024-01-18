@@ -203,6 +203,19 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="WEBUI_REQUEST"/>
   <int value="16" label="APPROVE_CONSENT"/>
   <int value="17" label="DECLINE_CONSENT"/>
+  <int value="18" label="FEATURE_BLOCKED"/>
+  <int value="19" label="FEATURE_BLOCKED_BY_UNSUPPORTED_REGION"/>
+  <int value="20" label="FEATURE_BLOCKED_BY_MANAGED_STATUS"/>
+  <int value="21" label="FEATURE_BLOCKED_BY_CONSENT"/>
+  <int value="22" label="FEATURE_BLOCKED_BY_SETTING"/>
+  <int value="23" label="FEATURE_BLOCKED_BY_TEXT_LENGTH"/>
+  <int value="24" label="FEATURE_BLOCKED_BY_URL"/>
+  <int value="25" label="FEATURE_BLOCKED_BY_APP"/>
+  <int value="26" label="FEATURE_BLOCKED_BY_INPUT_METHOD"/>
+  <int value="27" label="FEATURE_BLOCKED_BY_INPUT_TYPE"/>
+  <int value="28" label="FEATURE_BLOCKED_BY_APP_TYPE"/>
+  <int value="29" label="FEATURE_BLOCKED_BY_INVALID_FORM_FACTOR"/>
+  <int value="30" label="FEATURE_BLOCKED_BY_NETWORK_STATUS"/>
 </enum>
 
 <enum name="IMEGrammarActions">

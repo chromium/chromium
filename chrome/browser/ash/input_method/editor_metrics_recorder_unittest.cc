@@ -112,7 +112,6 @@ INSTANTIATE_TEST_SUITE_P(
         {"NativeRequestWrite", EditorOpportunityMode::kWrite,
          EditorTone::kUnset, EditorStates::kNativeRequest,
          /*histogram_name=*/"InputMethod.Manta.Orca.States.Write"},
-
     }),
     [](const testing::TestParamInfo<StateCase> info) {
       return info.param.test_name;

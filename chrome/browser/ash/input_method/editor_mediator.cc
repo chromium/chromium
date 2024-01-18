@@ -226,12 +226,16 @@ EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
 }
 
-EditorMetricsRecorder* EditorMediator::GetMetricsRecorder() const {
+EditorMetricsRecorder* EditorMediator::GetMetricsRecorder() {
   return metrics_recorder_.get();
 }
 
 EditorOpportunityMode EditorMediator::GetEditorOpportunityMode() const {
   return editor_switch_->GetEditorOpportunityMode();
+}
+
+std::vector<EditorBlockedReason> EditorMediator::GetBlockedReasons() const {
+  return editor_switch_->GetBlockedReasons();
 }
 
 void EditorMediator::Shutdown() {

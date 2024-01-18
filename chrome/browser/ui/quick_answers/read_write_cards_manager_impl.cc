@@ -76,14 +76,19 @@ void ReadWriteCardsManagerImpl::OnEditorPanelContextCallback(
     editor_menu::FetchControllerCallback callback,
     content::BrowserContext* context,
     const crosapi::mojom::EditorPanelContextPtr editor_panel_context) {
-  if (editor_panel_context->editor_panel_mode !=
-          crosapi::mojom::EditorPanelMode::kBlocked &&
-      editor_menu_controller_) {
-    editor_menu_controller_->SetBrowserContext(context);
-    std::move(callback).Run(editor_menu_controller_->GetWeakPtr());
-    return;
+  if (editor_menu_controller_) {
+    if (editor_panel_context->editor_panel_mode !=
+        crosapi::mojom::EditorPanelMode::kBlocked) {
+      editor_menu_controller_->SetBrowserContext(context);
+      std::move(callback).Run(editor_menu_controller_->GetWeakPtr());
+      return;
+    }
+    auto* panel_manager =
+        editor_menu_controller_->GetEditorPanelManager(context);
+    if (panel_manager) {
+      panel_manager->LogEditorMode(crosapi::mojom::EditorPanelMode::kBlocked);
+    }
   }
-
   std::move(callback).Run(GetMahiOrQuickAnswerControllerIfEligible(params));
 }
 

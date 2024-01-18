@@ -53,6 +53,35 @@ EditorTone GetEditorToneFromString(std::string_view tone) {
 }
 }  // namespace
 
+EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
+  switch (reason) {
+    case EditorBlockedReason::kBlockedByConsent:
+      return EditorStates::kBlockedByConsent;
+    case EditorBlockedReason::kBlockedBySetting:
+      return EditorStates::kBlockedBySetting;
+    case EditorBlockedReason::kBlockedByTextLength:
+      return EditorStates::kBlockedByTextLength;
+    case EditorBlockedReason::kBlockedByUrl:
+      return EditorStates::kBlockedByUrl;
+    case EditorBlockedReason::kBlockedByApp:
+      return EditorStates::kBlockedByApp;
+    case EditorBlockedReason::kBlockedByInputMethod:
+      return EditorStates::kBlockedByInputMethod;
+    case EditorBlockedReason::kBlockedByInputType:
+      return EditorStates::kBlockedByInputType;
+    case EditorBlockedReason::kBlockedByAppType:
+      return EditorStates::kBlockedByAppType;
+    case EditorBlockedReason::kBlockedByInvalidFormFactor:
+      return EditorStates::kBlockedByInvalidFormFactor;
+    case EditorBlockedReason::kBlockedByNetworkStatus:
+      return EditorStates::kBlockedByNetworkStatus;
+    case EditorBlockedReason::kBlockedByUnsupportedRegion:
+      return EditorStates::kBlockedByUnsupportedRegion;
+    case EditorBlockedReason::kBlockedByManagedStatus:
+      return EditorStates::kBlockedByManagedStatus;
+  }
+}
+
 EditorMetricsRecorder::EditorMetricsRecorder(EditorOpportunityMode mode)
     : mode_(mode) {}
 

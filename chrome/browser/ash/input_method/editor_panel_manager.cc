@@ -163,6 +163,13 @@ void EditorPanelManager::LogEditorMode(
       mode == crosapi::mojom::EditorPanelMode::kWrite) {
     logger->LogEditorState(EditorStates::kNativeUIShown);
   }
+
+  if (mode == crosapi::mojom::EditorPanelMode::kBlocked) {
+    logger->LogEditorState(EditorStates::kBlocked);
+    for (EditorBlockedReason blocked_reason : delegate_->GetBlockedReasons()) {
+      logger->LogEditorState(ToEditorStatesMetric(blocked_reason));
+    }
+  }
 }
 
 }  // namespace ash::input_method
