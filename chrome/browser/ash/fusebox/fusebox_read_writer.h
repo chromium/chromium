@@ -100,10 +100,9 @@ class ReadWriter {
 
   static void OnEOFFlushBeforeActualClose(
       base::WeakPtr<ReadWriter> weak_ptr,
-      scoped_refptr<storage::FileSystemContext> fs_context,
       Close2Callback callback,
+      scoped_refptr<storage::FileSystemContext> fs_context,
       std::unique_ptr<storage::FileStreamWriter> fs_writer,
-      int64_t write_offset,
       int flush_posix_error_code);
 
   static void OnTempFileInitialized(base::WeakPtr<ReadWriter> weak_ptr,
@@ -139,7 +138,6 @@ class ReadWriter {
       int64_t offset,
       int length,
       std::unique_ptr<storage::FileStreamWriter> fs_writer,
-      int64_t write_offset,
       int flush_posix_error_code);
 
   void CallWriteDirect(Write2Callback callback,
