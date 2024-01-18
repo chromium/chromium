@@ -22,6 +22,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {WallpaperGridItemSelectedEvent} from '../personalization/wallpaper_grid_item_element.js';
 
 import {RecentSeaPenData} from './constants.js';
+import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
@@ -74,7 +75,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private recentImagesToDisplay_: FilePath[];
   private currentShowWallpaperInfoDialog_: number|null;
   private currentSelected_: string|null;
-  private pendingSelected_: FilePath|null;
+  private pendingSelected_: FilePath|SeaPenThumbnail|null;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -183,7 +184,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
   private isRecentImageSelected_(
       image: FilePath|null, currentSelected: string|null,
-      pendingSelected: FilePath|null) {
+      pendingSelected: FilePath|SeaPenThumbnail|null) {
     if (!isNonEmptyFilePath(image)) {
       return false;
     }

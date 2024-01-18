@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 
+#include <sstream>
 #include <string>
 
 #include "ash/webui/common/mojom/sea_pen.mojom.h"

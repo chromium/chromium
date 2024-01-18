@@ -19,6 +19,8 @@ export enum SeaPenActionName {
   BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE =
       'begin_load_selected_recent_sea_pen_image',
   SET_THUMBNAIL_RESPONSE_STATUS_CODE = 'set_thumbnail_response_status_code',
+  BEGIN_SELECT_SEA_PEN_THUMBNAIL = 'begin_select_sea_pen_thumbnail',
+  END_SELECT_SEA_PEN_THUMBNAIL = 'end_select_sea_pen_thumbnail',
   BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
   END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
   SET_SEA_PEN_THUMBNAILS = 'set_sea_pen_thumbnails',
@@ -32,7 +34,8 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
     EndSelectRecentSeaPenImageAction|SetThumbnailResponseStatusCodeAction|
     SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
-    SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction;
+    SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction|
+    BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -201,5 +204,34 @@ export function setThumbnailResponseStatusCodeAction(
   return {
     name: SeaPenActionName.SET_THUMBNAIL_RESPONSE_STATUS_CODE,
     thumbnailResponseStatusCode,
+  };
+}
+
+export interface BeginSelectSeaPenThumbnailAction extends Action {
+  name: SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL;
+  thumbnail: SeaPenThumbnail;
+}
+
+export function beginSelectSeaPenThumbnailAction(thumbnail: SeaPenThumbnail):
+    BeginSelectSeaPenThumbnailAction {
+  return {
+    name: SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL,
+    thumbnail,
+  };
+}
+
+export interface EndSelectSeaPenThumbnailAction extends Action {
+  name: SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL;
+  thumbnail: SeaPenThumbnail;
+  success: boolean;
+}
+
+export function endSelectSeaPenThumbnailAction(
+    thumbnail: SeaPenThumbnail,
+    success: boolean): EndSelectSeaPenThumbnailAction {
+  return {
+    name: SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL,
+    thumbnail,
+    success,
   };
 }

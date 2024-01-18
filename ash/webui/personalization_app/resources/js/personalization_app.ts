@@ -57,6 +57,7 @@ import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
  * necessary so they can be imported in tests.
  */
 export {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+export {SparklePlaceholderElement} from 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 export {AlbumListElement} from './ambient/album_list_element.js';
 export {AlbumsSubpageElement} from './ambient/albums_subpage_element.js';
 export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAmbientThemeAction, setAmbientThemeAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForAmbient, SetPreviewsAction, setPreviewsAction, SetScreenSaverDurationAction, setScreenSaverDurationAction, SetShouldShowTimeOfDayBannerAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';

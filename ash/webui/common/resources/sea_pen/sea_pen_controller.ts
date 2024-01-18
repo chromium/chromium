@@ -48,8 +48,10 @@ export async function searchSeaPenThumbnails(
 export async function selectSeaPenWallpaper(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
-  // TODO(b/305965517) show loading state.
+  store.dispatch(seaPenAction.beginSelectSeaPenThumbnailAction(thumbnail));
   const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
+  store.dispatch(
+      seaPenAction.endSelectSeaPenThumbnailAction(thumbnail, success));
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
   // successfully, which means the file has been downloaded successfully.
   if (success) {

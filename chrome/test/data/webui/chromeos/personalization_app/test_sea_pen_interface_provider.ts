@@ -49,6 +49,10 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     },
   };
 
+  selectSeaPenThumbnailResponse:
+      ReturnType<SeaPenProviderInterface['selectSeaPenThumbnail']> =
+          Promise.resolve({success: true});
+
   constructor() {
     super([
       'searchWallpaper',
@@ -70,7 +74,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   selectSeaPenThumbnail(id: number) {
     this.methodCalled('selectSeaPenThumbnail', id);
-    return Promise.resolve({success: true});
+    return this.selectSeaPenThumbnailResponse;
   }
 
   selectRecentSeaPenImage(filePath: FilePath) {

@@ -21,7 +21,7 @@ export interface SeaPenState {
   recentImages: FilePath[]|null;
   thumbnails: SeaPenThumbnail[]|null;
   currentSelected: string|null;
-  pendingSelected: FilePath|null;
+  pendingSelected: FilePath|SeaPenThumbnail|null;
   thumbnailResponseStatusCode: MantaStatusCode|null;
 }
 
