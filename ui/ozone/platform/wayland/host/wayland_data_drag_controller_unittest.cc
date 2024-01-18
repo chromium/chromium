@@ -103,7 +103,7 @@ class MockDropHandler : public WmDropHandler {
 
   MOCK_METHOD3(OnDragEnter,
                void(const gfx::PointF& point, int operation, int modifiers));
-  MOCK_METHOD0(MockOnDragDataFetched, void());
+  MOCK_METHOD0(MockOnDragDataAvailable, void());
   MOCK_METHOD3(MockDragMotion,
                int(const gfx::PointF& point, int operation, int modifiers));
   MOCK_METHOD0(MockOnDragDrop, void());
@@ -124,7 +124,7 @@ class MockDropHandler : public WmDropHandler {
  protected:
   void OnDragDataAvailable(std::unique_ptr<ui::OSExchangeData> data) override {
     dropped_data_ = std::move(data);
-    MockOnDragDataFetched();
+    MockOnDragDataAvailable();
   }
   void OnDragDrop(int modifiers) override {
     MockOnDragDrop();
@@ -505,9 +505,10 @@ TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {
   // condition to quit the loop and verify the expectations, otherwise some
   // flakiness may be observed, see https://crbug.com/1395127.
   base::RunLoop loop;
-  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).WillOnce([&loop]() {
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).WillOnce([&loop]() {
     loop.Quit();
   });
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* data_offer =
         server->data_device_manager()->data_device()->CreateAndSendDataOffer();
@@ -562,6 +563,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
 
   for (const auto& kCase : kCases) {
     EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
     const uint32_t surface_id = window_->root_surface()->get_surface_id();
     PostToServerAndWait([surface_id, content = kCase.content](
                             wl::TestWaylandServerThread* server) {
@@ -626,6 +628,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
 
   for (const auto& kCase : kCases) {
     EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
     const uint32_t surface_id = window_->root_surface()->get_surface_id();
     PostToServerAndWait([surface_id, content = kCase.content](
                             wl::TestWaylandServerThread* server) {
@@ -1120,7 +1123,8 @@ TEST_P(WaylandDataDragControllerTest, DropWhileFetchingData) {
   // in PostToServerAndWait() impl - isn't enough to fetch all the data, which
   // is exactly the goal in this test case, so that we can send the "early" drop
   // and ensure it does not crash in the next step.
-  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* data_device = server->data_device_manager()->data_device();
     auto* data_offer = data_device->CreateAndSendDataOffer();
@@ -1151,7 +1155,8 @@ TEST_P(WaylandDataDragControllerTest, DndActionsToDragOperations) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
 
   // Consume the move event from pointer enter.
-  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _));
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
 
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     // Place the window onto the output.
@@ -1190,9 +1195,13 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
   ASSERT_TRUE(main_thread_test_task_runnner);
   ASSERT_TRUE(window_);
 
-  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+
+  // None other event expected because the window gets destroyed in the middle
+  // of the test.
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
   EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
-  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(0);
   EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
 
   // 3 mime types are offered, which gives as time to hook partial data transfer
@@ -1222,11 +1231,16 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
   WaitForDragDropTasks();
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
+  EXPECT_EQ(drag_controller()->state(),
+            WaylandDataDragController::State::kStarted);
+
   SendDndLeave();
 
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
   EXPECT_FALSE(data_device()->drag_delegate_);
+  EXPECT_EQ(drag_controller()->state(),
+            WaylandDataDragController::State::kIdle);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

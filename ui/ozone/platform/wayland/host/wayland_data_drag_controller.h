@@ -234,9 +234,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;
 
-  // Set when 'leave' event is fired while data is being transferred.
-  bool is_leave_pending_ = false;
-
   // Drag icon related variables.
   std::unique_ptr<WaylandSurface> icon_surface_;
   float icon_surface_buffer_scale_ = 1.0f;

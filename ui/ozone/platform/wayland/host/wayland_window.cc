@@ -725,17 +725,20 @@ void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
 
-void WaylandWindow::OnDragEnter(const gfx::PointF& point,
-                                std::unique_ptr<OSExchangeData> data,
-                                int operation) {
+void WaylandWindow::OnDragEnter(const gfx::PointF& point, int operation) {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
   if (!drop_handler) {
     return;
   }
-
   // TODO(crbug.com/1102857): get the real event modifier here.
   drop_handler->OnDragEnter(point, operation, /*modifiers=*/0);
+}
 
+void WaylandWindow::OnDragDataAvailable(std::unique_ptr<OSExchangeData> data) {
+  WmDropHandler* drop_handler = GetWmDropHandler(*this);
+  if (!drop_handler) {
+    return;
+  }
   // TODO(crbug.com/1487784): Factor DataFetched out of Enter callback.
   drop_handler->OnDragDataAvailable(std::move(data));
 }
@@ -745,7 +748,6 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
   if (!drop_handler) {
     return 0;
   }
-
   // TODO(crbug.com/1102857): get the real event modifier here.
   return drop_handler->OnDragMotion(point, operation,
                                     /*modifiers=*/0);
