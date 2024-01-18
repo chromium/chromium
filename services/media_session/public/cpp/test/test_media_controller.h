@@ -141,6 +141,9 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
 
   mojo::Remote<mojom::MediaController> CreateMediaControllerRemote();
 
+  void BindMediaControllerReceiver(
+      mojo::PendingReceiver<mojom::MediaController> receiver);
+
   // mojom::MediaController:
   void Suspend() override;
   void Resume() override;
@@ -183,6 +186,12 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_forward_count() const { return seek_forward_count_; }
   int seek_to_count() const { return seek_to_count_; }
   int skip_ad_count() const { return skip_ad_count_; }
+  int enter_picture_in_picture_count() const {
+    return enter_picture_in_picture_count_;
+  }
+  int exit_picture_in_picture_count() const {
+    return exit_picture_in_picture_count_;
+  }
   int raise_count() const { return raise_count_; }
   int request_media_remoting_count() const {
     return request_media_remoting_count_;
@@ -197,6 +206,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void SimulateMediaSessionMetadataChanged(
       const media_session::MediaMetadata& meta_data);
   void Flush();
+  int GetActiveObserverCount();
 
  private:
   int toggle_suspend_resume_count_ = 0;
@@ -210,6 +220,8 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_forward_count_ = 0;
   int seek_to_count_ = 0;
   int skip_ad_count_ = 0;
+  int enter_picture_in_picture_count_ = 0;
+  int exit_picture_in_picture_count_ = 0;
   int raise_count_ = 0;
   int request_media_remoting_count_ = 0;
 

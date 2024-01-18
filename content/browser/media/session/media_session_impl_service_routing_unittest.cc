@@ -370,7 +370,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   services_[main_frame_]->EnableAction(MediaSessionAction::kPlay);
 
   observer.WaitForEmptyActions();
-  observer.WaitForEmptyMetadata();
+  observer.WaitForExpectedMetadata(empty_metadata());
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,

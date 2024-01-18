@@ -121,6 +121,7 @@ source_set("tests") {
     "//components/signin/public/identity_manager:test_support",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
+    "//services/media_session/public/cpp/test:test_support",
     "//services/media_session/public/mojom",
     "//services/network:test_support",
     "//testing/gmock",

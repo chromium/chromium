@@ -212,8 +212,9 @@ void MockMediaSessionMojoObserver::WaitForExpectedHideMetadata(
 }
 
 void MockMediaSessionMojoObserver::WaitForEmptyMetadata() {
-  if (session_metadata_.has_value() || !session_metadata_->has_value())
+  if (!session_metadata_.has_value() || !session_metadata_->has_value()) {
     return;
+  }
 
   waiting_for_empty_metadata_ = true;
   StartWaiting();
