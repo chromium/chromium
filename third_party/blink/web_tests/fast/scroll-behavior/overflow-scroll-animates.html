@@ -1,35 +1,66 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <title>Tests that overflow scrolls are animated.</title>
-
-<div id="container" style="overflow: scroll;width: 200px;height: 200px;">
-  <div id="content" style="width: 750px;height: 10000px;background-color: blue;"></div>
+<style>
+  #container {
+    overflow: scroll;
+    width: 200px;
+    height: 200px;
+  }
+  #content {
+    width: 750px;
+    height: 10000px;
+    background-color: blue;
+  }
+</style>
+<div id="container">
+  <div id="content"></div>
 </div>
 
 <script>
-if (!window.eventSender || !window.internals || !window.testRunner) {
+if (!window.internals) {
   assert_unreached("This test must be run in the test harness");
 }
 internals.settings.setScrollAnimatorEnabled(true);
-testRunner.waitUntilDone();
-testRunner.dumpAsText();
 
-const container = document.getElementById("container");
+function smoothScrollPromise(container) {
+  let firstScrollPosition = undefined;
+  let lastScrollPosition = undefined;
+  return new Promise((resolve, reject) => {
+    const scrollendListener = () => {
+      container.removeEventListener('scroll', scrollListener);
+      if (lastScrollPosition == firstScrollPosition) {
+        reject('expected multiple scroll events with a smooth scroll');
+      } else {
+        resolve();
+      }
+    }
+    container.addEventListener('scrollend', scrollendListener, { once: true });
+    const scrollListener = () => {
+      if (firstScrollPosition == undefined) {
+        firstScrollPosition = container.scrollTop;
+      }
+      lastScrollPosition = container.scrollTop;
+    }
+    container.addEventListener('scroll', scrollListener);
+  });
+}
 
-let prevScrollTop;
-container.addEventListener("scroll", function onElementScroll() {
-  if (prevScrollTop === undefined) {
-    assert_not_equals(container.scrollTop,container.scrollHeight - container.clientHeight);
-    prevScrollTop = container.scrollTop;
-  } else {
-    assert_true(container.scrollTop > prevScrollTop);
-    console.log('PASS');
-    testRunner.notifyDone();
-  }
-});
+promise_test(async () => {
+  const container = document.getElementById("container");
+  await waitForCompositorCommit();
+  await waitForScrollReset(container);
+  const animatedScroll = smoothScrollPromise(container);
+  const pos = elementCenter(container);
+  await mouseClick(pos.x, pos.y);
+  await keyboardScroll("PageDown", container);
+  await animatedScroll;
+  assert_true(container.scrollTop > 0);
+}, 'Overflow scrolls are animated');
 
-eventSender.mouseMoveTo(100, 100);
-eventSender.mouseDown();
-eventSender.mouseUp();
-eventSender.keyDown('End');
 </script>
