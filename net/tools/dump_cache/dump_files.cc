@@ -500,12 +500,11 @@ int DumpLists(const base::FilePath& input_path) {
     int32_t size = header.lru.sizes[i];
     if (size < 0 || size > kMaxLength) {
       printf("Wrong size %d\n", size);
-      size = kMaxLength;
     }
 
     disk_cache::CacheAddr addr = header.lru.tails[i];
     int count = 0;
-    for (; size && addr; size--) {
+    while (addr) {
       count++;
       disk_cache::RankingsNode rankings;
       if (!dumper.LoadRankings(addr, &rankings)) {
