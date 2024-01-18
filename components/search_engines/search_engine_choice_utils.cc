@@ -8,11 +8,13 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -25,7 +27,19 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/grit/components_scaled_resources.h"  // nogncheck
+#include "ui/resources/grit/ui_resources.h"               // nogncheck
+#endif
+
 namespace search_engines {
+
+namespace {
+#if !BUILDFLAG(IS_ANDROID)
+// Defines `kSearchEngineResourceIdMap`.
+#include "components/search_engines/generated_search_engine_resource_ids-inc.cc"
+#endif
+}  // namespace
 
 const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
     "Search.ChoiceScreenNavigationConditions";
@@ -124,6 +138,16 @@ std::u16string GetMarketingSnippetString(
                    template_url_data.short_name())
              : l10n_util::GetStringUTF16(snippet_resource_id);
 }
+
+int GetIconResourceId(const std::u16string& engine_keyword) {
+  // `kSearchEngineResourceIdMap` is defined in
+  // `components/search_engines/generated_search_engine_resource_ids-inc.cc`
+  const base::fixed_flat_map<std::u16string_view, int,
+                             kSearchEngineResourceIdMap.size()>::const_iterator
+      iterator = kSearchEngineResourceIdMap.find(engine_keyword);
+  return iterator == kSearchEngineResourceIdMap.cend() ? -1 : iterator->second;
+}
+
 #endif
 
 }  // namespace search_engines

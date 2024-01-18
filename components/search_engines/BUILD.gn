@@ -114,10 +114,7 @@ static_library("search_engines") {
   }
 
   if (!is_android) {
-    sources += [
-      "generated_marketing_snippets.cc",
-      "generated_search_engine_resource_ids.cc",
-    ]
+    sources += [ "generated_marketing_snippets.cc" ]
     deps += [
       "//components/resources:components_scaled_resources_grit",
       "//ui/resources",

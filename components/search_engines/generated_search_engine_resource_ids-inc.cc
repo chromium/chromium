@@ -2,18 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/search_engine_choice_utils.h"
-
-#include "base/containers/fixed_flat_map.h"
-#include "build/branding_buildflags.h"
-#include "components/grit/components_scaled_resources.h"
-#include "ui/resources/grit/ui_resources.h"
-
 // This code is generated
 // using`tools/search_engine_choice/generate_search_engine_icons.py`. Don't
 // modify it manually.
-
-namespace {
 
 constexpr auto kSearchEngineResourceIdMap =
     base::MakeFixedFlatMap<std::u16string_view, int>(
@@ -78,16 +69,3 @@ constexpr auto kSearchEngineResourceIdMap =
           IDR_DEFAULT_FAVICON
 #endif
          }});
-
-}  // namespace
-
-namespace search_engines {
-
-int GetIconResourceId(const std::u16string& engine_keyword) {
-  const base::fixed_flat_map<std::u16string_view, int,
-                             kSearchEngineResourceIdMap.size()>::const_iterator
-      iterator = kSearchEngineResourceIdMap.find(engine_keyword);
-  return iterator == kSearchEngineResourceIdMap.cend() ? -1 : iterator->second;
-}
-
-}  // namespace search_engines

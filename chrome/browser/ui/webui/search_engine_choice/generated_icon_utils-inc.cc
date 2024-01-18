@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/fixed_flat_map.h"
-#include "build/branding_buildflags.h"
-#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 // This code is generated
 // using`tools/search_engine_choice/generate_search_engine_icons.py`. Don't
 // modify it manually.
-
-namespace {
 
 constexpr auto kSearchEngineIconPathMap =
     base::MakeFixedFlatMap<std::u16string_view, std::string_view>(
@@ -74,14 +69,3 @@ constexpr auto kSearchEngineIconPathMap =
           "chrome://theme/IDR_DEFAULT_FAVICON"
 #endif
          }});
-
-}  // namespace
-
-std::string_view GetSearchEngineGeneratedIconPath(
-    const std::u16string& engine_keyword) {
-  const base::fixed_flat_map<std::u16string_view, std::string_view,
-                             kSearchEngineIconPathMap.size()>::const_iterator
-      iterator = kSearchEngineIconPathMap.find(engine_keyword);
-  return iterator == kSearchEngineIconPathMap.cend() ? std::string_view()
-                                                     : iterator->second;
-}
