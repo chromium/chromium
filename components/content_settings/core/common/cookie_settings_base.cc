@@ -77,13 +77,13 @@ constexpr std::optional<SettingSource> GetSettingSource(
     // 3PCD-related mechanisms all map to `SETTING_SOURCE_TPCD_GRANT`.
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
       return SettingSource::SETTING_SOURCE_TPCD_GRANT;
     // Other mechanisms do not map to a `SettingSource`.
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
     case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
     case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
     case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
