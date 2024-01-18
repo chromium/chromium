@@ -25,7 +25,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/filters/ffmpeg_video_decoder.h"
-#include "media/filters/frame_buffer_pool.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_frame_buffer.h"

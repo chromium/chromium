@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/frame_buffer_pool.h"
+#include "media/base/frame_buffer_pool.h"
 
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_message_loop.h"

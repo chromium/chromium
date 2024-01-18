@@ -11,11 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "media/base/frame_buffer_pool.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
-#include "media/filters/frame_buffer_pool.h"
 
 struct AVCodecContext;
 struct AVFrame;

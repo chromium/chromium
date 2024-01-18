@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_FRAME_BUFFER_POOL_H_
-#define MEDIA_FILTERS_FRAME_BUFFER_POOL_H_
+#ifndef MEDIA_BASE_FRAME_BUFFER_POOL_H_
+#define MEDIA_BASE_FRAME_BUFFER_POOL_H_
 
 #include <stdint.h>
 
@@ -136,4 +136,4 @@ class MEDIA_EXPORT FrameBufferPool
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_FRAME_BUFFER_POOL_H_
+#endif  // MEDIA_BASE_FRAME_BUFFER_POOL_H_
