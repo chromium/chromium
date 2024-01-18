@@ -861,19 +861,42 @@ void ToolbarView::OnThemeChanged() {
   SchedulePaint();
 }
 
+// The implementation of this method is subtle.
+// The goal is to create rounded corners in the top-left and top-right corners,
+// allowing background_view_left_ and background_view_right_ to peek through. In
+// order for the corners to look good, we must use antialiasing on the clip
+// paths. When there are fractional device scale factors (e.g. 1.5), it's easy
+// (common even) to have straight edges of the clip path end up on non-integral
+// boundaries (e.g. y=68.5). This is unavoidable. Antialiasing turns these
+// non-integral boundary clip paths into 2-pixel "fuzzy" boundaries, which in
+// turn causes misalignment with other views::Views which assume the boundaries
+// are exact. Solving this problem completely will require a rethink of how we
+// implement fractional device scale factors in Chrome. In the meanwhile, the
+// implementation of this method minimizes the length of straight edges of the
+// clip path to minimize issues. To do this we carve out the two corners, and
+// then take the inverse as our clip path.
 void ToolbarView::UpdateClipPath() {
   const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   SkPath path;
   const gfx::Rect local_bounds = GetLocalBounds();
-  path.moveTo(0, local_bounds.height());
+
+  // Carve out top-left.
+  path.moveTo(0, 0);
   path.lineTo(0, corner_radius);
   path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
              SkPathDirection::kCW, corner_radius, 0);
-  path.lineTo(local_bounds.width() - corner_radius, 0);
+  path.lineTo(0, 0);
+
+  // Carve out top-right.
+  path.moveTo(local_bounds.width() - corner_radius, 0);
   path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
              SkPathDirection::kCW, local_bounds.width(), corner_radius);
-  path.lineTo(local_bounds.width(), local_bounds.height());
-  path.lineTo(0, local_bounds.height());
+  path.lineTo(local_bounds.width(), 0);
+  path.lineTo(local_bounds.width() - corner_radius, 0);
+
+  // Take the inverse so we keep everything else. Artifacts are confined to the
+  // corners.
+  path.setFillType(SkPathFillType::kInverseWinding);
   container_view_->SetClipPath(path);
 }
 
