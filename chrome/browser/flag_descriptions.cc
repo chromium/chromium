@@ -3469,9 +3469,9 @@ const char kTpcdMetadataGrantsDescription[] =
     "Provides a control for enabling/disabling Third-Party Cookie Deprecation "
     "Metadata Grants (WRT its default state) for testing.";
 
-const char kTpcdSupportSettingsName[] =
+const char kTpcdTrialSettingsName[] =
     "Third-party Cookie Deprecation Trial Grants for Testing";
-const char kTpcdSupportSettingsDescription[] =
+const char kTpcdTrialSettingsDescription[] =
     "Controls creation of cookie access grants for the Third-Party Cookies "
     "Deprecation Trial. Please note that, even if enabled, this will still "
     "require #tracking-protection-3pcd to be enabled and a pref to be set, for "

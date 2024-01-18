@@ -4679,7 +4679,7 @@ Called by update_net_error_codes.py.-->
   <int value="102" label="MIDI"/>
   <int value="103" label="All Screens Media API"/>
   <int value="104" label="Cookie Controls Metadata"/>
-  <int value="105" label="3PCD Support"/>
+  <int value="105" label="3PCD Trial"/>
   <int value="106" label="Auto Picture-in-Picture"/>
   <int value="107" label="3PCD Metadata Grants"/>
   <int value="108" label="File System Access extended permission"/>
@@ -4689,7 +4689,7 @@ Called by update_net_error_codes.py.-->
   <int value="112" label="Smart Card guard"/>
   <int value="113" label="Smart Card data"/>
   <int value="114" label="Web Printing"/>
-  <int value="115" label="Top-level 3PCD Support"/>
+  <int value="115" label="Top-level 3PCD Trial"/>
 </enum>
 
 <enum name="ContextMenuOptionAndroid">

@@ -864,9 +864,9 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // as it depends on the default StoragePartition being initialized.
   GetOriginTrialsControllerDelegate();
 
-  // The TpcdSupportService must be created with the profile, but after the
+  // The TpcdTrialService must be created with the profile, but after the
   // initialization of the OriginTrialsControllerDelegate, as it depends on it.
-  tpcd::support::TpcdSupportServiceFactory::GetForProfile(this);
+  tpcd::trial::TpcdTrialServiceFactory::GetForProfile(this);
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {

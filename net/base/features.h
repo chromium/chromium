@@ -311,11 +311,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 
-// Feature to enable consideration of 3PCD Support settings.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
+// Feature to enable consideration of 3PC deprecation trial settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTpcdTrialSettings);
 
-// Feature to enable consideration of top-level 3PCD Support settings.
-NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdSupportSettings);
+// Feature to enable consideration of top-level 3PC deprecation trial settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdTrialSettings);
 
 // Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
 // component updater.

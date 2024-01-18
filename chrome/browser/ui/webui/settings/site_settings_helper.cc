@@ -200,7 +200,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
     {ContentSettingsType::ALL_SCREEN_CAPTURE, nullptr},
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
-    {ContentSettingsType::TPCD_SUPPORT, nullptr},
+    {ContentSettingsType::TPCD_TRIAL, nullptr},
     {ContentSettingsType::TPCD_METADATA_GRANTS, nullptr},
     // TODO(crbug.com/1011533): Update the name once the design is finalized
     // for the integration with Safety Hub.
@@ -210,7 +210,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // TODO(crbug.com/1464851): Update name once UI design is done.
     {ContentSettingsType::SMART_CARD_GUARD, nullptr},
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
-    {ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT, nullptr},
+    {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

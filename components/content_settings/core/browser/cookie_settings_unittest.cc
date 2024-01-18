@@ -65,8 +65,8 @@ constexpr char kAllowedRequestsHistogram[] =
 enum TestVariables {
   kTopLevelStorageAccessGrantEligible = 0,
   kStorageAccessGrantsEligible,
-  // Whether `net::features::kTpcdSupportSettings` is enabled.
-  k3pcdSupportEligible,
+  // Whether `net::features::kTpcdTrialSettings` is enabled.
+  k3pcdTrialEligible,
   // Whether `net::features::kTpcdMetadataGrants` is enabled.
   kTpcdMetadataGrantsEligible,
   // Whether `content_settings_features::kHostIndexedMetadataGrants` is enabled
@@ -209,7 +209,7 @@ class CookieSettingsTest
       public testing::TestWithParam<
           std::tuple</*kStorageAccessGrantsEligible*/ bool,
                      /*kTopLevelStorageAccessGrantEligible*/ bool,
-                     /*k3pcdSupportEligible*/ bool,
+                     /*k3pcdTrialEligible*/ bool,
                      /*kTpcdMetadataGrantsEligible*/ bool,
                      /*kHostIndexedMetadataGrantsEnabled*/ bool>> {
  public:
@@ -220,10 +220,10 @@ class CookieSettingsTest
     enabled_features.push_back(
         {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
 
-    if (Is3pcdSupportEligible()) {
-      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
+    if (Is3pcdTrialEligible()) {
+      enabled_features.push_back({net::features::kTpcdTrialSettings, {}});
     } else {
-      disabled_features.push_back(net::features::kTpcdSupportSettings);
+      disabled_features.push_back(net::features::kTpcdTrialSettings);
     }
 
     if (IsIndexedContentSettingsEnabled()) {
@@ -260,8 +260,8 @@ class CookieSettingsTest
         GetParam());
   }
 
-  bool Is3pcdSupportEligible() const {
-    return std::get<TestVariables::k3pcdSupportEligible>(GetParam());
+  bool Is3pcdTrialEligible() const {
+    return std::get<TestVariables::k3pcdTrialEligible>(GetParam());
   }
 
   bool Is3pcdMetadataGrantEligible() const {
@@ -299,10 +299,10 @@ class CookieSettingsTest
   }
 
   // Assumes that cookie access would be blocked if not for a
-  // `ContentSettingsType::TPCD_SUPPORT` setting.
-  ContentSetting SettingWith3pcdSupportSetting() const {
-    return Is3pcdSupportEligible() ? CONTENT_SETTING_ALLOW
-                                   : CONTENT_SETTING_BLOCK;
+  // `ContentSettingsType::TPCD_TRIAL` setting.
+  ContentSetting SettingWith3pcdTrialSetting() const {
+    return Is3pcdTrialEligible() ? CONTENT_SETTING_ALLOW
+                                 : CONTENT_SETTING_BLOCK;
   }
 
   // Assumes that cookie access would be blocked if not for a
@@ -335,11 +335,11 @@ class CookieSettingsTest
   }
 
   // The cookie access result would be blocked if not for a
-  // `ContentSettingsType::TPCD_SUPPORT` setting.
+  // `ContentSettingsType::TPCD_TRIAL` setting.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWith3pcdSupportSetting() const {
-    if (Is3pcdSupportEligible()) {
-      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD_SUPPORT;
+  BlockedStorageAccessResultWith3pcdTrialSetting() const {
+    if (Is3pcdTrialEligible()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD_TRIAL;
     }
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
@@ -1415,7 +1415,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
+TEST_P(CookieSettingsTest, GetCookieSetting3pcdTrial) {
   const GURL top_level_url(kFirstPartySite);
   const GURL url(kAllowedSite);
   const GURL third_url(kBlockedSite);
@@ -1428,19 +1428,19 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      ContentSettingsType::TPCD_SUPPORT, CONTENT_SETTING_ALLOW);
+      ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWith3pcdSupportSetting());
+            SettingWith3pcdTrialSetting());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(BlockedStorageAccessResultWith3pcdSupportSetting()), 1);
+      static_cast<int>(BlockedStorageAccessResultWith3pcdTrialSetting()), 1);
 
-  // Check override support setting.
+  // Check override trial setting.
   auto overrides = GetCookieSettingOverrides();
-  overrides.Put(net::CookieSettingOverride::kSkipTPCDSupport);
+  overrides.Put(net::CookieSettingOverride::kSkipTPCDTrial);
   EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, overrides,
                                                nullptr),
             CONTENT_SETTING_BLOCK);
@@ -1893,8 +1893,8 @@ std::string CustomTestName(
              info.param)
       << "_StorageAccessGrantsEligible_"
       << std::get<TestVariables::kStorageAccessGrantsEligible>(info.param)
-      << "_3pcdSupportEligible_"
-      << std::get<TestVariables::k3pcdSupportEligible>(info.param)
+      << "_3pcdTrialEligible_"
+      << std::get<TestVariables::k3pcdTrialEligible>(info.param)
       << "_TpcdMetadataGrantsEligible_"
       << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param)
       << "_HostIndexedMetadataGrantsEnabled_"
@@ -1940,20 +1940,20 @@ INSTANTIATE_TEST_SUITE_P(
     CustomTestName);
 
 #if !BUILDFLAG(IS_IOS)
-class CookieSettingsTopLevelTpcdSupportTest
+class CookieSettingsTopLevelTpcdTrialTest
     : public CookieSettingsTestBase,
       public testing::
-          TestWithParam</*net::features::kTopLevelTpcdSupportSettings:*/
+          TestWithParam</*net::features::kTopLevelTpcdTrialSettings:*/
                         bool> {
  public:
-  CookieSettingsTopLevelTpcdSupportTest() {
+  CookieSettingsTopLevelTpcdTrialTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (IsTopLevel3pcdSupportEligible()) {
-      enabled_features.push_back(net::features::kTopLevelTpcdSupportSettings);
+    if (IsTopLevel3pcdTrialEligible()) {
+      enabled_features.push_back(net::features::kTopLevelTpcdTrialSettings);
     } else {
-      disabled_features.push_back(net::features::kTopLevelTpcdSupportSettings);
+      disabled_features.push_back(net::features::kTopLevelTpcdTrialSettings);
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1961,7 +1961,7 @@ class CookieSettingsTopLevelTpcdSupportTest
 
   void SetUp() override { CookieSettingsTestBase::SetUp(); }
 
-  bool IsTopLevel3pcdSupportEligible() const { return GetParam(); }
+  bool IsTopLevel3pcdTrialEligible() const { return GetParam(); }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
@@ -1969,37 +1969,36 @@ class CookieSettingsTopLevelTpcdSupportTest
   }
 
   // Assumes the cookie access would be blocked if not for a
-  // `ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT` setting.
-  ContentSetting SettingWithTopLevel3pcdSupportSetting() const {
-    return IsTopLevel3pcdSupportEligible() ? CONTENT_SETTING_ALLOW
-                                           : CONTENT_SETTING_BLOCK;
+  // `ContentSettingsType::TOP_LEVEL_TPCD_TRIAL` setting.
+  ContentSetting SettingWithTopLevel3pcdTrialSetting() const {
+    return IsTopLevel3pcdTrialEligible() ? CONTENT_SETTING_ALLOW
+                                         : CONTENT_SETTING_BLOCK;
   }
 
   // Assumes the storage access result would be blocked if not for a
-  // `ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT` setting.
+  // `ContentSettingsType::TOP_LEVEL_TPCD_TRIAL` setting.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWithTopLevel3pcdSupportSetting() const {
-    if (IsTopLevel3pcdSupportEligible()) {
+  BlockedStorageAccessResultWithTopLevel3pcdTrialSetting() const {
+    if (IsTopLevel3pcdTrialEligible()) {
       return net::cookie_util::StorageAccessResult::
-          ACCESS_ALLOWED_TOP_LEVEL_3PCD_SUPPORT;
+          ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL;
     }
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
-  void AddSettingForTopLevelTpcdSupport(GURL top_level_url,
-                                        ContentSetting setting) {
-    // Top level 3pcd support settings use
+  void AddSettingForTopLevelTpcdTrial(GURL top_level_url,
+                                      ContentSetting setting) {
+    // Top-level 3pcd trial settings use
     // |WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE| by default and as a result
     // only use a primary pattern (with wildcard placeholder for the secondary
     // pattern).
     settings_map_->SetContentSettingDefaultScope(
-        top_level_url, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT,
+        top_level_url, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
         CONTENT_SETTING_ALLOW);
   }
 };
 
-TEST_P(CookieSettingsTopLevelTpcdSupportTest,
-       GetCookieSettingTopLevel3pcdSupport) {
+TEST_P(CookieSettingsTopLevelTpcdTrialTest, GetCookieSettingTopLevel3pcdTrial) {
   const GURL top_level_url(kFirstPartySite);
   const GURL url(kAllowedSite);
   const GURL third_url(kBlockedSite);
@@ -2009,18 +2008,18 @@ TEST_P(CookieSettingsTopLevelTpcdSupportTest,
 
   prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
 
-  AddSettingForTopLevelTpcdSupport(top_level_url, CONTENT_SETTING_ALLOW);
+  AddSettingForTopLevelTpcdTrial(top_level_url, CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithTopLevel3pcdSupportSetting());
+            SettingWithTopLevel3pcdTrialSetting());
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
-      BlockedStorageAccessResultWithTopLevel3pcdSupportSetting(), 1);
+      BlockedStorageAccessResultWithTopLevel3pcdTrialSetting(), 1);
 
-  // Check override support setting.
+  // Check override trial setting.
   auto overrides = GetCookieSettingOverrides();
-  overrides.Put(net::CookieSettingOverride::kSkipTopLevelTPCDSupport);
+  overrides.Put(net::CookieSettingOverride::kSkipTopLevelTPCDTrial);
   EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, overrides,
                                                nullptr),
             CONTENT_SETTING_BLOCK);
@@ -2028,10 +2027,10 @@ TEST_P(CookieSettingsTopLevelTpcdSupportTest,
   // Valid pairs where |top_level_url| grants access to other urls.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithTopLevel3pcdSupportSetting());
+            SettingWithTopLevel3pcdTrialSetting());
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 GURL(), top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWithTopLevel3pcdSupportSetting());
+            SettingWithTopLevel3pcdTrialSetting());
 
   // Invalid pair where the |top_level_url| granting access to embedded sites is
   // now being loaded under |url| as the top level url.
@@ -2049,7 +2048,7 @@ TEST_P(CookieSettingsTopLevelTpcdSupportTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         CookieSettingsTopLevelTpcdSupportTest,
+                         CookieSettingsTopLevelTpcdTrialTest,
                          testing::Bool());
 #endif
 

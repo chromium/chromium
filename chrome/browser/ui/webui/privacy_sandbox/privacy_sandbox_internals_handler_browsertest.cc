@@ -194,13 +194,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
                 Field(&ContentSettingPatternSource::source, "preference")))));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdSupport) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdTrial) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingDefaultScope(
       GURL("https://example.org"), GURL("https://example.net"),
-      ContentSettingsType::TPCD_SUPPORT, CONTENT_SETTING_ALLOW);
-  remote_->GetTpcdSupport(
+      ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
+  remote_->GetTpcdTrial(
       base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
                      base::Unretained(this)));
   waiter_.Wait();

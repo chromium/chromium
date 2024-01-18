@@ -296,8 +296,8 @@ class CookieSettingsBase {
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
-  // ContentSettingsTypes. Currently only COOKIES, TPCD_SUPPORT, STORAGE_ACCESS,
-  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_TPCD_SUPPORT, and
+  // ContentSettingsTypes. Currently only COOKIES, TPCD_TRIAL, STORAGE_ACCESS,
+  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_TPCD_TRIAL, and
   // TOP_LEVEL_STORAGE_ACCESS are required.
   virtual ContentSetting GetContentSetting(
       const GURL& primary_url,
@@ -308,12 +308,12 @@ class CookieSettingsBase {
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
 
-  bool IsAllowedByTopLevel3pcdSupportSetting(const GURL& first_party_url) const;
+  bool IsAllowedByTopLevel3pcdTrialSetting(const GURL& first_party_url) const;
 
-  bool ShouldConsider3pcdSupportSettings(
+  bool ShouldConsider3pcdTrialSettings(
       net::CookieSettingOverrides overrides) const;
 
-  bool ShouldConsiderTopLevel3pcdSupportSettings(
+  bool ShouldConsiderTopLevel3pcdTrialSettings(
       net::CookieSettingOverrides overrides) const;
 
   bool ShouldConsider3pcdHeuristicsGrantsSettings(

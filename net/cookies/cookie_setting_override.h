@@ -26,10 +26,12 @@ enum class CookieSettingOverride {
   // these grants/heuristics.
   kSkipTPCDHeuristicsGrant = 2,
   kSkipTPCDMetadataGrant = 3,
-  // Corresponds to skipping checks on the TPCD_SUPPORT content setting, which
+  // Corresponds to skipping checks on the TPCD_TRIAL content setting, which
   // backs 3PC accesses granted via 3PC deprecation trial.
-  kSkipTPCDSupport = 4,
-  kSkipTopLevelTPCDSupport = 5,
+  kSkipTPCDTrial = 4,
+  // Corresponds to skipping checks on the TOP_LEVEL_TPCD_TRIAL content setting,
+  // which backs 3PC accesses granted via top-level 3PC deprecation trial.
+  kSkipTopLevelTPCDTrial = 5,
   // Corresponds to checks that may grant 3PCs when a request opts into
   // credentials and CORS protection.
   // One example are subresource requests that are same-site with the top-level

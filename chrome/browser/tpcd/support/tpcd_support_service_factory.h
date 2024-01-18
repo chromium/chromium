@@ -12,32 +12,31 @@ namespace content {
 class BrowserContext;
 }
 
-namespace tpcd::support {
-class TpcdSupportService;
+namespace tpcd::trial {
+class TpcdTrialService;
 
-class TpcdSupportServiceFactory : public ProfileKeyedServiceFactory {
+class TpcdTrialServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static TpcdSupportServiceFactory* GetInstance();
-  static TpcdSupportService* GetForProfile(Profile* profile);
+  static TpcdTrialServiceFactory* GetInstance();
+  static TpcdTrialService* GetForProfile(Profile* profile);
   static ProfileSelections CreateProfileSelections();
 
-  TpcdSupportServiceFactory(const TpcdSupportServiceFactory&) = delete;
-  TpcdSupportServiceFactory& operator=(const TpcdSupportServiceFactory&) =
-      delete;
-  TpcdSupportServiceFactory(TpcdSupportServiceFactory&&) = delete;
-  TpcdSupportServiceFactory& operator=(TpcdSupportServiceFactory&&) = delete;
+  TpcdTrialServiceFactory(const TpcdTrialServiceFactory&) = delete;
+  TpcdTrialServiceFactory& operator=(const TpcdTrialServiceFactory&) = delete;
+  TpcdTrialServiceFactory(TpcdTrialServiceFactory&&) = delete;
+  TpcdTrialServiceFactory& operator=(TpcdTrialServiceFactory&&) = delete;
 
  private:
-  friend class base::NoDestructor<TpcdSupportServiceFactory>;
+  friend class base::NoDestructor<TpcdTrialServiceFactory>;
 
-  TpcdSupportServiceFactory();
-  ~TpcdSupportServiceFactory() override;
+  TpcdTrialServiceFactory();
+  ~TpcdTrialServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };
 
-}  // namespace tpcd::support
+}  // namespace tpcd::trial
 
 #endif  // CHROME_BROWSER_TPCD_SUPPORT_TPCD_SUPPORT_SERVICE_FACTORY_H_

@@ -69,8 +69,8 @@ enum class AdsHeuristicCookieOverride {
   kAny = 2,
   kSkipHeuristics = 3,
   kSkipMetadata = 4,
-  kSkipSupport = 5,
-  kMaxValue = kSkipSupport
+  kSkipTrial = 5,
+  kMaxValue = kSkipTrial
 };
 
 const char kAdHeuristicOverrideHistogramName[] =
@@ -213,7 +213,7 @@ class AdHeuristicTPCDBrowserTestBase
       net::test_server::ControllableHttpResponse* register_response2,
       int metadata_count,
       int heuristics_count,
-      int support_count) {
+      int trial_count) {
     content::CookieChangeObserver observer(web_contents());
     FetchCookies("b.test", "/set-cookie?thirdparty=1;SameSite=None;Secure");
     observer.Wait();
@@ -246,8 +246,8 @@ class AdHeuristicTPCDBrowserTestBase
         kAdHeuristicOverrideHistogramName,
         AdsHeuristicCookieOverride::kSkipHeuristics, heuristics_count);
     histogram_tester.ExpectBucketCount(kAdHeuristicOverrideHistogramName,
-                                       AdsHeuristicCookieOverride::kSkipSupport,
-                                       support_count);
+                                       AdsHeuristicCookieOverride::kSkipTrial,
+                                       trial_count);
 
     // Check JS access.
     NavigateFrameTo("b.test", "/empty.html");
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipMetadata, CookieBlocked) {
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/1, /*heuristics_count=*/0,
-                              /*support_count=*/0);
+                              /*trial_count=*/0);
 }
 
 class AdHeuristicTPCDBrowserTestHeuristicsGrant
@@ -418,16 +418,16 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipHeuristicsGrant,
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/0, /*heuristics_count=*/1,
-                              /*support_count=*/0);
+                              /*trial_count=*/0);
 }
 
-class AdHeuristicTPCDBrowserTestSupportGrant
+class AdHeuristicTPCDBrowserTestTrialGrant
     : public AdHeuristicTPCDBrowserTestBase {
  public:
-  AdHeuristicTPCDBrowserTestSupportGrant() {
+  AdHeuristicTPCDBrowserTestTrialGrant() {
     // Experiment feature param requests 3PCs blocked.
     feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kTpcdSupportSettings, {}},
+        {{net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}},
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsSupport", "false"},
@@ -440,7 +440,7 @@ class AdHeuristicTPCDBrowserTestSupportGrant
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSupportGrant, CookieAllowed) {
+IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestTrialGrant, CookieAllowed) {
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           https_server(), "/empty.html?isad=1");
@@ -451,22 +451,22 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSupportGrant, CookieAllowed) {
 
   GURL third_party_url = https_server()->GetURL("b.test", "/");
   GURL first_party_url = https_server()->GetURL("a.test", "/");
-  tpcd::support::TpcdSupportServiceFactory::GetForProfile(browser()->profile())
-      ->Update3pcdSupportSettingsForTesting(
-          url::Origin::Create(third_party_url), first_party_url.spec(),
-          /*match_subdomains=*/false,
-          /*enabled=*/true);
+  tpcd::trial::TpcdTrialServiceFactory::GetForProfile(browser()->profile())
+      ->Update3pcdTrialSettingsForTesting(url::Origin::Create(third_party_url),
+                                          first_party_url.spec(),
+                                          /*match_subdomains=*/false,
+                                          /*enabled=*/true);
 
   Verify3PCookieAccessAllowed(register_response.get());
 }
 
-class AdHeuristicTPCDBrowserTestSkipSupportGrant
+class AdHeuristicTPCDBrowserTestSkipTrialGrant
     : public AdHeuristicTPCDBrowserTestBase {
  public:
-  AdHeuristicTPCDBrowserTestSkipSupportGrant() {
+  AdHeuristicTPCDBrowserTestSkipTrialGrant() {
     // Experiment feature param requests 3PCs blocked.
     feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kTpcdSupportSettings, {}},
+        {{net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}},
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsSupport", "true"},
@@ -479,7 +479,7 @@ class AdHeuristicTPCDBrowserTestSkipSupportGrant
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipSupportGrant,
+IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipTrialGrant,
                        CookieBlocked) {
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -494,13 +494,13 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipSupportGrant,
 
   GURL third_party_url = https_server()->GetURL("b.test", "/");
   GURL first_party_url = https_server()->GetURL("a.test", "/");
-  tpcd::support::TpcdSupportServiceFactory::GetForProfile(browser()->profile())
-      ->Update3pcdSupportSettingsForTesting(
-          url::Origin::Create(third_party_url), first_party_url.spec(),
-          /*match_subdomains=*/false,
-          /*enabled=*/true);
+  tpcd::trial::TpcdTrialServiceFactory::GetForProfile(browser()->profile())
+      ->Update3pcdTrialSettingsForTesting(url::Origin::Create(third_party_url),
+                                          first_party_url.spec(),
+                                          /*match_subdomains=*/false,
+                                          /*enabled=*/true);
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/0, /*heuristics_count=*/0,
-                              /*support_count=*/1);
+                              /*trial_count=*/1);
 }

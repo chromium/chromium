@@ -57,12 +57,12 @@ void PrivacySandboxInternalsHandler::GetTpcdHeuristicsGrants(
       map->GetSettingsForOneType(ContentSettingsType::TPCD_HEURISTICS_GRANTS));
 }
 
-void PrivacySandboxInternalsHandler::GetTpcdSupport(
+void PrivacySandboxInternalsHandler::GetTpcdTrial(
     GetTpcdMetadataGrantsCallback callback) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
   std::move(callback).Run(
-      map->GetSettingsForOneType(ContentSettingsType::TPCD_SUPPORT));
+      map->GetSettingsForOneType(ContentSettingsType::TPCD_TRIAL));
 }
 
 void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(

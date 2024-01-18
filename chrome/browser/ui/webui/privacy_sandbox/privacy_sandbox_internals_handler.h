@@ -42,7 +42,7 @@ class PrivacySandboxInternalsHandler
   void GetCookieSettings(GetCookieSettingsCallback callback) override;
   void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
   void GetTpcdHeuristicsGrants(GetTpcdMetadataGrantsCallback callback) override;
-  void GetTpcdSupport(GetTpcdMetadataGrantsCallback callback) override;
+  void GetTpcdTrial(GetTpcdMetadataGrantsCallback callback) override;
 
  private:
   raw_ptr<Profile> profile_;

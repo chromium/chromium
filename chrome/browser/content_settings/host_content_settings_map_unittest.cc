@@ -1870,11 +1870,11 @@ TEST_P(IndexedHostContentSettingsMapTest, GetPatternsFromScopingType) {
   // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
   host_content_settings_map->SetContentSettingDefaultScope(
-      primary_url, secondary_url, ContentSettingsType::TPCD_SUPPORT,
+      primary_url, secondary_url, ContentSettingsType::TPCD_TRIAL,
       CONTENT_SETTING_ALLOW);
 
   settings = host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::TPCD_SUPPORT);
+      ContentSettingsType::TPCD_TRIAL);
 
   EXPECT_EQ(settings[0].primary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
@@ -1955,7 +1955,7 @@ TEST_F(HostContentSettingsMapTest, GetPatternsForContentSettingsType) {
   // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
   patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
-      primary_url, secondary_url, ContentSettingsType::TPCD_SUPPORT);
+      primary_url, secondary_url, ContentSettingsType::TPCD_TRIAL);
 
   EXPECT_EQ(patterns.first,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));

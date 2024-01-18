@@ -37,7 +37,7 @@
 using content::URLLoaderInterceptor;
 using content::WebContents;
 
-namespace tpcd::support {
+namespace tpcd::trial {
 namespace {
 
 const char kTestTokenPublicKey[] =
@@ -124,7 +124,7 @@ class ContentSettingChangeObserver : public content_settings::Observer {
 
 }  // namespace
 
-class TpcdSupportBrowserTest : public PlatformBrowserTest {
+class TpcdTrialBrowserTest : public PlatformBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII("origin-trial-public-key",
@@ -135,7 +135,7 @@ class TpcdSupportBrowserTest : public PlatformBrowserTest {
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
         {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTpcdSupportSettings, {}},
+         {net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
@@ -238,7 +238,7 @@ class TpcdSupportBrowserTest : public PlatformBrowserTest {
       base::StrCat({"https://", kTrialEnabledSubdomain})};
 };
 
-IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
+IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
                        EnabledAfterCrossSiteIframeResponse) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site =
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), kTrialEnabledSite, embedding_site,
-        ContentSettingsType::TPCD_SUPPORT);
+        ContentSettingsType::TPCD_TRIAL);
 
     GURL iframe_url = GURL(kTrialEnabledSite.spec() + kTrialEnabledIframePath);
     ASSERT_TRUE(
@@ -288,11 +288,11 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
 
   // Verify that a subsequent load of a resource from `kTrialEnabledSite` on the
   // embedding site without the token (`enabled_site_diff_path`) removes the
-  // `TPCD_SUPPORT` content setting for it it.
+  // `TPCD_TRIAL` content setting for it it.
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), enabled_site_diff_path,
-        embedding_site, ContentSettingsType::TPCD_SUPPORT);
+        embedding_site, ContentSettingsType::TPCD_TRIAL);
     ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId,
                                              enabled_site_diff_path));
     setting_observer.Wait();
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
             CONTENT_SETTING_BLOCK);
 }
 
-IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
+IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
                        EnabledAfterCrossSiteIframeResponseWithSubdomainToken) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site =
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), kTrialEnabledSiteSubdomain,
-        embedding_site, ContentSettingsType::TPCD_SUPPORT);
+        embedding_site, ContentSettingsType::TPCD_TRIAL);
 
     GURL iframe_url = GURL(kTrialEnabledSiteSubdomain.spec() +
                            kTrialEnabledIframePath + "?etld_plus_1_token");
@@ -371,11 +371,11 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
   // Verify that a subsequent load of a resource from
   // `kTrialEnabledSiteSubdomain`'s eTLD+1 (`kTrialEnabledSite`) on the
   // embedding site without the token (`enabled_site_diff_path`) removes the
-  // `TPCD_SUPPORT` content setting for it.
+  // `TPCD_TRIAL` content setting for it.
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), enabled_site_no_token,
-        embedding_site, ContentSettingsType::TPCD_SUPPORT);
+        embedding_site, ContentSettingsType::TPCD_TRIAL);
     ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId,
                                              enabled_site_no_token));
     setting_observer.Wait();
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
             CONTENT_SETTING_BLOCK);
 }
 
-IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest, EnabledAfterMetaTagAppend) {
+IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest, EnabledAfterMetaTagAppend) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site{
       base::StrCat({"https://a.test/", kEmbeddedScriptPagePath})};
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest, EnabledAfterMetaTagAppend) {
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), kTrialEnabledSite, embedding_site,
-        ContentSettingsType::TPCD_SUPPORT);
+        ContentSettingsType::TPCD_TRIAL);
 
     ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
     setting_observer.Wait();
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest, EnabledAfterMetaTagAppend) {
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }
 
-IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
+IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
                        EnabledAfterMetaTagAppendWithSubdomainToken) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site{base::StrCat(
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), kTrialEnabledSite, embedding_site,
-        ContentSettingsType::TPCD_SUPPORT);
+        ContentSettingsType::TPCD_TRIAL);
 
     ASSERT_TRUE(content::NavigateToURL(web_contents, embedding_site));
     setting_observer.Wait();
@@ -462,11 +462,10 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }
 
-// This test verifies that TPCD_SUPPORT content settings are scoped to the
+// This test verifies that TPCD_TRIAL content settings are scoped to the
 // embedded origin, in the case where a non-subdomain-matching origin trial
 // token is used to enable the trial.
-IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
-                       TrialEnabledForTokenOriginScope) {
+IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest, TrialEnabledForTokenOriginScope) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site =
       embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
@@ -479,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), kTrialEnabledSite, embedding_site,
-        ContentSettingsType::TPCD_SUPPORT);
+        ContentSettingsType::TPCD_TRIAL);
 
     GURL iframe_url = GURL(kTrialEnabledSite.spec() + kTrialEnabledIframePath);
     ASSERT_TRUE(
@@ -487,14 +486,14 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
     setting_observer.Wait();
   }
 
-  // Verify the format of the `TPCD_SUPPORT` content setting.
+  // Verify the format of the `TPCD_TRIAL` content setting.
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(
           GetActiveWebContents()->GetBrowserContext());
 
   content_settings::SettingInfo setting_info;
   ASSERT_EQ(settings_map->GetContentSetting(kTrialEnabledSite, embedding_site,
-                                            ContentSettingsType::TPCD_SUPPORT,
+                                            ContentSettingsType::TPCD_TRIAL,
                                             &setting_info),
             CONTENT_SETTING_ALLOW);
 
@@ -513,11 +512,11 @@ IN_PROC_BROWSER_TEST_F(TpcdSupportBrowserTest,
       ContentSettingsPattern::FromURLToSchemefulSitePattern(embedding_site));
 }
 
-// This test verifies that TPCD_SUPPORT content settings are scoped to
+// This test verifies that TPCD_TRIAL content settings are scoped to
 // subdomains of the token origin, when created as a result of a subdomain
 // matching origin trial token being used.
 IN_PROC_BROWSER_TEST_F(
-    TpcdSupportBrowserTest,
+    TpcdTrialBrowserTest,
     SubdomainMatchingTokenEnablesTrialOnlyForSubdomainsOfTokenOrigin) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site =
@@ -532,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     ContentSettingChangeObserver setting_observer(
         web_contents->GetBrowserContext(), kTrialEnabledSiteSubdomain,
-        embedding_site, ContentSettingsType::TPCD_SUPPORT);
+        embedding_site, ContentSettingsType::TPCD_TRIAL);
 
     GURL iframe_url =
         GURL(kTrialEnabledSiteSubdomain.spec() + kTrialEnabledIframePath);
@@ -541,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(
     setting_observer.Wait();
   }
 
-  // Verify the format of the `TPCD_SUPPORT` content setting.
+  // Verify the format of the `TPCD_TRIAL` content setting.
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(
           GetActiveWebContents()->GetBrowserContext());
@@ -549,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(
   content_settings::SettingInfo setting_info;
   ASSERT_EQ(settings_map->GetContentSetting(
                 kTrialEnabledSiteSubdomain, embedding_site,
-                ContentSettingsType::TPCD_SUPPORT, &setting_info),
+                ContentSettingsType::TPCD_TRIAL, &setting_info),
             CONTENT_SETTING_ALLOW);
 
   // `setting_info.primary_pattern` should only match
@@ -570,4 +569,4 @@ IN_PROC_BROWSER_TEST_F(
       ContentSettingsPattern::FromURLToSchemefulSitePattern(embedding_site));
 }
 
-}  // namespace tpcd::support
+}  // namespace tpcd::trial

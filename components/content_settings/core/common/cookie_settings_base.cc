@@ -87,8 +87,8 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::STORAGE_ACCESS,
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-          ContentSettingsType::TPCD_SUPPORT,
-          ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT,
+          ContentSettingsType::TPCD_TRIAL,
+          ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
       });
   return kInstance;
 }
@@ -236,19 +236,19 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
   return net::CookieAccessSemantics::UNKNOWN;
 }
 
-bool CookieSettingsBase::ShouldConsider3pcdSupportSettings(
+bool CookieSettingsBase::ShouldConsider3pcdTrialSettings(
     net::CookieSettingOverrides overrides) const {
-  return base::FeatureList::IsEnabled(net::features::kTpcdSupportSettings) &&
+  return base::FeatureList::IsEnabled(net::features::kTpcdTrialSettings) &&
          MitigationsEnabledFor3pcd() &&
-         !overrides.Has(net::CookieSettingOverride::kSkipTPCDSupport);
+         !overrides.Has(net::CookieSettingOverride::kSkipTPCDTrial);
 }
 
-bool CookieSettingsBase::ShouldConsiderTopLevel3pcdSupportSettings(
+bool CookieSettingsBase::ShouldConsiderTopLevel3pcdTrialSettings(
     net::CookieSettingOverrides overrides) const {
   return base::FeatureList::IsEnabled(
-             net::features::kTopLevelTpcdSupportSettings) &&
+             net::features::kTopLevelTpcdTrialSettings) &&
          MitigationsEnabledFor3pcd() &&
-         !overrides.Has(net::CookieSettingOverride::kSkipTopLevelTPCDSupport);
+         !overrides.Has(net::CookieSettingOverride::kSkipTopLevelTPCDTrial);
 }
 
 bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
@@ -368,27 +368,27 @@ CookieSettingsBase::GetCookieSettingInternal(
     }
   }
 
-  if (block_third && ShouldConsider3pcdSupportSettings(overrides) &&
+  if (block_third && ShouldConsider3pcdTrialSettings(overrides) &&
       GetContentSetting(url, first_party_url,
-                        ContentSettingsType::TPCD_SUPPORT) ==
+                        ContentSettingsType::TPCD_TRIAL) ==
           CONTENT_SETTING_ALLOW) {
     block_third = false;
     third_party_cookie_allow_mechanism =
         ThirdPartyCookieAllowMechanism::kAllowBy3PCD;
     FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD_SUPPORT);
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD_TRIAL);
     if (info) {
       info->source = SETTING_SOURCE_TPCD_GRANT;
     }
   }
 
-  if (block_third && ShouldConsiderTopLevel3pcdSupportSettings(overrides) &&
-      IsAllowedByTopLevel3pcdSupportSetting(first_party_url)) {
+  if (block_third && ShouldConsiderTopLevel3pcdTrialSettings(overrides) &&
+      IsAllowedByTopLevel3pcdTrialSetting(first_party_url)) {
     block_third = false;
     third_party_cookie_allow_mechanism =
         ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD;
     FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                   ACCESS_ALLOWED_TOP_LEVEL_3PCD_SUPPORT);
+                                   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL);
     if (info) {
       info->source = SETTING_SOURCE_TPCD_GRANT;
     }
@@ -478,14 +478,14 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
          CONTENT_SETTING_ALLOW;
 }
 
-bool CookieSettingsBase::IsAllowedByTopLevel3pcdSupportSetting(
+bool CookieSettingsBase::IsAllowedByTopLevel3pcdTrialSetting(
     const GURL& first_party_url) const {
-  // Top level 3pcd support settings use
+  // Top-level 3pcd trial settings use
   // |WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE| by default and as a result
   // only use a primary pattern (with wildcard placeholder for the secondary
   // pattern).
   return GetContentSetting(first_party_url, first_party_url,
-                           ContentSettingsType::TOP_LEVEL_TPCD_SUPPORT) ==
+                           ContentSettingsType::TOP_LEVEL_TPCD_TRIAL) ==
          CONTENT_SETTING_ALLOW;
 }
 
