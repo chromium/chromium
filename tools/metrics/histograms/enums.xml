@@ -14140,6 +14140,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4772" label="HTMLDatalistInSelect"/>
   <int value="4773" label="EffectiveAlignContentForBlock"/>
   <int value="4774" label="EffectiveAlignContentForTableCell"/>
+  <int value="4775" label="UserFeatureNgOptimizedImage"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

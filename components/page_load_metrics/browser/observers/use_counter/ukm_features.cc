@@ -374,6 +374,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kElementRequestPointerLock,
           WebFeature::kKeyboardApiLock,
           WebFeature::kLCPImageWasLazy,
+          WebFeature::kUserFeatureNgOptimizedImage,
       }));
   return *opt_in_features;
 }

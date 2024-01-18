@@ -4112,6 +4112,7 @@ enum WebFeature {
   kHTMLDatalistInSelect = 4772,
   kEffectiveAlignContentForBlock = 4773,
   kEffectiveAlignContentForTableCell = 4774,
+  kUserFeatureNgOptimizedImage = 4775,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

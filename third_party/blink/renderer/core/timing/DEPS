@@ -13,4 +13,7 @@ specific_include_rules = {
       "+base/test/trace_event_analyzer.h",
       "+base/json/json_reader.h",
     ],
+    "performance_mark_test.cc": [
+        "+components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h",
+    ]
 }

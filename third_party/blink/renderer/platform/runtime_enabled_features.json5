@@ -2904,6 +2904,11 @@
       public: true,
     },
     {
+      // Enables performance.mark('mark_feature_usage'): crbug.com/1517170
+      name: "PerformanceMarkFeatureUsage",
+      status: "experimental"
+    },
+    {
       name: "PerformanceNavigateSystemEntropy",
       status: "experimental",
     },

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] performance.mark with mark_feature_usage ticks mapped WebFeature UseCounter
+  assert_true: mark_feature_usage corresponding WebFeature usage was counted expected true got false
+Harness: the test ran to completion.
+

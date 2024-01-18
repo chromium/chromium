@@ -355,6 +355,8 @@ class CORE_EXPORT Performance : public EventTarget {
       const AtomicString& maybe_type = g_null_atom,
       const AtomicString& maybe_name = g_null_atom);
 
+  void ProcessUserFeatureMark(const PerformanceMarkOptions* mark_options);
+
  protected:
   Performance(base::TimeTicks time_origin,
               bool cross_origin_isolated_capability,
