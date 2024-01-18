@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -77,8 +78,15 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jint android_button_state,
                                       jint android_meta_state,
                                       jboolean for_touch_handle) {
-  TRACE_EVENT("input", "EventForwarder::OnTouchEvent", "history_size",
-              history_size, "time_ns", time_ns, "x", pos_x_0, "y", pos_y_0);
+  TRACE_EVENT(
+      "input", "EventForwarder::OnTouchEvent", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* forwarder = event->set_event_forwarder();
+        forwarder->set_history_size(history_size);
+        forwarder->set_time_ns(time_ns);
+        forwarder->set_x_pixel(pos_x_0);
+        forwarder->set_y_pixel(pos_y_0);
+      });
 
   ui::MotionEventAndroid::Pointer pointer0(
       pointer_id_0, pos_x_0, pos_y_0, touch_major_0, touch_minor_0,
