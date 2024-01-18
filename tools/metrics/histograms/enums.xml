@@ -20298,6 +20298,8 @@ from previous Chrome versions.
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
+  <int value="-1911212842"
+      label="AutofillReplaceCachedWebElementsByRendererIds:enabled"/>
   <int value="-1911153473" label="enable-easy-signin"/>
   <int value="-1910984835" label="CCTPreventTouches:enabled"/>
   <int value="-1910725149" label="kFastPairHID:enabled"/>
@@ -27576,6 +27578,8 @@ from previous Chrome versions.
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
   <int value="1495341532" label="disable-mtp-write-support"/>
   <int value="1495748045" label="SignedHTTPExchange:enabled"/>
+  <int value="1496070561"
+      label="AutofillReplaceCachedWebElementsByRendererIds:disabled"/>
   <int value="1496135626" label="UploadCrashReportsUsingJobScheduler:enabled"/>
   <int value="1496571153" label="enable-webapk"/>
   <int value="1497284913" label="WASAPIRawAudioCapture:enabled"/>

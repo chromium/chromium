@@ -262,6 +262,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill will first look at field labels and then at field "
                         + "attributes when classifying address fields in Mexico."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_REPLACE_CACHED_WEB_ELEMENTS_BY_RENDERER_IDS,
+                "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
+                        + "instead of holding strong references to blink::WebElement objects."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ALWAYS_PARSE_PLACEHOLDERS,
                 "When enabled, Autofill local heuristics consider the placeholder attribute "
                         + "for determining field types."),
