@@ -4754,10 +4754,10 @@
           other {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and # other apps to start automatically every time you log in.}
         }
       </message>
-      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_ONE_APP_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when one application is automatically started on OS login and is prevented from closing.[ICU Syntax]">
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_ONE_APP_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when one application is automatically started on OS login and is prevented from closing.">
         Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically. This app may not be closed.
       </message>
-      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MULTIPLE_APPS_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when multiple applications are automatically started on OS login and are prevented from closing.[ICU Syntax]">
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MULTIPLE_APPS_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when multiple applications are automatically started on OS login and are prevented from closing.">
         Your administrator has set up some apps to start automatically. Some of these apps may not be closed.
       </message>
 
