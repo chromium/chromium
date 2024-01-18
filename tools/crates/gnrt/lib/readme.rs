@@ -75,12 +75,12 @@ pub fn readme_file_from_package<'a>(
         .join(format!("{}-{}", package.name, package.version));
     let group = find_group(&package.id);
 
-    let security_critical = find_security_critical(&package.id).unwrap_or_else(|| match group {
+    let security_critical = find_security_critical(&package.id).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,
         Group::Test => false,
     });
 
-    let shipped = find_shipped(&package.id).unwrap_or_else(|| match group {
+    let shipped = find_shipped(&package.id).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,
         Group::Test => false,
     });
@@ -127,21 +127,19 @@ pub fn readme_file_from_package<'a>(
             }
         }) {
             config_license_files.map(to_crate_dir_string).collect()
+        } else if let Some(file) = &package.license_file {
+            path_if_exists(file.as_std_path())?.into_iter().map(to_crate_dir_string).collect()
         } else {
-            if let Some(file) = &package.license_file {
-                path_if_exists(file.as_std_path())?.into_iter().map(to_crate_dir_string).collect()
-            } else {
-                EXPECTED_LICENSE_FILE
-                    .iter()
-                    .filter_map(|(l, path)| {
-                        if license == **l {
-                            path_if_exists(Path::new(path)).unwrap_or(None).map(to_crate_dir_string)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect()
-            }
+            EXPECTED_LICENSE_FILE
+                .iter()
+                .filter_map(|(l, path)| {
+                    if license == **l {
+                        path_if_exists(Path::new(path)).unwrap_or(None).map(to_crate_dir_string)
+                    } else {
+                        None
+                    }
+                })
+                .collect()
         }
     };
     if license_files.is_empty() && shipped {

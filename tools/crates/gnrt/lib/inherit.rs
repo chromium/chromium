@@ -10,14 +10,13 @@ use std::collections::HashMap;
 fn is_ancestor(
     ancestor_id: &PackageId,
     id: &PackageId,
-    packages: &HashMap<&PackageId, &Package>,
     nodes: &HashMap<&PackageId, &Node>,
 ) -> bool {
     if id == ancestor_id {
         return true;
     }
     for dep in &nodes[ancestor_id].dependencies {
-        if dep == id || is_ancestor(dep, id, packages, nodes) {
+        if dep == id || is_ancestor(dep, id, nodes) {
             return true;
         }
     }
@@ -62,11 +61,11 @@ pub fn find_inherited_privilege_group(
         });
 
         if let Some(group) = found_group {
-            if id == *each_id || is_ancestor(each_id, id, packages, nodes) {
+            if id == *each_id || is_ancestor(each_id, id, nodes) {
                 // `each_id` is an ancestor of `id`, or is the same crate.
                 log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, group);
                 ancestor_groups.push(group);
-            } else if is_ancestor(id, each_id, packages, nodes) {
+            } else if is_ancestor(id, each_id, nodes) {
                 // `each_id` is an descendent of `id`, or is the same crate.
                 log::debug!("{} depe {} ({:?})", packages[id].name, packages[each_id].name, group);
                 dependency_groups.push(group);
@@ -81,10 +80,8 @@ pub fn find_inherited_privilege_group(
 
     // Combine the privileges together. Ancestors work to increase privilege,
     // and dependencies work to decrease it.
-    let ancestor_privilege =
-        ancestor_groups.into_iter().fold(Group::Test, |old, g| std::cmp::max(old, g));
-    let depedency_privilege =
-        dependency_groups.into_iter().fold(Group::Safe, |old, g| std::cmp::min(old, g));
+    let ancestor_privilege = ancestor_groups.into_iter().fold(Group::Test, std::cmp::max);
+    let depedency_privilege = dependency_groups.into_iter().fold(Group::Safe, std::cmp::min);
     let privilege = std::cmp::min(ancestor_privilege, depedency_privilege);
     log::debug!("privilege = {:?}", privilege);
     privilege
@@ -116,13 +113,13 @@ fn find_inherited_bool_flag(
         let group = get_group(each_id, packages, config);
 
         if let Some(flag) = get_flag(each_id).or_else(|| {
-            if nodes[root].deps.iter().find(|d| d.pkg == **each_id).is_some() {
+            if nodes[root].deps.iter().any(|d| d.pkg == **each_id) {
                 get_flag_for_top_level(group)
             } else {
                 None
             }
         }) {
-            if id == *each_id || is_ancestor(each_id, id, packages, nodes) {
+            if id == *each_id || is_ancestor(each_id, id, nodes) {
                 log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, flag);
                 inherited_flag = Some(inherited_flag.unwrap_or_default() || flag);
             }

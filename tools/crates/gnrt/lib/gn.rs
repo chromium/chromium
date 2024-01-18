@@ -236,7 +236,7 @@ pub fn build_rule_from_std_dep(
             .dependency_kinds
             .get(&deps::DependencyKind::Normal)
             .map(|per_kind_info| per_kind_info.features.clone())
-            .unwrap_or(vec![]);
+            .unwrap_or_default();
         features.sort_unstable();
         features.dedup();
         features
@@ -247,7 +247,7 @@ pub fn build_rule_from_std_dep(
             .dependency_kinds
             .get(&deps::DependencyKind::Build)
             .map(|per_kind_info| per_kind_info.features.clone())
-            .unwrap_or(vec![]);
+            .unwrap_or_default();
         features.sort_unstable();
         features.dedup();
         features
@@ -266,13 +266,13 @@ pub fn build_rule_from_std_dep(
                 details
                     .build_script_sources
                     .iter()
-                    .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string())),
+                    .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap())),
             )
             .collect();
         detail_template.build_script_inputs = details
             .build_script_inputs
             .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
+            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
             .collect();
         detail_template.build_script_outputs =
             if let Some(outs) = per_crate_config.map(|config| &config.build_script_outputs) {
@@ -294,12 +294,12 @@ pub fn build_rule_from_std_dep(
         bin_detail.sources = details
             .sources
             .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
+            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
             .collect();
         bin_detail.inputs = details
             .inputs
             .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
+            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
             .collect();
         // Bins are not part of a build script, so they don't need build-script
         // deps, only normal deps.
@@ -343,7 +343,7 @@ pub fn build_rule_from_std_dep(
             let (crate_name, epoch) = match name_lib_style {
                 NameLibStyle::PackageName => (None, None),
                 NameLibStyle::LibLiteral => {
-                    (Some(normalized_crate_name.to_string()), Some(crate_epoch.clone()))
+                    (Some(normalized_crate_name.to_string()), Some(crate_epoch))
                 }
             };
             let crate_type = {
@@ -360,12 +360,12 @@ pub fn build_rule_from_std_dep(
             lib_detail.sources = details
                 .sources
                 .iter()
-                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
+                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
                 .collect();
             lib_detail.inputs = details
                 .inputs
                 .iter()
-                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap().to_string()))
+                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
                 .collect();
             lib_detail.features = match &dep_kind {
                 Normal => requested_features_for_normal.clone(),
@@ -401,10 +401,7 @@ where
 {
     let mut groups = HashMap::<Option<Condition>, Vec<_>>::new();
     for dep in deps {
-        let cond = match &dep.platform {
-            None => None,
-            Some(p) => Some(platform_to_condition(p)),
-        };
+        let cond = dep.platform.as_ref().map(platform_to_condition);
 
         groups.entry(cond).or_default().push(target_name(dep));
     }

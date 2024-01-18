@@ -27,7 +27,7 @@ pub fn run_command(mut cmd: process::Command, cmd_msg: &str, stdin: Option<&[u8]
     let mut child = check_spawn(&mut cmd, cmd_msg)?;
     if let Some(stdin) = stdin {
         use std::io::Write;
-        child.stdin.as_mut().unwrap().write(stdin)?;
+        child.stdin.as_mut().unwrap().write_all(stdin)?;
     }
     let status = child.wait()?;
     if !status.success() {
@@ -153,7 +153,7 @@ pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn init_handlebars<'a>(template_path: &'a Path) -> Result<handlebars::Handlebars> {
+pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
     let mut handlebars = handlebars::Handlebars::new();
 
     // Don't escape output strings; the default is to escape for HTML output. Do

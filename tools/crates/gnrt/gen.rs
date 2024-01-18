@@ -282,10 +282,12 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         .iter()
         .map(|p| {
             crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibAndBin)
-                .expect(&format!(
-                    "missing a crate input file for '{}'. Dependencies are not vendored?",
-                    p.package_name
-                ))
+                .unwrap_or_else(|_| {
+                    panic!(
+                        "missing a crate input file for '{}'. Dependencies are not vendored?",
+                        p.package_name
+                    )
+                })
         })
         .collect();
 
@@ -295,7 +297,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         let mut found = HashSet::new();
         for dep in &dependencies {
             let epoch = crates::Epoch::from_version(&dep.version);
-            if found.insert((&dep.package_name, epoch)) == false {
+            if !found.insert((&dep.package_name, epoch)) {
                 Err(format_err!(
                     "Two '{}' crates found with the same {} epoch",
                     dep.package_name,
@@ -332,7 +334,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         map
     };
 
-    for (dir, _) in &all_build_files {
+    for dir in all_build_files.keys() {
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
     }
 

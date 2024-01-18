@@ -73,10 +73,7 @@ impl ChromiumPaths {
 
     /// Given an absolute path to a file in the checkout, get an absolute GN
     /// path suitable for use in GN rules.
-    pub fn to_gn_abs_path<'a>(
-        &self,
-        path: &'a Path,
-    ) -> Result<String, std::path::StripPrefixError> {
+    pub fn to_gn_abs_path(&self, path: &Path) -> Result<String, std::path::StripPrefixError> {
         Ok(normalize_unix_path_separator(path.strip_prefix(&self.root)?))
     }
 
@@ -106,20 +103,11 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
 
 /// Replace all path separators with `/` and return it as a String. The
 /// resulting path is suitable for use in GN files.
-pub fn normalize_unix_path_separator<'a>(path: &'a Path) -> String {
+pub fn normalize_unix_path_separator(path: &Path) -> String {
     // `Path`s on windows use `\` separators and we need to use `/` in GN strings.
-    path.iter().map(|comp| comp.to_str().expect(&format!("non-UTF-8 in path {:?}", path))).join("/")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_normalize() {
-        assert_eq!(normalize_unix_path_separator(Path::new("rel")), "rel");
-        assert_eq!(normalize_unix_path_separator(&Path::new("a").join("b")), "a/b");
-    }
+    path.iter()
+        .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {:?}", path)))
+        .join("/")
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
@@ -137,3 +125,14 @@ static THIRD_PARTY_CARGO_ROOT: &str = "third_party/rust/chromium_crates_io";
 static THIRD_PARTY_CONFIG_FILE: &str = "third_party/rust/chromium_crates_io/gnrt_config.toml";
 
 static VET_CONFIG_FILE: &str = "third_party/rust/chromium_crates_io/supply-chain/config.toml";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normalize() {
+        assert_eq!(normalize_unix_path_separator(Path::new("rel")), "rel");
+        assert_eq!(normalize_unix_path_separator(&Path::new("a").join("b")), "a/b");
+    }
+}
