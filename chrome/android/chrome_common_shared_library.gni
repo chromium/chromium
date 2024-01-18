@@ -19,7 +19,10 @@ declare_args() {
   # efficient, but supported only on API 28+.
   # This is not permanently enabled for Trichrome because it shares its native
   # library with Monochrome.
-  use_relr_relocations = is_high_end_android
+  # Restricted to official builds to avoid turning off is_high_end_android
+  # explicitly on all relevant non-official bots. TODO(crbug.com/1515925):
+  # Always use RELR when Android O (and O_MR1) is no longer supported.
+  use_relr_relocations = is_high_end_android && is_official_build
 }
 
 # This template contains all common configuration for native shared libraries,
