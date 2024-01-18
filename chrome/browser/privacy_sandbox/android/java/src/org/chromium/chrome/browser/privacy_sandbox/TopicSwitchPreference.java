@@ -21,8 +21,7 @@ public class TopicSwitchPreference extends ChromeSwitchPreference {
         mTopic = topic;
         setTitle(topic.getName());
         setSummary(topic.getDescription());
-        // TODO(crbug.com/1515108): Update with dynamic logic based on the topic.
-        setIcon(R.drawable.topic_taxonomy_placeholder);
+        updateIcon();
     }
 
     @Override
@@ -33,5 +32,18 @@ public class TopicSwitchPreference extends ChromeSwitchPreference {
         // Manually apply ListItemStartIcon style to draw the outer circle in the right size.
         ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
         FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
+    }
+
+    @SuppressWarnings("DiscouragedApi")
+    private void updateIcon() {
+        String iconName =
+                String.format(
+                        "topic_taxonomy_%s_id_%s",
+                        mTopic.getTaxonomyVersion(), mTopic.getTopicId());
+        int iconId =
+                getContext()
+                        .getResources()
+                        .getIdentifier(iconName, "drawable", getContext().getPackageName());
+        setIcon((iconId != 0) ? iconId : R.drawable.topic_taxonomy_placeholder);
     }
 }

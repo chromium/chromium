@@ -145,6 +145,8 @@ android_resources("java_resources") {
     "java/res/drawable/ic_interests_24dp.xml",
     "java/res/drawable/privacy_sandbox_interests_illustration.xml",
     "java/res/drawable/privacy_sandbox_notice_eea_illustration.xml",
+    "java/res/drawable/topic_taxonomy_2_id_1.xml",
+    "java/res/drawable/topic_taxonomy_2_id_57.xml",
     "java/res/drawable/topic_taxonomy_placeholder.xml",
     "java/res/layout/category_with_clickable_summary_preference.xml",
     "java/res/layout/privacy_sandbox_consent_eea.xml",
