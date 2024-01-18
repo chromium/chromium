@@ -274,8 +274,8 @@ bool DXGISwapChainImageBacking::Present(
                       : 1;
   UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
-  TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
-               "has_alpha", !SkAlphaTypeIsOpaque(alpha_type()), "dirty_rect",
+  TRACE_EVENT2("gpu", "IDXGISwapChain1::Present1", "has_alpha",
+               !SkAlphaTypeIsOpaque(alpha_type()), "dirty_rect",
                pending_swap_rect_->ToString());
   DXGI_PRESENT_PARAMETERS params = {};
   RECT dirty_rect = pending_swap_rect_.value().ToRECT();
