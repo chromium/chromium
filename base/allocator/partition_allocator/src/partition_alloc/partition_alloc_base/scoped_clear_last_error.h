@@ -5,7 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
 
-#include <errno.h>
+#include <cerrno>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"

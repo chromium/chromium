@@ -4,8 +4,8 @@
 
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 
-#include <string.h>
 #include <algorithm>
+#include <cstring>
 
 #include "partition_alloc/partition_alloc_base/check.h"
 

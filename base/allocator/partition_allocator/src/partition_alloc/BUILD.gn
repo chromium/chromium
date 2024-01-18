@@ -316,7 +316,7 @@ if (is_clang_or_gcc) {
       # Not allocating memory, but part of the API
       "-Wl,-wrap,malloc_usable_size",
 
-      # <stdlib.h> functions
+      # <cstdlib> functions
       "-Wl,-wrap,realpath",
 
       # <string.h> functions
@@ -326,7 +326,7 @@ if (is_clang_or_gcc) {
       # <unistd.h> functions
       "-Wl,-wrap,getcwd",
 
-      # <stdio.h> functions
+      # <cstdio> functions
       "-Wl,-wrap,asprintf",
       "-Wl,-wrap,vasprintf",
     ]

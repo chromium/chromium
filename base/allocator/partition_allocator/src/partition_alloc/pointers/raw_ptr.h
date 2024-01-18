@@ -5,10 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <type_traits>
 #include <utility>

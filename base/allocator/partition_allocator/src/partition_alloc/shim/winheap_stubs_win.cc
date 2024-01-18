@@ -8,13 +8,13 @@
 
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
-#include <limits.h>
 #include <malloc.h>
 #include <new.h>
 #include <windows.h>
 
 #include <algorithm>
 #include <bit>
+#include <climits>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/bits.h"

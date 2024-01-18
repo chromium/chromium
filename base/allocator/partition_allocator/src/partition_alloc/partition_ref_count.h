@@ -5,10 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
 
 #include "build/build_config.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"

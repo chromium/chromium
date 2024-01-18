@@ -4,11 +4,11 @@
 
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 
-#include <stddef.h>
-#include <stdint.h>
 #include <windows.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/check.h"

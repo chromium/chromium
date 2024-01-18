@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/time/time.h"
-
-#include <stdint.h>
 #include <sys/time.h>
-#include <time.h>
 
+#include <cstdint>
+#include <ctime>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/time/time.h"
 
 namespace partition_alloc::internal::base {
 

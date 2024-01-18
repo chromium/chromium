@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/rand_util.h"
-
-#include <stddef.h>
-#include <stdint.h>
-
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <vector>
 
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -9,9 +9,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_FUNCTIONS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_FUNCTIONS_H_
 
-#include <stddef.h>
-
 #include <atomic>
+#include <cstddef>
 #include <new>
 
 #include "build/build_config.h"

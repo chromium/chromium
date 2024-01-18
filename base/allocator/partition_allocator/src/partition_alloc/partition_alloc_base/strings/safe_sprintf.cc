@@ -4,10 +4,9 @@
 
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
-#include <errno.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cerrno>
+#include <cstring>
 #include <limits>
 
 #include "build/build_config.h"

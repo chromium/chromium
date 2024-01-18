@@ -5,8 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_PROCESS_PROCESS_HANDLE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_PROCESS_PROCESS_HANDLE_H_
 
-#include <stdint.h>
 #include <sys/types.h>
+
+#include <cstdint>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"

@@ -5,8 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_SAFE_STRERROR_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_SAFE_STRERROR_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <string>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"

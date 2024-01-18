@@ -9,7 +9,8 @@
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <malloc/malloc.h>
-#include <stddef.h>
+
+#include <cstddef>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"

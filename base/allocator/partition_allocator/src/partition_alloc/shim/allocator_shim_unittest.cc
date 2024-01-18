@@ -4,10 +4,9 @@
 
 #include "partition_alloc/shim/allocator_shim.h"
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <atomic>
+#include <cstdlib>
+#include <cstring>
 #include <iomanip>
 #include <memory>
 #include <new>
@@ -692,7 +691,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
 
   InsertAllocatorDispatch(&g_mock_dispatch);
 
-  // <stdlib.h>
+  // <cstdlib>
   counts_before = counts_after;
   ptr = realpath(".", nullptr);
   EXPECT_NE(nullptr, ptr);
@@ -700,7 +699,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   counts_after = total_counts(allocs_intercepted_by_size);
   EXPECT_GT(counts_after, counts_before);
 
-  // <string.h>
+  // <cstring>
   counts_before = counts_after;
   ptr = strdup("hello, world");
   EXPECT_NE(nullptr, ptr);

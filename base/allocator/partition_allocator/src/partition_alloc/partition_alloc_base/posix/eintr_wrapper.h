@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
-#include <errno.h>
+#include <cerrno>
 #include <utility>
 #endif
 

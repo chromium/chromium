@@ -5,10 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
 
-#include <stdint.h>
-
 #include <array>
 #include <atomic>
+#include <cstdint>
 #include <utility>
 #include <vector>
 

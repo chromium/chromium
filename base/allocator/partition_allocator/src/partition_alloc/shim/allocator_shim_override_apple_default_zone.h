@@ -13,9 +13,8 @@
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
 #endif
 
-#include <string.h>
-
 #include <atomic>
+#include <cstring>
 #include <tuple>
 
 #include "partition_alloc/partition_alloc_base/apple/mach_logging.h"

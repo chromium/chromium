@@ -33,9 +33,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_LIGHTWEIGHT_QUARANTINE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_LIGHTWEIGHT_QUARANTINE_H_
 
-#include <stdint.h>
 #include <array>
 #include <atomic>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <type_traits>

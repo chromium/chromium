@@ -5,8 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_BACKUP_REF_IMPL_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_BACKUP_REF_IMPL_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <type_traits>
 
 #include "build/build_config.h"

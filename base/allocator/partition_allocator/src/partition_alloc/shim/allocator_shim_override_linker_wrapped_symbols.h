@@ -68,7 +68,7 @@ static_assert(kPathMaxSize >= PATH_MAX, "");
 
 extern char* __wrap_strdup(const char* str);
 
-// Override <stdlib.h>
+// Override <cstdlib>
 
 extern char* __real_realpath(const char* path, char* resolved_path);
 
@@ -85,7 +85,7 @@ SHIM_ALWAYS_EXPORT char* __wrap_realpath(const char* path,
   return __wrap_strdup(buffer);
 }
 
-// Override <string.h> functions
+// Override <cstring> functions
 
 SHIM_ALWAYS_EXPORT char* __wrap_strdup(const char* str) {
   std::size_t length = std::strlen(str) + 1;

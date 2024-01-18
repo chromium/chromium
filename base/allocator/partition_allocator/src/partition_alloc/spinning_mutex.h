@@ -21,8 +21,9 @@
 #endif
 
 #if BUILDFLAG(IS_POSIX)
-#include <errno.h>
 #include <pthread.h>
+
+#include <cerrno>
 #endif
 
 #if BUILDFLAG(IS_APPLE)

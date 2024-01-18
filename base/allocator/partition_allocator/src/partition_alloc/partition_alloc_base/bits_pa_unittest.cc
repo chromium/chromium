@@ -4,12 +4,10 @@
 
 // This file contains the unit tests for the bit utilities.
 
-#include "partition_alloc/partition_alloc_base/bits.h"
-
-#include <stddef.h>
-
+#include <cstddef>
 #include <limits>
 
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base::bits {

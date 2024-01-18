@@ -9,9 +9,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 
-#include <errno.h>
-
 #include <bit>
+#include <cerrno>
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/bits.h"

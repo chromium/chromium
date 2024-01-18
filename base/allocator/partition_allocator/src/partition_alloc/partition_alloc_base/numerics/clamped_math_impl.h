@@ -5,11 +5,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_CLAMPED_MATH_IMPL_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_CLAMPED_MATH_IMPL_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <climits>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <limits>
 #include <type_traits>

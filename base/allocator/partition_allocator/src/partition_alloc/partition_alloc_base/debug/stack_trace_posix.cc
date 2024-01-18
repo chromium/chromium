@@ -4,13 +4,14 @@
 
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <cstring>
+
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
-
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 #include <link.h>  // For ElfW() macro.
