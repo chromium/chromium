@@ -29,10 +29,6 @@ message ClientCommand {
 
   optional int32 max_commit_batch_size = 3;
 
-  // Number of seconds to delay between a sessions action and sending a commit
-  // message to the server. Can be overridden by |custom_nudge_delays|.
-  optional int32 sessions_commit_delay_seconds = 4;
-
   // Number of seconds to delay before the throttled client should retry.
   optional int32 throttle_delay_seconds = 5;
 
@@ -43,9 +39,6 @@ message ClientCommand {
   optional int32 gu_retry_delay_seconds = 7;
 
   // A dictionary of custom nudge delays.
-  // Note: if a SESSIONS value is present, this will override
-  // |sessions_commit_delay_seconds|
-  // New in M39.
   repeated CustomNudgeDelay custom_nudge_delays = 8;
 
   // Configuration for commit quota of extension-related data types.
@@ -56,4 +49,7 @@ message ClientCommand {
 
   // Extended nudge delay for data types with depleted quota.
   optional int32 extension_types_depleted_quota_nudge_delay_seconds = 11;
+
+  reserved 4;
+  reserved "sessions_commit_delay_seconds";
 }

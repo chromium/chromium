@@ -113,10 +113,7 @@ class SyncerTest : public testing::Test,
 
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& delay_map) override {
-    auto iter = delay_map.find(SESSIONS);
-    if (iter != delay_map.end() && iter->second.is_positive())
-      last_sessions_commit_delay_ = iter->second;
-    iter = delay_map.find(BOOKMARKS);
+    auto iter = delay_map.find(BOOKMARKS);
     if (iter != delay_map.end() && iter->second.is_positive())
       last_bookmarks_commit_delay_ = iter->second;
   }
@@ -259,7 +256,6 @@ class SyncerTest : public testing::Test,
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   std::unique_ptr<SyncCycleContext> context_;
   base::TimeDelta last_poll_interval_received_;
-  base::TimeDelta last_sessions_commit_delay_;
   base::TimeDelta last_bookmarks_commit_delay_;
   int last_client_invalidation_hint_buffer_size_ = 10;
 
@@ -700,7 +696,6 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   auto command = std::make_unique<ClientCommand>();
   command->set_set_sync_poll_interval(8);
   command->set_set_sync_long_poll_interval(800);
-  command->set_sessions_commit_delay_seconds(3141);
   sync_pb::CustomNudgeDelay* bookmark_delay =
       command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
@@ -712,13 +707,11 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   EXPECT_TRUE(SyncShareNudge());
 
   EXPECT_EQ(base::Seconds(8), last_poll_interval_received_);
-  EXPECT_EQ(base::Seconds(3141), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(950), last_bookmarks_commit_delay_);
 
   command = std::make_unique<ClientCommand>();
   command->set_set_sync_poll_interval(180);
   command->set_set_sync_long_poll_interval(190);
-  command->set_sessions_commit_delay_seconds(2718);
   bookmark_delay = command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
       GetSpecificsFieldNumberFromModelType(BOOKMARKS));
@@ -729,7 +722,6 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   EXPECT_TRUE(SyncShareNudge());
 
   EXPECT_EQ(base::Seconds(180), last_poll_interval_received_);
-  EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
 }
 
@@ -739,7 +731,6 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   auto command = std::make_unique<ClientCommand>();
   command->set_set_sync_poll_interval(8);
   command->set_set_sync_long_poll_interval(800);
-  command->set_sessions_commit_delay_seconds(3141);
   sync_pb::CustomNudgeDelay* bookmark_delay =
       command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
@@ -752,13 +743,11 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_TRUE(SyncShareNudge());
 
   EXPECT_EQ(base::Seconds(8), last_poll_interval_received_);
-  EXPECT_EQ(base::Seconds(3141), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(950), last_bookmarks_commit_delay_);
 
   command = std::make_unique<ClientCommand>();
   command->set_set_sync_poll_interval(180);
   command->set_set_sync_long_poll_interval(190);
-  command->set_sessions_commit_delay_seconds(2718);
   bookmark_delay = command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
       GetSpecificsFieldNumberFromModelType(BOOKMARKS));
@@ -770,7 +759,6 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_TRUE(SyncShareNudge());
 
   EXPECT_EQ(base::Seconds(180), last_poll_interval_received_);
-  EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
 }
 
