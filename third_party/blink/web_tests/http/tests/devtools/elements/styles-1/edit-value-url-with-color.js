@@ -33,7 +33,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function editCallback() {
     var treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('background');
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
     TestRunner.addResult(treeElement.valueElement.textContent);
     if (idIndex <= maxIndex)
       selectDivAndEditValue();

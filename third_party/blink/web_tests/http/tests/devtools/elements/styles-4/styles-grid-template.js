@@ -37,7 +37,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function step2() {
     const treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('grid-template-areas');
     TestRunner.addResult('Start editing "grid-template-areas"');
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
 
     TestRunner.addResult(`Prompt text ${treeElement.prompt.text()}`);
 

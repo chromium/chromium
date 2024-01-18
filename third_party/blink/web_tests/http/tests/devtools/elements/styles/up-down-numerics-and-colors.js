@@ -28,7 +28,7 @@ import * as Host from 'devtools/core/host/host.js';
 
     function testAlterColor(next) {
       var colorTreeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
-      colorTreeElement.startEditing(colorTreeElement.valueElement);
+      colorTreeElement.startEditingValue();
 
       // PageUp should change to 'FF3'
       colorTreeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('PageUp'));
@@ -46,7 +46,7 @@ import * as Host from 'devtools/core/host/host.js';
 
     function testAlterNumber(next) {
       var opacityTreeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('opacity');
-      opacityTreeElement.startEditing(opacityTreeElement.valueElement);
+      opacityTreeElement.startEditingValue();
       // 0.5 (initial). Alt + Up should change to 0.6
       opacityTreeElement.valueElement.dispatchEvent(
           TestRunner.createKeyEvent('ArrowUp', /*Ctrl*/ false, /*Alt*/ true, /*Shift*/ false));
@@ -61,7 +61,7 @@ import * as Host from 'devtools/core/host/host.js';
 
     function testAlterBigNumber(next) {
       var treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('transform');
-      treeElement.startEditing(treeElement.valueElement);
+      treeElement.startEditingValue();
       var selection = treeElement.valueElement.getComponentSelection();
       var range = selection.getRangeAt(0);
       var newRange = document.createRange();

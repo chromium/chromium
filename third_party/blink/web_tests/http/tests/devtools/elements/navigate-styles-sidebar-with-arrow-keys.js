@@ -36,7 +36,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
   // start editing
   ssp.sectionBlocks[0].sections[0].element.focus();
-  ssp.sectionBlocks[0].sections[0].addNewBlankProperty(0).startEditing();
+  ssp.sectionBlocks[0].sections[0].addNewBlankProperty(0).startEditingName();
 
   dumpState();
 

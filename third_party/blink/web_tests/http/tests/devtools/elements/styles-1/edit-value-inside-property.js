@@ -16,7 +16,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function testEmulateKeypress() {
     var treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('font-size');
-    treeElement.startEditing(treeElement.valueElement);
+    treeElement.startEditingValue();
     var selection = treeElement.valueElement.getComponentSelection();
     var range = selection.getRangeAt(0);
     var newRange = document.createRange();

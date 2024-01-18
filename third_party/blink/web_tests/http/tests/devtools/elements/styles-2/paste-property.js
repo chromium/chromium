@@ -49,7 +49,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function pasteProperty(treeElement, propertyText, callback) {
     treeElement.nameElement.textContent = propertyText;
-    treeElement.startEditing();
+    treeElement.startEditingName();
 
     document.execCommand('SelectAll');
     document.execCommand('Copy');

@@ -32,7 +32,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   function step2() {
     var section = ElementsTestRunner.firstMatchedStyleSection();
     var newProperty = section.addNewBlankProperty();
-    newProperty.startEditing();
+    newProperty.startEditingName();
     textInputController.insertText('color');
     eventSender.keyDown(':');
     textInputController.insertText('maroon');

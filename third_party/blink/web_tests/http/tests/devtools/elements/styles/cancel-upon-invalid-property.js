@@ -23,7 +23,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   async function editProperty() {
     treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
     await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
-    treeElement.startEditing();
+    treeElement.startEditingName();
     treeElement.nameElement.textContent = 'color';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     treeElement.valueElement.textContent = 'red';
