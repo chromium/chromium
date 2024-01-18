@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstring>
 #include <set>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -985,7 +986,7 @@ void InputMethodAsh::DeleteSurroundingText(uint32_t num_char16s_before_cursor,
 void InputMethodAsh::ReplaceSurroundingText(
     uint32_t length_before_selection,
     uint32_t length_after_selection,
-    base::StringPiece16 replacement_text) {
+    std::u16string_view replacement_text) {
   if (!GetTextInputClient()) {
     return;
   }
