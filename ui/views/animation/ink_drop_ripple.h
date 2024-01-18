@@ -91,6 +91,9 @@ class VIEWS_EXPORT InkDropRipple {
   virtual void AnimateStateChange(InkDropState old_ink_drop_state,
                                   InkDropState new_ink_drop_state) = 0;
 
+  // Updates the transforms, opacity, and visibility to a ACTIVATED state.
+  virtual void SetStateToActivated() = 0;
+
   // Updates the transforms, opacity, and visibility to a HIDDEN state.
   virtual void SetStateToHidden() = 0;
 

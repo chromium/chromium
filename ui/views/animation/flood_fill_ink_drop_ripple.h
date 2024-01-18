@@ -68,7 +68,6 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   ~FloodFillInkDropRipple() override;
 
   // InkDropRipple:
-  void SnapToActivated() override;
   ui::Layer* GetRootLayer() override;
 
   void set_use_hide_transform_duration_for_hide_fade_out(bool value) {
@@ -85,6 +84,7 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   // InkDropRipple:
   void AnimateStateChange(InkDropState old_ink_drop_state,
                           InkDropState new_ink_drop_state) override;
+  void SetStateToActivated() override;
   void SetStateToHidden() override;
   void AbortAllAnimations() override;
 

@@ -191,14 +191,6 @@ SquareInkDropRipple::~SquareInkDropRipple() {
   AbortAllAnimations();
 }
 
-void SquareInkDropRipple::SnapToActivated() {
-  InkDropRipple::SnapToActivated();
-  SetOpacity(visible_opacity_);
-  InkDropTransforms transforms;
-  GetActivatedTargetTransforms(&transforms);
-  SetTransforms(transforms);
-}
-
 ui::Layer* SquareInkDropRipple::GetRootLayer() {
   return &root_layer_;
 }
@@ -397,6 +389,14 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
       break;
     }
   }
+}
+
+void SquareInkDropRipple::SetStateToActivated() {
+  root_layer_.SetVisible(true);
+  SetOpacity(visible_opacity_);
+  InkDropTransforms transforms;
+  GetActivatedTargetTransforms(&transforms);
+  SetTransforms(transforms);
 }
 
 void SquareInkDropRipple::SetStateToHidden() {
