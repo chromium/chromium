@@ -36,10 +36,4 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
   source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-void AddSeaPenBooleans(content::WebUIDataSource* source) {
-  source->AddBoolean("isSeaPenEnabled", ::ash::features::IsSeaPenEnabled());
-  source->AddBoolean("isSeaPenTextInputEnabled",
-                     ::ash::features::IsSeaPenTextInputEnabled());
-}
-
 }  // namespace ash::common

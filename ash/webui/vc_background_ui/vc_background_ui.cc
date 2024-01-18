@@ -41,7 +41,13 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 void AddBooleans(content::WebUIDataSource* source) {
-  ::ash::common::AddSeaPenBooleans(source);
+  source->AddBoolean("isSeaPenEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         manta::features::IsMantaServiceEnabled());
+  source->AddBoolean("isSeaPenTextInputEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         ::ash::features::IsSeaPenTextInputEnabled() &&
+                         manta::features::IsMantaServiceEnabled());
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -69,7 +75,7 @@ VcBackgroundUIConfig::VcBackgroundUIConfig(
 bool VcBackgroundUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) &&
-         ash::features::IsSeaPenEnabled() &&
+         ::ash::features::IsVcBackgroundReplaceEnabled() &&
          manta::features::IsMantaServiceEnabled();
 }
 

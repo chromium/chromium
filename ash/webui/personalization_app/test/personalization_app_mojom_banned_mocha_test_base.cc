@@ -103,13 +103,17 @@ class MockPersonalizationAppKeyboardBacklightProvider
   MOCK_METHOD(void, HandleNudgeShown, (), (override));
 };
 
-class MockSeaPenProvider : public ::ash::common::SeaPenProvider {
+class MockSeaPenProvider
+    : public ::ash::common::SeaPenProvider,
+      public ::ash::personalization_app::mojom::SeaPenProvider {
  public:
+  // ::ash::common::SeaPenProvider:
   MOCK_METHOD(void,
               BindInterface,
               (mojo::PendingReceiver<
                   ::ash::personalization_app::mojom::SeaPenProvider> receiver),
               (override));
+  // ::ash::personalization_app::mojom::SeaPenProvider:
   MOCK_METHOD(void,
               SearchWallpaper,
               (const mojom::SeaPenQueryPtr, SearchWallpaperCallback callback),

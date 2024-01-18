@@ -49,10 +49,9 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
  public:
   VcBackgroundUISeaPenProviderImplTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware,
-         manta::features::kMantaService, features::kSeaPen,
-         features::kFeatureManagementSeaPen},
+        {features::kVideoConference, manta::features::kMantaService,
+         features::kVcBackgroundReplace,
+         features::kCameraEffectsSupportedByHardware},
         {});
   }
 

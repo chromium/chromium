@@ -15,8 +15,6 @@ namespace ash::common {
 
 void AddSeaPenStrings(content::WebUIDataSource* source);
 
-void AddSeaPenBooleans(content::WebUIDataSource* source);
-
 }  // namespace ash::common
 
 #endif  // ASH_WEBUI_COMMON_SEA_PEN_RESOURCES_H_

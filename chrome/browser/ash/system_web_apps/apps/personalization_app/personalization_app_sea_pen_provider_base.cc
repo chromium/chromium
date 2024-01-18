@@ -106,8 +106,9 @@ PersonalizationAppSeaPenProviderBase::~PersonalizationAppSeaPenProviderBase() =
 void PersonalizationAppSeaPenProviderBase::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
-  CHECK(manta::features::IsMantaServiceEnabled() &&
-        features::IsSeaPenEnabled());
+  CHECK(manta::features::IsMantaServiceEnabled());
+  CHECK(::ash::features::IsSeaPenEnabled() ||
+        ::ash::features::IsVcBackgroundReplaceEnabled());
   sea_pen_receiver_.reset();
   sea_pen_receiver_.Bind(std::move(receiver));
 }

@@ -40,7 +40,8 @@ using DecodeImageCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
 // private callback functions; while the non-shared code should be put into each
 // implementation and have the protected pure virtual interface here.
 class PersonalizationAppSeaPenProviderBase
-    : public ::ash::common::SeaPenProvider {
+    : public ::ash::common::SeaPenProvider,
+      public ::ash::personalization_app::mojom::SeaPenProvider {
  public:
   PersonalizationAppSeaPenProviderBase(
       content::WebUI* web_ui,
@@ -49,9 +50,11 @@ class PersonalizationAppSeaPenProviderBase
 
   ~PersonalizationAppSeaPenProviderBase() override;
 
+  // ::ash::common::SeaPenProvider:
   void BindInterface(
       mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
+  // ::ash::personalization_app::mojom::SeaPenProvider:
   void SearchWallpaper(mojom::SeaPenQueryPtr query,
                        SearchWallpaperCallback callback) override;
 

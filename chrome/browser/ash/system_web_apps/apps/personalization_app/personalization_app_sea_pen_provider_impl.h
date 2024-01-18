@@ -5,21 +5,19 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 
-#include <map>
 #include <memory>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
-#include "base/files/file.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
-#include "components/manta/manta_status.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/gfx/image/image_skia.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::personalization_app {
 
+// Implementation of a SeaPenProvider for Personalization App WebUI.
+// Sends/receives images via WallpaperController to set as ChromeOS system
+// wallpaper.
 class PersonalizationAppSeaPenProviderImpl
     : public PersonalizationAppSeaPenProviderBase {
  public:
@@ -35,11 +33,18 @@ class PersonalizationAppSeaPenProviderImpl
 
   ~PersonalizationAppSeaPenProviderImpl() override;
 
+  // ::ash::personalization_app::PersonalizationAppSeaPenProviderBase:
+  void BindInterface(
+      mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
+          receiver) override;
+
+  // ::ash::personalization_app::mojom::SeaPenProvider:
   void DeleteRecentSeaPenImage(
       const base::FilePath& path,
       DeleteRecentSeaPenImageCallback callback) override;
 
  private:
+  // ::ash::personalization_app::PersonalizationAppSeaPenProviderBase:
   void SelectRecentSeaPenImageInternal(
       const base::FilePath& path,
       SelectRecentSeaPenImageCallback callback) override;

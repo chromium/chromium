@@ -42,7 +42,7 @@ VcBackgroundUISystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool VcBackgroundUISystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsSeaPenEnabled() &&
+  return ::ash::features::IsVcBackgroundReplaceEnabled() &&
          manta::features::IsMantaServiceEnabled();
 }
 

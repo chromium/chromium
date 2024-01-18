@@ -115,7 +115,8 @@ class FakeSeaPenFetcher : public SeaPenFetcher {
 class SeaPenFetcherImpl : public SeaPenFetcher {
  public:
   explicit SeaPenFetcherImpl(Profile* profile) {
-    CHECK(ash::features::IsSeaPenEnabled());
+    CHECK(ash::features::IsSeaPenEnabled() ||
+          ash::features::IsVcBackgroundReplaceEnabled());
     CHECK(manta::features::IsMantaServiceEnabled());
     auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile);
     if (manta_service) {

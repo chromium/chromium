@@ -12,9 +12,10 @@ namespace ash::common {
 
 // An interface for binding mojom::SeaPenProvider to a WebUI. Used for
 // VC Background and Personalization WebUIs.
-class SeaPenProvider
-    : public ::ash::personalization_app::mojom::SeaPenProvider {
+class SeaPenProvider {
  public:
+  virtual ~SeaPenProvider() = default;
+
   virtual void BindInterface(
       mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
           receiver) = 0;
