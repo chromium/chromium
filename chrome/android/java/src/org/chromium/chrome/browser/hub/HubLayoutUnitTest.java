@@ -192,7 +192,9 @@ public class HubLayoutUnitTest {
         mHubContainerView.addView(hubLayout);
         mActivity.setContentView(mFrameLayout);
 
+        View paneHostView = hubLayout.findViewById(R.id.hub_pane_host);
         when(mHubController.getContainerView()).thenReturn(mHubContainerView);
+        when(mHubController.getPaneHostView()).thenReturn(paneHostView);
 
         LazyOneshotSupplier<HubManager> hubManagerSupplier =
                 LazyOneshotSupplier.fromValue(mHubManager);
@@ -432,6 +434,7 @@ public class HubLayoutUnitTest {
     @Test
     @SmallTest
     public void testHideViaNewTab() {
+        forceLayout();
         mHubLayout.onTabCreated(FAKE_TIME, NEW_TAB_ID, NEW_TAB_INDEX, TAB_ID, false, false, 0, 0);
         hide(
                 LayoutType.BROWSING,
@@ -611,11 +614,7 @@ public class HubLayoutUnitTest {
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
         assertTrue(mHubLayout.isRunningAnimations());
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
-        // Force any layout delayed animations to run.
-        mHubContainerView.layout(0, 0, 100, 100);
-        for (int i = 0; i < mHubContainerView.getChildCount(); i++) {
-            mHubContainerView.getChildAt(i).layout(0, 0, 100, 100);
-        }
+        forceLayout();
 
         ShadowLooper.runUiThreadTasks();
 
@@ -698,5 +697,13 @@ public class HubLayoutUnitTest {
         when(mHubLayoutAnimatorMock.getAnimatorSet()).thenReturn(animatorSet);
         when(mHubLayoutAnimatorProviderMock.getPlannedAnimationType()).thenReturn(animationType);
         mHubLayoutAnimatorSupplier.set(mHubLayoutAnimatorMock);
+    }
+
+    private void forceLayout() {
+        // Force any layout delayed animations to run.
+        mHubContainerView.layout(0, 0, 100, 100);
+        for (int i = 0; i < mHubContainerView.getChildCount(); i++) {
+            mHubContainerView.getChildAt(i).layout(0, 0, 100, 100);
+        }
     }
 }

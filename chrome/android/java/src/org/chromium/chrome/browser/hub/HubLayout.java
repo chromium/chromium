@@ -10,13 +10,10 @@ import static org.chromium.chrome.browser.hub.HubLayoutConstants.TIMEOUT_MS;
 import static org.chromium.chrome.browser.hub.HubLayoutConstants.TRANSLATE_DURATION_MS;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -32,6 +29,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
@@ -51,7 +49,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.Collections;
@@ -375,7 +372,6 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         // Tablet Hub doesn't handle new tab animations.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            // TODO(crbug/1497472): Trigger this from inside Hub when the tab is created.
             selectTabAndHideHubLayout(tabId);
             return;
         }
@@ -384,8 +380,15 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         mCurrentSceneLayer = mEmptySceneLayer;
 
-        @ColorInt
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), newIsIncognito);
+        @ColorInt int backgroundColor;
+        if (newIsIncognito) {
+            backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), newIsIncognito);
+        } else {
+            // See https://crbug/1507124.
+            backgroundColor =
+                    ChromeColors.getSurfaceColor(
+                            getContext(), R.dimen.home_surface_background_color_elevation);
+        }
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         HubLayoutAnimatorProvider animatorProvider =
@@ -395,20 +398,25 @@ public class HubLayout extends Layout implements HubLayoutController {
                         backgroundColor,
                         EXPAND_NEW_TAB_DURATION_MS);
 
-        // TODO(crbug/1492207): Supply this from HubController so it can look like the animation
-        // originated from wherever on the Hub was clicked. The originX/originY data here is stale
-        // because it comes from the compositorView which we are masking.
-        int x = Math.round(originX);
-        int y = Math.round(originY);
-        Rect initialRect = new Rect(x, y, x + 1, y + 1);
+        HubContainerView containerView = mHubController.getContainerView();
+        assert containerView.isLaidOut();
+        Rect containerViewRect = new Rect();
+        containerView.getGlobalVisibleRect(containerViewRect);
 
-        // TODO(crbug/1492207): Final rect should be the rect of the tab area not the whole screen.
-        Resources resources = getContext().getResources();
-        Configuration configuration = resources.getConfiguration();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-        int width = ViewUtils.dpToPx(displayMetrics, configuration.screenWidthDp);
-        int height = ViewUtils.dpToPx(displayMetrics, configuration.screenHeightDp);
-        Rect finalRect = new Rect(0, 0, width, height);
+        View paneHost = mHubController.getPaneHostView();
+        assert paneHost.isLaidOut();
+        Rect finalRect = new Rect();
+        paneHost.getGlobalVisibleRect(finalRect);
+        // Ignore left offset and just ensure the width is correct. See crbug/1502437.
+        int leftOffset = finalRect.left;
+        finalRect.offset(-leftOffset, -containerViewRect.top);
+
+        // TODO(crbug/1492207): Supply this from HubController so it can look like the animation
+        // originated from wherever on the Hub was clicked. This defaults to the top left of the
+        // pane host view.
+        int x = finalRect.left;
+        int y = finalRect.top;
+        Rect initialRect = new Rect(x, y, x + 1, y + 1);
 
         animationDataSupplier.set(
                 new ShrinkExpandAnimationData(

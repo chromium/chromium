@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /** The interface for communication between the {@link HubLayout} and Hub internals. */
 public interface HubController {
@@ -14,6 +17,10 @@ public interface HubController {
     /** Returns the view that contains all the Hub UI. */
     @NonNull
     HubContainerView getContainerView();
+
+    /** Returns the view that contains the Hub panes. */
+    @Nullable
+    View getPaneHostView();
 
     /** Called at the start of {@link HubLayout#show(long, boolean)}. */
     void onHubLayoutShow();
