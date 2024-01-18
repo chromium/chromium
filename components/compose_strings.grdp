@@ -69,13 +69,13 @@
     You can enter things like:
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1" desc="First bullet point example for the placeholder text in the input field.">
-    3 or more words that sum up your thoughts
+    a few words that sum up your thoughts
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_2" desc="Second bullet point example for the placeholder text in the input field.">
     a first draft
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3" desc="Third bullet point example for the placeholder text in the input field.">
-    requests like "write a 5-star review for this restaurant"
+    "reply yes to this wedding invite with excitement"
   </message>
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog.">
     Your text and page content are sent to Google and may be used to improve this feature.
