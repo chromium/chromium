@@ -151,6 +151,13 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       return;
     }
 
+    // Ignore the release event if no key was pressed before. This is to
+    // avoid the case when the user presses "enter" key to pop up the
+    // shortcut input, release of the key is captured by accident.
+    if (!this.pendingKeyEvent) {
+      return;
+    }
+
     if (this.updateOnKeyPress) {
       const updatedKeyEvent = {...keyEvent};
       const updatedPrerewrittenKeyEvent = {...prerewrittenKeyEvent};
