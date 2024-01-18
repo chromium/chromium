@@ -15,6 +15,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -818,6 +819,17 @@ void CloudBinaryUploadService::IsAuthorized(
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
       request->set_per_profile_request(per_profile_request);
+
+#if BUILDFLAG(IS_CHROMEOS)
+      // WebProtect handles requests from ChromeOS Managed Guest Sessions
+      // differently, as it cannot rely on the GAIA ID to determine whether or
+      // not the user has the BCE license.
+      enterprise_connectors::ClientMetadata client_metadata;
+      client_metadata.mutable_profile()->set_is_chrome_os_managed_guest_session(
+          chromeos::IsManagedGuestSession());
+      request->set_client_metadata(std::move(client_metadata));
+#endif
+
       QueueForDeepScanning(std::move(request));
     }
     return;
