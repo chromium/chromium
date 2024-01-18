@@ -144,7 +144,7 @@ export class InputController {
   connect(callback: () => void): void {
     this.onConnectCallback_ = callback;
     chrome.inputMethodPrivate.getCurrentInputMethod(
-        method => this.saveCurrentInputMethodAndStart_(method));
+        (method: string) => this.saveCurrentInputMethodAndStart_(method));
   }
 
   /**

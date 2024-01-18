@@ -90,8 +90,12 @@ const char kAccessibilityCommonExtensionId[] =
 const char kAccessibilityCommonExtensionPath[] = "chromeos/accessibility";
 const char kAccessibilityCommonManifestFilename[] =
     "accessibility_common_manifest.json";
+const char kAccessibilityCommonManifestV3Filename[] =
+    "accessibility_common_manifest_v3.json";
 const char kAccessibilityCommonGuestManifestFilename[] =
     "accessibility_common_manifest_guest.json";
+const char kAccessibilityCommonGuestManifestV3Filename[] =
+    "accessibility_common_manifest_guest_v3.json";
 const char kChromeVoxExtensionPath[] = "chromeos/accessibility";
 const char kChromeVoxManifestFilename[] = "chromevox_manifest.json";
 const char kChromeVoxManifestV3Filename[] = "chromevox_manifest_v3.json";

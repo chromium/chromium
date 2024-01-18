@@ -499,14 +499,22 @@ AccessibilityManager::AccessibilityManager() {
   const bool enable_v3_manifest =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnableExperimentalAccessibilityManifestV3);
+  const base::FilePath::CharType* accessibility_common_manifest_filename =
+      enable_v3_manifest
+          ? extension_misc::kAccessibilityCommonManifestV3Filename
+          : extension_misc::kAccessibilityCommonManifestFilename;
+  const base::FilePath::CharType* accessibility_common_guest_manifest_filename =
+      enable_v3_manifest
+          ? extension_misc::kAccessibilityCommonGuestManifestV3Filename
+          : extension_misc::kAccessibilityCommonGuestManifestFilename;
 
   accessibility_common_extension_loader_ =
       base::WrapUnique(new AccessibilityExtensionLoader(
           extension_misc::kAccessibilityCommonExtensionId,
           resources_path.Append(
               extension_misc::kAccessibilityCommonExtensionPath),
-          extension_misc::kAccessibilityCommonManifestFilename,
-          extension_misc::kAccessibilityCommonGuestManifestFilename,
+          accessibility_common_manifest_filename,
+          accessibility_common_guest_manifest_filename,
           base::BindRepeating(
               &AccessibilityManager::PostUnloadAccessibilityCommon,
               weak_ptr_factory_.GetWeakPtr())));
@@ -532,17 +540,17 @@ AccessibilityManager::AccessibilityManager() {
       base::BindRepeating(&AccessibilityManager::PostUnloadSelectToSpeak,
                           weak_ptr_factory_.GetWeakPtr())));
 
-  const base::FilePath::CharType* switchAccessManifestFilename =
+  const base::FilePath::CharType* switch_access_manifest_filename =
       enable_v3_manifest ? extension_misc::kSwitchAccessManifestV3Filename
                          : extension_misc::kSwitchAccessManifestFilename;
-  const base::FilePath::CharType* switchAccessGuestManifestFilename =
+  const base::FilePath::CharType* switch_access_guest_manifest_filename =
       enable_v3_manifest ? extension_misc::kSwitchAccessGuestManifestV3Filename
                          : extension_misc::kSwitchAccessGuestManifestFilename;
 
   switch_access_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSwitchAccessExtensionId,
       resources_path.Append(extension_misc::kSwitchAccessExtensionPath),
-      switchAccessManifestFilename, switchAccessGuestManifestFilename,
+      switch_access_manifest_filename, switch_access_guest_manifest_filename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSwitchAccess,
                           weak_ptr_factory_.GetWeakPtr())));
 
