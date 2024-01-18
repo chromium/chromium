@@ -990,7 +990,7 @@ bool Database::Raze() {
 
   DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
-    DLOG(DCHECK) << "Cannot raze within a transaction";
+    DLOG(FATAL) << "Cannot raze within a transaction";
     return false;
   }
 
@@ -1003,7 +1003,7 @@ bool Database::Raze() {
           options_.enable_virtual_tables_discouraged,
   });
   if (!null_db.OpenInMemory()) {
-    DLOG(DCHECK) << "Unable to open in-memory database.";
+    DLOG(FATAL) << "Unable to open in-memory database.";
     return false;
   }
 
@@ -1064,7 +1064,7 @@ bool Database::Raze() {
       sqlite_result_code == SqliteResultCode::kIoShortRead) {
     sqlite3_file* file = GetSqliteVfsFile();
     if (!file || file->pMethods->xTruncate(file, 0) != SQLITE_OK) {
-      DLOG(DCHECK) << "Failed to truncate file.";
+      DLOG(FATAL) << "Failed to truncate file.";
       return false;
     }
 
@@ -1809,7 +1809,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
   }
 
   if (is_open()) {
-    DLOG(DCHECK) << "sql::Database is already open.";
+    DLOG(FATAL) << "sql::Database is already open.";
     return false;
   }
 

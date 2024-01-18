@@ -23,9 +23,9 @@ bool default_check_active_duration = true;
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||  \
     defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
     !defined(NDEBUG)
-#define DCHECK_OR_WARNING WARNING
+#define DFATAL_OR_WARNING WARNING
 #else
-#define DCHECK_OR_WARNING DCHECK
+#define DFATAL_OR_WARNING DFATAL
 #endif
 
 // Log animations that took more than 1m.  When DCHECK is enabled, it will fail
@@ -61,7 +61,7 @@ void CompositorAnimationObserver::NotifyFailure() {
     TRACE_EVENT_BEGIN("ui", "LongCompositorAnimationObserved",
                       perfetto::ThreadTrack::Current(), *start_);
     TRACE_EVENT_END("ui");
-    LOG(DCHECK_OR_WARNING)
+    LOG(DFATAL_OR_WARNING)
         << "CompositorAnimationObserver is active for too long ("
         << (base::TimeTicks::Now() - *start_).InSecondsF()
         << "s) location=" << location_.ToString();

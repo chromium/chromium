@@ -76,7 +76,7 @@ class BASE_EXPORT ZxLogMessageFatal final : public ZxLogMessage {
 #endif  // DCHECK_IS_ON()
 
 #define ZX_DCHECK(condition, zx_status)         \
-  LAZY_STREAM(ZX_LOG_STREAM(DCHECK, zx_status), \
+  LAZY_STREAM(ZX_LOG_STREAM(DFATAL, zx_status), \
               DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition << ". "
 
