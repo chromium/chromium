@@ -48,8 +48,6 @@ html {
 html:has(body.revamp-wayfinding-enabled) {
   --settings-base-bg-color: var(--cros-sys-surface3);
 
-  --settings-container-padding-top: 8px;
-
   --settings-menu-item-width: 256px;
 
   --settings-menu-padding-inline-end: 16px;

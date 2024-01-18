@@ -15,7 +15,6 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import '../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';

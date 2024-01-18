@@ -45,7 +45,7 @@
   }
 
   :host-context(body.revamp-wayfinding-enabled) #container {
-    padding-top: var(--settings-container-padding-top);
+    padding-top: 8px;
   }
 
   #left,
@@ -78,6 +78,15 @@
 
   #center {
     flex-basis: var(--settings-main-basis);
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #center  {
+    height: 100%;
+  }
+
+  /* Take up all remaining vertical space. */
+  :host-context(body.revamp-wayfinding-enabled) #center > os-settings-main {
+    min-height: 100%;
   }
 
   /* The breakpoint of 980px was decided on by the rounded sum of
