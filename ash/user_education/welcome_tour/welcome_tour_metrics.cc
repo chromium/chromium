@@ -26,23 +26,6 @@ PrefService* GetLastActiveUserPrefService() {
 
 }  // namespace
 
-TimeBucket GetTimeBucket(base::TimeDelta delta) {
-  if (delta <= base::Minutes(1)) {
-    return TimeBucket::kOneMinute;
-  } else if (delta <= base::Minutes(10)) {
-    return TimeBucket::kTenMinutes;
-  } else if (delta <= base::Hours(1)) {
-    return TimeBucket::kOneHour;
-  } else if (delta <= base::Days(1)) {
-    return TimeBucket::kOneDay;
-  } else if (delta <= base::Days(7)) {
-    return TimeBucket::kOneWeek;
-  } else if (delta <= base::Days(14)) {
-    return TimeBucket::kTwoWeeks;
-  }
-  return TimeBucket::kOverTwoWeeks;
-}
-
 void RecordInteraction(Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
 

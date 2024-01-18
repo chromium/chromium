@@ -15,20 +15,20 @@ class PrefService;
 
 namespace ash {
 
+enum class TimeBucket;
+
 namespace welcome_tour_metrics {
 enum class Interaction;
 enum class PreventedReason;
-enum class TimeBucket;
 }  // namespace welcome_tour_metrics
 
 namespace welcome_tour_prefs {
 
 // Retrieves the time that the given `interaction` first occurred after the tour
-// in terms of `welcome_tour_metrics::TimeBucket`. If the time has not been set,
-// returns `std::nullopt`.
-ASH_EXPORT std::optional<welcome_tour_metrics::TimeBucket>
-GetTimeBucketOfFirstInteraction(PrefService* prefs,
-                                welcome_tour_metrics::Interaction interaction);
+// in terms of `TimeBucket`. If it has not been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<TimeBucket> GetTimeBucketOfFirstInteraction(
+    PrefService* prefs,
+    welcome_tour_metrics::Interaction interaction);
 
 // Retrieves the time that the given `interaction` first occurred after the
 // tour. If the time has not been set, returns `std::nullopt`.

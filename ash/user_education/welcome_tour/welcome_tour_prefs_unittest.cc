@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/user_education/user_education_types.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -85,8 +86,7 @@ TEST_F(WelcomeTourPrefsTest, FirstInteraction) {
     auto interaction_time_bucket =
         GetTimeBucketOfFirstInteraction(pref_service(), interaction);
     ASSERT_TRUE(interaction_time_bucket);
-    EXPECT_EQ(interaction_time_bucket,
-              welcome_tour_metrics::TimeBucket::kOneMinute);
+    EXPECT_EQ(interaction_time_bucket, TimeBucket::kOneMinute);
 
     // For any call beyond the first, the function should return false and the
     // marked time should not change.
@@ -197,7 +197,7 @@ TEST_F(WelcomeTourPrefsTest, BackfillInteractionTimeBucketPref) {
 
     SyncInteractionPrefs(pref_service());
     EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
-              welcome_tour_metrics::TimeBucket::kOneMinute);
+              TimeBucket::kOneMinute);
   }
 }
 
@@ -223,7 +223,7 @@ TEST_F(WelcomeTourPrefsTest, InteractionTimeBucketPrefMaxPassed) {
     // Expect that syncing fills in the time bucket prefs with the appropriate
     // value while leaving the continuous prefs untouched.
     EXPECT_EQ(GetTimeBucketOfFirstInteraction(pref_service(), interaction),
-              welcome_tour_metrics::TimeBucket::kOverTwoWeeks);
+              TimeBucket::kOverTwoWeeks);
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
               std::nullopt);
   }

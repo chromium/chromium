@@ -186,7 +186,7 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteractionBeforeLogin) {
 
 // WelcomeTourMetricsEnumTest --------------------------------------------------
 
-// Base class of tests that verify all valid enum values and no other are
+// Base class of tests that verify all valid enum values and no others are
 // included in the relevant `base::EnumSet`s.
 using WelcomeTourMetricsEnumTest = testing::Test;
 
@@ -236,29 +236,6 @@ TEST_F(WelcomeTourMetricsEnumTest, AllPreventedReasons) {
     }
 
     EXPECT_EQ(kAllPreventedReasonsSet.Has(reason), should_exist_in_all_set);
-  }
-}
-
-TEST_F(WelcomeTourMetricsEnumTest, AllTimeBuckets) {
-  // If a value in `TimeBucket` is added or deprecated, the below switch
-  // statement must be modified accordingly. It should be a canonical list of
-  // what values are considered valid.
-  for (auto bucket : base::EnumSet<TimeBucket, TimeBucket::kMinValue,
-                                   TimeBucket::kMaxValue>::All()) {
-    bool should_exist_in_all_set = false;
-
-    switch (bucket) {
-      case TimeBucket::kOneMinute:
-      case TimeBucket::kTenMinutes:
-      case TimeBucket::kOneHour:
-      case TimeBucket::kOneDay:
-      case TimeBucket::kOneWeek:
-      case TimeBucket::kTwoWeeks:
-      case TimeBucket::kOverTwoWeeks:
-        should_exist_in_all_set = true;
-    }
-
-    EXPECT_EQ(kAllTimeBucketsSet.Has(bucket), should_exist_in_all_set);
   }
 }
 

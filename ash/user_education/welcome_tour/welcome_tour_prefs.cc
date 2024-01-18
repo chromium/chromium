@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -85,15 +87,14 @@ bool MarkTimeBucketOfFirstInteraction(
       auto time_delta = *first_interaction_time - *time_to_measure_from;
       prefs->SetInteger(
           bucket_pref_name,
-          static_cast<int>(welcome_tour_metrics::GetTimeBucket(time_delta)));
+          static_cast<int>(user_education_util::GetTimeBucket(time_delta)));
 
       return true;
     } else if (base::Time::Now() - *time_to_measure_from > base::Days(14)) {
       // Since it has been greater than the max possible period, just record
       // that so that we can gather metrics about users that don't engage.
-      prefs->SetInteger(
-          bucket_pref_name,
-          static_cast<int>(welcome_tour_metrics::TimeBucket::kOverTwoWeeks));
+      prefs->SetInteger(bucket_pref_name,
+                        static_cast<int>(TimeBucket::kOverTwoWeeks));
 
       return true;
     }
@@ -106,7 +107,7 @@ bool MarkTimeBucketOfFirstInteraction(
 
 // Utilities -------------------------------------------------------------------
 
-std::optional<welcome_tour_metrics::TimeBucket> GetTimeBucketOfFirstInteraction(
+std::optional<TimeBucket> GetTimeBucketOfFirstInteraction(
     PrefService* prefs,
     welcome_tour_metrics::Interaction interaction) {
   auto pref_name = GetTimeBucketOfFirstInteractionPrefName(interaction);
@@ -116,9 +117,8 @@ std::optional<welcome_tour_metrics::TimeBucket> GetTimeBucketOfFirstInteraction(
     return std::nullopt;
   }
 
-  auto bucket =
-      static_cast<welcome_tour_metrics::TimeBucket>(pref->GetValue()->GetInt());
-  if (welcome_tour_metrics::kAllTimeBucketsSet.Has(bucket)) {
+  auto bucket = static_cast<TimeBucket>(pref->GetValue()->GetInt());
+  if (kAllTimeBucketsSet.Has(bucket)) {
     return bucket;
   }
 
