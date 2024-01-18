@@ -694,7 +694,6 @@ void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {
   TRACE_EVENT0(
       "startup",
       "LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired");
-  login_finished_reported_ = true;
   post_login_deferred_task_runner_->Start();
 }
 
