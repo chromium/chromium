@@ -607,6 +607,11 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void CleanupBeforeDestroy() override {
+    expected_scroll_layer_ = nullptr;
+    expected_no_scroll_layer_ = nullptr;
+  }
+
   void WillCommit(const CommitState& commit_state) override {
     // Keep the test committing (otherwise the early out for no update
     // will stall the test).
@@ -752,8 +757,8 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   gfx::PointF final_scroll_offset_;
 
   scoped_refptr<Layer> child_layer_;
-  raw_ptr<Layer, DanglingUntriaged> expected_scroll_layer_;
-  raw_ptr<Layer, DanglingUntriaged> expected_no_scroll_layer_;
+  raw_ptr<Layer> expected_scroll_layer_;
+  raw_ptr<Layer> expected_no_scroll_layer_;
 };
 
 TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor1_ScrollChild) {
