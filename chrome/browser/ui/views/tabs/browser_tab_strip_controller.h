@@ -23,12 +23,15 @@
 class Browser;
 class BrowserNonClientFrameView;
 class Tab;
-class TabGroupId;
-class TabGroupVisualData;
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace tab_groups {
+class TabGroupId;
+class TabGroupVisualData;
+}  // namespace tab_groups
 
 namespace ui {
 class ListSelectionModel;

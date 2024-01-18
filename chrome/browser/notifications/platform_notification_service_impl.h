@@ -30,9 +30,9 @@
 class GURL;
 class Profile;
 
-namespace content {
+namespace blink {
 struct NotificationResources;
-}  // namespace content
+}  // namespace blink
 
 // The platform notification service is the profile-specific entry point through
 // which Web Notifications can be controlled.

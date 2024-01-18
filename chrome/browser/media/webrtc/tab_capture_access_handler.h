@@ -9,9 +9,9 @@
 
 class MediaStreamUI;
 
-namespace contents {
+namespace content {
 class WebContents;
-}
+}  // namespace content
 
 // MediaAccessHandler for TabCapture API.
 class TabCaptureAccessHandler : public CaptureAccessHandlerBase {

@@ -15,9 +15,10 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 
 class Browser;
-namespace Content {
+
+namespace content {
 class WebContents;
-}
+}  // namespace content
 
 class TabOrganizationSession : public TabOrganization::Observer {
  public:

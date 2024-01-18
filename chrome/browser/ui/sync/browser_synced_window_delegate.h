@@ -12,9 +12,9 @@
 
 class Browser;
 
-namespace browser_sync {
+namespace sync_sessions {
 class SyncedTabDelegate;
-}
+}  // namespace sync_sessions
 
 // A BrowserSyncedWindowDelegate is the desktop implementation for
 // SyncedWindowDelegate, representing the window corresponding to |browser|,

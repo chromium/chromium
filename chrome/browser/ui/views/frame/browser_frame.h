@@ -22,7 +22,6 @@ class BrowserRootView;
 enum class BrowserThemeChangeType;
 class BrowserView;
 class NativeBrowserFrame;
-class NonClientFrameView;
 class SystemMenuModelBuilder;
 
 namespace content {
@@ -40,6 +39,7 @@ class MenuModel;
 namespace views {
 class Label;
 class MenuRunner;
+class NonClientFrameView;
 class View;
 }  // namespace views
 

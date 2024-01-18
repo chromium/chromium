@@ -78,9 +78,11 @@ namespace content {
 class WebContents;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 namespace message_center {
 class Notification;
 }
+#endif
 
 namespace ui {
 enum ResourceScaleFactor : int;

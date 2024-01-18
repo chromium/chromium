@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
-class ChromeBrowserCloudManagementRegisterWatcherTest;
-
 namespace policy {
+
+class ChromeBrowserCloudManagementRegisterWatcherTest;
 
 // Watches the status of chrome browser cloud management enrollment.
 // Shows the blocking dialog for ongoing enrollment and failed enrollment.

@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace context {
+namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
 class PasswordsPrivateDelegate;

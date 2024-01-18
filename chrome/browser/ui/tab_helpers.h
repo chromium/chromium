@@ -23,8 +23,9 @@ class ChromeThinWebViewInitializer;
 
 namespace chrome {
 class BrowserTabStripModelDelegate;
+}  // namespace chrome
+
 class PreviewTab;
-}
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

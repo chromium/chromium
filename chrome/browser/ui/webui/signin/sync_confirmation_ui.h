@@ -24,9 +24,9 @@ namespace syncer {
 class SyncService;
 }
 
-namespace ui {
+namespace content {
 class WebUI;
-}
+}  // namespace content
 
 enum class SyncConfirmationStyle;
 

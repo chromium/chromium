@@ -16,9 +16,9 @@
 
 class GURL;
 struct ImportedBookmarkEntry;
+struct ImporterURLRow;
 
 namespace importer {
-struct ImporterURLRow;
 struct SearchEngineInfo;
 }
 

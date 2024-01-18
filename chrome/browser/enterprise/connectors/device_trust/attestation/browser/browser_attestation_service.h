@@ -18,9 +18,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 
-struct KeyInfo;
-
 namespace enterprise_connectors {
+
+class KeyInfo;
 
 // This class provides the methods needed in the handshake between Chrome, an
 // IdP and Verified Access.

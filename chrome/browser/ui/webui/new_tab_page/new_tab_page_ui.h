@@ -88,7 +88,6 @@ class FeedHandler;
 class HistoryClustersPageHandler;
 class HistoryClustersPageHandlerV2;
 class TabResumptionPageHandler;
-class HelpBubbleHandler;
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,

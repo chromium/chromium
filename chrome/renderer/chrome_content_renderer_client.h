@@ -65,9 +65,11 @@ namespace content {
 struct WebPluginInfo;
 }  // namespace content
 
+#if BUILDFLAG(ENABLE_NACL)
 namespace extensions {
 class Extension;
 }
+#endif
 
 namespace subresource_filter {
 class UnverifiedRulesetDealer;

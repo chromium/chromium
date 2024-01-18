@@ -34,8 +34,11 @@ class WebRTCInternalsIntegrationBrowserTest;
 
 namespace content {
 class BrowserContext;
-class NetworkConnectionTracker;
 }  // namespace content
+
+namespace network {
+class NetworkConnectionTracker;
+}  // namespace network
 
 FORWARD_DECLARE_TEST(WebRtcEventLogCollectionAllowedPolicyTest, RunTest);
 

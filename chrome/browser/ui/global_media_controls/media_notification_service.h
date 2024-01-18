@@ -29,7 +29,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
-class StartPresentationContext;
 class WebContents;
 }  // namespace content
 
@@ -40,6 +39,7 @@ class MediaItemManager;
 
 namespace media_router {
 class CastDialogController;
+class StartPresentationContext;
 }  // namespace media_router
 
 class MediaNotificationService

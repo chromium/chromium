@@ -23,7 +23,6 @@
 
 class Browser;
 class Profile;
-struct WebAppInstallInfo;
 
 namespace content {
 class StoragePartition;

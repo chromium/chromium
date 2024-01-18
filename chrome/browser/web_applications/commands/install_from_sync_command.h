@@ -26,7 +26,6 @@
 #include "url/gurl.h"
 
 class Profile;
-struct WebAppInstallInfo;
 
 namespace web_app {
 

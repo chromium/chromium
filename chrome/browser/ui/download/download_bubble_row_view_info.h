@@ -12,9 +12,9 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 
-namespace offline_item_collection {
-class ContentId;
-}
+namespace offline_items_collection {
+struct ContentId;
+}  // namespace offline_items_collection
 
 // Interface for observers of changes to a download row
 class DownloadBubbleRowViewInfoObserver : public base::CheckedObserver {

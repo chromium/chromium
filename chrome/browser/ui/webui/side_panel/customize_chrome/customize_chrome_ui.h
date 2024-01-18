@@ -32,7 +32,6 @@ class WebContents;
 class CustomizeChromePageHandler;
 class CartHandler;
 class Profile;
-class HelpBubbleHandler;
 class CustomizeColorSchemeModeHandler;
 class ThemeColorPickerHandler;
 class WallpaperSearchBackgroundManager;

@@ -25,9 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-namespace profile {
 class Profile;
-}
 
 namespace safe_browsing {
 

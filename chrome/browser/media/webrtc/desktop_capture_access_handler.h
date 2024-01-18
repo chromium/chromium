@@ -29,9 +29,9 @@ namespace extensions {
 class Extension;
 }
 
-namespace contents {
+namespace content {
 class WebContents;
-}
+}  // namespace content
 
 // MediaAccessHandler for DesktopCapture API requests that originate from
 // getUserMedia() calls. Note that getDisplayMedia() calls are handled in
