@@ -236,34 +236,44 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
                         });
 }
 
+const VariationsLayers::LayerInfo* VariationsLayers::FindActiveLayer(
+    uint32_t layer_id) const {
+  auto layer_iter = active_member_for_layer_.find(layer_id);
+  if (layer_iter == active_member_for_layer_.end()) {
+    return nullptr;
+  }
+  return &(layer_iter->second);
+}
+
 bool VariationsLayers::IsLayerMemberActive(uint32_t layer_id,
                                            uint32_t member_id) const {
-  auto layer_iter = active_member_for_layer_.find(layer_id);
-  if (layer_iter == active_member_for_layer_.end())
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
     return false;
-
-  return layer_iter->second.active_member_id &&
-         (member_id == layer_iter->second.active_member_id);
+  }
+  return layer_info->active_member_id &&
+         member_id == layer_info->active_member_id;
 }
 
 bool VariationsLayers::ActiveLayerMemberDependsOnHighEntropy(
     uint32_t layer_id) const {
-  auto layer_iter = active_member_for_layer_.find(layer_id);
-  if (layer_iter == active_member_for_layer_.end())
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
     return false;
-
-  return layer_iter->second.entropy_mode == Layer::DEFAULT;
+  }
+  return layer_info->entropy_mode == Layer::DEFAULT;
 }
 
 const base::FieldTrial::EntropyProvider& VariationsLayers::GetRemainderEntropy(
     uint32_t layer_id) const {
-  auto layer_iter = active_member_for_layer_.find(layer_id);
-  if (layer_iter == active_member_for_layer_.end()) {
-    // TODO(holte): Remove CreateTrialsForStudy fuzzer, then uncomment this.
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
+    // TODO(crbug.com/1519262): Remove CreateTrialsForStudy fuzzer, then
+    // uncomment this.
     // NOTREACHED();
     return nil_entropy;
   }
-  return layer_iter->second.remainder_entropy;
+  return layer_info->remainder_entropy;
 }
 
 }  // namespace variations

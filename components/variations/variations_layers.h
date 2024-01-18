@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   void ConstructLayer(const EntropyProviders& entropy_providers,
                       const Layer& layer_proto);
 
+  // Finds the layer with the given `layer_id`. Returns nullptr if there isn't a
+  // layer with this id or the layer is invalid.
+  const LayerInfo* FindActiveLayer(uint32_t layer_id) const;
+
   NormalizedMurmurHashEntropyProvider nil_entropy;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;
 };
