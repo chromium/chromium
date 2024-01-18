@@ -60,7 +60,6 @@ void ColorSchemeHelper::SetForcedColors(Page& page,
 
 void ColorSchemeHelper::SetEmulatedForcedColors(Document& document,
                                                 bool is_dark_theme) {
-  web_theme_engine_->EmulateForcedColors(is_dark_theme, /*is_web_test=*/true);
   document.GetPage()->EmulateForcedColors(is_dark_theme);
   document.ColorSchemeChanged();
 }

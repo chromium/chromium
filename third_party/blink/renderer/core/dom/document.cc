@@ -9163,8 +9163,12 @@ bool Document::InDarkMode() {
 
 const ui::ColorProvider* Document::GetColorProviderForPainting(
     mojom::blink::ColorScheme color_scheme) const {
+  // TODO(crbug.com/1516529): This should be changed to use
+  // `in_forced_colors_mode_` once forced colors becomes a web setting in Blink.
   return GetPage()->GetColorProviderForPainting(
-      color_scheme, in_forced_colors_mode_);
+      color_scheme,
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
+          ForcedColors::kNone);
 }
 
 void Document::CountUse(mojom::WebFeature feature) const {
