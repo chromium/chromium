@@ -1119,21 +1119,30 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
 
   window->Maximize();
-  Mock::VerifyAndClearExpectations(&delegate);
+  // The state of the window must already be fullscreen one.
+  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
 
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+
   Mock::VerifyAndClearExpectations(&delegate);
 
-  // Show the window now.
-  window->Show(false);
-  Mock::VerifyAndClearExpectations(&delegate);
-
-  // Activate the surface.
   // We must receive a state change after Show is called.
   EXPECT_CALL(delegate,
               OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
                                    Eq(PlatformWindowState::kMaximized)))
       .Times(1);
+
+  // Show the window now.
+  window->Show(false);
+
+  Mock::VerifyAndClearExpectations(&delegate);
+
+  // Window show state should be already up to date, so delegate is not
+  // notified.
+  EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
+
+  // Activate the surface.
   wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
   SendConfigureEvent(surface_id, {0, 0}, states);
@@ -1321,24 +1330,12 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
     EXPECT_CALL(*xdg_surface->xdg_toplevel(), SetMaximized());
     EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())));
   });
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
-  window_->Maximize();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // State changes are asynchronous.
   EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
-  EXPECT_CALL(delegate_,
-              OnWindowStateChanged(_, PlatformWindowState::kMaximized))
-      .Times(1);
-  {
-    WaylandWindow::WindowStates window_states;
-    window_states.is_maximized = true;
-    window_states.is_activated = true;
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
-  }
-  Mock::VerifyAndClearExpectations(&delegate_);
-  EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMaximized);
-
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  window_->Maximize();
+  // State changes are synchronous.
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
   SendConfigureEvent(surface_id_, kMaximizedBounds.size(), active_maximized);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   // Verify that the state has not been changed.
