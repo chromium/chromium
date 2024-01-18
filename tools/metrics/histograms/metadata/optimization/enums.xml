@@ -613,6 +613,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Base64 decoding error"/>
 </enum>
 
+<enum name="OptimizationGuideTextSafetyInferenceResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Encoding failed"/>
+  <int value="2" label="Model creation failed"/>
+  <int value="3" label="Model execution failed"/>
+  <int value="4" label="Regression failed"/>
+</enum>
+
 <enum name="OptimizationGuideUserFeedback">
   <int value="0" label="Unknown"/>
   <int value="1" label="Thumbs Up"/>
