@@ -18,7 +18,7 @@ Are you a Google employee? See
 *   The macOS SDK. Run
 
     ```shell
-    $ ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
+    ls `xcode-select -p`/Platforms/MacOSX.platform/Developer/SDKs
     ```
 
     to check whether you have it, and what version you have.
@@ -43,7 +43,7 @@ Are you a Google employee? See
 Clone the `depot_tools` repository:
 
 ```shell
-$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
 Add `depot_tools` to the end of your PATH (you will probably want to put this in
@@ -52,7 +52,7 @@ your `~/.bash_profile` or `~/.zshrc`). Assuming you cloned `depot_tools` to
 not be able to find infra tools):
 
 ```shell
-$ export PATH="$PATH:/path/to/depot_tools"
+export PATH="$PATH:/path/to/depot_tools"
 ```
 
 ## Get the code
@@ -62,14 +62,14 @@ this whatever you like and put it wherever you like, as long as the full path
 has no spaces):
 
 ```shell
-$ mkdir chromium && cd chromium
+mkdir chromium && cd chromium
 ```
 
 Run the `fetch` tool from `depot_tools` to check out the code and its
 dependencies.
 
 ```shell
-$ caffeinate fetch chromium
+caffeinate fetch chromium
 ```
 
 Running the `fetch` with `caffeinate` is optional, but it will prevent the
@@ -88,7 +88,7 @@ directory called `src` in the working directory. The remaining instructions
 assume you have switched to the `src` directory:
 
 ```shell
-$ cd src
+cd src
 ```
 
 *Optional*: You can also [install API
@@ -104,7 +104,7 @@ to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory:
 
 ```shell
-$ gn gen out/Default
+gn gen out/Default
 ```
 
 * You only have to run this once for each new build directory, Ninja will
@@ -174,7 +174,7 @@ You might also want to [install ccache](ccache_mac.md) to speed up the build.
 Build Chromium (the "chrome" target) with Ninja using the command:
 
 ```shell
-$ autoninja -C out/Default chrome
+autoninja -C out/Default chrome
 ```
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
@@ -190,7 +190,7 @@ out/Default chrome/test:unit_tests`).
 Once it is built, you can simply run the browser:
 
 ```shell
-$ out/Default/Chromium.app/Contents/MacOS/Chromium
+out/Default/Chromium.app/Contents/MacOS/Chromium
 ```
 
 ## Avoiding system permissions dialogs after each build
@@ -214,7 +214,7 @@ exist in the directory structure. To see what target a given unit test or
 browser test file corresponds to, the following command can be used:
 
 ```shell
-$ gn refs out/Default --testonly=true --type=executable --all chrome/browser/ui/browser_list_unittest.cc
+gn refs out/Default --testonly=true --type=executable --all chrome/browser/ui/browser_list_unittest.cc
 //chrome/test:unit_tests
 ```
 
@@ -222,14 +222,14 @@ In the example above, the target is unit_tests. The unit_tests binary can be
 built by running the following command:
 
 ```shell
-$ autoninja -C out/Default unit_tests
+autoninja -C out/Default unit_tests
 ```
 
 You can run the tests by running the unit_tests binary. You can also limit which
 tests are run using the `--gtest_filter` arg, e.g.:
 
 ```shell
-$ out/Default/unit_tests --gtest_filter="BrowserListUnitTest.*"
+out/Default/unit_tests --gtest_filter="BrowserListUnitTest.*"
 ```
 
 You can find out more about GoogleTest at its
@@ -244,8 +244,8 @@ Good debugging tips can be found [here](mac/debugging.md).
 To update an existing checkout, you can run
 
 ```shell
-$ git rebase-update
-$ gclient sync
+git rebase-update
+gclient sync
 ```
 
 The first command updates the primary Chromium source repository and rebases
@@ -272,13 +272,13 @@ target in the hybrid project and choosing Build.
 To use Xcode-Ninja Hybrid pass `--ide=xcode` to `gn gen`:
 
 ```shell
-$ gn gen out/gn --ide=xcode
+gn gen out/gn --ide=xcode
 ```
 
 Open it:
 
 ```shell
-$ open out/gn/all.xcodeproj
+open out/gn/all.xcodeproj
 ```
 
 You may run into a problem where http://YES is opened as a new tab every time
@@ -303,21 +303,21 @@ can be quite variable.  Increasing the system's vnode cache appears to help. By
 default, this command:
 
 ```shell
-$ sysctl -a | egrep 'kern\..*vnodes'
+sysctl -a | egrep 'kern\..*vnodes'
 ```
 
 Outputs `kern.maxvnodes: 263168` (263168 is 257 * 1024).  To increase this
 setting:
 
 ```shell
-$ sudo sysctl kern.maxvnodes=$((512*1024))
+sudo sysctl kern.maxvnodes=$((512*1024))
 ```
 
 Higher values may be appropriate if you routinely move between different
 Chromium checkouts.  This setting will reset on reboot.  To apply it at startup:
 
 ```shell
-$ sudo tee /Library/LaunchDaemons/kern.maxvnodes.plist > /dev/null <<EOF
+sudo tee /Library/LaunchDaemons/kern.maxvnodes.plist > /dev/null <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -343,14 +343,14 @@ Or edit the file directly.
 Try running
 
 ```shell
-$ git update-index --test-untracked-cache
+git update-index --test-untracked-cache
 ```
 
 If the output ends with `OK`, then the following may also improve performance of
 `git status`:
 
 ```shell
-$ git config core.untrackedCache true
+git config core.untrackedCache true
 ```
 
 #### Configure git to use fsmonitor
@@ -362,7 +362,7 @@ you have at least version 2.43 (fsmonitor on the Mac is broken before then). The
 command to enable fsmonitor in the current repo is:
 
 ```shell
-$ git config core.fsmonitor true
+git config core.fsmonitor true
 ```
 
 ### Xcode license agreement
@@ -376,13 +376,13 @@ the Xcode license hasn't been accepted yet which (contrary to the message) any
 user can do by running:
 
 ```shell
-$ xcodebuild -license
+xcodebuild -license
 ```
 
 Only accepting for all users of the machine requires root:
 
 ```shell
-$ sudo xcodebuild -license
+sudo xcodebuild -license
 ```
 
 ### Exclude checkout from Spotlight indexing
