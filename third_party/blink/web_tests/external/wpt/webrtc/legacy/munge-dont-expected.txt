@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] RTCSessionDescription.type is read-only
+  assert_throws_js: function "() => {\n    desc.type = 'answer';\n  }" did not throw
+[FAIL] RTCSessionDescription.sdp is read-only
+  assert_throws_js: function "() => {\n    desc.sdp += 'a=dont-modify-me\\r\\n';\n  }" did not throw
+[FAIL] Rejects SDP munging between createOffer and setLocalDescription
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Rejects SDP munging between createAnswer and setLocalDescription
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+
