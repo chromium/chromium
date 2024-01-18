@@ -337,17 +337,21 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |was_on_initial_empty_document| indicates whether the document being
   // navigated away from was an initial empty document.
   //
-  // |previous_document_was_activated| is true if the previous document had user
-  // interaction. This is used for a new renderer-initiated navigation to decide
-  // if the page that initiated the navigation should be skipped on
-  // back/forward button.
-  bool RendererDidNavigate(RenderFrameHostImpl* rfh,
-                           const mojom::DidCommitProvisionalLoadParams& params,
-                           LoadCommittedDetails* details,
-                           bool is_same_document_navigation,
-                           bool was_on_initial_empty_document,
-                           bool previous_document_was_activated,
-                           NavigationRequest* navigation_request);
+  // |previous_document_had_history_intervention_activation| is true if the
+  // previous document had a user activation that is being honored for the
+  // history manipulation intervention (i.e., a new user activation is needed
+  // after same-document back/forward navigations).
+  // See RFHI::honor_sticky_activation_for_history_intervention_ for details.
+  // This is used for a new renderer-initiated navigation to decide if the page
+  // that initiated the navigation should be skipped on back/forward button.
+  bool RendererDidNavigate(
+      RenderFrameHostImpl* rfh,
+      const mojom::DidCommitProvisionalLoadParams& params,
+      LoadCommittedDetails* details,
+      bool is_same_document_navigation,
+      bool was_on_initial_empty_document,
+      bool previous_document_had_history_intervention_activation,
+      NavigationRequest* navigation_request);
 
   // Notifies us that we just became active. This is used by the WebContentsImpl
   // so that we know to load URLs that were pending as "lazy" loads.
@@ -727,7 +731,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
-      bool previous_document_was_activated,
+      bool previous_document_had_history_intervention_activation,
       NavigationRequest* request,
       LoadCommittedDetails* details);
   void RendererDidNavigateToExistingEntry(
@@ -743,7 +747,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
-      bool previous_document_was_activated,
+      bool previous_document_had_history_intervention_activation,
       NavigationRequest* request,
       LoadCommittedDetails* details);
   bool RendererDidNavigateAutoSubframe(
@@ -815,7 +819,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // adding the entry.
   void SetShouldSkipOnBackForwardUIIfNeeded(
       bool replace_entry,
-      bool previous_document_was_activated,
+      bool previous_document_had_history_intervention_activation,
       bool is_renderer_initiated,
       ukm::SourceId previous_page_load_ukm_source_id);
 

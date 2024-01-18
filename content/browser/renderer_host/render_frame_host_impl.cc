@@ -4046,6 +4046,35 @@ void RenderFrameHostImpl::DidNavigate(
     // owner element which contains child's required document policy, so there
     // is no need to store required document policy in proxies.
   }
+
+  // Set `honor_sticky_activation_for_history_intervention_` to false if
+  // it's a browser-initiated same-document back/forward navigation.
+  // Note that `honor_sticky_activation_for_history_intervention_` is only
+  // tracked on the main frame so that same-document navigations on a child
+  // frame cannot be used as a work-around to the intervention.
+
+  // navigation_request->GetPageTransition only returns the bit set for
+  // PAGE_TRANSITION_FORWARD_BACK for back/forward transitions on the main
+  // frame so retrieve it from the pending entry instead of the
+  // navigation_request. Also navigation_request->IsSameDocument
+  // won't be true for the subframe's cross-document back/forward navigation
+  // case so instead check GetMainFrameDocumentSequenceNumber().
+  // TODO(creis): Add NavigationRequest::IsSessionHistory() and
+  // NavigationRequest::IsSamePage() to avoid needing to check either the
+  // pending NavigationEntry or the PageTransition.
+  NavigationControllerImpl& controller = frame_tree()->controller();
+  NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
+  // pending_entry should be non-nullptr for a back/forward navigation.
+  if (pending_entry) {
+    ui::PageTransition transition = pending_entry->GetTransitionType();
+    if (transition & ui::PAGE_TRANSITION_FORWARD_BACK &&
+        navigation_request->browser_initiated() &&
+        pending_entry->GetMainFrameDocumentSequenceNumber() ==
+            controller.GetLastCommittedEntry()
+                ->GetMainFrameDocumentSequenceNumber()) {
+      GetMainFrame()->honor_sticky_activation_for_history_intervention_ = false;
+    }
+  }
 }
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
@@ -5920,6 +5949,7 @@ bool RenderFrameHostImpl::IsActiveUserActivation() const {
 void RenderFrameHostImpl::ClearUserActivation() {
   user_activation_state_.Clear();
   history_user_activation_state_.Clear();
+  GetMainFrame()->honor_sticky_activation_for_history_intervention_ = true;
 }
 
 void RenderFrameHostImpl::ConsumeTransientUserActivation() {
@@ -5930,6 +5960,7 @@ void RenderFrameHostImpl::ActivateUserActivation(
     blink::mojom::UserActivationNotificationType notification_type) {
   user_activation_state_.Activate(notification_type);
   history_user_activation_state_.Activate();
+  GetMainFrame()->honor_sticky_activation_for_history_intervention_ = true;
 }
 
 void RenderFrameHostImpl::ActivateFocusSourceUserActivation() {
@@ -5946,6 +5977,17 @@ void RenderFrameHostImpl::ConsumeHistoryUserActivation() {
 
 void RenderFrameHostImpl::DeactivateFocusSourceUserActivation() {
   focus_source_user_activation_state_.Deactivate();
+}
+
+bool RenderFrameHostImpl::HasStickyUserActivationForHistoryIntervention()
+    const {
+  DCHECK(is_main_frame());
+  if (!base::FeatureList::IsEnabled(
+          features::kHistoryInterventionSameDocumentFix) ||
+      honor_sticky_activation_for_history_intervention_) {
+    return HasStickyUserActivation();
+  }
+  return false;
 }
 
 void RenderFrameHostImpl::ClosePage(ClosePageSource source) {

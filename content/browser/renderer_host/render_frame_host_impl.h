@@ -2916,6 +2916,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ActivateFocusSourceUserActivation();
   void DeactivateFocusSourceUserActivation();
 
+  // Computes user activation status for history intervention based on the
+  // actual sticky activation and
+  // `honor_sticky_activation_for_history_intervention_`. Note that this should
+  // be invoked on the root RFH and not a subframe's RFH since sticky activation
+  // from any frame is sufficient and is aggregated at the root.
+  bool HasStickyUserActivationForHistoryIntervention() const;
+
   // Parameter for `ClosePage()` that indicates whether the request comes from
   // the browser or the renderer. This is used to determine whether navigation
   // should prevent the page from closing, since navigations should not prevent
@@ -3247,6 +3254,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            DetachedIframePagehideHandlerABCB);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheStillLoadingBrowserTest,
                            DoesNotCacheIfFrameStillLoading);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestHonorStickyActivationForHistoryIntervention);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           HonorStickyActivationForHistoryInterventionReset);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestStickyActivationOnReload);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationControllerHistoryInterventionBrowserTest,
+      HonorStickyActivationForHistoryInterventionNotResetOnReplaceState);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestHonorStickyActivationCrossDocument);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationControllerHistoryInterventionBrowserTest,
+      TestHonorStickyActivationForHistoryInterventionForward);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           TestHonorStickyActivationWithChildFrame);
+  FRIEND_TEST_ALL_PREFIXES(
+      NavigationControllerHistoryInterventionBrowserTest,
+      TestHonorStickyActivationWithChildFrameCrossDocument);
 
   class SubresourceLoaderFactoriesConfig;
 
@@ -5001,7 +5027,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the Navigation API). Activated when `user_activation_state_` is activated,
   // but consumed separately when a page interrupts browser-initiated history
   // navigations (e.g., after canceled history navigations or uses of
-  // CloseWatcher).
+  // CloseWatcher). Note that this is used for the navigation API and not for
+  // tracking whether NavigationEntries are skippable (which uses sticky user
+  // activation and the honor_sticky_activation_for_history_intervention_ bit
+  // below).
   blink::HistoryUserActivationState history_user_activation_state_;
 
   // Manages a transient state tracking mechanism for this frame to verify focus
@@ -5010,6 +5039,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // passed to the new frame. This can be passed to multiple frames as part of a
   // single focus event if a frame doesn't have any focusable elements.
   TransientFocusSourceUserActivation focus_source_user_activation_state_;
+
+  // For the history manipulation intervention, main frames track whether to
+  // honor the sticky user activation for creating non-skippable
+  // NavigationEntries. The activation can be ignored if a same-document
+  // history navigation occurs, so that documents in the page cannot create
+  // more non-skippable entries after a back navigation even though activations
+  // are not consumed after same-document navigations. See crbug.com/1248529
+  // for more details.
+  // More specifically, this field is only updated for main frames, and:
+  // 1) Starts at true for every new document.
+  // 2) Is set to false after a same-document back/forward navigation in any
+  // frame of the page.
+  // 3) Is set back to true if another user activation is received or a cross
+  // document commit occurs (including a BFCache activation).
+
+  // The value is manually reset on cross-document navigations in
+  // ClearUserActivation via ResetForNavigation, and not via
+  // DocumentAssociatedData (which does not get reset for BFCache activations).
+  bool honor_sticky_activation_for_history_intervention_ = true;
 
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.
