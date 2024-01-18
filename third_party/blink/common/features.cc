@@ -938,7 +938,7 @@ BASE_FEATURE(kFledgeCustomMaxAuctionAdComponents,
              "FledgeCustomMaxAuctionAdComponents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
-    &kFledgeCustomMaxAuctionAdComponents, "value",
+    &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit",
     kMaxAdAuctionAdComponentsDefault};
 
 BASE_FEATURE(kForceDeferScriptIntervention,

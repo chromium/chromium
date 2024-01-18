@@ -989,7 +989,8 @@ class BidderWorkletTest : public testing::Test {
 class BidderWorkletCustomAdComponentLimitTest : public BidderWorkletTest {
  public:
   BidderWorkletCustomAdComponentLimitTest() {
-    const std::map<std::string, std::string> params = {{"value", "25"}};
+    const std::map<std::string, std::string> params = {
+        {"FledgeAdComponentLimit", "25"}};
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFledgeCustomMaxAuctionAdComponents, params);
   }
