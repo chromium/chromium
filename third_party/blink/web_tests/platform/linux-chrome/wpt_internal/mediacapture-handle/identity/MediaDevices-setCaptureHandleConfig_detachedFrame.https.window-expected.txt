@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] setCaptureHandleConfig raises InvalidStateError in a detached context.
-  GCController is not defined
-Harness: the test ran to completion.

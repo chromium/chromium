@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Test named 'performance.mark with mark_feature_usage ticks mapped WebFeature UseCounter' specified 1 'cleanup' function, and 1 failed.
-[FAIL] performance.mark with mark_feature_usage ticks mapped WebFeature UseCounter
-  internals is not defined
-Harness: the test ran to completion.

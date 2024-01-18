@@ -2116,6 +2116,7 @@ crbug.com/1516468 [ Chrome ] wpt_internal/mediacapture-extensions/MediaStreamTra
 crbug.com/1516468 [ Chrome ] wpt_internal/navigation-api/navigate-from-initial-about-blank-gc.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/observable/use-counter.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/performance-timeline/performance-user-timing-special-names.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/prerender/focus-on-prerendered-window-client.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/presentation/presentation-onreceiverconnection.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/reporting/deprecation.html [ Skip ]
@@ -2166,6 +2167,33 @@ crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-nonutf8-encoding.https
 crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-success.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-types.https.html [ Skip ]
 crbug.com/1516468 [ Chrome ] wpt_internal/web-share/share-url-relative.https.sub.html [ Skip ]
+
+# These tests are not expected to work for `chrome` because they use
+# `GCController`, a web test-only API.
+crbug.com/1516468 [ Chrome ] wpt_internal/hid/hidDevice_detachedFrame.https.window.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/mediacapture-handle/identity/MediaDevices-setCaptureHandleConfig_detachedFrame.https.window.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/serial/serialPort_detachedFrame.https.window.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/serial/serialPort_readable_gc.https.window.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/serial/serial_detachedFrame.https.window.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/webaudio/channel-count-detached-frame.window.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/webusb/usb-iframe.https.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/webusb/usbDevice-iframe.https.html [ Skip ]
+
+# These tests are not expected to work for `chrome` because they use
+# `accessibilityController`, a web test-only API.
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-001.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-002.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-003.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-003a.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-003b.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-003c.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-004.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-005.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-006.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-007.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-008.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-009.html [ Skip ]
+crbug.com/1516468 [ Chrome ] wpt_internal/display-lock/css-content-visibility/accessibility/content-visibility-accessibility-display-none.html [ Skip ]
 
 # Bluetooth tests do not work on Chrome
 [ Chrome ] external/wpt/bluetooth/* [ Skip ]

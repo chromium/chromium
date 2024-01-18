@@ -5,12 +5,11 @@
 <script type="module">
 import {vibration_test} from './resources/vibration-helpers.js';
 
-if (!window.testRunner)
-  debug('This test cannot be run without the TestRunner');
-
 // TODO(leonhsl): Add more test cases http://crbug.com/701288
-
 vibration_test(vibration => {
+  assert_implements(
+    window.testRunner, 'This test cannot be run without the TestRunner');
+
   let promise = new Promise(resolve => {
     let iframe = document.createElement('iframe');
     iframe.src = 'resources/vibrate-from-iframe.html';
