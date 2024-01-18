@@ -39,6 +39,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
@@ -3755,6 +3756,48 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
   // been established.
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
       GetActiveWebContents()->GetPrimaryMainFrame()));
+}
+
+// This test verifies the correctness of util `FindFullPagePdfExtensionHost`.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       OopifPdfFindFullPagePdfExtensionHost) {
+  {
+    // Navigate to a non-PDF page.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/title1.html")));
+
+    // Verify that there is no full-page pdf extension host on non-PDF page.
+    EXPECT_FALSE(
+        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+  }
+
+  {
+    // Load page with embedded PDF and make sure it succeeds.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        GetActiveWebContents()->GetPrimaryMainFrame()));
+
+    // Verify that there is no full-page pdf extension host on embedded PDF.
+    EXPECT_FALSE(
+        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+  }
+
+  {
+    // Load a full-page PDF and make sure it succeeds.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        GetActiveWebContents()->GetPrimaryMainFrame()));
+
+    content::RenderFrameHost* child_frame =
+        content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(child_frame);
+
+    // Verify that `FindFullPagePdfExtensionHost` returns the correct frame.
+    EXPECT_EQ(child_frame, pdf_frame_util::FindFullPagePdfExtensionHost(
+                               GetActiveWebContents()));
+  }
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer

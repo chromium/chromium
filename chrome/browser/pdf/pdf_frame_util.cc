@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/common/pdf_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -22,23 +21,15 @@ content::RenderFrameHost* FindFullPagePdfExtensionHost(
     content::WebContents* contents) {
   CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
 
-  auto* pdf_viewer_stream_manager =
-      pdf::PdfViewerStreamManager::FromWebContents(contents);
-  if (!pdf_viewer_stream_manager) {
-    return nullptr;
-  }
-
-  // If `primary_main_frame` has a stream container, it must be a full-page PDF
-  // embedder host.
-  content::RenderFrameHost* primary_main_frame =
-      contents->GetPrimaryMainFrame();
-  if (!pdf_viewer_stream_manager->GetStreamContainer(primary_main_frame)) {
+  // MIME type associated with `contents` must be `application/pdf` for a
+  // full-page PDF.
+  if (contents->GetContentsMimeType() != kPDFMimeType) {
     return nullptr;
   }
 
   // A full-page PDF embedder host should have a child PDF extension host.
   content::RenderFrameHost* extension_host = nullptr;
-  primary_main_frame->ForEachRenderFrameHost(
+  contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&extension_host](content::RenderFrameHost* child_host) {
         if (!IsPdfExtensionOrigin(child_host->GetLastCommittedOrigin())) {
           return;
