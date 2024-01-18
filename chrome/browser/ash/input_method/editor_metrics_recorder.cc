@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
 namespace ash::input_method {
 
@@ -79,6 +80,27 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
       return EditorStates::kBlockedByUnsupportedRegion;
     case EditorBlockedReason::kBlockedByManagedStatus:
       return EditorStates::kBlockedByManagedStatus;
+  }
+}
+
+EditorStates ToEditorStatesMetric(orca::mojom::TextQueryErrorCode error_code) {
+  switch (error_code) {
+    case orca::mojom::TextQueryErrorCode::kUnknown:
+      return EditorStates::ErrorUnknown;
+    case orca::mojom::TextQueryErrorCode::kInvalidArgument:
+      return EditorStates::ErrorInvalidArgument;
+    case orca::mojom::TextQueryErrorCode::kResourceExhausted:
+      return EditorStates::ErrorResourceExhausted;
+    case orca::mojom::TextQueryErrorCode::kBackendFailure:
+      return EditorStates::ErrorBackendFailure;
+    case orca::mojom::TextQueryErrorCode::kNoInternetConnection:
+      return EditorStates::ErrorNoInternetConnection;
+    case orca::mojom::TextQueryErrorCode::kUnsupportedLanguage:
+      return EditorStates::ErrorUnsupportedLanguage;
+    case orca::mojom::TextQueryErrorCode::kBlockedOutputs:
+      return EditorStates::ErrorBlockedOutputs;
+    case orca::mojom::TextQueryErrorCode::kRestrictedRegion:
+      return EditorStates::ErrorRestrictedRegion;
   }
 }
 

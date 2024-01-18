@@ -137,17 +137,21 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
              EditorMetricsRecorder* metrics_recorder,
              ProcessCallback process_callback, base::Value::Dict dict,
              manta::MantaStatus status) {
-            std::move(process_callback)
-                .Run(status.status_code == manta::MantaStatusCode::kOk
-                         ? orca::mojom::TextQueryResponse::NewResults(
-                               ParseSuccessResponse(request_id, dict))
-                         : orca::mojom::TextQueryResponse::NewError(
-                               ConvertErrorResponse(status)));
+            if (status.status_code == manta::MantaStatusCode::kOk) {
+              std::move(process_callback)
+                  .Run(orca::mojom::TextQueryResponse::NewResults(
+                      ParseSuccessResponse(request_id, dict)));
+              metrics_recorder->LogEditorState(EditorStates::kSuccessResponse);
+              return;
+            }
 
-            metrics_recorder->LogEditorState(
-                status.status_code == manta::MantaStatusCode::kOk
-                    ? EditorStates::kSuccessResponse
-                    : EditorStates::kErrorResponse);
+            auto error_response = ConvertErrorResponse(status);
+            orca::mojom::TextQueryErrorCode error_code = error_response->code;
+            std::move(process_callback)
+                .Run(orca::mojom::TextQueryResponse::NewError(
+                    std::move(error_response)));
+            metrics_recorder->LogEditorState(EditorStates::kErrorResponse);
+            metrics_recorder->LogEditorState(ToEditorStatesMetric(error_code));
           },
           base::NumberToString(request_id_), metrics_recorder_,
           std::move(callback)));

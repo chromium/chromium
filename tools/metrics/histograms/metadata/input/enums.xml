@@ -216,6 +216,14 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="FEATURE_BLOCKED_BY_APP_TYPE"/>
   <int value="29" label="FEATURE_BLOCKED_BY_INVALID_FORM_FACTOR"/>
   <int value="30" label="FEATURE_BLOCKED_BY_NETWORK_STATUS"/>
+  <int value="31" label="ERROR_UNKNOWN"/>
+  <int value="32" label="ERROR_INVALID_ARGUMENT"/>
+  <int value="33" label="ERROR_RESOURCE_EXHAUSTED"/>
+  <int value="34" label="ERROR_BACKEND_FAILURE"/>
+  <int value="35" label="ERROR_NO_INTERNET_CONNECTION"/>
+  <int value="36" label="ERROR_UNSUPPORTED_LANGUAGE"/>
+  <int value="37" label="ERROR_BLOCKED_OUTPUTS"/>
+  <int value="38" label="ERROR_RESTRICTED_REGION"/>
 </enum>
 
 <enum name="IMEGrammarActions">

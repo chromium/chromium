@@ -10,10 +10,13 @@
 
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
 namespace ash::input_method {
 
 EditorStates ToEditorStatesMetric(EditorBlockedReason reason);
+
+EditorStates ToEditorStatesMetric(orca::mojom::TextQueryErrorCode error_code);
 
 class EditorMetricsRecorder {
  public:

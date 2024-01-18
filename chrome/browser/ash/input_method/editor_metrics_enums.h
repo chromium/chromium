@@ -103,7 +103,24 @@ enum class EditorStates {
   // Increase by 1 when the feature is blocked because user is not connected to
   // internet.
   kBlockedByNetworkStatus = 30,
-  kMaxValue = kBlockedByNetworkStatus,
+  // Increase by 1 when user receives unknown error from the server.
+  ErrorUnknown = 31,
+  // Increase by 1 when user receives invalid argument error from the server.
+  ErrorInvalidArgument = 32,
+  // Increase by 1 when user receives resource exhausted error from the server.
+  ErrorResourceExhausted = 33,
+  // Increase by 1 when user receives backend failure error from the server.
+  ErrorBackendFailure = 34,
+  // Increase by 1 when user receives internet connection error from the server.
+  ErrorNoInternetConnection = 35,
+  // Increase by 1 when user receives unsupported language error from the
+  // server.
+  ErrorUnsupportedLanguage = 36,
+  // Increase by 1 when user receives blocked output error from the server.
+  ErrorBlockedOutputs = 37,
+  // Increase by 1 when user receives restricted region error from the server.
+  ErrorRestrictedRegion = 38,
+  kMaxValue = ErrorRestrictedRegion,
 };
 
 }  // namespace ash::input_method
