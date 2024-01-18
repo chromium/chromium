@@ -83,16 +83,6 @@ enum class SearchEngineChoiceScreenEvents {
   kMaxValue = kProfileCreationLearnMoreDisplayed,
 };
 
-// Profile properties that need to be passed to
-// `ShouldShowChoiceScreen`. This is due to the fact that
-// the 'Profile' class is different between platforms.
-// TODO(b/312115939): Rename `is_regular_profile` to something like
-// `is_eligible_profile`.
-struct ProfileProperties {
-  bool is_regular_profile = false;
-  raw_ptr<PrefService> pref_service;
-};
-
 enum class ChoicePromo {
   // Any path of getting the choice screen.
   kAny = 0,
