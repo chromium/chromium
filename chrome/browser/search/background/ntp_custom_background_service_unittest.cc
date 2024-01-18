@@ -1057,7 +1057,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
       profile().GetTestingPrefService();
 
   base::Token token = base::Token::CreateRandom();
-  custom_background_service_->SetBackgroundToLocalResourceWithId(token);
+  custom_background_service_->SetBackgroundToLocalResourceWithId(token, true);
   task_environment_.RunUntilIdle();
 
   // Check that local background image was set.
@@ -1071,6 +1071,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
   EXPECT_EQ(pref_service->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId),
             token.ToString());
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kNtpCustomBackgroundInspiration));
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
 }

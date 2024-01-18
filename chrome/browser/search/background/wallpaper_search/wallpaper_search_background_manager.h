@@ -41,6 +41,7 @@ class WallpaperSearchBackgroundManager {
   // data.
   virtual void SelectLocalBackgroundImage(const base::Token& id,
                                           const SkBitmap& bitmap,
+                                          bool is_inspiration_image,
                                           base::ElapsedTimer timer);
 
   // Saves the background to history if it is the current background.
@@ -51,7 +52,8 @@ class WallpaperSearchBackgroundManager {
  private:
   void SetBackgroundToLocalResourceWithId(const base::Token& id,
                                           base::ElapsedTimer timer,
-                                          const SkBitmap& bitmap);
+                                          const SkBitmap& bitmap,
+                                          bool is_inspiration_image);
 
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;

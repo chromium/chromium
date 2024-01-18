@@ -381,7 +381,7 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     history_entry_->mood = descriptors->mood;
   }
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
-      result_id, bitmap, base::ElapsedTimer());
+      result_id, bitmap, /*is_inspiration_image=*/false, base::ElapsedTimer());
 }
 
 void WallpaperSearchHandler::SetBackgroundToInspirationImage(
@@ -711,7 +711,7 @@ void WallpaperSearchHandler::OnInspirationImageDecoded(
     base::ElapsedTimer timer,
     const gfx::Image& image) {
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
-      id, image.AsBitmap(), std::move(timer));
+      id, image.AsBitmap(), /*is_inspiration_image=*/true, std::move(timer));
 }
 
 void WallpaperSearchHandler::OnInspirationsRetrieved(

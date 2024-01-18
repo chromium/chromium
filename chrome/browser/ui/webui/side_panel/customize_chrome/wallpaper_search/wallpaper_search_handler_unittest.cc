@@ -94,9 +94,10 @@ class MockWallpaperSearchBackgroundManager
                void(const base::Token&,
                     const gfx::Image&,
                     base::ElapsedTimer timer));
-  MOCK_METHOD3(SelectLocalBackgroundImage,
+  MOCK_METHOD4(SelectLocalBackgroundImage,
                void(const base::Token&,
                     const SkBitmap&,
+                    bool is_inspiration_image,
                     base::ElapsedTimer timer));
   MOCK_METHOD1(SaveCurrentBackgroundToHistory,
                std::optional<base::Token>(const HistoryEntry& history_entry));
@@ -1285,12 +1286,13 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   SkBitmap bitmap;
   base::Token token;
   base::ElapsedTimer timer;
+  bool is_inspiration_image;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SelectLocalBackgroundImage(An<const base::Token&>(),
-                                         An<const SkBitmap&>(),
+                                         An<const SkBitmap&>(), An<bool>(),
                                          An<base::ElapsedTimer>()))
-      .WillOnce(
-          DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap), MoveArg<2>(&timer)));
+      .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap),
+                      SaveArg<2>(&is_inspiration_image), MoveArg<3>(&timer)));
 
   auto descriptors =
       side_panel::customize_chrome::mojom::ResultDescriptors::New();
@@ -1309,6 +1311,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
 
   // Check that the processing timer is being passed.
   EXPECT_EQ(timer.Elapsed().InMilliseconds(), 123);
+
+  // Should not be marked as an inspiration image.
+  EXPECT_FALSE(is_inspiration_image);
 
   // Simulate current background is saved to history.
   HistoryEntry history_entry_arg;
@@ -1700,12 +1705,14 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToInspirationImage) {
   base::Token token_arg;
   SkBitmap bitmap_arg;
   base::ElapsedTimer timer_arg;
+  bool is_inspiration_image_arg;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SelectLocalBackgroundImage(An<const base::Token&>(),
-                                         An<const SkBitmap&>(),
+                                         An<const SkBitmap&>(), An<bool>(),
                                          An<base::ElapsedTimer>()))
       .WillOnce(DoAll(SaveArg<0>(&token_arg), SaveArg<1>(&bitmap_arg),
-                      MoveArg<2>(&timer_arg)));
+                      SaveArg<2>(&is_inspiration_image_arg),
+                      MoveArg<3>(&timer_arg)));
   // Ensure that the set theme is *not* saved to history on destruction.
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SaveCurrentBackgroundToHistory(_))
@@ -1737,6 +1744,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToInspirationImage) {
   EXPECT_EQ(bitmap_arg.width(), bitmap.width());
   EXPECT_EQ(bitmap_arg.height(), bitmap.height());
   EXPECT_EQ(timer_arg.Elapsed().InMilliseconds(), 123);
+  EXPECT_TRUE(is_inspiration_image_arg);
 
   // Ensure that after resetting a handler, no call is made to
   // |mock_wallpaper_search_background_manager|'s,
