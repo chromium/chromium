@@ -536,7 +536,8 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
     wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
     ASSERT_TRUE(surface);
     wl::MockXdgSurface* xdg_surface = surface->xdg_surface();
-    EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(28, 24, 900, 500)))
+        .Times(1);
   });
 
   window_->SetDecorationInsets(&kDecorationInsets_2x);
