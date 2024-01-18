@@ -1023,9 +1023,8 @@ void CertProvisioningWorkerStatic::RegisterForInvalidationTopic() {
   // |invalidator_| is destroyed.
   invalidator_->Register(
       invalidation_topic_,
-      base::BindRepeating(&CertProvisioningWorkerStatic::OnShouldContinue,
-                          base::Unretained(this),
-                          ContinueReason::kInvalidation));
+      base::BindRepeating(&CertProvisioningWorkerStatic::OnInvalidationEvent,
+                          base::Unretained(this)));
 
   RecordEvent(cert_profile_.protocol_version, cert_scope_,
               CertProvisioningEvent::kRegisteredToInvalidationTopic);
@@ -1037,6 +1036,13 @@ void CertProvisioningWorkerStatic::UnregisterFromInvalidationTopic() {
   DCHECK(invalidator_);
 
   invalidator_->Unregister();
+}
+
+void CertProvisioningWorkerStatic::OnInvalidationEvent(
+    InvalidationEvent invalidation_event) {
+  // TODO - b/307340577: Also react on a new "registered successfully" event.
+  VLOG(0) << "Invalidation received";
+  OnShouldContinue(ContinueReason::kInvalidation);
 }
 
 }  // namespace ash::cert_provisioning
