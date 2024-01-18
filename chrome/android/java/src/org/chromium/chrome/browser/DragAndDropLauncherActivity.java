@@ -18,6 +18,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 
 /** A helper activity for routing Chrome link drag & drop launcher intents. */
 public class DragAndDropLauncherActivity extends Activity {
@@ -42,6 +45,7 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.setClass(this, ChromeTabbedActivity.class);
         IntentUtils.addTrustedIntentExtras(intent);
         RecordUserAction.record(LAUNCHED_FROM_LINK_USER_ACTION);
+        DragDropMetricUtils.recordTabDragDropType(getDragDropTypeFromIntent(intent));
 
         // Launch the intent in an existing Chrome window, referenced by the EXTRA_WINDOW_ID intent
         // extra, if required. This extra will be present when the maximum number of instances is
@@ -67,9 +71,11 @@ public class DragAndDropLauncherActivity extends Activity {
      * @param urlString The link URL string.
      * @param windowId The window ID of the Chrome window in which the link will be opened,
      *     |MultiWindowUtils.INVALID_INSTANCE_ID| if there is no preference.
+     * @param intentSrc An enum indicating whether the intent is created by link or tab.
      * @return The intent that will be used to create a new Chrome instance from a dragged link.
      */
-    public static Intent getLinkLauncherIntent(Context context, String urlString, int windowId) {
+    public static Intent getLinkLauncherIntent(
+            Context context, String urlString, int windowId, @UrlIntentSource int intentSrc) {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context.getApplicationContext(),
@@ -81,6 +87,7 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.setAction(DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setData(Uri.parse(urlString));
+        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, intentSrc);
         DragAndDropLauncherActivity.setLinkIntentCreationTimestampMs(SystemClock.elapsedRealtime());
         return intent;
     }
@@ -129,5 +136,17 @@ public class DragAndDropLauncherActivity extends Activity {
     static void setLinkDropTimeoutMsForTesting(Long timeout) {
         sLinkDropTimeoutForTesting = timeout;
         ResettersForTesting.register(() -> sLinkDropTimeoutForTesting = null);
+    }
+
+    @VisibleForTesting
+    static @DragDropType int getDragDropTypeFromIntent(Intent intent) {
+        switch (intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN)) {
+            case UrlIntentSource.LINK:
+                return DragDropType.LINK_TO_NEW_INSTANCE;
+            case UrlIntentSource.TAB_IN_STRIP:
+                return DragDropType.TAB_STRIP_TO_NEW_INSTANCE;
+            default:
+                return DragDropType.UNKNOWN_TO_NEW_INSTANCE;
+        }
     }
 }

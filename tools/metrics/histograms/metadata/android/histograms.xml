@@ -1210,6 +1210,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Tab.Type" enum="DragDropType"
+    expires_after="2024-04-28">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the drag source and drop target when a tab is dropped successfully.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.ToOmnibox.DropType"
     enum="AndroidToolbarDropType" expires_after="2024-02-25">
   <owner>wenyufu@chromium.org</owner>

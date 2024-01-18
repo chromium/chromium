@@ -39,6 +39,7 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -266,7 +267,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             case DragTargetType.LINK:
                 if (mDragAndDropBrowserDelegate != null) {
                     Intent intent =
-                            mDragAndDropBrowserDelegate.createLinkIntent(dropData.gurl.getSpec());
+                            mDragAndDropBrowserDelegate.createUrlIntent(
+                                    dropData.gurl.getSpec(), UrlIntentSource.LINK);
                     if (intent != null) {
                         return new ClipData(
                                 null,

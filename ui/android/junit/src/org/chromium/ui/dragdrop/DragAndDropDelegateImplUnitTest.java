@@ -713,7 +713,7 @@ public class DragAndDropDelegateImplUnitTest {
                 .thenReturn(supportAnimatedImageDragShadow);
         when(mDragAndDropBrowserDelegate.getDragAndDropPermissions(any(DragEvent.class)))
                 .thenReturn(permissions);
-        when(mDragAndDropBrowserDelegate.createLinkIntent(anyString())).thenReturn(intent);
+        when(mDragAndDropBrowserDelegate.createUrlIntent(anyString(), anyInt())).thenReturn(intent);
         return mDragAndDropBrowserDelegate;
     }
 }

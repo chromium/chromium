@@ -930,6 +930,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="START_STICKY"/>
 </enum>
 
+<enum name="DragDropType">
+  <summary>See Android.DragDrop.Tab.Type</summary>
+  <int value="0" label="TAB_STRIP_TO_TAB_STRIP"/>
+  <int value="1" label="TAB_STRIP_TO_CONTENT"/>
+  <int value="2" label="TAB_STRIP_TO_NEW_INSTANCE"/>
+  <int value="3" label="LINK_TO_NEW_INSTANCE"/>
+  <int value="4" label="UNKNOWN_TO_NEW_INSTANCE"/>
+</enum>
+
 <enum name="ExifOrientation">
   <int value="0" label="Normal"/>
   <int value="1" label="Rotate 90"/>

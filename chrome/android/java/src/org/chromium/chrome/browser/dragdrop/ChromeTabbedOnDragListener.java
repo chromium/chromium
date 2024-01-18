@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 /**
  * Define the default behavior when {@link ChromeTabbedActivity} receive drag events that's not
@@ -90,6 +92,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                                         mTabModelSelector.getModel(currentTab.isIncognito()),
                                         currentTab.getId())
                                 + 1);
+                DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_CONTENT);
                 return true;
         }
         return false;

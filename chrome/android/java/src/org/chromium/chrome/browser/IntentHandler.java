@@ -232,6 +232,10 @@ public class IntentHandler {
     public static final String EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY =
             "org.chromium.chrome.browser.launched_via_chrome_launcher_activity";
 
+    /** An enum to indicate whether the intent is created by link or tab. */
+    public static final String EXTRA_URL_DRAG_SOURCE =
+            "org.chromium.chrome.browser.url_drag_source";
+
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
