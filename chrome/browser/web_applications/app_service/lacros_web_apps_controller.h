@@ -95,12 +95,12 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   void ExecuteContextMenuCommandInternal(
       const std::string& app_id,
       const std::string& id,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+      base::OnceCallback<void(std::vector<content::WebContents*>)>
           launch_finished_callback);
   void LaunchInternal(
       const std::string& app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+      base::OnceCallback<void(std::vector<content::WebContents*>)>
           launch_finished_callback);
 
   // WebAppPublisherHelper::Delegate:
@@ -113,7 +113,7 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
 
   void ReturnLaunchResults(
       base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)> callback,
-      const std::vector<content::WebContents*>& web_contents);
+      std::vector<content::WebContents*> web_contents);
 
   const WebApp* GetWebApp(const webapps::AppId& app_id) const;
 

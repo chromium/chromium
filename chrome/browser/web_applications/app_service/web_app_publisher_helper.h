@@ -278,8 +278,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void LaunchAppWithFilesCheckingUserPermission(
       const std::string& app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          callback);
+      base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   Profile* profile() const { return profile_; }
 
@@ -379,8 +378,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       apps::IntentPtr intent,
       apps::LaunchSource launch_source,
       int64_t display_id,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          callback);
+      base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   // Get the list of identifiers for the app that will be used in policy
   // controls, such as force-installation and pinning. May be empty.
@@ -405,8 +403,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void OnFileHandlerDialogCompleted(
       std::string app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          callback,
+      base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       bool allowed,
       bool remember_user_choice);
 

@@ -1039,7 +1039,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       base::BindOnce(
           [](apps::LaunchCallback callback, apps::LaunchSource launch_source,
-             const std::vector<content::WebContents*>& web_contentses) {
+             std::vector<content::WebContents*> web_contentses) {
 // TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
             for (content::WebContents* web_contents : web_contentses) {
@@ -1703,8 +1703,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     apps::IntentPtr intent,
     apps::LaunchSource launch_source,
     int64_t display_id,
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-        callback) {
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   bool is_file_handling_launch =
       intent && !intent->files.empty() && !intent->IsShareIntent();
   auto params = apps::CreateAppLaunchParamsForIntent(
@@ -1721,7 +1720,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
   LaunchAppWithParams(
       std::move(params),
       base::BindOnce(
-          [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          [](base::OnceCallback<void(std::vector<content::WebContents*>)>
                  callback,
              content::WebContents* contents) {
             // These calls are piped through LaunchWebAppCommand and can end
@@ -1890,8 +1889,7 @@ bool WebAppPublisherHelper::ShouldShowBadge(const std::string& app_id,
 void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     const std::string& app_id,
     apps::AppLaunchParams params,
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-        callback) {
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   std::vector<base::FilePath> file_paths = params.launch_files;
   auto launch_callback =
       base::BindOnce(&WebAppPublisherHelper::OnFileHandlerDialogCompleted,
@@ -1921,8 +1919,7 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
 void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
     std::string app_id,
     apps::AppLaunchParams params,
-    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-        callback,
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     bool allowed,
     bool remember_user_choice) {
   if (remember_user_choice) {
