@@ -21,6 +21,7 @@ from .code_node import SequenceNode
 from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
+from .code_node import SymbolSensitiveSelectionNode
 from .code_node import TextNode
 from .code_node import WeakDependencyNode
 from .code_node_cxx import CxxBlockNode
@@ -319,12 +320,6 @@ def bind_callback_local_vars(code_node, cg_context):
                                "V8PerIsolateData::From(${isolate});")),
         S("property_name",
           "const char* const ${property_name} = \"${property.identifier}\";"),
-        S("receiver_context",
-          ("v8::Local<v8::Context> ${receiver_context} = "
-           "${v8_receiver}->GetCreationContextChecked();")),
-        S("receiver_script_state",
-          ("ScriptState* ${receiver_script_state} = "
-           "ScriptState::From(${receiver_context});")),
     ])
 
     is_receiver_context = not (
@@ -349,7 +344,7 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.append(S("execution_context", _format(pattern, _1=_1)))
     node = S("current_execution_context",
              ("ExecutionContext* ${current_execution_context} = "
-              "ExecutionContext::From(${current_context});"))
+              "ToExecutionContext(${current_script_state});"))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
             "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -357,7 +352,7 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.append(node)
     node = S("receiver_execution_context",
              ("ExecutionContext* ${receiver_execution_context} = "
-              "ExecutionContext::From(${receiver_context});"))
+              "ToExecutionContext(${receiver_script_state});"))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
             "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -436,6 +431,70 @@ def bind_callback_local_vars(code_node, cg_context):
 
     local_vars.append(
         S("exception_state", definition_constructor=create_exception_state))
+
+    # receiver_context
+    def create_receiver_context(symbol_node):
+        node = SymbolDefinitionNode(symbol_node)
+        # tl;dr: This is an optimization to leverage
+        # `v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext`.
+        # See also the comment in `create_receiver_script_state`.
+        #
+        # When ${receiver_script_state} is already defined,
+        #     ${receiver_script_state}->GetContext()
+        # is faster than
+        #     ${v8_receiver}->GetCreationContextChecked()
+        node.append(
+            SymbolSensitiveSelectionNode([
+                SymbolSensitiveSelectionNode.Choice(
+                    ["receiver_script_state"],
+                    T("v8::Local<v8::Context> ${receiver_context} = "
+                      "${receiver_script_state}->GetContext();")),
+                SymbolSensitiveSelectionNode.Choice(
+                    [],
+                    T("v8::Local<v8::Context> ${receiver_context} = "
+                      "${v8_receiver}->GetCreationContextChecked();")),
+            ]))
+        return node
+
+    local_vars.append(
+        S("receiver_context", definition_constructor=create_receiver_context))
+
+    # receiver_script_state
+    def create_receiver_script_state(symbol_node):
+        node = SymbolDefinitionNode(symbol_node)
+        # tl;dr: This is an optimization to leverage
+        # `v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext`.
+        #
+        # If ${receiver_context} is not used at all, or if
+        # ${receiver_script_state} is used before ${receiver_context} is used,
+        # then
+        #     v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext
+        #   + ScriptState::GetContext
+        # i.e.
+        #     ScriptState::ForRelevantRealm(v8::Local<v8::Object>)
+        #   + ScriptState::GetContext
+        # is faster than
+        #     v8::Object::GetCreationContextChecked
+        #   + ScriptState::From(v8::Local<v8::Context>)
+        # Depending on already-defined symbols, select the best way to get
+        # ${receiver_script_state}.
+        node.append(
+            SymbolSensitiveSelectionNode([
+                SymbolSensitiveSelectionNode.Choice(
+                    ["receiver_context"],
+                    T("ScriptState* ${receiver_script_state} = "
+                      "ScriptState::From(${receiver_context});")),
+                SymbolSensitiveSelectionNode.Choice(
+                    [],
+                    T("ScriptState* ${receiver_script_state} = "
+                      "ScriptState::ForRelevantRealm(${v8_receiver});")),
+            ]))
+        return node
+
+    local_vars.append(
+        S("receiver_script_state",
+          definition_constructor=create_receiver_script_state))
+
 
     # blink_receiver
     if cg_context.class_like.identifier == "Window":
@@ -4278,7 +4337,7 @@ def bind_installer_local_vars(code_node, cg_context):
 
     # execution_context
     node = S("execution_context", ("ExecutionContext* ${execution_context} = "
-                                   "ExecutionContext::From(${script_state});"))
+                                   "ToExecutionContext(${script_state});"))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
             "third_party/blink/renderer/core/execution_context/execution_context.h"
