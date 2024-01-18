@@ -54,7 +54,7 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
   def testGetLLVMProfilePath(self):
     path = local_device_gtest_run._GetLLVMProfilePath('test_dir', 'sr71', '5')
-    self.assertEqual(path, os.path.join('test_dir', 'sr71_5_%2m.profraw'))
+    self.assertEqual(path, os.path.join('test_dir', 'sr71_5_%2m%c.profraw'))
 
   def testGroupTests(self):
     test = [

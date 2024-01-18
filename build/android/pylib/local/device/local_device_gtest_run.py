@@ -146,9 +146,13 @@ def _GetLLVMProfilePath(device_coverage_dir, suite, coverage_index):
   Returns:
     The path pattern for environment variable 'LLVM_PROFILE_FILE'.
   """
+  # "%2m" is used to expand to 2 raw profiles at runtime.
+  # "%c" enables continuous mode. See crbug.com/1468343, crbug.com/1518474
+  # For more details, refer to:
+  #   https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
   return posixpath.join(device_coverage_dir,
                         '_'.join([suite,
-                                  str(coverage_index), '%2m.profraw']))
+                                  str(coverage_index), '%2m%c.profraw']))
 
 
 class _ApkDelegate:
