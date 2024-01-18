@@ -72,6 +72,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor_observer.h"
@@ -2792,10 +2793,25 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
     } else if (IsIncognitoWindow(window)) {
       num_incognito_windows_ += addend;
     }
-  }
 
-  CHECK_GE(num_unsupported_windows_, 0);
-  CHECK_GE(num_incognito_windows_, 0);
+    // TODO(b/319904368): Clean this up after we figure out which app changes
+    // its supported/incognito type and a proper fix is made.
+    if (num_unsupported_windows_ < 0) {
+      num_unsupported_windows_ = 0;
+      SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "unsupported_app_type",
+                              window->GetProperty(aura::client::kAppType));
+      SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "unsupported_app_id",
+                                full_restore::GetAppId(window));
+      base::debug::DumpWithoutCrashing();
+    } else if (num_incognito_windows_ < 0) {
+      num_incognito_windows_ = 0;
+      SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "incognito_app_type",
+                              window->GetProperty(aura::client::kAppType));
+      SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "incognito_app_id",
+                                full_restore::GetAppId(window));
+      base::debug::DumpWithoutCrashing();
+    }
+  }
 }
 
 int OverviewGrid::GetDesksBarHeight() const {
