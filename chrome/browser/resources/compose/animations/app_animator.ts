@@ -131,4 +131,54 @@ export class ComposeAppAnimator extends Animator {
           {duration: 100, easing: STANDARD_EASING}),
     ].flat();
   }
+
+  transitionFromResultToEditing(resultContainerHeight: number): Animation[] {
+    // Keep results body and footer visible while its contents animates out.
+    const maintainResultsVisibility = this.maintainStyles(
+        '#body, .footer', {
+          overflow: 'hidden',
+          visibility: 'visible',
+        },
+        {duration: 200});
+
+    const bodyGapHeightAnimation = this.animate(
+        '#body',
+        [
+          {gap: '8px'},
+          {gap: '0px'},
+        ],
+        {duration: 200, easing: STANDARD_EASING});
+
+    const resultContainerHeightAnimation = this.animate(
+        '#resultContainer',
+        [
+          {
+            height: `${resultContainerHeight}px`,
+            overflow: 'hidden',
+            alignItems: 'flex-end',
+          },
+          {
+            height: '0px',
+            overflow: 'hidden',
+            alignItems: 'flex-end',
+          },
+        ],
+        {duration: 200, easing: STANDARD_EASING});
+
+    return [
+      maintainResultsVisibility,
+      bodyGapHeightAnimation,
+      resultContainerHeightAnimation,
+
+      // Fade out result UI and keep faded out for the rest of animation.
+      this.fadeOut('#resultContainer, #resultFooter', {duration: 100}),
+      this.maintainStyles(
+          '#resultContainer, #resultFooter', {opacity: 0},
+          {delay: 100, duration: 100, fill: 'none'}),
+
+      // Fade in edit form.
+      this.fadeIn('#editContainer', {duration: 200}),
+      this.fadeIn('#editContainer .footer', {delay: 100, duration: 100}),
+    ].flat();
+  }
 }

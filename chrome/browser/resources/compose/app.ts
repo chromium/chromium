@@ -400,8 +400,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onEditClick_() {
+    const fullBodyHeight = this.$.body.offsetHeight;
+    const resultContainerHeight = this.$.resultContainer.offsetHeight;
     this.editedInput_ = this.input_;
     this.isEditingSubmittedInput_ = true;
+    this.animator_.transitionFromResultToEditing(resultContainerHeight);
+    this.$.textarea.transitionToEditing(fullBodyHeight);
+    this.$.editTextarea.transitionToEditing(fullBodyHeight);
   }
 
   private onIsEditingSubmittedInputChanged_() {

@@ -111,6 +111,10 @@ export class ComposeTextareaElement extends PolymerElement {
     this.animator_.transitionToReadonly();
   }
 
+  transitionToEditing(bodyHeight: number) {
+    this.animator_.transitionToEditing(bodyHeight);
+  }
+
   validate() {
     const value = this.$.input.value;
     const wordCount = value.match(/\S+/g)?.length || 0;

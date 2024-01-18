@@ -246,7 +246,7 @@
     --compose-result-text-color-while-loading: var(--cr-primary-text-color);
     --compose-result-text-color: var(--cr-primary-text-color);
     border-radius: 8px;
-    padding: 16px;
+    display: flex;
     box-sizing: border-box;
     background: var(--results-background_);
     color: var(--cr-primary-text-color);
@@ -259,6 +259,14 @@
         --color-compose-dialog-result-foreground-while-loading);
     --compose-result-text-color: var(--color-compose-dialog-result-foreground);
     line-height: 16px;
+  }
+
+  #resultContainerInner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
   }
 
   .result-text {
@@ -395,6 +403,7 @@
    */
   .dialog[hidden],
   .footer[hidden],
+  .result-container[hidden],
   #loading[hidden],
   #editContainer[hidden] {
     display: none;
@@ -482,41 +491,43 @@
       <div id="resultContainer" class="result-container"
           hidden="[[!hasPartialOrCompleteResponse_(response_,
               partialResponse_)]]">
-        <div class="result-text"
-            hidden="[[hasPartialResponse_(partialResponse_)]]"
-            >[[getTrimmedResult_(response_.result)]]</div>
-        <div id="partialResultText" class="result-text"
-            hidden="[[!hasPartialResponse_(partialResponse_)]]"
-            >[[getTrimmedPartialResult_(partialResponse_)]]</div>
-        <div id="resultOptions"
-            inert$="[[hasPartialResponse_(partialResponse_)]]">
-          <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-              aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
-            <template is="dom-repeat" items="[[lengthOptions_]]">
-              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                  selected$="[[item.isDefault]]">
-                [[item.label]]
-              </option>
-            </template>
-          </select>
-          <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-              aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
-            <template is="dom-repeat" items="[[toneOptions_]]">
-              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                  selected$="[[item.isDefault]]">
-                [[item.label]]
-              </option>
-            </template>
-          </select>
+        <div id="resultContainerInner">
+          <div class="result-text"
+              hidden="[[hasPartialResponse_(partialResponse_)]]"
+              >[[getTrimmedResult_(response_.result)]]</div>
+          <div id="partialResultText" class="result-text"
+              hidden="[[!hasPartialResponse_(partialResponse_)]]"
+              >[[getTrimmedPartialResult_(partialResponse_)]]</div>
+          <div id="resultOptions"
+              inert$="[[hasPartialResponse_(partialResponse_)]]">
+            <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
+                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
+              <template is="dom-repeat" items="[[lengthOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                    selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
+            <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
+              <template is="dom-repeat" items="[[toneOptions_]]">
+                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                    selected$="[[item.isDefault]]">
+                  [[item.label]]
+                </option>
+              </template>
+            </select>
 
-          <div class="icon-buttons-row">
-            <cr-icon-button id="undoButton" iron-icon="compose:undo"
-              title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
-              on-click="onUndoClick_">
-            </cr-icon-button>
-            <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-              title="$i18n{resubmit}" on-click="onRefresh_">
-            </cr-icon-button>
+            <div class="icon-buttons-row">
+              <cr-icon-button id="undoButton" iron-icon="compose:undo"
+                title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
+                on-click="onUndoClick_">
+              </cr-icon-button>
+              <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
+                title="$i18n{resubmit}" on-click="onRefresh_">
+              </cr-icon-button>
+            </div>
           </div>
         </div>
       </div>
