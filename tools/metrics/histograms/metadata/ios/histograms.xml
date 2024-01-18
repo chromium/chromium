@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2"
-    units="ms" expires_after="2024-02-27">
+    units="ms" expires_after="2025-01-19">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -1012,7 +1012,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2"
-    units="ms" expires_after="2024-02-27">
+    units="ms" expires_after="2025-01-19">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.SubFrame2" units="ms"
-    expires_after="2024-02-27">
+    expires_after="2025-01-19">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
