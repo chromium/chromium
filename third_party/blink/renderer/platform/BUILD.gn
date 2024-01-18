@@ -2020,6 +2020,7 @@ test("blink_platform_unittests") {
     bundle_deps = [
       ":blink_platform_unittests_bundle_data",
       "//media:unit_tests_bundle_data",
+      "//testing/buildbot/filters:blink_platform_unittests_filters_bundle_data",
     ]
   }
 }

@@ -3626,7 +3626,12 @@ targets.legacy_basic_suite(
         "blink_common_unittests": targets.legacy_test_config(),
         "blink_fuzzer_unittests": targets.legacy_test_config(),
         "blink_heap_unittests": targets.legacy_test_config(),
-        "blink_platform_unittests": targets.legacy_test_config(),
+        "blink_platform_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
+            ],
+        ),
         "blink_unittests": targets.legacy_test_config(),
         "blink_unittests_v2": targets.legacy_test_config(),
         "boringssl_crypto_tests": targets.legacy_test_config(),

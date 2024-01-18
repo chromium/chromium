@@ -4008,7 +4008,12 @@
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter',
+        ],
+      },
       'blink_unittests': {},
       'blink_unittests_v2': {},
       'boringssl_crypto_tests': {},
