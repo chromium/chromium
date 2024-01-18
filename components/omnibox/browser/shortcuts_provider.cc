@@ -549,9 +549,11 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
 
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
     DCHECK(!is_starter_pack);
-    DCHECK(is_search_type != match.keyword.empty());
+    DCHECK(is_search_type != match.keyword.empty())
+        << "type: " << match.type << ", keyword" << match.keyword;
   } else {
-    DCHECK(is_search_type != match.keyword.empty() || is_starter_pack);
+    DCHECK(is_search_type != match.keyword.empty() || is_starter_pack)
+        << "type: " << match.type << ", keyword" << match.keyword;
   }
 
   const bool keyword_matches =
