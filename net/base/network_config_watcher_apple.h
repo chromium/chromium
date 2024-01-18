@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_BASE_NETWORK_CONFIG_WATCHER_MAC_H_
-#define NET_BASE_NETWORK_CONFIG_WATCHER_MAC_H_
+#ifndef NET_BASE_NETWORK_CONFIG_WATCHER_APPLE_H_
+#define NET_BASE_NETWORK_CONFIG_WATCHER_APPLE_H_
 
 #include <SystemConfiguration/SystemConfiguration.h>
 
@@ -18,10 +18,10 @@ class Thread;
 namespace net {
 
 // Helper class for watching the Mac OS system network settings.
-class NetworkConfigWatcherMac {
+class NetworkConfigWatcherApple {
  public:
   // NOTE: The lifetime of Delegate is expected to exceed the lifetime of
-  // NetworkConfigWatcherMac.
+  // NetworkConfigWatcherApple.
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -45,10 +45,10 @@ class NetworkConfigWatcherMac {
     virtual void OnNetworkConfigChange(CFArrayRef changed_keys) = 0;
   };
 
-  explicit NetworkConfigWatcherMac(Delegate* delegate);
-  NetworkConfigWatcherMac(const NetworkConfigWatcherMac&) = delete;
-  NetworkConfigWatcherMac& operator=(const NetworkConfigWatcherMac&) = delete;
-  ~NetworkConfigWatcherMac();
+  explicit NetworkConfigWatcherApple(Delegate* delegate);
+  NetworkConfigWatcherApple(const NetworkConfigWatcherApple&) = delete;
+  NetworkConfigWatcherApple& operator=(const NetworkConfigWatcherApple&) = delete;
+  ~NetworkConfigWatcherApple();
 
  private:
   // The thread used to listen for notifications.  This relays the notification
@@ -59,4 +59,4 @@ class NetworkConfigWatcherMac {
 
 }  // namespace net
 
-#endif  // NET_BASE_NETWORK_CONFIG_WATCHER_MAC_H_
+#endif  // NET_BASE_NETWORK_CONFIG_WATCHER_APPLE_H_

@@ -36,7 +36,7 @@
 #elif BUILDFLAG(IS_LINUX)
 #include "net/base/network_change_notifier_linux.h"
 #elif BUILDFLAG(IS_APPLE)
-#include "net/base/network_change_notifier_mac.h"
+#include "net/base/network_change_notifier_apple.h"
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier_passive.h"
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -325,7 +325,7 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
   return std::make_unique<NetworkChangeNotifierLinux>(
       std::unordered_set<std::string>());
 #elif BUILDFLAG(IS_APPLE)
-  return std::make_unique<NetworkChangeNotifierMac>();
+  return std::make_unique<NetworkChangeNotifierApple>();
 #elif BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<NetworkChangeNotifierFuchsia>(
       /*require_wlan=*/false);

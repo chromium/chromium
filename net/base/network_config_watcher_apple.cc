@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/network_config_watcher_mac.h"
+#include "net/base/network_config_watcher_apple.h"
 
 #include <algorithm>
 
@@ -31,22 +31,22 @@ const int kMaxRetry = 5;
 void DynamicStoreCallback(SCDynamicStoreRef /* store */,
                           CFArrayRef changed_keys,
                           void* config_delegate) {
-  NetworkConfigWatcherMac::Delegate* net_config_delegate =
-      static_cast<NetworkConfigWatcherMac::Delegate*>(config_delegate);
+  NetworkConfigWatcherApple::Delegate* net_config_delegate =
+      static_cast<NetworkConfigWatcherApple::Delegate*>(config_delegate);
   net_config_delegate->OnNetworkConfigChange(changed_keys);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
-class NetworkConfigWatcherMacThread : public base::Thread {
+class NetworkConfigWatcherAppleThread : public base::Thread {
  public:
-  explicit NetworkConfigWatcherMacThread(
-      NetworkConfigWatcherMac::Delegate* delegate);
-  NetworkConfigWatcherMacThread(const NetworkConfigWatcherMacThread&) = delete;
-  NetworkConfigWatcherMacThread& operator=(
-      const NetworkConfigWatcherMacThread&) = delete;
-  ~NetworkConfigWatcherMacThread() override;
+  explicit NetworkConfigWatcherAppleThread(
+      NetworkConfigWatcherApple::Delegate* delegate);
+  NetworkConfigWatcherAppleThread(const NetworkConfigWatcherAppleThread&) = delete;
+  NetworkConfigWatcherAppleThread& operator=(
+      const NetworkConfigWatcherAppleThread&) = delete;
+  ~NetworkConfigWatcherAppleThread() override;
 
  protected:
   // base::Thread
@@ -62,26 +62,26 @@ class NetworkConfigWatcherMacThread : public base::Thread {
   bool InitNotificationsHelper();
 
   base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source_;
-  const raw_ptr<NetworkConfigWatcherMac::Delegate> delegate_;
+  const raw_ptr<NetworkConfigWatcherApple::Delegate> delegate_;
 #if !BUILDFLAG(IS_IOS)
   int num_retry_ = 0;
 #endif  // !BUILDFLAG(IS_IOS)
-  base::WeakPtrFactory<NetworkConfigWatcherMacThread> weak_factory_;
+  base::WeakPtrFactory<NetworkConfigWatcherAppleThread> weak_factory_;
 };
 
-NetworkConfigWatcherMacThread::NetworkConfigWatcherMacThread(
-    NetworkConfigWatcherMac::Delegate* delegate)
+NetworkConfigWatcherAppleThread::NetworkConfigWatcherAppleThread(
+    NetworkConfigWatcherApple::Delegate* delegate)
     : base::Thread("NetworkConfigWatcher"),
       delegate_(delegate),
       weak_factory_(this) {}
 
-NetworkConfigWatcherMacThread::~NetworkConfigWatcherMacThread() {
+NetworkConfigWatcherAppleThread::~NetworkConfigWatcherAppleThread() {
   // This is expected to be invoked during shutdown.
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_thread_join;
   Stop();
 }
 
-void NetworkConfigWatcherMacThread::Init() {
+void NetworkConfigWatcherAppleThread::Init() {
   delegate_->Init();
 
   // TODO(willchan): Look to see if there's a better signal for when it's ok to
@@ -89,12 +89,12 @@ void NetworkConfigWatcherMacThread::Init() {
   const base::TimeDelta kInitializationDelay = base::Seconds(1);
   task_runner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&NetworkConfigWatcherMacThread::InitNotifications,
+      base::BindOnce(&NetworkConfigWatcherAppleThread::InitNotifications,
                      weak_factory_.GetWeakPtr()),
       kInitializationDelay);
 }
 
-void NetworkConfigWatcherMacThread::CleanUp() {
+void NetworkConfigWatcherAppleThread::CleanUp() {
   if (!run_loop_source_.get())
     return;
 
@@ -103,7 +103,7 @@ void NetworkConfigWatcherMacThread::CleanUp() {
   run_loop_source_.reset();
 }
 
-void NetworkConfigWatcherMacThread::InitNotifications() {
+void NetworkConfigWatcherAppleThread::InitNotifications() {
   // If initialization fails, retry after a 1s delay.
   bool success = InitNotificationsHelper();
 
@@ -112,7 +112,7 @@ void NetworkConfigWatcherMacThread::InitNotifications() {
     LOG(ERROR) << "Retrying SystemConfiguration registration in 1 second.";
     task_runner()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&NetworkConfigWatcherMacThread::InitNotifications,
+        base::BindOnce(&NetworkConfigWatcherAppleThread::InitNotifications,
                        weak_factory_.GetWeakPtr()),
         kRetryInterval);
     num_retry_++;
@@ -124,7 +124,7 @@ void NetworkConfigWatcherMacThread::InitNotifications() {
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
-bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
+bool NetworkConfigWatcherAppleThread::InitNotificationsHelper() {
 #if !BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
   // Add a run loop source for a dynamic store to the current run loop.
@@ -163,9 +163,9 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
   return true;
 }
 
-NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
+NetworkConfigWatcherApple::NetworkConfigWatcherApple(Delegate* delegate)
     : notifier_thread_(
-          std::make_unique<NetworkConfigWatcherMacThread>(delegate)) {
+          std::make_unique<NetworkConfigWatcherAppleThread>(delegate)) {
   // We create this notifier thread because the notification implementation
   // needs a thread with a CFRunLoop, and there's no guarantee that
   // CurrentThread::Get() meets that criterion.
@@ -173,6 +173,6 @@ NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
   notifier_thread_->StartWithOptions(std::move(thread_options));
 }
 
-NetworkConfigWatcherMac::~NetworkConfigWatcherMac() = default;
+NetworkConfigWatcherApple::~NetworkConfigWatcherApple() = default;
 
 }  // namespace net

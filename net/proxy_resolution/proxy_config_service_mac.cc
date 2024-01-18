@@ -198,7 +198,7 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());
-  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
+  config_watcher_ = std::make_unique<NetworkConfigWatcherApple>(&forwarder_);
 }
 
 ProxyConfigServiceMac::~ProxyConfigServiceMac() {

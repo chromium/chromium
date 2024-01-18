@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "net/base/network_config_watcher_mac.h"
+#include "net/base/network_config_watcher_apple.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 
@@ -45,9 +45,9 @@ class ProxyConfigServiceMac : public ProxyConfigService {
  private:
   class Helper;
 
-  // Forwarder just exists to keep the NetworkConfigWatcherMac API out of
+  // Forwarder just exists to keep the NetworkConfigWatcherApple API out of
   // ProxyConfigServiceMac's public API.
-  class Forwarder : public NetworkConfigWatcherMac::Delegate {
+  class Forwarder : public NetworkConfigWatcherApple::Delegate {
    public:
     explicit Forwarder(ProxyConfigServiceMac* proxy_config_service)
         : proxy_config_service_(proxy_config_service) {}
@@ -55,7 +55,7 @@ class ProxyConfigServiceMac : public ProxyConfigService {
     Forwarder(const Forwarder&) = delete;
     Forwarder& operator=(const Forwarder&) = delete;
 
-    // NetworkConfigWatcherMac::Delegate implementation:
+    // NetworkConfigWatcherApple::Delegate implementation:
     void StartReachabilityNotifications() override {}
     void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store) override;
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
@@ -64,7 +64,7 @@ class ProxyConfigServiceMac : public ProxyConfigService {
     const raw_ptr<ProxyConfigServiceMac> proxy_config_service_;
   };
 
-  // Methods directly called by the NetworkConfigWatcherMac::Delegate:
+  // Methods directly called by the NetworkConfigWatcherApple::Delegate:
   void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store);
   void OnNetworkConfigChange(CFArrayRef changed_keys);
 
@@ -72,7 +72,7 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   void OnProxyConfigChanged(const ProxyConfigWithAnnotation& new_config);
 
   Forwarder forwarder_;
-  std::unique_ptr<const NetworkConfigWatcherMac> config_watcher_;
+  std::unique_ptr<const NetworkConfigWatcherApple> config_watcher_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

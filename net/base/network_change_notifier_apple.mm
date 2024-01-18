@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/network_change_notifier_mac.h"
+#include "net/base/network_change_notifier_apple.h"
 
 #include <netinet/in.h>
 #include <resolv.h>
@@ -34,16 +34,16 @@ static bool CalculateReachability(SCNetworkConnectionFlags flags) {
   return reachable && !connection_required;
 }
 
-NetworkChangeNotifierMac::NetworkChangeNotifierMac()
+NetworkChangeNotifierApple::NetworkChangeNotifierApple()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsMac()),
       initial_connection_type_cv_(&connection_type_lock_),
       forwarder_(this) {
   // Must be initialized after the rest of this object, as it may call back into
   // SetInitialConnectionType().
-  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
+  config_watcher_ = std::make_unique<NetworkConfigWatcherApple>(&forwarder_);
 }
 
-NetworkChangeNotifierMac::~NetworkChangeNotifierMac() {
+NetworkChangeNotifierApple::~NetworkChangeNotifierApple() {
   ClearGlobalPointer();
   // Delete the ConfigWatcher to join the notifier thread, ensuring that
   // StartReachabilityNotifications() has an opportunity to run to completion.
@@ -59,7 +59,7 @@ NetworkChangeNotifierMac::~NetworkChangeNotifierMac() {
 
 // static
 NetworkChangeNotifier::NetworkChangeCalculatorParams
-NetworkChangeNotifierMac::NetworkChangeCalculatorParamsMac() {
+NetworkChangeNotifierApple::NetworkChangeCalculatorParamsMac() {
   NetworkChangeCalculatorParams params;
   // Delay values arrived at by simple experimentation and adjusted so as to
   // produce a single signal when switching between network connections.
@@ -71,7 +71,7 @@ NetworkChangeNotifierMac::NetworkChangeCalculatorParamsMac() {
 }
 
 NetworkChangeNotifier::ConnectionType
-NetworkChangeNotifierMac::GetCurrentConnectionType() const {
+NetworkChangeNotifierApple::GetCurrentConnectionType() const {
   // https://crbug.com/125097
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::AutoLock lock(connection_type_lock_);
@@ -100,13 +100,13 @@ NetworkChangeNotifierMac::GetCurrentConnectionType() const {
   return CONNECTION_UNKNOWN;
 }
 
-void NetworkChangeNotifierMac::Forwarder::Init() {
+void NetworkChangeNotifierApple::Forwarder::Init() {
   net_config_watcher_->SetInitialConnectionType();
 }
 
 // static
 NetworkChangeNotifier::ConnectionType
-NetworkChangeNotifierMac::CalculateConnectionType(
+NetworkChangeNotifierApple::CalculateConnectionType(
     SCNetworkConnectionFlags flags) {
   bool reachable = CalculateReachability(flags);
   if (!reachable)
@@ -187,21 +187,21 @@ NetworkChangeNotifierMac::CalculateConnectionType(
 #endif
 }
 
-void NetworkChangeNotifierMac::Forwarder::StartReachabilityNotifications() {
+void NetworkChangeNotifierApple::Forwarder::StartReachabilityNotifications() {
   net_config_watcher_->StartReachabilityNotifications();
 }
 
-void NetworkChangeNotifierMac::Forwarder::SetDynamicStoreNotificationKeys(
+void NetworkChangeNotifierApple::Forwarder::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
   net_config_watcher_->SetDynamicStoreNotificationKeys(store);
 }
 
-void NetworkChangeNotifierMac::Forwarder::OnNetworkConfigChange(
+void NetworkChangeNotifierApple::Forwarder::OnNetworkConfigChange(
     CFArrayRef changed_keys) {
   net_config_watcher_->OnNetworkConfigChange(changed_keys);
 }
 
-void NetworkChangeNotifierMac::SetInitialConnectionType() {
+void NetworkChangeNotifierApple::SetInitialConnectionType() {
   // Called on notifier thread.
 
   // Try to reach 0.0.0.0. This is the approach taken by Firefox:
@@ -232,7 +232,7 @@ void NetworkChangeNotifierMac::SetInitialConnectionType() {
   }
 }
 
-void NetworkChangeNotifierMac::StartReachabilityNotifications() {
+void NetworkChangeNotifierApple::StartReachabilityNotifications() {
   // Called on notifier thread.
   run_loop_.reset(CFRunLoopGetCurrent());
   CFRetain(run_loop_.get());
@@ -246,7 +246,7 @@ void NetworkChangeNotifierMac::StartReachabilityNotifications() {
       nullptr   // description
   };
   if (!SCNetworkReachabilitySetCallback(
-          reachability_.get(), &NetworkChangeNotifierMac::ReachabilityCallback,
+          reachability_.get(), &NetworkChangeNotifierApple::ReachabilityCallback,
           &reachability_context)) {
     LOG(DFATAL) << "Could not set network reachability callback";
     reachability_.reset();
@@ -257,7 +257,7 @@ void NetworkChangeNotifierMac::StartReachabilityNotifications() {
   }
 }
 
-void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
+void NetworkChangeNotifierApple::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
 #if BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
@@ -284,7 +284,7 @@ void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
 #endif  // BUILDFLAG(IS_IOS)
 }
 
-void NetworkChangeNotifierMac::OnNetworkConfigChange(CFArrayRef changed_keys) {
+void NetworkChangeNotifierApple::OnNetworkConfigChange(CFArrayRef changed_keys) {
 #if BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
   NOTREACHED();
@@ -310,21 +310,21 @@ void NetworkChangeNotifierMac::OnNetworkConfigChange(CFArrayRef changed_keys) {
 }
 
 // static
-void NetworkChangeNotifierMac::ReachabilityCallback(
+void NetworkChangeNotifierApple::ReachabilityCallback(
     SCNetworkReachabilityRef target,
     SCNetworkConnectionFlags flags,
     void* notifier) {
-  NetworkChangeNotifierMac* notifier_mac =
-      static_cast<NetworkChangeNotifierMac*>(notifier);
+  NetworkChangeNotifierApple* notifier_apple =
+      static_cast<NetworkChangeNotifierApple*>(notifier);
 
-  DCHECK_EQ(notifier_mac->run_loop_.get(), CFRunLoopGetCurrent());
+  DCHECK_EQ(notifier_apple->run_loop_.get(), CFRunLoopGetCurrent());
 
   ConnectionType new_type = CalculateConnectionType(flags);
   ConnectionType old_type;
   {
-    base::AutoLock lock(notifier_mac->connection_type_lock_);
-    old_type = notifier_mac->connection_type_;
-    notifier_mac->connection_type_ = new_type;
+    base::AutoLock lock(notifier_apple->connection_type_lock_);
+    old_type = notifier_apple->connection_type_;
+    notifier_apple->connection_type_ = new_type;
   }
   if (old_type != new_type) {
     NotifyObserversOfConnectionTypeChange();

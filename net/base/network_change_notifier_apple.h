@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_MAC_H_
-#define NET_BASE_NETWORK_CHANGE_NOTIFIER_MAC_H_
+#ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_APPLE_H_
+#define NET_BASE_NETWORK_CHANGE_NOTIFIER_APPLE_H_
 
 #include <SystemConfiguration/SystemConfiguration.h>
 
@@ -17,44 +17,44 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/network_config_watcher_mac.h"
+#include "net/base/network_config_watcher_apple.h"
 
 namespace net {
 
-class NetworkChangeNotifierMac: public NetworkChangeNotifier {
+class NetworkChangeNotifierApple: public NetworkChangeNotifier {
  public:
-  NetworkChangeNotifierMac();
-  NetworkChangeNotifierMac(const NetworkChangeNotifierMac&) = delete;
-  NetworkChangeNotifierMac& operator=(const NetworkChangeNotifierMac&) = delete;
-  ~NetworkChangeNotifierMac() override;
+  NetworkChangeNotifierApple();
+  NetworkChangeNotifierApple(const NetworkChangeNotifierApple&) = delete;
+  NetworkChangeNotifierApple& operator=(const NetworkChangeNotifierApple&) = delete;
+  ~NetworkChangeNotifierApple() override;
 
   // NetworkChangeNotifier implementation:
   ConnectionType GetCurrentConnectionType() const override;
 
-  // Forwarder just exists to keep the NetworkConfigWatcherMac API out of
-  // NetworkChangeNotifierMac's public API.
-  class Forwarder : public NetworkConfigWatcherMac::Delegate {
+  // Forwarder just exists to keep the NetworkConfigWatcherApple API out of
+  // NetworkChangeNotifierApple's public API.
+  class Forwarder : public NetworkConfigWatcherApple::Delegate {
    public:
-    explicit Forwarder(NetworkChangeNotifierMac* net_config_watcher)
+    explicit Forwarder(NetworkChangeNotifierApple* net_config_watcher)
         : net_config_watcher_(net_config_watcher) {}
     Forwarder(const Forwarder&) = delete;
     Forwarder& operator=(const Forwarder&) = delete;
 
-    // NetworkConfigWatcherMac::Delegate implementation:
+    // NetworkConfigWatcherApple::Delegate implementation:
     void Init() override;
     void StartReachabilityNotifications() override;
     void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store) override;
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
 
    private:
-    const raw_ptr<NetworkChangeNotifierMac> net_config_watcher_;
+    const raw_ptr<NetworkChangeNotifierApple> net_config_watcher_;
   };
 
  private:
   // Called on the main thread on startup, afterwards on the notifier thread.
   static ConnectionType CalculateConnectionType(SCNetworkConnectionFlags flags);
 
-  // Methods directly called by the NetworkConfigWatcherMac::Delegate:
+  // Methods directly called by the NetworkConfigWatcherApple::Delegate:
   void StartReachabilityNotifications();
   void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store);
   void OnNetworkConfigChange(CFArrayRef changed_keys);
@@ -77,9 +77,9 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
   base::apple::ScopedCFTypeRef<CFRunLoopRef> run_loop_;
 
   Forwarder forwarder_;
-  std::unique_ptr<const NetworkConfigWatcherMac> config_watcher_;
+  std::unique_ptr<const NetworkConfigWatcherApple> config_watcher_;
 };
 
 }  // namespace net
 
-#endif  // NET_BASE_NETWORK_CHANGE_NOTIFIER_MAC_H_
+#endif  // NET_BASE_NETWORK_CHANGE_NOTIFIER_APPLE_H_
