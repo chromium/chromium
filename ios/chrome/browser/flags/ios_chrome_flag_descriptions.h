@@ -361,6 +361,10 @@ extern const char kEnableReadingListSignInPromoDescription[];
 extern const char kEnableSuggestionsScrollingOnIPadName[];
 extern const char kEnableSuggestionsScrollingOnIPadDescription[];
 
+// Title and description for the flag to enable startup latency improvements.
+extern const char kEnableStartupImprovementsName[];
+extern const char kEnableStartupImprovementsDescription[];
+
 // Title and description for the flag to enable signed out user view demotion.
 extern const char kEnableSignedOutViewDemotionName[];
 extern const char kEnableSignedOutViewDemotionDescription[];

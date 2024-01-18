@@ -424,6 +424,11 @@ const char kEnableSignedOutViewDemotionDescription[] =
     "Enable signed out user view demotion to avoid repeated content for signed "
     "out users.";
 
+const char kEnableStartupImprovementsName[] =
+    "Enable startup latency improvements";
+const char kEnableStartupImprovementsDescription[] =
+    "Enables startup latency improvements to make startup faster.";
+
 const char kEnableSuggestionsScrollingOnIPadName[] =
     "Enable omnibox suggestions scrolling on iPad";
 const char kEnableSuggestionsScrollingOnIPadDescription[] =
