@@ -108,6 +108,10 @@ ValidateManifestIdFromParsableSyncEntity(
 }
 }  // namespace
 
+BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
+             "DeleteBadWebAppSyncEntitites",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
   DCHECK(!app.untranslated_name().empty());
@@ -586,7 +590,7 @@ void WebAppSyncBridge::MergeLocalAppsToSync(
   }
 }
 
-void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
+ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     const syncer::EntityChange& change,
     RegistryUpdateData* update_local_data,
     std::vector<webapps::AppId>& apps_display_mode_changed) {
@@ -599,7 +603,7 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   if (change.type() == syncer::EntityChange::ACTION_DELETE) {
     if (!existing_web_app) {
       DLOG(ERROR) << "ApplySyncDataChange error: no app to delete";
-      return;
+      return ManifestIdParseResult::kSuccess;
     }
     auto app_copy = std::make_unique<WebApp>(*existing_web_app);
     app_copy->RemoveSource(WebAppManagement::kSync);
@@ -611,7 +615,7 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
       app_copy->SetIsUninstalling(true);
     }
     update_local_data->apps_to_update.push_back(std::move(app_copy));
-    return;
+    return ManifestIdParseResult::kSuccess;
   }
 
   // Handle EntityChange::ACTION_ADD and EntityChange::ACTION_UPDATE.
@@ -624,7 +628,7 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   if (!manifest_id.has_value()) {
     base::UmaHistogramEnumeration("WebApp.Sync.CorruptSyncEntity",
                                   manifest_id.error());
-    return;
+    return manifest_id.error();
   }
   base::UmaHistogramEnumeration("WebApp.Sync.CorruptSyncEntity",
                                 ManifestIdParseResult::kSuccess);
@@ -667,6 +671,7 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   } else {
     update_local_data->apps_to_create.push_back(std::move(web_app));
   }
+  return ManifestIdParseResult::kSuccess;
 }
 
 void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
@@ -748,8 +753,13 @@ std::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(
 
   for (const auto& change : entity_data) {
     DCHECK_NE(change->type(), syncer::EntityChange::ACTION_DELETE);
-    PrepareLocalUpdateFromSyncChange(*change, update_local_data.get(),
-                                     apps_display_mode_changed);
+    ManifestIdParseResult result = PrepareLocalUpdateFromSyncChange(
+        *change, update_local_data.get(), apps_display_mode_changed);
+    if (base::FeatureList::IsEnabled(kDeleteBadWebAppSyncEntitites) &&
+        result != ManifestIdParseResult::kSuccess) {
+      change_processor()->Delete(GetStorageKey(change->data()),
+                                 metadata_change_list.get());
+    }
   }
 
   MergeLocalAppsToSync(entity_data, metadata_change_list.get());

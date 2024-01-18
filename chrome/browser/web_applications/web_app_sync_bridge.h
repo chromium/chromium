@@ -269,7 +269,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MergeLocalAppsToSync(const syncer::EntityChangeList& entity_data,
                             syncer::MetadataChangeList* metadata_change_list);
 
-  void PrepareLocalUpdateFromSyncChange(
+  // Returns if the data was parsed.
+  ManifestIdParseResult PrepareLocalUpdateFromSyncChange(
       const syncer::EntityChange& change,
       RegistryUpdateData* update_local_data,
       std::vector<webapps::AppId>& apps_display_mode_changed);
