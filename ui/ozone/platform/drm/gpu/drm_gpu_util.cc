@@ -96,22 +96,9 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const skcms_Matrix3x3& color_matrix) {
 }
 
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect) {
-  // Damage rect should be non empty and non negative, otherwise there is
-  // risk of artifacting and black screens.
-  if (rect.width() <= 0) {
-    LOG(ERROR) << "Damage rect width must be positive: " << rect.ToString();
-    return nullptr;
-  }
-  if (rect.height() <= 0) {
-    LOG(ERROR) << "Damage rect height must be positive: " << rect.ToString();
-    return nullptr;
-  }
-  if (rect.x() < 0) {
-    LOG(ERROR) << "Damage rect x1 is negative: " << rect.x();
-    return nullptr;
-  }
-  if (rect.y() < 0) {
-    LOG(ERROR) << "Damage rect y1 is negative: " << rect.y();
+  // Damage rect can be empty, but sending empty or negative rects can result in
+  // artifacting and black screens. Filter them out here.
+  if (rect.width() <= 0 || rect.height() <= 0 || rect.x() < 0 || rect.y() < 0) {
     return nullptr;
   }
 

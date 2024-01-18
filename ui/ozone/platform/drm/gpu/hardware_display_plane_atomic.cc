@@ -132,11 +132,15 @@ bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
         OverlayTransformToDrmRotationPropertyValue(transform);
   }
 
-  const bool clip_in_bounds = src_rect.Contains(damage_rect);
-  if (!clip_in_bounds) {
-    LOG(ERROR) << "Damage clip not contained inside source plane";
+  // Log an error if the clip is not in bounds. Restrict logging to when PSR2 is
+  // enabled. (plane_fb_damage_clips has non-zero ID).
+  const bool clip_in_bounds = crtc_rect.Contains(damage_rect);
+  if (!clip_in_bounds && assigned_props_.plane_fb_damage_clips.id) {
+    LOG(ERROR) << "Damage clip dmg: " << damage_rect.ToString()
+               << " not contained inside display bounds"
+               << " crtc: " << crtc_rect.ToString();
   }
-  if (drm && assigned_props_.plane_fb_damage_clips.id && clip_in_bounds) {
+  if (drm && assigned_props_.plane_fb_damage_clips.id) {
     ScopedDrmModeRectPtr dmg_clip_blob_data = CreateDCBlob(damage_rect);
     // dmg_clip_blob needs to live long enough to be committed.
     static ScopedDrmPropertyBlob dmg_clip_blob = drm->CreatePropertyBlob(
