@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -95,6 +96,11 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
     /** Called to set a click listener for the search box. */
     void setSearchBoxClickListener(OnClickListener listener) {
         mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, v -> listener.onClick(v));
+    }
+
+    /** Called to set a drag listener for the search box. */
+    void setSearchBoxDragListener(OnDragListener listener) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, listener);
     }
 
     /** Called to add a click listener for the voice search button. */

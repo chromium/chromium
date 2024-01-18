@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
@@ -76,6 +77,10 @@ public class SearchBoxCoordinator {
 
     public void setSearchBoxClickListener(OnClickListener listener) {
         mMediator.setSearchBoxClickListener(listener);
+    }
+
+    public void setSearchBoxDragListener(OnDragListener listener) {
+        mMediator.setSearchBoxDragListener(listener);
     }
 
     public void setSearchBoxTextWatcher(TextWatcher textWatcher) {

@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.TextWatcher;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -32,6 +33,8 @@ interface SearchBoxProperties {
     WritableObjectPropertyKey<String> SEARCH_TEXT = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey SEARCH_HINT_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> SEARCH_BOX_CLICK_CALLBACK =
+            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<OnDragListener> SEARCH_BOX_DRAG_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<TextWatcher> SEARCH_BOX_TEXT_WATCHER =
             new WritableObjectPropertyKey<>();
@@ -59,6 +62,7 @@ interface SearchBoxProperties {
                 SEARCH_TEXT,
                 SEARCH_HINT_VISIBILITY,
                 SEARCH_BOX_CLICK_CALLBACK,
+                SEARCH_BOX_DRAG_CALLBACK,
                 SEARCH_BOX_TEXT_WATCHER,
                 SEARCH_BOX_HINT_COLOR,
                 SEARCH_BOX_HEIGHT,

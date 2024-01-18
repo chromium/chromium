@@ -69,6 +69,9 @@ class SearchBoxViewBinder
                                 model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK)
                                         .onClick(searchBoxTextView));
             }
+        } else if (SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK == propertyKey) {
+            searchBoxTextView.setOnDragListener(
+                    model.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER == propertyKey) {
             searchBoxTextView.addTextChangedListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));

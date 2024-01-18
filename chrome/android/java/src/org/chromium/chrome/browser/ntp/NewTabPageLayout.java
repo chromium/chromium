@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,6 +69,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -373,6 +375,29 @@ public class NewTabPageLayout extends LinearLayout {
         TraceEvent.begin(TAG + ".initializeSearchBoxTextView()");
 
         mSearchBoxCoordinator.setSearchBoxClickListener(v -> mManager.focusSearchBox(false, null));
+
+        // @TODO(crbug.com/1519592): Add test case for search box OnDragListener.
+        mSearchBoxCoordinator.setSearchBoxDragListener(
+                new OnDragListener() {
+                    @Override
+                    public boolean onDrag(View view, DragEvent dragEvent) {
+                        // Disable search box EditText when tab is dropped.
+                        if (dragEvent.getClipDescription() == null
+                                || !dragEvent
+                                        .getClipDescription()
+                                        .hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB)) {
+                            return false;
+                        } else {
+                            if (dragEvent.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+                                view.setEnabled(false);
+                            } else if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED) {
+                                view.setEnabled(true);
+                            }
+                        }
+                        return false;
+                    }
+                });
+
         mSearchBoxCoordinator.setSearchBoxTextWatcher(
                 new EmptyTextWatcher() {
                     @Override
