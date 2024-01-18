@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -35,10 +36,8 @@ class TwoClientSearchEnginesSyncTest : public SyncTest {
  public:
   TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {
     // The search engine pref will stop being synced when the
-    // `kSearchEngineChoice` or `kSearchEngineChoiceFre` feature is enabled.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{
-            switches::kSearchEngineChoice, switches::kSearchEngineChoiceFre});
+    // `kSearchEngineChoiceTrigger` feature is enabled.
+    feature_list_.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
   }
   ~TwoClientSearchEnginesSyncTest() override = default;
 

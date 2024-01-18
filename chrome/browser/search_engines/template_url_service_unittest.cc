@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/search_engines/template_url_service.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -32,13 +34,13 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -291,17 +293,11 @@ class TemplateURLServiceWithoutFallbackTest : public TemplateURLServiceTest {
 };
 
 TemplateURLServiceTest::TemplateURLServiceTest() {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
   if (IsSearchEngineChoiceEnabled()) {
-    enabled_features.push_back(switches::kSearchEngineChoice);
-    enabled_features.push_back(switches::kSearchEngineChoiceFre);
+    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   } else {
-    disabled_features.push_back(switches::kSearchEngineChoice);
-    disabled_features.push_back(switches::kSearchEngineChoiceFre);
+    feature_list_.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
   }
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 void TemplateURLServiceTest::SetUp() {

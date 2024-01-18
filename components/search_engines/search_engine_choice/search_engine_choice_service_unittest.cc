@@ -44,7 +44,10 @@ namespace search_engines {
 class SearchEngineChoiceServiceTest : public ::testing::Test {
  public:
   SearchEngineChoiceServiceTest() {
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "false"}});
     TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
     DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
@@ -357,11 +360,12 @@ TEST_F(SearchEngineChoiceServiceTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
 
 TEST_F(SearchEngineChoiceServiceTest, ShowChoiceScreenWithTriggerFeature) {
   // SearchEngineChoiceTrigger is enabled and not set to trigger only for
-  // tagged profiles: the dialog should trigger, regardless of the state of
-  // the other feature flags.
+  // tagged profiles: the dialog should trigger.
   feature_list()->Reset();
-  feature_list()->InitWithFeatures({switches::kSearchEngineChoiceTrigger},
-                                   {switches::kSearchEngineChoice});
+  feature_list()->InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+        "false"}});
   EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
@@ -384,9 +388,9 @@ TEST_F(SearchEngineChoiceServiceTest, ShowChoiceScreenWithTriggerFeature) {
   base::FieldTrialParams tagged_only_params{
       {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name, "true"}};
   feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      {{switches::kSearchEngineChoiceTrigger, tagged_only_params}},
-      {switches::kSearchEngineChoice});
+  feature_list()->InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger, tagged_only_params);
+
   EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)

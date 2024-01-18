@@ -268,12 +268,9 @@ class FirstRunParameterizedInteractiveUiTest
                   /*force_chrome_build=*/true));
 
       enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoiceFre, {}});
-      enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoice, {}});
+          {switches::kSearchEngineChoiceTrigger, {}});
     } else {
-      disabled_features.push_back(switches::kSearchEngineChoice);
-      disabled_features.push_back(switches::kSearchEngineChoiceFre);
+      disabled_features.push_back(switches::kSearchEngineChoiceTrigger);
     }
 
     if (WithPrivacySandboxEnabled()) {

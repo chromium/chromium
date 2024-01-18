@@ -19,6 +19,7 @@
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -112,7 +113,11 @@ class SearchEnginesHandlerParametrizedTest
  public:
   SearchEnginesHandlerParametrizedTest() {
     if (WithSearchEnginesChoiceEnabled()) {
-      feature_list()->InitAndEnableFeature(switches::kSearchEngineChoice);
+      feature_list()->InitAndEnableFeature(
+          switches::kSearchEngineChoiceTrigger);
+    } else {
+      feature_list()->InitAndDisableFeature(
+          switches::kSearchEngineChoiceTrigger);
     }
   }
 
@@ -194,7 +199,7 @@ class SearchEnginesHandlerTestWithSearchEngineChoiceEnabled
     : public SearchEnginesHandlerTestBase {
  public:
   SearchEnginesHandlerTestWithSearchEngineChoiceEnabled() {
-    feature_list()->InitAndEnableFeature(switches::kSearchEngineChoice);
+    feature_list()->InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   }
 
   void SetUp() override {

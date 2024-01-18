@@ -33,20 +33,13 @@ void ConfigureFeatureState(base::test::ScopedFeatureList& scoped_feature_list,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, kBelgiumCountryId);
 
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
   if (enable_feature) {
-    enabled_features.push_back(switches::kSearchEngineChoice);
-    enabled_features.push_back(switches::kSearchEngineChoiceFre);
-    enabled_features.push_back(switches::kSearchEngineChoiceTrigger);
+    scoped_feature_list.InitAndEnableFeature(
+        switches::kSearchEngineChoiceTrigger);
   } else {
-    disabled_features.push_back(switches::kSearchEngineChoice);
-    disabled_features.push_back(switches::kSearchEngineChoiceFre);
-    disabled_features.push_back(switches::kSearchEngineChoiceTrigger);
+    scoped_feature_list.InitAndDisableFeature(
+        switches::kSearchEngineChoiceTrigger);
   }
-
-  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 }
 }  // namespace
 

@@ -55,6 +55,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -537,6 +538,9 @@ class TurnSyncOnHelperTest : public testing::Test {
     profile_builder.AddTestingFactory(
         policy::UserPolicySigninServiceFactory::GetInstance(),
         base::BindRepeating(&FakeUserPolicySigninService::Build));
+    profile_builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   }
 
   void ClearProfile() {
@@ -1613,22 +1617,8 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
 
 class TurnSyncOnHelperSearchEngineTest : public TurnSyncOnHelperTest {
  private:
-  void SetUp() override {
-    TurnSyncOnHelperTest::SetUp();
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-  }
-
-  void SwitchToProfile(Profile* new_profile) override {
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        new_profile,
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-
-    TurnSyncOnHelperTest::SwitchToProfile(new_profile);
-  }
-
-  base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
 };
 
 TEST_F(TurnSyncOnHelperSearchEngineTest, SearchEngineImportedToNewProfile) {

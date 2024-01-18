@@ -21,7 +21,7 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSearchEngineChoice};
+      switches::kSearchEngineChoiceTrigger};
   base::AutoReset<bool> scoped_chrome_build_override_ =
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(

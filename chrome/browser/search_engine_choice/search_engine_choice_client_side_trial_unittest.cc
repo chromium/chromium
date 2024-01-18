@@ -91,10 +91,6 @@ TEST_P(SearchEngineChoiceClientSideTrialTest, SetUpIfNeeded) {
             base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
   EXPECT_EQ(GetParam().expect_feature_enabled,
             switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get());
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
-  EXPECT_EQ(GetParam().expect_feature_enabled,
-            base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive("WaffleStudy"));
@@ -177,7 +173,7 @@ TEST_F(SearchEngineChoiceClientSideTrialTest,
     base::MockEntropyProvider low_entropy_provider{0.01};
     auto feature_list = std::make_unique<base::FeatureList>();
     feature_list->RegisterExtraFeatureOverrides(
-        {{std::cref(switches::kSearchEngineChoice),
+        {{std::cref(switches::kSearchEngineChoiceTrigger),
           base::FeatureList::OVERRIDE_ENABLE_FEATURE}});
 
     SearchEngineChoiceClientSideTrial::SetUpIfNeeded(
@@ -189,11 +185,6 @@ TEST_F(SearchEngineChoiceClientSideTrialTest,
   }
 
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive("WaffleStudy"));
-
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
-
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kSearchEnginesStudyGroup));
 }
 

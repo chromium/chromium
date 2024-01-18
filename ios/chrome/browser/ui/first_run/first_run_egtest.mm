@@ -1479,7 +1479,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   // Set the country to one that is eligible for the choice screen (in this
   // case, France).
   config.additional_args.push_back("--search-engine-choice-country=FR");
-  config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
+  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   config.additional_args.push_back(
       std::string("-") + base::SysNSStringToUTF8(kSearchEngineForceEnabled));
   config.additional_args.push_back("true");

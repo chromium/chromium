@@ -15,6 +15,7 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -255,8 +256,7 @@ TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()
   // the feature flag is inlined."
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kSearchEngineChoice,
-                             switches::kSearchEngineChoiceFre});
+      /*disabled_features=*/{switches::kSearchEngineChoiceTrigger});
 }
 
 void TemplateURLServiceSyncTest::SetUp() {

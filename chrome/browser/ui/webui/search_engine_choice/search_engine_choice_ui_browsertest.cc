@@ -22,6 +22,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -160,8 +161,6 @@ class SearchEngineChoiceUIPixelTest
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
                           GetParam().use_right_to_left_language) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoice, {{"with-forced-scroll", "true"}});
   }
 
   ~SearchEngineChoiceUIPixelTest() override = default;
@@ -227,7 +226,8 @@ class SearchEngineChoiceUIPixelTest
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

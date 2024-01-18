@@ -66,31 +66,20 @@ const char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
+  if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_IOS)
-    // Chrome on iOS does not tag profiles, so this param instead determines
-    // whether we show the choice screen outside of the FRE or not.
-    if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
-        promo == ChoicePromo::kDialog) {
-      return false;
-    }
+  // Chrome on iOS does not tag profiles, so this param instead determines
+  // whether we show the choice screen outside of the FRE or not.
+  if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
+      promo == ChoicePromo::kDialog) {
+    return false;
+  }
 #endif
 
-    // This flag is a coordinating flag, which supersedes the flags below that
-    // are guarding individual screens making up the feature.
-    // TODO(b/310593464): Remove checks for the other flags.
-    return true;
-  }
-
-  switch (promo) {
-    case ChoicePromo::kAny:
-      return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
-             base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre);
-    case ChoicePromo::kDialog:
-      return base::FeatureList::IsEnabled(switches::kSearchEngineChoice);
-    case ChoicePromo::kFre:
-      return base::FeatureList::IsEnabled(switches::kSearchEngineChoiceFre);
-  }
+  return true;
 }
 
 bool IsEeaChoiceCountry(int country_id) {

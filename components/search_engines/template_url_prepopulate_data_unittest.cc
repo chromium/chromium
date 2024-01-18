@@ -21,6 +21,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -160,7 +161,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
 
   void SetupForChoiceScreenDisplay() {
     feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
     // Pick any EEA country
     const int kFranceCountryId =
         country_codes::CountryCharsToCountryID('F', 'R');
@@ -194,7 +195,7 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
 // in EEA they should have more than 5, and outside of EEA not more than 5.
 TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   const size_t kMinEea = 6;
   const size_t kMaxEea = 12;
   const size_t kMinRow = 3;

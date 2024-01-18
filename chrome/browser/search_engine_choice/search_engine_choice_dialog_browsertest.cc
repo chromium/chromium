@@ -161,7 +161,12 @@ webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
 class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
  public:
   explicit SearchEngineChoiceDialogBrowserTest(bool use_spy_service = true)
-      : use_spy_service_(use_spy_service) {}
+      : use_spy_service_(use_spy_service) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "false"}});
+  }
 
   SearchEngineChoiceDialogBrowserTest(const SearchEngineChoiceDialogBrowserTest&) = delete;
   SearchEngineChoiceDialogBrowserTest& operator=(
@@ -282,7 +287,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true);
-  base::test::ScopedFeatureList feature_list_{switches::kSearchEngineChoice};
+  base::test::ScopedFeatureList feature_list_;
   bool use_spy_service_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
@@ -965,6 +970,10 @@ class SearchEngineRepromptBrowserTest
       field_trial_params
           [switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name] =
               "true";
+    } else {
+      field_trial_params
+          [switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name] =
+              "false";
     }
     feature_list_.InitAndEnableFeatureWithParameters(
         switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));

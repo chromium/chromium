@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 
 #import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -13,6 +14,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_pref_names.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -77,8 +79,7 @@
 class SearchEngineChoiceCoordinatorTest : public PlatformTest {
  protected:
   SearchEngineChoiceCoordinatorTest() {
-    feature_list_.InitWithFeatures(
-        {switches::kSearchEngineChoiceFre, switches::kSearchEngineChoice}, {});
+    feature_list_.InitWithFeatures({switches::kSearchEngineChoiceTrigger}, {});
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),

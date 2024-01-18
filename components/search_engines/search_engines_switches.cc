@@ -23,6 +23,8 @@ const char kDisableSearchEngineChoiceScreen[] =
 const char kForceSearchEngineChoiceScreen[] =
     "force-search-engine-choice-screen";
 
+// Enables the search engine choice screen. Feature parameters below can
+// affect the actual triggering logic.
 BASE_FEATURE(kSearchEngineChoiceTrigger,
              "SearchEngineChoiceTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);

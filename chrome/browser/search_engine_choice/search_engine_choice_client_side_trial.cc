@@ -112,10 +112,6 @@ void SetUp(const base::FieldTrial::EntropyProvider& entropy_provider,
 
   feature_list.RegisterFieldTrialOverride(
       switches::kSearchEngineChoiceTrigger.name, feature_state, trial.get());
-  feature_list.RegisterFieldTrialOverride(switches::kSearchEngineChoice.name,
-                                          feature_state, trial.get());
-  feature_list.RegisterFieldTrialOverride(switches::kSearchEngineChoiceFre.name,
-                                          feature_state, trial.get());
 
   // Activate only after the overrides are completed.
   trial->Activate();
@@ -151,10 +147,7 @@ void SetUpIfNeeded(const base::FieldTrial::EntropyProvider& entropy_provider,
   // Skip setup if an associated feature is overriden, typically via the
   // commandline or setup during tests.
   if (feature_list->IsFeatureOverridden(
-          switches::kSearchEngineChoiceTrigger.name) ||
-      feature_list->IsFeatureOverridden(switches::kSearchEngineChoice.name) ||
-      feature_list->IsFeatureOverridden(
-          switches::kSearchEngineChoiceFre.name)) {
+          switches::kSearchEngineChoiceTrigger.name)) {
     LOG(WARNING) << "Not setting up client-side trial for WaffleStudy, feature "
                     "already overridden.";
     return;

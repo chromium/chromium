@@ -94,11 +94,13 @@ BASE_FEATURE(kTangibleSync,
 );
 
 // Enables the search engine choice feature for existing users.
+// TODO(b/316859558): Not used for shipping purposes, remove this feature.
 BASE_FEATURE(kSearchEngineChoice,
              "SearchEngineChoice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the search engine choice feature in the FRE.
+// TODO(b/315126434): Not used for shipping purposes, remove this feature.
 BASE_FEATURE(kSearchEngineChoiceFre,
              "SearchEngineChoiceFre",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -17,6 +17,7 @@
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -262,10 +263,9 @@ TEST(TemplateURLServiceUtilTest, GetSearchProvidersUsingLoadedEngines) {
   auto simulate_run = [&](bool enable_feature, int mocked_current_version) {
     base::test::ScopedFeatureList feature_list;
     if (enable_feature) {
-      feature_list.InitAndEnableFeature(switches::kSearchEngineChoice);
+      feature_list.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
     } else {
-      feature_list.InitWithFeatures({}, {switches::kSearchEngineChoice,
-                                         switches::kSearchEngineChoiceFre});
+      feature_list.InitWithFeatures({}, {switches::kSearchEngineChoiceTrigger});
     }
 
     TemplateURLService::OwnedTemplateURLVector template_urls;

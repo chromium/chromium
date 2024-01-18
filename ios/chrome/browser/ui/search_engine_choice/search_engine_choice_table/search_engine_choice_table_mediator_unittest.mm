@@ -40,7 +40,7 @@
 class SearchEngineChoiceTableMediatorTest : public PlatformTest {
  protected:
   SearchEngineChoiceTableMediatorTest() {
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),

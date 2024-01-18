@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -1808,9 +1809,11 @@ class DiceWebSigninInterceptorParametrizedBrowserTest
  public:
   DiceWebSigninInterceptorParametrizedBrowserTest() {
     if (WithSearchEngineChoiceEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kSearchEngineChoiceTrigger);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(switches::kSearchEngineChoice);
+      scoped_feature_list_.InitAndDisableFeature(
+          switches::kSearchEngineChoiceTrigger);
     }
   }
 

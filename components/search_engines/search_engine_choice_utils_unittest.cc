@@ -40,7 +40,11 @@ namespace search_engines {
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
   SearchEngineChoiceUtilsTest() {
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoiceTrigger,
+        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+          "false"}});
+
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -73,46 +77,27 @@ TEST_F(SearchEngineChoiceUtilsTest, IsEeaChoiceCountry) {
 
 TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
   feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          switches::kSearchEngineChoiceTrigger,
-          switches::kSearchEngineChoiceFre,
-          switches::kSearchEngineChoice,
-      });
+  feature_list()->InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
 
   EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
   EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
   EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
 
   feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{switches::kSearchEngineChoiceTrigger,
-        {
-            {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-             "false"},
-        }}},
-      /*disabled_features=*/{
-          switches::kSearchEngineChoiceFre,
-          switches::kSearchEngineChoice,
-      });
+  feature_list()->InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+        "false"}});
 
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
 
   feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{switches::kSearchEngineChoiceTrigger,
-        {
-            {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-             "true"},
-        }}},
-      /*disabled_features=*/{
-          switches::kSearchEngineChoiceFre,
-          switches::kSearchEngineChoice,
-      });
+  feature_list()->InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
+        "true"}});
 
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));

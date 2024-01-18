@@ -20802,7 +20802,7 @@
                     },
                     "enable_features": [
                         "LargeFaviconFromGoogle",
-                        "SearchEngineChoice"
+                        "SearchEngineChoiceTrigger"
                     ]
                 }
             ]
@@ -20827,8 +20827,6 @@
                     },
                     "enable_features": [
                         "IOSHideFeedWithSearchChoice",
-                        "SearchEngineChoice",
-                        "SearchEngineChoiceFre",
                         "SearchEngineChoiceTrigger"
                     ]
                 },
@@ -20840,8 +20838,6 @@
                     },
                     "enable_features": [
                         "IOSHideFeedWithSearchChoice",
-                        "SearchEngineChoice",
-                        "SearchEngineChoiceFre",
                         "SearchEngineChoiceTrigger"
                     ]
                 }
