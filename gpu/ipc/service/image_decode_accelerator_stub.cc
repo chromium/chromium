@@ -37,6 +37,7 @@
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"

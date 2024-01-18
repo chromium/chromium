@@ -27,6 +27,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {

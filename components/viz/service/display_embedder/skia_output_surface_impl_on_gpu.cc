@@ -48,6 +48,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"

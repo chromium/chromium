@@ -20,7 +20,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
-#include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"

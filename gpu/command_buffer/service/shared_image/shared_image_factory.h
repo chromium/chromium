@@ -17,7 +17,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -32,7 +32,6 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace gpu {
-class GpuDriverBugWorkarounds;
 class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;

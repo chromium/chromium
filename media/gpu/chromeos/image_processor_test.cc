@@ -28,6 +28,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"

@@ -48,6 +48,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist.h"
