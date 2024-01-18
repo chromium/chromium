@@ -7872,6 +7872,34 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Compose.PageEvents">
+  <owner>chrome-compose-frontend@google.com</owner>
+  <owner>petewil@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Reported at PrimaryPageChanged (or tab destruction) if any metrics have been
+    recorded. This collects user actions in the compose feature for this page.
+  </summary>
+  <metric name="ComposeTextInserted">
+    <summary>
+      The number of times the Compose result was inserted into the page. Uses
+      exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="MenuItemClicked">
+    <summary>
+      The number of times the Compose context menu item was clicked for an
+      element on the page. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+  <metric name="MenuItemShown">
+    <summary>
+      The number of times the Compose context menu item was shown for an element
+      on the page. Uses exponential buckets for privacy.
+    </summary>
+  </metric>
+</event>
+
 <event name="Compose.TextElementUsage">
   <owner>harringtond@google.com</owner>
   <owner>carlosk@chromium.org</owner>

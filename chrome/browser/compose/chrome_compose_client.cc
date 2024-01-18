@@ -75,6 +75,9 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
       translate_language_provider_(new TranslateLanguageProvider()),
       manager_(this),
       client_page_receiver_(this) {
+  auto ukm_source_id =
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
+  page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(ukm_source_id);
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   pref_service_ = profile_->GetPrefs();
@@ -128,6 +131,12 @@ void ChromeComposeClient::ShowComposeDialog(
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeCallback callback) {
+  if (ui_entry_point == EntryPoint::kContextMenu) {
+    // TODO(b/319478359): move this closer to the menu code to capture clicks
+    // even when the UI failed to open.
+    page_ukm_tracker_->MenuItemClicked();
+  }
+
   CreateOrUpdateSession(ui_entry_point, trigger_field, std::move(callback));
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
@@ -182,6 +191,7 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
       SetFirstRunSessionCloseReason(
           compose::ComposeFirstRunSessionCloseReason::
               kFirstRunDisclaimerAcknowledgedWithInsert);
+      page_ukm_tracker_->ComposeTextInserted();
       break;
   }
 
@@ -448,8 +458,12 @@ bool ChromeComposeClient::ShouldTriggerContextMenu(
     content::ContextMenuParams& params) {
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  return compose_enabling_->ShouldTriggerContextMenu(
+  bool allow_context_menu = compose_enabling_->ShouldTriggerContextMenu(
       profile_, translate_manager, rfh, params);
+  if (allow_context_menu) {
+    page_ukm_tracker_->MenuItemShown();
+  }
+  return allow_context_menu;
 }
 
 optimization_guide::ModelQualityLogsUploader*
@@ -513,6 +527,9 @@ void ChromeComposeClient::OpenFeedbackPageForTest(std::string feedback_id) {
 
 void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
   RemoveAllSessions();
+
+  page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(
+      page.GetMainDocument().GetPageUkmSourceId());
 
   compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
       &page.GetMainDocument());

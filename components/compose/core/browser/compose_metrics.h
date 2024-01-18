@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -115,6 +117,35 @@ struct ComposeSessionEvents {
   unsigned int msbb_dialog_shown_count = 0;
   unsigned int undo_count = 0;
   unsigned int update_input_count = 0;
+};
+
+// Class that automatically reports any UKM metrics for the page-level Compose
+// UKM as defined in go/ukm-collection-chrome-compose.
+class PageUkmTracker {
+ public:
+  PageUkmTracker(ukm::SourceId source_id);
+  ~PageUkmTracker();
+
+  // The compose menu item was shown in a context menu.
+  void MenuItemShown();
+
+  // The compose menu item was clicked, opening Compose.
+  void MenuItemClicked();
+
+  // The composed text was accepted and inserted into the webpage by the user.
+  void ComposeTextInserted();
+
+  // Records UKM if any of the above events happened during this object's
+  // lifetime.  Called in the destructor.
+  void MaybeLogUkm();
+
+ private:
+  bool event_was_recorded_ = false;
+  unsigned int menu_item_shown_count_ = 0;
+  unsigned int menu_item_clicked_count_ = 0;
+  unsigned int compose_text_inserted_count_ = 0;
+
+  ukm::SourceId source_id;
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);

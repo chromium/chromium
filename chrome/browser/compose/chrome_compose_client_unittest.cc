@@ -33,6 +33,7 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/test_renderer_host.h"
@@ -40,6 +41,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,6 +139,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         {});
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
                                          true);
@@ -173,6 +176,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     client_ = nullptr;
     scoped_feature_list_.Reset();
+    ukm_recorder_.reset();
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
     BrowserWithTestWindowTest::TearDown();
@@ -238,6 +242,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                std::move(callback_router_pending_remote));
   }
 
+  void FlushMojo() {
+    client_page_handler().FlushForTesting();
+    page_handler().FlushForTesting();
+  }
+
   ChromeComposeClient& client() { return *client_; }
   MockSession& session() { return session_; }
   MockModelQualityLogsUploader& model_quality_logs_uploader() {
@@ -256,6 +265,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   client_page_handler() {
     return client_page_handler_;
   }
+
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
 
   mojo::Remote<compose::mojom::ComposeSessionPageHandler>& page_handler() {
     return page_handler_;
@@ -344,30 +355,27 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   mojo::Remote<compose::mojom::ComposeClientPageHandler> client_page_handler_;
   mojo::Remote<compose::mojom::ComposeSessionPageHandler> page_handler_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
+  // Simulate page showing context menu.
+  auto* rfh =
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_content_editable_for_autofill = true;
+  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+
+  // Then simulate clicking the dialog.
   ShowDialogAndBindMojo();
-  EXPECT_CALL(session(), ExecuteModel(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) {
-            std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
-                nullptr);
-          })));
 
+  // Now call Compose, checking the results.
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
-  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
-      .WillOnce(
-          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            test_future.SetValue(std::move(response));
-          }));
-
+  BindComposeFutureToOnResponseReceived(test_future);
   page_handler()->Compose("", false);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
@@ -389,6 +397,115 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   histograms().ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
   // Check that a no response duration Error metric was emitted.
   histograms().ExpectTotalCount(compose::kComposeResponseDurationError, 0);
+
+  // Simulate insert call from Compose dialog.
+  page_handler()->AcceptComposeResult(base::NullCallback());
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
+  FlushMojo();
+
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        1),
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+                        1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1)));
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
+  auto* rfh =
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_content_editable_for_autofill = true;
+  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        1),
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
+
+  // Now show context menu twice on same page, and verify that second UKM record
+  // reflects this.
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 2UL);
+
+  EXPECT_THAT(
+      ukm_entries[1].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        2),
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
+  auto* rfh =
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_content_editable_for_autofill = true;
+  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  ShowDialogAndBindMojo();
+
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        1),
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+                        1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
@@ -561,6 +678,8 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+
+  NavigateAndCommitActiveTab(GURL("about:blank"));
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {

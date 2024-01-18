@@ -210,6 +210,9 @@ class ChromeComposeClient
   // Used to test Compose in a tab at |chrome://compose|.
   std::unique_ptr<ComposeSession> debug_session_;
 
+  // On destruction reports per-pageload UKM metrics (if any).
+  std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_;
+
   bool skip_show_dialog_for_test_ = false;
 
   // This boolean gets set to true upon opening the Settings page via the

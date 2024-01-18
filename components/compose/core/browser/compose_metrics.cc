@@ -7,6 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace compose {
 
@@ -35,6 +39,41 @@ const char kComposeFirstRunSessionCloseReason[] =
     "Compose.Session.FRE.Disclaimer.CloseReason";
 const char kComposeFirstRunSessionDialogShownCount[] =
     "Compose.Session.FRE.Disclaimer.DialogShownCount";
+
+PageUkmTracker::PageUkmTracker(ukm::SourceId source_id)
+    : source_id(source_id) {}
+
+PageUkmTracker::~PageUkmTracker() {
+  MaybeLogUkm();
+}
+
+void PageUkmTracker::MenuItemShown() {
+  event_was_recorded_ = true;
+  ++menu_item_shown_count_;
+}
+void PageUkmTracker::MenuItemClicked() {
+  event_was_recorded_ = true;
+  ++menu_item_clicked_count_;
+}
+void PageUkmTracker::ComposeTextInserted() {
+  event_was_recorded_ = true;
+  ++compose_text_inserted_count_;
+}
+
+void PageUkmTracker::MaybeLogUkm() {
+  if (!event_was_recorded_) {
+    return;
+  }
+
+  ukm::builders::Compose_PageEvents(source_id)
+      .SetMenuItemShown(
+          ukm::GetExponentialBucketMinForCounts1000(menu_item_shown_count_))
+      .SetMenuItemClicked(
+          ukm::GetExponentialBucketMinForCounts1000(menu_item_clicked_count_))
+      .SetComposeTextInserted(ukm::GetExponentialBucketMinForCounts1000(
+          compose_text_inserted_count_))
+      .Record(ukm::UkmRecorder::Get());
+}
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
