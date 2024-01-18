@@ -540,28 +540,6 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
-  test('verifyHonorificIsSaved', async function() {
-    loadTimeData.overrideValues({showHonorific: true});
-    const address = createEmptyAddressEntry();
-    const dialog = await createAddressDialog(address);
-    const honorificElement =
-        dialog.$.dialog.querySelectorAll<CrTextareaElement|CrInputElement>(
-            'cr-textarea, cr-input')[0]!;
-    assertEquals(undefined, honorificElement.value);
-    assertFalse(
-        !!getAddressFieldValue(address, FieldType.NAME_HONORIFIC_PREFIX));
-
-    const honorific = 'Lord';
-    honorificElement.value = honorific;
-
-    await expectEvent(
-        dialog, 'save-address', () => dialog.$.saveButton.click());
-    assertEquals(honorific, honorificElement.value);
-    assertEquals(
-        honorific,
-        getAddressFieldValue(address, FieldType.NAME_HONORIFIC_PREFIX));
-  });
-
   // TODO(crbug.com/1473847): Fix the flakiness.
   test.skip('verifyPhoneAndEmailAreRemoved', function() {
     const address = createEmptyAddressEntry();
@@ -612,7 +590,6 @@ suite('AutofillSectionAddressTests', function() {
   // save button is enabled, then it will clear the field and verify that the
   // save button is disabled. Test passes after all elements have been tested.
   test('verifySaveIsNotClickableIfAllInputFieldsAreEmpty', async function() {
-    loadTimeData.overrideValues({showHonorific: true});
     const dialog = await createAddressDialog(createEmptyAddressEntry());
     const saveButton = dialog.$.saveButton;
     const testElements =
@@ -627,10 +604,10 @@ suite('AutofillSectionAddressTests', function() {
       countrySelect.dispatchEvent(new CustomEvent('change'));
     });
 
-    // Default country is 'US' expecting: Honorific, Name, Organization,
+    // Default country is 'US' expecting: Name, Organization,
     // Street address, City, State, ZIP code, Phone, and Email.
-    // Unless Company name or honorific is disabled.
-    assertEquals(9, testElements.length);
+    // Unless Company name is disabled.
+    assertEquals(8, testElements.length);
 
     assertTrue(saveButton.disabled);
     for (const element of testElements) {
@@ -759,14 +736,9 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
   // US address has 3 fields on the same line.
   test('verifyEditingUSAddress', function() {
-    loadTimeData.overrideValues({showHonorific: true});
     const address = createEmptyAddressEntry();
 
     address.fields = [
-      {
-        type: FieldType.NAME_HONORIFIC_PREFIX,
-        value: 'Honorific',
-      },
       {type: FieldType.NAME_FULL, value: 'Name'},
       {type: FieldType.COMPANY_NAME, value: 'Organization'},
       {
@@ -784,7 +756,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertEquals(7, rows.length);
+      assertEquals(6, rows.length);
 
       let index = 0;
       // Country
@@ -795,18 +767,9 @@ suite('AutofillSectionAddressLocaleTests', function() {
           'United States',
           countrySelect!.selectedOptions[0]!.textContent!.trim());
       index++;
-      // Honorific
-      row = rows[index]!;
-      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.NAME_HONORIFIC_PREFIX),
-          cols[0]!.value);
-      index++;
       // Name
       row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(
@@ -861,11 +824,9 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
   // GB address has 1 field per line for all lines that change.
   test('verifyEditingGBAddress', function() {
-    loadTimeData.overrideValues({showHonorific: true});
     const address = createEmptyAddressEntry();
 
     address.fields = [
-      {type: FieldType.NAME_HONORIFIC_PREFIX, value: 'Lord'},
       {type: FieldType.NAME_FULL, value: 'Name'},
       {type: FieldType.COMPANY_NAME, value: 'Organization'},
       {
@@ -882,7 +843,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertEquals(9, rows.length);
+      assertEquals(8, rows.length);
 
       let index = 0;
       // Country
@@ -893,18 +854,9 @@ suite('AutofillSectionAddressLocaleTests', function() {
           'United Kingdom',
           countrySelect!.selectedOptions[0]!.textContent!.trim());
       index++;
-      // Honorific
-      row = rows[index]!;
-      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.NAME_HONORIFIC_PREFIX),
-          cols[0]!.value);
-      index++;
       // Name
       row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(
@@ -972,14 +924,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
   // IL address has 2 fields on the same line and is an RTL locale.
   // RTL locale shouldn't affect this test.
   test('verifyEditingILAddress', function() {
-    loadTimeData.overrideValues({showHonorific: true});
     const address = createEmptyAddressEntry();
-
     address.fields = [
-      {
-        type: FieldType.NAME_HONORIFIC_PREFIX,
-        value: 'Honorific',
-      },
       {type: FieldType.NAME_FULL, value: 'Name'},
       {type: FieldType.COMPANY_NAME, value: 'Organization'},
       {
@@ -996,7 +942,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
     return createAddressDialog(address).then(function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertEquals(7, rows.length);
+      assertEquals(6, rows.length);
 
       let index = 0;
       // Country
@@ -1006,18 +952,9 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertEquals(
           'Israel', countrySelect!.selectedOptions[0]!.textContent!.trim());
       index++;
-      // Honorific
-      row = rows[index]!;
-      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
-          '.address-column');
-      assertEquals(1, cols.length);
-      assertEquals(
-          getAddressFieldValue(address, FieldType.NAME_HONORIFIC_PREFIX),
-          cols[0]!.value);
-      index++;
       // Name
       row = rows[index]!;
-      cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
+      let cols = row.querySelectorAll<CrTextareaElement|CrInputElement>(
           '.address-column');
       assertEquals(1, cols.length);
       assertEquals(
@@ -1070,9 +1007,8 @@ suite('AutofillSectionAddressLocaleTests', function() {
   // US has an extra field 'State'. Validate that this field is
   // persisted when switching to IL then back to US.
   test('verifyAddressPersistanceWhenSwitchingCountries', function() {
-    loadTimeData.overrideValues({showHonorific: true});
     const address = createEmptyAddressEntry();
-    const experimental_fields_count = 2;
+    const experimental_fields_count = 1;
     address.fields.push({type: FieldType.ADDRESS_HOME_COUNTRY, value: 'US'});
 
     return createAddressDialog(address).then(function(dialog) {
