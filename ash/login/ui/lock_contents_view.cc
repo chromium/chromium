@@ -1319,23 +1319,6 @@ void LockContentsView::OnDeviceEnterpriseInfoChanged() {
 
 void LockContentsView::OnEnterpriseAccountDomainChanged() {}
 
-void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
-  LoginBigUserView* big_view = CurrentBigUserView();
-  if (!big_view->auth_user()) {
-    return;
-  }
-
-  const AccountId account_id =
-      big_view->GetCurrentUser().basic_user_info.account_id;
-  UserState* user_state = FindStateForUser(account_id);
-
-  auth_error_bubble_->ShowAuthError(
-      /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
-      /*unlock_attempt = */ unlock_attempt,
-      /*show_pin = */ user_state->show_pin,
-      /*is_login_screen = */ screen_type_ == LockScreen::ScreenType::kLogin);
-}
-
 void LockContentsView::ToggleManagementForUserForDebug(const AccountId& user) {
   auto replace = [](const LoginUserInfo& user_info) {
     auto changed = user_info;

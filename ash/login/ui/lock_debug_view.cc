@@ -18,6 +18,7 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login/ui/login_detachable_base_model.h"
@@ -1114,6 +1115,7 @@ void LockDebugView::TogglePublicAccountButtonPressed(int index) {
 }
 
 void LockDebugView::CycleAuthErrorMessage() {
+  LockContentsViewTestApi lock_test_api(lock_);
   switch (next_auth_error_type_) {
     case AuthErrorType::kFirstUnlockFailed:
       next_auth_error_type_ = AuthErrorType::kFirstUnlockFailedCapsLockOn;
@@ -1122,25 +1124,25 @@ void LockDebugView::CycleAuthErrorMessage() {
       debug_detachable_base_model_->SetPairingState(
           DetachableBasePairingStatus::kNone,
           DebugLoginDetachableBaseModel::kNullBaseId);
-      lock_->ShowAuthErrorMessageForDebug(1 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(1);
       return;
     case AuthErrorType::kFirstUnlockFailedCapsLockOn:
       next_auth_error_type_ = AuthErrorType::kSecondUnlockFailed;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           true /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(1 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(1);
       return;
     case AuthErrorType::kSecondUnlockFailed:
       next_auth_error_type_ = AuthErrorType::kSecondUnlockFailedCapsLockOn;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           false /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(2 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(2);
       return;
     case AuthErrorType::kSecondUnlockFailedCapsLockOn:
       next_auth_error_type_ = AuthErrorType::kDetachableBaseFailed;
       Shell::Get()->ime_controller()->UpdateCapsLockState(
           true /*caps_enabled*/);
-      lock_->ShowAuthErrorMessageForDebug(2 /*unlock_attempt*/);
+      lock_test_api.ShowAuthErrorBubble(2);
       return;
     case AuthErrorType::kDetachableBaseFailed:
       next_auth_error_type_ = AuthErrorType::kFirstUnlockFailed;

@@ -5,6 +5,9 @@
 #ifndef ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 #define ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 
+#include <vector>
+
+#include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_screen_media_controls_view.h"
@@ -38,7 +41,6 @@ class ASH_EXPORT LockContentsViewTestApi {
   views::View* note_action() const;
   views::View* tooltip_bubble() const;
   views::View* management_bubble() const;
-  LoginErrorBubble* auth_error_bubble() const;
   LoginErrorBubble* detachable_base_error_bubble() const;
   LoginErrorBubble* warning_banner_bubble() const;
   views::View* user_adding_screen_indicator() const;
@@ -57,6 +59,14 @@ class ASH_EXPORT LockContentsViewTestApi {
   bool RemoveUser(const AccountId& account_id);
   bool IsOobeDialogVisible() const;
   FingerprintState GetFingerPrintState(const AccountId& account_id) const;
+
+  // AuthErrorBubble functions.
+  AuthErrorBubble* auth_error_bubble() const;
+  bool IsAuthErrorBubbleVisible() const;
+  void ShowAuthErrorBubble(int unlock_attempt) const;
+  void HideAuthErrorBubble() const;
+  void PressAuthErrorRecoveryButton() const;
+  void PressAuthErrorLearnMoreButton() const;
 
  private:
   const raw_ptr<LockContentsView, DanglingUntriaged> view_;

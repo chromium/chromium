@@ -211,8 +211,6 @@ class ASH_EXPORT LockContentsView
   void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
-  void ShowAuthErrorMessageForDebug(int unlock_attempt);
-
   // Called for debugging to make |user| managed and display an icon along with
   // a note in the menu user view.
   void ToggleManagementForUserForDebug(const AccountId& user);

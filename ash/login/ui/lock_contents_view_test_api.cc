@@ -4,9 +4,24 @@
 
 #include "ash/login/ui/lock_contents_view_test_api.h"
 
+#include <vector>
+
+#include "ash/login/ui/auth_error_bubble.h"
+#include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_screen_media_controls_view.h"
+#include "ash/login/ui/lock_screen_media_view.h"
+#include "ash/login/ui/login_big_user_view.h"
+#include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
+#include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/note_action_launch_button.h"
+#include "ash/login/ui/scrollable_users_list_view.h"
+#include "ash/public/cpp/login_types.h"
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
+#include "components/account_id/account_id.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -59,10 +74,6 @@ views::View* LockContentsViewTestApi::note_action() const {
 
 views::View* LockContentsViewTestApi::management_bubble() const {
   return view_->management_bubble_;
-}
-
-LoginErrorBubble* LockContentsViewTestApi::auth_error_bubble() const {
-  return view_->auth_error_bubble_;
 }
 
 LoginErrorBubble* LockContentsViewTestApi::detachable_base_error_bubble()
@@ -157,6 +168,47 @@ FingerprintState LockContentsViewTestApi::GetFingerPrintState(
   UserState* user_state = view_->FindStateForUser(account_id);
   DCHECK(user_state);
   return user_state->fingerprint_state;
+}
+
+AuthErrorBubble* LockContentsViewTestApi::auth_error_bubble() const {
+  return view_->auth_error_bubble_;
+}
+
+bool LockContentsViewTestApi::IsAuthErrorBubbleVisible() const {
+  return auth_error_bubble()->GetVisible();
+}
+
+void LockContentsViewTestApi::ShowAuthErrorBubble(int unlock_attempt) const {
+  LoginBigUserView* big_view = view_->CurrentBigUserView();
+  if (!big_view->auth_user()) {
+    return;
+  }
+
+  const AccountId account_id =
+      big_view->GetCurrentUser().basic_user_info.account_id;
+  UserState* user_state = view_->FindStateForUser(account_id);
+
+  auth_error_bubble()->ShowAuthError(
+      /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
+      /*unlock_attempt = */ unlock_attempt,
+      /*show_pin = */ user_state->show_pin,
+      /*is_login_screen = */ view_->screen_type_ ==
+          LockScreen::ScreenType::kLogin);
+}
+
+void LockContentsViewTestApi::HideAuthErrorBubble() const {
+  CHECK(IsAuthErrorBubbleVisible());
+  auth_error_bubble()->Hide();
+}
+
+void LockContentsViewTestApi::PressAuthErrorRecoveryButton() const {
+  CHECK(IsAuthErrorBubbleVisible());
+  auth_error_bubble()->OnRecoverButtonPressed();
+}
+
+void LockContentsViewTestApi::PressAuthErrorLearnMoreButton() const {
+  CHECK(IsAuthErrorBubbleVisible());
+  auth_error_bubble()->OnLearnMoreButtonPressed();
 }
 
 }  // namespace ash
