@@ -30,6 +30,9 @@
 #include "media/gpu/android/ndk_media_codec_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
+    NDK_MEDIA_CODEC_MIN_API)
+
 namespace media {
 
 struct AMediaFormatDeleter {
@@ -107,10 +110,6 @@ NdkAudioEncoder::~NdkAudioEncoder() {
   ClearMediaCodec();
 }
 
-bool NdkAudioEncoder::IsSupported() {
-  return NdkMediaCodecWrapper::IsSupported();
-}
-
 bool NdkAudioEncoder::CreateAndStartMediaCodec() {
   auto mime_type =
       MediaCodecUtil::CodecToAndroidMimeType(options_.codec, kSampleFormatS16);
@@ -155,13 +154,6 @@ void NdkAudioEncoder::Initialize(const Options& options,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
-
-  if (!IsSupported()) {
-    LogAndReportError({EncoderStatus::Codes::kEncoderInitializationError,
-                       "NdkAudioEncoder is not supported"},
-                      std::move(done_cb));
-    return;
-  }
 
   // Check for `fifo_` instead of `media_codec_`, as `media_codec_` is reset
   // during a flush.
@@ -661,3 +653,4 @@ void NdkAudioEncoder::ReportOk(EncoderStatusCB done_cb) {
 }
 
 }  // namespace media
+#pragma clang attribute pop

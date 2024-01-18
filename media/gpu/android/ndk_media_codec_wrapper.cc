@@ -7,40 +7,11 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
 #include "base/check.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "media/gpu/android/mediacodec_stubs.h"
 
 namespace media {
-
-bool InitMediaCodec() {
-  // We need at least Android P for AMediaCodec_getInputFormat(), but in
-  // Android P we have issues with CFI and dynamic linker on arm64. However
-  // GetSupportedProfiles() needs Q+, so just limit to Q.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
-    return false;
-  }
-
-  media_gpu_android::StubPathMap paths;
-  constexpr base::FilePath::CharType kMediacodecPath[] =
-      FILE_PATH_LITERAL("libmediandk.so");
-
-  paths[media_gpu_android::kModuleMediacodec].push_back(kMediacodecPath);
-  if (!media_gpu_android::InitializeStubs(paths)) {
-    LOG(ERROR) << "Failed on loading libmediandk.so symbols";
-    return false;
-  }
-  return true;
-}
-
-bool NdkMediaCodecWrapper::IsSupported() {
-  static const bool is_loaded = InitMediaCodec();
-  return is_loaded;
-}
 
 std::unique_ptr<NdkMediaCodecWrapper> NdkMediaCodecWrapper::CreateByCodecName(
     std::string_view codec_name,

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/android/requires_api.h"
 #include "base/thread_annotations.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
@@ -28,8 +29,9 @@ class ConvertingAudioFifo;
 // thread to `task_runner_`.
 // Note: calling flush() forces a lazy re-creation of the underlying
 //       `media_codec_` on the next Encode() call.
-class MEDIA_GPU_EXPORT NdkAudioEncoder : public AudioEncoder,
-                                         public NdkMediaCodecWrapper::Client {
+class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
+    MEDIA_GPU_EXPORT NdkAudioEncoder : public AudioEncoder,
+                                       public NdkMediaCodecWrapper::Client {
  public:
   // `runner` - a task runner that will be used for all callbacks and external
   // calls to this instance.
@@ -38,8 +40,6 @@ class MEDIA_GPU_EXPORT NdkAudioEncoder : public AudioEncoder,
   NdkAudioEncoder(const NdkAudioEncoder&) = delete;
   NdkAudioEncoder& operator=(const NdkAudioEncoder&) = delete;
   ~NdkAudioEncoder() override;
-
-  static bool IsSupported();
 
   // AudioEncoder implementation.
   void Initialize(const Options& options,

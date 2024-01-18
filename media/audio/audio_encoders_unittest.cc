@@ -184,16 +184,16 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       buffer_duration_ = AudioTimestampHelper::FramesToTime(
           frames_per_buffer_, options_.sample_rate);
 #elif HAS_AAC_ENCODER && BUILDFLAG(IS_ANDROID)
-      if (!NdkAudioEncoder::IsSupported()) {
+      if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
+        encoder_ = std::make_unique<NdkAudioEncoder>(
+            base::SequencedTaskRunner::GetCurrentDefault());
+        frames_per_buffer_ = kAacFramesPerBuffer;
+        buffer_duration_ = AudioTimestampHelper::FramesToTime(
+            frames_per_buffer_, options_.sample_rate);
+      } else {
         GTEST_SKIP() << "NDK AAC encoder not supported. Skipping test.";
         // GTEST_SKIP() returns.
       }
-
-      encoder_ = std::make_unique<NdkAudioEncoder>(
-          base::SequencedTaskRunner::GetCurrentDefault());
-      frames_per_buffer_ = kAacFramesPerBuffer;
-      buffer_duration_ = AudioTimestampHelper::FramesToTime(
-          frames_per_buffer_, options_.sample_rate);
 #else
       NOTREACHED();
 #endif

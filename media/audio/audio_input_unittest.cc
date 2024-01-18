@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/audio_manager_android.h"
 #endif
 
@@ -124,9 +125,9 @@ class AudioInputTest : public testing::TestWithParam<bool> {
     if (should_use_aaudio_) {
       features_.InitAndEnableFeature(features::kUseAAudioInput);
 
-      aaudio_is_supported_ =
-          reinterpret_cast<AudioManagerAndroid*>(audio_manager_.get())
-              ->IsUsingAAudioForTesting();
+      if (__builtin_available(android AAUDIO_MIN_API, *)) {
+        aaudio_is_supported_ = true;
+      }
     }
 #endif
     base::RunLoop().RunUntilIdle();

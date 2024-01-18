@@ -19,15 +19,6 @@ if (use_pulseaudio && !link_pulseaudio) {
   }
 }
 
-if (is_android) {
-  generate_stubs("aaudio_stubs") {
-    extra_header = "android/aaudio_stub_header.fragment"
-    sigs = [ "android/aaudio.sigs" ]
-    output_name = "android/aaudio_stubs"
-    deps = [ "//base" ]
-  }
-}
-
 config("platform_config") {
   defines = []
   if (use_alsa) {
@@ -275,18 +266,9 @@ source_set("audio") {
       "android/opensles_util.h",
       "android/opensles_wrapper.cc",
     ]
+    libs += [ "aaudio" ]
 
-    deps += [
-      ":aaudio_stubs",
-      "//media/base/android:media_jni_headers",
-    ]
-
-    defines += [
-      # media/audio includes functions from NDK API levels beyond the one Chromium compiles
-      # with by default.
-      # Therefore relax the verification of functions <=> API level introduced with NDK 23.
-      "__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
-    ]
+    deps += [ "//media/base/android:media_jni_headers" ]
   }
 
   if (is_linux || is_chromeos) {

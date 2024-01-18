@@ -1,8 +1,0 @@
-// The extra include header needed in the generated stub file for defining
-// various MediaCodec types.
-
-extern "C" {
-
-#include <media/NdkMediaCodec.h>
-
-}

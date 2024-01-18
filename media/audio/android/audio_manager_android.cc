@@ -10,13 +10,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
-#include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_track_output_stream.h"
 #include "media/audio/android/opensles_input.h"
 #include "media/audio/android/opensles_output.h"
@@ -35,13 +33,6 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-
-using media_audio_android::InitializeStubs;
-using media_audio_android::kModuleAaudio;
-using media_audio_android::StubPathMap;
-
-static const base::FilePath::CharType kAaudioLib[] =
-    FILE_PATH_LITERAL("libaaudio.so");
 
 namespace media {
 namespace {
@@ -63,19 +54,15 @@ bool IsAudioSinkConnected() {
       base::android::AttachCurrentThread());
 }
 
-}  // namespace
-
-static bool InitAAudio() {
-  StubPathMap paths;
-
-  // Check if the AAudio library is available.
-  paths[kModuleAaudio].push_back(kAaudioLib);
-  if (!InitializeStubs(paths)) {
-    VLOG(1) << "Failed on loading the AAudio library and symbols";
-    return false;
-  }
-  return true;
+bool UseAAudioOutput() {
+  return base::FeatureList::IsEnabled(features::kUseAAudioDriver);
 }
+
+bool UseAAudioInput() {
+  return base::FeatureList::IsEnabled(features::kUseAAudioInput);
+}
+
+}  // namespace
 
 std::unique_ptr<AudioManager> CreateAudioManager(
     std::unique_ptr<AudioThread> audio_thread,
@@ -257,8 +244,10 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  if (UseAAudioOutput()) {
-    return new AAudioOutputStream(this, params, AAUDIO_USAGE_MEDIA);
+  if (__builtin_available(android AAUDIO_MIN_API, *)) {
+    if (UseAAudioOutput()) {
+      return new AAudioOutputStream(this, params, AAUDIO_USAGE_MEDIA);
+    }
   }
 
   return new OpenSLESOutputStream(this, params, SL_ANDROID_STREAM_MEDIA);
@@ -270,11 +259,13 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
-  if (UseAAudioOutput()) {
-    const aaudio_usage_t usage = communication_mode_is_on_
-                                     ? AAUDIO_USAGE_VOICE_COMMUNICATION
-                                     : AAUDIO_USAGE_MEDIA;
-    return new AAudioOutputStream(this, params, usage);
+  if (__builtin_available(android AAUDIO_MIN_API, *)) {
+    if (UseAAudioOutput()) {
+      const aaudio_usage_t usage = communication_mode_is_on_
+                                       ? AAUDIO_USAGE_VOICE_COMMUNICATION
+                                       : AAUDIO_USAGE_MEDIA;
+      return new AAudioOutputStream(this, params, usage);
+    }
   }
 
   // Set stream type which matches the current system-wide audio mode used by
@@ -302,8 +293,10 @@ AudioInputStream* AudioManagerAndroid::MakeLinearInputStream(
   DLOG_IF(ERROR, !device_id.empty()) << "Not implemented!";
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
 
-  if (UseAAudioInput()) {
-    return new AAudioInputStream(this, params);
+  if (__builtin_available(android AAUDIO_MIN_API, *)) {
+    if (UseAAudioInput()) {
+      return new AAudioInputStream(this, params);
+    }
   }
 
   return new OpenSLESInputStream(this, params);
@@ -327,19 +320,15 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
     return NULL;
   }
 
-  if (UseAAudioInput()) {
-    return new AAudioInputStream(this, params);
+  if (__builtin_available(android AAUDIO_MIN_API, *)) {
+    if (UseAAudioInput()) {
+      return new AAudioInputStream(this, params);
+    }
   }
 
   // Create a new audio input stream and enable or disable all audio effects
   // given |params.effects()|.
   return new OpenSLESInputStream(this, params);
-}
-
-// static
-bool AudioManagerAndroid::SupportsPerformanceModeForOutput() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_NOUGAT_MR1;
 }
 
 void AudioManagerAndroid::SetMute(JNIEnv* env,
@@ -392,8 +381,7 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     // For high latency playback on supported platforms, pass through the
     // requested buffer size; this provides significant power savings (~25%) and
     // reduces the potential for glitches under load.
-    if (SupportsPerformanceModeForOutput() &&
-        input_params.latency_tag() == AudioLatency::Type::kPlayback) {
+    if (input_params.latency_tag() == AudioLatency::Type::kPlayback) {
       buffer_size = input_params.frames_per_buffer();
     } else {
       buffer_size = GetOptimalOutputFrameSize(sample_rate,
@@ -525,37 +513,6 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
        ++it) {
     (*it)->SetVolume(volume);
   }
-}
-
-bool AudioManagerAndroid::UseAAudio() {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
-    // We need APIs that weren't added until API Level 28. Also, AAudio crashes
-    // on Android P, so only consider Q and above.
-    return false;
-  }
-
-  if (!is_aaudio_available_.has_value()) {
-    is_aaudio_available_ = InitAAudio();
-  }
-
-  return is_aaudio_available_.value();
-}
-
-bool AudioManagerAndroid::UseAAudioOutput() {
-  if (!base::FeatureList::IsEnabled(features::kUseAAudioDriver)) {
-    return false;
-  }
-
-  return UseAAudio();
-}
-
-bool AudioManagerAndroid::UseAAudioInput() {
-  if (!base::FeatureList::IsEnabled(features::kUseAAudioInput)) {
-    return false;
-  }
-
-  return UseAAudio();
 }
 
 }  // namespace media
