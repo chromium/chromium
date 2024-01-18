@@ -969,9 +969,15 @@ AV1Validator::AV1Validator(const gfx::Rect& visible_rect)
 bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
   if (metadata.dropped_frame()) {
-    LOG(ERROR)
-        << "VideoEncodeAccelerator doesn't support drop frame support in AV1.";
-    return false;
+    if (metadata.key_frame) {
+      LOG(ERROR) << "Don't drop key frame";
+      return false;
+    }
+    if (metadata.av1.has_value()) {
+      LOG(ERROR) << "BitstreamBufferMetadata has Av1Metadata on dropped frame";
+      return false;
+    }
+    return true;
   }
   if (!metadata.end_of_picture) {
     LOG(ERROR) << "end_of_picture must be true always in AV1";

@@ -358,6 +358,7 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
 
   current_params_.framerate = config.initial_framerate.value_or(
       VideoEncodeAccelerator::kDefaultFramerate);
+  current_params_.drop_frame_thresh = config.drop_frame_thresh_percentage;
   current_params_.bitrate_allocation.SetBitrate(0, 0,
                                                 config.bitrate.target_bps());
 
@@ -414,6 +415,8 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.overshoot_pct = 50;
   rc_config.max_intra_bitrate_pct = 300;
   rc_config.max_inter_bitrate_pct = 0;
+  rc_config.frame_drop_thresh =
+      base::strict_cast<int>(current_params_.drop_frame_thresh);
   rc_config.framerate = current_params_.framerate;
   rc_config.layer_target_bitrate[0] =
       current_params_.bitrate_allocation.GetSumBps() / 1000;
@@ -469,6 +472,18 @@ VaapiVideoEncoderDelegate::PrepareEncodeJobResult
 AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (frame_num_ == current_params_.intra_period) {
     encode_job.ProduceKeyframe();
+  }
+
+  aom::AV1FrameParamsRTC frame_params{
+      .frame_type =
+          encode_job.IsKeyframeRequested() ? aom::kKeyFrame : aom::kInterFrame,
+      .spatial_layer_id = 0,
+      .temporal_layer_id = 0,
+  };
+  if (rate_ctrl_->ComputeQP(frame_params) == aom::FrameDropDecision::kDrop) {
+    CHECK(!encode_job.IsKeyframeRequested());
+    DVLOGF(3) << "Drop frame";
+    return PrepareEncodeJobResult::kDrop;
   }
 
   size_t frame_header_obu_offset = 0;
@@ -664,7 +679,7 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackSequenceHeader() const {
   return ret.Flush();
 }
 
-bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
+bool AV1VaapiVideoEncoderDelegate::SubmitFrame(const EncodeJob& job,
                                                size_t frame_header_obu_offset) {
   VAEncPictureParameterBufferAV1 pic_param{};
   VAEncSegMapBufferAV1 segment_map_param{};
@@ -674,6 +689,10 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
     LOG(ERROR) << "Failed to fill PPS";
     return false;
   }
+
+  // Set QP value to the Picture frame header to set the metadata qp value
+  // later, in GetMetadata().
+  pic->frame_header.quantizer.base_index = pic_param.base_qindex;
 
   size_t frame_header_obu_size_offset = 0;
   if (!SubmitFrameOBU(pic_param, frame_header_obu_size_offset)) {
@@ -789,11 +808,6 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 
   pic_param.temporal_id = 0;
 
-  aom::AV1FrameParamsRTC frame_params;
-  frame_params.frame_type = is_keyframe ? aom::kKeyFrame : aom::kInterFrame;
-  frame_params.spatial_layer_id = 0;
-  frame_params.temporal_layer_id = 0;
-  rate_ctrl_->ComputeQP(frame_params);
   pic_param.base_qindex = rate_ctrl_->GetQP();
 
   aom::AV1LoopfilterLevel loop_filter_level = rate_ctrl_->GetLoopfilterLevel();

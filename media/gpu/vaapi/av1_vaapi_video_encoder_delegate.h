@@ -28,6 +28,10 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     uint32_t framerate = 0;
     uint8_t min_qp = 0;
     uint8_t max_qp = 0;
+
+    // The rate controller drop frame threshold. 0-100 as this is percentage.
+    uint8_t drop_frame_thresh = 0;
+
     // Sensible default values for CDEF taken from
     // https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
     // TODO: we may want to tune these parameters.
@@ -66,7 +70,7 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   bool SubmitSequenceParam();
   bool SubmitSequenceHeaderOBU(size_t& sequence_header_obu_size);
   std::vector<uint8_t> PackSequenceHeader() const;
-  bool SubmitFrame(EncodeJob& job, size_t frame_header_obu_offset);
+  bool SubmitFrame(const EncodeJob& job, size_t frame_header_obu_offset);
   bool FillPictureParam(VAEncPictureParameterBufferAV1& pic_param,
                         VAEncSegMapBufferAV1& segment_map_param,
                         const EncodeJob& job,

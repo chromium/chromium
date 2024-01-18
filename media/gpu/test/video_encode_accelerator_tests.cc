@@ -793,7 +793,8 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
 #if BUILDFLAG(USE_VAAPI)
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf_EnableDropFrame) {
   const VideoCodec codec = VideoCodecProfileToVideoCodec(g_env->Profile());
-  if (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9) {
+  if (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9 &&
+      codec != media::VideoCodec::kAV1) {
     GTEST_SKIP() << "VideoEncodeAccelerator on this device doesn't support drop"
                  << "frame with codec=" << GetCodecName(codec);
   }
