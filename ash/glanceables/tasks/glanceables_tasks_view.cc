@@ -289,6 +289,8 @@ void GlanceablesTasksView::UpdateTasksList(
     const std::string& task_list_title,
     bool initial_update,
     const ui::ListModel<api::Task>* tasks) {
+  const gfx::Size old_preferred_size = GetPreferredSize();
+
   if (initial_update) {
     add_new_task_button_->SetVisible(true);
     base::UmaHistogramCounts100(
@@ -296,7 +298,6 @@ void GlanceablesTasksView::UpdateTasksList(
         tasks->item_count());
   }
 
-  const gfx::Size old_preferred_size = GetPreferredSize();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   task_items_container_view_->RemoveAllChildViews();
@@ -314,7 +315,6 @@ void GlanceablesTasksView::UpdateTasksList(
       ++num_tasks_shown;
     }
   }
-  task_items_container_view_->SetVisible(num_tasks_shown > 0);
   list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
