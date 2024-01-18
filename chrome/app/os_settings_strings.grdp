@@ -6393,11 +6393,17 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
     Manage site microphone permissions in Chrome
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_LOCATION_PERMISSIONS_IN_CHROME_TEXT" translateable="false" desc="The label of the Chrome row in the Websites section of the location subpage. This row is displayed when location is allowed.">
+    Manage site location permissions in Chrome
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT" translateable="false" desc="The text displayed in the Websites section of the camera subpage when camera is not allowed.">
     No website is allowed to use your camera
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" translateable="false" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
     No website is allowed to use your microphone
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_LOCATION_TEXT" translateable="false" desc="The text displayed in the Websites section of the location subpage when location is not allowed for websites.">
+    No website is allowed to use your location
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Apps section of the privacy hub sensor subpages.">
     Apps

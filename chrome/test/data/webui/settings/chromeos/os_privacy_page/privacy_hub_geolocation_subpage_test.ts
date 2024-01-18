@@ -5,11 +5,12 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, GeolocationAccessLevel, Router, routes, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -22,6 +23,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   let fakeHandler: FakeAppPermissionHandler;
   let metrics: FakeMetricsPrivate;
   let privacyHubGeolocationSubpage: SettingsPrivacyHubGeolocationSubpage;
+  let openWindowProxy: TestOpenWindowProxy;
 
   async function initPage() {
     privacyHubGeolocationSubpage =
@@ -46,14 +48,17 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   setup(() => {
     fakeHandler = new FakeAppPermissionHandler();
     setAppPermissionProviderForTesting(fakeHandler);
-
     metrics = createFakeMetricsPrivate();
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
   });
 
   teardown(() => {
     privacyHubGeolocationSubpage.remove();
     Router.getInstance().resetRouteForTesting();
+    openWindowProxy.reset();
   });
 
   function histogram(): string {
@@ -226,5 +231,86 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertEquals(
         1,
         metrics.countMetricValue(histogram(), GeolocationAccessLevel.ALLOWED));
+  });
+
+  function getManagePermissionsInChromeRow(): CrLinkRowElement|null {
+    return privacyHubGeolocationSubpage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#managePermissionsInChromeRow');
+  }
+
+  function getNoWebsiteHasAccessTextRow(): HTMLElement|null {
+    return privacyHubGeolocationSubpage.shadowRoot!.querySelector<HTMLElement>(
+        '#noWebsiteHasAccessText');
+  }
+
+  test('Websites section texts', async () => {
+    await initPage();
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n('websitesSectionTitle'),
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#websitesSectionTitle')!.innerText!.trim());
+
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n(
+            'manageLocationPermissionsInChromeText'),
+        getManagePermissionsInChromeRow()!.label);
+
+    // Disable geolocation access.
+    setGeolocationAccessLevel(GeolocationAccessLevel.DISALLOWED);
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n('noWebsiteCanUseLocationText'),
+        getNoWebsiteHasAccessTextRow()!.innerText!.trim());
+
+    // Setting location to "only allowed for system services" should have same
+    // effect as disabling.
+    setGeolocationAccessLevel(GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n('noWebsiteCanUseLocationText'),
+        getNoWebsiteHasAccessTextRow()!.innerText!.trim());
+  });
+
+  test(
+      'Websites section with external link to Chrome Settings is shown when ' +
+          'location is allowed',
+      async () => {
+        await initPage();
+        // Geolocation is set to Allowed by default.
+        assertEquals(
+            GeolocationAccessLevel.ALLOWED, getGeolocationAccessLevel());
+
+        // Check that the external link is present
+        assertTrue(!!getManagePermissionsInChromeRow());
+        assertNull(getNoWebsiteHasAccessTextRow());
+      });
+
+  test(
+      'Clicking the link under the Websites section opens Chrome Location ' +
+          'Content Settings',
+      async () => {
+        await initPage();
+        // Geolocation is set to Allowed by default.
+        assertEquals(
+            GeolocationAccessLevel.ALLOWED, getGeolocationAccessLevel());
+
+        // Click on the external link and check the location content setting is
+        // opened.
+        getManagePermissionsInChromeRow()!.click();
+        assertEquals(
+            'chrome://settings/content/location',
+            await openWindowProxy.whenCalled('openUrl'));
+      });
+
+  test('Websites section is hidden when location is not allowed', async () => {
+    await initPage();
+    // Disable location access.
+    setGeolocationAccessLevel(GeolocationAccessLevel.DISALLOWED);
+    assertNull(getManagePermissionsInChromeRow());
+    assertTrue(!!getNoWebsiteHasAccessTextRow());
+
+    // Set location to "only allowed for system", UI should remain the same.
+    setGeolocationAccessLevel(GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    assertNull(getManagePermissionsInChromeRow());
+    assertTrue(!!getNoWebsiteHasAccessTextRow());
   });
 });

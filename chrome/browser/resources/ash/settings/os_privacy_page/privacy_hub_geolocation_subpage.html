@@ -12,6 +12,11 @@
     padding-inline-start: var(--cr-section-indent-padding);
   }
 
+  .subsection > cr-link-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
   settings-dropdown-menu {
     --md-select-width: 100%;
   }
@@ -53,5 +58,21 @@
 <div class="hr"></div>
 <div id="websitesSection">
   <h2 id="websitesSectionTitle">$i18n{websitesSectionTitle}</h2>
+  <div class="subsection">
+    <template is="dom-if" if="[[isGeolocationAllowedForApps_]]" restamp>
+      <cr-link-row
+          id="managePermissionsInChromeRow"
+          start-icon="os-settings:chrome"
+          label="$i18n{manageLocationPermissionsInChromeText}"
+          on-click="onManagePermissionsInChromeRowClick_"
+          external>
+      </cr-link-row>
+    </template>
+    <template is="dom-if" if="[[!isGeolocationAllowedForApps_]]" restamp>
+      <div id="noWebsiteHasAccessText" class="settings-box-text">
+        $i18n{noWebsiteCanUseLocationText}
+      </div>
+    </template>
+  </div>
 </div>
 <div class="hr"></div>
