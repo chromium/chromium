@@ -123,9 +123,23 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     var snapshot = NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
+
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
     selectItem(selectedItem)
+
+    /// Scroll to the end of the collection view if an item has been added.
+    if layout.lastUpdateAction == .insert {
+      let isRTL: Bool = self.collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+      if !isRTL {
+        let scrollOffset = self.collectionView.contentSize.width - self.collectionView.frame.width
+        if scrollOffset > 0 {
+          self.collectionView.setContentOffset(
+            CGPoint(x: scrollOffset, y: 0),
+            animated: true)
+        }
+      }
+    }
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
@@ -141,12 +155,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     else { return }
     layout.selectedIndexPath = indexPath
 
-    /// `.centeredHorizontally` is needed when the selected cell is not dequeued.
-    /// If the item is dequeued `.centeredVertically` will not update the layout.
-    let scrollPosition: UICollectionView.ScrollPosition =
-      collectionView.cellForItem(at: indexPath) != nil
-      ? .centeredVertically : .centeredHorizontally
-    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: scrollPosition)
+    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
 
     /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
     collectionView.collectionViewLayout.invalidateLayout()

@@ -12,12 +12,15 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// IndexPath of the selected item.
   public var selectedIndexPath: IndexPath?
 
-  // Separator views for the collection view.
+  /// Separator views for the collection view.
   public var leadingSeparatorView: TabStripSeparatorView?
   public var trailingSeparatorView: TabStripSeparatorView?
 
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
+
+  /// Last update item action.
+  public var lastUpdateAction: UICollectionViewUpdateItem.Action = .none
 
   /// Index paths of animated items.
   private var indexPathsOfDeletingItems: [IndexPath] = []
@@ -61,16 +64,18 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
     super.prepare(forCollectionViewUpdates: updateItems)
 
-    /// Keeps track of updated items to animate their transition.
+    // Keeps track of updated items to animate their transition.
     indexPathsOfDeletingItems = []
     indexPathsOfInsertingItems = []
     for item in updateItems {
       switch item.updateAction {
       case .insert:
         indexPathsOfInsertingItems.append(item.indexPathAfterUpdate!)
+        lastUpdateAction = .insert
         break
       case .delete:
         indexPathsOfDeletingItems.append(item.indexPathBeforeUpdate!)
+        lastUpdateAction = .delete
         break
       default:
         break
@@ -88,8 +93,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      let attributes: UICollectionViewLayoutAttributes = super
-        .initialLayoutAttributesForAppearingItem(at: itemIndexPath)
+      let attributes: UICollectionViewLayoutAttributes =
+        self
+        .layoutAttributesForItem(at: itemIndexPath)
     else { return nil }
 
     if indexPathsOfInsertingItems.contains(itemIndexPath) {
@@ -101,6 +107,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
         y: attributes.frame.size.height
       )
     }
+
     return attributes
   }
 
@@ -111,7 +118,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
       let attributes: UICollectionViewLayoutAttributes = super
         .finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
     else { return nil }
-
     if indexPathsOfDeletingItems.contains(itemIndexPath) {
       // Animate the disappearing item by fading it out and translating it down
       // by its height.
@@ -131,9 +137,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
       let layoutAttributes = super.layoutAttributesForItem(at: indexPath),
       let collectionView = collectionView
     else { return nil }
-    guard
-      let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
-    else { return layoutAttributes }
 
     let contentOffset = collectionView.contentOffset
     var frame = layoutAttributes.frame
@@ -141,12 +144,14 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     // The selected cell should remain on top of other cells within collection
     // view's bounds.
-    if indexPath == selectedIndexPath {
-      // Update cell separators.
-      cell.leadingSeparatorHidden = true
-      cell.trailingSeparatorHidden = true
-      cell.leadingSeparatorGradientViewHidden = true
-      cell.trailingSeparatorGradientViewHidden = true
+    if indexPath == selectedIndexPath || indexPathsOfInsertingItems.contains(indexPath) {
+      if let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell {
+        // Update cell separators.
+        cell.leadingSeparatorHidden = true
+        cell.trailingSeparatorHidden = true
+        cell.leadingSeparatorGradientViewHidden = true
+        cell.trailingSeparatorGradientViewHidden = true
+      }
 
       var origin = layoutAttributes.frame.origin
 
@@ -161,6 +166,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
       layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
       return layoutAttributes
     }
+
+    guard
+      let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
+    else { return layoutAttributes }
 
     // Update cell separators.
     cell.leadingSeparatorHidden = true
