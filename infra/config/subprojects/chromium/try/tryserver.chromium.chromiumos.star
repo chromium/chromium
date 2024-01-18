@@ -286,11 +286,12 @@ try_.orchestrator_builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
     # TODO(crbug.com/1471166) Enable on CQ.
-    # tryjob = try_.job(
-    #    equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
-    #    equivalent_builder_percentage = 100,
-    #    equivalent_builder_whitelist = "chromeos-pa-with-chromium-accounts",
-    # ),
+    tryjob = try_.job(
+        experiment_percentage = 1,
+        #    equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
+        #    equivalent_builder_percentage = 100,
+        #    equivalent_builder_whitelist = "chromeos-pa-with-chromium-accounts",
+    ),
 )
 
 try_.orchestrator_builder(
