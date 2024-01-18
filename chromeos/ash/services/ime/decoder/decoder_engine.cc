@@ -39,7 +39,7 @@ class ClientDelegate : public ImeClientDelegate {
     }
   }
 
-  void Destroy() override {}
+  void Destroy() override { delete this; }
 
  private:
   void OnDisconnected() {
