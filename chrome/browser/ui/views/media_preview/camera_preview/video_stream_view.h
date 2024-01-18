@@ -19,7 +19,7 @@ class VideoStreamView : public views::View {
   METADATA_HEADER(VideoStreamView, views::View)
 
  public:
-  explicit VideoStreamView(float default_aspect_ratio);
+  VideoStreamView();
   VideoStreamView(const VideoStreamView&) = delete;
   VideoStreamView& operator=(const VideoStreamView&) = delete;
   ~VideoStreamView() override;

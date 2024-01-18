@@ -55,11 +55,6 @@ class VideoStreamCoordinator
     frame_received_callback_for_test_ = std::move(callback);
   }
 
-  const media::VideoCaptureFormat GetClosestVideoFormatForTest(
-      const std::vector<media::VideoCaptureFormat>& formats,
-      const int view_width,
-      const float minimum_frame_rate);
-
  private:
   void StopInternal(mojo::Remote<video_capture::mojom::VideoSourceProvider>
                         video_source_provider = {});

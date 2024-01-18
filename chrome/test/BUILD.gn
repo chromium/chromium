@@ -9908,6 +9908,7 @@ if (!is_fuchsia) {
       if (is_linux || is_win || is_mac) {
         sources += [
           "../browser/ui/views/media_preview/camera_preview/camera_coordinator_unittest.cc",
+          "../browser/ui/views/media_preview/camera_preview/video_format_comparison_unittest.cc",
           "../browser/ui/views/media_preview/camera_preview/video_stream_coordinator_unittest.cc",
           "../browser/ui/views/media_preview/media_view_controller_base_unittest.cc",
           "../browser/ui/views/media_preview/mic_preview/audio_stream_coordinator_unittest.cc",

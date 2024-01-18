@@ -4750,6 +4750,8 @@ static_library("ui") {
       "views/media_preview/camera_preview/camera_mediator.h",
       "views/media_preview/camera_preview/camera_view_controller.cc",
       "views/media_preview/camera_preview/camera_view_controller.h",
+      "views/media_preview/camera_preview/video_format_comparison.cc",
+      "views/media_preview/camera_preview/video_format_comparison.h",
       "views/media_preview/camera_preview/video_stream_coordinator.cc",
       "views/media_preview/camera_preview/video_stream_coordinator.h",
       "views/media_preview/camera_preview/video_stream_view.cc",

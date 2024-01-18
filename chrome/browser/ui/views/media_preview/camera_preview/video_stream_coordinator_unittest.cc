@@ -181,24 +181,3 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   coordinator_->ConnectToDevice(std::move(video_source), GetFormats());
   run_loop.Run();
 }
-
-TEST_F(VideoStreamCoordinatorTest, ChooseTheClosetFormat) {
-  const auto& formats = GetFormats();
-  EXPECT_EQ(formats[0],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/130, /*minimum_frame_rate*/ 10));
-  EXPECT_EQ(formats[3],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/300, /*minimum_frame_rate*/ 10));
-
-  EXPECT_EQ(formats[3],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/280, /*minimum_frame_rate*/ 30));
-  EXPECT_EQ(formats[5],
-            coordinator_->GetClosestVideoFormatForTest(
-                formats, /*view_width=*/700, /*minimum_frame_rate*/ 30));
-
-  EXPECT_EQ(formats[3], coordinator_->GetClosestVideoFormatForTest(
-                            formats, /*view_width=*/280,
-                            /*minimum_frame_rate*/ 40));
-}
