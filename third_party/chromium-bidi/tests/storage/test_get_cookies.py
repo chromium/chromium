@@ -28,15 +28,20 @@ ANOTHER_COOKIE_VALUE = 'another_cookie_value'
 async def test_cookies_get_with_empty_params(websocket, context_id,
                                              example_url):
     await goto_url(websocket, context_id, example_url)
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'underspecified storage partition',
-                           'message': 'partition should be set'
-                       })):
-        await execute_command(websocket, {
-            'method': 'storage.getCookies',
-            'params': {}
-        })
+
+    hostname, origin = get_hostname_and_origin(example_url)
+    cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, hostname)
+    await set_cookie(websocket, context_id, cookie)
+
+    res = await execute_command(websocket, {
+        'method': 'storage.getCookies',
+        'params': {}
+    })
+
+    assert res == {
+        'cookies': [cookie],
+        'partitionKey': {},
+    }
 
 
 @pytest.mark.asyncio

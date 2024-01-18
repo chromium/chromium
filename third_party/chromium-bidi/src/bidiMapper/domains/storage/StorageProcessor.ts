@@ -158,9 +158,7 @@ export class StorageProcessor {
     partitionSpec: Storage.PartitionDescriptor | undefined
   ): Storage.PartitionKey {
     if (partitionSpec === undefined) {
-      throw new UnderspecifiedStoragePartitionException(
-        'partition should be set'
-      );
+      return {};
     }
     if (partitionSpec.type === 'context') {
       return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
@@ -188,7 +186,9 @@ export class StorageProcessor {
       secure: params.cookie.secure ?? false,
       httpOnly: params.cookie.httpOnly ?? false,
       // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
-      partitionKey: partitionKey.sourceOrigin,
+      ...(partitionKey.sourceOrigin !== undefined && {
+        partitionKey: partitionKey.sourceOrigin,
+      }),
       ...(params.cookie.expiry !== undefined && {
         expires: params.cookie.expiry,
       }),

@@ -35,6 +35,48 @@ async def test_cookie_set_with_required_fields(websocket, context_id,
             'method': 'storage.setCookie',
             'params': {
                 'cookie': {
+                    'name': SOME_COOKIE_NAME,
+                    'value': {
+                        'type': 'string',
+                        'value': SOME_COOKIE_VALUE
+                    },
+                    'domain': hostname,
+                }
+            }
+        })
+
+    resp = await execute_command(
+        websocket, {
+            'method': 'storage.getCookies',
+            'params': {
+                'partition': {
+                    'type': 'context',
+                    'context': context_id
+                }
+            }
+        })
+    assert resp == {
+        'cookies': [
+            get_bidi_cookie(SOME_COOKIE_NAME,
+                            SOME_COOKIE_VALUE,
+                            hostname,
+                            secure=False)
+        ],
+        'partitionKey': {
+            'sourceOrigin': expected_origin,
+        }
+    }
+
+
+@pytest.mark.asyncio
+async def test_cookie_set_partitioned(websocket, context_id, example_url):
+    hostname, expected_origin = get_hostname_and_origin(example_url)
+    await goto_url(websocket, context_id, example_url)
+    await execute_command(
+        websocket, {
+            'method': 'storage.setCookie',
+            'params': {
+                'cookie': {
                     'secure': True,
                     'name': SOME_COOKIE_NAME,
                     'value': {
@@ -99,10 +141,6 @@ async def test_cookie_set_with_all_fields(websocket, context_id, example_url):
                     'sameSite': same_site,
                     'expiry': expiry,
                 },
-                'partition': {
-                    'type': 'context',
-                    'context': context_id
-                }
             }
         })
 
@@ -140,26 +178,11 @@ async def test_cookie_set_expired(websocket, context_id, example_url):
                                           SOME_COOKIE_VALUE,
                                           hostname,
                                           expiry=expiry),
-                'partition': {
-                    'type': 'context',
-                    'context': context_id
-                }
             }
         })
 
-    resp = await execute_command(
-        websocket, {
-            'method': 'storage.getCookies',
-            'params': {
-                'partition': {
-                    'type': 'context',
-                    'context': context_id
-                }
-            }
-        })
-    assert resp == {
-        'cookies': [],
-        'partitionKey': {
-            'sourceOrigin': expected_origin,
-        }
-    }
+    resp = await execute_command(websocket, {
+        'method': 'storage.getCookies',
+        'params': {}
+    })
+    assert resp == {'cookies': [], 'partitionKey': {}}

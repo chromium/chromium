@@ -50,16 +50,14 @@ def get_bidi_cookie(cookie_name,
     } if expiry is not None else {})
 
 
-async def set_cookie(websocket, context_id, bidi_cookie):
+async def set_cookie(websocket, context_id, bidi_cookie, partition=None):
     """ Set cookie via BiDi command."""
     await execute_command(
         websocket, {
             'method': 'storage.setCookie',
             'params': {
                 'cookie': bidi_cookie,
-                'partition': {
-                    'type': 'context',
-                    'context': context_id
-                }
-            }
+            } | ({
+                'partition': partition
+            } if partition is not None else {})
         })
