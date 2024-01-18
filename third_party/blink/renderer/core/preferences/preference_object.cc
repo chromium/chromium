@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/preferences/preference_object.h"
+
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -247,8 +249,12 @@ ScriptPromise PreferenceObject::requestOverride(
   return promise;
 }
 
-Vector<AtomicString> PreferenceObject::validValues() {
-  Vector<AtomicString> valid_values;
+const FrozenArray<IDLString>& PreferenceObject::validValues() {
+  if (LIKELY(valid_values_)) {
+    return *valid_values_.Get();
+  }
+
+  FrozenArray<IDLString>::VectorType valid_values;
   if (name_ == "colorScheme") {
     valid_values.push_back("light");
     valid_values.push_back("dark");
@@ -264,7 +270,14 @@ Vector<AtomicString> PreferenceObject::validValues() {
   } else {
     NOTREACHED();
   }
-  return valid_values;
+  valid_values_ =
+      MakeGarbageCollected<FrozenArray<IDLString>>(std::move(valid_values));
+  return *valid_values_.Get();
+}
+
+void PreferenceObject::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  visitor->Trace(valid_values_);
 }
 
 }  // namespace blink
