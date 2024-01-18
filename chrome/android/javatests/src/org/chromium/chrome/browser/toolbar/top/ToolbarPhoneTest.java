@@ -480,6 +480,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
@@ -517,6 +518,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void
             testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled_animationsEnabled() {
@@ -564,7 +566,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.ANDROID_HUB})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceDisabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -608,6 +610,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -675,7 +678,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.ANDROID_HUB})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void
             testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled_noAnimation() {
@@ -745,7 +748,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.ANDROID_HUB})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     public void testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceDisabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

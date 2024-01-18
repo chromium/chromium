@@ -39,7 +39,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.ANDROID_HUB})
 public class AdaptiveToolbarTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
