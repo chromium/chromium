@@ -53,6 +53,9 @@ def __step_config(ctx, step_config):
             "name": "android/compile_resources",
             "command_prefix": "python3 ../../build/android/gyp/compile_resources.py",
             "handler": "android_compile_resources",
+            "inputs": [
+                "third_party/protobuf/python/google:pyprotolib",
+            ],
             "exclude_input_patterns": [
                 "*.h",
                 "*.o",
@@ -152,6 +155,10 @@ def __android_compile_resources_handler(ctx, cmd):
     #   --webp-cache-dir=obj/android-webp-cache
     inputs = []
     for i, arg in enumerate(cmd.args):
+        if arg in ["--aapt2-path", "--include-resources"]:
+            inputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
+        if arg.startswith("--include-resources="):
+            inputs.append(ctx.fs.canonpath(arg.removeprefix("--include-resources=")))
         for k in ["--dependencies-res-zips=", "--dependencies-res-zip-overlays=", "--extra-res-packages="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
@@ -190,13 +197,23 @@ def __android_compile_java_handler(ctx, cmd):
     #   --enable-errorprone
     #   @gen/chrome/android/chrome_test_java.sources
 
+    out = cmd.outputs[0]
+    outputs = [
+        out + ".md5.stamp",
+    ]
+
     inputs = []
     for i, arg in enumerate(cmd.args):
+        if arg == "--enable-errorprone":
+            # errorprone requires the plugin directory to detect src dir.
+            # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
+            inputs.append(ctx.fs.canonpath("../../tools/android/errorprone_plugin"))
+
         # read .sources file.
         if arg.startswith("@"):
             sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()
             inputs += sources
-        for k in ["--classpath=", "--bootclasspath=", "--processorpath="]:
+        for k in ["--java-srcjars=", "--classpath=", "--bootclasspath=", "--processorpath=", "--kotlin-jar-path="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)
@@ -208,6 +225,7 @@ def __android_compile_java_handler(ctx, cmd):
 
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,
+        outputs = cmd.outputs + outputs,
     )
 
 def __android_dex_handler(ctx, cmd):
@@ -217,11 +235,13 @@ def __android_dex_handler(ctx, cmd):
     ]
 
     # Add __dex.desugardeps to the outputs.
-    outputs = []
+    outputs = [
+        out + ".md5.stamp",
+    ]
     for i, arg in enumerate(cmd.args):
         if arg == "--desugar-dependencies":
             outputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
-        for k in ["--class-inputs=", "--bootclasspath=", "--classpath=", "--class-inputs-filearg=", "--dex-inputs-filearg="]:
+        for k in ["--class-inputs=", "--bootclasspath=", "--classpath=", "--class-inputs-filearg=", "--dex-inputs=", "--dex-inputs-filearg="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)
@@ -246,6 +266,10 @@ def __android_turbine_handler(ctx, cmd):
     if cmd.args[len(cmd.args) - 1].startswith("@"):
         out_fileslist = True
     for i, arg in enumerate(cmd.args):
+        if arg.startswith("--jar-path="):
+            jar_path = ctx.fs.canonpath(arg.removeprefix("--jar-path="))
+            if out_fileslist:
+                outputs.append(jar_path + ".java_files_list.txt")
         for k in ["--classpath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
@@ -354,6 +378,9 @@ def __input_deps(ctx, input_deps):
     ]
     input_deps["third_party/jdk/current/bin/javac"] = [
         "third_party/jdk/current:current",
+    ]
+    input_deps["third_party/protobuf/python/google/protobuf/__init__.py"] = [
+        "third_party/protobuf/python/google:google",
     ]
 
 android = module(
