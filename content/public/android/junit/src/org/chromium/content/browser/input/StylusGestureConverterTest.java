@@ -11,14 +11,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import static org.chromium.content.browser.input.StylusTestHelper.FALLBACK_TEXT;
-import static org.chromium.content.browser.input.StylusTestHelper.assertMojoRectsAreEqual;
-import static org.chromium.content.browser.input.StylusTestHelper.createMojoRect;
-import static org.chromium.content.browser.input.StylusTestHelper.toJavaString;
-
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.inputmethod.DeleteGesture;
 import android.view.inputmethod.DeleteRangeGesture;
 import android.view.inputmethod.InsertGesture;
@@ -27,32 +22,31 @@ import android.view.inputmethod.RemoveSpaceGesture;
 import android.view.inputmethod.SelectGesture;
 import android.view.inputmethod.SelectRangeGesture;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
-import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
 /**
  * Tests for the StylusGestureConverter class which converts stylus gestures from their Android
  * representation to their Blink representation. These tests construct gesture objects and use the
  * converter to convert them into gesture data. The gesture data is then checked for accuracy.
  */
-@RunWith(ContentJUnit4ClassRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({"enable-features=StylusRichGestures"})
-@MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class StylusGestureConverterTest {
     private static final String GESTURE_TYPE_HISTOGRAM = "InputMethod.StylusHandwriting.Gesture";
+    private static final String FALLBACK_TEXT = "this gesture failed";
 
     @Test
     @SmallTest
@@ -235,5 +229,30 @@ public class StylusGestureConverterTest {
         assertEquals(FALLBACK_TEXT, toJavaString(gestureData.textAlternative));
         assertNull(gestureData.textToInsert);
         histogram.assertExpected();
+    }
+
+    private static void assertMojoRectsAreEqual(
+            org.chromium.gfx.mojom.Rect expected, org.chromium.gfx.mojom.Rect actual) {
+        assertEquals(expected.x, actual.x);
+        assertEquals(expected.y, actual.y);
+        assertEquals(expected.width, actual.width);
+        assertEquals(expected.height, actual.height);
+    }
+
+    private static org.chromium.gfx.mojom.Rect createMojoRect(int x, int y, int width, int height) {
+        org.chromium.gfx.mojom.Rect rect = new org.chromium.gfx.mojom.Rect();
+        rect.x = x;
+        rect.y = y;
+        rect.width = width;
+        rect.height = height;
+        return rect;
+    }
+
+    private static String toJavaString(org.chromium.mojo_base.mojom.String16 buffer) {
+        StringBuilder string = new StringBuilder();
+        for (short c : buffer.data) {
+            string.append((char) c);
+        }
+        return string.toString();
     }
 }
