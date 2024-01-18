@@ -10,7 +10,9 @@
 namespace features {
 
 BASE_DECLARE_FEATURE(kEnableNearbyBleV2ExtendedAdvertising);
+BASE_DECLARE_FEATURE(kEnableNearbyBluetoothClassicAdvertising);
 bool IsNearbyBleV2ExtendedAdvertisingEnabled();
+bool IsNearbyBluetoothClassicAdvertisingEnabled();
 
 }  // namespace features
 
