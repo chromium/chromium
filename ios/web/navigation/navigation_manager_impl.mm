@@ -1091,6 +1091,10 @@ void NavigationManagerImpl::Restore(
   }
 
   RestoreNativeSession();
+
+  RestoreItemsState(RestoreItemListType::kBackList, std::move(back_items));
+  RestoreItemsState(RestoreItemListType::kForwardList,
+                    std::move(forward_items));
 }
 
 bool NavigationManagerImpl::IsRestoreSessionInProgress() const {

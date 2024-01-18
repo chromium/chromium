@@ -15237,6 +15237,21 @@
             ]
         }
     ],
+    "RemoveOldWebStateRestoration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveOldWebStateRestoration"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemoveUPMUnenrollment": [
         {
             "platforms": [
