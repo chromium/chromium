@@ -57,6 +57,12 @@ ChallengeReplyError AuthErrorToChallengeReplyError(
       return ChallengeReplyError::CRL_INVALID;
     case AuthResult::ERROR_CERT_REVOKED:
       return ChallengeReplyError::CERT_REVOKED;
+    case AuthResult::ERROR_CRL_OK_FALLBACK_CRL:
+      return ChallengeReplyError::CRL_OK_FALLBACK_CRL;
+    case AuthResult::ERROR_FALLBACK_CRL_INVALID:
+      return ChallengeReplyError::FALLBACK_CRL_INVALID;
+    case AuthResult::ERROR_CERTS_REVOKED_BY_FALLBACK_CRL:
+      return ChallengeReplyError::CERTS_REVOKED_BY_FALLBACK_CRL;
     case AuthResult::ERROR_SENDER_NONCE_MISMATCH:
       return ChallengeReplyError::SENDER_NONCE_MISMATCH;
     case AuthResult::ERROR_SIGNATURE_EMPTY:
