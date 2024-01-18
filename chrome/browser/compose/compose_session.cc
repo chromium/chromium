@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -29,6 +30,7 @@
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
@@ -184,6 +186,8 @@ ComposeSession::ComposeSession(
       close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
       final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
+      collect_inner_text_(
+          base::FeatureList::IsEnabled(compose::features::kComposeInnerText)),
       model_quality_logs_uploader_(model_quality_logs_uploader),
       session_id_(session_id),
       weak_ptr_factory_(this) {
@@ -322,7 +326,7 @@ void ComposeSession::MakeRequest(
   // Increase compose count regradless of status of request.
   session_events_.compose_count += 1;
 
-  if (skip_inner_text_ || got_inner_text_) {
+  if (!collect_inner_text_ || got_inner_text_) {
     RequestWithSession(std::move(request), is_input_edited);
   } else {
     // Prepare the compose call, which will be invoked when inner text
@@ -336,7 +340,7 @@ void ComposeSession::MakeRequest(
 void ComposeSession::RequestWithSession(
     const optimization_guide::proto::ComposeRequest& request,
     bool is_input_edited) {
-  if (skip_inner_text_) {
+  if (!collect_inner_text_) {
     // Make sure context is added for sessions with no inner text.
     AddPageContentToSession("");
   }
@@ -738,7 +742,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
 
 void ComposeSession::RefreshInnerText() {
   got_inner_text_ = false;
-  if (skip_inner_text_) {
+  if (!collect_inner_text_) {
     return;
   }
 

@@ -106,7 +106,7 @@ void ChromeComposeClient::BindComposeDialog(
     debug_session_ = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
         GetSessionId());
-    debug_session_->set_skip_inner_text(true);
+    debug_session_->set_collect_inner_text(false);
     debug_session_->set_fre_complete(
         pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
     debug_session_->set_current_msbb_state(GetMSBBStateFromPrefs());

@@ -134,8 +134,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Sets an initial input value for the session given by the renderer.
   void set_initial_input(const std::string input) { initial_input_ = input; }
 
-  void set_skip_inner_text(bool skip_inner_text) {
-    skip_inner_text_ = skip_inner_text;
+  void set_collect_inner_text(bool collect_inner_text) {
+    collect_inner_text_ = collect_inner_text;
   }
 
   bool get_current_msbb_state() { return current_msbb_state_; }
@@ -262,7 +262,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Increasing counter used to identify most recent request for inner-text.
   int current_inner_text_request_id_ = 0;
 
-  bool skip_inner_text_ = false;
+  bool collect_inner_text_;
 
   // Logging counters.
   compose::ComposeSessionEvents session_events_;

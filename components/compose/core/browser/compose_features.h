@@ -12,14 +12,15 @@ namespace compose::features {
 
 // Controls whether the Compose feature is available
 BASE_DECLARE_FEATURE(kEnableCompose);
-// The minimum number of words needed for a valid user input to Compose.
-extern const base::FeatureParam<int> kEnableComposeInputMinWords;
-// The maximum number of words allowed for a valid user input to Compose.
-extern const base::FeatureParam<int> kEnableComposeInputMaxWords;
-// The maximum number of characters allowed for a valid user input to Compose.
-extern const base::FeatureParam<int> kEnableComposeInputMaxChars;
-// The maximum number of bytes allowed for the inner text sent to Compose.
-extern const base::FeatureParam<int> kEnableComposeInnerTextMaxBytes;
+
+// Has flags for tweaking the valid sizes of input.
+BASE_DECLARE_FEATURE(kComposeInputParams);
+
+// Enables/disables inner text context gathering.
+BASE_DECLARE_FEATURE(kComposeInnerText);
+
+// Enables Auto-submit of compose with a valid selection.
+BASE_DECLARE_FEATURE(kComposeAutoSubmit);
 
 // Force compose off even if enabled by other switches.
 BASE_DECLARE_FEATURE(kComposeEligible);

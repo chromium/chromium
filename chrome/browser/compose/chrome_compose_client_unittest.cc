@@ -187,12 +187,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   void EnableAutoCompose() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{compose::features::kEnableCompose,
-                               {{"auto_submit_with_selection", "true"}}},
-                              {optimization_guide::features::
-                                   kOptimizationGuideModelExecution,
-                               {}}},
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{compose::features::kEnableCompose,
+                              optimization_guide::features::
+                                  kOptimizationGuideModelExecution,
+                              compose::features::kComposeAutoSubmit},
         /*disabled_features=*/{});
     // Needed for feature params to apply.
     compose::ResetConfigForTesting();
