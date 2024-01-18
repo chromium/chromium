@@ -7,31 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-template <typename T>
-T* DequeueTableViewCell(UITableView* table_view) {
-  return [table_view
-      dequeueReusableCellWithIdentifier:NSStringFromClass([T class])];
-}
-
-template <typename T>
-T* DequeueTableViewHeaderFooter(UITableView* table_view) {
-  return [table_view
-      dequeueReusableHeaderFooterViewWithIdentifier:NSStringFromClass(
-                                                        [T class])];
-}
-
-template <typename T>
-void RegisterTableViewCell(UITableView* table_view) {
-  [table_view registerClass:[T class]
-      forCellReuseIdentifier:NSStringFromClass([T class])];
-}
-
-template <typename T>
-void RegisterTableViewHeaderFooter(UITableView* table_view) {
-  [table_view registerClass:[T class]
-      forHeaderFooterViewReuseIdentifier:NSStringFromClass([T class])];
-}
-
 @interface ChromeTableViewController : UITableViewController
 
 // Adds an empty table view in the center of the Table View which displays
