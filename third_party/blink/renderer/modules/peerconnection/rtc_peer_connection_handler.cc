@@ -490,7 +490,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     }
     // Since OnSessionDescriptionsUpdated can fire events, it may cause
     // garbage collection. Ensure that handler_ is still valid.
-    if (handler_) {
+    if (handler_ && !handler_->is_unregistered_) {
       handler_->OnModifyTransceivers(
           states.signaling_state, std::move(states.transceiver_states),
           action_ == PeerConnectionTracker::kActionSetRemoteDescription,
@@ -2180,6 +2180,7 @@ std::unique_ptr<blink::RTCRtpTransceiverImpl>
 RTCPeerConnectionHandler::CreateOrUpdateTransceiver(
     blink::RtpTransceiverState transceiver_state,
     blink::TransceiverStateUpdateMode update_mode) {
+  CHECK(dependency_factory_);
   DCHECK(transceiver_state.is_initialized());
   DCHECK(transceiver_state.sender_state());
   DCHECK(transceiver_state.receiver_state());
