@@ -113,42 +113,40 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<integer>10</integer>
+			<integer>4</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_TITLE</string>
+			<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SUBTITLE</string>
+			<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT</string>
 			<key>ImageName</key>
-			<string>chrome_actions</string>
+			<string>default_browser_animation</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>IDS_MANAGE_PASSWORDS</key>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_MANAGE_PASSWORDS</string>
-				<key>IDS_MENU</key>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_MENU</string>
-				<key>IDS_SETTINGS</key>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_SETTINGS</string>
-				<key>IDS_PASSWORD_1</key>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_PASSWORDS</string>
-				<key>IDS_PASSWORD_2</key>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_PASSWORDS</string>
+				<key>IDS_DEFAULT_BROWSER_APP</key>
+				<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP</string>
+				<key>IDS_DEFAULT_BROWSER_APP_2</key>
+				<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP</string>
+				<key>IDS_CHROME</key>
+				<string>IDS_IOS_SHORT_PRODUCT_NAME</string>
+				<key>IDS_CHROME_SETTINGS</key>
+				<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>magnifyingglass</string>
-			<key>IconBackgroundColor</key>
-			<string>purple</string>
+			<string>multicolor_chromeball</string>
 			<key>IsSymbol</key>
 			<true/>
-			<key>IsSystemSymbol</key>
+			<key>IsMulticolorSymbol</key>
 			<true/>
 			<key>InstructionSteps</key>
 			<array>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_3</string>
+				<string>IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP</string>
+				<string>IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP</string>
+				<string>IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP</string>
 			</array>
+			<key>PrimaryAction</key>
+			<integer>1</integer>
 			<key>LearnMoreUrlString</key>
-			<string>https://support.google.com/chrome/?p=ios_chrome_actions</string>
+			<string>https://support.google.com/chrome/?p=bling_default_browser</string>
 		</dict>
 	</array>
 </dict>

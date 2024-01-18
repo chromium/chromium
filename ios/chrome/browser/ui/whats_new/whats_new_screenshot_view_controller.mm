@@ -112,6 +112,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
+  config.loopAnimationCount = 1000;
   return ios::provider::GenerateLottieAnimation(config);
 }
 
@@ -180,6 +181,18 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 
   self.screenshotViewWrapper.animationView.hidden = darkModeEnabled;
   self.screenshotViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
+  [self updateAnimationsPlaying];
+}
+
+// Checks if the animations are hidden or unhidden and plays (or stops) them
+// accordingly.
+- (void)updateAnimationsPlaying {
+  self.screenshotViewWrapper.animationView.hidden
+      ? [self.screenshotViewWrapper stop]
+      : [self.screenshotViewWrapper play];
+  self.screenshotViewWrapperDarkMode.animationView.hidden
+      ? [self.screenshotViewWrapperDarkMode stop]
+      : [self.screenshotViewWrapperDarkMode play];
 }
 
 @end
