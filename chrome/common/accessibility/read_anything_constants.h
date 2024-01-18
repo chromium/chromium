@@ -45,7 +45,7 @@ inline constexpr int kButtonPadding = 2;
 inline constexpr int kIconSize = 16;
 inline constexpr int kFontSizeIconSize = kIconSize + kInternalInsets;
 inline constexpr int kColorsIconSize = 24;
-inline constexpr int kLinkToggleIconSize = 18;
+inline constexpr int kLinkToggleIconSize = 26;
 inline constexpr int kSpacingIconSize = 20;
 
 // Used for text formatting correction in PDFs. This value should match the line
