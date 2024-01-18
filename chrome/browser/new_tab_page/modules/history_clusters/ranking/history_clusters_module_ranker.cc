@@ -26,7 +26,12 @@ HistoryClustersModuleRanker::HistoryClustersModuleRanker(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     CartService* cart_service,
     const base::flat_set<std::string>& category_boostlist)
-    : cart_service_(cart_service), category_boostlist_(category_boostlist) {
+    : cart_service_(cart_service),
+      category_boostlist_(category_boostlist),
+      threshold_param_((float)GetFieldTrialParamByFeatureAsDouble(
+          ntp_features::kNtpHistoryClustersModule,
+          ntp_features::kNtpHistoryClustersModuleScoreThresholdParam,
+          0)) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (model_provider) {
     model_handler_ = std::make_unique<HistoryClustersModuleRankingModelHandler>(
@@ -135,15 +140,21 @@ void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
   CHECK_EQ(clusters.size(), ranking_signals->size());
   CHECK_EQ(clusters.size(), outputs.size());
 
-  // Sort clusters by model score.
   std::vector<
       std::tuple<history::Cluster, HistoryClustersModuleRankingSignals, float>>
       clusters_with_scores;
-  clusters_with_scores.reserve(clusters.size());
+
+  // Filter clusters by model score.
   for (size_t i = 0; i < clusters.size(); i++) {
-    clusters_with_scores.emplace_back(
-        std::move(clusters[i]), std::move(ranking_signals->at(i)), outputs[i]);
+    if (outputs[i] <= threshold_param_) {
+      clusters_with_scores.emplace_back(std::move(clusters[i]),
+                                        std::move(ranking_signals->at(i)),
+                                        outputs[i]);
+    }
   }
+
+  // Sort clusters by model score. This sort function is reversed and so all
+  // models account for this by flipping the sign. i.e. -1 is before -0.5.
   base::ranges::stable_sort(clusters_with_scores,
                             [](const auto& c1, const auto& c2) {
                               return std::get<float>(c1) < std::get<float>(c2);
