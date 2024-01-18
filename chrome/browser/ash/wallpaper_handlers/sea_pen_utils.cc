@@ -22,10 +22,6 @@ std::string TemplateIdToString(
       return "flower";
     case ash::personalization_app::mojom::SeaPenTemplateId::kMineral:
       return "mineral";
-    case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape:
-      return "landscape";
-    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi:
-      return "scifi";
     case ash::personalization_app::mojom::SeaPenTemplateId::kArt:
       return "art";
     case ash::personalization_app::mojom::SeaPenTemplateId::kCharacters:
@@ -38,6 +34,8 @@ std::string TemplateIdToString(
       return "dreamscapes";
     case ash::personalization_app::mojom::SeaPenTemplateId::kTranslucent:
       return "translucent";
+    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi:
+      return "scifi";
   }
 }
 
@@ -52,11 +50,6 @@ std::string TemplateChipToString(
       return "<mineral_name>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kMineralColor:
       return "<mineral_color>";
-    case ash::personalization_app::mojom::SeaPenTemplateChip::kLandscapeBiome:
-      return "<landscape_biome>";
-    case ash::personalization_app::mojom::SeaPenTemplateChip::
-        kLandscapeLighting:
-      return "<landscape_lighting>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kScifiFeature:
       return "<scifi_feature>";
     case ash::personalization_app::mojom::SeaPenTemplateChip::kScifiColor:
@@ -129,8 +122,8 @@ std::string TemplateOptionToString(
         kFlowerTypeDaisy:
       return "daisy";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kFlowerTypeHydrangeas:
-      return "hydrangeas";
+        kFlowerTypeHydrangea:
+      return "hydrangea";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kFlowerColorPink:
       return "pink";
@@ -191,9 +184,6 @@ std::string TemplateOptionToString(
         kMineralNameLabradorite:
       return "labradorite";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralNameLapisLazuli:
-      return "lapis_lazuli";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralNameMoonstone:
       return "moonstone";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -250,54 +240,6 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralColorGray:
       return "gray";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeTaiga:
-      return "taiga";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeDesert:
-      return "desert";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeRainforest:
-      return "rainforest";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeTundra:
-      return "tundra";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeBeach:
-      return "beach";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeIcebergs:
-      return "icebergs";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeSwamp:
-      return "swamp";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeGrassland:
-      return "grassland";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeBiomeForest:
-      return "forest";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingDiffuse:
-      return "diffuse";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingNorthernLights:
-      return "northern_lights";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingSunRays:
-      return "sun_rays";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingGoldenHour:
-      return "golden_hour";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingEarlyMorning:
-      return "early_morning";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingBlueHour:
-      return "blue_hour";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kLandscapeLightingMidday:
-      return "midday";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kScifiFeatureStreet:
       return "street";
@@ -416,17 +358,17 @@ std::string TemplateOptionToString(
         kArtMovementAvantGarde:
       return "avant_garde";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementRealism:
-      return "realism";
+        kArtMovementRealist:
+      return "realist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementExpressionism:
-      return "expressionism";
+        kArtMovementExpressionist:
+      return "expressionist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementImpressionism:
-      return "impressionism";
+        kArtMovementImpressionist:
+      return "impressionist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementPostImpressionism:
-      return "post_impressionism";
+        kArtMovementPostImpressionist:
+      return "post_impressionist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kArtMovementArtNouveau:
       return "art_nouveau";
@@ -437,8 +379,8 @@ std::string TemplateOptionToString(
         kArtMovementBauhaus:
       return "bauhaus";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementClassicism:
-      return "classicism";
+        kArtMovementClassicist:
+      return "classicist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kArtMovementWatercolor:
       return "watercolor";
@@ -446,8 +388,8 @@ std::string TemplateOptionToString(
         kArtMovementAbstract:
       return "abstract";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kArtMovementPointillism:
-      return "pointillism";
+        kArtMovementPointillist:
+      return "pointillist";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kArtMovementGraphicDesign:
       return "graphic_design";
@@ -473,12 +415,6 @@ std::string TemplateOptionToString(
         kCharactersColorGreen:
       return "green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorEmerald:
-      return "emerald";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorTeal:
-      return "teal";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorCyan:
       return "cyan";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -491,9 +427,6 @@ std::string TemplateOptionToString(
         kCharactersColorGold:
       return "gold";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorBurntOrange:
-      return "burnt_orange";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorRust:
       return "rust";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -503,68 +436,26 @@ std::string TemplateOptionToString(
         kCharactersColorGray:
       return "gray";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorViolet:
-      return "violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorWhite:
       return "white";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorBeige:
       return "beige";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorIvory:
-      return "ivory";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorCream:
-      return "cream";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorMagenta:
       return "magenta";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorLimeGreen:
-      return "lime_green";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorFuschia:
-      return "fuschia";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorElectricBlue:
-      return "electric_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorHotPink:
-      return "hot_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorNeonGreen:
       return "neon_green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorSkyBlue:
-      return "sky_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorElectricPurple:
-      return "electric_purple";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorFireEngineRed:
-      return "fire_engine_red";
+        kCharactersColorLightBlue:
+      return "light_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorNeonPink:
       return "neon_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorChartreuse:
-      return "chartreuse";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorCobalt:
-      return "cobalt";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorLemonYellow:
-      return "lemon_yellow";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersColorCoralPink:
       return "coral_pink";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorVibrantViolet:
-      return "vibrant_violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersColorPeacockBlue:
-      return "peacock_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersSubjectsLemons:
       return "lemons";
@@ -689,12 +580,6 @@ std::string TemplateOptionToString(
         kCharactersBackgroundGreen:
       return "green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundEmerald:
-      return "emerald";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundTeal:
-      return "teal";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundCyan:
       return "cyan";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -706,9 +591,6 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundRed:
       return "red";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundBurntOrange:
-      return "burnt_orange";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundRust:
       return "rust";
@@ -725,68 +607,26 @@ std::string TemplateOptionToString(
         kCharactersBackgroundYellow:
       return "yellow";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundViolet:
-      return "violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundWhite:
       return "white";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundBeige:
       return "beige";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundIvory:
-      return "ivory";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundCream:
-      return "cream";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundMagenta:
       return "magenta";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundLimeGreen:
-      return "lime_green";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundFuschia:
-      return "fuschia";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundElectricBlue:
-      return "electric_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundHotPink:
-      return "hot_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundNeonGreen:
       return "neon_green";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundSkyBlue:
-      return "sky_blue";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundElectricPurple:
-      return "electric_purple";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundFireEngineRed:
-      return "fire_engine_red";
+        kCharactersBackgroundLightBlue:
+      return "light_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundNeonPink:
       return "neon_pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundChartreuse:
-      return "chartreuse";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundCobalt:
-      return "cobalt";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundLemonYellow:
-      return "lemon_yellow";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kCharactersBackgroundCoralPink:
       return "coral_pink";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundVibrantViolet:
-      return "vibrant_violet";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kCharactersBackgroundPeacockBlue:
-      return "peacock_blue";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainFeatureSaltLake:
       return "salt_lake";
@@ -797,14 +637,14 @@ std::string TemplateOptionToString(
         kTerrainFeatureNorthernLights:
       return "northern_lights";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTerrainFeatureWhiteDunes:
-      return "white_dunes";
+        kTerrainFeatureSandDunes:
+      return "sand_dunes";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainFeatureClayHills:
       return "clay_hills";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTerrainFeatureSandyLagoons:
-      return "sandy_lagoons";
+        kTerrainFeatureSandyLagoon:
+      return "sandy_lagoon";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainFeatureMountains:
       return "mountains";
@@ -815,8 +655,8 @@ std::string TemplateOptionToString(
         kTerrainFeatureFireflyForest:
       return "firefly_forest";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTerrainFeatureSandDunes:
-      return "sand_dunes";
+        kTerrainFeatureDifferentPlanet:
+      return "different_planet";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTerrainColorPink:
       return "pink";
@@ -995,8 +835,8 @@ std::string TemplateOptionToString(
         kDreamscapesObjectTower:
       return "tower";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kDreamscapesObjectUfo:
-      return "UFO";
+        kDreamscapesObjectChair:
+      return "chair";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kDreamscapesMaterialFlowers:
       return "flowers";
@@ -1157,12 +997,6 @@ std::string TemplateOptionToString(
         kTranslucentItemTulip:
       return "tulip";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTranslucentItemButterfly:
-      return "butterfly";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kTranslucentItemDragonfly:
-      return "dragonfly";
-    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kTranslucentColorPink:
       return "pink";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -1245,7 +1079,7 @@ bool IsValidTemplateQuery(
       if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kFlowerTypeRose ||
           enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kFlowerTypeHydrangeas) {
+                      kFlowerTypeHydrangea) {
         return false;
       }
       return true;
@@ -1269,52 +1103,6 @@ bool IsValidTemplateQuery(
                       kMineralColorWarm ||
           enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
                       kMineralColorGray) {
-        return false;
-      }
-      return true;
-    }
-    case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape: {
-      auto enum1 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kLandscapeBiome)
-                       ->second;
-      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeBiomeTaiga ||
-          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeBiomeForest) {
-        return false;
-      }
-      auto enum2 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kLandscapeLighting)
-                       ->second;
-      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeLightingDiffuse ||
-          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kLandscapeLightingMidday) {
-        return false;
-      }
-      return true;
-    }
-    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi: {
-      auto enum1 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kScifiFeature)
-                       ->second;
-      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiFeatureStreet ||
-          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiFeatureUnderwater) {
-        return false;
-      }
-      auto enum2 = options
-                       .find(ash::personalization_app::mojom::
-                                 SeaPenTemplateChip::kScifiColor)
-                       ->second;
-      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiColorEarthy ||
-          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kScifiColorNeutral) {
         return false;
       }
       return true;
@@ -1350,7 +1138,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kCharactersColorYellow ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kCharactersColorPeacockBlue) {
+                      kCharactersColorCoralPink) {
         return false;
       }
       auto enum2 = options
@@ -1370,7 +1158,7 @@ bool IsValidTemplateQuery(
       if (enum3 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kCharactersBackgroundPurple ||
           enum3 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kCharactersBackgroundPeacockBlue) {
+                      kCharactersBackgroundCoralPink) {
         return false;
       }
       return true;
@@ -1383,7 +1171,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kTerrainFeatureSaltLake ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kTerrainFeatureSandDunes) {
+                      kTerrainFeatureDifferentPlanet) {
         return false;
       }
       auto enum2 = options
@@ -1439,7 +1227,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kDreamscapesObjectBicycle ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kDreamscapesObjectUfo) {
+                      kDreamscapesObjectChair) {
         return false;
       }
       auto enum2 = options
@@ -1472,7 +1260,7 @@ bool IsValidTemplateQuery(
       if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
                       kTranslucentItemApple ||
           enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kTranslucentItemDragonfly) {
+                      kTranslucentItemTulip) {
         return false;
       }
       auto enum2 = options
@@ -1483,6 +1271,29 @@ bool IsValidTemplateQuery(
                       kTranslucentColorPink ||
           enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
                       kTranslucentColorBlack) {
+        return false;
+      }
+      return true;
+    }
+    case ash::personalization_app::mojom::SeaPenTemplateId::kScifi: {
+      auto enum1 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kScifiFeature)
+                       ->second;
+      if (enum1 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiFeatureStreet ||
+          enum1 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiFeatureUnderwater) {
+        return false;
+      }
+      auto enum2 = options
+                       .find(ash::personalization_app::mojom::
+                                 SeaPenTemplateChip::kScifiColor)
+                       ->second;
+      if (enum2 < ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiColorEarthy ||
+          enum2 > ash::personalization_app::mojom::SeaPenTemplateOption::
+                      kScifiColorNeutral) {
         return false;
       }
       return true;

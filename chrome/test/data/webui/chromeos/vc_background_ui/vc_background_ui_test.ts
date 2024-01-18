@@ -70,11 +70,11 @@ suite('VcBackgroundUITest', () => {
         getSeaPenTemplates().length, seaPenTemplateElements.length,
         'each sea pen template is displayed');
 
-    // Click the 'Classic Art' template.
+    // Click the 'Classic art' template.
     seaPenTemplateElements
         .find(template => {
           const p = template.shadowRoot?.querySelector('p.primary-text');
-          return p?.textContent?.trim() === 'Classic Art';
+          return p?.textContent?.trim() === 'Classic art';
         })!.click();
     await waitAfterNextRender(getSeaPenRouter());
 
@@ -82,15 +82,15 @@ suite('VcBackgroundUITest', () => {
     assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
 
     assertEquals(
-        'A painting of a canyon in the avant garde style',
+        'A painting of a canyon in the avant-garde style',
         seaPenTemplateQuery?.shadowRoot?.getElementById('template')
             ?.textContent?.trim()
             .replace(/\s+/g, ' '),
-        'Expected template text is shown for Classic Art');
+        'Expected template text is shown for Classic art');
 
     assertEquals(
-        'chrome://vc-background/?seaPenTemplateId=4', window.location.href,
-        'Classic Art template id is added to url');
+        'chrome://vc-background/?seaPenTemplateId=2', window.location.href,
+        'Classic art template id is added to url');
 
     // Breadcrumbs have not changed yet.
     assertArrayEquals(
@@ -101,11 +101,11 @@ suite('VcBackgroundUITest', () => {
   test('updates breadcrumbs when create button clicked', async () => {
     const seaPenTemplateElements = getSeaPenTemplateElements();
 
-    // Click the 'Classic Art' template.
+    // Click the 'Classic art' template.
     seaPenTemplateElements
         .find(template => {
           const p = template.shadowRoot?.querySelector('p.primary-text');
-          return p?.textContent?.trim() === 'Classic Art';
+          return p?.textContent?.trim() === 'Classic art';
         })!.click();
     await waitAfterNextRender(getSeaPenRouter());
 
@@ -120,28 +120,28 @@ suite('VcBackgroundUITest', () => {
     await waitAfterNextRender(seaPenTemplateQuery);
 
     assertEquals(
-        'chrome://vc-background/results?seaPenTemplateId=4',
+        'chrome://vc-background/results?seaPenTemplateId=2',
         window.location.href,
-        'App is on /results and Classic Art template id is added to url');
+        'App is on /results and Classic art template id is added to url');
 
-    // Breadcrumbs should now show 'Classic Art'.
+    // Breadcrumbs should now show 'Classic art'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Classic Art']);
+        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Classic art']);
   });
 
   test('allows changing templates via breadcrumbs dropdown menu', async () => {
     // Navigate directly to a results page with template in breadcrumbs.
     const seaPenRouter = getSeaPenRouter();
-    seaPenRouter.goToRoute(SeaPenPaths.RESULTS, {seaPenTemplateId: '4'});
+    seaPenRouter.goToRoute(SeaPenPaths.RESULTS, {seaPenTemplateId: '2'});
     await waitAfterNextRender(seaPenRouter);
 
     const breadcrumbElement = getVcBackgroundBreadcrumbs();
 
-    // Breadcrumbs should show 'Classic Art'.
+    // Breadcrumbs should show 'Classic art'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [breadcrumbElement.i18n('seaPenLabel'), 'Classic Art']);
+        [breadcrumbElement.i18n('seaPenLabel'), 'Classic art']);
 
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');

@@ -340,7 +340,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
           {mojom::SeaPenTemplateChip::kCharactersBackground,
            mojom::SeaPenTemplateOption::kCharactersBackgroundOlive},
           {mojom::SeaPenTemplateChip::kCharactersColor,
-           mojom::SeaPenTemplateOption::kCharactersColorChartreuse},
+           mojom::SeaPenTemplateOption::kCharactersColorBeige},
           {mojom::SeaPenTemplateChip::kCharactersSubjects,
            mojom::SeaPenTemplateOption::kCharactersSubjectsBicycles}};
 

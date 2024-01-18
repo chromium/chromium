@@ -377,7 +377,6 @@ generate_grd("build_grd") {
     "sea_pen/sea_pen_images/sea_pen_curious.jpg",
     "sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg",
     "sea_pen/sea_pen_images/sea_pen_flower.jpg",
-    "sea_pen/sea_pen_images/sea_pen_landscape.jpg",
     "sea_pen/sea_pen_images/sea_pen_mineral.jpg",
     "sea_pen/sea_pen_images/sea_pen_scifi.jpg",
     "sea_pen/sea_pen_images/sea_pen_terrain.jpg",

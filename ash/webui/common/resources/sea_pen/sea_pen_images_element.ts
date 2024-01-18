@@ -180,8 +180,6 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         return 'Flower';
       case SeaPenTemplateId.kMineral:
         return 'Mineral';
-      case SeaPenTemplateId.kLandscape:
-        return 'Landscape';
       case SeaPenTemplateId.kScifi:
         return 'Scifi';
       case SeaPenTemplateId.kArt:
