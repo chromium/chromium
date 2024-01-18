@@ -22,7 +22,6 @@ class WaitableEvent;
 }
 
 namespace cc {
-class Resource;
 
 class CC_EXPORT RasterBufferProvider {
  public:

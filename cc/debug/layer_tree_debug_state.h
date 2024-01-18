@@ -11,10 +11,6 @@
 
 namespace cc {
 
-namespace proto {
-class LayerTreeDebugState;
-}  // namespace proto
-
 enum DebugBorderType {
   RENDERPASS = 0,
   SURFACE,
