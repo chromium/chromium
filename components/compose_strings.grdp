@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <!-- TODO(b/301510467): Mark strings as translateable once all strings are aligned. -->
   <!-- Nudge -->
-  <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="Text a user sees in the Autofill popup or context menu as the entry point for the Help me write feature.">
+  <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="Text a user sees in the Autofill popup as the entry point for the Help me write feature.">
     Help me write
   </message>
+  <if expr="is_macosx"> <!-- Title Case for Mac -->
+    <message name="IDS_COMPOSE_CONTEXT_MENU_TEXT" desc="Text a user sees in the context menu as the entry point for the Help me write feature.">
+      Help Me Write
+    </message>
+  </if>
+  <if expr="not is_macosx">
+    <message name="IDS_COMPOSE_CONTEXT_MENU_TEXT" desc="Text a user sees in the context menu as the entry point for the Help me write feature.">
+      Help me write
+    </message>
+  </if>
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element.">
     Powered by Google
   </message>

@@ -2387,7 +2387,7 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       base::RecordAction(
           base::UserMetricsAction("Compose.ContextMenu.ItemSeen"));
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
-                                      IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+                                      IDS_COMPOSE_CONTEXT_MENU_TEXT);
       menu_model_.SetElementIdentifierAt(
           menu_model_.GetIndexOfCommandId(IDC_CONTEXT_COMPOSE).value(),
           kComposeMenuItem);
