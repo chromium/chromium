@@ -1465,6 +1465,15 @@ bool CSSMathExpressionOperation::InvolvesPercentage() const {
   return false;
 }
 
+bool CSSMathExpressionOperation::InvolvesAnchorQueries() const {
+  for (const CSSMathExpressionNode* operand : operands_) {
+    if (operand->InvolvesAnchorQueries()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static bool AnyOperandHasComparisons(
     CSSMathExpressionOperation::Operands& operands) {
   for (const CSSMathExpressionNode* operand : operands) {

@@ -333,8 +333,11 @@ CSSNumericValue* CSSNumericValue::parse(
 // static
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
-    return CalcToNumericValue(
-        *To<CSSMathFunctionValue>(value).ExpressionNode());
+    const auto& math_function = To<CSSMathFunctionValue>(value);
+    if (math_function.InvolvesAnchorQueries()) {
+      return nullptr;
+    }
+    return CalcToNumericValue(*math_function.ExpressionNode());
   }
   return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }
