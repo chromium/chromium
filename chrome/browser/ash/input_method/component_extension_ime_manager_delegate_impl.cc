@@ -38,6 +38,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "net/base/url_util.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -309,13 +310,20 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Information is managed on VK extension side so just use a default value
-  // here.
-  std::string query_part = base::StrCat(
-      {"?", "jelly=", chromeos::features::IsJellyEnabled() ? "true" : "false"});
+  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  bool is_global_emoji_preferences_enabled = base::FeatureList::IsEnabled(
+      features::kVirtualKeyboardGlobalEmojiPreferences);
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
-      "inputview.html" + query_part + "#id=default");
+      "inputview.html");
+  url = net::AppendOrReplaceQueryParameter(url, "jelly",
+                                           is_jelly_enabled ? "true" : "false");
+  url = net::AppendOrReplaceQueryParameter(
+      url, "globalemojipreferences",
+      is_global_emoji_preferences_enabled ? "true" : "false");
+  // Information is managed on VK extension side so just use a default value
+  // here.
+  url = net::AppendOrReplaceRef(url, "id=default");
   if (!url.is_valid())
     return false;
   out->input_view_url = url;
