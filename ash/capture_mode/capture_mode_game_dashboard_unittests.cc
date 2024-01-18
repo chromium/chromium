@@ -256,7 +256,9 @@ TEST_F(GameDashboardCaptureModeTest, NotificationView) {
 
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
+  EXPECT_FALSE(controller->can_start_new_recording());
   CaptureNotificationWaiter().Wait();
+  EXPECT_TRUE(controller->can_start_new_recording());
 
   const message_center::Notification* notification = GetPreviewNotification();
   EXPECT_TRUE(notification);

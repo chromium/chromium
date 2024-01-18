@@ -4506,9 +4506,14 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   EXPECT_FALSE(GetVideoToggleButton()->selected());
   EXPECT_EQ(CaptureModeType::kImage, controller->type());
 
-  // Things should go back to normal when there's no recording going on.
+  // Things should go back to normal when there's no recording going on and the
+  // video file has been fully saved.
   controller->Stop();
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(controller->can_start_new_recording());
+  WaitForCaptureFileToBeSaved();
+  EXPECT_TRUE(controller->can_start_new_recording());
+
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   EXPECT_EQ(CaptureModeType::kVideo, controller->type());
   EXPECT_FALSE(GetImageToggleButton()->selected());
@@ -4800,6 +4805,7 @@ TEST_F(CaptureModeTest, SimulateUserCancelingDlpWarningDialog) {
   EXPECT_FALSE(GetPreviewNotification());
   ash::HoldingSpaceTestApi holding_space_api;
   EXPECT_TRUE(holding_space_api.GetScreenCaptureViews().empty());
+  EXPECT_TRUE(controller->can_start_new_recording());
 }
 
 // Tests that `CaptureScreenshotOfGivenWindow` can take window screenshot

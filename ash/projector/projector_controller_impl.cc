@@ -191,7 +191,7 @@ void ProjectorControllerImpl::StartProjectorSession(
            NewScreencastPreconditionState::kEnabled);
 
   auto* controller = CaptureModeController::Get();
-  if (!controller->is_recording_in_progress()) {
+  if (controller->can_start_new_recording()) {
     // A capture mode session can be blocked by many factors, such as policy,
     // DLP, ... etc. We don't start a Projector session until we're sure a
     // capture session started.
@@ -309,7 +309,7 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   }
 
   auto* capture_mode_controller = CaptureModeController::Get();
-  if (capture_mode_controller->is_recording_in_progress()) {
+  if (!capture_mode_controller->can_start_new_recording()) {
     result.state = NewScreencastPreconditionState::kDisabled;
     result.reasons = {
         NewScreencastPreconditionReason::kScreenRecordingInProgress};

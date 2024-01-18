@@ -704,7 +704,7 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
 
   record_game_tile_->SetEnabled(
       is_recording_game_window ||
-      !CaptureModeController::Get()->is_recording_in_progress());
+      CaptureModeController::Get()->can_start_new_recording());
 
   record_game_tile_->SetVectorIcon(is_recording_game_window
                                        ? kCaptureModeCircleStopIcon

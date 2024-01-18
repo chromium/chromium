@@ -218,6 +218,11 @@ void GameDashboardContext::OnRecordingEnded() {
   }
 }
 
+void GameDashboardContext::OnVideoFileFinalized() {
+  // For now it's ok to just call `OnRecordingEnded()` to update the UI.
+  OnRecordingEnded();
+}
+
 void GameDashboardContext::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   CHECK_EQ(game_dashboard_button_, observed_view);

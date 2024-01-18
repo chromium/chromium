@@ -84,7 +84,7 @@ void GameDashboardController::StartCaptureSession(
   auto* game_window = game_context->game_window();
   CHECK(game_window_contexts_.contains(game_window));
   auto* capture_mode_controller = CaptureModeController::Get();
-  CHECK(!capture_mode_controller->is_recording_in_progress());
+  CHECK(capture_mode_controller->can_start_new_recording());
 
   active_recording_context_ = game_context;
   if (record_instantly) {
@@ -153,7 +153,11 @@ void GameDashboardController::OnRecordingEnded() {
 
 void GameDashboardController::OnVideoFileFinalized(
     bool user_deleted_video_file,
-    const gfx::ImageSkia& thumbnail) {}
+    const gfx::ImageSkia& thumbnail) {
+  for (auto const& [game_window, context] : game_window_contexts_) {
+    context->OnVideoFileFinalized();
+  }
+}
 
 void GameDashboardController::OnRecordedWindowChangingRoot(
     aura::Window* new_root) {

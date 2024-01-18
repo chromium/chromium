@@ -97,6 +97,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // if the recording session was aborted.
   void OnRecordingEnded();
 
+  // Called when a recorded file has been finalized and fully saved, at which
+  // point a new recording is allowed to be started.
+  void OnVideoFileFinalized();
+
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 

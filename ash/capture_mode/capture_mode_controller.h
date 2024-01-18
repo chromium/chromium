@@ -118,6 +118,12 @@ class ASH_EXPORT CaptureModeController
            (video_recording_watcher_ &&
             !video_recording_watcher_->is_shutting_down());
   }
+  bool can_start_new_recording() const {
+    // Even if recording stops, it takes a while for the video/gif file to be
+    // fully finalized. Until that happens, a new recording is not allowed to
+    // start.
+    return current_video_file_path_.empty() && !is_recording_in_progress();
+  }
   bool enable_demo_tools() const { return enable_demo_tools_; }
 
   CaptureModeEducationController* education_controller() {

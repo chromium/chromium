@@ -412,7 +412,7 @@ void GameDashboardToolbarView::UpdateRecordGameButton(
 
   record_game_button_->SetEnabled(
       is_recording_game_window ||
-      !CaptureModeController::Get()->is_recording_in_progress());
+      CaptureModeController::Get()->can_start_new_recording());
   record_game_button_->SetToggled(is_recording_game_window);
 }
 

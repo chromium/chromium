@@ -1039,7 +1039,15 @@ TEST_P(GameTypeGameDashboardContextTest,
   CaptureModeTestApi().StopVideoRecording();
   EXPECT_FALSE(capture_mode_controller->is_recording_in_progress());
 
-  // Verify the record game buttons are now enabled and toggled off.
+  // Verify the record game buttons are not enabled until the video file is
+  // finalized.
+  EXPECT_FALSE(capture_mode_controller->can_start_new_recording());
+  EXPECT_FALSE(main_menu_record_game_button->GetEnabled());
+  EXPECT_FALSE(main_menu_record_game_button->IsToggled());
+  EXPECT_FALSE(toolbar_record_game_button->GetEnabled());
+  EXPECT_FALSE(toolbar_record_game_button->toggled());
+  WaitForCaptureFileToBeSaved();
+  EXPECT_TRUE(capture_mode_controller->can_start_new_recording());
   EXPECT_TRUE(main_menu_record_game_button->GetEnabled());
   EXPECT_FALSE(main_menu_record_game_button->IsToggled());
   EXPECT_TRUE(toolbar_record_game_button->GetEnabled());
