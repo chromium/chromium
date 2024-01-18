@@ -77,13 +77,13 @@
 
   // Testing permutation.
   fuzzy_test_computed_color(`rgb(from rebeccapurple g b r)`, `color(srgb 0.2 0.6 0.4)`);
-  fuzzy_test_computed_color(`rgb(from rebeccapurple b alpha r / g)`, `color(srgb 0.6 1 0.4 / 0.2)`);
-  fuzzy_test_computed_color(`rgb(from rebeccapurple r r r / r)`, `color(srgb 0.4 0.4 0.4 / 0.4)`);
-  fuzzy_test_computed_color(`rgb(from rebeccapurple alpha alpha alpha / alpha)`, `color(srgb 1 1 1)`);
+  fuzzy_test_computed_color(`rgb(from rebeccapurple b alpha r / g)`, `color(srgb 0.6 ${1/255} 0.4)`);
+  fuzzy_test_computed_color(`rgb(from rebeccapurple r r r / r)`, `color(srgb 0.4 0.4 0.4)`);
+  fuzzy_test_computed_color(`rgb(from rebeccapurple alpha alpha alpha / alpha)`, `color(srgb ${1/255} ${1/255} ${1/255})`);
   fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) g b r)`, `color(srgb 0.4 0.6 0.2 / 0.8)`);
-  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) b alpha r / g)`, `color(srgb 0.6 0.8 0.2 / 0.4)`);
-  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) r r r / r)`, `color(srgb 0.2 0.2 0.2 / 0.2)`);
-  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) alpha alpha alpha / alpha)`, `color(srgb 0.8 0.8 0.8 / 0.8)`);
+  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) b alpha r / g)`, `color(srgb 0.6 ${0.8/255} 0.2)`);
+  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) r r r / r)`, `color(srgb 0.2 0.2 0.2)`);
+  fuzzy_test_computed_color(`rgb(from rgb(20%, 40%, 60%, 80%) alpha alpha alpha / alpha)`, `color(srgb ${0.8/255} ${0.8/255} ${0.8/255} / 0.8)`);
 
   // Testing mixes of number and percentage. (These would not be allowed in the non-relative syntax).
   fuzzy_test_computed_color(`rgb(from rebeccapurple r 20% 10)`, `color(srgb 0.4 0.2 0.0392)`);
