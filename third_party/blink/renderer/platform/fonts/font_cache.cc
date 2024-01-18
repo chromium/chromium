@@ -114,6 +114,11 @@ FontCache::FontCache()
 
 FontCache::~FontCache() = default;
 
+void FontCache::Trace(Visitor* visitor) const {
+  visitor->Trace(font_cache_clients_);
+  visitor->Trace(font_fallback_map_);
+}
+
 #if !BUILDFLAG(IS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
@@ -311,13 +316,8 @@ void FontCache::Purge(PurgeSeverity purge_severity) {
 
 void FontCache::AddClient(FontCacheClient* client) {
   CHECK(client);
-  if (!font_cache_clients_) {
-    font_cache_clients_ =
-        MakeGarbageCollected<HeapHashSet<WeakMember<FontCacheClient>>>();
-    LEAK_SANITIZER_IGNORE_OBJECT(&font_cache_clients_);
-  }
-  DCHECK(!font_cache_clients_->Contains(client));
-  font_cache_clients_->insert(client);
+  DCHECK(!font_cache_clients_.Contains(client));
+  font_cache_clients_.insert(client);
 }
 
 uint16_t FontCache::Generation() {
@@ -329,9 +329,8 @@ void FontCache::Invalidate() {
   font_platform_data_cache_->Clear();
   generation_++;
 
-  if (font_cache_clients_) {
-    for (const auto& client : *font_cache_clients_)
-      client->FontCacheInvalidated();
+  for (const auto& client : font_cache_clients_) {
+    client->FontCacheInvalidated();
   }
 
   Purge(kForcePurge);

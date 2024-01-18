@@ -19,26 +19,25 @@ static constexpr size_t kCachesMaxSize = 250;
 
 namespace blink {
 
-ThreadSpecific<std::unique_ptr<FontGlobalContext>>&
+ThreadSpecific<Persistent<FontGlobalContext>>&
 GetThreadSpecificFontGlobalContextPool() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<std::unique_ptr<FontGlobalContext>>, thread_specific_pool,
-      ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<FontGlobalContext>>,
+                                  thread_specific_pool, ());
   return thread_specific_pool;
 }
 
 FontGlobalContext& FontGlobalContext::Get() {
   auto& thread_specific_pool = GetThreadSpecificFontGlobalContextPool();
   if (!*thread_specific_pool)
-    *thread_specific_pool = base::WrapUnique(new FontGlobalContext());
+    *thread_specific_pool = MakeGarbageCollected<FontGlobalContext>(PassKey());
   return **thread_specific_pool;
 }
 
 FontGlobalContext* FontGlobalContext::TryGet() {
-  return GetThreadSpecificFontGlobalContextPool()->get();
+  return GetThreadSpecificFontGlobalContextPool()->Get();
 }
 
-FontGlobalContext::FontGlobalContext()
+FontGlobalContext::FontGlobalContext(PassKey)
     : typeface_digest_cache_(kCachesMaxSize),
       postscript_name_digest_cache_(kCachesMaxSize) {}
 

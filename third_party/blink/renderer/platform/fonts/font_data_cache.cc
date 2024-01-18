@@ -106,7 +106,6 @@ void FontDataCache::Release(const SimpleFontData* font_data) {
   DCHECK(!font_data->IsCustomFont());
 
   Cache::iterator it = cache_.find(&(font_data->PlatformData()));
-  DCHECK_NE(it, cache_.end());
   if (it == cache_.end())
     return;
 
