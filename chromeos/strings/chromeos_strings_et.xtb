@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Tumeda režiim väljalülitamine</translation>
 <translation id="1885577615937958993">kerib meediasisu edasi</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
-<translation id="1897672602657312171">Otsetee ilma otsinguklahvita võib olla vastuolus mõne rakenduse otseteega. Kasutamise jätkamiseks vajutage seda otseteed uuesti või vajutage otsinguklahvi abil uut otseteed.</translation>
 <translation id="1904932688895783618">Allpool on veel kasulikke allikaid</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
@@ -185,6 +184,7 @@
 <translation id="2189104374785738357">APN-i üksikasjade muutmine</translation>
 <translation id="2209788852729124853">Liiklusloendurite lähtestamine</translation>
 <translation id="2212733584906323460">Nime lahendamine</translation>
+<translation id="2215920961700443347">Internetiühendus puudub. Looge ühendus internetiga ja proovige uuesti.</translation>
 <translation id="2217935453350629363">Praegune kiirus</translation>
 <translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="222447520299472966">Valima peab vähemalt ühe kunstigalerii albumi</translation>
@@ -218,6 +218,7 @@
 <translation id="2421798028054665193">Pilt <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
 <translation id="2448312741937722512">Tüüp</translation>
+<translation id="2465272316171730950">Maht on täis. Tulge hiljem tagasi.</translation>
 <translation id="248546197012830854">Seade on võrguühenduseta. Abimaterjalide nägemiseks looge ühendus WiFi-võrguga.</translation>
 <translation id="2491955442992294626">Klahve ei testita, kui kasutate teist akent</translation>
 <translation id="2493126929778606526">Teie parimad fotod, valitud automaatselt</translation>
@@ -225,7 +226,6 @@
 <translation id="2505327257735685095">Praeguse taustapildi värskendamine</translation>
 <translation id="2512979179176933762">kuvab aknad</translation>
 <translation id="2513396635448525189">Profiilipilt</translation>
-<translation id="2515109918609218604">Otsetee pole saadaval. Vajutage uut otseteed ilma funktsiooni- ja otsinguklahve kasutamata.</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2521835766824839541">eelmine lugu</translation>
 <translation id="2526590354069164005">Töölaud</translation>
@@ -425,7 +425,6 @@
 <translation id="4171077696775491955">vähendab heledust</translation>
 <translation id="4176463684765177261">Keelatud</translation>
 <translation id="4176659219503619100">Juhtpaneel</translation>
-<translation id="4185315616950253617">Ülemise rea klahvidega otseteed peavad sisaldama otsinguklahvi.</translation>
 <translation id="420283545744377356">Lülita ekraanisäästja välja</translation>
 <translation id="4213104098953699324">USB-klaviatuur</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
@@ -572,6 +571,7 @@
 <translation id="5227902338748591677">Tumeda teema ajakava</translation>
 <translation id="5229344016299762883">Välju täisekraanilt</translation>
 <translation id="5234764350956374838">Loobu</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ käivituma automaatselt iga kord, kui sisse logite.}=2{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ ja veel ühe rakenduse käivituma automaatselt iga kord, kui sisse logite.}other{Administraator on määranud rakenduse „<ph name="APP_NAME" />“ ja veel # rakenduse käivituma automaatselt iga kord, kui sisse logite.}}</translation>
 <translation id="5252456968953390977">Rändlus</translation>
 <translation id="5257811368506016604">Luba hele värvirežiim</translation>
 <translation id="5264277876637023664">Käita protsessori test</translation>
@@ -844,7 +844,6 @@
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="725133483556299729">Valige e-posti aadress</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
-<translation id="7273347807225967898">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades muuteklahvi (Ctrl, Alt, tõstuklahv, otsinguklahv või käivitaja).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Tunnetage briisi</translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
@@ -943,6 +942,7 @@
 <translation id="7971535376154084247">Üldised juhtelemendid</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" />-võrguga ühendamiseks avage leht Seaded</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ käivitati automaatselt}other{# rakendust käivitati automaatselt}}</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8017679124341497925">Otsetee on muudetud</translation>
@@ -959,7 +959,6 @@
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="8094062939584182041">Luban Google'il endale selle teema kohta meile saata</translation>
 <translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
-<translation id="8111706652656628199">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades tõstuklahvi ja veel ühte muuteklahvi (Ctrl, Alt, otsinguklahv või käivitaja).</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>

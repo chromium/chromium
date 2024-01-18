@@ -598,6 +598,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4307992518367153382">Asosiy</translation>
+<translation id="4311652497846705514">PDF faylni ochilsinmi?</translation>
 <translation id="4320177379694898372">Internet aloqasi yo‘q</translation>
 <translation id="433213510553688132">Obuna rasmiylashtirilmoqda…</translation>
 <translation id="4335835283689002019">Xavfsiz koʻrish faolsizlantirilgan</translation>
@@ -958,6 +959,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="6192907950379606605">Rasm tavsiflari chiqsin</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
 <translation id="6196315980958524839">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
+<translation id="6202514376968366382">Chrome yuklab olingan PDF fayllarni ocha oladi</translation>
 <translation id="6202812185118613467">Sinxronizatsiyani boshlash uchun hisobga qayta kiring.</translation>
 <translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> emasmi?</translation>

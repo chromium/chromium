@@ -268,12 +268,15 @@
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> <ph name="TOP_ORIGIN" /> bölməsinə davam etmək üçün <ph name="EMBEDDED_ORIGIN" /> kodunuzdur</translation>
 <translation id="1472675084647422956">Daha çox göstərin</translation>
 <translation id="1473183651233018052">JIS B10</translation>
+<translation id="1473495410389165587">Yazarkən kömək almaq üçün minimum 3 söz daxil edin</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Təmizlik xidmətləri</translation>
 <translation id="1475299637784133125">Brauzer versiyası axtarırsınız? Ziyarət edin</translation>
 <translation id="1476595624592550506">Parolunuzu dəyişin</translation>
 <translation id="1482879811280872320">Velosiped</translation>
 <translation id="1483493594462132177">Göndərin</translation>
+<translation id="1484449009683144042">Bu, təcrübi AI yazı yardımıdır və həmişə doğru nəticə verməyə bilər.
+    <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Siyasət bildirişləri:</translation>
 <translation id="14938948731065592">Kompüter periferiyası</translation>
 <translation id="1495677929897281669">Taba geri qayıdın</translation>
@@ -419,6 +422,7 @@
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Bu datanı necə istifadə edirik:<ph name="END_BOLD" /> Baxış keçirərkən Chrome maraqlandığınız mövzuları qeyd edir. Mövzu etiketləri əvvəlcədən müəyyən edilir və İncəsənət və Əyləncə, Alış-veriş və İdman kimi sahələri əhatə edir. Daha sonra ziyarət etdiyiniz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chrome'dan bəzi mövzularınızı (baxış tarixçənizi deyil) istəyə bilər.</translation>
 <translation id="1746113442205726301">Şəklin Y oxu üzrə yerdəyişməsi</translation>
 <translation id="1746531169546376413">0 dərəcə</translation>
+<translation id="1748225549612934682">Yazarkən kömək almaq üçün mətni qısaldın</translation>
 <translation id="1751544761369730824"><ph name="SITE_NAME" /> saytını silin</translation>
 <translation id="1752021286346845558">Poçt qutusu 8</translation>
 <translation id="1753068535428855445">Tanışlıq</translation>
@@ -872,6 +876,7 @@
 <translation id="2677696497921480781">Doğum günləri və ad günləri</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2678468611080193228">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
+<translation id="2686919536310834199">"Yazmağa kömək et" ilə bağlı rəy göndərin.</translation>
 <translation id="2687555958734450033">Ən uyğun</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Bəli, davam edin</translation>
@@ -1406,6 +1411,7 @@
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3744212718085287312">Növbəti dəfə virtual kart ilə təhlükəsizlik artırılsın?</translation>
 <translation id="3744899669254331632">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
+<translation id="3745599309295009257">Mətn, yazdığınız səhifənin kontent və URL-i Google-a göndəriləcək, insanlar tərəfindən nəzərdən keçiriləcək və bu funksiyanı təkmilləşdirmək üçün istifadə ediləcək. Şəxsi məlumat (tibbi və ya maliyyə detalları kimi) daxil etməyin. Şəxsi və ya həssas məlumat olan saytlarda bu alətdən istifadə etməyin.</translation>
 <translation id="3748009735914587286">Metal (çox parlaq)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular Sizi zərərli proqram təminatı quraşdırmaq və ya şəxsi məlumatı (məsələn, parol, telefon nömrəsi və ya kredit kartları) paylaşmaq kimi təhlükəli işləri görməyə sövq edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Aviasiya sənayesi</translation>
@@ -2045,6 +2051,7 @@
 <translation id="503498442187459473"><ph name="HOST" /> kameranızı və mikrofonunuzu istifadə etmək istəyir</translation>
 <translation id="5035135400558156732">Bağçılıq</translation>
 <translation id="503574301575803523">SRA3</translation>
+<translation id="5036337510084622581">Yazarkən kömək almaq üçün yenidən daxil olun, sonra bu taba qayıdın</translation>
 <translation id="5039762155821394373">Şrift Ölçüsü</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5040262127954254034">Məxfilik</translation>
@@ -2570,6 +2577,7 @@
 <translation id="6105460996796456817">Sayt yaradın</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb səhifəsi müvəqqəti işləməyə bilər və ya yeni veb ünvana köçürülmüş ola bilər.</translation>
 <translation id="6107012941649240045">Verildi:</translation>
+<translation id="6107924765192360631">Yazı təklifləri almaq üçün bir neçə söz və ya ilk qaralama ilə başlayın.</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="6116338172782435947">Buferə kopyalanan mətn və şəkillərə baxın</translation>
 <translation id="6117833587752089929">Foto (hamar)</translation>
@@ -2780,6 +2788,7 @@
 <translation id="6502626736864595182">Forum və söhbət təminatçıları</translation>
 <translation id="6502991525169604759">Dəyişikliklər olmadan</translation>
 <translation id="6506959208958864820">Zərf</translation>
+<translation id="6507117483253822672">Vebdə əminliklə yazın</translation>
 <translation id="6508722015517270189">Chrome'u yenidən başladın</translation>
 <translation id="6513005815064132016">Saytlar kamera mövqeyinizi izləmək üçün icazə istəyə bilər</translation>
 <translation id="6517596291481585650">Xəbərdarlıq: Siyasət tərəfindən göstərilən bu siyasət siyahı olmadığına görə siyahı şəklində birləşdirilmədi.</translation>

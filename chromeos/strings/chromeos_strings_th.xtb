@@ -144,7 +144,6 @@
 <translation id="188114911237521550">ปิดโหมดมืด</translation>
 <translation id="1885577615937958993">กรอสื่อไปข้างหน้า</translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
-<translation id="1897672602657312171">แป้นพิมพ์ลัดที่ไม่มีแป้นค้นหาอาจขัดแย้งกับแป้นพิมพ์ลัดของบางแอป กดแป้นพิมพ์ลัดนี้อีกครั้งเพื่อใช้ต่อไป หรือกดแป้นพิมพ์ลัดใหม่โดยใช้แป้นค้นหา</translation>
 <translation id="1904932688895783618">แหล่งข้อมูลอื่นๆ บางส่วนที่เป็นประโยชน์มีดังต่อไปนี้</translation>
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">รีเฟรชรูปภาพวอลเปเปอร์ปัจจุบัน</translation>
 <translation id="2512979179176933762">แสดงหน้าต่าง</translation>
 <translation id="2513396635448525189">รูปภาพการเข้าสู่ระบบ</translation>
-<translation id="2515109918609218604">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยไม่ใช้ฟังก์ชันและแป้นค้นหา</translation>
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2521835766824839541">แทร็กก่อนหน้า</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">ลดความสว่าง</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4176659219503619100">แผงควบคุม</translation>
-<translation id="4185315616950253617">แป้นพิมพ์ลัดที่ประกอบด้วยแป้นแถวบนสุดต้องมีแป้นค้นหารวมอยู่ด้วย</translation>
 <translation id="420283545744377356">ปิดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="4213104098953699324">แป้นพิมพ์ USB</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
-<translation id="7273347807225967898">แป้นพิมพ์ลัดไม่พร้อมใช้งาน โปรดกดแป้นพิมพ์ลัดใหม่โดยใช้แป้นกดร่วม (Ctrl, Alt, Shift, ค้นหา หรือ Launcher)</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">สัมผัสสายลมเย็น</translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
-<translation id="8111706652656628199">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และแป้นกดร่วมอีก 1 รายการ (Ctrl, Alt, ค้นหา หรือ launcher)</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>

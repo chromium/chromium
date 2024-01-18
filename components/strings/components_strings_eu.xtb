@@ -1411,6 +1411,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3744212718085287312">Hurrengoan seguruago bihurtu nahi duzu txartel birtual baten bidez?</translation>
 <translation id="3744899669254331632">Une honetan ezin duzu <ph name="SITE" /> bisitatu, webguneak Chromium-ek prozesatu ezin dituen kredentzial nahasiak bidali baititu. Sareko erroreak eta erasoak aldi baterako izan ohi dira eta, beraz, segur aski orriak geroago funtzionatuko du.</translation>
+<translation id="3745599309295009257">Zure testua eta idazten ari zaren orriaren edukia eta URLa Google-ri bidaliko zaizkio, gizakiek berrikusiko dute eta eginbide hau hobetzeko erabiliko dira. Ez idatzi informazio pertsonalik (adibidez, osasunari edo finantzei buruzko xehetasunak) eta ez erabili tresna hau informazio pribatua edo kontuzkoa daukaten webguneetan.</translation>
 <translation id="3748009735914587286">Metala (oso distiratsua)</translation>
 <translation id="3748148204939282805">Baliteke <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webguneko erasotzaileak zu iruzurtzen saiatzea arriskutsua izan litekeen zerbait egin dezazun; besteak beste, segurua ez den softwarea instalatzea edo informazio pertsonala ezagutaraztea (adibidez, pasahitzak, telefono-zenbakiak edo kreditu-txartelen datuak) izan liteke hori. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Abiazioaren industria</translation>
@@ -2468,8 +2469,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5903264686717710770">Izena:</translation>
 <translation id="5904360430676679685">Familia eta harremanak</translation>
-<translation id="5907669856855422186">Testua eta orriaren edukia Google-ri bidaliko zaizkio, eta baliteke eginbidea hobetzeko erabiltzea.
-  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizatuta)</translation>
 <translation id="5910140988253729859">Desegin betetze automatikoa</translation>
 <translation id="5911020115933784199">Gertaerak eta zerrendak</translation>
@@ -2578,6 +2577,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6105460996796456817">Sortu webgune bat</translation>
 <translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
 <translation id="6107012941649240045">Nori jaulkia:</translation>
+<translation id="6107924765192360631">Idazteko iradokizunak jasotzeko, hasi hitz batzuk edo lehenengo zirriborroa idazten.</translation>
 <translation id="610911394827799129">Google-ko kontuko arakatze-historiaren bestelako datu batzuk gera litezke <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="6116338172782435947">Arbelean kopiatzen ditudan testuak eta irudiak ikusi.</translation>
 <translation id="6117833587752089929">Argazkia (satina)</translation>
@@ -2787,6 +2787,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6502626736864595182">Foro- eta txat-hornitzaileak</translation>
 <translation id="6502991525169604759">Aldaketarik gabe</translation>
 <translation id="6506959208958864820">Gutun-azala</translation>
+<translation id="6507117483253822672">Idatzi ziurtasun handiagoarekin sareko edozein tokitan</translation>
 <translation id="6508722015517270189">Berrabiarazi Chrome</translation>
 <translation id="6513005815064132016">Kameraren posizioaren jarraipena egitea eska dezake</translation>
 <translation id="6517596291481585650">Abisua: gidalerro hau ez da bateratu zerrenda gisa gidalerroak zehaztu bezala, ez delako zerrenda bat.</translation>

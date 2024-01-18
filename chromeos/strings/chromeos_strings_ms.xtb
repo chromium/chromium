@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Matikan mod gelap</translation>
 <translation id="1885577615937958993">mundar laju media</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
-<translation id="1897672602657312171">Pintasan tanpa kekunci carian mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci carian.</translation>
 <translation id="1904932688895783618">Yang berikut ialah beberapa sumber lain yang berguna:</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Muatkan semula imej kertas dinding semasa</translation>
 <translation id="2512979179176933762">tunjukkan tetingkap</translation>
 <translation id="2513396635448525189">Imej log masuk</translation>
-<translation id="2515109918609218604">Pintasan tidak tersedia. Tekan pintasan baharu tanpa menggunakan kekunci fungsi dan carian.</translation>
 <translation id="2517472476991765520">Imbas</translation>
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2526590354069164005">Desktop</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">kurangkan kecerahan</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
 <translation id="4176659219503619100">Panel Kawalan</translation>
-<translation id="4185315616950253617">Pintasan dengan kekunci baris atas perlu menyertakan kekunci carian.</translation>
 <translation id="420283545744377356">Matikan penyelamat skrin</translation>
 <translation id="4213104098953699324">Papan kekunci USB</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">Penyedia selular</translation>
 <translation id="725133483556299729">Pilih e-mel</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
-<translation id="7273347807225967898">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan kunci pengubah suai (Ctrl, Alt, Shift, carian atau pelancar).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Rasai tiupan anginnya</translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8094062939584182041">Benarkan Google menghantar e-mel tentang isu ini kepada anda</translation>
 <translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
-<translation id="8111706652656628199">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan Shift dan 1 kunci pengubah suai lain (Ctrl, Alt, carian atau pelancar).</translation>
 <translation id="811820734797650957">Get laluan boleh Diping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>

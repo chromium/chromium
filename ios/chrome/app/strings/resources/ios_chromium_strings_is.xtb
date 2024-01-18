@@ -81,7 +81,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="3366305173356742781">Chromium-gögn á reikningnum þínum</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}}</translation>
 <translation id="3472200483164753384">Ekki stutt í Chromium Canary</translation>
-<translation id="3478750326643748149">Fela „Nýttu þér Chromium til fulls“</translation>
 <translation id="347967311580159871">Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Aðgangsorðinu var ekki deilt. Athugaðu nettenginguna og gakktu úr skugga um að þú sért skráð(ur) inn á Chromium. Reyndu svo aftur.</translation>
 <translation id="3554027294407525061">Hreinsa vefskoðunargögn í Chromium.</translation>

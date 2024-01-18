@@ -351,7 +351,7 @@
 <translation id="1260451001046713751">一律允許 <ph name="HOST" /> 的彈出式視窗和重新導向</translation>
 <translation id="1260810365552581339">Linux 磁碟空間可能不足。你可以增加 Linux 磁碟空間並嘗試在<ph name="LINK_START" />設定<ph name="LINK_END" />中再次還原。</translation>
 <translation id="1261380933454402672">普通模式</translation>
-<translation id="126156426083987769">示範模式的裝置授權發生問題。</translation>
+<translation id="126156426083987769">展示模式的裝置授權發生問題。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263733306853729545">使用 <ph name="MINUS" /> 鍵與 <ph name="EQUAL" /> 鍵呼叫候選字清單</translation>
 <translation id="126387934568812801">加入這張螢幕截圖和已開啟分頁的標題</translation>
@@ -496,6 +496,7 @@
 <translation id="1383861834909034572">完成後開啟</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384849755549338773">在其他語言的網站上使用 Google 翻譯</translation>
+<translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1388253969141979417">可以使用麥克風</translation>
 <translation id="1388728792929436380">「<ph name="DEVICE_TYPE" />」會在更新完成時重新啟動。</translation>
 <translation id="1390113502208199250">你必須將這部裝置恢復原廠設定，才能使用 Chrome Education 升級版功能。</translation>
@@ -697,7 +698,7 @@
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1539727654733007771">尚未設定行動網路。請下載新的<ph name="BEGIN_LINK" />設定檔<ph name="END_LINK" />。</translation>
 <translation id="1540265419569299117">ChromeOS 應用程式服務</translation>
-<translation id="1540605929960647700">啟用示範模式</translation>
+<translation id="1540605929960647700">啟用展示模式</translation>
 <translation id="1541346352678737112">找不到網路</translation>
 <translation id="154198613844929213">{0,plural, =0{立即刪除。}=1{刪除時間：1 秒後}other{刪除時間：# 秒後}}</translation>
 <translation id="1542137295869176367">無法更新你的登入資料</translation>
@@ -990,6 +991,7 @@
 <translation id="1748563609363301860">你可以將這組密碼儲存在 Google 帳戶中，也可以只儲存在這部裝置上</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="1750172676754093297">你的安全金鑰無法儲存指紋</translation>
+<translation id="1750238553597293878">請繼續使用 Google 帳戶中的密碼</translation>
 <translation id="1751262127955453661">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
 <translation id="175196451752279553">重新開啟已關閉分頁(&amp;E)</translation>
@@ -1125,7 +1127,7 @@
 <translation id="1841705068325380214">「<ph name="EXTENSION_NAME" />」已停用</translation>
 <translation id="184183613002882946">否，只使用 1 個外接切換裝置</translation>
 <translation id="184273675144259287">以先前的備份取代你的 Linux 應用程式和檔案</translation>
-<translation id="1842766183094193446">確定要啟用示範模式嗎？</translation>
+<translation id="1842766183094193446">確定要啟用展示模式嗎？</translation>
 <translation id="1845060436536902492">ChromeVox 是 ChromeOS Flex 上的螢幕閱讀器，主要供失明和低視能人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按下空白鍵即可開啟 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="1845727111305721124">可以播放音效</translation>
 <translation id="1846308012215045257">按下 Ctrl 鍵並點選即可執行「<ph name="PLUGIN_NAME" />」</translation>
@@ -1431,7 +1433,6 @@
 <translation id="2076228988744845354">其他「<ph name="EXTENSION_NAME" />」擴充功能動作</translation>
 <translation id="2076269580855484719">隱藏這個外掛程式</translation>
 <translation id="2076672359661571384">中 (建議)</translation>
-<translation id="2077129598763517140">在可用時使用硬體加速</translation>
 <translation id="2078019350989722914">結束前顯示警告訊息 (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">如果你刪除了你所擁有的某個憑證，那麼你將無法再使用這個憑證來識別你的身分。</translation>
 <translation id="2079495302726689071">在新「<ph name="APP" />」分頁中開啟連結</translation>
@@ -1441,7 +1442,7 @@
 <translation id="2082187087049518845">將分頁分組</translation>
 <translation id="2082510809738716738">請選擇主題顏色</translation>
 <translation id="208586643495776849">請再試一次</translation>
-<translation id="208634871997892083">永久連線的 VPN</translation>
+<translation id="208634871997892083">永久連線 VPN</translation>
 <translation id="2087822576218954668">列印：<ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">安裝 <ph name="DEVICE_OS" /> 後才能註冊。</translation>
 <translation id="2088564884469682888">內建 TrackPoint</translation>
@@ -1513,7 +1514,6 @@
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="2133775869826239001">選擇更多要設定的功能</translation>
 <translation id="2133857665503360653">重新嘗試下載「<ph name="FILE_NAME" />」</translation>
-<translation id="2133939190018801302">這個應用程式將安裝在你目前使用的 Chrome 設定檔中。<ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">系統 CA</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
@@ -3619,7 +3619,7 @@
 <translation id="3764753550716962406">要讓 Google 根據購物車中的商品尋找可用折扣嗎？</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3765055238058255342">這類資訊卡</translation>
-<translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
+<translation id="3765246971671567135">無法讀取離線展示模式的政策。</translation>
 <translation id="3765696567014520261">網站無法透過 Cookie 瞭解你在各網站的瀏覽活動，也無法放送個人化廣告。某些網站的功能可能無法運作</translation>
 <translation id="3766687283066842296">進一步瞭解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3923,7 +3923,7 @@
 <translation id="3983764759749072418">Play 商店應用程式可以存取這個裝置。</translation>
 <translation id="3983769721878416534">點擊前延遲</translation>
 <translation id="3984135167056005094">不包含電子郵件地址</translation>
-<translation id="3984159763196946143">無法啟動示範模式</translation>
+<translation id="3984159763196946143">無法啟動展示模式</translation>
 <translation id="3984431586879874039">要允許這個網站查看你的安全金鑰嗎？</translation>
 <translation id="3984536049089846927">下一頁</translation>
 <translation id="398477389655464998">複製醒目顯示文字的連結</translation>
@@ -4668,7 +4668,6 @@
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">如要設定瀏覽器通知，請前往 <ph name="LINK_BEGIN" />Chrome 瀏覽器設定<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">所有聯絡人都可以看見</translation>
-<translation id="4580587929153007251">重新登入 Google 密碼管理工具</translation>
 <translation id="4580596421317071374">密碼已儲存至這部裝置上的 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
 <translation id="4582297591746054421">網站通常會讀取你的剪貼簿，以提供保留複製文字格式等功能</translation>
@@ -4753,7 +4752,7 @@
 <translation id="4650037136970677721">已釋出記憶體</translation>
 <translation id="4650364565596261010">系統預設</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
-<translation id="4651484272688821107">無法使用示範模式的資源載入線上元件。</translation>
+<translation id="4651484272688821107">無法使用展示模式的資源載入線上元件。</translation>
 <translation id="4651921906638302153">無法登入這個帳戶</translation>
 <translation id="4652935475563630866">必須重新啟動 Parallels Desktop，攝影機設定的變更才會生效。請重新啟動 Parallels Desktop 以繼續操作。</translation>
 <translation id="4653116291358041820">小型陰影</translation>
@@ -5139,7 +5138,6 @@
 <translation id="4953808748584563296">預設的橘色顯示圖片</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />瀏覽權限</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>
-<translation id="4958090327979461112">管理 Chrome 設定檔</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
 <translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5203,6 +5201,7 @@
 <translation id="5010043101506446253">憑證授權單位</translation>
 <translation id="501057610015570208">含有「kiosk_only」資訊清單屬性的應用程式只能在 ChromeOS Flex Kiosk 模式中安裝</translation>
 <translation id="5010886807652684893">視覺化檢視</translation>
+<translation id="5012523644916800014">管理密碼和密碼金鑰</translation>
 <translation id="501394389332262641">低電量音效</translation>
 <translation id="5015344424288992913">正在解析 proxy...</translation>
 <translation id="5016305686459575361">連結手機後，你可以：</translation>
@@ -5592,7 +5591,7 @@
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置資訊設定時區</translation>
 <translation id="5327248766486351172">名稱</translation>
-<translation id="5327570636534774768">這個裝置的標記狀態是由其他網域管理。請先從該網域取消佈建裝置，再設定示範模式。</translation>
+<translation id="5327570636534774768">這個裝置的標記狀態是由其他網域管理。請先從該網域取消佈建裝置，再設定展示模式。</translation>
 <translation id="5327912693242073631">需要傳送通知的功能將無法運作</translation>
 <translation id="532943162177641444">在 <ph name="PHONE_NAME" /> 上輕觸通知，即可設定可供這個裝置使用的可攜式無線基地台。</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>
@@ -6055,7 +6054,6 @@
 <translation id="5696143504434933566">檢舉「<ph name="EXTENSION_NAME" />」的濫用情形</translation>
 <translation id="5696679855467848181">目前使用中的 PPD：<ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">表情符號挑選器</translation>
-<translation id="5698462638680260399">必須登入才能使用密碼</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
 <translation id="570043786759263127">Google Play 應用程式和服務</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -6381,7 +6379,7 @@
 <translation id="5955282598396714173">你的密碼已過期。如要變更密碼，請先登出然後重新登入。</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5955721306465922729">有個網站想要開啟這個應用程式。</translation>
-<translation id="5955809630138889698">這個裝置可能只能使用線上示範模式。如需詳情，請與你的產品支援代表聯絡。</translation>
+<translation id="5955809630138889698">這個裝置可能只能使用線上展示模式。如需詳情，請與你的產品支援代表聯絡。</translation>
 <translation id="5957987129450536192">輕觸靠近設定檔圖片的「隨選朗讀」圖示，然後選取你要聆聽的內容。</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
 <translation id="5963413905009737549">區段</translation>
@@ -6679,7 +6677,7 @@
 <translation id="6195005504600220730">讀取瀏覽器、OS 和裝置相關資訊</translation>
 <translation id="6195155925303302899">置中對齊</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
-<translation id="6195693561221576702">這個裝置無法設為離線示範模式。</translation>
+<translation id="6195693561221576702">這個裝置無法設為離線展示模式。</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網路上的行為。如果您不確定這項變更的發生原因，建議您停用該擴充功能。</translation>
 <translation id="6197128521826316819">為這個頁面建立 QR 圖碼</translation>
@@ -7797,7 +7795,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
-<translation id="7074066049407662839">必須登入才能儲存密碼</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 憑證和設定</translation>
 <translation id="7076875098323397992">無法開始升級</translation>
@@ -8014,7 +8011,6 @@
 <translation id="7258192266780953209">轉換</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7260186537988033909">資訊站和看板裝置註冊完成</translation>
-<translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置開啟了廣告評估設定，廣告技術公司或許就能在你造訪的網站和使用的應用程式上評估廣告成效。</translation>
 <translation id="7261612856573623172">系統預設文字轉語音聲音</translation>
 <translation id="7262004276116528033">這是由 <ph name="SAML_DOMAIN" /> 代管的登入服務。</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 {NUM_SITES} 個網站的權限}}</translation>
@@ -8063,7 +8059,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301812050652048720">密碼金鑰已刪除</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{這個應用程式可能會造成 Chrome 無法正常運作。}other{這些應用程式可能會造成 Chrome 無法正常運作。}}</translation>
-<translation id="7303281435234579599">糟糕！設定示範模式時出了點狀況。</translation>
+<translation id="7303281435234579599">糟糕！設定展示模式時出了點狀況。</translation>
 <translation id="7303900363563182677">這個網站無法讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="7304030187361489308">高</translation>
 <translation id="7305123176580523628">已連接 USB 印表機</translation>
@@ -8231,6 +8227,7 @@
 <translation id="7423807071740419372">需要權限才能執行「<ph name="APP_NAME" />」</translation>
 <translation id="7424153922653300265">節能模式已開啟</translation>
 <translation id="7424818322350938336">已新增網路</translation>
+<translation id="7425037327577270384">幫我寫</translation>
 <translation id="7425292366411265498">管理員安裝的擴充功能仍可讀取及變更網站</translation>
 <translation id="7427315069950454694">今天的回憶集錦</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -8422,7 +8419,7 @@
 <translation id="7573594921350120855">網站通常會使用你的攝影機提供通訊功能 (例如視訊通訊)</translation>
 <translation id="7575272930307342804">瀏覽控制選項</translation>
 <translation id="7576690715254076113">自動分頁</translation>
-<translation id="7576976045740938453">示範模式的帳戶發生問題。</translation>
+<translation id="7576976045740938453">展示模式的帳戶發生問題。</translation>
 <translation id="7578137152457315135">指紋設定</translation>
 <translation id="7578692661782707876">請輸入確認碼。</translation>
 <translation id="757941033127302446">已登入</translation>

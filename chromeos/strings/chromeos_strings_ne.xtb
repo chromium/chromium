@@ -144,7 +144,6 @@
 <translation id="188114911237521550">अँध्यारो मोड अफ गर्नुहोस्</translation>
 <translation id="1885577615937958993">"मिडिया फास्ट फर्वार्ड गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
-<translation id="1897672602657312171">सर्च की समावेश नगरिएको सर्टकट केही एपको सर्टकटसँग जुध्न सक्छ। यो सर्टकट प्रयोग गरिराख्न उक्त सर्टकट फेरि थिच्नुहोस् वा सर्च की प्रयोग गरेर नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="1904932688895783618">यहाँ केही अन्य उपयोगी स्रोतहरू दिइएका छन्:</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
 <translation id="2512979179176933762">"विन्डोहरू देखाइऊन्" जनाउने आइकन</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
-<translation id="2515109918609218604">यो सर्टकट उपलब्ध छैन। फङ्सन की र सर्च की प्रयोग नगरिकनै नयाँ सर्टकटमा थिच्नुहोस्।</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2521835766824839541">"अघिल्लो ट्रयाक" जनाउने आइकन</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">"चमक घटाउनुहोस्" जनाउने आइकन</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="4176659219503619100">कन्ट्रोल प्यानल</translation>
-<translation id="4185315616950253617">सिरानमा भएको रोका कीहरू भएको सर्टकटमा सर्च की समावेश गरिएको हुनु पर्छ।</translation>
 <translation id="420283545744377356">स्क्रिन सेभर अफ गर्नुहोस्</translation>
 <translation id="4213104098953699324">USB किबोर्ड</translation>
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">अँध्यारो थिमको समयतालिका</translation>
 <translation id="5229344016299762883">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा "<ph name="APP_NAME" />" स्वतः खुल्ने गरी सेट अप गर्नुभएको छ।}=2{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा "<ph name="APP_NAME" />" र अर्को एउटा एप स्वतः खुल्ने गरी सेट अप गर्नुभएको छ।}other{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा "<ph name="APP_NAME" />" र अन्य # वटा एप स्वतः खुल्ने गरी सेट अप गर्नुभएको छ।}}</translation>
 <translation id="5252456968953390977">रोमिङ</translation>
 <translation id="5257811368506016604">उज्यालो रङ मोड अन गर्नुहोस्</translation>
 <translation id="5264277876637023664">CPU सम्बन्धी परीक्षण गर्नुहोस्</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="725133483556299729">इमेल चयन गर्नुहोस्</translation>
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="7273347807225967898">यो सर्टकट उपलब्ध छैन। मोडिफायर की (ctrl, alt, सिफ्ट, सर्च वा लन्चर) प्रयोग गरी नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">वालपेपरका सङ्ग्रहहरू</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">सामान्य कन्ट्रोलहरू</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमा कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="7978412674231730200">निजी कुञ्जी</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" स्वतः खोलियो}other{# वटा एप स्वतः खोलिए}}</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8017679124341497925">सर्टकट सम्पादन गरियो</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8094062939584182041">Google लाई तपाईंलाई यो समस्याका बारेमा इमेल पठाउने अनुमति दिनुहोस्</translation>
 <translation id="8104083085214006426">तपाईं खुला र असुरक्षित नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
-<translation id="8111706652656628199">यो सर्टकट उपलब्ध छैन। सिफ्ट र थप एउटा मोडिफायर की (ctrl, alt, सर्च वा लन्चर) प्रयोग गरी नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="811820734797650957">(Android) गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8132480444149501833">ट्राफिक काउन्टरसम्बन्धी जानकारी माग्दै अनुरोध पठाउनुहोस्</translation>

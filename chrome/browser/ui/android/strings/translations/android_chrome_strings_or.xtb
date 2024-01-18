@@ -83,7 +83,7 @@
 <translation id="1384704387250346179">Google Lens ସହ ଛବି ଅନୁବାଦ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="13931502444227376">ଜାରି ରଖିବାକୁ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ ନାମ, ଇମେଲ ଠିକଣା ଏବଂ ପ୍ରୋଫାଇଲ ଛବିକୁ ସେୟାର କରିବ। ଏହି ସାଇଟର <ph name="BEGIN_LINK1" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" />କୁ ଦେଖନ୍ତୁ।</translation>
-<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ମାଧ୍ୟମରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ଡାଇନ୍‌ଲୋଡ୍‍କୁ ପ୍ରତିରୋଧ କରାଯାଇଛି କାରଣ ଫାଇଲ୍‌ ପୂର୍ବରୁ ଅଛି।</translation>
@@ -101,7 +101,7 @@
 <translation id="1492417797159476138">ଆପଣ ଏହି ସାଇଟ୍ ପାଇଁ ଏହି ଉପଯୋଗକର୍ତ୍ତାନାମ ପୂର୍ବରୁ ସେଭ୍ କରିଛନ୍ତି</translation>
 <translation id="1493287004536771723">ଆପଣ <ph name="SITE_NAME" />କୁ ଅନୁସରଣ କରୁଛନ୍ତି</translation>
 <translation id="1502010315804028179">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
-<translation id="1506061864768559482">ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
+<translation id="1506061864768559482">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="1513352483775369820">ବୁକ୍‌ମାର୍କ ଏବଂ ୱେବ୍ ଇତିବୃତ୍ତି</translation>
 <translation id="1513814250881909472">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ଆପଣଙ୍କର ଟାବଗୁଡ଼ିକ ପାଇବାକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="1513858653616922153">ପାସ୍‍ୱାର୍ଡକୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">ପାସୱାର୍ଡ ମ୍ୟାନେଜର</translation>
 <translation id="4307992518367153382">ଆଧାରଗୁଡିକ</translation>
+<translation id="4311652497846705514">PDFକୁ ଖୋଲିବେ?</translation>
 <translation id="4320177379694898372">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ସଂଯୋଗ ନାହିଁ</translation>
 <translation id="433213510553688132">ଅନୁସରଣ କରୁଛନ୍ତି...</translation>
 <translation id="4335835283689002019">ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ବନ୍ଦ ଅଛି</translation>
@@ -854,7 +855,7 @@
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ସର୍ଚ୍ଚ ଇତିହାସ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />ଅନ୍ୟ ପ୍ରକାରର କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK2" /> ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହୋଇପାରେ</translation>
 <translation id="564667659802381754"><ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ଗୋପନୀୟତା ଗାଇଡ</translation>
 <translation id="5648166631817621825">ବିଗତ 7 ଦିନ</translation>
-<translation id="5655963694829536461">ଆପଣଙ୍କର ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
+<translation id="5655963694829536461">ଆପଣଙ୍କର ଡାଉନଲୋଡଗୁଡ଼ିକରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5657871969392618475">ପ୍ରୋଫାଇଲ ଲକ ସହ ଆପଣଙ୍କ ସୂଚନା ସୁରକ୍ଷିତ ଅଛି</translation>
 <translation id="5659593005791499971">ଇମେଲ୍</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" />ରେ ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">ଛବିର ବର୍ଣ୍ଣନା ପାଆନ୍ତୁ</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6196315980958524839">ଏହି ଡିଭାଇସ Google Password Managerରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି</translation>
+<translation id="6202514376968366382">Chrome ଆପଣଙ୍କ ଡାଉନଲୋଡ କରାଯାଇଥିବା PDFକୁ ଖୋଲିପାରିବ</translation>
 <translation id="6202812185118613467">ସିଙ୍କ ଆରମ୍ଭ କରିବା ପାଇଁ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6205314730813004066">ବିଜ୍ଞାପନ ଗୋପନୀୟତା</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ନୁହେଁ?</translation>
@@ -1299,6 +1301,7 @@
 <translation id="7810647596859435254">ଏଥିରେ ଖୋଲନ୍ତୁ…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{ସମସ୍ତ ଫାଇଲ, ତାଲିକାରେ 1 ଫାଇଲ}other{ସମସ୍ତ ଫାଇଲ, ତାଲିକାରେ # ଫାଇଲ}}</translation>
 <translation id="7815484226266492798">ଲମ୍ବା ସ୍କ୍ରିନସଟ୍</translation>
+<translation id="7821130663268546430">ଆପଣ ଟାବ ସୁଇଚରରେ ସମସ୍ତ ଖୋଲା ଥିବା ଟାବ ପାଇପାରିବେ</translation>
 <translation id="7822705602465980873">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ, ଏକ ସୁରକ୍ଷା ଘଟଣା ପରେ Gmailରେ ସୁରକ୍ଷା ବ୍ୟବସ୍ଥାକୁ ବଢ଼ାଇବା ପରି ଏହି ଡାଟା ଆପଣଙ୍କୁ ସମଗ୍ର Google ସେବାରେ ସୁରକ୍ଷା ଦେବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ ହୋଇଥାଏ।</translation>
 <translation id="78270725016672455">ଏକ ସାଇଟରେ ସାଇନ୍ ଇନ୍ କରିବା ପାଇଁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ଏହି ଡିଭାଇସକୁ ପଞ୍ଜିକରଣ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="7844171778363018843">ସିଙ୍କ୍ କରିବାକୁ କୌଣସି ଡାଟା ଚୟନ କରାଯାଇନାହିଁ</translation>

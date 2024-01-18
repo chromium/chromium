@@ -598,6 +598,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4307992518367153382">Basics</translation>
+<translation id="4311652497846705514">Open PDF?</translation>
 <translation id="4320177379694898372">No internet connection</translation>
 <translation id="433213510553688132">Following…</translation>
 <translation id="4335835283689002019">Safe Browsing is off</translation>
@@ -958,6 +959,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6192907950379606605">Get image descriptions</translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
+<translation id="6202514376968366382">Chrome can open your downloaded PDF</translation>
 <translation id="6202812185118613467">Sign back in to start sync</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>

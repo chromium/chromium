@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="4307992518367153382">기본설정</translation>
+<translation id="4311652497846705514">PDF를 여시겠습니까?</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
 <translation id="433213510553688132">팔로우 중...</translation>
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">이미지 설명 보기</translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6196315980958524839">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
+<translation id="6202514376968366382">Chrome에서 다운로드한 PDF를 열 수 있습니다</translation>
 <translation id="6202812185118613467">동기화를 시작하려면 다시 로그인하세요.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>

@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4307992518367153382">Негізгілер</translation>
+<translation id="4311652497846705514">PDF файлын ашу қажет пе?</translation>
 <translation id="4320177379694898372">Интернет байланысы жоқ</translation>
 <translation id="433213510553688132">Жазылуда…</translation>
 <translation id="4335835283689002019">"Қауіпсіз шолу" функциясы өшірулі.</translation>
@@ -958,6 +959,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6192907950379606605">Сурет сипаттамаларын алу</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6196315980958524839">Құпия сөздер осы құрылғыдағы Google Құпия сөз менеджеріне сақталады.</translation>
+<translation id="6202514376968366382">Chrome браузері жүктеп алынған PDF файлын аша алады.</translation>
 <translation id="6202812185118613467">Синхрондауды бастау үшін қайтадан кіріңіз.</translation>
 <translation id="6205314730813004066">Жарнамадағы құпиялық</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> емес пе?</translation>

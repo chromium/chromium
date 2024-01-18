@@ -452,6 +452,7 @@
 <translation id="1343865611738742294">Даць праграмам Linux доступ да прылад USB. Linux будзе забываць выдаленыя прылады USB.</translation>
 <translation id="1343920184519992513">Працягваць з месца, на якім вы спыніліся, і адкрываць пэўны набор старонак</translation>
 <translation id="1344141078024003905">Вы трансліруеце свой экран. Вы можаце прыпыніць або спыніць трансляцыю экрана ў любы час.</translation>
+<translation id="1344914278748983512">Гэта праграма ўжо ўсталявана</translation>
 <translation id="1346630054604077329">Пацвердзіць і перазапусціць</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1347256498747320987">Усталёўка абнаўленняў і праграм. Працягваючы, вы дазваляеце гэтай прыладзе аўтаматычна спампоўваць і ўсталёўваць абнаўленні і праграмы ад Google, вашага аператара і вытворцы прылады, у тым ліку праз сотавую перадачу даных. Некаторыя з гэтых праграм могуць прапаноўваць платнае змесціва. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
@@ -498,6 +499,7 @@
 <translation id="1383861834909034572">Адкрыццё пры завяршэнні</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384849755549338773">Прапаноўваць перакладаць сайты на іншых мовах з дапамогай Перакладчыка Google</translation>
+<translation id="1384959399684842514">Спампоўка прыпынена</translation>
 <translation id="1388253969141979417">Дазволена выкарыстоўваць мікрафон</translation>
 <translation id="1388728792929436380">Пасля завяршэння абнаўлення прылада "<ph name="DEVICE_TYPE" />" перазапусціцца.</translation>
 <translation id="1390113502208199250">Каб выкарыстоўваць функцыі Chrome Education Upgrade, вам трэба будзе скінуць налады гэтай прылады да заводскіх значэнняў.</translation>
@@ -751,6 +753,7 @@
 <translation id="1572266655485775982">Уключэнне Wi-Fi</translation>
 <translation id="1572876035008611720">Увядзіце адрас электроннай пошты</translation>
 <translation id="1573127087832371028">Апішыце праблему</translation>
+<translation id="1574335334663388774">Версія <ph name="APP_VERSION" /> праграмы "<ph name="APP_NAME" />" на гэтай прыладзе ўжо ўсталявана</translation>
 <translation id="1575036763505533001">Бакавая панэль наладжвання Chrome</translation>
 <translation id="1575741822946219011">Мовы і метады ўводу</translation>
 <translation id="1576594961618857597">Стандартны белы аватар</translation>
@@ -991,6 +994,7 @@
 <translation id="1748563609363301860">Вы можаце захаваць пароль ва Уліковым запісе Google або толькі на гэтай прыладзе</translation>
 <translation id="1749733017156547309">Неабходна ўказаць пароль</translation>
 <translation id="1750172676754093297">Не ўдалося захаваць адбіткі пальцаў на вашым ключы бяспекі</translation>
+<translation id="1750238553597293878">Працягвайце выкарыстоўваць паролі ва Уліковым запісе Google</translation>
 <translation id="1751262127955453661">Сайт <ph name="ORIGIN" /> зможа змяняць файлы ў папцы "<ph name="FOLDERNAME" />", пакуль вы не закрыеце ўсе яго ўкладкі</translation>
 <translation id="17513872634828108">Адкрытыя ўкладкі</translation>
 <translation id="175196451752279553">Паў&amp;торна адкрыць закрытыя ўкладкі</translation>
@@ -1430,7 +1434,6 @@
 <translation id="2076228988744845354">Іншыя дзеянні для пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2076269580855484719">Схаваць гэту ўбудову</translation>
 <translation id="2076672359661571384">Сярэдні (рэкамендуецца)</translation>
-<translation id="2077129598763517140">Выкарыстоўваць апаратнае паскарэнне, калі гэта магчыма</translation>
 <translation id="2078019350989722914">Запытваць перад выхадам (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">Выдаліўшы адзін са сваіх уласных сертыфікатаў, вы больш не зможаце выкарыстоўваць яго для ідэнтыфікацыі сябе.</translation>
 <translation id="2079495302726689071">Адкрыць спасылку ў новай укладцы (<ph name="APP" />)</translation>
@@ -1512,7 +1515,6 @@
 <translation id="2131077480075264">Не атрымалася ўсталяваць праграму "<ph name="APP_NAME" />", бо "<ph name="IMPORT_NAME" />" яе не дазваляе</translation>
 <translation id="2133775869826239001">Выберыце, што яшчэ вы хочаце наладзіць</translation>
 <translation id="2133857665503360653">Паўтарыць спробу спампаваць файл "<ph name="FILE_NAME" />"</translation>
-<translation id="2133939190018801302">Гэта праграма будзе ўсталявана ў ваш бягучы профіль Chrome. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">Сістэмныя цэнтры сертыфікацыі</translation>
 <translation id="21354425047973905">Не паказваць PIN-коды</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
@@ -3316,6 +3318,7 @@
 <translation id="3537099313456411235">Падключыце ўліковы запіс <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />, каб атрымаць доступ да файлаў на Дыску ў праграме "Файлы"</translation>
 <translation id="3537881477201137177">Яго можна будзе змяніць пазней у Наладах</translation>
 <translation id="3538066758857505094">Памылка выдалення Linux. Паўтарыце спробу.</translation>
+<translation id="3539537154248488260">Уключыць або выключыць функцыю "Натхненне"</translation>
 <translation id="3540173484406326944">Няма падключэння да сеткі праз прыладу "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="354060433403403521">Адаптар пераменнага току</translation>
 <translation id="354068948465830244">Гэта пашырэнне можа чытаць і змяняць даныя на сайце</translation>
@@ -4665,7 +4668,6 @@
 <translation id="4579581181964204535">Не ўдаецца трансліраваць <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Параметры апавяшчэнняў у браўзеры можна задаваць у <ph name="LINK_BEGIN" />Наладах браўзера Chrome<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">Прыладу могуць бачыць усе кантакты</translation>
-<translation id="4580587929153007251">Увайдзіце ў Менеджар пароляў Google зноў</translation>
 <translation id="4580596421317071374">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />" на гэтай прыладзе.</translation>
 <translation id="4581774856936278355">Памылка падчас аднаўлення кантэйнера Linux</translation>
 <translation id="4582297591746054421">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
@@ -5136,7 +5138,6 @@
 <translation id="4953808748584563296">Стандартны аранжавы аватар</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />: бачнасць</translation>
 <translation id="4955710816792587366">Набярыце PIN-код</translation>
-<translation id="4958090327979461112">Кіраваць профілямі Chrome</translation>
 <translation id="4959262764292427323">Паролі захоўваюцца ў вашым Уліковым запісе Google, і вы зможаце карыстацца імі з любой прылады</translation>
 <translation id="4960020053211143927">Не падтрымліваецца некаторымі праграмамі</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5200,6 +5201,7 @@
 <translation id="5010043101506446253">Цэнтр сертыфікацыі</translation>
 <translation id="501057610015570208">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS Flex</translation>
 <translation id="5010886807652684893">Нагляднае адлюстраванне</translation>
+<translation id="5012523644916800014">Кіраваць паролямі і ключамі доступу</translation>
 <translation id="501394389332262641">Гук апавяшчэння аб нізкім зарадзе акумулятара</translation>
 <translation id="5015344424288992913">Вызначэнне проксі-сервера...</translation>
 <translation id="5016305686459575361">Падключыўшы тэлефон, вы атрымаеце доступ да наступных функцый:</translation>
@@ -6054,7 +6056,6 @@
 <translation id="5696143504434933566">Паскардзіцца на пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">Файл PPD, які зараз выкарыстоўваецца: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Акно выбару эмодзі</translation>
-<translation id="5698462638680260399">Каб выкарыстоўваць паролі, трэба ўвайсці ва ўліковы запіс</translation>
 <translation id="5698878456427040674">Праверце, ці падтрымліваецца выбраны ўліковы запіс.</translation>
 <translation id="570043786759263127">Праграмы і сэрвісы Google Play</translation>
 <translation id="5700761515355162635">Староннія файлы cookie дазволены</translation>
@@ -6107,6 +6108,7 @@
 <translation id="574104302965107104">Адлюстраванне дысплэя</translation>
 <translation id="574209121243317957">Вышыня голасу</translation>
 <translation id="5742787970423162234">Пакетныя вэб-праграмы з палепшанымі магчымасцямі. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5743267941164890801">Больш новая версія гэтай праграмы ўжо ўсталявана</translation>
 <translation id="5743501966138291117">Для выкарыстання аўтаматычнай разблакіроўкі PIN-код павінен змяшчаць не больш за 12 сімвалаў</translation>
 <translation id="5745316408658560138">Дазволіць Chrome шукаць персаналізаваныя скідкі на тавары ў вашых кошыках?</translation>
 <translation id="5746169159649715125">Захаваць як PDF</translation>
@@ -7800,7 +7802,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Новы пароль для гэта сайта}one{Новыя паролі для гэта сайта}few{Новыя паролі для гэта сайта}many{Новыя паролі для гэта сайта}other{Новыя паролі для гэта сайта}}</translation>
 <translation id="7070484045139057854">Гэта пашырэнне можа чытаць і змяняць даныя на сайце</translation>
 <translation id="7072010813301522126">Назва ярлыка</translation>
-<translation id="7074066049407662839">Каб захоўваць паролі, трэба ўвайсці ва ўліковы запіс</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 з шыфраваннем RSA</translation>
 <translation id="7075625805486468288">Кіраванне наладамі і сертыфікатамі HTTPS/SSL</translation>
 <translation id="7076875098323397992">Не ўдалося пачаць абнаўленне</translation>
@@ -8017,7 +8018,6 @@
 <translation id="7258192266780953209">Пераўтварэнні</translation>
 <translation id="7258225044283673131">Праграма не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7260186537988033909">Рэгістрацыя прылады для работы ў рэжыме кіёска і лічбавай знешняй рэкламы завершана</translation>
-<translation id="7260367682327802201">На вашай прыладзе Android можа быць падобная налада. Калі вымярэнне паказчыкаў, звязаных з рэкламай, уключана ў Chrome і на вашай прыладзе Android, кампаніі змогуць ацэньваць эфектыўнасць рэкламы на сайтах, якія вы наведваеце, і ў праграмах, якімі вы карыстаецеся.</translation>
 <translation id="7261612856573623172">Стандартны голас для сінтэзу маўлення</translation>
 <translation id="7262004276116528033">Гэты сэрвіс уваходу размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Дазволы адкліканы ў 1 сайта}one{Дазволы адкліканы ў {NUM_SITES} сайта}few{Дазволы адкліканы ў {NUM_SITES} сайтаў}many{Дазволы адкліканы ў {NUM_SITES} сайтаў}other{Дазволы адкліканы ў {NUM_SITES} сайта}}</translation>
@@ -8234,6 +8234,7 @@
 <translation id="7423807071740419372">Праграме <ph name="APP_NAME" /> патрабуецца ваш дазвол</translation>
 <translation id="7424153922653300265">Эканомія энергіі ўключана</translation>
 <translation id="7424818322350938336">Сетка дададзена</translation>
+<translation id="7425037327577270384">Дапамога з напісаннем</translation>
 <translation id="7425292366411265498">Пашырэнні, усталяваныя адміністратарам, усё яшчэ могуць чытаць і змяняць даныя сайтаў</translation>
 <translation id="7427315069950454694">успаміны на сёння</translation>
 <translation id="7427348830195639090">Фонавая старонка: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -9566,7 +9567,7 @@
 <translation id="8434480141477525001">Порт адладкі NaCl</translation>
 <translation id="8436054240208929121">Увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю, каб Chrome мог упарадкаваць укладкі і даваць прапановы па іх групаванні</translation>
 <translation id="8437209419043462667">ЗША</translation>
-<translation id="8438566539970814960">Паскорыць пошук і прагляд</translation>
+<translation id="8438566539970814960">Палепшыць пошук і прагляд</translation>
 <translation id="8439506636278576865">Прапаноўваць перакладаць старонкі на гэтай мове</translation>
 <translation id="8440004142066757254">Пачаць трансляцыю відэафайлаў з вашай прылады на іншы экран</translation>
 <translation id="8440630305826533614">Linux-праграмы</translation>

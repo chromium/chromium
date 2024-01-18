@@ -599,6 +599,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4307992518367153382">Grunderna</translation>
+<translation id="4311652497846705514">Vill du öppna PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
 <translation id="433213510553688132">Följer …</translation>
 <translation id="4335835283689002019">Säker webbsökning har inaktiverats</translation>
@@ -959,6 +960,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6192907950379606605">Få bildbeskrivningar</translation>
 <translation id="6193448654517602979">Välj flikar</translation>
 <translation id="6196315980958524839">Lösenorden sparas med Google Lösenordshantering på den här enheten</translation>
+<translation id="6202514376968366382">Chrome kan öppna din nedladdade PDF-fil</translation>
 <translation id="6202812185118613467">Logga in igen för att starta synkroniseringen</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
@@ -1300,6 +1302,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alla filer, 1 fil i listan}other{Alla filer, # filer i listan}}</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
+<translation id="7821130663268546430">Du hittar alla öppna flikar i flikbytaren</translation>
 <translation id="7822705602465980873">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
 <translation id="78270725016672455">Datorn vill registrera den här enheten för att logga in på en webbplats</translation>
 <translation id="7844171778363018843">Du har inte valt någon data att synkronisera</translation>

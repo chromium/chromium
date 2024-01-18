@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">替换</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">桌面书签</translation>
+<translation id="1067029985695494416">搜索引擎详细信息</translation>
 <translation id="1068672505746868501">一律不翻译<ph name="SOURCE_LANGUAGE" />网页</translation>
 <translation id="1070333806075222467">金属（平滑）</translation>
 <translation id="1070853536588271387">混合动力车与替代燃料车</translation>
@@ -1411,6 +1412,7 @@
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3744212718085287312">下次使用虚拟卡以提高安全性？</translation>
 <translation id="3744899669254331632">您目前无法访问 <ph name="SITE" />，因为此网站发送了 Chromium 无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
+<translation id="3745599309295009257">系统会将您撰写的文字以及您书写时所在网页的内容和网址发送给 Google，然后由人工审核者进行审核，用来改进此功能。避免输入个人信息（如医疗或财务详细信息）或在包含私密信息或敏感信息的网站上使用此工具。</translation>
 <translation id="3748009735914587286">金属（高光）</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻击者可能会诱骗您做一些危险的事情，例如安装软件或泄露您的个人信息（如密码、电话号码或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空业</translation>
@@ -2468,8 +2470,6 @@
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903264686717710770">标题：</translation>
 <translation id="5904360430676679685">家庭与人际关系</translation>
-<translation id="5907669856855422186">您的文字和网页内容会发送给 Google，并可能会用于改进此功能。
-  <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
 <translation id="5910140988253729859">撤消自动填充</translation>
 <translation id="5911020115933784199">活动与演出</translation>
@@ -2578,6 +2578,7 @@
 <translation id="6105460996796456817">创建网站</translation>
 <translation id="6106989379647458772">位于 <ph name="PAGE" /> 的网页可能暂时无法打开或已永久移至新网址。</translation>
 <translation id="6107012941649240045">颁发对象</translation>
+<translation id="6107924765192360631">只需先输入几个字词或撰写一份初稿，即可获得写作建议。</translation>
 <translation id="610911394827799129">您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录</translation>
 <translation id="6116338172782435947">查看复制到剪贴板的文字和图片</translation>
 <translation id="6117833587752089929">相纸（磨光）</translation>
@@ -2787,6 +2788,7 @@
 <translation id="6502626736864595182">论坛与聊天服务</translation>
 <translation id="6502991525169604759">不含您所做更改</translation>
 <translation id="6506959208958864820">信封</translation>
+<translation id="6507117483253822672">随时随地在网上更自信地书写内容</translation>
 <translation id="6508722015517270189">重新启动 Chrome</translation>
 <translation id="6513005815064132016">可以询问能否跟踪您的摄像头位置</translation>
 <translation id="6517596291481585650">警告：系统未按照相关政策中指定的方式将此政策合并为列表，因为此政策不是一个列表。</translation>

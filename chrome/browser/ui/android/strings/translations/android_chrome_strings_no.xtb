@@ -598,6 +598,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4303044213806199882">chrome_skjermdump_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4307992518367153382">Generelt</translation>
+<translation id="4311652497846705514">Vil du åpne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internettilkobling</translation>
 <translation id="433213510553688132">Følger …</translation>
 <translation id="4335835283689002019">Safe Browsing er av</translation>
@@ -958,6 +959,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6192907950379606605">Få bildebeskrivelser</translation>
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6196315980958524839">Passord lagres i Google Passordlagring på denne enheten</translation>
+<translation id="6202514376968366382">Chrome kan åpne den nedlastede PDF-filen</translation>
 <translation id="6202812185118613467">Logg på igjen for å starte synkroniseringen</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>

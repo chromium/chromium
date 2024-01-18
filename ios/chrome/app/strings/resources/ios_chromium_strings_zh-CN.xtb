@@ -81,7 +81,6 @@
 <translation id="3366305173356742781">您账号中的 Chromium 数据</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}}</translation>
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
-<translation id="3478750326643748149">隐藏“充分利用 Chromium”</translation>
 <translation id="347967311580159871">如需更多使用数据来提升 Chromium 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="3512168799938877162">未能分享密码。请检查互联网连接，确保您已登录 Chromium。然后，再试一次。</translation>
 <translation id="3554027294407525061">清除 Chromium 中的浏览数据。</translation>

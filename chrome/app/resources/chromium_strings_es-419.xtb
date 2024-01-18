@@ -138,7 +138,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="3533435340678213462">Para proteger tu privacidad, quitamos los intereses automáticamente luego de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. O bien puedes quitar los intereses que no quieres que Chromium tenga en cuenta.</translation>
 <translation id="3567254597502212821">Tu historial de navegación, un registro de los sitios que visitaste con Chromium en este dispositivo.</translation>
 <translation id="3593091352817399191">Ya accediste con otra cuenta. Para mantener separados los datos de navegación, Chromium puede crear un perfil individual para ti.</translation>
-<translation id="363078681319665186">Para obtener próximas actualizaciones de Chromium, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.13.</translation>
 <translation id="3639635944603682591">Los datos de navegación de esta persona se borrarán de este dispositivo. Para recuperarlos, accede a Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies.}=1{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies. No se volverá a abrir la ventana de incógnito.}other{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="3651803019964686660">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, accede a Chromium en ambos dispositivos.</translation>
@@ -155,7 +154,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Obtener ayuda con Chromium OS</translation>
 <translation id="3871664619793219264">Accede a tu contenido del navegador Chromium desde <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Para obtener próximas actualizaciones de Chromium, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.14.</translation>
 <translation id="388648406173476553">Personaliza y controla Chromium. Una alerta necesita tu atención. Haz clic para ver los detalles.</translation>
 <translation id="3889543394854987837">Haz clic en tu nombre para abrir Chromium y empezar a navegar.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chromium. Para mantener separados los datos de navegación, Chromium puede crear un perfil individual para ti.</translation>

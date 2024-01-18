@@ -498,6 +498,7 @@
 <translation id="1383861834909034572">បើកនៅពេលបញ្ចប់</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1384849755549338773">ផ្ដល់ជូន Google បកប្រែសម្រាប់​គេហទំព័រជាភាសាផ្សេងទៀត</translation>
+<translation id="1384959399684842514">បានផ្អាកការទាញយក</translation>
 <translation id="1388253969141979417">អនុញ្ញាតឱ្យប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ​នឹងចាប់ផ្ដើម​ឡើងវិញ នៅពេលបញ្ចប់​ការដំឡើងកំណែ​។</translation>
 <translation id="1390113502208199250">អ្នក​នឹង​ត្រូវ​កំណត់​ឧបករណ៍​នេះ​ដូច​ចេញ​ពី​រោងចក្រ ដើម្បី​ប្រើប្រាស់​មុខងារ Chrome Education Upgrade។</translation>
@@ -1001,6 +1002,7 @@
 <translation id="1748563609363301860">អ្នកអាចរក្សាទុកពាក្យសម្ងាត់នេះនៅក្នុងគណនី Google របស់អ្នក ឬនៅលើឧបករណ៍នេះតែប៉ុណ្ណោះ</translation>
 <translation id="1749733017156547309">តម្រូវឱ្យបញ្ចូលពាក្យសម្ងាត់​</translation>
 <translation id="1750172676754093297">សោសុវត្ថិភាពរបស់អ្នក​មិនអាច​រក្សាទុក​ស្នាមម្រាមដៃ​បានទេ</translation>
+<translation id="1750238553597293878">បន្តប្រើពាក្យ​សម្ងាត់នៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> នឹងអាចកែឯកសារនៅក្នុង <ph name="FOLDERNAME" /> បាន រហូតទាល់តែអ្នកបិទផ្ទាំងទាំងអស់​សម្រាប់គេហទំព័រនេះ</translation>
 <translation id="17513872634828108">បើកផ្ទាំង</translation>
 <translation id="175196451752279553">បើកផ្ទាំងដែលបានបិទឡើងវិញ</translation>
@@ -1443,7 +1445,6 @@
 <translation id="2076228988744845354">សកម្មភាព​ច្រើនទៀត​សម្រាប់​កម្មវិធីបន្ថែម <ph name="EXTENSION_NAME" /></translation>
 <translation id="2076269580855484719">លាក់កម្មវិធីជំនួយនេះ</translation>
 <translation id="2076672359661571384">មធ្យម (បានណែនាំ)</translation>
-<translation id="2077129598763517140">ប្រើការជម្រុញផ្នែករឹងនៅពេលដែលមាន</translation>
 <translation id="2078019350989722914">ព្រមានមុននឹងចេញ (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">ប្រសិនបើអ្នកលុបវិញ្ញាបនប័ត្រមួយក្នុងចំណោមវិញ្ញាបនប័ត្រទាំងឡាយរបស់អ្នក អ្នកមិនអាចប្រើវាដើម្បីសម្គាល់ខ្លួនអ្នកទៀតទេ។</translation>
 <translation id="2079495302726689071">បើក​តំណ​នៅ​ក្នុង​ផ្ទាំង <ph name="APP" /> ថ្មី</translation>
@@ -1525,7 +1526,6 @@
 <translation id="2131077480075264">មិនអាចតំឡើង "<ph name="APP_NAME" />" ទេ ពីព្រោះវាមិនត្រូវបានអនុញ្ញាតដោយ "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">ជ្រើសរើស​មុខងារ​ច្រើនទៀត​សម្រាប់​រៀបចំ</translation>
 <translation id="2133857665503360653">សាកល្បងទាញយក <ph name="FILE_NAME" /> ម្ដង​ទៀត</translation>
-<translation id="2133939190018801302">កម្មវិធីនេះ​នឹងត្រូវបាន​ដំឡើង​នៅលើ​កម្រងព័ត៌មាន Chrome ដែលអ្នក​ប្រើ​ក្នុងពេលបច្ចុប្បន្ននេះ។ <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">CA ប្រព័ន្ធ</translation>
 <translation id="21354425047973905">លាក់កូដ PIN</translation>
 <translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
@@ -4685,7 +4685,6 @@
 <translation id="4579581181964204535">មិនអាចខាស <ph name="HOST_NAME" /> បានទេ</translation>
 <translation id="4579876313423027742">ដើម្បី​ទទួលបាន​ការជូនដំណឹង​ពីកម្មវិធីរុករកតាមអ៊ីនធឺណិត សូមចូល​ទៅកាន់<ph name="LINK_BEGIN" />ការកំណត់​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត Chrome<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">ទំនាក់ទំនង​ទាំងអស់​អាចមើលឃើញ</translation>
-<translation id="4580587929153007251">ចូល​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ Google វិញ</translation>
 <translation id="4580596421317071374">ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុង <ph name="GOOGLE_PASSWORD_MANAGER" /> នៅលើឧបករណ៍នេះ។</translation>
 <translation id="4581774856936278355">មានបញ្ហា​ខណៈពេល​កំពុងស្ដារ Linux</translation>
 <translation id="4582297591746054421">ជាធម្មតា គេហទំព័រអានឃ្លីបបតរបស់អ្នកសម្រាប់មុខងារផ្សេងៗដូចជា ការរក្សាទម្រង់នៃអត្ថបទដែលអ្នកបានចម្លងជាដើម</translation>
@@ -5156,7 +5155,6 @@
 <translation id="4953808748584563296">រូបតំណាងពណ៌ទឹកក្រូចលំនាំដើម</translation>
 <translation id="4955707703665801001">លទ្ធភាពមើលឃើញនៃ<ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">ជ្រើសរើសកូដ PIN របស់អ្នក</translation>
-<translation id="4958090327979461112">គ្រប់គ្រង​កម្រងព័ត៌មាន Chrome របស់អ្នក</translation>
 <translation id="4959262764292427323">ពាក្យសម្ងាត់​ត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក ដើម្បី​អាចឱ្យអ្នក​ប្រើវានៅ​លើឧបករណ៍​ទាំងឡាយ</translation>
 <translation id="4960020053211143927">មិនអាច​ប្រើបាន​ដោយកម្មវិធី​មួយចំនួនទេ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5220,6 +5218,7 @@
 <translation id="5010043101506446253">អាជ្ញាធរវិញ្ញាបនប័ត្រ</translation>
 <translation id="501057610015570208">កម្មវិធី​ដែល​មាន​លក្ខណៈ​មេនីហ្វេសថ៍ 'kiosk_only' ត្រូវតែ​ដំឡើង​នៅក្នុង​មុខងារបញ្ជរ ChromeOS Flex</translation>
 <translation id="5010886807652684893">ទិដ្ឋភាព​មើលឃើញ</translation>
+<translation id="5012523644916800014">គ្រប់គ្រង​ពាក្យសម្ងាត់ និង​កូដសម្ងាត់</translation>
 <translation id="501394389332262641">សំឡេងពេលថ្មសល់តិច</translation>
 <translation id="5015344424288992913">កំពុងដោះស្រាយប្រូកស៊ី...</translation>
 <translation id="5016305686459575361">តាមរយៈការតភ្ជាប់ទូរសព្ទរបស់អ្នក អ្នកអាច៖</translation>
@@ -6075,7 +6074,6 @@
 <translation id="5696143504434933566">រាយការណ៍​ពី​ការបំពាន​ពី "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">កំពុងប្រើ​ឯកសារ PPD បច្ចុប្បន្ន៖ <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ផ្ទាំងជ្រើសរើស​រូបអារម្មណ៍</translation>
-<translation id="5698462638680260399">ចូល​ដើម្បីប្រើ​ពាក្យសម្ងាត់</translation>
 <translation id="5698878456427040674">ពិនិត្យមើល​ថាតើ​អាចប្រើ​គណនី​ដែលបានជ្រើសរើស​បានឬអត់។</translation>
 <translation id="570043786759263127">កម្មវិធី និង​សេវាកម្ម Google Play</translation>
 <translation id="5700761515355162635">បានអនុញ្ញាត​ខូគី​ភាគីទីបី</translation>
@@ -7818,7 +7816,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ពាក្យសម្ងាត់​ថ្មី​សម្រាប់​គេហទំព័រ​នេះ}other{ពាក្យសម្ងាត់​ថ្មី​សម្រាប់​គេហទំព័រ​នេះ}}</translation>
 <translation id="7070484045139057854">វាអាច​អាន និងផ្លាស់ប្ដូរ​ទិន្នន័យ​គេហទំព័រ​</translation>
 <translation id="7072010813301522126">ឈ្មោះផ្លូវកាត់</translation>
-<translation id="7074066049407662839">ចូល​ដើម្បី​រក្សាទុក​ពាក្យ​សម្ងាត់</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 ជាមួយនឹងការអ៊ីនគ្រីប RSA</translation>
 <translation id="7075625805486468288">គ្រប់គ្រងវិញ្ញាបនបត្រ HTTPS/SSL និងការកំណត់</translation>
 <translation id="7076875098323397992">មិនអាចចាប់ផ្ដើមការដំឡើងកំណែបានទេ</translation>
@@ -8035,7 +8032,6 @@
 <translation id="7258192266780953209">ការបំប្លែង</translation>
 <translation id="7258225044283673131">កម្មវិធី​មិនដំណើរ​ការទេ។ សូមជ្រើសរើស "បង្ខំឱ្យបិទ" ដើម្បីបិទ​កម្មវិធី។</translation>
 <translation id="7260186537988033909">ការចុះឈ្មោះ​ឧបករណ៍ Kiosk និង signage បានបញ្ចប់</translation>
-<translation id="7260367682327802201">ឧបករណ៍ Android របស់អ្នកអាចរួម​បញ្ចូល​ការ​កំណត់​ស្រដៀង​គ្នា។ ប្រសិនបើ​ការ​វាស់ស្ទង់​ការ​ផ្សាយពាណិជ្ជកម្ម​ត្រូវ​បានបើកនៅ​ក្នុង Chrome និង​នៅលើ​ឧបករណ៍ Android របស់​អ្នក ក្រុមហ៊ុន​អាច​វាស់ស្ទង់​ប្រសិទ្ធភាព​នៃ​ការ​ផ្សាយ​ពាណិជ្ជកម្ម​នៅលើគេហទំព័រ​ដែល​អ្នក​ចូលមើល និង​កម្មវិធី​ដែល​អ្នកប្រើ។</translation>
 <translation id="7261612856573623172">សំឡេង​នៃការបំប្លែងអត្ថបទទៅជាការនិយាយ​របស់​ប្រព័ន្ធ</translation>
 <translation id="7262004276116528033">សេវាកម្មចូលនេះត្រូវបានបង្ហោះដោយ <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{បាន​ដក​ការ​អនុញ្ញាត​ចេញ​សម្រាប់​គេហទំព័រ 1}other{បាន​ដក​ការ​អនុញ្ញាត​ចេញ​សម្រាប់​គេហទំព័រ {NUM_SITES}}}</translation>
@@ -8252,6 +8248,7 @@
 <translation id="7423807071740419372"><ph name="APP_NAME" /> ត្រូវការ​ការអនុញ្ញាត ដើម្បី​ដំណើរការ</translation>
 <translation id="7424153922653300265">មុខងារ​សន្សំសំចៃ​ថាមពល​ត្រូវ​បាន​បើក</translation>
 <translation id="7424818322350938336">បានបញ្ចូលបណ្ដាញ</translation>
+<translation id="7425037327577270384">ជួយខ្ញុំក្នុងការសរសេរ</translation>
 <translation id="7425292366411265498">កម្មវិធីបន្ថែម​ដែលបានដំឡើងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក​នៅតែអាច​អាន និងប្ដូរ​គេហទំព័រ​បានដដែល</translation>
 <translation id="7427315069950454694">អនុស្សាវរីយ៍របស់អ្នកសម្រាប់ថ្ងៃនេះ</translation>
 <translation id="7427348830195639090">ទំព័រផ្ទៃខាងក្រោយ៖ <ph name="BACKGROUND_PAGE_URL" /></translation>

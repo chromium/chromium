@@ -447,6 +447,7 @@
 <translation id="1343865611738742294">Linux का एपलाई USB यन्त्रहरूमाथि पहुँच राख्न दिनुहोस्। कुनै USB यन्त्र हटाएपछि Linux ले उक्त यन्त्र सम्झने छैन।</translation>
 <translation id="1343920184519992513">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस् र आफूले चाहेका विशेष पेजहरू खोल्नुहोस्</translation>
 <translation id="1344141078024003905">तपाईं आफ्नो स्क्रिन कास्ट गर्दै हुनुहुन्छ। तपाईं जुनसुकै बेला आफ्नो स्क्रिन कास्ट गर्न छाड्न वा केही समयका लागि कास्ट गर्ने कार्य रोक्न सक्नुहुन्छ।</translation>
+<translation id="1344914278748983512">यो एप इन्स्टल गरिसकिएको छ</translation>
 <translation id="1346630054604077329">पुष्टि गर्नुहोस् र रिस्टार्ट गर्नुहोस्</translation>
 <translation id="1346748346194534595">दायाँ</translation>
 <translation id="1347256498747320987">अपडेट र एप इन्स्टल गर्नुहोस्‌। जारी राख्नुभयो भने तपाईं यो डिभाइसले सम्भवतः मोबाइल डेटाको प्रयोग गरी Google, तपाईंको सेवा प्रदायक र तपाईंको डिभाइसका उत्पादकका अपडेट र एप स्वतः डाउनलोड गरी इन्स्टल गर्न सक्ने कुरामा सहमत हुनुहुन्छ भन्ने अर्थ। यीमध्ये केही एपहरूले एपभित्र हुने किनमेलहरू प्रस्ताव गर्न सक्छन्। <ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
@@ -493,6 +494,7 @@
 <translation id="1383861834909034572">पूरा भएपछि खुल्ने</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384849755549338773">अन्य भाषाका वेबसाइटहरू Google Translate प्रयोग गरी अनुवाद गर्ने विकल्प दिइयोस्</translation>
+<translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
 <translation id="1388253969141979417">तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="1388728792929436380">अपडेट पूरा भएपछि <ph name="DEVICE_TYPE" /> रिस्टार्ट हुने छ।</translation>
 <translation id="1390113502208199250">तपाईं Chrome Education Upgrade का सुविधाहरू प्रयोग गर्न चाहनुहुन्छ भने तपाईंले यो डिभाइस फ्याक्ट्री रिसेट गर्नु पर्ने हुन्छ।</translation>
@@ -747,6 +749,7 @@
 <translation id="1572266655485775982">Wi-Fi सक्षम</translation>
 <translation id="1572876035008611720">तपाईँको इमेल प्रविष्टि गर्नुहोस्</translation>
 <translation id="1573127087832371028">त्रुटिका बारेमा वर्णन गर्नुहोस्</translation>
+<translation id="1574335334663388774">यो डिभाइसमा <ph name="APP_NAME" /> को संस्करण <ph name="APP_VERSION" /> इन्स्टल गरिसकिएको छ</translation>
 <translation id="1575036763505533001">Chrome को साइड प्यानल कस्टमाइज गर्नुहोस्</translation>
 <translation id="1575741822946219011">भाषा तथा इनपुट विधिहरू</translation>
 <translation id="1576594961618857597">डिफल्ट सेतो अवतार</translation>
@@ -985,6 +988,7 @@
 <translation id="1748563609363301860">तपाईं आफ्नो Google खाता वा यस यन्त्रमा मात्र यो पासवर्ड सुरक्षित गर्न सक्नुहुन्छ।</translation>
 <translation id="1749733017156547309">पासवर्ड हालिएको छैन</translation>
 <translation id="1750172676754093297">तपाईंको सुरक्षा साँचोले फिंगरप्रिन्टहरू भण्डारण गर्न सक्दैन</translation>
+<translation id="1750238553597293878">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू प्रयोग गरिराख्नुहोस्</translation>
 <translation id="1751262127955453661">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा रहेका फाइलहरू सम्पादन गर्न सक्ने छ</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
 <translation id="175196451752279553">बन्द ट्याबलाई पुन: खो&amp;ल्नुहोस्</translation>
@@ -1426,7 +1430,6 @@
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> एक्स्टेन्सनका सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="2076269580855484719">यो प्लगइनलाई लुकाउनुहोस्</translation>
 <translation id="2076672359661571384">मध्यम (सिफारिस गरिएको)</translation>
-<translation id="2077129598763517140">उपलब्ध हुँदा हार्डवेयर त्वरण प्रयोग गर्नुहोस्</translation>
 <translation id="2078019350989722914">अन्त गर्नुअघि चेतावनी दिनुहोस् (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">यदि तपाइँले तपाइँको आफ्नै प्रमाणपत्रहरू मध्ये एक हटाउनुभयो भने, तपाइँले उप्रान्त आफैलाई परिचय दिन सक्नुहुन्न।</translation>
 <translation id="2079495302726689071">यो लिंक <ph name="APP" /> को नयाँ ट्याबमा खोल्नुहोस्</translation>
@@ -1508,7 +1511,6 @@
 <translation id="2131077480075264">"<ph name="APP_NAME" />" स्थापना गर्न असक्षम किनभने त्यो "<ph name="IMPORT_NAME" />" द्वारा अनुमति गरिएको छैन</translation>
 <translation id="2133775869826239001">आफूले सेटअप गर्न चाहेका थप सुविधाहरू छनौट गर्नुहोस्</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> फेरि खोली हेर्नुहोस्</translation>
-<translation id="2133939190018801302">यो एप तपाईंले हाल प्रयोग गरिरहनुभएको Chrome प्रोफाइलमा इन्स्टल गरिने छ। <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">सिस्टम CA हरू</translation>
 <translation id="21354425047973905">PIN हरू लुकाउनुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
@@ -3313,6 +3315,7 @@
 <translation id="3537099313456411235">Files एपमार्फत Drive मा भएका आफ्ना फाइलहरू एक्सेस गर्न <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="3537881477201137177">यसलाई पछि सेटिङमा गई परिमार्जन गर्न सकिने छ</translation>
 <translation id="3538066758857505094">Linux को स्थापना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3539537154248488260">सुझाव देखाउने वा लुकाउने टगल</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> मार्फत कुनै पनि नेटवर्क कनेक्ट गरिएको छैन</translation>
 <translation id="354060433403403521">AC एड्याप्टर</translation>
 <translation id="354068948465830244">यसले साइटको डेटा पढ्न र परिवर्तन गर्न सक्छ</translation>
@@ -4663,7 +4666,6 @@
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> लाई cast गर्न असमर्थ।</translation>
 <translation id="4579876313423027742">ब्राउजरमार्फत सूचना प्राप्त गर्ने सुविधासम्बन्धी सेटिङ मिलाउन <ph name="LINK_BEGIN" />Chrome ब्राउजरको सेटिङ<ph name="LINK_END" />मा जानुहोस्</translation>
 <translation id="4580389561674319558">सबै कन्ट्याक्टहरूलाई देखिन्छ</translation>
-<translation id="4580587929153007251">Google पासवर्ड म्यानेजरमा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="4580596421317071374">पासवर्डहरू यो डिभाइसको <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्।</translation>
 <translation id="4581774856936278355">Linux पुनर्स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="4582297591746054421">साइटहरूले तपाईंले कपी गर्नुभएको पाठको ढाँचा कायमै राख्ने जस्ता सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको क्लिपबोर्ड पढ्छन्</translation>
@@ -5134,7 +5136,6 @@
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> को अनुमतिसम्बन्धी सेटिङ</translation>
 <translation id="4955710816792587366">आफ्नो PIN छनौट गर्नुहोस्</translation>
-<translation id="4958090327979461112">आफ्ना Chrome प्रोफाइलहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4959262764292427323">तपाईं जुनसुकै बेला पासवर्ड प्रयोग गर्न सक्नुहोस् भन्नाका लागि तिनलाई तपाईंको Google खातामा सेभ गरिन्छ</translation>
 <translation id="4960020053211143927">केही एपहरूमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5198,6 +5199,7 @@
 <translation id="5010043101506446253">प्रमाणपत्र अधिकार</translation>
 <translation id="501057610015570208">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS Flex को किअस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="5010886807652684893">भिजुअल भ्यू</translation>
+<translation id="5012523644916800014">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="501394389332262641">ब्याट्री कम हुँदा साउन्ड बजाइयोस्</translation>
 <translation id="5015344424288992913">प्रोक्सी समाधान गर्दै...</translation>
 <translation id="5016305686459575361">आफ्नो फोन कनेक्ट गरेर तपाईं निम्न काम गर्न सक्नुहुन्छ:</translation>
@@ -6052,7 +6054,6 @@
 <translation id="5696143504434933566"><ph name="EXTENSION_NAME" /> को दुरुपयोगबारे रिपोर्ट गर्नुहोस्</translation>
 <translation id="5696679855467848181">हाल प्रयोगमा रहेको PPD फाइल: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">इमोजी पिकर</translation>
-<translation id="5698462638680260399">पासवर्ड प्रयोग गर्न साइन इन गर्नुहोस्</translation>
 <translation id="5698878456427040674">चयन गरिएको खाता प्रयोग गर्न मिल्छ कि मिल्दैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="570043786759263127">Google Play एप र सेवाहरू</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
@@ -6105,6 +6106,7 @@
 <translation id="574104302965107104">डिस्प्ले मिररिङ</translation>
 <translation id="574209121243317957">पिच</translation>
 <translation id="5742787970423162234">परिष्कृत सुविधा उपलब्ध भएका प्याकेज्ड वेब एपहरू। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5743267941164890801">यो एपको योभन्दा नयाँ संस्करण इन्स्टल गरिसकिएको छ</translation>
 <translation id="5743501966138291117">PIN १२ वा सोभन्दा कम अङ्कको छ भने मात्र स्वतः अनलक गर्ने सुविधा प्रयोग गर्न सकिन्छ</translation>
 <translation id="5745316408658560138">Chrome लाई तपाईंका कार्टमा भएका सामग्रीका सम्बन्धमा पर्सनलाइज गरिएको छुट खोज्ने अनुमति दिने हो?</translation>
 <translation id="5746169159649715125">पीडीएपको रूपमा बचत गर्नुहोस्</translation>
@@ -7793,7 +7795,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{यो साइटको नयाँ पासवर्ड}other{यो साइटका नयाँ पासवर्डहरू}}</translation>
 <translation id="7070484045139057854">यसले साइटको डेटा पढ्न र परिवर्तन गर्न सक्छ</translation>
 <translation id="7072010813301522126">शर्टकट नाम</translation>
-<translation id="7074066049407662839">पासवर्ड सेभ गर्न साइन इन गर्नुहोस्</translation>
 <translation id="7075513071073410194">PKCS #1 MD2 सँग RSA गुप्तलेखन</translation>
 <translation id="7075625805486468288">HTTPS/SSL सम्बन्धी प्रमाणपत्र र सेटिङहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7076875098323397992">अपग्रेड गर्ने कार्य सुरु गर्न सकिएन</translation>
@@ -8010,7 +8011,6 @@
 <translation id="7258192266780953209">रूपान्तरणहरू</translation>
 <translation id="7258225044283673131">यो एपले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="7260186537988033909">किअस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया पूरा भयो</translation>
-<translation id="7260367682327802201">तपाईंको Android डिभाइसमा यस्तै सेटिङ हुन सक्छ। Chrome र तपाईंको Android डिभाइसमा विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा अन गरिएको छ भने कुनै पनि कम्पनी तपाईंले खोल्ने वेबसाइट र तपाईंले प्रयोग गर्ने एपहरूमा देखाइने विज्ञापनको प्रभावकारिता मापन गर्न सक्षम हुन सक्छन्।</translation>
 <translation id="7261612856573623172">पाठवाचकसम्बन्धी प्रणालीको आवाज</translation>
 <translation id="7262004276116528033">यो साइन इन सेवा <ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिन्छ</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{{NUM_SITES} वटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
@@ -8227,6 +8227,7 @@
 <translation id="7423807071740419372"><ph name="APP_NAME" /> चलाउन अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="7424153922653300265">इनर्जी सेभर अन गरिएको छ</translation>
 <translation id="7424818322350938336">नेटवर्क थप गरिएको छ</translation>
+<translation id="7425037327577270384">मलाई लेख्न मद्दत गरियोस्</translation>
 <translation id="7425292366411265498">तपाईंका एड्मिनले इन्स्टल गरेका एक्स्टेन्सनहरूले अझै पनि साइटहरू रिड गर्न र बदल्न सक्छन्</translation>
 <translation id="7427315069950454694">आजका स्मरणीय क्षणहरू</translation>
 <translation id="7427348830195639090">पृष्ठभूमि पाना: <ph name="BACKGROUND_PAGE_URL" /></translation>

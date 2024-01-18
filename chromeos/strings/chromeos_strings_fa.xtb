@@ -144,7 +144,6 @@
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
 <translation id="1885577615937958993">جلو بردن سریع رسانه</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
-<translation id="1897672602657312171">اگر میان‌بر حاوی کلید جستجو نباشد ممکن است با میان‌بر برخی برنامه‌ها تداخل پیدا کند. اگر می‌خواهید به استفاده از این میان‌بر ادامه دهید آن را دوباره فشار دهید، یا میان‌بری جدید حاوی کلید جستجو اختصاص دهید.</translation>
 <translation id="1904932688895783618">در اینجا منابع مفید دیگری ارائه شده است:</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
@@ -185,6 +184,7 @@
 <translation id="2189104374785738357">‏ویرایش جزئیات APN</translation>
 <translation id="2209788852729124853">بازنشانی شمارش‌گرهای ترافیک</translation>
 <translation id="2212733584906323460">حل‌وفصل نام</translation>
+<translation id="2215920961700443347">به اینترنت متصل نیستید. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="2217935453350629363">سرعت کنونی</translation>
 <translation id="2224337661447660594">اتصال اینترنت وجود ندارد</translation>
 <translation id="222447520299472966">باید حداقل یک آلبوم از «گالری هنری» انتخاب شود</translation>
@@ -218,6 +218,7 @@
 <translation id="2421798028054665193">تصویر <ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
+<translation id="2465272316171730950">تکمیل شده است. لطفاً کمی بعد دوباره سر بزنید.</translation>
 <translation id="248546197012830854">‏دستگاه آفلاین است. برای دیدن محتوای راهنما، به شبکه Wi-Fi متصل شوید.</translation>
 <translation id="2491955442992294626">وقتی درحال استفاده از پنجره دیگری هستید، کلیدها آزمایش نمی‌شوند</translation>
 <translation id="2493126929778606526">بهترین عکس‌هایتان که به‌طور خودکار انتخاب شده‌اند</translation>
@@ -225,7 +226,6 @@
 <translation id="2505327257735685095">بازآوری کاغذدیواری کنونی</translation>
 <translation id="2512979179176933762">نمایش پنجره‌ها</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
-<translation id="2515109918609218604">میان‌بر دردسترس نیست. میان‌بر جدیدی را بدون استفاده از کلیدهای عملیات و جستجو فشار دهید.</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2521835766824839541">آهنگ قبلی</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
@@ -425,7 +425,6 @@
 <translation id="4171077696775491955">کاهش روشنایی</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4176659219503619100">صفحه کنترل</translation>
-<translation id="4185315616950253617">میان‌برهای دارای کلیدهای ردیف بالا باید حاوی کلید جستجو باشند.</translation>
 <translation id="420283545744377356">خاموش کردن محافظ صفحه</translation>
 <translation id="4213104098953699324">‏صفحه‌کلید USB</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
@@ -572,6 +571,7 @@
 <translation id="5227902338748591677">زمان‌بندی زمینه تیره</translation>
 <translation id="5229344016299762883">خروج از حالت تمام‌صفحه</translation>
 <translation id="5234764350956374838">رد کردن</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{سرپرستتان «<ph name="APP_NAME" />» را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید، به‌طور خودکار اجرا شود.}=2{سرپرستتان «<ph name="APP_NAME" />» و ۱ برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}one{سرپرستتان «<ph name="APP_NAME" />» و # برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}other{سرپرستتان «<ph name="APP_NAME" />» و # برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}}</translation>
 <translation id="5252456968953390977">فراگردی</translation>
 <translation id="5257811368506016604">فعال کردن حالت رنگ روشن</translation>
 <translation id="5264277876637023664">اجرای آزمایش واحد پردازش مرکزی</translation>
@@ -844,7 +844,6 @@
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
 <translation id="725133483556299729">انتخاب ایمیل</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
-<translation id="7273347807225967898">میان‌بر دردسترس نیست. میان‌بر جدید باید با یکی از کلیدهای تغییردهنده (مهار، دگرساز، تبدیل، جستجو، یا راه‌انداز) اختصاص داده شود.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">احساس کردن نسیم</translation>
 <translation id="7287310195820267359">مجموعه کاغذدیواری</translation>
@@ -943,6 +942,7 @@
 <translation id="7971535376154084247">کنترل‌های عمومی</translation>
 <translation id="7977800524392185497">برای پیوستن به <ph name="NETWORK_NAME" />، به «تنظیمات» بروید</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» به‌طور خودکار اجرا شد}one{# برنامه به‌طور خودکار اجرا شد}other{# برنامه به‌طور خودکار اجرا شد}}</translation>
 <translation id="7994702968232966508">‏روش EAP</translation>
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8017679124341497925">میان‌بر ویرایش شد</translation>
@@ -959,7 +959,6 @@
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8094062939584182041">‏اجازه دادن به Google برای ارسال ایمیل درباره این مشکل</translation>
 <translation id="8104083085214006426">از شبکه‌ای باز و ناامن استفاده می‌کنید</translation>
-<translation id="8111706652656628199">میان‌بر دردسترس نیست. بااستفاده از کلید تبدیل و یک کلید تغییردهنده دیگر (مهار، دگرساز، جستجو، یا راه‌انداز) میان‌بر جدیدی اختصاص دهید.</translation>
 <translation id="811820734797650957">‏(Android) دروازه را می‌توان پینگ کرد</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8132480444149501833">درخواست شمارش‌گرهای ترافیک</translation>

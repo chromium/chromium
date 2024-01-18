@@ -451,6 +451,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1343865611738742294">Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.</translation>
 <translation id="1343920184519992513">Continue from where you left off and open a specific set of pages</translation>
 <translation id="1344141078024003905">You are casting your screen. You can pause or stop casting your screen at any time.</translation>
+<translation id="1344914278748983512">This app is already installed</translation>
 <translation id="1346630054604077329">Confirm and restart</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1347256498747320987">Install updates &amp; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
@@ -497,6 +498,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1383861834909034572">Opening when complete</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384849755549338773">Offer Google Translate for websites in other languages</translation>
+<translation id="1384959399684842514">Download paused</translation>
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
 <translation id="1390113502208199250">You will have to factory reset this device to use Chrome Education upgrade features.</translation>
@@ -751,6 +753,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1572266655485775982">Wi-Fi enable</translation>
 <translation id="1572876035008611720">Enter your email</translation>
 <translation id="1573127087832371028">Describe the issue</translation>
+<translation id="1574335334663388774"><ph name="APP_NAME" /> version <ph name="APP_VERSION" /> is already installed on this device</translation>
 <translation id="1575036763505533001">Customise Chrome side panel</translation>
 <translation id="1575741822946219011">Languages and inputs</translation>
 <translation id="1576594961618857597">Default white avatar</translation>
@@ -999,6 +1002,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1748563609363301860">You can save this password in your Google Account or only on this device</translation>
 <translation id="1749733017156547309">A password is required</translation>
 <translation id="1750172676754093297">Your security key can't store fingerprints</translation>
+<translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> will be able to edit files in <ph name="FOLDERNAME" /> until you close all tabs for this site</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="175196451752279553">R&amp;eopen closed tab</translation>
@@ -1441,7 +1445,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2076228988744845354">More actions for <ph name="EXTENSION_NAME" /> extension</translation>
 <translation id="2076269580855484719">Hide this plug-in</translation>
 <translation id="2076672359661571384">Medium (Recommended)</translation>
-<translation id="2077129598763517140">Use hardware acceleration when available</translation>
 <translation id="2078019350989722914">Warn Before Quitting (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">If you delete one of your own certificates, you can no longer use it to identify yourself.</translation>
 <translation id="2079495302726689071">Open link in new <ph name="APP" /> tab</translation>
@@ -1523,7 +1526,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">Choose more features to set up</translation>
 <translation id="2133857665503360653">Retry <ph name="FILE_NAME" /></translation>
-<translation id="2133939190018801302">This application will be installed on your currently used Chrome profile. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">System CAs</translation>
 <translation id="21354425047973905">Hide PINs</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
@@ -3330,6 +3332,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3537099313456411235">Connect <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> to access your Drive files in the Files app</translation>
 <translation id="3537881477201137177">This can be modified later in Settings</translation>
 <translation id="3538066758857505094">Error uninstalling Linux. Please try again.</translation>
+<translation id="3539537154248488260">Toggle inspiration</translation>
 <translation id="3540173484406326944">No network through <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">AC adaptor</translation>
 <translation id="354068948465830244">This can read and change site data</translation>
@@ -4682,7 +4685,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4579581181964204535">Unable to cast <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">For browser notifications, go to <ph name="LINK_BEGIN" />Chrome browser settings<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">Visible to all contacts</translation>
-<translation id="4580587929153007251">Sign back in to Google Password Manager</translation>
 <translation id="4580596421317071374">Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> on this device.</translation>
 <translation id="4581774856936278355">Error while restoring Linux</translation>
 <translation id="4582297591746054421">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
@@ -5153,7 +5155,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4953808748584563296">Default orange avatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> visibility</translation>
 <translation id="4955710816792587366">Choose your PIN</translation>
-<translation id="4958090327979461112">Manage your Chrome profiles</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5217,6 +5218,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5010043101506446253">Certificate authority</translation>
 <translation id="501057610015570208">App with 'kiosk_only' manifest attribute must be installed in Chrome OS Flex kiosk mode</translation>
 <translation id="5010886807652684893">Visual view</translation>
+<translation id="5012523644916800014">Manage passwords and passkeys</translation>
 <translation id="501394389332262641">Low battery sound</translation>
 <translation id="5015344424288992913">Resolving proxy...</translation>
 <translation id="5016305686459575361">By connecting your phone, you can:</translation>
@@ -6071,7 +6073,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5696143504434933566">Report abuse from '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="5696679855467848181">Current PPD file in use: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emoji picker</translation>
-<translation id="5698462638680260399">Sign in to use passwords</translation>
 <translation id="5698878456427040674">Check if the selected account is supported.</translation>
 <translation id="570043786759263127">Google Play apps and services</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
@@ -6124,6 +6125,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="574104302965107104">Display mirroring</translation>
 <translation id="574209121243317957">Pitch</translation>
 <translation id="5742787970423162234">Packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5743267941164890801">A newer version of this app is already installed</translation>
 <translation id="5743501966138291117">PIN must be 12 digits or less to use automatic unlock</translation>
 <translation id="5745316408658560138">Let Chrome find personalised discounts on your baskets?</translation>
 <translation id="5746169159649715125">Save as PDF</translation>
@@ -7814,7 +7816,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="7070484045139057854">This Can Read and Change Site Data</translation>
 <translation id="7072010813301522126">Shortcut name</translation>
-<translation id="7074066049407662839">Sign in to save passwords</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 With RSA Encryption</translation>
 <translation id="7075625805486468288">Manage HTTPS/SSL certificates and settings</translation>
 <translation id="7076875098323397992">Can't start upgrade</translation>
@@ -8031,7 +8032,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">The application is not responding. Select 'Force close' to close the app.</translation>
 <translation id="7260186537988033909">Kiosk and signage device enrolment complete</translation>
-<translation id="7260367682327802201">Your Android device may include a similar setting. If ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="7261612856573623172">System Text-to-Speech voice</translation>
 <translation id="7262004276116528033">This sign-in service is hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Permissions removed for 1 site}other{Permissions removed for {NUM_SITES} sites}}</translation>
@@ -8248,6 +8248,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7423807071740419372"><ph name="APP_NAME" /> needs permission to run</translation>
 <translation id="7424153922653300265">Energy Saver Turned On</translation>
 <translation id="7424818322350938336">Network added</translation>
+<translation id="7425037327577270384">Help me write</translation>
 <translation id="7425292366411265498">Extensions installed by your administrator can still read and change sites</translation>
 <translation id="7427315069950454694">your memories for today</translation>
 <translation id="7427348830195639090">Background Page: <ph name="BACKGROUND_PAGE_URL" /></translation>

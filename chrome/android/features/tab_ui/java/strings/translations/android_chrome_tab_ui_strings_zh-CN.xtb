@@ -49,6 +49,7 @@
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
 <translation id="5082793167783849073">通过分组快速比较网页。为此，请先轻触并按住某个链接。</translation>
+<translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{您有 <ph name="TABS_COUNT_ONE" /> 个近期未使用的标签页}other{您有 <ph name="TABS_COUNT_MANY" /> 个近期未使用的标签页}}</translation>
 <translation id="5339733443032484186">您的最后一个标签页</translation>
 <translation id="5490235265819901748">已展开标签页组</translation>

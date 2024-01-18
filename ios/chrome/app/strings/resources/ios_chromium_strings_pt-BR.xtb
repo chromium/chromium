@@ -81,7 +81,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Pode incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
-<translation id="3478750326643748149">Ocultar "Aproveite o Chromium ao máximo"</translation>
 <translation id="347967311580159871">Para conferir mais configurações que usam dados para melhorar sua experiência no Chromium, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Sua senha não foi compartilhada. Verifique sua conexão com a Internet e confira se você fez login no Chromium. Em seguida, tente de novo.</translation>
 <translation id="3554027294407525061">Limpar dados de navegação no Chromium.</translation>

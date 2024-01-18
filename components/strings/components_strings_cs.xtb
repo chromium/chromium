@@ -42,6 +42,7 @@
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Záložky v PC</translation>
+<translation id="1067029985695494416">Podrobnosti o vyhledávači</translation>
 <translation id="1068672505746868501">Stránky v jazyce <ph name="SOURCE_LANGUAGE" /> nikdy nepřekládat</translation>
 <translation id="1070333806075222467">Kov (lesklý)</translation>
 <translation id="1070853536588271387">Automobily s hybridním a alternativním pohonem</translation>
@@ -1411,6 +1412,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3744212718085287312">Chcete příště zvýšit zabezpečení pomocí virtuální karty?</translation>
 <translation id="3744899669254331632">Web <ph name="SITE" /> teď nelze navštívit, protože tento web odeslal nesprávné identifikační údaje, které prohlížeč Chromium nedokáže zpracovat. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
+<translation id="3745599309295009257">Váš text a obsah a adresa URL stránky, na které píšete, se odešlou do Googlu a budou zkontrolovány lidmi a použity k vylepšení této funkce. Nezadávejte osobních údaje (jako jsou zdravotní nebo finanční údaje) a nepoužívejte tento nástroj na webech, které obsahují soukromé nebo citlivé údaje.</translation>
 <translation id="3748009735914587286">Kov (vysoký lesk)</translation>
 <translation id="3748148204939282805">Útočníci na webu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> vás mohou podvodem přimět k nebezpečnému chování, jako je instalace softwaru nebo vyzrazení osobních údajů (například hesel, telefonních čísel nebo platebních karet). <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Letecký průmysl</translation>
@@ -2468,8 +2470,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5901630391730855834">Žlutá</translation>
 <translation id="5903264686717710770">Název:</translation>
 <translation id="5904360430676679685">Rodina a vztahy</translation>
-<translation id="5907669856855422186">Váš text a obsah stránky se odesílají do Googlu a mohou být použity ke zlepšování této funkce.
-  <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronizováno)</translation>
 <translation id="5910140988253729859">Vrátit automatické vyplnění zpět</translation>
 <translation id="5911020115933784199">Události a přehledy</translation>
@@ -2578,6 +2578,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6105460996796456817">Vytvořit web</translation>
 <translation id="6106989379647458772">Webová stránka <ph name="PAGE" /> může být dočasně nefunkční nebo mohla být trvale přesunuta na novou webovou adresu.</translation>
 <translation id="6107012941649240045">Vydán pro</translation>
+<translation id="6107924765192360631">Pokud chcete získat návrhy psaní, zadejte několik slov nebo první koncept.</translation>
 <translation id="610911394827799129">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="6116338172782435947">Přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6117833587752089929">Fotografie (saténová)</translation>
@@ -2787,6 +2788,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6502626736864595182">Poskytovatelé fór a chatů</translation>
 <translation id="6502991525169604759">Bez vašich změn</translation>
 <translation id="6506959208958864820">Obálka</translation>
+<translation id="6507117483253822672">Pište kdekoli na webu s větší jistotou</translation>
 <translation id="6508722015517270189">Restartujte Chrome</translation>
 <translation id="6513005815064132016">Může žádat o sledování pozice kamery</translation>
 <translation id="6517596291481585650">Upozornění: Tato zásada nebyla podle zásady sloučena jako seznam, protože se nejedná o seznam.</translation>

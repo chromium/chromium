@@ -49,6 +49,7 @@
 <translation id="5073204694187207510">Sakrij mrežu cijelog ekrana</translation>
 <translation id="5076161749301278626">Želite li pogledati recenzije trgovine?</translation>
 <translation id="5082793167783849073">Kreirajte grupu i brzo uporedite stranice. Da započnete, dodirnite i držite link.</translation>
+<translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> karticu koju niste nedavno koristili}one{Imate <ph name="TABS_COUNT_MANY" /> karticu koju niste nedavno koristili}few{Imate <ph name="TABS_COUNT_MANY" /> kartice koje niste nedavno koristili}other{Imate <ph name="TABS_COUNT_MANY" /> kartica koje niste nedavno koristili}}</translation>
 <translation id="5339733443032484186">Posljednja kartica</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>

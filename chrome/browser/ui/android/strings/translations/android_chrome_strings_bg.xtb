@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4307992518367153382">Основни положения</translation>
+<translation id="4311652497846705514">Да се отвори ли PDF файлът?</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="433213510553688132">Започвате да следите...</translation>
 <translation id="4335835283689002019">„Безопасно сърфиране“ е изключено</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">Описания на изображенията</translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
 <translation id="6196315980958524839">Паролите се запазват в Google Мениджър на пароли на това устройство</translation>
+<translation id="6202514376968366382">Chrome може да отвори изтегления от вас PDF файл</translation>
 <translation id="6202812185118613467">Влезте отново в профила си, за да стартирате синхронизирането</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>

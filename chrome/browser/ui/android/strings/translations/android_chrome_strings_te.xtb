@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
+<translation id="4311652497846705514">PDFను తెరవాలా?</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="433213510553688132">ఫాలో చేస్తున్నారు...</translation>
 <translation id="4335835283689002019">సురక్షిత బ్రౌజింగ్ ఆఫ్‌లో ఉంది</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">ఇమేజ్ వివరణలను పొందండి</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6196315980958524839">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి</translation>
+<translation id="6202514376968366382">Chrome మీరు డౌన్‌లోడ్ చేసిన PDFను తెరవగలదు</translation>
 <translation id="6202812185118613467">సింక్‌ను ప్రారంభించడం కోసం తిరిగి సైన్ ఇన్ చేయండి</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> కాదా?</translation>
@@ -1299,6 +1301,7 @@
 <translation id="7810647596859435254">దీనితో తెరువు…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{అన్ని ఫైల్స్, లిస్ట్‌లో 1 ఫైల్ ఉంది}other{అన్ని ఫైల్స్, లిస్ట్‌లో # ఫైల్స్ ఉన్నాయి}}</translation>
 <translation id="7815484226266492798">పొడవైన స్క్రీన్‌షాట్</translation>
+<translation id="7821130663268546430">మీరు ట్యాబ్ స్విచ్చర్‌లో అన్ని ఓపెన్ ట్యాబ్‌లను కనుగొనవచ్చు</translation>
 <translation id="7822705602465980873">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచడం కోసం ఈ డేటా మీ Google ఖాతాకు లింక్ చేయబడుతుంది, ఉదాహరణకు సెక్యూరిటీకి సంబంధించిన ఒక సంఘటన జరిగిన తర్వాత Gmailలో రక్షణను పెంచడం జరుగుతుంది.</translation>
 <translation id="78270725016672455">ఒక సైట్‌లోకి సైన్ ఇన్ చేయడానికి, మీ కంప్యూటర్ ఈ పరికరాన్ని రిజిస్టర్ చేయాలని కోరుతోంది</translation>
 <translation id="7844171778363018843">సింక్ చేయడానికి డేటా ఏదీ ఎంచుకోబడలేదు</translation>

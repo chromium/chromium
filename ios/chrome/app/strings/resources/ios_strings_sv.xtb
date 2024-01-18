@@ -369,6 +369,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="288902476966286676">Retur till avsändaren</translation>
 <translation id="2890171748217283516">Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
+<translation id="2895084600668778673">Se all data för Autofyll</translation>
 <translation id="2898963176829412617">Ny mapp ...</translation>
 <translation id="2902684821701498619">Lägg till i läslistan</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> återanvända lösenord som kan innebära en säkerhetsrisk.</translation>
@@ -711,6 +712,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4805759445554688327">Ogiltigt kortnummer</translation>
 <translation id="4808646838864186379">Leveransen har annullerats</translation>
 <translation id="4808744395915275922">Uppdateringar</translation>
+<translation id="4813345808229079766">Anslutning</translation>
 <translation id="4818522717893377262">Lägg till språk …</translation>
 <translation id="481968316161811770">Cookies, webbplatsdata</translation>
 <translation id="4821595350501541683">Flikarna stängdes och webbinformationen rensades.</translation>
@@ -923,6 +925,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5922999516621365983">Dra hit fliken för att fästa den.</translation>
 <translation id="5938160824633642847">Det finns nästan ingen plats kvar på enheten. Frigör utrymme och försök igen.</translation>
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
+<translation id="5954562874938077107">Öppna Lens</translation>
 <translation id="5955891643922670672">Offlineversionen visas</translation>
 <translation id="5957613098218939406">Fler alternativ</translation>
 <translation id="595769230373966252">Sök med <ph name="SEARCH_PROVIDER" /></translation>

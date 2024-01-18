@@ -81,7 +81,6 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="3366305173356742781">Podaci Chromiuma na vašem računu</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Ovo može uključivati historiju i automatsko popunjavanje.}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Ovo može uključivati historiju i automatsko popunjavanje.}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute. Ovo može uključivati historiju i automatsko popunjavanje.}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta. Ovo može uključivati historiju i automatsko popunjavanje.}}</translation>
 <translation id="3472200483164753384">Nije podržano na Chromium Canaryju</translation>
-<translation id="3478750326643748149">Sakrijte "Iskoristite sve prednosti Chromiuma"</translation>
 <translation id="347967311580159871">Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu idite na <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Lozinka nije podijeljena. Provjerite internetsku vezu i jeste li prijavljeni u Chromium. Nakon toga pokušajte ponovo.</translation>
 <translation id="3554027294407525061">Brisanje podataka o pregledanju u Chromiumu.</translation>

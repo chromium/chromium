@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4307992518367153382">Основи</translation>
+<translation id="4311652497846705514">Да се отвори PDF-датотеката?</translation>
 <translation id="4320177379694898372">Нема интернет поврзување</translation>
 <translation id="433213510553688132">Се следи…</translation>
 <translation id="4335835283689002019">„Безбедното прелистување“ е исклучено</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">Добивајте описи на слики</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6196315980958524839">Лозинките се зачувани во „Управникот со лозинки на Google“ на уредов</translation>
+<translation id="6202514376968366382">Chrome може да ја отвори преземената PDF-датотека</translation>
 <translation id="6202812185118613467">Најавете се повторно за да започнете со синхронизација</translation>
 <translation id="6205314730813004066">Приватност за реклами</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
@@ -1299,6 +1301,7 @@
 <translation id="7810647596859435254">Отвори со…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Сите датотеки, 1 датотека во список}one{Сите датотеки, # датотека во список}other{Сите датотеки, # датотеки во список}}</translation>
 <translation id="7815484226266492798">Копче за долга слика од екранот</translation>
+<translation id="7821130663268546430">Може да ги најдете сите отворени картички во „Менувачот на картички“</translation>
 <translation id="7822705602465980873">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="78270725016672455">Компјутерот сака да го регистрира уредов за најавување на сајт</translation>
 <translation id="7844171778363018843">Не се избрани податоци за синхронизација</translation>

@@ -498,6 +498,7 @@
 <translation id="1383861834909034572">Отварање кад се доврши</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1384849755549338773">Понуди Google преводилац за веб-сајтове на другим језицима</translation>
+<translation id="1384959399684842514">Преузимање је паузирано</translation>
 <translation id="1388253969141979417">Дозвољено им је коришћење микрофона</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> ће се рестартовати када се ажурирања заврше.</translation>
 <translation id="1390113502208199250">Морате да ресетујете овај уређај на фабричка подешавања да бисте користили функције надоградње за Chrome Education.</translation>
@@ -989,6 +990,7 @@
 <translation id="1748563609363301860">Можете да сачувате ову лозинку на Google налогу или само на овом уређају</translation>
 <translation id="1749733017156547309">Лозинка је обавезна</translation>
 <translation id="1750172676754093297">Безбедносни кључ не може да чува отиске прстију</translation>
+<translation id="1750238553597293878">Наставите да користите лозинке на Google налогу</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> ће моћи да мења датотеке у директоријуму <ph name="FOLDERNAME" /> док не затворите све картице овог сајта</translation>
 <translation id="17513872634828108">Отворене картице</translation>
 <translation id="175196451752279553">П&amp;оново отвори затворену картицу</translation>
@@ -1429,7 +1431,6 @@
 <translation id="2076228988744845354">Још радњи за додатак <ph name="EXTENSION_NAME" /></translation>
 <translation id="2076269580855484719">Сакриј овај додатак</translation>
 <translation id="2076672359661571384">Средње (препоручено)</translation>
-<translation id="2077129598763517140">Користи хардверско убрзање када је доступно</translation>
 <translation id="2078019350989722914">Упозори пре напуштања (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">Ако избришете неки свој сертификат, више нећете моћи да га користите да се идентификујете.</translation>
 <translation id="2079495302726689071">Отвори линк на новој картици у апликацији <ph name="APP" /></translation>
@@ -1511,7 +1512,6 @@
 <translation id="2131077480075264">Није успело инсталирање „<ph name="APP_NAME" />“ јер то не дозвољава „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2133775869826239001">Одаберите додатне функције за подешавање</translation>
 <translation id="2133857665503360653">Поново отворите <ph name="FILE_NAME" /></translation>
-<translation id="2133939190018801302">Ова апликација ће бити инсталирана на Chrome профилу који се тренутно користи. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">CA-ови за систем</translation>
 <translation id="21354425047973905">Сакриј PIN-ове</translation>
 <translation id="2135456203358955318">Монтирана лупа екрана</translation>
@@ -4667,7 +4667,6 @@
 <translation id="4579581181964204535">Није успело пребацивање за <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Ако желите обавештења прегледача, идите у <ph name="LINK_BEGIN" />Подешавања Chrome прегледача<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">Видљиво свим контактима</translation>
-<translation id="4580587929153007251">Поново се пријавите у Google менаџер лозинки</translation>
 <translation id="4580596421317071374">Лозинке се чувају на овом уређају у:<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4581774856936278355">Грешка при враћању Linux-а</translation>
 <translation id="4582297591746054421">Сајтови обично читају привремену меморију за потребе функција попут задржавања форматирања текста који сте копирали</translation>
@@ -5138,7 +5137,6 @@
 <translation id="4953808748584563296">Подразумевани наранџасти аватар</translation>
 <translation id="4955707703665801001">Видљивост за <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Одаберите PIN</translation>
-<translation id="4958090327979461112">Управљајте Chrome профилима</translation>
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
 <translation id="4960020053211143927">Неке апликације не подржавају ово</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5202,6 +5200,7 @@
 <translation id="5010043101506446253">Ауторитет за издавање сертификата</translation>
 <translation id="501057610015570208">Апликација са атрибутом манифеста „kiosk_only“ мора да се инсталира у режиму киоска у Chrome OS Flex-у</translation>
 <translation id="5010886807652684893">Визуелни приказ</translation>
+<translation id="5012523644916800014">Управљајте лозинкама и приступним кодовима</translation>
 <translation id="501394389332262641">Звук батерије је низак</translation>
 <translation id="5015344424288992913">Одређује се прокси...</translation>
 <translation id="5016305686459575361">Ако повежете телефон, можете:</translation>
@@ -6056,7 +6055,6 @@
 <translation id="5696143504434933566">Пријави злоупотребу од „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="5696679855467848181">Тренутна PPD датотека у употреби: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Бирач емоџија</translation>
-<translation id="5698462638680260399">Пријавите се да бисте користили лозинке</translation>
 <translation id="5698878456427040674">Проверите да ли је изабрани налог подржан.</translation>
 <translation id="570043786759263127">Google Play апликације и услуге</translation>
 <translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
@@ -7804,7 +7802,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Нова лозинка за овај сајт}one{Нове лозинке за овај сајт}few{Нове лозинке за овај сајт}other{Нове лозинке за овај сајт}}</translation>
 <translation id="7070484045139057854">Ово може да чита и мења податке сајтова</translation>
 <translation id="7072010813301522126">Назив пречице</translation>
-<translation id="7074066049407662839">Пријавите се да бисте сачували лозинке</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 са RSA шифровањем</translation>
 <translation id="7075625805486468288">Управљање HTTPS/SSL сертификатима и подешавањима</translation>
 <translation id="7076875098323397992">Покретање надоградње није успело</translation>
@@ -8021,7 +8018,6 @@
 <translation id="7258192266780953209">Трансформације</translation>
 <translation id="7258225044283673131">Апликација не реагује. Изаберите „Принудно затвори“ да бисте затворили апликацију.</translation>
 <translation id="7260186537988033909">Регистрација киоска и уређаја за пријављивање је довршена</translation>
-<translation id="7260367682327802201">Android уређај може да има слично подешавање. Ако је мерење огласа укључено у Chrome-у и на Android уређају, компанија можда може да мери ефикасност огласа на веб-сајтовима које посећујете и у апликацијама које користите.</translation>
 <translation id="7261612856573623172">Системски глас за претварање текста у говор</translation>
 <translation id="7262004276116528033">Ову услугу пријављивања хостује <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Дозволе су уклоњене за 1 сајт}one{Дозволе су уклоњене за {NUM_SITES} сајт}few{Дозволе су уклоњене за {NUM_SITES} сајта}other{Дозволе су уклоњене за {NUM_SITES} сајтова}}</translation>
@@ -8238,6 +8234,7 @@
 <translation id="7423807071740419372">За покретање апликације <ph name="APP_NAME" /> је потребна дозвола</translation>
 <translation id="7424153922653300265">Уштеда енергије је укључена</translation>
 <translation id="7424818322350938336">Мрежа је додата</translation>
+<translation id="7425037327577270384">Помоћ при писању</translation>
 <translation id="7425292366411265498">Додаци које је инсталирао администратор и даље могу да читају и мењају сајтове</translation>
 <translation id="7427315069950454694">ваше успомене за данас</translation>
 <translation id="7427348830195639090">Страница у позадини: <ph name="BACKGROUND_PAGE_URL" /></translation>

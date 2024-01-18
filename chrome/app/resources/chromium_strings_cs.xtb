@@ -142,7 +142,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3533435340678213462">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromia odstranit.</translation>
 <translation id="3567254597502212821">Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromiu na tomto zařízení.</translation>
 <translation id="3593091352817399191">Už je přihlášen jiný účet. Pokud chcete své prohlížení oddělit, Chromium vám může vytvořit vlastní profil.</translation>
-<translation id="363078681319665186">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.15 nebo novější. Tento počítač používá systém macOS 10.13.</translation>
 <translation id="3639635944603682591">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování.}=1{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3651803019964686660">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do prohlížeče Chromium.</translation>
@@ -159,7 +158,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Pomoc se systémem ChromiumOS</translation>
 <translation id="3871664619793219264">Získejte obsah prohlížeče Chromium z účtu <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.15 nebo novější. Tento počítač používá systém macOS 10.14.</translation>
 <translation id="388648406173476553">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="3889543394854987837">Chcete-li otevřít Chromium a začít procházet Internet, klikněte na svoje jméno.</translation>
 <translation id="390528597099634151">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chromium přihlášen. Chcete-li své procházení oddělit, Chromium vám může vytvořit vlastní profil.</translation>

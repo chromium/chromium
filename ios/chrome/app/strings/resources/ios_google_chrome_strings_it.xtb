@@ -98,7 +98,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3503014945441706099">Attiva la funzionalità Navigazione sicura avanzata anche per questo profilo Chrome</translation>
 <translation id="3522659714780527202">Per visualizzare le tue schede su tutti i dispositivi su cui utilizzi Chrome, attiva la sincronizzazione</translation>
 <translation id="3577555362230509265">Utilizza Chrome in altre app.</translation>
-<translation id="3594076341410558780">Nascondi "Ottieni il massimo da Chrome"</translation>
 <translation id="364480321352456989">Chrome non è aggiornato.</translation>
 <translation id="3646736009628185125">Al momento il tuo membro del gruppo Famiglia non può ricevere password. Chiedi di aggiornare Chrome e sincronizzare le sue password. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Ciò significa che Chrome richiederà ogni volta il sito per dispositivi mobili.</translation>
@@ -277,7 +276,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8727043961453758442">Ottieni il massimo da Chrome</translation>
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>
 <translation id="8760668027640688122">Apri nuova scheda in Chrome</translation>
-<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
+<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito</translation>
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Impostazioni di Chrome</translation>

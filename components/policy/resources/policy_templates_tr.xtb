@@ -295,6 +295,19 @@ Fakat, bu politika için kaynakları eşleşen kalıplar "/path" ya da "@query" 
 <translation id="1223789468190631420">Güvenilen kaynaklar için Güvenli Tarama etkinleştirme durumu</translation>
 <translation id="123018742985150697">Yerel kullanıcı ile uzaktan erişim ana makine sahibinin eşleşmesini zorunlu tut</translation>
 <translation id="123081309365616809">Cihaza içerik yayınlamayı etkinleştirme</translation>
+<translation id="1233343906578850273"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> politikasının ayarlanması, resim arama için kullanılan arama motorunun URL'sini belirtir. (<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> politikası ayarlandıysa resim arama istekleri bunun yerine POST yöntemini kullanır.)
+
+      <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> protokolü ayarlanmadan bırakılırsa resim arama kullanılmaz.
+
+      Görsel arama, alma yöntemini kullanıyorsa URL aşağıdaki yer tutucuların geçerli
+      bir kombinasyonunu kullanarak görsel parametrelerini belirtmelidir:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="1238868319430505522"><ph name="GOOGLE_DRIVE_NAME" /> ve <ph name="GOOGLE_WORKSPACE_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırır</translation>
 <translation id="1239526922294123540">Web sitelerinin daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin verilip verilmediğini kontrol eder.
 
@@ -1327,7 +1340,6 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 <translation id="2073552873076775140"><ph name="PRODUCT_NAME" /> oturumunun açılmasına izin ver</translation>
 <translation id="2075732129949889165">Crostini Ansible başucu kitabı</translation>
 <translation id="2076158466157390917">Giriş sırasında otomatik temizlemeyi kontrol et</translation>
-<translation id="2077129598763517140">Kullanılabilir olduğunda donanım hızlandırmayı kullan</translation>
 <translation id="2077273864382355561">Pil gücüyle çalışırken ekran kapatma gecikmesi</translation>
 <translation id="2081969239334697268">
         Politika Devre Dışı değerine ayarlandığında, uzantı manifestindeki güncelleme URL'sini kullanan oturum içi Kiosk Chrome uygulamaları güncellemesi devre dışı bırakılır ve güncelleme mekanizması olarak yalnızca CRX önceden getirme işlemi kalır.
@@ -1972,7 +1984,6 @@ Bu politika Yanlış değerine ayarlandığında İlgili Web Sitesi Grupları ö
 <translation id="2570181623957732921">Üçüncü taraf alanlarının listesi için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
 <translation id="2575198840408498393">Dolaşım profillerinin oluşturulmasını devre dışı bırak</translation>
 <translation id="2576324725151524912">Erişime kapalı uygulamalar için geliştirici moduna izin ver.</translation>
-<translation id="257717978573041245">Donanım hızlandırmayı etkinleştir</translation>
 <translation id="257788512393330403">Altı saatte bir şifre girilmesi gerekir</translation>
 <translation id="2580606791930800692">Veri denetimleri kural listesini ayarlar.</translation>
 <translation id="2580757713966614760">Politika ayarlanırsa toplu yazıcı yapılandırması için hangi erişim politikasının geçerli olacağı belirlenerek <ph name="DEVICE_PRINTERS_POLICY_NAME" /> içerisinden hangi yazıcıların kullanılabileceği kontrol edilir.
@@ -2515,7 +2526,7 @@ Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı bu kay
       Politika, Devre Dışı değerine ayarlanırsa medya denetimleri kilit ekranında devre dışı bırakılır.</translation>
 <translation id="3072847235228302527">Bir cihaz yerel hesabı için Hizmet Şartları'nı ayarlama</translation>
 <translation id="3074032542020543133">LTS kanalı</translation>
-<translation id="3074886258920642791">Giriş ekranında sanal klavyeyi etkinleştir</translation>
+<translation id="3074886258920642791">Erişilebilirlik sanal klavyesini, giriş ekranında etkinleştir</translation>
 <translation id="3077650998740742747">
 Varsayılan davranış (Politika ayarlanmadıysa)
 İçerik alanına bir hesap eklendiğinde, kullanıcıdan yeni profil oluşturmasını isteyen küçük bir iletişim kutusu görünebilir. Bu iletişim kutusu kapatılabilir.
@@ -2759,7 +2770,6 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
       Politika ayarlanmadan bırakılırsa <ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımı güncellemesi kullanılamaz.</translation>
 <translation id="3232563711929146405">Ağ hizmeti korumalı alanını devre dışı bırak</translation>
 <translation id="3232691106293445015">Güvenli olmayan HTTP bağlantılarının <ph name="BASIC_AUTH" /> kimlik doğrulamasını kullanmasına izni verilmez, HTTPS gereklidir</translation>
-<translation id="3234753491625248216">Donanım hızlandırmayı devre dışı bırak</translation>
 <translation id="3234773866678260466">Yeni profil eklenmesine izin ver</translation>
 <translation id="3234863952320884611"><ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> yöntemlerinin eşzamansız olarak çağrılmasını etkinleştirir</translation>
 <translation id="3235085623859932253"> Bu politika devre dışı bırakılırsa kullanıcılar, PCle tünelleme üzerinden Thunderbolt/USB4 çevre birimi cihazlarını tam olarak bağlayamazlar.
@@ -4852,7 +4862,7 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
       Not: Bu listeye <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> politikası aracılığıyla öğeler eklenebileceğini de unutmayın.</translation>
 <translation id="5063480226653192405">Kullanım</translation>
 <translation id="5067143124345820993">Kullanıcı beyaz listesine giriş yap</translation>
-<translation id="50689955292091946">Giriş ekranında sanal klavyeyi etkinleştir</translation>
+<translation id="50689955292091946">Erişilebilirlik sanal klavyesini, giriş ekranında etkinleştir</translation>
 <translation id="5069522005630249098">Bu ayar, <ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerinin ne kadarının saklanacağını belirler.
 
       Politika <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> değerine ayarlanır veya ayarlanmadan bırakılırsa geriye dönük veri taşıma işlemi yapılmaz.
@@ -5209,6 +5219,19 @@ Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz mo
 <translation id="5366977351895725771">False (yanlış) olarak ayarlanırsa, bu kullanıcının denetlenen kullanıcı oluşturma yetkisi devre dışı bırakılır. Mevcut tüm denetlenen kullanıcılar kullanılabilir olmaya devam eder.
 
           True (doğru) olarak ayarlanırsa veya yapılandırılmazsa, bu kullanıcı denetlenen kullanıcılar oluşturabilir ve denetlenen kullanıcıları yönetebilir.</translation>
+<translation id="5367255280764736002"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> protokolünün ayarlanması, POST ile resim araması yaparken parametreleri belirtir. Virgülle ayrılmış ad-değer çiftlerini içerir. Değer, {imageThumbnail} gibi bir şablon parametresi ise gerçek resmin küçük resim verisiyle değiştirilir.
+
+      <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> politikası ayarlanmazsa resim araması isteği, GET yöntemi kullanılarak gönderilir.
+
+      URL, arama motorunun neyi desteklediğine göre aşağıdaki yer tutucuların geçerli
+      bir kombinasyonunu kullanarak görsel parametresini belirtmelidir:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="5369937289900051171">Yalnızca renkli yazdır</translation>
 <translation id="5370279767682621504">Varsayılan olmayan bağlantı noktalarında HTTP/0.9 desteğini etkinleştir</translation>
 <translation id="5370765433640162225">Bu politika doğru değerine ayarlandığında yeterli boş disk alanı olduğundan emin olmak için giriş sırasında otomatik temizleme işlemi gerçekleştirilir.
@@ -7083,9 +7106,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" /> kullanın.</translation>
 <translation id="6847379587945465889">Oturum açma sırasında, SAML TOA Çerezlerinin kullanıcı oturumuna aktarılmasını etkinleştir</translation>
 <translation id="684856667300805181">Bu politika <ph name="PRODUCT_NAME" /> 68 sürümünde kaldırılmış ve yerine <ph name="ARC_GLS_POLICY_NAME" /> kullanılmaya başlanmıştır.</translation>
-<translation id="6848721032946289937">Politikanın Etkin değerine ayarlanması veya ayarlamadan bırakılması, mevcutsa donanım hızlandırmayı açar.
-
-      Politika, Devre Dışı değerine ayarlanırsa donanım hızlandırma devre dışı bırakılır.</translation>
 <translation id="6850300477973481112">Masa Bağlayıcı Ayarları</translation>
 <translation id="6851199885688265233">İmleci vurgulama erişilebilirlik özelliğini etkinleştir</translation>
 <translation id="6851315055469993882">Genel olarak kapsamlı HTTP auth önbelleği etkinleştirir</translation>
@@ -8924,9 +8944,9 @@ Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlana
 <translation id="8402079500086185021">PDF dosyalarını her zaman harici olarak aç</translation>
 <translation id="8402357110539568621">Sanal klavye erişilebilirlik özelliğini etkinleştirin.
 
-          Bu politika, doğru değerine ayarlanırsa erişilebilirlik sanal klavyesi her zaman etkinleştirilir.
+          Bu politika doğru değerine ayarlanırsa erişilebilirlik sanal klavyesi her zaman etkinleştirilir.
 
-          Bu politika, yanlış değerine ayarlanırsa erişilebilirlik sanal klavyesi her zaman devre dışı olur.
+          Bu politika yanlış değerine ayarlanırsa erişilebilirlik sanal klavyesi her zaman devre dışı olur.
 
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
 
@@ -9162,6 +9182,13 @@ Poltikanının ayarlanmadan bırakılması, kullanıcıların oyunu kayıtlı <p
       Politika true (doğru) değerine ayarlanırsa en az 5 dakikadır arka planda bulunan sekmeler dondurulabilir. Sekme dondurma işlemi CPU, pil ve bellek kullanımını azaltır. <ph name="PRODUCT_NAME" />, arka planda faydalı işler yapan sekmelerin (ör. bildirimleri görüntüleme, ses çalma, video yayınlama) dondurulmaması için sezgisel yöntemler kullanır. Web geliştiricileri, sitelerinin dondurma kapsamı dışında kalmasını seçebilir (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Politika false (yanlış) değerine ayarlanırsa hiçbir sekme dondurulmaz.</translation>
+<translation id="8610216287193516769">M122 sürümünde kaldırıldı. Bu, yayılımı için ChromeOS politika altyapısını hiç kullanmamış yalnızca sunucu tarafı bir politikadır.
+Bu politika <ph name="POLICY_VALUE_ALL" /> değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen hesapların her türlü kullanımına izin verilir. Bu durum, yönetilen hesabın ikincil hesap olmasına ve yalnızca tarayıcı profilinde birincil hesap olarak oturum açtığında politika alabilmesine neden olabilir.
+      Hesapta ayarlanan politikalar aşağıdaki durumlarda uygulanmaz:
+        -  OS seviyesinde (Hesap Ayarları) ikincil hesap olma
+        -  Tarayıcı profilinde ikincil hesap olma
+
+      Bu politika bir hesapta <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> değerine ayarlanırsa o hesabın yalnızca birincil hesap olarak oturum açmasına izin verilir. Hesabın ikincil hesap olarak oturum açmasına izin verilmez.</translation>
 <translation id="8612188068319977428">Chrome durum raporu yüklemelerinin sıklığını kontrol eder.
 
 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> politikası tarafından etkinleştirilen raporlar bu kapsama dahildir.

@@ -144,7 +144,6 @@
 <translation id="188114911237521550">تاریک وضع آف کریں</translation>
 <translation id="1885577615937958993">فاسٹ فارورڈ میڈیا</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
-<translation id="1897672602657312171">تلاش کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں، یا تلاش کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="1904932688895783618">کچھ دوسرے مددگار وسائل یہ ہیں:</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">وال پیپر کی موجودہ تصویر کو ریفریش کریں</translation>
 <translation id="2512979179176933762">ونڈوز دکھائیں</translation>
 <translation id="2513396635448525189">لاگ ان کی تصویر</translation>
-<translation id="2515109918609218604">شارٹ کٹ دستیاب نہیں ہے۔ فنکشن اور تلاش کی کلیدیں استعمال کیے بغیر نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2521835766824839541">پچھلا ٹریک</translation>
 <translation id="2526590354069164005">ڈیسک ٹاپ</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">چمک کم کریں</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
 <translation id="4176659219503619100">کنٹرول پینل</translation>
-<translation id="4185315616950253617">اوپر والی قطار والے شارٹ کٹ میں تلاش کی کلید شامل کرنے کی ضرورت ہے۔</translation>
 <translation id="420283545744377356">اسکرین سیور آف کریں</translation>
 <translation id="4213104098953699324">‏USB کی بورڈ</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">گہری تھیم شیڈول کریں</translation>
 <translation id="5229344016299762883">مکمل اسکرین سے باہر نکلیں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{آپ کے منتظم نے آپ کے ہر بار لاگ ان ہونے پر "<ph name="APP_NAME" />" کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔}=2{آپ کے منتظم نے آپ کے ہر بار لاگ ان ہونے پر "<ph name="APP_NAME" />" اور 1 دیگر ایپ کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔}other{آپ کے منتظم نے آپ کے ہر بار لاگ ان ہونے پر "<ph name="APP_NAME" />" اور # دیگر ایپس کو خودکار طور پر شروع ہونے کے لیے سیٹ اپ کیا ہے۔}}</translation>
 <translation id="5252456968953390977">رومنگ</translation>
 <translation id="5257811368506016604">ہلکے رنگ کے موڈ کو فعال کریں</translation>
 <translation id="5264277876637023664">‏CPU ٹیسٹ چلائیں</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
 <translation id="725133483556299729">ای میل منتخب کریں</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
-<translation id="7273347807225967898">‏شارٹ کٹ دستیاب نہیں ہے۔ موڈیفائر کلید (ctrl, alt، shift، search یا launcher) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ہوا کا جھونکا محسوس کریں</translation>
 <translation id="7287310195820267359">وال پیپر کے مجموعے</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">عام کنٹرولز</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" خودکار طور پر شروع ہو گئی}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8017679124341497925">شارٹ کٹ میں ترمیم کی گئی</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8094062939584182041">‏Google کو اس مسئلے کے بارے میں آپ کو ای میل کرنے کی اجازت دیں</translation>
 <translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
-<translation id="8111706652656628199">‏شارٹ کٹ دستیاب نہیں ہے۔ شفٹ اور 1 مزید موڈیفائر کلید (ctrl، alt، search، یا launcher) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="811820734797650957">‏(Android) گیٹ وے کو پنگ کیا جا سکتا ہے</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8132480444149501833">ٹریفک کاؤنٹرز کی درخواست کریں</translation>

@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Sötét mód kikapcsolása</translation>
 <translation id="1885577615937958993">médiatartalom előretekerése</translation>
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
-<translation id="1897672602657312171">A keresőgomb nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a keresőgombbal.</translation>
 <translation id="1904932688895783618">Íme néhány további hasznos forrás:</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
@@ -185,6 +184,7 @@
 <translation id="2189104374785738357">APN-adatok szerkesztése</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
+<translation id="2215920961700443347">Nincs internetkapcsolat. Csatlakozzon az internethez, és próbálja újra.</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
 <translation id="2224337661447660594">Nincs internet</translation>
 <translation id="222447520299472966">Legalább egy Művészeti albumot ki kell választani</translation>
@@ -218,6 +218,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" />. oldalon lévő kép</translation>
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2448312741937722512">Típus</translation>
+<translation id="2465272316171730950">Most nincs szabad kapacitásunk. Jöjjön vissza később.</translation>
 <translation id="248546197012830854">Az eszköz offline állapotú. A súgótartalom megtekintéséhez csatlakozzon Wi-Fi-hálózathoz.</translation>
 <translation id="2491955442992294626">A rendszer nem teszteli a billentyűket, amikor másik ablakot használ</translation>
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
@@ -225,7 +226,6 @@
 <translation id="2505327257735685095">A jelenlegi háttérkép frissítése</translation>
 <translation id="2512979179176933762">ablakok megjelenítése</translation>
 <translation id="2513396635448525189">Bejelentkezési kép</translation>
-<translation id="2515109918609218604">A parancsikon nem áll rendelkezésre. Nyomja le az új billentyűparancsot a funkció- és keresőbillentyűk használata nélkül.</translation>
 <translation id="2517472476991765520">Szkennelés</translation>
 <translation id="2521835766824839541">előző szám</translation>
 <translation id="2526590354069164005">Asztal</translation>
@@ -425,7 +425,6 @@
 <translation id="4171077696775491955">fényerő csökkentése</translation>
 <translation id="4176463684765177261">Letiltva</translation>
 <translation id="4176659219503619100">Vezérlőpult</translation>
-<translation id="4185315616950253617">A felső sor billentyűit tartalmazó billentyűparancsban benne kell lennie a keresőgombnak.</translation>
 <translation id="420283545744377356">Képernyővédő kikapcsolása</translation>
 <translation id="4213104098953699324">USB-billentyűzet</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
@@ -845,7 +844,6 @@
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
 <translation id="725133483556299729">Válassza ki a kívánt e-mail-címet</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
-<translation id="7273347807225967898">A parancsikon nem áll rendelkezésre. Új billentyűparancs megnyomása egy módosító billentyű (Ctrl, Alt, Shift, keresés vagy indító) használatával.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Érezze a szellő simogatását</translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">Jelszó módosítása</translation>
 <translation id="8094062939584182041">A problémáról szóló e-mail küldésének engedélyezése a Google számára</translation>
 <translation id="8104083085214006426">Ön nyílt és nem biztonságos hálózatot használ</translation>
-<translation id="8111706652656628199">A parancsikon nem áll rendelkezésre. Nyomja meg az új billentyűparancsot a Shift és egy további módosító billentyű (Ctrl, Alt, keresés vagy indító) használatával.</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>

@@ -451,6 +451,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1343865611738742294">Przyznaj aplikacjom na Linuksa dostęp do urządzeń USB. Linux nie będzie pamiętać urządzenia USB po jego odłączeniu.</translation>
 <translation id="1343920184519992513">Kontynuuj od tego samego miejsca i otwórz konkretny zestaw stron</translation>
 <translation id="1344141078024003905">Przesyłasz ekran. Przesyłanie ekranu możesz w każdej chwili wstrzymać lub zakończyć.</translation>
+<translation id="1344914278748983512">Ta aplikacja jest już zainstalowana</translation>
 <translation id="1346630054604077329">Potwierdź i uruchom ponownie</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1347256498747320987">Instalowanie aktualizacji i aplikacji. Przechodząc dalej, zgadzasz się, że urządzenie może też automatycznie pobierać i instalować aktualizacje oraz aplikacje od Google, Twojego operatora i producenta urządzenia oraz że może się to odbywać z użyciem komórkowej transmisji danych. Niektóre z tych aplikacji mogą oferować zakupy w aplikacji. <ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
@@ -497,6 +498,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1383861834909034572">Otwieranie po ukończeniu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384849755549338773">Proponuj użycie Tłumacza Google na stronach w innych językach</translation>
+<translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1388253969141979417">Zezwolono na używanie mikrofonu</translation>
 <translation id="1388728792929436380">Po ukończeniu aktualizacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie.</translation>
 <translation id="1390113502208199250">Aby używać funkcji licencji na Chrome Education, musisz przywrócić urządzenie do ustawień fabrycznych.</translation>
@@ -750,6 +752,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1572266655485775982">Włączanie Wi-Fi</translation>
 <translation id="1572876035008611720">Wpisz swój adres e-mail</translation>
 <translation id="1573127087832371028">Opisz problem</translation>
+<translation id="1574335334663388774">Aplikacja <ph name="APP_NAME" /> w wersji <ph name="APP_VERSION" /> jest już zainstalowana na tym urządzeniu</translation>
 <translation id="1575036763505533001">Dostosuj panel boczny Chrome</translation>
 <translation id="1575741822946219011">Języki i metody wprowadzania</translation>
 <translation id="1576594961618857597">Domyślny biały awatar</translation>
@@ -990,6 +993,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1748563609363301860">Możesz zapisać hasło na koncie Google albo tylko na tym urządzeniu</translation>
 <translation id="1749733017156547309">Hasło jest wymagane</translation>
 <translation id="1750172676754093297">Na Twoim kluczu bezpieczeństwa nie można zapisywać odcisków palców</translation>
+<translation id="1750238553597293878">Nadal używaj haseł na swoim koncie Google</translation>
 <translation id="1751262127955453661">Strona <ph name="ORIGIN" /> będzie mogła edytować pliki z folderu <ph name="FOLDERNAME" />, dopóki nie zamkniesz wszystkich jej kart</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="175196451752279553">Prz&amp;ywróć zamkniętą kartę</translation>
@@ -1426,7 +1430,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2076228988744845354">Więcej działań dotyczących rozszerzenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="2076269580855484719">Ukryj wtyczkę</translation>
 <translation id="2076672359661571384">Średni (zalecany)</translation>
-<translation id="2077129598763517140">Użyj akceleracji sprzętowej, gdy jest dostępna</translation>
 <translation id="2078019350989722914">Ostrzegaj przed zakończeniem (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">Jeśli usuniesz jeden ze swoich certyfikatów, nie możesz go już używać do przedstawiania się.</translation>
 <translation id="2079495302726689071">Otwórz link w nowej karcie aplikacji <ph name="APP" /></translation>
@@ -1508,7 +1511,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2131077480075264">Nie można zainstalować elementu „<ph name="APP_NAME" />”, bo nie zezwala na to element „<ph name="IMPORT_NAME" />”</translation>
 <translation id="2133775869826239001">Wybierz więcej funkcji do skonfigurowania</translation>
 <translation id="2133857665503360653">Spróbuj ponownie pobrać plik <ph name="FILE_NAME" /></translation>
-<translation id="2133939190018801302">Ta aplikacja zostanie zainstalowana w aktualnie używanym profilu Chrome. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">Certyfikaty CA systemu</translation>
 <translation id="21354425047973905">Ukryj kody PIN</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
@@ -3297,6 +3299,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3537099313456411235">Połącz konto <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />, aby mieć dostęp do swoich plików z Dysku w aplikacji Pliki</translation>
 <translation id="3537881477201137177">Można to później zmienić w Ustawieniach</translation>
 <translation id="3538066758857505094">Błąd podczas odinstalowywania Linuksa. Spróbuj ponownie.</translation>
+<translation id="3539537154248488260">Przełącz inspirację</translation>
 <translation id="3540173484406326944">Brak sieci z urządzenia <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">Zasilacz</translation>
 <translation id="354068948465830244">Może odczytywać i modyfikować dane witryn</translation>
@@ -4648,7 +4651,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4579581181964204535">Nie udało się przesłać <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Aby wyświetlić powiadomienia przeglądarki, otwórz <ph name="LINK_BEGIN" />Ustawienia przeglądarki Chrome<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">Widoczne dla wszystkich kontaktów</translation>
-<translation id="4580587929153007251">Zaloguj się ponownie w Menedżerze haseł Google</translation>
 <translation id="4580596421317071374">Hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" /> na tym urządzeniu.</translation>
 <translation id="4581774856936278355">Błąd podczas przywracania Linuksa</translation>
 <translation id="4582297591746054421">Strony zwykle odczytują zawartość schowka na przykład w celu zachowania formatowania kopiowanego tekstu</translation>
@@ -5119,7 +5121,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4953808748584563296">Domyślny pomarańczowy awatar</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> – widoczność</translation>
 <translation id="4955710816792587366">Ustaw kod PIN</translation>
-<translation id="4958090327979461112">Zarządzaj profilami Chrome</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
 <translation id="4960020053211143927">Nieobsługiwane przez niektóre aplikacje</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -5183,6 +5184,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5010043101506446253">Urząd certyfikacji</translation>
 <translation id="501057610015570208">Aplikacja z atrybutem „kiosk_only” w pliku manifestu musi być zainstalowana w trybie kiosku ChromeOS Flex.</translation>
 <translation id="5010886807652684893">Widok graficzny</translation>
+<translation id="5012523644916800014">Zarządzaj hasłami i kluczami dostępu</translation>
 <translation id="501394389332262641">Dźwięk słabej baterii</translation>
 <translation id="5015344424288992913">Łączenie z proxy...</translation>
 <translation id="5016305686459575361">Dzięki połączeniu telefonu możesz:</translation>
@@ -6036,7 +6038,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5696143504434933566">Zgłoś nadużycie dotyczące rozszerzenia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="5696679855467848181">Bieżący plik PPD: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Selektor emotikonów</translation>
-<translation id="5698462638680260399">Aby używać haseł, musisz się zalogować</translation>
 <translation id="5698878456427040674">Sprawdź, czy wybrane konto jest obsługiwane.</translation>
 <translation id="570043786759263127">Aplikacje i usługi Google Play</translation>
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
@@ -6089,6 +6090,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="574104302965107104">Odbicie lustrzane wyświetlacza</translation>
 <translation id="574209121243317957">Ton</translation>
 <translation id="5742787970423162234">Pakiety aplikacji internetowych o rozbudowanych możliwościach. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5743267941164890801">Jest już zainstalowana nowsza wersja tej aplikacji</translation>
 <translation id="5743501966138291117">Aby można było użyć funkcji automatycznego odblokowania, kod PIN musi składać się z maksymalnie 12 cyfr</translation>
 <translation id="5745316408658560138">Czy Chrome ma znajdować w Twoich koszykach spersonalizowane rabaty?</translation>
 <translation id="5746169159649715125">Zapisz jako PDF</translation>
@@ -7781,7 +7783,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nowe hasło do tej witryny}few{Nowe hasła do tej witryny}many{Nowe hasła do tej witryny}other{Nowe hasła do tej witryny}}</translation>
 <translation id="7070484045139057854">Może odczytywać i modyfikować dane witryn</translation>
 <translation id="7072010813301522126">Nazwa skrótu</translation>
-<translation id="7074066049407662839">Aby zapisywać hasła, musisz się zalogować</translation>
 <translation id="7075513071073410194">PKCS #1, MD5 z szyfrowaniem RSA</translation>
 <translation id="7075625805486468288">Zarządzanie certyfikatami i ustawieniami HTTPS/SSL</translation>
 <translation id="7076875098323397992">Nie można rozpocząć uaktualnienia</translation>
@@ -7998,7 +7999,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7258192266780953209">Transformacje</translation>
 <translation id="7258225044283673131">Aplikacja nie odpowiada. Aby ją zamknąć, wybierz „Wymuś zamknięcie”.</translation>
 <translation id="7260186537988033909">Rejestrowanie urządzenia w trybie kiosku i tablicy informacyjnej zostało zakończone</translation>
-<translation id="7260367682327802201">Twoje urządzenie z Androidem może mieć podobne ustawienie. Jeśli w Chrome i na Twoim urządzeniu z Androidem jest włączony pomiar skuteczności reklam, firma może mierzyć skuteczność reklam w odwiedzanych przez Ciebie witrynach i w aplikacjach, z których korzystasz</translation>
 <translation id="7261612856573623172">Systemowy głos zamiany tekstu na mowę</translation>
 <translation id="7262004276116528033">Ta usługa logowania pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Usunięto uprawnienia 1 witryny}few{Usunięto uprawnienia {NUM_SITES} witryn}many{Usunięto uprawnienia {NUM_SITES} witryn}other{Usunięto uprawnienia {NUM_SITES} witryny}}</translation>
@@ -8215,6 +8215,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7423807071740419372"><ph name="APP_NAME" /> wymaga pozwolenia na uruchomienie</translation>
 <translation id="7424153922653300265">Oszczędzanie energii włączone</translation>
 <translation id="7424818322350938336">Dodano sieć</translation>
+<translation id="7425037327577270384">Pomóż mi w pisaniu</translation>
 <translation id="7425292366411265498">Rozszerzenia zainstalowane przez administratora nadal mogą odczytywać witryny i wprowadzać w nich zmiany</translation>
 <translation id="7427315069950454694">swoje wspomnienia na dziś</translation>
 <translation id="7427348830195639090">Strona w tle: <ph name="BACKGROUND_PAGE_URL" /></translation>

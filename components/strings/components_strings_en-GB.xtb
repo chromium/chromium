@@ -1415,6 +1415,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3744212718085287312">Make it more secure with a virtual card next time?</translation>
 <translation id="3744899669254331632">You cannot visit <ph name="SITE" /> right now because the website sent scrambled credentials that Chromium cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
+<translation id="3745599309295009257">Your text and the content and URL of the page that you're writing on will be sent to Google, reviewed by humans and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.</translation>
 <translation id="3748009735914587286">Metal (high gloss)</translation>
 <translation id="3748148204939282805">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Aviation industry</translation>
@@ -2472,8 +2473,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903264686717710770">Title:</translation>
 <translation id="5904360430676679685">Family and relationships</translation>
-<translation id="5907669856855422186">Your text and page content are sent to Google and may be used to improve this feature.
-  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
 <translation id="5910140988253729859">Undo autofill</translation>
 <translation id="5911020115933784199">Events and Listings</translation>
@@ -2582,6 +2581,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6105460996796456817">Create site</translation>
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6107012941649240045">Issued To</translation>
+<translation id="6107924765192360631">Just start with a few words or a first draft to get writing suggestions.</translation>
 <translation id="610911394827799129">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
 <translation id="6117833587752089929">Photo (satin)</translation>
@@ -2792,6 +2792,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6502626736864595182">Forum and chat providers</translation>
 <translation id="6502991525169604759">Without your changes</translation>
 <translation id="6506959208958864820">Envelope</translation>
+<translation id="6507117483253822672">Write with more confidence anywhere on the web</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
 <translation id="6513005815064132016">Can ask to track your camera position</translation>
 <translation id="6517596291481585650">Warning: This policy was not merged as a list as specified by policy because it is not a list.</translation>

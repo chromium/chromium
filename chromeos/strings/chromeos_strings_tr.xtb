@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Koyu modu kapat</translation>
 <translation id="1885577615937958993">medyayı ileri sar</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
-<translation id="1897672602657312171">Arama anahtarı olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya arama tuşunu kullanarak yeni bir kısayola basın.</translation>
 <translation id="1904932688895783618">İşinize yarayabilecek diğer kaynaklar:</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1908234395526491708">UDP istek hataları</translation>
@@ -185,6 +184,7 @@
 <translation id="2189104374785738357">APN ayrıntılarını düzenleyin</translation>
 <translation id="2209788852729124853">Trafik Sayaçlarını Sıfırla</translation>
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
+<translation id="2215920961700443347">İnternet yok. İnternete bağlanıp tekrar deneyin.</translation>
 <translation id="2217935453350629363">Şu anki hız</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="222447520299472966">En az bir Sanat galerisi albümü seçilmelidir</translation>
@@ -218,6 +218,7 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> resimden <ph name="CURRENT_PAGE" />.</translation>
 <translation id="2446553403094072641">Kayan nokta doğruluğu</translation>
 <translation id="2448312741937722512">Tür</translation>
+<translation id="2465272316171730950">Kapasitemiz doldu. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="248546197012830854">Cihaz internete bağlı değil. Yardım içeriğini görmek için kablosuz ağa bağlanın.</translation>
 <translation id="2491955442992294626">Başka bir pencere kullanılırken tuşlar test edilmez</translation>
 <translation id="2493126929778606526">Otomatik olarak seçilen en iyi fotoğraflarınız</translation>
@@ -225,7 +226,6 @@
 <translation id="2505327257735685095">Mevcut duvar kağıdı resmini yenile</translation>
 <translation id="2512979179176933762">pencereleri göster</translation>
 <translation id="2513396635448525189">Giriş resmi</translation>
-<translation id="2515109918609218604">Kısayol kullanılamıyor. İşlev ve arama tuşlarını kullanmadan yeni bir kısayola basın.</translation>
 <translation id="2517472476991765520">Tara</translation>
 <translation id="2521835766824839541">önceki parça</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
@@ -425,7 +425,6 @@
 <translation id="4171077696775491955">parlaklığı azalt</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4176659219503619100">Kontrol Paneli</translation>
-<translation id="4185315616950253617">Üst sıra tuşlarına sahip kısayolun arama tuşunu içermesi gerekir.</translation>
 <translation id="420283545744377356">Ekran koruyucuyu kapat</translation>
 <translation id="4213104098953699324">USB klavye</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
@@ -572,6 +571,7 @@
 <translation id="5227902338748591677">Koyu tema programı</translation>
 <translation id="5229344016299762883">Tam ekran modundan çık</translation>
 <translation id="5234764350956374838">Kapat</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Yöneticiniz "<ph name="APP_NAME" />" uygulamasını her giriş yaptığınızda otomatik olarak başlatılacak şekilde ayarladı.}=2{Yöneticiniz "<ph name="APP_NAME" />" ve 1 diğer uygulamayı her giriş yaptığınızda otomatik olarak başlatılacak şekilde ayarladı.}other{Yöneticiniz "<ph name="APP_NAME" />" ve # diğer uygulamayı her giriş yaptığınızda otomatik olarak başlatılacak şekilde ayarladı.}}</translation>
 <translation id="5252456968953390977">Dolaşım</translation>
 <translation id="5257811368506016604">Açık renk modunu etkinleştir</translation>
 <translation id="5264277876637023664">CPU testini çalıştır</translation>
@@ -844,7 +844,6 @@
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="725133483556299729">E-posta'yı seçme</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
-<translation id="7273347807225967898">Kısayol kullanılamıyor. Değiştirici tuş (ctrl, alt, üst karakter, arama veya başlatıcı) kullanarak yeni bir kısayola basın.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Esintiyi hissedin</translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>
@@ -943,6 +942,7 @@
 <translation id="7971535376154084247">Genel kontroller</translation>
 <translation id="7977800524392185497">Bir <ph name="NETWORK_NAME" /> ağına katılmak için Ayarlar'a gidin</translation>
 <translation id="7978412674231730200">Özel anahtar</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" otomatik olarak başlatıldı}other{# uygulama otomatik olarak başlatıldı}}</translation>
 <translation id="7994702968232966508">EAP yöntemi</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
 <translation id="8017679124341497925">Kısayol düzenlendi</translation>
@@ -959,7 +959,6 @@
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
-<translation id="8111706652656628199">Kısayol kullanılamıyor. Üst karakter ve bir tane daha değiştirici tuş (ctrl, alt, arama veya başlatıcı) kullanarak yeni bir kısayola basın.</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>

@@ -451,7 +451,7 @@
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="1344141078024003905">您正在投放螢幕畫面。您可以隨時暫停或停止投放螢幕畫面。</translation>
-<translation id="1344914278748983512">已安裝這個應用程式</translation>
+<translation id="1344914278748983512">已安裝此應用程式</translation>
 <translation id="1346630054604077329">確認並重新啟動</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1347256498747320987">安裝更新和應用程式。如果繼續操作，即表示您亦允許此裝置自動下載和安裝來自 Google、您的流動網絡供應商和裝置製造商的更新內容和應用程式，當中可能會耗用流動數據。部分應用程式可能會提供應用程式內購買產品。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -498,6 +498,7 @@
 <translation id="1383861834909034572">完成後開啟</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384849755549338773">詢問是否使用「Google 翻譯」轉換其它語言的網頁</translation>
+<translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1388253969141979417">已允許使用麥克風</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> 將在更新完成時重新啟動。</translation>
 <translation id="1390113502208199250">您需要將此裝置回復原廠設定，才能使用 Chrome Education 升級功能。</translation>
@@ -752,7 +753,7 @@
 <translation id="1572266655485775982">啟用 Wi-Fi</translation>
 <translation id="1572876035008611720">輸入您的電郵</translation>
 <translation id="1573127087832371028">描述問題</translation>
-<translation id="1574335334663388774">這部裝置已安裝「<ph name="APP_NAME" />」的 <ph name="APP_VERSION" /> 版</translation>
+<translation id="1574335334663388774">已在此裝置上安裝「<ph name="APP_NAME" />」的版本 <ph name="APP_VERSION" /></translation>
 <translation id="1575036763505533001">自訂 Chrome 側面板</translation>
 <translation id="1575741822946219011">語言和輸入方法</translation>
 <translation id="1576594961618857597">預設白色圖示</translation>
@@ -1000,6 +1001,7 @@
 <translation id="1748563609363301860">您可將此密碼儲存在 Google 帳戶中，或只儲存在此裝置上</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="1750172676754093297">您的安全密鑰無法儲存指紋</translation>
+<translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
 <translation id="1751262127955453661">在您關閉此網站所有分頁前，<ph name="ORIGIN" /> 都能編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="175196451752279553">重新開啟已關閉分頁(&amp;E)</translation>
@@ -1443,7 +1445,6 @@
 <translation id="2076228988744845354">其他「<ph name="EXTENSION_NAME" />」擴充程式操作</translation>
 <translation id="2076269580855484719">隱藏此外掛程式</translation>
 <translation id="2076672359661571384">中 (建議)</translation>
-<translation id="2077129598763517140">在可用時使用硬件加速</translation>
 <translation id="2078019350989722914">結束前顯示警告訊息 (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">如果您刪除了擁有的憑證之一，您將無法透過該憑證識別身分。</translation>
 <translation id="2079495302726689071">在新 <ph name="APP" />分頁中開啟連結</translation>
@@ -1525,7 +1526,6 @@
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="2133775869826239001">選擇更多要設定的功能</translation>
 <translation id="2133857665503360653">重試 <ph name="FILE_NAME" /></translation>
-<translation id="2133939190018801302">此應用程式將安裝在你目前使用的 Chrome 設定檔中。<ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">系統 CA</translation>
 <translation id="21354425047973905">隱藏 PIN</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
@@ -4681,7 +4681,6 @@
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">如要設定瀏覽器通知，請前往 <ph name="LINK_BEGIN" />Chrome 瀏覽器設定<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">所有聯絡人都可看見</translation>
-<translation id="4580587929153007251">重新登入「Google 密碼管理工具」</translation>
 <translation id="4580596421317071374">密碼會儲存至此裝置的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
 <translation id="4582297591746054421">網站通常會讀取剪貼簿，以提供保留複製文字格式等功能</translation>
@@ -5152,7 +5151,6 @@
 <translation id="4953808748584563296">預設橙色圖片</translation>
 <translation id="4955707703665801001">「<ph name="FEATURE_NAME" />」分享設定</translation>
 <translation id="4955710816792587366">選擇 PIN</translation>
-<translation id="4958090327979461112">管理 Chrome 設定檔</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
 <translation id="4960020053211143927">部分應用程式不支援此設定</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5216,6 +5214,7 @@
 <translation id="5010043101506446253">憑證授權單位</translation>
 <translation id="501057610015570208">含有「kiosk_only」資訊清單屬性的應用程式只能在 ChromeOS Flex Kiosk 模式中安裝</translation>
 <translation id="5010886807652684893">視覺化檢視</translation>
+<translation id="5012523644916800014">管理密碼和密鑰</translation>
 <translation id="501394389332262641">低電量音效</translation>
 <translation id="5015344424288992913">正在解析 Proxy…</translation>
 <translation id="5016305686459575361">連結手機後，你可以：</translation>
@@ -6068,7 +6067,6 @@
 <translation id="5696143504434933566">舉報「<ph name="EXTENSION_NAME" />」的濫用行為</translation>
 <translation id="5696679855467848181">目前正在使用的 PPD：<ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emoji 點選器</translation>
-<translation id="5698462638680260399">登入以使用密碼</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
 <translation id="570043786759263127">Google Play 應用程式和服務</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -6121,7 +6119,7 @@
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
 <translation id="5742787970423162234">具備進階功能的套裝網絡軟件。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="5743267941164890801">你已安裝這個應用程式的新版本</translation>
+<translation id="5743267941164890801">已安裝此應用程式的較新版本</translation>
 <translation id="5743501966138291117">PIN 長度不得超過 12 個數字，才能使用自動解鎖功能</translation>
 <translation id="5745316408658560138">要讓 Chrome 根據購物車中的商品尋找個人化折扣嗎？</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
@@ -7812,7 +7810,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
-<translation id="7074066049407662839">登入以儲存密碼</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 憑證和設定</translation>
 <translation id="7076875098323397992">無法開始升級</translation>
@@ -8029,7 +8026,6 @@
 <translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7260186537988033909">Kiosk 和標牌裝置註冊完成</translation>
-<translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告成效評估，商家或能在你瀏覽的網站和使用的應用程式評估廣告成效。</translation>
 <translation id="7261612856573623172">「文字轉語音」系統聲音</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 {NUM_SITES} 個網站的權限}}</translation>
@@ -8246,6 +8242,7 @@
 <translation id="7423807071740419372">需要權限才能執行 <ph name="APP_NAME" /></translation>
 <translation id="7424153922653300265">「慳電模式」已開啟</translation>
 <translation id="7424818322350938336">已新增網絡</translation>
+<translation id="7425037327577270384">幫我寫</translation>
 <translation id="7425292366411265498">管理員安裝的擴充程式仍可讀取及變更網站</translation>
 <translation id="7427315069950454694">今天的回憶</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>

@@ -142,7 +142,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3533435340678213462">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests you don't want Chromium to consider.</translation>
 <translation id="3567254597502212821">Your browsing history, a record of sites that you've visited using Chromium on this device.</translation>
 <translation id="3593091352817399191">Another account is already signed in. To keep your browsing separate, Chromium can create your own profile for you.</translation>
-<translation id="363078681319665186">To get future Chromium updates, you'll need macOS 10.15 or later. This computer is using macOS 10.13.</translation>
 <translation id="3639635944603682591">This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{A new update for Chromium is available and will be applied as soon as you relaunch.}=1{A new update for Chromium is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3651803019964686660">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chromium on both devices.</translation>
@@ -159,7 +158,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Get help with Chromium OS</translation>
 <translation id="3871664619793219264">Get your Chromium browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">To get future Chromium updates, you'll need macOS 10.15 or later. This computer is using macOS 10.14.</translation>
 <translation id="388648406173476553">Customise and control Chromium. Something needs your attention – click for details.</translation>
 <translation id="3889543394854987837">Click your name to open Chromium and start browsing.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> is already signed in to this Chromium profile. To keep your browsing separate, Chromium can create your own profile for you.</translation>

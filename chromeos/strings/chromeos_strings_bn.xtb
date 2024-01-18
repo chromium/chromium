@@ -144,7 +144,6 @@
 <translation id="188114911237521550">'ডার্ক মোড' বন্ধ করুন</translation>
 <translation id="1885577615937958993">মিডিয়া ফাস্ট ফরওয়ার্ড করুন</translation>
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
-<translation id="1897672602657312171">সার্চ বোতাম ছাড়া শর্টকার্ট কিছু অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা সার্চ বোতাম ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন।</translation>
 <translation id="1904932688895783618">এখানে কিছু অন্যান্য সহায়ক রিসোর্স রয়েছে:</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">বর্তমান ওয়ালপেপারের ছবি রিফ্রেশ করুন</translation>
 <translation id="2512979179176933762">উইন্ডো দেখুন</translation>
 <translation id="2513396635448525189">'লগ-ইন'-এর ছবি</translation>
-<translation id="2515109918609218604">শর্টকাট উপলভ্য নেই। ফাংশন ও সার্চ কী ব্যবহার না করেই একটি নতুন শর্টকাটে প্রেস করুন।</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2521835766824839541">আগের ট্র্যাক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">উজ্জ্বলতা কমান</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
 <translation id="4176659219503619100">কন্ট্রোল প্যানেল</translation>
-<translation id="4185315616950253617">একেবারে উপরের সারির 'কী' সহ শর্টকাটে 'search কী' অন্তর্ভুক্ত করতে হবে।</translation>
 <translation id="420283545744377356">স্ক্রিন সেভার বন্ধ করুন</translation>
 <translation id="4213104098953699324">ইউএসবি কীবোর্ড</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">ডার্ক থিমের শিডিউল</translation>
 <translation id="5229344016299762883">ফুল স্ক্রিন স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" সেট আপ করেছেন।}=2{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য ১টি অ্যাপ সেট আপ করেছেন।}one{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য #টি অ্যাপ সেট আপ করেছেন।}other{আপনি প্রতিবার লগ-ইন করার পরে অটোমেটিক চালু করতে আপনার অ্যাডমিনিস্ট্রেটর "<ph name="APP_NAME" />" এবং অন্য #টি অ্যাপ সেট আপ করেছেন।}}</translation>
 <translation id="5252456968953390977">রোমিং</translation>
 <translation id="5257811368506016604">'লাইট কালার' মোড চালু করুন</translation>
 <translation id="5264277876637023664">সিপিইউ টেস্ট করুন</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
 <translation id="725133483556299729">ইমেল বেছে নিন</translation>
 <translation id="7271040990581020067">স্ক্যানার বর্তমানে ব্যবহার করা হচ্ছে। পরে আবার চেষ্টা করুন।</translation>
-<translation id="7273347807225967898">শর্টকাট উপলভ্য নেই। 'পরিবর্তক কী' (ctrl, alt, shift, search অথবা launcher) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">নিশ্চিন্ত থাকুন</translation>
 <translation id="7287310195820267359">ওয়ালপেপারের সংগ্রহ</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">সাধারণ কন্ট্রোল</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" অটোমেটিক চালু হয়েছে}one{#টি অ্যাপ অটোমেটিক চালু হয়েছে}other{#টি অ্যাপ অটোমেটিক চালু হয়েছে}}</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8017679124341497925">শর্টকাট এডিট করা হয়েছে</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
-<translation id="8111706652656628199">শর্টকাট উপলভ্য নেই। Shift ও আরও ১টি 'পরিবর্তক কী' (ctrl, alt, search অথবা launcher) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8132480444149501833">ট্রাফিক কাউন্টার্স-এর অনুরোধ করুন</translation>

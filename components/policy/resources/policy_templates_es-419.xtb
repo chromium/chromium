@@ -306,6 +306,19 @@ Sin embargo, los patrones de coincidencia de orígenes para esta política no pu
 <translation id="1223789468190631420">La Navegación segura habilita el estado para las fuentes de confianza</translation>
 <translation id="123018742985150697">Solicitar correspondencia entre el usuario local y el propietario del host de acceso remoto</translation>
 <translation id="123081309365616809">Permite transmitir contenido al dispositivo</translation>
+<translation id="1233343906578850273">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda utilizado para la búsqueda de imágenes. (Si estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, las solicitudes de búsqueda de imágenes utilizarán el método POST en su lugar).
+
+      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" />, no se utilizarán métodos de búsqueda de imágenes.
+
+      Si la búsqueda con imágenes usa el método GET, la URL debe especificar
+      parámetros de imagen con una combinación válida de los siguientes marcadores de posición:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="1238868319430505522">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
 
@@ -1341,7 +1354,6 @@ Esta política suele estar inhabilitada para ofrecer protección frente al phish
 <translation id="2073552873076775140">Permitir el acceso a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook de Ansible de Crostini</translation>
 <translation id="2076158466157390917">Controlar la limpieza automática del disco durante el acceso</translation>
-<translation id="2077129598763517140">Usar aceleración de hardware cuando esté disponible</translation>
 <translation id="2077273864382355561">Demora de pantalla apagada con batería</translation>
 <translation id="2081969239334697268">
         Si inhabilitas la política, se inhabilitará la actualización de las apps de Chrome para kiosco durante la sesión (las cuales utilizan URL de actualización del manifiesto de la extensión) y se deja la precarga de CRX como el único mecanismo de actualización.
@@ -1994,7 +2006,6 @@ Si la estableces como falsa, se inhabilitará la función Conjuntos de sitios we
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
 <translation id="2576324725151524912">Permitir el modo de desarrollador de apps aisladas</translation>
-<translation id="257717978573041245">Habilitar la aceleración de hardware</translation>
 <translation id="257788512393330403">Se requiere el ingreso de la contraseña cada 6 horas</translation>
 <translation id="2580606791930800692">Establece una lista de reglas de Controles de datos.</translation>
 <translation id="2580757713966614760">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="DEVICE_PRINTERS_POLICY_NAME" /> que estarán disponibles para los usuarios.
@@ -2795,7 +2806,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Si no estableces la política, no estará disponible la actualización del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
 <translation id="3232563711929146405">Inhabilitar la zona de pruebas del servicio de red</translation>
 <translation id="3232691106293445015">Las conexiones HTTP no seguras no pueden usar la autenticación <ph name="BASIC_AUTH" />; se requiere una conexión HTTPS</translation>
-<translation id="3234753491625248216">Inhabilitar la aceleración de hardware</translation>
 <translation id="3234773866678260466">Permitir que se agreguen perfiles nuevos</translation>
 <translation id="3234863952320884611">Permitir que los métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> se invoquen de forma asíncrona</translation>
 <translation id="3235085623859932253"> Si inhabilitas esta política, el usuario no podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
@@ -5290,6 +5300,19 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 <translation id="5366977351895725771">Si está configurada en falso, la creación de usuarios supervisados por este usuario estará inhabilitada. Los usuarios supervisados existentes seguirán estando disponibles.
 
           Si está configurada en verdadero o si no está configurada, este usuario podrá crear y administrar usuarios supervisados.</translation>
+<translation id="5367255280764736002">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> especificará los parámetros durante la búsqueda de imágenes con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como {imageThumbnail}, se reemplazará por datos de miniaturas de imágenes reales.
+
+      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de imágenes con el método GET.
+
+      La URL debe especificar el parámetro de imagen con una combinación válida de
+      los siguientes marcadores de posición, según lo que admita el proveedor de búsqueda:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="5369937289900051171">Solo impresión a color</translation>
 <translation id="5370279767682621504">Habilitar la compatibilidad con HTTP/0.9 en puertos no predeterminados</translation>
 <translation id="5370765433640162225">Si estableces esta política como verdadera, se ejecuta la limpieza automática durante el acceso para asegurar que haya espacio disponible en el disco.
@@ -7224,9 +7247,6 @@ política mientras se esté ejecutando el navegador.</translation>
       Esta política dejó de estar disponible; usa la política <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="6847379587945465889">Habilitar la transferencia de cookies del SSO de SAML a la sesión del usuario durante el acceso</translation>
 <translation id="684856667300805181">En la versión 68 de <ph name="PRODUCT_NAME" />, se quitó esta política y se reemplazó por <ph name="ARC_GLS_POLICY_NAME" />.</translation>
-<translation id="6848721032946289937">Si habilitas la política o no la estableces, se activará la aceleración de hardware, en caso de estar disponible.
-
-      Si la inhabilitas, se desactivará la aceleración de hardware.</translation>
 <translation id="6850300477973481112">Configuración del conector del escritorio</translation>
 <translation id="6851199885688265233">Habilita la función de accesibilidad de resaltar la posición del cursor</translation>
 <translation id="6851315055469993882">Permite la caché de autorización para HTTP con alcance global</translation>
@@ -9328,6 +9348,13 @@ Si no la estableces, los usuarios no podrán jugar al juego en el <ph name="PROD
       Si se establece la política como verdadera, es posible que las pestañas que hayan estado en segundo plano por al menos 5 minutos queden inmovilizadas. Cuando se inmovilizan las pestañas, se reduce el uso de la CPU, la batería y la memoria. <ph name="PRODUCT_NAME" /> utiliza heurísticas para evitar que se inmovilicen las pestañas que realizan tareas útiles en segundo plano (p. ej., muestran notificaciones de pantalla, reproducen sonidos o transmiten video). Los desarrolladores web también pueden inhabilitar la inmovilización en sus sitios (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se establece la política como falsa, no se inmovilizará ninguna pestaña.</translation>
+<translation id="8610216287193516769">Se quitó en la versión M122. Esta es una política solo del servidor que nunca usó la infraestructura de la política de ChromeOS para su propagación.
+Si estableces esta política con el valor <ph name="POLICY_VALUE_ALL" /> o no la estableces, se permitirán todos los usos de cuentas administradas. De esta manera, es posible que una cuenta administrada se utilice como secundaria, por lo que solo recibiría políticas si se accede a ella como cuenta principal en un perfil de navegador.
+      Las políticas establecidas para la cuenta no se aplicarán de manera forzosa en los siguientes casos:
+        -  Si es una cuenta secundaria a nivel de SO (Configuración de la cuenta)
+        -  Si es una cuenta secundaria en un perfil de navegador
+
+      Si estableces esta política con el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> en una cuenta, solo se podrá acceder a esta cuenta como cuenta principal. No se podrá acceder a ella como cuenta secundaria.</translation>
 <translation id="8612188068319977428">Controla la frecuencia de las cargas de informes de estado de Chrome.
 
 Esto incluye los informes habilitados por<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.

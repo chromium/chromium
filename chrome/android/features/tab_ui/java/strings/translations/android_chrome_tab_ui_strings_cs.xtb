@@ -49,6 +49,7 @@
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
 <translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
+<translation id="5161254044473106830">Je požadován název</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> kartu, se kterou jste delší dobu nepracovali}few{Máte <ph name="TABS_COUNT_MANY" /> karty, se kterými jste delší dobu nepracovali}many{Máte <ph name="TABS_COUNT_MANY" /> karty, se kterými jste delší dobu nepracovali}other{Máte <ph name="TABS_COUNT_MANY" /> karet, se kterými jste delší dobu nepracovali}}</translation>
 <translation id="5339733443032484186">Vaše poslední karta</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>

@@ -451,6 +451,7 @@
 <translation id="1343865611738742294">USB పరికరాలను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి. USB పరికరాన్ని తీసివేసిన తర్వాత, దానిని Linux గుర్తుంచుకోదు.</translation>
 <translation id="1343920184519992513">మీరు ఆపివేసిన చోటు నుండి కొనసాగించండి, నిర్దిష్ట పేజీల సెట్‌ను తెరవండి</translation>
 <translation id="1344141078024003905">మీరు మీ స్క్రీన్‌ను ప్రసారం చేస్తున్నారు. మీరు స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఎప్పుడైనా పాజ్ చేయవచ్చు లేదా ఆపివేయవచ్చు.</translation>
+<translation id="1344914278748983512">ఈ యాప్ ఇప్పటికే ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1346630054604077329">నిర్ధారించి, రీస్టార్ట్ చేయి</translation>
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1347256498747320987">అప్‌డేట్‌లు &amp; యాప్‌లను ఇన్‌స్టాల్ చేయండి. కొనసాగించడం ద్వారా, ఈ పరికరం Google, మీ క్యారియర్ మరియు మీ పరికర తయారీదారు నుండి అప్‌డేట్‌లు మరియు యాప్‌లను ఆటోమేటిక్‌గా కూడా డౌన్‌లోడ్ మరియు ఇన్‌స్టాల్ చేయవచ్చని మీరు అంగీకరిస్తున్నారు, బహుశా సెల్యులార్ డేటా ఉపయోగించబడవచ్చు. ఈ యాప్‌లలో కొన్ని యాప్‌లో కొనుగోళ్లను అందించవచ్చు. <ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
@@ -497,6 +498,7 @@
 <translation id="1383861834909034572">పూర్తి అయిన తర్వాత తెరవబడుతుంది</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384849755549338773">ఇతర భాషలలోని వెబ్‌సైట్‌లకు Google Translateను అందించు</translation>
+<translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
 <translation id="1388253969141979417">మీ మైక్రోఫోన్ ఉపయోగించడానికి అనుమతించబడింది</translation>
 <translation id="1388728792929436380">అప్‌డేట్‌లు పూర్తయినప్పుడు <ph name="DEVICE_TYPE" /> రీస్టార్ట్ అవుతుంది.</translation>
 <translation id="1390113502208199250">Chrome Education అప్‌గ్రేడ్ ఫీచర్‌లను ఉపయోగించడానికి మీరు ఈ పరికరాన్ని ఫ్యాక్టరీ రీసెట్ చేయవలసి ఉంటుంది.</translation>
@@ -751,6 +753,7 @@
 <translation id="1572266655485775982">Wi-Fiని ప్రారంభించండి</translation>
 <translation id="1572876035008611720">మీ ఈమెయిల్‌ను నమోదు చేయండి</translation>
 <translation id="1573127087832371028">సమస్యను వివరించండి</translation>
+<translation id="1574335334663388774"><ph name="APP_NAME" /> <ph name="APP_VERSION" /> వెర్షన్ ఈ పరికరంలో ఇప్పటికే ఇన్‌స్టాల్ చేయబడి ఉంది</translation>
 <translation id="1575036763505533001">Chrome సైడ్ ప్యానెల్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="1575741822946219011">భాషలు, ఇన్‌పుట్‌లు</translation>
 <translation id="1576594961618857597">డిఫాల్ట్ తెలుపు రంగు అవతార్</translation>
@@ -997,6 +1000,7 @@
 <translation id="1748563609363301860">మీరు ఈ పాస్‌వర్డ్‌ను మీ Google ఖాతాలో లేదా ఈ పరికరంలో మాత్రమే సేవ్ చేయవచ్చు.</translation>
 <translation id="1749733017156547309">పాస్‌వర్డ్‌ను తప్పక అందించాలి</translation>
 <translation id="1750172676754093297">మీ సెక్యూరిటీ కీ, వేలిముద్రలను స్టోరేజ్‌ చేయలేదు</translation>
+<translation id="1750238553597293878">మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="1751262127955453661">మీరు ఈ సైట్ కోసం అన్ని ట్యాబ్‌లను మూసివేసే వరకు <ph name="ORIGIN" />, <ph name="FOLDERNAME" />లో ఉన్న ఫైల్స్‌ను ఎడిట్ చేయగలదు</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="175196451752279553">మూసివేయబడిన ట్యాబ్‌ను మళ్లీ తె&amp;రవండి</translation>
@@ -1439,7 +1443,6 @@
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> ఎక్స్‌టెన్షన్‌కు మరిన్ని చర్యలు</translation>
 <translation id="2076269580855484719">ఈ ప్లగ్ఇన్‌ను దాచు</translation>
 <translation id="2076672359661571384">మధ్యస్థం (సిఫార్సు చేయబడింది)</translation>
-<translation id="2077129598763517140">హార్డ్‌వేర్ వేగవృద్ధి అందుబాటులో ఉన్నప్పుడు ఉపయోగించండి</translation>
 <translation id="2078019350989722914">నిష్క్రమించే ముందు హెచ్చరించు (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">మీరు మీ స్వంత ప్రమాణపత్రాలలోని ఒకదాన్ని తొలగించినట్లయితే, మీరు దీన్ని గుర్తించడానికి మీరే ఇకపై ఉపయోగించలేరు.</translation>
 <translation id="2079495302726689071">కొత్త <ph name="APP" /> ట్యాబ్‌లో లింక్‌ను తెరవండి</translation>
@@ -1521,7 +1524,6 @@
 <translation id="2131077480075264">"<ph name="APP_NAME" />"ను అనుమతించనందున దీన్ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2133775869826239001">సెటప్ చేయడానికి మరిన్ని ఫీచర్‌లను ఎంచుకోండి</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ఫైల్‌ను మళ్లీ ట్రై చేయండి</translation>
-<translation id="2133939190018801302">మీరు ప్రస్తుతం ఉపయోగిస్తున్న Chrome ప్రొఫైల్‌లో ఈ అప్లికేషన్ ఇన్‌స్టాల్ చేయబడుతుంది. <ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">సిస్టమ్ CAలు</translation>
 <translation id="21354425047973905">పిన్‌లను దాస్తుంది</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
@@ -2089,6 +2091,7 @@
 <translation id="2540449034743108469">ఎక్స్‌టెన్షన్ యాక్టివిటీలను వినడానికి "ప్రారంభించండి" నొక్కండి</translation>
 <translation id="2540651571961486573">ఏదో తప్పు జరిగింది. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">పూర్తిస్క్రీన్ ప్రసారాన్ని ఆప్టిమైజ్ చేయాలా?</translation>
+<translation id="2541343621592284735">కెమెరా &amp; మైక్రోఫోన్ అనుమతించబడవు</translation>
 <translation id="2541706104884128042">కొత్త నిద్ర సమయం సెట్ చేయబడింది</translation>
 <translation id="2542050502251273923">ff_debugను ఉపయోగించి నెట్‌వర్క్ కనెక్షన్ మేనేజర్ ఇంకా ఇతర సర్వీస్‌ల డీబగ్గింగ్ స్థాయిని సెట్ చేస్తుంది.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{మీరు "<ph name="APP_NAME" />" కోసం మంజూరు చేసే అనుమతులు ఈ యాప్‌నకు కూడా అనుమతించబడతాయి. <ph name="MANAGE_LINK" />}other{మీరు "<ph name="APP_NAME" />" కోసం మంజూరు చేసే అనుమతులు ఈ యాప్‌లకు కూడా అనుమతించబడతాయి. <ph name="MANAGE_LINK" />}}</translation>
@@ -3161,6 +3164,7 @@
 <translation id="3406605057700382950"> &amp;బుక్‌మార్క్‌ల బార్‌ను చూపు</translation>
 <translation id="3407392651057365886">మరిన్ని పేజీలు ప్రీ - లోడ్ చేయబడ్డాయి. ఇతర సైట్‌లు ద్వారా రిక్వెస్ట్ చేసినప్పుడు పేజీలు Google సర్వర్‌ల ద్వారా ప్రీ - లోడ్ చేయబడవచ్చు.</translation>
 <translation id="3407967630066378878">వేలిముద్రను సెటప్ చేయడానికి, ఈ <ph name="DEVICE_TYPE" />‌కు ఎడమ వైపున ఉన్న వేలిముద్ర సెన్సార్‌ను మీ చిన్నారి వేలితో తాకించండి. మీ చిన్నారి వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ ఈ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
+<translation id="3408555740610481810">కెమెరా &amp; మైక్రోఫోన్ వినియోగంలో ఉన్నాయి</translation>
 <translation id="3409513286451883969">ఎంపిక చేసిన టెక్స్ట్‌కు <ph name="LANGUAGE" /> భాషలో &amp;అనువాదం పొందండి</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">ఎంపికకు వెళ్ళు</translation>
@@ -3326,6 +3330,7 @@
 <translation id="3537099313456411235">Files యాప్‌లో మీ Drive ఫైళ్లను యాక్సెస్ చేయడానికి <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />‌ను కనెక్ట్ చేయండి</translation>
 <translation id="3537881477201137177">దీన్ని తర్వాత సెట్టింగ్‌లలో ఎడిట్ చేయవచ్చు</translation>
 <translation id="3538066758857505094">Linuxని అన్‌ఇన్‌స్టాల్ చేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
+<translation id="3539537154248488260">స్ఫూర్తిని టోగుల్ చేయండి</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> ద్వారా నెట్‌వర్క్ లేదు</translation>
 <translation id="354060433403403521">AC అడాప్టర్</translation>
 <translation id="354068948465830244">ఇది సైట్ డేటాను చదవగలదు మరియు మార్చగలదు</translation>
@@ -3421,6 +3426,7 @@
 <translation id="3617062258679844578">క్లిక్ చేయడానికి, మీ టచ్‌ప్యాడ్‌ను నొక్కడానికి బదులుగా ట్యాప్ చేయండి</translation>
 <translation id="3617891479562106823">నేపథ్యాలు అందుబాటులో లేవు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3618286417582819036">క్షమించండి, ఒక ఎర్రర్ ఏర్పడింది</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> ఇప్పుడు Google Password Managerను ఉపయోగించినప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. సైన్ ఇన్ చేయడానికి <ph name="WEBSITE" />‌కి వెళ్లమని చెప్పండి.</translation>
 <translation id="3619115746895587757">కాపుచినో</translation>
 <translation id="3619294456800709762">సైట్‌లు పిక్చర్-ఇన్-పిక్చర్ మోడ్‌కు ఆటోమేటిక్‌గా ప్రవేశించగలవు</translation>
 <translation id="3620136223548713675">భౌగోళిక స్థానం</translation>
@@ -4677,7 +4683,6 @@
 <translation id="4579581181964204535"><ph name="HOST_NAME" />ని ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="4579876313423027742">బ్రౌజర్ నోటిఫికేషన్‌ల కోసం, <ph name="LINK_BEGIN" />Chrome బ్రౌజర్ సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్లండి</translation>
 <translation id="4580389561674319558">అన్ని కాంటాక్ట్‌లకు కనిపిస్తుంది</translation>
-<translation id="4580587929153007251">Google Password Managerకు మీరు తిరిగి సైన్ ఇన్ చేయండి</translation>
 <translation id="4580596421317071374">ఈ పరికరంలోని <ph name="GOOGLE_PASSWORD_MANAGER" />‌లో పాస్‌వర్డ్‌లు సేవ్ చేయబడ్డాయి.</translation>
 <translation id="4581774856936278355">Linuxని పునరుద్ధరిస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది</translation>
 <translation id="4582297591746054421">మీరు కాపీ చేసిన టెక్స్ట్ యొక్క ఫార్మాటింగ్‌ను అలాగే ఉంచడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు మీ క్లిప్‌బోర్డ్‌ను చదువుతాయి</translation>
@@ -5148,7 +5153,6 @@
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> విజిబిలిటీ</translation>
 <translation id="4955710816792587366">మీ పిన్ ఎంచుకోండి</translation>
-<translation id="4958090327979461112">మీ Chrome ప్రొఫైల్స్‌ను మేనేజ్ చేయండి</translation>
 <translation id="4959262764292427323">మీ Google ఖాతాలో పాస్‌వర్డ్‌లు సేవ్ చేయబడతాయి కాబట్టి మీరు వాటిని ఏ పరికరంలోనైనా ఉపయోగించవచ్చు</translation>
 <translation id="4960020053211143927">కొన్ని యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5212,6 +5216,7 @@
 <translation id="5010043101506446253">ప్రమాణపత్ర అధికారం</translation>
 <translation id="501057610015570208">'kiosk_only' మ్యానిఫెస్ట్ లక్షణం గల యాప్‌ను తప్పనిసరిగా ChromeOS Flex కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
 <translation id="5010886807652684893">విజువల్ వీక్షణ</translation>
+<translation id="5012523644916800014">పాస్‌వర్డ్‌లను, పాస్-కీలను మేనేజ్ చేయండి</translation>
 <translation id="501394389332262641">తక్కువ బ్యాటరీ సౌండ్</translation>
 <translation id="5015344424288992913">ప్రాక్సీని పరిష్కరిస్తోంది...</translation>
 <translation id="5016305686459575361">మీ ఫోన్‌ను కనెక్ట్ చేయడం ద్వారా, మీరు వీటిని చేయవచ్చు:</translation>
@@ -6066,7 +6071,6 @@
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" నుండి దుర్వినియోగాన్ని రిపోర్ట్ చేయండి</translation>
 <translation id="5696679855467848181">వినియోగంలో ఉన్న ప్రస్తుత PPD ఫైల్: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ఎమోజి పికర్</translation>
-<translation id="5698462638680260399">పాస్‌వర్డ్‌లను ఉపయోగించడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="5698878456427040674">ఎంచుకున్న ఖాతా సపోర్ట్ చేస్తుందో లేదో చెక్ చేయండి.</translation>
 <translation id="570043786759263127">Google Play యాప్‌లు మరియు సేవలు</translation>
 <translation id="5700761515355162635">థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి</translation>
@@ -6119,6 +6123,7 @@
 <translation id="574104302965107104">డిస్‌ప్లే మిర్రరింగ్</translation>
 <translation id="574209121243317957">పిచ్</translation>
 <translation id="5742787970423162234">మెరుగైన సామర్థ్యాలతో ప్యాక్ చేయబడిన వెబ్ అప్లికేషన్‌లు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5743267941164890801">ఈ యాప్‌నకు చెందిన తాజా వెర్షన్ ఇప్పటికే ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="5743501966138291117">ఆటోమేటిక్ అన్‌లాక్‌ను ఉపయోగించడానికి పిన్ తప్పనిసరిగా 12 అంకెలు కానీ లేదా అంతకంటే తక్కువ కానీ ఉండాలి</translation>
 <translation id="5745316408658560138">మీ కార్ట్‌లలో వ్యక్తిగతీకరించబడిన డిస్కౌంట్‌లను కనుగొనడానికి Chromeను అనుమతించాలా?</translation>
 <translation id="5746169159649715125">PDF లాగా సేవ్ చేయండి</translation>
@@ -7809,7 +7814,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్}other{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7070484045139057854">ఇది సైట్ డేటాను చదవగలదు మరియు మార్చగలదు</translation>
 <translation id="7072010813301522126">షార్ట్‌కట్ పేరు</translation>
-<translation id="7074066049407662839">పాస్‌వర్డ్‌లను సేవ్ చేయడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="7075513071073410194">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSLసర్టిఫికెట్లు మరియు సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7076875098323397992">అప్‌గ్రేడ్‌ను ప్రారంభించడం సాధ్యం కాదు</translation>
@@ -7934,6 +7938,7 @@
 <translation id="7189965711416741966">వేలిముద్ర జోడించబడింది.</translation>
 <translation id="7191063546666816478">కొన్ని సపోర్ట్ లింక్‌లు ఇప్పటికీ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, మరో <ph name="NUMBER_OF_OTHER_APPS" /> యాప్‌లలో తెరవబడతాయి.</translation>
 <translation id="7191159667348037">తెలియని ప్రింటర్ (USB)</translation>
+<translation id="7191632649590906354">మీ ఫ్యామిలీ మెంబర్‌లు ఇప్పుడు Google Password Managerను ఉపయోగించినప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. సైన్ ఇన్ చేయడానికి <ph name="WEBSITE" />‌కి వెళ్లమని చెప్పండి.</translation>
 <translation id="7193051357671784796">మీ సంస్థ ద్వారా ఈ యాప్ జోడించబడింది. యాప్‌ను పునఃప్రారంభించడం ద్వారా దీని ఇన్‌స్టాలేషన్‌ను పూర్తి చేయండి.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> కోసం పాస్‌వర్డ్‌లు సేవ్ చేయబడలేదు</translation>
 <translation id="7193663868864659844">సూచించిన Groupsకు ఫీడ్‌బ్యాక్ పంపండి</translation>
@@ -8025,7 +8030,6 @@
 <translation id="7258192266780953209">పరివర్తనాలు</translation>
 <translation id="7258225044283673131">అప్లికేషన్ స్పందించడం లేదు. యాప్‌ను మూసివేయడానికి "బలవంతంగా మూసివేయి" ఎంచుకోండి.</translation>
 <translation id="7260186537988033909">కియోస్క్, సంకేత చిహ్నాల పరికరంలో ఎన్‌రోల్ అవ్వడం పూర్తయింది</translation>
-<translation id="7260367682327802201">మీ Android పరికరం ఇటువంటి సెట్టింగ్‌ను కలిగి ఉండవచ్చు. Chromeలో, మీ Android పరికరంలో యాడ్ మెజర్‌మెంట్‌ను ఆన్ చేస్తే, మీరు చూసే వెబ్ సైట్‌లు, ఉపయోగించే యాప్‌ల అంతటా యాడ్ ప్రభావం ఎలా ఉంది అనే దానిని కంపెనీ అంచనా వేసే అవకాశం ఉంది.</translation>
 <translation id="7261612856573623172">వచనం నుండి ప్రసంగం సిస్టమ్ వాయిస్</translation>
 <translation id="7262004276116528033">ఈ సైన్-ఇన్ సేవను <ph name="SAML_DOMAIN" /> హోస్ట్ చేస్తోంది</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{1 సైట్‌కు అనుమతులు తీసివేయబడ్డాయి}other{{NUM_SITES} సైట్‌లకు అనుమతులు తీసివేయబడ్డాయి}}</translation>
@@ -8242,6 +8246,7 @@
 <translation id="7423807071740419372">రన్ కావడానికి <ph name="APP_NAME" />కు అనుమతి అవసరం</translation>
 <translation id="7424153922653300265">ఎనర్జీ సేవర్ ఆన్ చేయబడింది</translation>
 <translation id="7424818322350938336">నెట్‌వర్క్ జోడించబడింది</translation>
+<translation id="7425037327577270384">రాయడంలో నాకు సహాయపడండి</translation>
 <translation id="7425292366411265498">మీ అడ్మినిస్ట్రేటర్ ద్వారా ఇన్‌స్టాల్ చేయబడిన ఎక్స్‌టెన్షన్‌లను ఉపయోగించి ఇప్పటికీ సైట్‌లను చదవగలరు, మార్చగలరు</translation>
 <translation id="7427315069950454694">నేడు మీ అందించబడిన జ్ఞాపకాలు</translation>
 <translation id="7427348830195639090">నేపథ్య పేజీ: <ph name="BACKGROUND_PAGE_URL" /></translation>

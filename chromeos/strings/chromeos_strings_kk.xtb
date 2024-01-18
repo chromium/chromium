@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Қараңғы режимді өшіру</translation>
 <translation id="1885577615937958993">мультимeдианы жылдам алға айналдыру</translation>
 <translation id="1887850431809612466">Жабдық нұсқасы</translation>
-<translation id="1897672602657312171">Іздеу пернесі жоқ жылдам пәрмен кейбір қолданбаның жылдам пәрменіне қайшы келуі мүмкін. Оны пайдалануды жалғастыру үшін осы жылдам пәрменді қайта басыңыз немесе іздеу пернесін пайдаланып жаңа жылдам пәрменді басыңыз.</translation>
 <translation id="1904932688895783618">Басқа да пайдалы ресурстар:</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
 <translation id="1908234395526491708">UDP сұрауының ақаулары</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Ағымдағы тұсқағаз суретін жаңарту</translation>
 <translation id="2512979179176933762">терезелерді көрсету</translation>
 <translation id="2513396635448525189">Кіру суреті</translation>
-<translation id="2515109918609218604">Пернелер тіркесімі қолжетімді емес. Функциялық және іздеу пернелерін пайдаланбай, жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2521835766824839541">алдыңғы трек</translation>
 <translation id="2526590354069164005">Жұмыс үстелі</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">жарықтық деңгейін төмендету</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
 <translation id="4176659219503619100">Басқару панелі</translation>
-<translation id="4185315616950253617">Жоғарғы жол пернелері бар пернелер тіркесімі іздеу пернесін қамтуы керек.</translation>
 <translation id="420283545744377356">Скринсейверді өшіру</translation>
 <translation id="4213104098953699324">USB пернетақтасы</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">Қараңғы режим кестесі</translation>
 <translation id="5229344016299762883">Толық күйден шығу</translation>
 <translation id="5234764350956374838">Жабу</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Әкімші сіз аккаунтқа кірген сайын "<ph name="APP_NAME" />" қолданбасы автоматты түрде іске қосылатындай орнатты.}=2{Әкімші сіз аккаунтқа кірген сайын "<ph name="APP_NAME" />" және тағы 1 қолданба автоматты түрде іске қосылатындай орнатты.}other{Әкімші сіз аккаунтқа кірген сайын "<ph name="APP_NAME" />" және тағы # қолданба автоматты түрде іске қосылатындай орнатты.}}</translation>
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5257811368506016604">Ашық түс режимін қосу</translation>
 <translation id="5264277876637023664">Орталық процессор тексерісін іске қосу</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="725133483556299729">Электрондық поштаны таңдау</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
-<translation id="7273347807225967898">Пернелер тіркесімі қолжетімді емес. Өзгерткіш пернені (ctrl, alt, shift, іздеу немесе іске қосу тақтасы пернесін) пайдаланып жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Самал жел</translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">Жалпы басқару элементтері</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> желісіне қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>
 <translation id="7978412674231730200">Жеке кілт</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" автоматты түрде іске қосылды}other{# қолданба автоматты түрде іске қосылды}}</translation>
 <translation id="7994702968232966508">EAP әдісі</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8017679124341497925">Таңбаша өзгерді</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8094062939584182041">Google-ға осы мәселе туралы электрондық хат жіберуге рұқсат ету</translation>
 <translation id="8104083085214006426">Ашық әрі қауіпті желіні қолданып жатырсыз.</translation>
-<translation id="8111706652656628199">Пернелер тіркесімі қолжетімді емес. Shift пен 1 өзгерткіш пернені (ctrl, alt, іздеу немесе іске қосу тақтасы пернесін) пайдаланып жаңа тіркесімді басыңыз.</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>

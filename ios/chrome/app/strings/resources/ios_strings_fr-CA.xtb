@@ -369,6 +369,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="288902476966286676">Retourner à l'expéditeur</translation>
 <translation id="2890171748217283516">Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
+<translation id="2895084600668778673">Voir toutes les données de Remplissage automatique</translation>
 <translation id="2898963176829412617">Nouveau dossier...</translation>
 <translation id="2902684821701498619">Ajouter à la liste de lecture</translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés, ce qui pourrait compromettre votre sécurité.</translation>
@@ -711,6 +712,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4805759445554688327">Numéro de carte incorrect</translation>
 <translation id="4808646838864186379">Votre livraison a été annulée</translation>
 <translation id="4808744395915275922">Mises à jour</translation>
+<translation id="4813345808229079766">Connexion</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>
 <translation id="481968316161811770">Témoins, données de sites</translation>
 <translation id="4821595350501541683">Les onglets ont été fermés, et les données de navigation ont été supprimées</translation>

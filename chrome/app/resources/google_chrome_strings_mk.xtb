@@ -221,7 +221,6 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> е додадена на Chrome</translation>
 <translation id="4384570495110188418">Chrome не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
 <translation id="4389991535395284064">При прелистување во режим „Инкогнито“, Chrome ќе ве предупреди пред да вчита сајт преку небезбедна врска</translation>
-<translation id="4393248995085527349">За да добивате идни ажурирања на Google Chrome, потребен ви е macOS 10.15 или понова верзија. Компјутеров користи macOS 10.13.</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4450664632294415862">Chrome - Мрежно најавување - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Во тек е друга операција на Google Chrome. Обидете се повторно подоцна.</translation>
@@ -309,7 +308,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
-<translation id="6010556343189461180">За да добивате идни ажурирања на Google Chrome, потребен ви е macOS 10.15 или понова верзија. Компјутеров користи macOS 10.14.</translation>
 <translation id="6014316319780893079">Со <ph name="BEGIN_LINK" />алатките од Chrome<ph name="END_LINK" />, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
 <translation id="6025087594896450715">Google Chrome ќе се рестартира за <ph name="REMAINING_TIME" /></translation>

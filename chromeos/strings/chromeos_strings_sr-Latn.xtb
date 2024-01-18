@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Isključite tamni režim</translation>
 <translation id="1885577615937958993">premotajte medijski sadržaj unapred</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
-<translation id="1897672602657312171">Prečica bez tastera za pretragu može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera za pretragu.</translation>
 <translation id="1904932688895783618">Evo još nekih korisnih resursa:</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspeli UDP zahtevi</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Osvežite aktuelnu sliku pozadine</translation>
 <translation id="2512979179176933762">pregledajte prozore</translation>
 <translation id="2513396635448525189">Slika za prijavljivanje</translation>
-<translation id="2515109918609218604">Prečica nije dostupna. Pritisnite novu prečicu bez korišćenja funkcijskih tastera i tastera za pretragu.</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2521835766824839541">prethodna pesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">smanjite osvetljenost</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4176659219503619100">Kontrolna tabla</translation>
-<translation id="4185315616950253617">Prečica sa tasterima u gornjem redu treba da sadrži taster za pretragu.</translation>
 <translation id="420283545744377356">Isključite čuvar ekrana</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="725133483556299729">Izaberite imejl</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
-<translation id="7273347807225967898">Prečica nije dostupna. Pritisnite novu prečicu pomoću modifikujućeg tastera (ctrl, alt, shift, tastera za pretragu ili tastera pokretača).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osetite povetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadina</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8094062939584182041">Dozvolite Google-u da vam pošalje imejl o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
-<translation id="8111706652656628199">Prečica nije dostupna. Pritisnite novu prečicu pomoću tastera shift i još 1 modifikujućeg tastera (ctrl, alt, shift, tastera za pretragu ili tastera pokretača).</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>

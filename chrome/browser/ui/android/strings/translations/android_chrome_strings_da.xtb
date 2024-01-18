@@ -598,6 +598,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Adgangskodeadministrator</translation>
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
+<translation id="4311652497846705514">Vil du åbne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
 <translation id="433213510553688132">Følger...</translation>
 <translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
@@ -958,6 +959,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6192907950379606605">Få billedbeskrivelser</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6196315980958524839">Adgangskoder gemmes i Google Adgangskodeadministrator på denne enhed</translation>
+<translation id="6202514376968366382">Chrome kan åbne din downloadede PDF-fil</translation>
 <translation id="6202812185118613467">Log ind igen for at synkronisere</translation>
 <translation id="6205314730813004066">Privatliv ved annoncering</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
@@ -1299,6 +1301,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7810647596859435254">Åbn med…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}one{Alle filer, # fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Langt screenshot</translation>
+<translation id="7821130663268546430">Du kan finde alle åbne faner i Faneskift</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="78270725016672455">Din computer anmoder om at registrere denne enhed til login på et website</translation>
 <translation id="7844171778363018843">Der er ikke valgt nogen data til synkronisering</translation>

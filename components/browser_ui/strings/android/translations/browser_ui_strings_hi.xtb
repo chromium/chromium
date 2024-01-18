@@ -22,6 +22,7 @@
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
 <translation id="1415402041810619267">यूआरएल छोटा हो गया</translation>
 <translation id="1426410128494586442">हां</translation>
+<translation id="1434873037477293673">कीमत में गिरावट वाला कार्ड</translation>
 <translation id="1448064542941920355">ज़ूम आउट करें</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}one{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइटें}}</translation>
 <translation id="1510341833810331442">साइटों को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है</translation>
@@ -200,7 +201,7 @@
 <translation id="4336566011000459927">Chrome आज फिर से कुकी को सीमित करेगा</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> की सभी साइटें</translation>
 <translation id="4402755511846832236">साइटों को यह जानने से रोकें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
-<translation id="4412992751769744546">तृतीय-पक्ष कुकी को अनुमति दें</translation>
+<translation id="4412992751769744546">तीसरे पक्ष की कुकी को अनुमति दें</translation>
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="443552056913301231">इस कार्रवाई से, कुकी के साथ-साथ पूरा स्थानीय डेटा मिट जाएगा. साथ ही, <ph name="ORIGIN" /> की सभी अनुमतियां रीसेट हो जाएंगी</translation>
 <translation id="4468959413250150279">किसी खास साइट के लिए आवाज़ बंद करें.</translation>

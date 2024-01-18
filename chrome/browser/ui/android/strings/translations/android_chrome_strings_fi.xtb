@@ -598,6 +598,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4307992518367153382">Perustiedot</translation>
+<translation id="4311652497846705514">Avataanko PDF?</translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
 <translation id="433213510553688132">Seurataan…</translation>
 <translation id="4335835283689002019">Selaussuoja on pois päältä</translation>
@@ -958,6 +959,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="6192907950379606605">Muodosta kuvaselitykset</translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6196315980958524839">Salasanat tallennetaan Google Salasanoihin tällä laitteella</translation>
+<translation id="6202514376968366382">Chrome voi avata ladatun PDF-tiedoston</translation>
 <translation id="6202812185118613467">Kirjaudu takaisin sisään, jotta voit aloittaa synkronoinnin</translation>
 <translation id="6205314730813004066">Mainosyksityisyys</translation>
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>

@@ -6,18 +6,22 @@
 <translation id="1246424317317450637">Lodia</translation>
 <translation id="1921351128855867012">Aurreratu <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
 <translation id="1984328900355667246">Ezin da erreproduzitu</translation>
+<translation id="2224347680315897176">Egonkorra</translation>
 <translation id="3023502830214299618">Tamalez, une honetan ezin da erreproduzitu orri hau. Saiatu berriro geroago.</translation>
 <translation id="3807208219231826020">Arakatu erreprodukzioa</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3936324432406465283">Erreprodukzio-abiadura</translation>
 <translation id="4020327272915390518">Aukeren menua</translation>
 <translation id="4431240646217225907">Nabarmendu testua eta egin gora eta behera automatikoki</translation>
+<translation id="4494605076346185630">Tartekoa</translation>
+<translation id="4710974520964166851">Lasaia</translation>
 <translation id="4872475766448853257">Egin atzera <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
 <translation id="5234971936051226002">"Entzun orri honetan dagoena" erreproduzigailua minimizatuta dago.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5694491020339060116">Erreprodukzio-abiaduraren menua</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
 <translation id="6550675742724504774">Aukerak</translation>
+<translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6846298663435243399">Kargatzen…</translation>
@@ -27,5 +31,7 @@
 <translation id="8136852699834914183">Erreprodukzioa ez dago erabilgarri orrialde honetan.</translation>
 <translation id="8264989794233974275">Handitu edo txikitu abiadura <ph name="PLAYBACK_SPEED" /> aldiz.</translation>
 <translation id="8407011429883244666">Itxi erreproduzigailua.</translation>
+<translation id="8481839122437406573">Barea</translation>
 <translation id="8953618380150219653">"Entzun orri honetan dagoena" erreproduzigailua altuera osoan irekita dago.</translation>
+<translation id="978117257931832348">Baxua</translation>
 </translationbundle>

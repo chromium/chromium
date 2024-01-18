@@ -598,6 +598,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
+<translation id="4311652497846705514">Deschizi fișierul PDF?</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="433213510553688132">Urmărești...</translation>
 <translation id="4335835283689002019">Navigarea sigură este dezactivată</translation>
@@ -958,6 +959,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6192907950379606605">Generează descrieri imagine</translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6196315980958524839">Parolele sunt salvate în Managerul de parole Google pe acest dispozitiv</translation>
+<translation id="6202514376968366382">Chrome poate deschide fișierul PDF descărcat</translation>
 <translation id="6202812185118613467">Conectează-te din nou pentru a începe sincronizarea</translation>
 <translation id="6205314730813004066">Confidențialitatea anunțurilor</translation>
 <translation id="6210748933810148297">Nu ești <ph name="EMAIL" />?</translation>

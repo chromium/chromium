@@ -1354,7 +1354,6 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
 <translation id="2073552873076775140">Izinkan login ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Crostini Ansible</translation>
 <translation id="2076158466157390917">Kontrol pembersihan otomatis selama login</translation>
-<translation id="2077129598763517140">Gunakan akselerasi hardware jika tersedia</translation>
 <translation id="2077273864382355561">Penundaan mematikan layar saat menggunakan daya baterai</translation>
 <translation id="2081969239334697268">
         Menyetel kebijakan ke Nonaktif akan menonaktifkan update aplikasi Kiosk Chrome (yang menggunakan URL update dari manifes ekstensi) dalam sesi dan hanya akan menggunakan pra-pengambilan CRX sebagai mekanisme update.
@@ -2009,7 +2008,6 @@ Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinona
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
 <translation id="2575198840408498393">Nonaktifkan pembuatan profil roaming</translation>
 <translation id="2576324725151524912">Mengizinkan Mode Developer Aplikasi Terisolasi.</translation>
-<translation id="257717978573041245">Aktifkan akselerasi hardware</translation>
 <translation id="257788512393330403">Sandi harus dimasukkan setiap enam jam</translation>
 <translation id="2580606791930800692">Menetapkan daftar aturan Kontrol Data.</translation>
 <translation id="2580757713966614760">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="DEVICE_PRINTERS_POLICY_NAME" /> yang akan tersedia bagi pengguna.
@@ -2812,7 +2810,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Jika kebijakan tidak disetel, update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> tidak akan tersedia.</translation>
 <translation id="3232563711929146405">Nonaktifkan sandbox layanan jaringan</translation>
 <translation id="3232691106293445015">Koneksi HTTP yang tidak aman dilarang menggunakan autentikasi <ph name="BASIC_AUTH" />; HTTPS diwajibkan</translation>
-<translation id="3234753491625248216">Nonaktifkan akselerasi hardware</translation>
 <translation id="3234773866678260466">Izinkan penambahan profil baru</translation>
 <translation id="3234863952320884611">Mengaktifkan metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> dipanggil secara asinkron</translation>
 <translation id="3235085623859932253"> Jika kebijakan ini dinonaktifkan, pengguna tidak akan dapat menghubungkan sepenuhnya perangkat periferal Thunderbolt/USB4 melalui tunneling PCIe.
@@ -7260,9 +7257,6 @@ kebijakan ini saat browser berjalan.</translation>
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Aktifkan transfer Cookie SSO SAML ke sesi pengguna selama login</translation>
 <translation id="684856667300805181">Kebijakan ini dihapus dalam <ph name="PRODUCT_NAME" /> 68 dan digantikan oleh <ph name="ARC_GLS_POLICY_NAME" />.</translation>
-<translation id="6848721032946289937">Jika kebijakan disetel ke Aktif atau tidak disetel, akselerasi hardware akan diaktifkan jika tersedia.
-
-      Jika kebijakan disetel ke Nonaktif, akselerasi hardware akan dinonaktifkan.</translation>
 <translation id="6850300477973481112">Setelan Konektor Desktop</translation>
 <translation id="6851199885688265233">Mengaktifkan fitur aksesibilitas sorotan kursor</translation>
 <translation id="6851315055469993882">Mengaktifkan cache autentikasi HTTP yang tercakup secara global</translation>

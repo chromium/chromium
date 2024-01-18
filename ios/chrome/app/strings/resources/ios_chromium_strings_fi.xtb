@@ -81,7 +81,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="3366305173356742781">Tilisi Chromium-data</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Tämä koskee esimerkiksi historiaa ja automaattista täyttöä.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Tämä koskee esimerkiksi historiaa ja automaattista täyttöä.}}</translation>
 <translation id="3472200483164753384">Ei tueta Chromium Canaryssa</translation>
-<translation id="3478750326643748149">Piilota "Näin saat kaiken irti Chromiumista"</translation>
 <translation id="347967311580159871">Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin näet lisää asetuksia, jotka käyttävät dataa Chromiumin käyttökokemuksen parantamiseen.</translation>
 <translation id="3512168799938877162">Salasanaasi ei jaettu. Tarkista internetyhteytesi ja varmista, että olet kirjautunut Chromiumiin. Yritä sitten uudelleen.</translation>
 <translation id="3554027294407525061">Poista Chromiumin selausdata.</translation>

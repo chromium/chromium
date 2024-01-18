@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="4307992518367153382">Асноўнае</translation>
+<translation id="4311652497846705514">Адкрыць файл PDF?</translation>
 <translation id="4320177379694898372">Няма падключэння да інтэрнэту</translation>
 <translation id="433213510553688132">Выконваецца падпіска...</translation>
 <translation id="4335835283689002019">"Бяспечны прагляд" выключаны</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">Атрымл. апісанні відарысаў</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6196315980958524839">Паролі захоўваюцца ў Менеджары пароляў Google на гэтай прыладзе.</translation>
+<translation id="6202514376968366382">Спампаваны файл PDF можна адкрыць у Chrome</translation>
 <translation id="6202812185118613467">Каб пачаць сінхранізацыю, увайдзіце ва ўліковы запіс зноў</translation>
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> – гэта не вы?</translation>
@@ -1424,7 +1426,7 @@
 <translation id="8427875596167638501">Укладка перадпрагляду адкрыта напалову</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8430824733382774043">Абагуліць толькі здымак экрана</translation>
-<translation id="8438566539970814960">Паскорыць пошук і прагляд</translation>
+<translation id="8438566539970814960">Палепшыць пошук і прагляд</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – мова гатовая да выкарыстання, перазапусціце <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Няма новых артыкулаў</translation>
 <translation id="8443209985646068659">Немагчыма абнавіць Chrome</translation>

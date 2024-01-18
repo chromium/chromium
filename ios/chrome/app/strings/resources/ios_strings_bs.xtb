@@ -369,7 +369,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="288655811176831528">Zatvori karticu</translation>
 <translation id="288902476966286676">Vraćanje pošiljaocu</translation>
 <translation id="2890171748217283516">Web lokacije koje pratite se pohranjuju na vaš Google račun. Njima možete upravljati u postavkama Discovera.</translation>
-<translation id="2895084600668778673">Pogledajte sve podatke automatskog popunjavanja</translation>
+<translation id="2895084600668778673">Pregled svih podataka za automatsko popunjavanje</translation>
 <translation id="2898963176829412617">Novi folder…</translation>
 <translation id="2902684821701498619">Dodaj na Listu za čitanje</translation>
 <translation id="2905479111267140204">Imate ovoliko već korištenih lozinki koje mogu ugroziti sigurnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
@@ -712,6 +712,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4805759445554688327">Nevažeći broj kartice</translation>
 <translation id="4808646838864186379">Isporuka je otkazana</translation>
 <translation id="4808744395915275922">Ažuriranja</translation>
+<translation id="4813345808229079766">Veza</translation>
 <translation id="4818522717893377262">Dodaj jezik…</translation>
 <translation id="481968316161811770">Kolačići, podaci o web lokacijama</translation>
 <translation id="4821595350501541683">Kartice su zatvorene i podaci o pregledanju su izbrisani</translation>
@@ -924,6 +925,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5922999516621365983">Povucite karticu ovamo da je zakačite.</translation>
 <translation id="5938160824633642847">Vaš uređaj je skoro pun. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da sačuvate fotografije u biblioteku fotografija.</translation>
+<translation id="5954562874938077107">Otvori Objektiv</translation>
 <translation id="5955891643922670672">Prikaz verzije van mreže</translation>
 <translation id="5957613098218939406">Više opcija</translation>
 <translation id="595769230373966252">Pretražite putem pružaoca <ph name="SEARCH_PROVIDER" /></translation>

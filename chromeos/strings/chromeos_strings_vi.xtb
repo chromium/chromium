@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Tắt chế độ tối</translation>
 <translation id="1885577615937958993">tua nhanh nội dung nghe nhìn</translation>
 <translation id="1887850431809612466">Hiệu chỉnh phần cứng</translation>
-<translation id="1897672602657312171">Phím tắt không có phím tìm kiếm có thể xung đột với phím tắt của một số ứng dụng. Nhấn phím tắt này một lần nữa để tiếp tục sử dụng hoặc nhấn một phím tắt mới có phím tìm kiếm.</translation>
 <translation id="1904932688895783618">Dưới đây là một số tài nguyên hữu ích khác:</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Làm mới hình nền hiện tại</translation>
 <translation id="2512979179176933762">hiện cửa sổ</translation>
 <translation id="2513396635448525189">Hình ảnh đăng nhập</translation>
-<translation id="2515109918609218604">Không có phím tắt này. Nhấn một phím tắt mới mà không cần dùng phím chức năng và phím tìm kiếm.</translation>
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2521835766824839541">bản nhạc trước</translation>
 <translation id="2526590354069164005">Màn hình nền</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">giảm độ sáng</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4176659219503619100">Bảng điều khiển</translation>
-<translation id="4185315616950253617">Phím tắt có phím ở hàng trên cùng cần bao gồm phím tìm kiếm.</translation>
 <translation id="420283545744377356">Tắt trình bảo vệ màn hình</translation>
 <translation id="4213104098953699324">Bàn phím USB</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">Lịch áp dụng giao diện tối</translation>
 <translation id="5229344016299762883">Thoát khỏi trạng thái toàn màn hình</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" tự khởi động mỗi khi bạn đăng nhập.}=2{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và 1 ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}other{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và # ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}}</translation>
 <translation id="5252456968953390977">Đang chuyển vùng</translation>
 <translation id="5257811368506016604">Bật chế độ màu sáng</translation>
 <translation id="5264277876637023664">Chạy quá trình Kiểm tra CPU</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="725133483556299729">Chọn email</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
-<translation id="7273347807225967898">Không có phím tắt này. Nhấn phím tắt mới bằng cách sử dụng phím bổ trợ (ctrl, alt, shift, tìm kiếm hoặc trình chạy).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Bay trong gió</translation>
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">Chế độ điều khiển chung</translation>
 <translation id="7977800524392185497">Để kết nối với mạng <ph name="NETWORK_NAME" />, hãy đi tới phần Cài đặt</translation>
 <translation id="7978412674231730200">Khoá cá nhân</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" đã tự khởi động}other{# ứng dụng đã tự khởi động}}</translation>
 <translation id="7994702968232966508">Phương pháp EAP</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8017679124341497925">Đã chỉnh sửa phím tắt</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8094062939584182041">Cho phép Google gửi email về vấn đề này cho bạn</translation>
 <translation id="8104083085214006426">Bạn đang dùng mạng mở và không an toàn</translation>
-<translation id="8111706652656628199">Không có phím tắt này. Nhấn phím tắt mới bằng cách sử dụng phím shift và 1 phím bổ trợ nữa (ctrl, alt, tìm kiếm hoặc trình chạy).</translation>
 <translation id="811820734797650957">(Android) Có thể ping cổng vào</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>

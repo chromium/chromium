@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4307992518367153382">基本</translation>
+<translation id="4311652497846705514">打开 PDF 文件？</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="433213510553688132">正在关注…</translation>
 <translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">获取图片说明</translation>
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196315980958524839">系统会将密码保存到此设备上的 Google 密码管理工具中</translation>
+<translation id="6202514376968366382">Chrome 可以打开您下载的 PDF 文件</translation>
 <translation id="6202812185118613467">重新登录即可开始同步</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>

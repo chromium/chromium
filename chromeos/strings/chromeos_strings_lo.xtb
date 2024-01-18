@@ -144,7 +144,6 @@
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
 <translation id="1885577615937958993">ເລື່ອນມີເດຍໄປໜ້າ</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
-<translation id="1897672602657312171">ທາງລັດທີ່ບໍ່ມີປຸ່ມຊອກຫາອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຊອກຫາ.</translation>
 <translation id="1904932688895783618">ນີ້ແມ່ນຊັບພະຍາກອນທີ່ມີປະໂຫຍດຈຳນວນໜຶ່ງ:</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">ໂຫຼດຂໍ້ມູນຮູບພື້ນຫຼັງປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="2515109918609218604">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດແປ້ນພິມທາງລັດໃໝ່ໂດຍໃຊ້ຟັງຊັນ ແລະ ປຸ່ມຊອກຫາ.</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2521835766824839541">ເພງກ່ອນໜ້າ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">ຫຼຸດຄວາມສະຫວ່າງລົງ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4176659219503619100">ແຜງຄວບຄຸມ</translation>
-<translation id="4185315616950253617">ທາງລັດທີ່ມີປຸ່ມແຖວເທິງສຸດຈະຕ້ອງມີປຸ່ມຊອກຫານຳ.</translation>
 <translation id="420283545744377356">ປິດສະກຣີນເຊັບເວີ</translation>
 <translation id="4213104098953699324">ແປ້ນພິມ USB</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
@@ -848,7 +845,6 @@
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
-<translation id="7273347807225967898">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift, ຊອກຫາ ຫຼື ຕົວເປີດໃຊ້).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ສຳຜັດສາຍລົມເຢັນ</translation>
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>
@@ -964,7 +960,6 @@
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
 <translation id="8104083085214006426">ທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍເປີດ ແລະ ບໍ່ປອດໄພຢູ່</translation>
-<translation id="8111706652656628199">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍໃຊ້ shift ແລະ ປຸ່ມຕົວດັດແປງ 1 ປຸ່ມ (ctrl, alt, ຊອກຫາ ຫຼື ຕົວເປີດໃຊ້).</translation>
 <translation id="811820734797650957">(Android) ສາມາດ Ping ເກດເວໄດ້</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>

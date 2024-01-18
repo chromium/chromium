@@ -1415,6 +1415,7 @@
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3744212718085287312">次回から仮想カードでセキュリティを高めますか？</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
+<translation id="3745599309295009257">入力したテキストとページのコンテンツおよび URL が Google に送信され、人間による確認が行われ、この機能の改善に使用されます。個人情報（医療や財務情報など）を入力したり、個人情報や機密情報を含むサイトでこのツールを使用したりしないでください。</translation>
 <translation id="3748009735914587286">金属（高光沢）</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導される可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空産業</translation>
@@ -2472,8 +2473,6 @@
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903264686717710770">タイトル:</translation>
 <translation id="5904360430676679685">家族、人間関係</translation>
-<translation id="5907669856855422186">テキストとページのコンテンツが Google に送信され、この機能の改善に使用されることがあります。
-  <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（同期済み）</translation>
 <translation id="5910140988253729859">自動入力を取り消す</translation>
 <translation id="5911020115933784199">イベント情報</translation>
@@ -2582,6 +2581,7 @@
 <translation id="6105460996796456817">サイトを作成</translation>
 <translation id="6106989379647458772">ウェブページ（<ph name="PAGE" />）は一時的に利用できなくなっているか、新しいウェブアドレスに移動した可能性があります。</translation>
 <translation id="6107012941649240045">発行先</translation>
+<translation id="6107924765192360631">いくつかの単語や最初の下書きを入力するだけで、文章の候補が表示されます。</translation>
 <translation id="610911394827799129">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="6116338172782435947">クリップボードにコピーしたテキストや画像へのアクセス</translation>
 <translation id="6117833587752089929">写真（サテン）</translation>
@@ -2792,6 +2792,7 @@
 <translation id="6502626736864595182">掲示板、チャット</translation>
 <translation id="6502991525169604759">変更前のバージョン</translation>
 <translation id="6506959208958864820">封筒</translation>
+<translation id="6507117483253822672">ウェブ上のどこでも文章の作成をサポート</translation>
 <translation id="6508722015517270189">Chrome を再起動する</translation>
 <translation id="6513005815064132016">カメラ位置の追跡を要求できる</translation>
 <translation id="6517596291481585650">警告: このポリシーはリストでないため、ポリシーで指定されているとおりにリストとして統合されませんでした。</translation>

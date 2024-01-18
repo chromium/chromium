@@ -598,6 +598,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4307992518367153382">Podstawowe</translation>
+<translation id="4311652497846705514">Otworzyć PDF?</translation>
 <translation id="4320177379694898372">Brak połączenia z internetem</translation>
 <translation id="433213510553688132">Dodaję do obserwowanych…</translation>
 <translation id="4335835283689002019">Bezpieczne przeglądanie jest wyłączone</translation>
@@ -958,6 +959,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6192907950379606605">Pobieraj opisy obrazów</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6196315980958524839">Hasła są zapisywane w Menedżerze haseł Google na tym urządzeniu.</translation>
+<translation id="6202514376968366382">Chrome może otworzyć pobrany plik PDF</translation>
 <translation id="6202812185118613467">Zaloguj się z powrotem, aby rozpocząć synchronizację</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> to nie Ty?</translation>

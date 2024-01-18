@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Qaranlıq rejimi deaktiv edin</translation>
 <translation id="1885577615937958993">medianı cəld irəli ötürün</translation>
 <translation id="1887850431809612466">Avadanlıq versiyası</translation>
-<translation id="1897672602657312171">Axtarış düyməsi olmayan qısayol bəzi tətbiq qısayolları ilə ziddiyyətli ola bilər. Bu qısayoldan istifadəyə davam etmək üçün ona yenidən basın, yaxud axtarış düyməsindən istifadə edərək yeni qısayola basın.</translation>
 <translation id="1904932688895783618">Digər faydalı resurslar:</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Cari divar kağızı şəklini yeniləyin</translation>
 <translation id="2512979179176933762">pəncərələri göstərin</translation>
 <translation id="2513396635448525189">Giriş şəkli</translation>
-<translation id="2515109918609218604">Qısayol əlçatan deyil. Funksiya və axtarış düymələrindən istifadə etmədən yeni qısayola basın.</translation>
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2521835766824839541">əvvəlki trek</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">parlaqlığı azaldın</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4176659219503619100">İdarəetmə Paneli</translation>
-<translation id="4185315616950253617">Üst sıra düymələri olan qısayolda axtarış düyməsi olmalıdır.</translation>
 <translation id="420283545744377356">Ekran qoruyucusunu deaktiv edin</translation>
 <translation id="4213104098953699324">USB klaviatura</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">Qaranlıq tema cədvəli</translation>
 <translation id="5229344016299762883">Tam ekrandan çıxın</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrator "<ph name="APP_NAME" />" tətbiqini hər daxilolmada avtomatik başlamağa ayarlayıb.}=2{Administrator "<ph name="APP_NAME" />" və digər 1 tətbiqi hər daxilolmada avtomatik başlamağa ayarlayıb.}other{Administrator "<ph name="APP_NAME" />" və digər # tətbiqi hər daxilolmada avtomatik başlamağa ayarlayıb.}}</translation>
 <translation id="5252456968953390977">Rouminq</translation>
 <translation id="5257811368506016604">Açıq rəng rejimini aktiv edin</translation>
 <translation id="5264277876637023664">CPU testi icra edin</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">Mobil provayder</translation>
 <translation id="725133483556299729">E-poçt seçin</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
-<translation id="7273347807225967898">Qısayol əlçatan deyil. Dəyişdirici düymə (ctrl, alt, shift, axtarış və ya başladıcı) ilə yeni qısayolu basın.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Mehi hiss edin</translation>
 <translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">Ümumi nizamlayıcılar</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> şəbəkəsinə qoşulmaq üçün Ayarlara keçin</translation>
 <translation id="7978412674231730200">Şəxsi açar</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" avtomatik başladıldı}other{# tətbiq avtomatik başladıldı}}</translation>
 <translation id="7994702968232966508">EAP üsulu</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8017679124341497925">Qısayol redaktə edildi</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
-<translation id="8111706652656628199">Qısayol əlçatan deyil. Shift və daha 1 dəyişdirici düymə (ctrl, alt, axtarış və ya başladıcı) ilə yeni qısayolu basın.</translation>
 <translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>

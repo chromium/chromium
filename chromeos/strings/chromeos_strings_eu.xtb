@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Desaktibatu modu iluna</translation>
 <translation id="1885577615937958993">aurreratu multimedia-edukia</translation>
 <translation id="1887850431809612466">Hardwarearen berrikuspena</translation>
-<translation id="1897672602657312171">Baliteke bilaketa-teklarik gabeko lasterbideak gatazkan egotea aplikazioren baten lasterbidearekin. Lasterbide hau erabiltzen jarraitzeko, saka ezazu berriro; bestela, sakatu beste lasterbide bat bilaketa-tekla erabilita.</translation>
 <translation id="1904932688895783618">Hona hemen beste baliabide lagungarri batzuk:</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Freskatu oraingo horma-paperaren irudia</translation>
 <translation id="2512979179176933762">erakutsi leihoak</translation>
 <translation id="2513396635448525189">Saio-hasierako irudia</translation>
-<translation id="2515109918609218604">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat funtzio- eta bilaketa-teklarik erabili gabe.</translation>
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2521835766824839541">aurreko pista</translation>
 <translation id="2526590354069164005">Ordenagailua</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">txikitu distira</translation>
 <translation id="4176463684765177261">Desgaituta</translation>
 <translation id="4176659219503619100">Kontrol-panela</translation>
-<translation id="4185315616950253617">Goiko errenkadako teklak darabiltzaten lasterbideetan bilaketa-tekla ere erabili behar da.</translation>
 <translation id="420283545744377356">Desaktibatu pantaila-babeslea</translation>
 <translation id="4213104098953699324">USB bidezko teklatua</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> barru iraungiko da pasahitza</translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">Gai ilunaren programazioa</translation>
 <translation id="5229344016299762883">Irten pantaila osoko ikuspegitik</translation>
 <translation id="5234764350956374838">Baztertu</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Saioa hasten duzun bakoitzean abiarazteko konfiguratu du administratzaileak "<ph name="APP_NAME" />".}=2{Saioa hasten duzun bakoitzean abiarazteko konfiguratu ditu administratzaileak "<ph name="APP_NAME" />" eta beste aplikazio bat.}other{Saioa hasten duzun bakoitzean abiarazteko konfiguratu ditu administratzaileak "<ph name="APP_NAME" />" eta beste # aplikazio.}}</translation>
 <translation id="5252456968953390977">Ibiltaritza</translation>
 <translation id="5257811368506016604">Gaitu kolore argiaren modua</translation>
 <translation id="5264277876637023664">Egin PUZaren proba</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
 <translation id="725133483556299729">Hautatu helbide elektroniko bat</translation>
 <translation id="7271040990581020067">Eskanerra erabiltzen ari zara. Saiatu berriro geroago.</translation>
-<translation id="7273347807225967898">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat tekla aldatzaile bat erabilita (Ktrl, Alt, Maius, Bilaketa edo Exekutatzeko tresnaren tekla).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sentitu haize gozoa</translation>
 <translation id="7287310195820267359">Horma-paperen bildumak</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">Kontrolatzeko aukera orokorrak</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan ezarpenetara</translation>
 <translation id="7978412674231730200">Gako pribatua</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" automatikoki abiarazi da}other{# aplikazio automatikoki abiarazi dira}}</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8017679124341497925">Editatu da lasterbidea</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8094062939584182041">Eman arazo honi buruzko mezu elektronikoak bidaltzeko baimena Google-ri</translation>
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
-<translation id="8111706652656628199">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat Maius eta beste tekla aldatzaile bat erabilita (Ktrl, Alt, Bilaketa edo Exekutatzeko tresnaren tekla).</translation>
 <translation id="811820734797650957">Ping egin dakioke atebideari (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Eskatu trafiko-kontagailuak</translation>

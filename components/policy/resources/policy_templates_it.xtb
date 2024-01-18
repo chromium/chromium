@@ -296,6 +296,18 @@ I pattern corrispondenti alle origini di questo criterio non possono però conte
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
 <translation id="123018742985150697">Richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
+<translation id="1233343906578850273">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato per le immagini. Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> viene configurato, la ricerca immagini richiede invece l'utilizzo del metodo POST.
+
+      Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> non viene configurato, non viene utilizzata alcuna ricerca immagini.
+
+      Se la ricerca immagini utilizza il metodo Get, l'URL deve specificare i parametri delle immagini utilizzando una combinazione valida dei seguenti segnaposto:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="1238868319430505522">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Consente di stabilire se i siti web possono o meno effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.
 
@@ -1315,7 +1327,6 @@ In genere, questo criterio è disattivato per difendere gli utenti da tentativi 
 <translation id="2073552873076775140">Consenti di eseguire l'accesso a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Ansible di Crostini</translation>
 <translation id="2076158466157390917">Controlla la pulizia automatica durante l'accesso</translation>
-<translation id="2077129598763517140">Usa accelerazione hardware quando disponibile</translation>
 <translation id="2077273864382355561">Ritardo disattivazione schermo in caso di utilizzo della batteria</translation>
 <translation id="2081969239334697268">
         Se il criterio viene impostato su Disabled, l'aggiornamento delle app kiosk di Chrome all'interno della sessione (per cui viene usato l'URL di aggiornamento indicato nel file manifest dell'estensione) verrà disattivato e rimarrà soltanto il precaricamento CRX come meccanismo di aggiornamento.
@@ -1943,7 +1954,6 @@ Se questo criterio viene impostato su False, la funzionalità di insiemi di siti
 <translation id="2570181623957732921">Attiva <ph name="DESK_API_NAME" /> per un elenco di domini di terze parti</translation>
 <translation id="2575198840408498393">Disattiva la creazione di profili di roaming</translation>
 <translation id="2576324725151524912">Consenti la modalità sviluppatore per app isolate</translation>
-<translation id="257717978573041245">Attiva l'accelerazione hardware</translation>
 <translation id="257788512393330403">Richiedi inserimento della password ogni sei ore</translation>
 <translation id="2580606791930800692">Consente di impostare un elenco di regole di controllo dei dati.</translation>
 <translation id="2580757713966614760">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> mettere a disposizione degli utenti.
@@ -2731,7 +2741,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Se il criterio non viene configurato, la visualizzazione dell'aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> non è disponibile.</translation>
 <translation id="3232563711929146405">Disattiva la sandbox del servizio di rete</translation>
 <translation id="3232691106293445015">Per le connessioni HTTP non sicure non è possibile usare l'autenticazione <ph name="BASIC_AUTH" />; sono richieste connessioni HTTPS</translation>
-<translation id="3234753491625248216">Disattiva l'accelerazione hardware</translation>
 <translation id="3234773866678260466">Consenti l'aggiunta di nuovi profili</translation>
 <translation id="3234863952320884611">Consente di richiamare i metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> in modo asincrono.</translation>
 <translation id="3235085623859932253"> Se questo criterio viene disattivato, l'utente non potrà collegare completamente il proprio dispositivo periferico Thunderbolt/USB4 tramite tunneling PCIe.
@@ -5142,6 +5151,18 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è su
 <translation id="5366977351895725771">Se questa norma è impostata su false, la creazione di utenti supervisionati da parte di questo utente sarà disabilitata. Gli eventuali utenti supervisionati esistenti saranno comunque disponibili.
 
           Se questa norma è impostata su true o non è configurata, questo utente può creare e gestire utenti supervisionati.</translation>
+<translation id="5367255280764736002">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca immagini con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio {imageThumbnail}, viene sostituito con i dati delle miniature di immagini reali.
+
+      Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> non viene configurato, la richiesta di ricerca immagini viene inviata utilizzando il metodo Get.
+
+      L'URL deve specificare il parametro delle immagini utilizzando una combinazione valida dei seguenti segnaposto, a seconda di ciò che viene supportato dal motore di ricerca:
+      <ph name="IMAGE_IMAGE_URL" />,
+      <ph name="IMAGE_ORIGINAL_HEIGHT" />,
+      <ph name="IMAGE_ORIGINAL_WIDTH" />,
+      <ph name="IMAGE_PROCESSED_IMAGE_DIMENSIONS" />,
+      <ph name="IMAGE_SEARCH_SOURCE" />,
+      <ph name="IMAGE_THUMBNAIL" />,
+      <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
 <translation id="5369937289900051171">Solo stampa a colori</translation>
 <translation id="5370279767682621504">Attiva il supporto HTTP/0.9 sulle porte non predefinite</translation>
 <translation id="5370765433640162225">Se il criterio viene impostato su vero, la pulizia automatica viene eseguita durante l'accesso per garantire che sia disponibile spazio su disco libero a sufficienza.
@@ -7019,9 +7040,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
       Questo criterio è deprecato, al suo posto utilizza <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Attiva il trasferimento dei cookie SSO SAML nella sessione utente durante l'accesso</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
-<translation id="6848721032946289937">Se il criterio viene impostato su Attivato o se non viene configurato, viene abilitata l'accelerazione hardware, se disponibile.
-
-      Se viene impostato su Disattivato, viene disabilitata l'accelerazione hardware.</translation>
 <translation id="6850300477973481112">Impostazioni del connettore di scrivania</translation>
 <translation id="6851199885688265233">Attiva la funzione di accessibilità di evidenziazione del cursore</translation>
 <translation id="6851315055469993882">Attiva cache di autenticazione HTTP con ambito globale</translation>
@@ -9062,6 +9080,13 @@ Se il criterio non è configurato, gli utenti non possono giocare sul dispositiv
       Se il criterio viene impostato su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
+<translation id="8610216287193516769">Rimosso in M122: si tratta di un criterio solo lato server che non ha mai utilizzato l'infrastruttura dei criteri di ChromeOS per la sua propagazione.
+Se questo criterio viene impostato su <ph name="POLICY_VALUE_ALL" /> o se non viene configurato, sono consentiti tutti gli utilizzi degli account gestiti. Di conseguenza, un account gestito potrebbe essere un account secondario, che riceverebbe i criteri soltanto se venisse eseguito l'accesso all'account come account principale in un profilo del browser.
+      I criteri impostati per l'account non verranno applicati nei seguenti casi:
+        -  Se l'account è un account secondario a livello di sistema operativo (Impostazioni account)
+        -  Se l'account è un account secondario in un profilo del browser
+
+      Se questo criterio viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> per un account, sarà possibile accedere a questo account soltanto come account principale. Non sarà possibile accedervi come account secondario.</translation>
 <translation id="8612188068319977428">Controlla la frequenza dei caricamenti di report sullo stato di Chrome.
 
 Sono inclusi i report attivati da <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.

@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_скриншот_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Сырсөздөрдү башкаргыч</translation>
 <translation id="4307992518367153382">Негизги параметрлер</translation>
+<translation id="4311652497846705514">PDF файл ачылсынбы?</translation>
 <translation id="4320177379694898372">Интернет жок</translation>
 <translation id="433213510553688132">Көз салынууда...</translation>
 <translation id="4335835283689002019">Коопсуз серептөө өчүк.</translation>
@@ -958,6 +959,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6192907950379606605">Сүрөттөмөлөрдү алуу</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6196315980958524839">Сырсөздөр ушул түзмөктө Google Сырсөздөрдү башкаргычка сакталат</translation>
+<translation id="6202514376968366382">Chrome жүктөлүп алынган PDF файлдарын ача алат</translation>
 <translation id="6202812185118613467">Шайкештирип баштоо үчүн кайра кириңиз</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> эмеспи?</translation>

@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Inaktivera mörkt läge</translation>
 <translation id="1885577615937958993">spola framåt i media</translation>
 <translation id="1887850431809612466">Revision av maskinvara</translation>
-<translation id="1897672602657312171">Ett kortkommando utan söktangenten kan strida mot ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med söktangenten.</translation>
 <translation id="1904932688895783618">Här är några andra användbara resurser:</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
@@ -185,6 +184,7 @@
 <translation id="2189104374785738357">Redigera APN-information</translation>
 <translation id="2209788852729124853">Återställ trafikräknare</translation>
 <translation id="2212733584906323460">Namnmatchning</translation>
+<translation id="2215920961700443347">Inget internet. Anslut till internet och försök igen.</translation>
 <translation id="2217935453350629363">Nuvarande hastighet</translation>
 <translation id="2224337661447660594">Inget internet</translation>
 <translation id="222447520299472966">Minst ett album i konstgalleriet måste vara markerat</translation>
@@ -218,6 +218,7 @@
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2465272316171730950">Vi är fullt upptagna. Kom tillbaka om en stund.</translation>
 <translation id="248546197012830854">Enheten är offline. Anslut till ett wifi-nätverk för att se hjälpinnehåll.</translation>
 <translation id="2491955442992294626">Inga tangenter testas när du använder ett annat fönster</translation>
 <translation id="2493126929778606526">Dina bästa bilder, utvalda automatiskt</translation>
@@ -225,7 +226,6 @@
 <translation id="2505327257735685095">Uppdatera den aktuella bakgrundsbilden</translation>
 <translation id="2512979179176933762">visa fönster</translation>
 <translation id="2513396635448525189">Inloggningsbild</translation>
-<translation id="2515109918609218604">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando utan att använda funktions- och söktangenterna.</translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2521835766824839541">föregående spår</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
@@ -425,7 +425,6 @@
 <translation id="4171077696775491955">minska ljusstyrkan</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
 <translation id="4176659219503619100">Kontrollpanel</translation>
-<translation id="4185315616950253617">Kortkommandon med tangenterna på översta raden måste innehålla söktangenten.</translation>
 <translation id="420283545744377356">Inaktivera skärmsläckare</translation>
 <translation id="4213104098953699324">USB-tangentbord</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
@@ -572,6 +571,7 @@
 <translation id="5227902338748591677">Schema för mörkt tema</translation>
 <translation id="5229344016299762883">Avsluta helskärm</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratören har ställt in <ph name="APP_NAME" /> på att starta automatiskt varje gång du loggar in.}=2{Administratören har ställt in <ph name="APP_NAME" /> och 1 app till på att starta automatiskt varje gång du loggar in.}other{Administratören har ställt in <ph name="APP_NAME" /> och # appar till på att starta automatiskt varje gång du loggar in.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Aktivera ljust färgläge</translation>
 <translation id="5264277876637023664">Kör CPU-test</translation>
@@ -844,7 +844,6 @@
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="725133483556299729">Välj e-postadress</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
-<translation id="7273347807225967898">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med en specialtangent (Ctrl, Alt, Skift, Sök eller Appstartaren).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">För vinden</translation>
 <translation id="7287310195820267359">Samlingar med bakgrunder</translation>
@@ -943,6 +942,7 @@
 <translation id="7971535376154084247">Allmänna inställningar</translation>
 <translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> startades automatiskt}other{# appar startades automatiskt}}</translation>
 <translation id="7994702968232966508">EAP-metod</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8017679124341497925">Genvägen har ändrats</translation>
@@ -959,7 +959,6 @@
 <translation id="808894953321890993">Ändra lösenord</translation>
 <translation id="8094062939584182041">Tillåt att Google skickar e-post till dig om det här problemet</translation>
 <translation id="8104083085214006426">Du använder ett öppet och osäkert nätverk</translation>
-<translation id="8111706652656628199">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med Skift och en till specialtangent (Ctrl, Alt, Skift, Sök eller Appstartaren).</translation>
 <translation id="811820734797650957">(Android) Gateway går att pinga</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Begär trafikräknare</translation>

@@ -140,7 +140,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3533435340678213462">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chromium skal tage med i betragtning.</translation>
 <translation id="3567254597502212821">Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chromium på denne enhed</translation>
 <translation id="3593091352817399191">En anden konto er allerede logget ind. Hvis du vil holde din browsing adskilt, kan Chromium oprette en ny profil til dig.</translation>
-<translation id="363078681319665186">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.13.</translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3651803019964686660">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
@@ -157,7 +156,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Få hjælp til Chromium OS</translation>
 <translation id="3871664619793219264">Få adgang til tingene i din Chromium-browser fra <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="387966568917439637">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.14.</translation>
 <translation id="388648406173476553">Tilpas og administrer Chromium. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
 <translation id="3889543394854987837">Klik på dit navn for at åbne Chromium og gå i gang med at browse.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chromium-profil. Hvis du vil holde din browsing adskilt, kan Chromium oprette en ny profil til dig.</translation>

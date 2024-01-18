@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Isključivanje tamnog načina</translation>
 <translation id="1885577615937958993">premotavanje multimedijskog sadržaja unaprijed</translation>
 <translation id="1887850431809612466">Hardverska revizija</translation>
-<translation id="1897672602657312171">Prečac bez tipke za pretraživanje može biti u sukobu s prečacem neke aplikacije. Ponovno pritisnite taj prečac kako biste ga nastavili upotrebljavati ili pritisnite novi prečac pomoću tipke za pretraživanje.</translation>
 <translation id="1904932688895783618">Evo još nekih korisnih resursa:</translation>
 <translation id="1905710495812624430">Premašen je maksimalan dopušteni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspješni UDP zahtjevi</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Osvježi trenutačnu sliku pozadine</translation>
 <translation id="2512979179176933762">prikaz prozora</translation>
 <translation id="2513396635448525189">Slika za prijavu</translation>
-<translation id="2515109918609218604">Prečac nije dostupan. Pritisnite novi prečac bez upotrebe funkcijske i tipke za pretraživanje.</translation>
 <translation id="2517472476991765520">Traži</translation>
 <translation id="2521835766824839541">prethodna pjesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">smanjivanje svjetline</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4176659219503619100">Upravljačka ploča</translation>
-<translation id="4185315616950253617">Prečac s tipkama iz gornjeg reda treba sadržavati tipku za pretraživanje.</translation>
 <translation id="420283545744377356">Isključivanje čuvara zaslona</translation>
 <translation id="4213104098953699324">USB tipkovnica</translation>
 <translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
@@ -574,6 +571,7 @@
 <translation id="5227902338748591677">Raspored tamne teme</translation>
 <translation id="5229344016299762883">Napusti prikaz na cijelom zaslonu</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> prilikom svake vaše prijave.}=2{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još jedne aplikacije prilikom svake vaše prijave.}one{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još # aplikacije prilikom svake vaše prijave.}few{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još # aplikacije prilikom svake vaše prijave.}other{Vaš administrator postavio je automatsko pokretanje aplikacije <ph name="APP_NAME" /> i još # aplikacija prilikom svake vaše prijave.}}</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Omogućite način svijetle boje</translation>
 <translation id="5264277876637023664">Pokreni test procesora</translation>
@@ -846,7 +844,6 @@
 <translation id="7216409898977639127">Davatelj mobilnih usluga</translation>
 <translation id="725133483556299729">Odaberite e-poštu</translation>
 <translation id="7271040990581020067">Skener se trenutačno upotrebljava. Pokušajte ponovo kasnije.</translation>
-<translation id="7273347807225967898">Prečac nije dostupan. Pritisnite novi prečac pomoću modifikatorske tipke (ctrl, alt, shift, pretraživanje ili pokretač).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Osjetite povjetarac</translation>
 <translation id="7287310195820267359">Zbirke pozadina</translation>
@@ -945,6 +942,7 @@
 <translation id="7971535376154084247">Opće kontrole</translation>
 <translation id="7977800524392185497">Da biste se pridružili <ph name="NETWORK_NAME" /> mreži, otvorite postavke</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> automatski je pokrenuta}one{Automatski je pokrenuta # aplikacija}few{Automatski su pokrenute # aplikacije}other{Automatski je pokrenuto # aplikacija}}</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8017679124341497925">Prečac je uređen</translation>
@@ -961,7 +959,6 @@
 <translation id="808894953321890993">Promjena zaporke</translation>
 <translation id="8094062939584182041">Dopustite Googleu da vam pošalje e-poruku o tom problemu</translation>
 <translation id="8104083085214006426">Upotrebljavate otvorenu i nesigurnu mrežu</translation>
-<translation id="8111706652656628199">Prečac nije dostupan. Pritisnite novi prečac pomoću tipke Shift i još 1 modifikatorske tipke (Ctrl, Alt, pretraživanje ili pokretač).</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može pingati</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Zatraži brojače prometa</translation>

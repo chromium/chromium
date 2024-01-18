@@ -81,7 +81,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3366305173356742781">Chromium data in your account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
-<translation id="3478750326643748149">Hide 'Get the most out of Chromium'</translation>
 <translation id="347967311580159871">For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chromium. Then try again.</translation>
 <translation id="3554027294407525061">Clear browsing data in Chromium.</translation>

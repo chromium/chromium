@@ -598,6 +598,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
+<translation id="4311652497846705514">Ouvrir un fichier PDF?</translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>
 <translation id="433213510553688132">Suivi en cours…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
@@ -958,6 +959,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil</translation>
+<translation id="6202514376968366382">Chrome peut ouvrir votre fichier PDF téléchargé</translation>
 <translation id="6202812185118613467">Reconnectez-vous pour lancer la synchronisation</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
@@ -1299,6 +1301,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7810647596859435254">Ouvrir avec…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, 1 fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
+<translation id="7821130663268546430">Vous pouvez trouver tous les onglets ouverts dans le Gestionnaire d'onglets</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
 <translation id="78270725016672455">Votre ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>

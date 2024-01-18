@@ -344,7 +344,7 @@
 <translation id="2780046210906776326">Создайте аккаунт</translation>
 <translation id="2780326741858434269">Аккаунты на этом устройстве</translation>
 <translation id="2781325423985810933">ОТМЕНИТЬ</translation>
-<translation id="2781331604911854368">ВКЛ</translation>
+<translation id="2781331604911854368">Включено</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Не удалось создать ссылку</translation>
 <translation id="2786701870377699570">Ищите вкладки на синхронизированных устройствах</translation>
@@ -369,6 +369,7 @@
 <translation id="288655811176831528">Закрыть вкладку</translation>
 <translation id="288902476966286676">Возвращено</translation>
 <translation id="2890171748217283516">Сайты, на которые вы подписаны, сохранены в аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
+<translation id="2895084600668778673">Показать все данные автозаполнения</translation>
 <translation id="2898963176829412617">Новая папка</translation>
 <translation id="2902684821701498619">Добавить в список для чтения</translation>
 <translation id="2905479111267140204">Повторяющихся паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
@@ -691,7 +692,7 @@
 <translation id="4689564913179979534">Настроить способы оплаты</translation>
 <translation id="469300482518076788">Закрыть вкладку</translation>
 <translation id="4697071790493980729">Ничего не найдено.</translation>
-<translation id="470337593714520080">{count,plural, =1{Сохраните 1 закладку в аккаунте Google}one{Сохраните {count} закладку в аккаунте Google}few{Сохраните {count} закладки в аккаунте Google}many{Сохраните {count} закладок в аккаунте Google}other{Сохраните {count} закладки в аккаунте Google}}</translation>
+<translation id="470337593714520080">{count,plural, =1{Сохранить 1 закладку в аккаунте Google}one{Сохранить {count} закладку в аккаунте Google}few{Сохранить {count} закладки в аккаунте Google}many{Сохранить {count} закладок в аккаунте Google}other{Сохранить {count} закладки в аккаунте Google}}</translation>
 <translation id="470966556546083668">Не включать синхронизацию</translation>
 <translation id="4711809265250406889">Что делает эта функция</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и ещё 1}one{{website_1}, {website_2} и ещё {more_count}}few{{website_1}, {website_2} и ещё {more_count}}many{{website_1}, {website_2} и ещё {more_count}}other{{website_1}, {website_2} и ещё {more_count}}}</translation>
@@ -711,6 +712,7 @@
 <translation id="4805759445554688327">Неверный номер карты</translation>
 <translation id="4808646838864186379">Отменено</translation>
 <translation id="4808744395915275922">Обновления</translation>
+<translation id="4813345808229079766">Соединение</translation>
 <translation id="4818522717893377262">Добавить язык</translation>
 <translation id="481968316161811770">Cookie, данные сайтов</translation>
 <translation id="4821595350501541683">Вкладки были закрыты, а данные о работе в браузере удалены.</translation>

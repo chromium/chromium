@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">პაროლების მმართველი</translation>
 <translation id="4307992518367153382">ძირითადი</translation>
+<translation id="4311652497846705514">გსურთ PDF-ის გახსნა?</translation>
 <translation id="4320177379694898372">ინტერნეტთან კავშირი არ არის</translation>
 <translation id="433213510553688132">მიმდინარეობს თვალის მიდევნება...</translation>
 <translation id="4335835283689002019">Safe Browsing გამორთულია</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">სურათების აღწერილობების მიღება</translation>
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
 <translation id="6196315980958524839">პაროლები ინახება Google პაროლების მმართველში მხოლოდ ამ მოწყობილობაზე</translation>
+<translation id="6202514376968366382">Chrome-ს შეუძლია თქვენ მიერ ჩამოტვირთული PDF-ების გახსნა</translation>
 <translation id="6202812185118613467">სინქრონიზაციის დასაწყებად ხელახლა შედით სისტემაში</translation>
 <translation id="6205314730813004066">სარეკლამო კონფიდენციალურობა</translation>
 <translation id="6210748933810148297">არ ხართ <ph name="EMAIL" />?</translation>

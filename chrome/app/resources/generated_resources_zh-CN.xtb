@@ -449,6 +449,7 @@
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
 <translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
+<translation id="1344914278748983512">已安装此应用</translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1347256498747320987">安装更新和应用。继续操作即表示您同意此设备还可从 Google、您的运营商以及您设备的制造商处自动下载并安装更新和应用（可能会使用移动数据网络）。部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
@@ -495,6 +496,7 @@
 <translation id="1383861834909034572">完成时打开</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384849755549338773">主动为采用其他语言的网站提供 Google 翻译服务</translation>
+<translation id="1384959399684842514">已暂停下载</translation>
 <translation id="1388253969141979417">允许使用您的麦克风</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
 <translation id="1390113502208199250">您必须将此设备恢复出厂设置才能使用 Chrome 教育版升级许可功能。</translation>
@@ -743,6 +745,7 @@
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
 <translation id="1573127087832371028">请描述问题</translation>
+<translation id="1574335334663388774">此设备已安装<ph name="APP_NAME" />版本 <ph name="APP_VERSION" /></translation>
 <translation id="1575036763505533001">自定义 Chrome 侧边栏</translation>
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
@@ -983,6 +986,7 @@
 <translation id="1748563609363301860">您可以将这个密码保存到您的 Google 账号中，或者仅保存到此设备上</translation>
 <translation id="1749733017156547309">必须输入密码</translation>
 <translation id="1750172676754093297">您的安全密钥无法存储指纹</translation>
+<translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件，除非您关闭此网站的所有标签页</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="175196451752279553">重新打开关闭的标签页(&amp;E)</translation>
@@ -1422,7 +1426,6 @@
 <translation id="2076228988744845354">可对“<ph name="EXTENSION_NAME" />”扩展程序执行的更多操作</translation>
 <translation id="2076269580855484719">隐藏此插件</translation>
 <translation id="2076672359661571384">中（推荐）</translation>
-<translation id="2077129598763517140">使用硬件加速模式（如果可用）</translation>
 <translation id="2078019350989722914">退出前先发提醒信息 (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">如果您删除了自己的某个证书，则不能再用该证书标识自己的身份。</translation>
 <translation id="2079495302726689071">在新的<ph name="APP" />标签页中打开链接</translation>
@@ -1504,7 +1507,6 @@
 <translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2133775869826239001">选择更多功能进行设置</translation>
 <translation id="2133857665503360653">重新尝试下载“<ph name="FILE_NAME" />”文件</translation>
-<translation id="2133939190018801302">系统会将此应用安装到您当前使用的 Chrome 个人资料中。<ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">系统 CA</translation>
 <translation id="21354425047973905">隐藏 PIN 码</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
@@ -3307,6 +3309,7 @@
 <translation id="3537099313456411235">关联 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 即可在“文件”应用内访问您的云端硬盘文件</translation>
 <translation id="3537881477201137177">日后需要时，您可在“设置”中修改</translation>
 <translation id="3538066758857505094">卸载 Linux 时出错。请重试。</translation>
+<translation id="3539537154248488260">隐藏/显示建议</translation>
 <translation id="3540173484406326944">未通过“<ph name="HOST_DEVICE_NAME" />”连接到网络</translation>
 <translation id="354060433403403521">交流电源适配器</translation>
 <translation id="354068948465830244">可读取和更改网站数据</translation>
@@ -4657,7 +4660,6 @@
 <translation id="4579581181964204535">无法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">若要设置浏览器通知，请转到 <ph name="LINK_BEGIN" />Chrome 浏览器设置<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">向所有联系人显示</translation>
-<translation id="4580587929153007251">请重新登录 Google 密码管理工具</translation>
 <translation id="4580596421317071374">系统会将密码保存到此设备上的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
 <translation id="4582297591746054421">网站通常会读取您的剪贴板内容以实现某些功能（例如保留您所复制文字的格式）</translation>
@@ -5128,7 +5130,6 @@
 <translation id="4953808748584563296">默认的橙色头像</translation>
 <translation id="4955707703665801001">“<ph name="FEATURE_NAME" />”功能的设备公开范围</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
-<translation id="4958090327979461112">管理您的 Chrome 个人资料</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5192,6 +5193,7 @@
 <translation id="5010043101506446253">证书授权中心</translation>
 <translation id="501057610015570208">具有“kiosk_only”这项清单属性的应用必须在 ChromeOS Flex 自助服务终端模式下进行安装</translation>
 <translation id="5010886807652684893">直观视图</translation>
+<translation id="5012523644916800014">管理密码和通行密钥</translation>
 <translation id="501394389332262641">电池电量低提示音</translation>
 <translation id="5015344424288992913">正在解析代理...</translation>
 <translation id="5016305686459575361">连接手机后，您可以畅享以下功能：</translation>
@@ -6044,7 +6046,6 @@
 <translation id="5696143504434933566">举报“<ph name="EXTENSION_NAME" />”的滥用行为</translation>
 <translation id="5696679855467848181">当前正在使用的 PPD 文件：<ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">表情符号选择器</translation>
-<translation id="5698462638680260399">登录后才能使用密码</translation>
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
 <translation id="570043786759263127">Google Play 应用和服务</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
@@ -6097,6 +6098,7 @@
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
 <translation id="5742787970423162234">具有增强功能的打包 Web 应用。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="5743267941164890801">已安装此应用的较新版本</translation>
 <translation id="5743501966138291117">PIN 码不超过 12 位，才能使用自动解锁功能</translation>
 <translation id="5745316408658560138">让 Chome 查找您购物车中商品的个性化折扣信息？</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
@@ -7786,7 +7788,6 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
 <translation id="7070484045139057854">可读取和更改网站数据</translation>
 <translation id="7072010813301522126">快捷方式名称</translation>
-<translation id="7074066049407662839">登录后才能保存密码</translation>
 <translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 证书和设置</translation>
 <translation id="7076875098323397992">无法开始升级</translation>
@@ -8003,7 +8004,6 @@
 <translation id="7258192266780953209">转换</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
-<translation id="7260367682327802201">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了“广告衡量”，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
 <translation id="7261612856573623172">系统默认文字转语音声音</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{已撤消 1 个网站的权限}other{已撤消 {NUM_SITES} 个网站的权限}}</translation>
@@ -8220,6 +8220,7 @@
 <translation id="7423807071740419372"><ph name="APP_NAME" /> 需要获得相应权限才能运行</translation>
 <translation id="7424153922653300265">节能模式已开启</translation>
 <translation id="7424818322350938336">已添加网络</translation>
+<translation id="7425037327577270384">帮我写</translation>
 <translation id="7425292366411265498">由管理员安装的扩展程序仍能读取和更改网站数据</translation>
 <translation id="7427315069950454694">今天的回忆</translation>
 <translation id="7427348830195639090">后台网页：<ph name="BACKGROUND_PAGE_URL" /></translation>

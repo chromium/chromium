@@ -144,7 +144,6 @@
 <translation id="188114911237521550">關閉深色模式</translation>
 <translation id="1885577615937958993">快轉播放媒體</translation>
 <translation id="1887850431809612466">硬體版本</translation>
-<translation id="1897672602657312171">使用快速鍵時如果未按下搜尋鍵，可能會與某些應用程式的快速鍵發生衝突。再次按下這個快速鍵即可繼續使用，或按下搜尋鍵重新輸入快速鍵。</translation>
 <translation id="1904932688895783618">其他實用資源如下：</translation>
 <translation id="1905710495812624430">超過嘗試次數上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
-<translation id="2515109918609218604">無法使用這組快速鍵。請使用其他快速鍵，而且當中不得有功能鍵和搜尋鍵。</translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2521835766824839541">播放上一首曲目</translation>
 <translation id="2526590354069164005">桌面</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">調低亮度</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
-<translation id="4185315616950253617">如果快速鍵包括最上排的按鍵，就也需要使用搜尋鍵。</translation>
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
 <translation id="4213104098953699324">USB 鍵盤</translation>
 <translation id="4227825898293920515">密碼將在 <ph name="TIME" />後到期</translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">行動網路提供者</translation>
 <translation id="725133483556299729">選取電子郵件地址</translation>
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
-<translation id="7273347807225967898">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">感受微風徐徐</translation>
 <translation id="7287310195820267359">桌布集錦</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8094062939584182041">允許 Google 透過電子郵件通知你這個問題的相關資訊</translation>
 <translation id="8104083085214006426">你目前使用的是未受保護的開放式網路</translation>
-<translation id="8111706652656628199">無法使用快速鍵。請使用 Shift 鍵和另外 1 個輔助鍵 (Ctrl、Alt、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>

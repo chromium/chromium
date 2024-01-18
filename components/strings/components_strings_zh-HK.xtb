@@ -1414,7 +1414,7 @@
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744212718085287312">下次要透過虛擬卡來提升卡的安全性嗎？</translation>
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
-<translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google，並由人工進行審查，用來改善這項功能。因此，請勿輸入醫療或財務資料等個人資訊，也不要在含有私密資訊的網站上使用這項工具。</translation>
+<translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google、由真人審核，並用來改善此功能。因此，請勿輸入醫療或財務資料等個人資料，亦不要在含有私人或敏感資料的網站上使用此工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空業</translation>
@@ -2472,8 +2472,6 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903264686717710770">標題：</translation>
 <translation id="5904360430676679685">家庭和人際關係</translation>
-<translation id="5907669856855422186">你的文字和網頁內容會傳送給 Google，且可能會用於改善此功能。
-  <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
 <translation id="5910140988253729859">復原自動填入</translation>
 <translation id="5911020115933784199">活動和節目資訊</translation>
@@ -2793,7 +2791,7 @@
 <translation id="6502626736864595182">論壇和聊天室服務供應商</translation>
 <translation id="6502991525169604759">不包括您所作的變更</translation>
 <translation id="6506959208958864820">信封</translation>
-<translation id="6507117483253822672">隨時隨地提供撰寫線上內容的建議</translation>
+<translation id="6507117483253822672">隨時隨地提供撰寫網上內容的建議</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
 <translation id="6513005815064132016">可要求追蹤攝錄機的位置</translation>
 <translation id="6517596291481585650">警告：此政策並非清單，因此未有按政策中指定的方式合併。</translation>

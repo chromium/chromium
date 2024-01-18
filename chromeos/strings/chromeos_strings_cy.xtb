@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
 <translation id="1885577615937958993">cyflymu cyfryngau</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
-<translation id="1897672602657312171">Gallai llwybr byr heb allwedd chwilio wrthdaro â llwybr byr rhai apiau. Pwyswch y llwybr byr hwn eto i barhau i'w ddefnyddio, neu pwyswch lwybr byr newydd gan ddefnyddio'r allwedd chwilio.</translation>
 <translation id="1904932688895783618">Dyma rai adnoddau defnyddiol eraill:</translation>
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
@@ -185,6 +184,7 @@
 <translation id="2189104374785738357">Golygu manylion APN</translation>
 <translation id="2209788852729124853">Ailosod Rhifyddion Traffig</translation>
 <translation id="2212733584906323460">Cydraniad Enw</translation>
+<translation id="2215920961700443347">Dim rhyngrwyd. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="2217935453350629363">Cyflymder presennol</translation>
 <translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="222447520299472966">Mae angen dewis o leiaf un albwm oriel Gelf</translation>
@@ -218,6 +218,7 @@
 <translation id="2421798028054665193">Llun <ph name="CURRENT_PAGE" /> o <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Cywirdeb pwynt rhydd</translation>
 <translation id="2448312741937722512">Math</translation>
+<translation id="2465272316171730950">Rydym yn llawn. Dewch yn ôl mewn ychydig.</translation>
 <translation id="248546197012830854">Mae'r ddyfais all-lein. Cysylltwch â rhwydwaith Wi-Fi i weld cynnwys cymorth.</translation>
 <translation id="2491955442992294626">Nid yw allweddi'n cael eu profi pan fyddwch yn defnyddio ffenestr arall</translation>
 <translation id="2493126929778606526">Eich lluniau gorau, wedi'u dewis yn awtomatig</translation>
@@ -225,7 +226,6 @@
 <translation id="2505327257735685095">Ail-lwytho'r llun papur wal presennol</translation>
 <translation id="2512979179176933762">dangos ffenestri</translation>
 <translation id="2513396635448525189">Llun mewngofnodi</translation>
-<translation id="2515109918609218604">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd heb ddefnyddio bysellau swyddogaeth a chwilio.</translation>
 <translation id="2517472476991765520">Sganio</translation>
 <translation id="2521835766824839541">trac blaenorol</translation>
 <translation id="2526590354069164005">Bwrdd gwaith</translation>
@@ -425,7 +425,6 @@
 <translation id="4171077696775491955">disgleirdeb i lawr</translation>
 <translation id="4176463684765177261">Mae wedi'i analluogi</translation>
 <translation id="4176659219503619100">Panel Rheoli</translation>
-<translation id="4185315616950253617">Mae angen i lwybr byr gyda bysellau rhes uchaf gynnwys y fysell Search.</translation>
 <translation id="420283545744377356">Diffodd yr arbedydd sgrîn</translation>
 <translation id="4213104098953699324">Bysellfwrdd USB</translation>
 <translation id="4227825898293920515">Mae'r cyfrinair yn darfod mewn <ph name="TIME" /></translation>
@@ -572,6 +571,7 @@
 <translation id="5227902338748591677">Amserlen thema dywyll</translation>
 <translation id="5229344016299762883">Gadael llawn</translation>
 <translation id="5234764350956374838">Diystyru</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Mae eich gweinyddwr wedi sefydlu ‘<ph name="APP_NAME" />' i gychwyn yn awtomatig bob tro y byddwch yn mewngofnodi.}=2{Mae eich gweinyddwr wedi sefydlu ‘<ph name="APP_NAME" />' ac 1 ap arall i gychwyn yn awtomatig bob tro y byddwch yn mewngofnodi.}zero{Mae eich gweinyddwr wedi sefydlu ‘<ph name="APP_NAME" />' a # apiau eraill i gychwyn yn awtomatig bob tro y byddwch yn mewngofnodi.}few{Mae eich gweinyddwr wedi sefydlu ‘<ph name="APP_NAME" />' a # ap arall i gychwyn yn awtomatig bob tro y byddwch yn mewngofnodi.}many{Mae eich gweinyddwr wedi sefydlu ‘<ph name="APP_NAME" />' a # ap arall i gychwyn yn awtomatig bob tro y byddwch yn mewngofnodi.}other{Mae eich gweinyddwr wedi sefydlu ‘<ph name="APP_NAME" />' a # ap arall i gychwyn yn awtomatig bob tro y byddwch yn mewngofnodi.}}</translation>
 <translation id="5252456968953390977">Trawsrwydweithio</translation>
 <translation id="5257811368506016604">Galluogi'r modd lliw golau</translation>
 <translation id="5264277876637023664">Cynnal prawf CPU</translation>
@@ -844,7 +844,6 @@
 <translation id="7216409898977639127">Darparwr Rhwydwaith Symudol</translation>
 <translation id="725133483556299729">Dewis e-bost</translation>
 <translation id="7271040990581020067">Mae'r sganiwr wrthi'n cael ei ddefnyddio. Rhowch gynnig arall arni'n nes ymlaen.</translation>
-<translation id="7273347807225967898">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio bysell addasydd (ctrl, alt, shift, search, neu launcher).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Teimlo'r awel</translation>
 <translation id="7287310195820267359">Casgliadau Papur Wal</translation>
@@ -943,6 +942,7 @@
 <translation id="7971535376154084247">Rheolyddion cyffredinol</translation>
 <translation id="7977800524392185497">I ymuno â rhwydwaith <ph name="NETWORK_NAME" />, ewch i'r Gosodiadau</translation>
 <translation id="7978412674231730200">Allwedd breifat</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Dechreuwyd ‘<ph name="APP_NAME_1" />' yn awtomatig}zero{Dechreuwyd # apiau yn awtomatig}two{Dechreuwyd # ap yn awtomatig}few{Dechreuwyd # ap yn awtomatig}many{Dechreuwyd # ap yn awtomatig}other{Dechreuwyd # ap yn awtomatig}}</translation>
 <translation id="7994702968232966508">Dull EAP</translation>
 <translation id="8004582292198964060">Porwr</translation>
 <translation id="8017679124341497925">Mae'r llwybr byr wedi'i newid</translation>
@@ -959,7 +959,6 @@
 <translation id="808894953321890993">Newid cyfrinair</translation>
 <translation id="8094062939584182041">Caniatáu i Google anfon e-bost atoch am y broblem hon</translation>
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
-<translation id="8111706652656628199">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio Shift ac 1 fysell addasydd arall (ctrl, alt, search, neu launcher).</translation>
 <translation id="811820734797650957">Gall porth gael ei Bingio (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Gwneud cais am Rifyddion Traffig</translation>

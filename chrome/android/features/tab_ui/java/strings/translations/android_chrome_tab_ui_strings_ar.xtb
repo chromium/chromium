@@ -49,6 +49,7 @@
 <translation id="5073204694187207510">إخفاء شبكة ملء الشاشة</translation>
 <translation id="5076161749301278626">هل تريد الاطّلاع على مراجعات المتجر؟</translation>
 <translation id="5082793167783849073">يُرجى مقارنة الصفحات بسرعة من خلال إنشاء مجموعة. للبدء، المس رابطًا مع الاستمرار.</translation>
+<translation id="5161254044473106830">العنوان مطلوب</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) لم تستخدمها مؤخرًا.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}two{لديك علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) لم تستخدمهما مؤخرًا.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب لم تستخدمها مؤخرًا.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب لم تستخدمها مؤخرًا.}}</translation>
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>

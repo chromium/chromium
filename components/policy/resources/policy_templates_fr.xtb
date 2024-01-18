@@ -1333,7 +1333,6 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 <translation id="2073552873076775140">Autoriser la connexion à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Crostini Ansible</translation>
 <translation id="2076158466157390917">Contrôler le nettoyage automatique lors de la connexion</translation>
-<translation id="2077129598763517140">Utiliser l'accélération matérielle si disponible</translation>
 <translation id="2077273864382355561">Délai d'arrêt de l'écran (batterie)</translation>
 <translation id="2081969239334697268">
         Si cette règle est désactivée, la mise à jour des applications Chrome Kiosk en cours de session (qui utilise l'URL de mise à jour provenant du fichier manifeste de l'extension) sera désactivée. Le préchargement CRX sera alors le seul mécanisme de mise à jour.
@@ -1961,7 +1960,6 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
 <translation id="2576324725151524912">Autoriser le mode développeur pour les applis isolées.</translation>
-<translation id="257717978573041245">Activer l'accélération matérielle</translation>
 <translation id="257788512393330403">La saisie du mot de passe est requise toutes les six heures</translation>
 <translation id="2580606791930800692">Lister les règles des contrôles de données.</translation>
 <translation id="2580757713966614760">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
@@ -2744,7 +2742,6 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
       Si cette règle n'est pas configurée, la mise à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /> n'est pas disponible.</translation>
 <translation id="3232563711929146405">Désactiver le bac à sable du service réseau</translation>
 <translation id="3232691106293445015">L'authentification <ph name="BASIC_AUTH" /> n'est pas autorisée sur les connexions HTTP non sécurisées (HTTPS requis)</translation>
-<translation id="3234753491625248216">Désactiver l'accélération matérielle</translation>
 <translation id="3234773866678260466">Autoriser l'ajout de nouveaux profils</translation>
 <translation id="3234863952320884611">Autorise l'appel asynchrone des méthodes <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /></translation>
 <translation id="3235085623859932253"> Si cette règle est désactivée, l'utilisateur ne pourra pas connecter complètement son périphérique Thunderbolt/USB4 via la tunnellisation PCIe.
@@ -6128,7 +6125,7 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 À partir de la version 114, cette règle est facultative si la règle <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> est configurée. Si cette règle n'est pas configurée, les identifiants des modèles d'URI configurés via la règle <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> sont hachés sans salage.</translation>
 <translation id="622197575020133151">Configurer les différentes fonctionnalités qui utilisent l'IA générative.</translation>
 <translation id="6224070048795197148">Autoriser l'utilisateur à se servir du navigateur sans se connecter</translation>
-<translation id="6224304369267200483">URL/domaines automatiquement autorisés à recevoir une attestation de clé de sécurité</translation>
+<translation id="6224304369267200483">URL/domaines automatiquement autorisés à recevoir une attestation des clés de sécurité</translation>
 <translation id="6225938950222983458">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> à la place.</translation>
 <translation id="6230442621691161858">Cette fonctionnalité affiche des suggestions de nouveaux contenus à explorer. Les suggestions de contenu concernent des applications, des pages Web et bien plus.
       Si cette règle est définie sur "True", les suggestions de nouveaux contenus à explorer sont activées.
@@ -7015,9 +7012,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       Cette règle étant obsolète, veuillez utiliser à la place la règle <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Activer le transfert des cookies d'authentification unique SAML dans la session utilisateur lors de la connexion</translation>
 <translation id="684856667300805181">Cette règle a été supprimée dans <ph name="PRODUCT_NAME" /> 68 et remplacée par <ph name="ARC_GLS_POLICY_NAME" />.</translation>
-<translation id="6848721032946289937">Si vous activez cette règle, ou si vous ne la configurez pas, l'accélération matérielle est activée, si disponible.
-
-      Si vous la désactivez, l'accélération matérielle est désactivée.</translation>
 <translation id="6850300477973481112">Paramètres du connecteur de bureau</translation>
 <translation id="6851199885688265233">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur</translation>
 <translation id="6851315055469993882">Permet d'activer un cache d'authentification HTTP à portée globale</translation>

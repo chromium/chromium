@@ -144,7 +144,6 @@
 <translation id="188114911237521550">የጨለማ ሁነታን አጥፋ</translation>
 <translation id="1885577615937958993">ሚዲያን ወደፊት ማሳለፊያ</translation>
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
-<translation id="1897672602657312171">የፍለጋ ቁልፍ የሌለው አቋራጭ ከተወሰነ መተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀምን መቀጠል ከፈለጉ በድጋሚ ይጫኑት ወይም የፍለጋ ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="1904932688895783618">አንዳንድ ሌሎች አጋዥ ግብዓቶች እዚህ አሉ፦</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
 <translation id="1908234395526491708">የ UDP ጥያቄ አለመሳካቶች</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">የአሁኑን የልጣፍ ምስል አድስ</translation>
 <translation id="2512979179176933762">መስኮቶችን ማሳያ</translation>
 <translation id="2513396635448525189">መግቢያ ምስል</translation>
-<translation id="2515109918609218604">አቋራጭ አይገኝም። ተግባርን እና የፍለጋ ቁልፎችን ሳይጠቀሙ አዲስ አቋራጭን ይጫኑ።</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2521835766824839541">ቀዳሚ ትራክ</translation>
 <translation id="2526590354069164005">ዴስክቶፕ</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">ብሩህነት መቀነሻ</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
 <translation id="4176659219503619100">የቁጥጥር ፓነል</translation>
-<translation id="4185315616950253617">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የፍለጋ ቁልፍን ማካተት አለበት።</translation>
 <translation id="420283545744377356">የማያ ገፅ ማቆያን አጥፋ</translation>
 <translation id="4213104098953699324">የዩኤስቢ ቁልፍ ሰሌዳ</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="725133483556299729">ኢሜይል ይምረጡ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
-<translation id="7273347807225967898">አቋራጭ አይገኝም። የአሻሻይ ቁልፍን (ctrl፣ alt፣ ቀያይር፣ ፍለጋ ወይም ማስጀምሪያ) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ነፋሱ ይሰማዎት</translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
 <translation id="8094062939584182041">Google ስለዚህ ችግር ኢሜይል እንዲልክልዎ ይፍቀዱለት</translation>
 <translation id="8104083085214006426">ክፍት እና ደህንነቱ ያልተጠበቀ አውታረ መረብ እየተጠቀሙ ነው</translation>
-<translation id="8111706652656628199">አቋራጭ አይገኝም። ቀያይርን እና 1 ተጨማሪ የአሻሻይ ቁልፍን (ctrl፣ alt፣ ፍለጋ ወይም ማስጀመሪያ) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="811820734797650957">(Android) አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
 <translation id="8132480444149501833">የትራፊክ ቆጣሪዎችን ጠይቅ</translation>

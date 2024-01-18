@@ -598,6 +598,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4307992518367153382">Cơ bản</translation>
+<translation id="4311652497846705514">Mở tệp PDF?</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
 <translation id="433213510553688132">Đang theo dõi...</translation>
 <translation id="4335835283689002019">Tính năng Duyệt web an toàn đang tắt</translation>
@@ -958,6 +959,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6192907950379606605">Tải nội dung mô tả hình ảnh</translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
 <translation id="6196315980958524839">Lưu mật khẩu vào Trình quản lý mật khẩu trên thiết bị này</translation>
+<translation id="6202514376968366382">Chrome có thể mở tệp PDF mà bạn tải xuống</translation>
 <translation id="6202812185118613467">Đăng nhập lại để bắt đầu đồng bộ hoá</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>

@@ -732,6 +732,7 @@
 <translation id="3986082989454912832">Ответить</translation>
 <translation id="3990002060657467458">Часто используемые параметры, такие как Wi-Fi, Bluetooth и громкость, находятся в меню быстрых настроек. Там также есть функция для создания скриншотов.</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
+<translation id="4002066346123236978">Название</translation>
 <translation id="40062176907008878">Рукописный ввод</translation>
 <translation id="4011112806063830608">Сейчас он включен.</translation>
 <translation id="4017989525502048489">Лазерная указка</translation>
@@ -1506,7 +1507,7 @@
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
 <translation id="7029814467594812963">Завершить сеанс</translation>
-<translation id="7031303610220416229">Показать все задачи в Google Задачах</translation>
+<translation id="7031303610220416229">Посмотреть все задачи в Google Задачах</translation>
 <translation id="7032161822340700104">Максимальное количество шаблонов – 6. Удалите один из шаблонов, чтобы сохранить новый.</translation>
 <translation id="7034025838182392395">Приложению "<ph name="APP_NAME" />" нужно разрешение (<ph name="DEVICE_NAME" />). Чтобы дать разрешение (<ph name="DEVICE_NAME" />), используйте физический переключатель.</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>

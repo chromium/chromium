@@ -221,7 +221,6 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />-г Chrome-д нэмсэн</translation>
 <translation id="4384570495110188418">Та нэвтрээгүй байгаа тул Chrome таны нууц үгсийг шалгах боломжгүй байна</translation>
 <translation id="4389991535395284064">Нууцлалын горимд үзэх үед Chrome аюултай холболт ашиглан сайтыг ачаалахаас өмнө танд сануулна</translation>
-<translation id="4393248995085527349">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.15 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.13 хувилбарыг ашиглаж байна.</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
 <translation id="4450664632294415862">Chrome - Сүлжээнд нэвтрэх - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome-н өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
@@ -309,7 +308,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5941711191222866238">Багасгах</translation>
 <translation id="5941830788786076944">Google Chrome-ыг анхдагч веб хөтөчөө болгоно уу</translation>
 <translation id="6003112304606738118">Татаж байна... <ph name="HOURS" /> цаг үлдсэн</translation>
-<translation id="6010556343189461180">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.15 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.14 хувилбарыг ашиглаж байна.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-н хэрэгслийн<ph name="END_LINK" /> тусламжтайгаар та аюулгүй үзэх болон хяналтыг гартаа байлгах боломжтой</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6025087594896450715">Google Chrome-г <ph name="REMAINING_TIME" />-н дараа эхлүүлнэ</translation>

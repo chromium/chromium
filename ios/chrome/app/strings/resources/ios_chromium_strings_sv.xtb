@@ -81,7 +81,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3366305173356742781">Chromium-data i ditt konto</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
-<translation id="3478750326643748149">Dölj Få ut mesta möjliga av Chromium</translation>
 <translation id="347967311580159871">Du hittar fler inställningar som använder data för att förbättra Chromium-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chromium. Försök sedan igen.</translation>
 <translation id="3554027294407525061">Rensa webbinformation i Chromium.</translation>

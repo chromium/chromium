@@ -598,6 +598,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4307992518367153382">Mga Pangunahing Kaalaman</translation>
+<translation id="4311652497846705514">Buksan ang PDF?</translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
 <translation id="433213510553688132">Sinusubaybayan…</translation>
 <translation id="4335835283689002019">Naka-off ang Ligtas na Pag-browse</translation>
@@ -958,6 +959,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="6192907950379606605">Makakuha ng desc ng larawan</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
 <translation id="6196315980958524839">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
+<translation id="6202514376968366382">Puwedeng buksan ng Chrome ang iyong na-download na PDF</translation>
 <translation id="6202812185118613467">Mag-sign in ulit para simulan ang pag-sync</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>

@@ -336,7 +336,7 @@
 <translation id="2747003861858887689">השדה הקודם</translation>
 <translation id="2749231692441336879">האתר <ph name="CHANNEL_NAME" /> נמצא במעקב</translation>
 <translation id="2754492786623500387">החשבונות במכשיר הזה</translation>
-<translation id="2755595981383829244">עכשיו יתקבלו התראות על תוכן</translation>
+<translation id="2755595981383829244">עכשיו נשלח לך התראות על תוכן</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="2772667768515195373">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו שמורה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">חיפוש במצב אנונימי</translation>
@@ -369,6 +369,7 @@
 <translation id="288655811176831528">סגירת הכרטיסייה</translation>
 <translation id="288902476966286676">הוחזרה לשולח</translation>
 <translation id="2890171748217283516">‏אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. ניתן לנהל אותם בהגדרות של Discover.</translation>
+<translation id="2895084600668778673">הצגת כל נתוני המילוי האוטומטי</translation>
 <translation id="2898963176829412617">תיקייה חדשה…</translation>
 <translation id="2902684821701498619">הוספה לרשימת הקריאה</translation>
 <translation id="2905479111267140204">יש לך <ph name="NUMBER_OF_PASSWORDS" /> סיסמאות בשימוש חוזר שעלולות לסכן את האבטחה שלך.</translation>
@@ -711,6 +712,7 @@
 <translation id="4805759445554688327">מספר כרטיס לא חוקי</translation>
 <translation id="4808646838864186379">המסירה בוטלה</translation>
 <translation id="4808744395915275922">עדכונים</translation>
+<translation id="4813345808229079766">התקשרות</translation>
 <translation id="4818522717893377262">הוספת שפה…</translation>
 <translation id="481968316161811770">‏קובצי cookie, נתונים מאתרים</translation>
 <translation id="4821595350501541683">הכרטיסיות נסגרו ונתוני הגלישה נמחקו</translation>

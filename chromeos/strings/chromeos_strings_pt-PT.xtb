@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Desativar modo escuro</translation>
 <translation id="1885577615937958993">avançar o conteúdo multimédia</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
-<translation id="1897672602657312171">O atalho sem tecla de pesquisa pode entrar em conflito com o atalho de alguma app. Prima este atalho novamente para continuar a usá-lo ou prima um novo atalho com a tecla de pesquisa.</translation>
 <translation id="1904932688895783618">Seguem-se outros recursos úteis:</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
 <translation id="1908234395526491708">Falhas de pedidos de UDP.</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Atualizar a imagem de fundo atual</translation>
 <translation id="2512979179176933762">mostrar janelas</translation>
 <translation id="2513396635448525189">Imagem de início de sessão</translation>
-<translation id="2515109918609218604">Atalho não disponível. Prima um novo atalho sem usar as teclas de função e pesquisa.</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2521835766824839541">faixa anterior</translation>
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">diminuir o brilho</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4176659219503619100">Painel de controlo</translation>
-<translation id="4185315616950253617">Os atalhos com teclas de linha superior têm de incluir a tecla de pesquisa.</translation>
 <translation id="420283545744377356">Desativar a proteção de ecrã</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="725133483556299729">Selecionar email</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente mais tarde.</translation>
-<translation id="7273347807225967898">Atalho não disponível. Prima um novo atalho através de uma tecla de modificação (Ctrl, Alt, Shift, pesquisa ou Launcher).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sentir a brisa</translation>
 <translation id="7287310195820267359">Coleções de imagens de fundo</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8094062939584182041">Permitir que a Google lhe envie um email acerca deste problema</translation>
 <translation id="8104083085214006426">Está a utilizar uma rede aberta e insegura</translation>
-<translation id="8111706652656628199">Atalho não disponível. Prima um novo atalho através da tecla Shift e mais 1 tecla de modificação (Ctrl, Alt, pesquisa ou Launcher).</translation>
 <translation id="811820734797650957">(Android) É possível enviar ping ao gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>

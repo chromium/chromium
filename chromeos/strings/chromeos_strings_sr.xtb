@@ -144,7 +144,6 @@
 <translation id="188114911237521550">Искључите тамни режим</translation>
 <translation id="1885577615937958993">премотајте медијски садржај унапред</translation>
 <translation id="1887850431809612466">Ревизија хардвера</translation>
-<translation id="1897672602657312171">Пречица без тастера за претрагу може да буде у супротности са пречицом неке апликације. Поново притисните ову пречицу да бисте наставили да је користите или притисните нову пречицу помоћу тастера за претрагу.</translation>
 <translation id="1904932688895783618">Ево још неких корисних ресурса:</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
 <translation id="1908234395526491708">Неуспели UDP захтеви</translation>
@@ -227,7 +226,6 @@
 <translation id="2505327257735685095">Освежите актуелну слику позадине</translation>
 <translation id="2512979179176933762">прегледајте прозоре</translation>
 <translation id="2513396635448525189">Слика за пријављивање</translation>
-<translation id="2515109918609218604">Пречица није доступна. Притисните нову пречицу без коришћења функцијских тастера и тастера за претрагу.</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2521835766824839541">претходна песма</translation>
 <translation id="2526590354069164005">Радна површина</translation>
@@ -427,7 +425,6 @@
 <translation id="4171077696775491955">смањите осветљеност</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
 <translation id="4176659219503619100">Контролна табла</translation>
-<translation id="4185315616950253617">Пречица са тастерима у горњем реду треба да садржи тастер за претрагу.</translation>
 <translation id="420283545744377356">Искључите чувар екрана</translation>
 <translation id="4213104098953699324">USB тастатура</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
@@ -847,7 +844,6 @@
 <translation id="7216409898977639127">Мобилни оператер</translation>
 <translation id="725133483556299729">Изаберите имејл</translation>
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
-<translation id="7273347807225967898">Пречица није доступна. Притисните нову пречицу помоћу модификујућег тастера (ctrl, alt, shift, тастера за претрагу или тастера покретача).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Осетите поветарац</translation>
 <translation id="7287310195820267359">Колекције позадина</translation>
@@ -963,7 +959,6 @@
 <translation id="808894953321890993">Промени лозинку</translation>
 <translation id="8094062939584182041">Дозволите Google-у да вам пошаље имејл о овом проблему</translation>
 <translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
-<translation id="8111706652656628199">Пречица није доступна. Притисните нову пречицу помоћу тастера shift и још 1 модификујућег тастера (ctrl, alt, shift, тастера за претрагу или тастера покретача).</translation>
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>

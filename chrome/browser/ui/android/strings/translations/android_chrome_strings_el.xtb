@@ -598,6 +598,7 @@
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4304713468139749426">Διαχειριστής κωδικών πρόσβασης</translation>
 <translation id="4307992518367153382">Βασικά στοιχεία</translation>
+<translation id="4311652497846705514">Άνοιγμα PDF;</translation>
 <translation id="4320177379694898372">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="433213510553688132">Παρακολούθηση…</translation>
 <translation id="4335835283689002019">Η ασφαλής περιήγηση είναι απενεργοποιημένη.</translation>
@@ -958,6 +959,7 @@
 <translation id="6192907950379606605">Λήψη περιγραφών εικόνων</translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
 <translation id="6196315980958524839">Οι κωδικοί πρόσβασης αποθηκεύονται στον Διαχειριστή κωδικών πρόσβασης Google σε αυτήν τη συσκευή.</translation>
+<translation id="6202514376968366382">Το Chrome μπορεί να ανοίξει το PDF που κατεβάσατε</translation>
 <translation id="6202812185118613467">Συνδεθείτε ξανά για να ξεκινήσετε τον συγχρονισμό</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
 <translation id="6210748933810148297">Δεν είστε ο χρήστης <ph name="EMAIL" />;</translation>

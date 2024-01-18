@@ -81,7 +81,6 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="3366305173356742781">Chromium-data i kontoen din</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt. Dette kan omfatte loggen og autofyll.}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter. Dette kan omfatte loggen og autofyll.}}</translation>
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
-<translation id="3478750326643748149">Skjul «Få mest mulig ut av Chromium»</translation>
 <translation id="347967311580159871">For å se flere innstillinger som bruker data for å forbedre Chromium-opplevelsen, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Passordet ble ikke delt. Sjekk internettilkoblingen din, og kontroller at du er logget på Chromium. Prøv deretter på nytt.</translation>
 <translation id="3554027294407525061">Slett nettlesingsdata i Chromium.</translation>
