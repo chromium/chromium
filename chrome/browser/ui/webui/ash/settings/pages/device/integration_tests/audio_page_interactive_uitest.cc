@@ -49,6 +49,12 @@ constexpr char kInputDeviceDropdownSelector[] = "#audioInputDeviceDropdown";
 constexpr char kInputMuteSelector[] = "#audioInputGainMuteButton";
 constexpr char kInputSliderSelector[] = "#audioInputGainVolumeSlider";
 
+// Devices' ID configured here:
+// chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
+constexpr uint64_t fake_internal_speaker = 0x100000001;
+constexpr uint64_t fake_headphone = 0x200000001;
+constexpr uint64_t fake_internal_mic = 0x100000002;
+
 // ActiveAudioNodeStateObserver tracks when primary input or output device
 // changes. Returns state change with primary active device ID depending for
 // input or output on the value of the `is_input` parameter.
@@ -138,19 +144,6 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
     InteractiveAshTest::TearDownOnMainThread();
   }
 
-  // Set active input or output device using CrasAudioHandler::SwitchToDevice.
-  auto DoSetActiveDevice(uint64_t device_id) {
-    return Steps(Do([this, device_id]() {
-      DCHECK(audio_handler());
-      const AudioDevice* audio_device =
-          audio_handler()->GetDeviceFromId(device_id);
-      DCHECK(audio_device);
-      audio_handler()->SwitchToDevice(
-          *audio_device, /*notify=*/true,
-          CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
-    }));
-  }
-
   // Ensure browser opened to Audio settings page.
   auto LoadAudioSettingsPage() {
     const InteractiveAshTest::DeepQuery kPathToAudioSettings = {
@@ -213,6 +206,25 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
                              CreateAudioPageDeepQueryForSelector(selector)));
   }
 
+  // Set active input or output device using CrasAudioHandler::SwitchToDevice
+  // and wait for it to exist.
+  auto DoSetActiveDevice(uint64_t device_id) {
+    return Steps(Do([this, device_id]() {
+      DCHECK(audio_handler());
+      const AudioDevice* audio_device =
+          audio_handler()->GetDeviceFromId(device_id);
+      DCHECK(audio_device);
+      audio_handler()->SwitchToDevice(
+          *audio_device, /*notify=*/true,
+          CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
+      if (audio_device->is_input) {
+        MaybeWaitForInputDevice(device_id);
+      } else {
+        MaybeWaitForOutputDevice(device_id);
+      }
+    }));
+  }
+
   CrasAudioHandler* audio_handler() const { return audio_handler_; }
 
  private:
@@ -226,19 +238,8 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
   SetupContextWidget();
 
-  // Output device `output_1`'s ID configured here:
-  // chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
-  const uint64_t expected_active_output_node = 0x100000001;
-  EXPECT_TRUE(audio_handler()->GetDeviceFromId(expected_active_output_node));
-
-  // Input device `input_1`'s ID configured here:
-  // chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
-  const uint64_t expected_active_input_node = 0x100000002;
-  EXPECT_TRUE(audio_handler()->GetDeviceFromId(expected_active_input_node));
-
   RunTestSequence(
-      Log("Setup state observers"),
-      // Setup state observers.
+      Log("Setup active node changed state observers"),
       ObserveState(kActiveOutputNodeState,
                    std::make_unique<ActiveAudioNodeStateObserver>(
                        audio_handler(), /*is_input=*/false)),
@@ -248,17 +249,15 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
 
       // Set fake internal speaker as active output device and wait for state
       // update to ensure output controls are displayed on audio settings page.
-      DoSetActiveDevice(expected_active_output_node),
-      MaybeWaitForOutputDevice(expected_active_output_node),
+      DoSetActiveDevice(fake_internal_speaker),
       Log("Expected primary output device configured"),
 
       // Set fake internal mic as active input device and wait for state update
       // to ensure input controls are displayed on audio settings page.
-      DoSetActiveDevice(expected_active_input_node),
-      MaybeWaitForInputDevice(expected_active_input_node),
+      DoSetActiveDevice(fake_internal_mic),
       Log("Expected primary input device configured"),
 
-      // Open audio settings page.
+      Log("Open audio settings page and ensure it exists"),
       LoadAudioSettingsPage(),
 
       // Test that output controls exist.
@@ -278,13 +277,7 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
 IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputDevice) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeHeadphoneActiveEvent);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
-
   SetupContextWidget();
-
-  // Output devices' ID configured here:
-  // chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
-  const uint64_t fake_headphone = 0x200000001;
-  EXPECT_TRUE(audio_handler()->GetDeviceFromId(fake_headphone));
 
   StateChange fake_headphone_active;
   fake_headphone_active.type = StateChange::Type::kExistsAndConditionTrue;
@@ -299,15 +292,55 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputDevice) {
   RunTestSequence(
       // Set fake headphone as active output device.
       DoSetActiveDevice(fake_headphone),
-      MaybeWaitForOutputDevice(fake_headphone),
       Log("Expected headphone output device configured"),
 
-      // Open audio settings page.
+      Log("Open audio settings page and ensure it exists"),
       LoadAudioSettingsPage(),
 
       // Test that headphone is selected.
       WaitForStateChange(kOsSettingsElementId, fake_headphone_active),
       Log("Expected headphone is selected in the active output dropdown"));
+}
+
+// Verify changing mute state in UI is reflected in cras.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleInputMute) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalMicMutedEvent);
+  base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
+  SetupContextWidget();
+
+  // Ensure input is not muted in cras.
+  EXPECT_FALSE(audio_handler()->IsInputMuted());
+
+  StateChange fake_internal_mic_muted;
+  fake_internal_mic_muted.type = StateChange::Type::kExistsAndConditionTrue;
+  fake_internal_mic_muted.event = kFakeInternalMicMutedEvent;
+  fake_internal_mic_muted.where =
+      CreateAudioPageDeepQueryForSelector(kInputMuteSelector);
+  fake_internal_mic_muted.test_function = "btn => btn.ariaPressed";
+
+  RunTestSequence(
+      Log("Setup active node changed state observers"),
+      ObserveState(kActiveInputNodeState,
+                   std::make_unique<ActiveAudioNodeStateObserver>(
+                       audio_handler(), /*is_input=*/true)),
+
+      // Set fake internal mic as active input device.
+      DoSetActiveDevice(fake_internal_mic),
+      Log("Expected internal mic input device configured"),
+
+      Log("Open audio settings page and ensure it exists"),
+      LoadAudioSettingsPage(),
+
+      Log("Mute input in UI"),
+      ClickElement(kOsSettingsElementId,
+                   CreateAudioPageDeepQueryForSelector(kInputMuteSelector)),
+
+      // Test input is muted in UI.
+      WaitForStateChange(kOsSettingsElementId, fake_internal_mic_muted),
+      Log("Expected muted input is reflected in UI"));
+
+  // Check cras to make sure input is in muted state now.
+  EXPECT_TRUE(audio_handler()->IsInputMuted());
 }
 
 }  // namespace
