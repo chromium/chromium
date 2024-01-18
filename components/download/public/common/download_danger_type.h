@@ -11,8 +11,8 @@ namespace download {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Update histogram suffixes in
-// tools/metrics/histograms/metadata/histogram_suffixes_list.xml, and variants
+// Update enum names in
+// tools/metrics/histograms/metadata/download/enums.xml, and variants
 // in tools/metrics/histograms/metadata/download/histograms.xml on additions.
 enum DownloadDangerType {
   // The download is safe.
