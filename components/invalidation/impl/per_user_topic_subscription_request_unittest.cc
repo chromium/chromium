@@ -30,6 +30,8 @@ using testing::_;
 using testing::DoAll;
 using testing::SaveArg;
 
+using RequestType = PerUserTopicSubscriptionRequest::RequestType;
+
 network::mojom::URLResponseHeadPtr CreateHeadersForTest(int responce_code) {
   auto head = network::mojom::URLResponseHead::New();
   head->headers = new net::HttpResponseHeaders(base::StringPrintf(
@@ -61,12 +63,11 @@ class PerUserTopicSubscriptionRequestTest : public testing::Test {
 
 TEST_F(PerUserTopicSubscriptionRequestTest,
        ShouldNotInvokeCallbackWhenCancelled) {
-  std::string token = "1234567890";
-  std::string url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::SUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kSubscribe;
 
   base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
       callback;
@@ -88,12 +89,11 @@ TEST_F(PerUserTopicSubscriptionRequestTest,
 }
 
 TEST_F(PerUserTopicSubscriptionRequestTest, ShouldSubscribeWithoutErrors) {
-  std::string token = "1234567890";
-  std::string base_url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::SUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string base_url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kSubscribe;
 
   base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
       callback;
@@ -136,12 +136,11 @@ TEST_F(PerUserTopicSubscriptionRequestTest, ShouldSubscribeWithoutErrors) {
 
 TEST_F(PerUserTopicSubscriptionRequestTest,
        ShouleNotSubscribeWhenNetworkProblem) {
-  std::string token = "1234567890";
-  std::string base_url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::SUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string base_url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kSubscribe;
 
   base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
       callback;
@@ -183,12 +182,11 @@ TEST_F(PerUserTopicSubscriptionRequestTest,
 
 TEST_F(PerUserTopicSubscriptionRequestTest,
        ShouldNotSubscribeWhenWrongResponse) {
-  std::string token = "1234567890";
-  std::string base_url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::SUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string base_url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kSubscribe;
 
   base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
       callback;
@@ -229,12 +227,11 @@ TEST_F(PerUserTopicSubscriptionRequestTest,
 }
 
 TEST_F(PerUserTopicSubscriptionRequestTest, ShouldUnsubscribe) {
-  std::string token = "1234567890";
-  std::string base_url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::UNSUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string base_url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kUnsubscribe;
 
   base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
       callback;
@@ -276,12 +273,11 @@ TEST_F(PerUserTopicSubscriptionRequestTest, ShouldUnsubscribe) {
 // Regression test for crbug.com/1054590, |completed_callback| destroys
 // |request|.
 TEST_F(PerUserTopicSubscriptionRequestTest, ShouldDestroyOnFailure) {
-  std::string token = "1234567890";
-  std::string base_url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::SUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string base_url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kSubscribe;
 
   std::unique_ptr<PerUserTopicSubscriptionRequest> request;
   base::RunLoop run_loop;
@@ -335,12 +331,11 @@ class PerUserTopicSubscriptionRequestParamTest
 
 TEST_P(PerUserTopicSubscriptionRequestParamTest,
        ShouldNotSubscribeWhenNonRepeatableError) {
-  std::string token = "1234567890";
-  std::string base_url = "http://valid-url.test";
-  std::string topic = "test";
-  std::string project_id = "smarty-pants-12345";
-  PerUserTopicSubscriptionRequest::RequestType type =
-      PerUserTopicSubscriptionRequest::SUBSCRIBE;
+  const std::string token = "1234567890";
+  const std::string base_url = "http://valid-url.test";
+  const std::string topic = "test";
+  const std::string project_id = "smarty-pants-12345";
+  const RequestType type = RequestType::kSubscribe;
 
   base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
       callback;

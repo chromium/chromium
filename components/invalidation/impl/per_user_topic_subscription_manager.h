@@ -39,6 +39,7 @@ namespace invalidation {
 // topics.
 class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
  public:
+  using RequestType = PerUserTopicSubscriptionRequest::RequestType;
   class Observer {
    public:
     virtual void OnSubscriptionChannelStateChanged(
