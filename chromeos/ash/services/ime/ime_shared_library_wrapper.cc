@@ -28,9 +28,11 @@ base::FilePath GetImeDecoderLibPath() {
 
 // Simple bridge between logging in the loaded shared library and logging in
 // Chrome.
+// Severity comes from the LogSeverity enum in absl logging.
 void ImeLoggerBridge(int severity, const char* message) {
   switch (severity) {
     case logging::LOGGING_INFO:
+      // Silently ignore.
       break;
     case logging::LOGGING_WARNING:
       LOG(WARNING) << message;
@@ -41,7 +43,9 @@ void ImeLoggerBridge(int severity, const char* message) {
     case logging::LOGGING_FATAL:
       LOG(FATAL) << message;
     default:
-      break;
+      // There's no LOGGING_VERBOSE level in absl logging. Nothing should reach
+      // here.
+      NOTREACHED_NORETURN();
   }
 }
 
