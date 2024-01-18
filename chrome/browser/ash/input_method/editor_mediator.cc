@@ -192,6 +192,7 @@ void EditorMediator::HandleTrigger(
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);
+      metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
     case EditorMode::kBlocked:
       mako_bubble_coordinator_.CloseUI();

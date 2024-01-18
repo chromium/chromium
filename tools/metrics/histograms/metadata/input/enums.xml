@@ -226,6 +226,7 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="ERROR_RESTRICTED_REGION"/>
   <int value="39" label="PROMO_CARD_IMPRESSION"/>
   <int value="40" label="PROMO_CARD_EXPLICIT_DISMISSAL"/>
+  <int value="41" label="CONSENT_SCREEN_IMPRESSION"/>
 </enum>
 
 <enum name="IMEGrammarActions">

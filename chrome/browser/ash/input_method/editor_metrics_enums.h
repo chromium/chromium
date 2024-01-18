@@ -124,7 +124,9 @@ enum class EditorStates {
   kPromoCardImpression = 39,
   // Increase by 1 when user clicks "Dismiss" on the promo card.
   kPromoCardExplicitDismissal = 40,
-  kMaxValue = kPromoCardExplicitDismissal,
+  // Increase by 1 when the webui consent screen is shown.
+  kConsentScreenImpression = 41,
+  kMaxValue = kConsentScreenImpression,
 };
 
 }  // namespace ash::input_method
