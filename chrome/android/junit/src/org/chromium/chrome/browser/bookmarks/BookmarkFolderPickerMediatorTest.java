@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -318,6 +319,7 @@ public class BookmarkFolderPickerMediatorTest {
 
         // Setup BookmarkUiPrefs
         doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
 
         mMediator =
                 new BookmarkFolderPickerMediator(
@@ -492,7 +494,7 @@ public class BookmarkFolderPickerMediatorTest {
 
         mMediator.populateFoldersForParentId(bookmarkModel.getRootFolderId());
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        BookmarkModelListTestUtil.verifyModelListHaViewTypes(
+        BookmarkModelListTestUtil.verifyModelListHasViewTypes(
                 mModelList,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
@@ -514,14 +516,29 @@ public class BookmarkFolderPickerMediatorTest {
 
         mMediator.populateFoldersForParentId(bookmarkModel.getRootFolderId());
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        BookmarkModelListTestUtil.verifyModelListHaViewTypes(
+        BookmarkModelListTestUtil.verifyModelListHasViewTypes(
                 mModelList,
                 ViewType.SECTION_HEADER,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.SECTION_HEADER,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
+        BookmarkModelListTestUtil.verifyModelListHasBookmarkIds(
+                mModelList,
+                null,
+                bookmarkModel.getAccountOtherFolderId(),
+                bookmarkModel.getAccountDesktopFolderId(),
+                bookmarkModel.getAccountMobileFolderId(),
+                bookmarkModel.getAccountReadingListFolder(),
+                null,
+                bookmarkModel.getOtherFolderId(),
+                bookmarkModel.getDesktopFolderId(),
+                bookmarkModel.getMobileFolderId(),
+                bookmarkModel.getLocalOrSyncableReadingListFolder());
     }
 }

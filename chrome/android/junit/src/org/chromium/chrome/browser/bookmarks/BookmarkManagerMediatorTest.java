@@ -520,7 +520,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     private void verifyCurrentViewTypes(int... expectedViewTypes) {
-        BookmarkModelListTestUtil.verifyModelListHaViewTypes(mModelList, expectedViewTypes);
+        BookmarkModelListTestUtil.verifyModelListHasViewTypes(mModelList, expectedViewTypes);
     }
 
     private void verifyCurrentBookmarkIds(BookmarkId... expectedBookmarkIds) {

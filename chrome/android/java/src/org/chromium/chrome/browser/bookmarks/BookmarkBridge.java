@@ -338,9 +338,7 @@ class BookmarkBridge {
         }
     }
 
-    /**
-     * @return The BookmarkId for root folder node
-     */
+    /** Returns the BookmarkId for root folder node. */
     public BookmarkId getRootFolderId() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
@@ -351,9 +349,7 @@ class BookmarkBridge {
         return mRootFolderId;
     }
 
-    /**
-     * @return The BookmarkId for Mobile folder node
-     */
+    /** Returns the BookmarkId for Mobile folder node. */
     public BookmarkId getMobileFolderId() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
@@ -364,9 +360,7 @@ class BookmarkBridge {
         return mMobileFolderId;
     }
 
-    /**
-     * @return Id representing the special "other" folder from bookmark model.
-     */
+    /** Returns Id representing the special "other" folder from bookmark model. */
     public BookmarkId getOtherFolderId() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
@@ -377,9 +371,7 @@ class BookmarkBridge {
         return mOtherFolderId;
     }
 
-    /**
-     * @return BookmarkId representing special "desktop" folder, namely "bookmark bar".
-     */
+    /** Returns the BookmarkId representing special "desktop" folder, namely "bookmark bar". */
     public BookmarkId getDesktopFolderId() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
@@ -388,6 +380,32 @@ class BookmarkBridge {
             mDesktopFolderId = BookmarkBridgeJni.get().getDesktopFolderId(mNativeBookmarkBridge);
         }
         return mDesktopFolderId;
+    }
+
+    /** Returns the id representing the special account "mobile" folder from bookmark model. */
+    public BookmarkId getAccountMobileFolderId() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return null;
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getAccountMobileFolderId(mNativeBookmarkBridge);
+    }
+
+    /** Returns the id representing the special account "other" folder from bookmark model. */
+    public BookmarkId getAccountOtherFolderId() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return null;
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getAccountOtherFolderId(mNativeBookmarkBridge);
+    }
+
+    /**
+     * @return BookmarkId representing special account "desktop" folder, namely "bookmark bar".
+     */
+    public BookmarkId getAccountDesktopFolderId() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return null;
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getAccountDesktopFolderId(mNativeBookmarkBridge);
     }
 
     /**
@@ -1055,6 +1073,12 @@ class BookmarkBridge {
         BookmarkId getOtherFolderId(long nativeBookmarkBridge);
 
         BookmarkId getDesktopFolderId(long nativeBookmarkBridge);
+
+        BookmarkId getAccountMobileFolderId(long nativeBookmarkBridge);
+
+        BookmarkId getAccountOtherFolderId(long nativeBookmarkBridge);
+
+        BookmarkId getAccountDesktopFolderId(long nativeBookmarkBridge);
 
         BookmarkId getPartnerFolderId(long nativeBookmarkBridge);
 

@@ -53,6 +53,9 @@ public class FakeBookmarkModel extends BookmarkModel {
     private BookmarkId mOtherFolderId;
     private BookmarkId mDesktopFolderId;
     private BookmarkId mMobileFolderId;
+    private BookmarkId mAccountOtherFolderId;
+    private BookmarkId mAccountDesktopFolderId;
+    private BookmarkId mAccountMobileFolderId;
     private BookmarkId mPartnerFolderId;
     private BookmarkId mLocalOrSyncableReadingListFolderId;
     private BookmarkId mAccountReadingListFolderId;
@@ -92,6 +95,24 @@ public class FakeBookmarkModel extends BookmarkModel {
                         mRootFolderId,
                         MOBILE_FOLDER_TITLE,
                         /* isAccountBookmark= */ false);
+        mAccountOtherFolderId =
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mRootFolderId,
+                        OTHER_FOLDER_TITLE,
+                        /* isAccountBookmark= */ true);
+        mAccountDesktopFolderId =
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mRootFolderId,
+                        DESKTOP_FOLDER_TITLE,
+                        /* isAccountBookmark= */ true);
+        mAccountMobileFolderId =
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mRootFolderId,
+                        MOBILE_FOLDER_TITLE,
+                        /* isAccountBookmark= */ true);
         mPartnerFolderId =
                 addPermanentFolder(
                         BookmarkType.NORMAL,
@@ -260,6 +281,9 @@ public class FakeBookmarkModel extends BookmarkModel {
 
             // Remove all account folders if the feature flag is disabled.
             if (!BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+                bookmarksList.remove(mAccountOtherFolderId);
+                bookmarksList.remove(mAccountDesktopFolderId);
+                bookmarksList.remove(mAccountMobileFolderId);
                 bookmarksList.remove(mAccountReadingListFolderId);
             }
         }
@@ -306,6 +330,21 @@ public class FakeBookmarkModel extends BookmarkModel {
         }
 
         @Override
+        public BookmarkId getAccountMobileFolderId(long nativeBookmarkBridge) {
+            return mAccountMobileFolderId;
+        }
+
+        @Override
+        public BookmarkId getAccountOtherFolderId(long nativeBookmarkBridge) {
+            return mAccountOtherFolderId;
+        }
+
+        @Override
+        public BookmarkId getAccountDesktopFolderId(long nativeBookmarkBridge) {
+            return mAccountDesktopFolderId;
+        }
+
+        @Override
         public BookmarkId getPartnerFolderId(long nativeBookmarkBridge) {
             return mPartnerFolderId;
         }
@@ -331,6 +370,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                     mBookmarkIdToItemMap.values().stream()
                             .filter(item -> Objects.equals(item.getParentId(), parentId))
                             .map(item -> item.getId())
+                            .sorted((first, second) -> Long.compare(first.getId(), second.getId()))
                             .collect(Collectors.toList()));
         }
 
@@ -548,6 +588,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                                             item.getTitle().contains(query)
                                                     || item.getUrlForDisplay().contains(query))
                             .map(item -> item.getId())
+                            .sorted((first, second) -> Long.compare(first.getId(), second.getId()))
                             .collect(Collectors.toList()));
         }
 

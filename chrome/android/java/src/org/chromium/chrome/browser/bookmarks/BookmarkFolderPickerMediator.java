@@ -173,6 +173,7 @@ class BookmarkFolderPickerMediator {
         PropertyModel propertyModel =
                 mImprovedBookmarkRowCoordinator.createBasePropertyModel(bookmarkId);
 
+        propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, entry);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
         propertyModel.set(

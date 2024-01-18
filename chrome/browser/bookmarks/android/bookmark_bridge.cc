@@ -280,11 +280,9 @@ BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrlImpl(const GURL& url) {
 
   // Get all the nodes for |url| from BookmarkModel and sort them by date added.
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
-      bookmarkModelResult =
-          BookmarkModelFactory::GetForBrowserContext(profile_)->GetNodesByURL(
-              url);
-  nodes.insert(nodes.end(), bookmarkModelResult.begin(),
-               bookmarkModelResult.end());
+      bookmark_model_result = bookmark_model_->GetNodesByURL(url);
+  nodes.insert(nodes.end(), bookmark_model_result.begin(),
+               bookmark_model_result.end());
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
 
   if (nodes.size() == 0) {
@@ -405,20 +403,17 @@ std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
   // bookmarks bar, mobile node, other node, and managed node (if it exists).
   // Account bookmarks come first, and local bookmarks after.
 
-  // TODO(crbug.com/1509189): Include account bookmarks when they're available.
-  // TODO(crbug.com/1509189): Hide empty local folders by default and add
-  // another function to get all top level folders to use when moving.
-  if (account_reading_list_manager_ &&
-      account_reading_list_manager_->GetRoot()) {
-    top_level_folders.push_back(account_reading_list_manager_->GetRoot());
-  }
-
   for (const auto& root_child : bookmark_model_->root_node()->children()) {
     if (!ignore_visibility && !root_child->IsVisible()) {
       continue;
     }
 
     top_level_folders.push_back(root_child.get());
+  }
+
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->GetRoot()) {
+    top_level_folders.push_back(account_reading_list_manager_->GetRoot());
   }
 
   if (local_or_syncable_reading_list_manager_->GetRoot()) {
@@ -456,6 +451,34 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetOtherFolderId(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetDesktopFolderId(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* desktop_node = bookmark_model_->bookmark_bar_node();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, desktop_node->id(), GetBookmarkType(desktop_node));
+  return folder_id_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountMobileFolderId(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* mobile_node = bookmark_model_->account_mobile_node();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, mobile_node->id(), GetBookmarkType(mobile_node));
+  return folder_id_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountOtherFolderId(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* other_node = bookmark_model_->account_other_node();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, other_node->id(), GetBookmarkType(other_node));
+  return folder_id_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetAccountDesktopFolderId(
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* desktop_node =
+      bookmark_model_->account_bookmark_bar_node();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, desktop_node->id(), GetBookmarkType(desktop_node));
   return folder_id_obj;
@@ -1023,8 +1046,18 @@ bool BookmarkBridge::IsAccountBookmarkImpl(const BookmarkNode* node) {
     return true;
   }
 
-  // TODO(crbug.com/1509189): Also check the bookmark model for account-ness
-  // when it's ready.
+  std::set<const BookmarkNode*> account_bookmark_root_folders = {
+      bookmark_model_->account_bookmark_bar_node(),
+      bookmark_model_->account_other_node(),
+      bookmark_model_->account_mobile_node()};
+  while (node != nullptr) {
+    if (account_bookmark_root_folders.find(node) !=
+        account_bookmark_root_folders.end()) {
+      return true;
+    }
+    node = node->parent();
+  }
+
   return false;
 }
 

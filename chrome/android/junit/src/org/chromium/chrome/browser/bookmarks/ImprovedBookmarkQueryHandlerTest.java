@@ -120,9 +120,12 @@ public class ImprovedBookmarkQueryHandlerTest {
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
-                        null, // Account header
+                        null,
+                        fakeBookmarkModel.getAccountOtherFolderId(),
+                        fakeBookmarkModel.getAccountDesktopFolderId(),
+                        fakeBookmarkModel.getAccountMobileFolderId(),
                         fakeBookmarkModel.getAccountReadingListFolder(),
-                        null, // Local header
+                        null,
                         fakeBookmarkModel.getOtherFolderId(),
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
@@ -422,9 +425,12 @@ public class ImprovedBookmarkQueryHandlerTest {
                         mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
         List<BookmarkId> expected =
                 Arrays.asList(
-                        null, // account header
+                        null,
+                        fakeBookmarkModel.getAccountDesktopFolderId(),
+                        fakeBookmarkModel.getAccountMobileFolderId(),
+                        fakeBookmarkModel.getAccountOtherFolderId(),
                         fakeBookmarkModel.getAccountReadingListFolder(),
-                        null, // local header
+                        null,
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
                         fakeBookmarkModel.getOtherFolderId(),
@@ -436,6 +442,11 @@ public class ImprovedBookmarkQueryHandlerTest {
                         mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
         expected =
                 Arrays.asList(
+                        null,
+                        fakeBookmarkModel.getAccountDesktopFolderId(),
+                        fakeBookmarkModel.getAccountMobileFolderId(),
+                        fakeBookmarkModel.getAccountOtherFolderId(),
+                        null,
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
                         fakeBookmarkModel.getOtherFolderId());
@@ -456,9 +467,12 @@ public class ImprovedBookmarkQueryHandlerTest {
                         mBookmarkModel.getRootFolderId(), /* movingFolder= */ false);
         List<BookmarkId> expected =
                 Arrays.asList(
-                        null, // account header
+                        null,
+                        fakeBookmarkModel.getAccountOtherFolderId(),
+                        fakeBookmarkModel.getAccountDesktopFolderId(),
+                        fakeBookmarkModel.getAccountMobileFolderId(),
                         fakeBookmarkModel.getAccountReadingListFolder(),
-                        null, // local header
+                        null,
                         fakeBookmarkModel.getOtherFolderId(),
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
@@ -470,6 +484,11 @@ public class ImprovedBookmarkQueryHandlerTest {
                         mBookmarkModel.getRootFolderId(), /* movingFolder= */ true);
         expected =
                 Arrays.asList(
+                        null,
+                        fakeBookmarkModel.getAccountOtherFolderId(),
+                        fakeBookmarkModel.getAccountDesktopFolderId(),
+                        fakeBookmarkModel.getAccountMobileFolderId(),
+                        null,
                         fakeBookmarkModel.getOtherFolderId(),
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId());

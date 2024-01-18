@@ -159,7 +159,7 @@ public class BasicBookmarkQueryHandlerTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getMobileFolderId(),
                         0,
-                        "bazz",
+                        "baz1",
                         new GURL("https://bar1.com"));
         BookmarkId baz2 =
                 mBookmarkModel.addBookmark(

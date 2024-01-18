@@ -108,6 +108,12 @@ class BookmarkBridge : public ProfileObserver,
   base::android::ScopedJavaLocalRef<jobject> GetMobileFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetOtherFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetDesktopFolderId(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountMobileFolderId(
+      JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountOtherFolderId(
+      JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAccountDesktopFolderId(
+      JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject>
   GetLocalOrSyncableReadingListFolder(JNIEnv* env);
