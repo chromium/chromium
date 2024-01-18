@@ -793,7 +793,7 @@ ci.builder(
         short_name = "chromeos-asan",
     ),
     contact_team_email = "chrome-deet-core@google.com",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
