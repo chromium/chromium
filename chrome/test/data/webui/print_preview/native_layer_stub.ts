@@ -53,6 +53,12 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   private pageLayoutInfo_: PageLayoutInfo|null = null;
 
+  /**
+   * Rejects the promise for getPrinters() to simulate getting no response or a
+   * a slow response from the backend.
+   */
+  private simulateNoResponseForGetPrinters_: boolean = false;
+
   constructor() {
     super([
       'dialogClose',
@@ -84,6 +90,10 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   }
 
   getPrinters(type: PrinterType) {
+    if (this.simulateNoResponseForGetPrinters_) {
+      return Promise.reject();
+    }
+
     this.methodCalled('getPrinters', type);
     if (this.multipleGetPrintersPromise_) {
       this.multipleGetPrintersCount_--;
@@ -275,5 +285,10 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     this.multipleGetPrintersCount_ = count;
     this.multipleGetPrintersPromise_ = new PromiseResolver();
     return this.multipleGetPrintersPromise_.promise;
+  }
+
+  setSimulateNoResponseForGetPrinters(simulateNoResponseForGetPrinters:
+                                          boolean) {
+    this.simulateNoResponseForGetPrinters_ = simulateNoResponseForGetPrinters;
   }
 }
