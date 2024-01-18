@@ -31,13 +31,7 @@ ExamplePtr CreateStringsServiceExamplePtr(const std::string& query) {
 
 }  // namespace
 
-FederatedClientManager::FederatedClientManager() {
-  if (use_fake_controller_for_testing_) {
-    controller_ = new TestFederatedServiceController;
-  } else {
-    controller_ = Shell::Get()->federated_service_controller();
-  }
-}
+FederatedClientManager::FederatedClientManager() {}
 
 FederatedClientManager::~FederatedClientManager() = default;
 
@@ -45,8 +39,18 @@ void FederatedClientManager::UseFakeAshInteractionForTest() {
   use_fake_controller_for_testing_ = true;
 }
 
-bool FederatedClientManager::IsFederatedServiceAvailable() const {
-  // TODO(b/289140140): Check further flags or conditions as needed.
+bool FederatedClientManager::IsFederatedServiceAvailable() {
+  // Lazy initialization. Useful for controlling mocked ash interaction in some
+  // unit test environments.
+  if (!initialized_) {
+    if (use_fake_controller_for_testing_) {
+      controller_ = new TestFederatedServiceController;
+    } else {
+      controller_ = Shell::Get()->federated_service_controller();
+    }
+    initialized_ = true;
+  }
+
   return ash::features::IsFederatedServiceEnabled() && controller_ &&
          controller_->IsServiceAvailable();
 }
@@ -61,7 +65,7 @@ void FederatedClientManager::ReportExample(
   ReportExampleToFederatedService(client_name, std::move(example));
 }
 
-bool FederatedClientManager::IsFederatedStringsServiceAvailable() const {
+bool FederatedClientManager::IsFederatedStringsServiceAvailable() {
   return IsFederatedServiceAvailable() &&
          ash::features::IsFederatedStringsServiceEnabled();
 }
