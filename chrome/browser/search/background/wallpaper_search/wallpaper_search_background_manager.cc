@@ -271,6 +271,8 @@ void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
   ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
       gfx::Image::CreateFrom1xBitmap(bitmap));
   UmaHistogramMediumTimes(
-      "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
+      is_inspiration_image
+          ? "NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
+          : "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
       timer.Elapsed());
 }

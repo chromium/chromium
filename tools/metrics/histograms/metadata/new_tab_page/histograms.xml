@@ -1871,6 +1871,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
+    units="ms" expires_after="2024-06-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds, it took to set an inspiration
+    Wallpaper Search theme as the current theme. This tracks how long the image
+    processing takes from the time image processing starts for setting an
+    inspiration Wallpaper Search theme to when the profile preference is set to
+    change the background image.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.WallpaperSearch.SetRecentThemeProcessingLatency"
     units="ms" expires_after="2024-04-28">
   <owner>tiborg@chromium.org</owner>

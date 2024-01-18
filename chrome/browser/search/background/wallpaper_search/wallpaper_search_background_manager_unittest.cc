@@ -197,7 +197,48 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
   base::Token token = base::Token::CreateRandom();
   base::ElapsedTimer timer = base::ElapsedTimer();
   wallpaper_search_background_manager().SelectLocalBackgroundImage(
-      token, bitmap, true, std::move(timer));
+      token, bitmap, /*is_inspiration_image=*/false, std::move(timer));
+  task_environment().AdvanceClock(base::Milliseconds(345));
+  task_environment().RunUntilIdle();
+
+  // Check that image file was created.
+  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(token)));
+
+  // Check that the args were passed to |NtpCustomBackgroundService|.
+  EXPECT_EQ(token_arg.high(), token.high());
+  EXPECT_EQ(token_arg.low(), token.low());
+  EXPECT_EQ(SK_ColorRED, image_arg.ToSkBitmap()->getColor(0, 0));
+  EXPECT_FALSE(is_inspiration_image_arg);
+
+  // Check that processing time was saved to metrics.
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency", 345, 1);
+}
+
+TEST_F(WallpaperSearchBackgroundManagerTest,
+       SetLocalBackgroundImage_Inspiration) {
+  gfx::Image image_arg;
+  base::Token token_arg;
+  bool is_inspiration_image_arg;
+  ON_CALL(mock_ntp_custom_background_service(),
+          IsCustomBackgroundDisabledByPolicy)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(mock_ntp_custom_background_service(),
+              SetBackgroundToLocalResourceWithId)
+      .WillOnce(
+          DoAll(SaveArg<0>(&token_arg), SaveArg<1>(&is_inspiration_image_arg)));
+  EXPECT_CALL(mock_ntp_custom_background_service(),
+              UpdateCustomLocalBackgroundColorAsync)
+      .WillOnce(SaveArg<0>(&image_arg));
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::Token token = base::Token::CreateRandom();
+  base::ElapsedTimer timer = base::ElapsedTimer();
+  wallpaper_search_background_manager().SelectLocalBackgroundImage(
+      token, bitmap, /*is_inspiration_image=*/true, std::move(timer));
   task_environment().AdvanceClock(base::Milliseconds(345));
   task_environment().RunUntilIdle();
 
@@ -212,7 +253,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
 
   // Check that processing time was saved to metrics.
   histogram_tester().ExpectBucketCount(
-      "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency", 345, 1);
+      "NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency", 345,
+      1);
 }
 
 // If the currently set wallpaper search image is set again, do not pass it
