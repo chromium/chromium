@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PART_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -40,18 +41,21 @@ class CORE_EXPORT Part : public ScriptWrappable {
 
   // Part API
   V8UnionChildNodePartOrDocumentPartRoot* rootForBindings() const;
-  const Vector<String>& metadata() const { return metadata_; }
+  const FrozenArray<IDLString>& metadata() const { return *metadata_; }
   virtual void disconnect();
 
  protected:
-  Part(PartRoot& root, const Vector<String> metadata)
-      : root_(root), metadata_(metadata) {}
+  Part(PartRoot& root, Vector<String> metadata)
+      : root_(root),
+        metadata_(
+            MakeGarbageCollected<FrozenArray<IDLString>>(std::move(metadata))) {
+  }
   bool IsConnected() { return connected_; }
   static bool IsAcceptableNodeType(Node& node);
 
  private:
   Member<PartRoot> root_;
-  Vector<String> metadata_;
+  Member<FrozenArray<IDLString>> metadata_;
   bool connected_{true};
   // Checking IsValid() is very hot during cloning, so |is_valid_| is
   // a cached version of (root_ && connected_),

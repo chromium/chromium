@@ -32,17 +32,17 @@ AttributePart::AttributePart(PartRoot& root,
                              Element& element,
                              AtomicString local_name,
                              bool automatic,
-                             const Vector<String> metadata)
-    : NodePart(root, element, !automatic, metadata),
+                             Vector<String> metadata)
+    : NodePart(root, element, !automatic, std::move(metadata)),
       local_name_(local_name),
       automatic_(automatic) {}
 
 Part* AttributePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
   Element& element_clone = To<Element>(node_clone);
-  Part* new_part =
-      MakeGarbageCollected<AttributePart>(data.CurrentPartRoot(), element_clone,
-                                          local_name_, automatic_, metadata());
+  Part* new_part = MakeGarbageCollected<AttributePart>(
+      data.CurrentPartRoot(), element_clone, local_name_, automatic_,
+      metadata().AsVector());
   AtomicString attribute_value = data.NextAttributeValue();
   if (attribute_value) {
     element_clone.setAttribute(local_name_, attribute_value);

@@ -43,7 +43,7 @@ class CORE_EXPORT AttributePart : public NodePart {
                 Element& element,
                 AtomicString local_name,
                 bool automatic,
-                const Vector<String> metadata);
+                Vector<String> metadata);
   AttributePart(const AttributePart&) = delete;
   ~AttributePart() override = default;
 
