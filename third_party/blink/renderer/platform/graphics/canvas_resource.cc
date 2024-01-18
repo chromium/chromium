@@ -487,7 +487,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
     // eliminated.
     shared_image_usage_flags = shared_image_usage_flags |
-                               gpu::SHARED_IMAGE_USAGE_RASTER |
+                               gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                               gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
                                gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
@@ -503,8 +504,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     // Currently in the process of adding with a killswitch.
     // TODO(crbug.com/1518427): Remove this killswitch post-safe rollout.
     if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
-      shared_image_usage_flags =
-          shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER;
+      shared_image_usage_flags = shared_image_usage_flags |
+                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     }
   }
 
@@ -1252,7 +1254,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   if (use_oop_rasterization_) {
-    usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER |
+    usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+            gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     // The GLES2_WRITE flag is needed due to raster being over GL.
@@ -1261,7 +1264,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     // Currently in the process of adding with a killswitch.
     // TODO(crbug.com/1518427): Remove this killswitch post-safe rollout.
     if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
-      usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER;
+      usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     }
   }
 
