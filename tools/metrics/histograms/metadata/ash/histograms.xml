@@ -4740,7 +4740,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.NotifierFramework.Toast.TimeInQueue" units="seconds"
+<histogram name="Ash.NotifierFramework.Toast.TimeInQueue" units="ms"
     expires_after="2025-05-19">
   <owner>kradtke@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -4826,7 +4826,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Popup.UserJourneyTime"
-    units="seconds" expires_after="2025-01-15">
+    units="ms" expires_after="2025-01-15">
   <owner>kradtke@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
