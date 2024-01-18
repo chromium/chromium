@@ -219,6 +219,16 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void LoadDeviceLocalAccounts(
       std::set<AccountId>* device_local_accounts_set) = 0;
 
+  // Called when the Profile instance for a user identified by `account_id`
+  // is created. `prefs` should be the one that is owned by Profile.
+  // The 'prefs' must be kept alive until OnUserProfileWillBeDestroyed
+  // for the user is called.
+  // Returns whether actually the prefs are used or not.
+  bool OnUserProfileCreated(const AccountId& account_id, PrefService* prefs);
+  // Called just before the Profile for a user identified by `account_id`
+  // will be destroyed.
+  void OnUserProfileWillBeDestroyed(const AccountId& account_id);
+
   // Notifies observers that active user has changed.
   void NotifyActiveUserChanged(User* active_user);
 

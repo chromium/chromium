@@ -554,11 +554,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kStartupBrowserWindowLaunchSuppressed,
                                 false);
 
-  // This pref is a per-session pref and must not be synced.
-  registry->RegisterBooleanPref(
-      ::prefs::kLoginExtensionApiCanLockManagedGuestSession, false,
-      PrefRegistry::NO_REGISTRATION_FLAGS);
-
   registry->RegisterBooleanPref(prefs::kLoginDisplayPasswordButtonEnabled,
                                 true);
 

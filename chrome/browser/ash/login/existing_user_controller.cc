@@ -238,7 +238,7 @@ void SetLoginExtensionApiCanLockManagedGuestSessionPref(
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetBoolean(::prefs::kLoginExtensionApiCanLockManagedGuestSession,
+  prefs->SetBoolean(ash::prefs::kLoginExtensionApiCanLockManagedGuestSession,
                     can_lock_managed_guest_session);
   prefs->CommitPendingWrite();
 }

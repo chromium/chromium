@@ -248,6 +248,12 @@ inline constexpr char kSystemWebAppLastAttemptedLocale[] =
 inline constexpr char kLoginDisplayPasswordButtonEnabled[] =
     "login_display_password_button_enabled";
 
+// A boolean user profile pref which indicates that the current Managed Guest
+// Session is lockable. Set by the chrome.login extension API and read by
+// `UserManager`.
+inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
+    "extensions_api.login.can_lock_managed_guest_session";
+
 // Boolean pref indicating whether the user has enabled Suggested Content in
 // OS settings > Privacy > "Suggest new content to explore".
 inline constexpr char kSuggestedContentEnabled[] =

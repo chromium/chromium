@@ -1182,12 +1182,6 @@ inline constexpr char kStartupBrowserWindowLaunchSuppressed[] =
 inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
     "extensions_api.login.data_for_next_login_attempt";
 
-// A boolean user profile pref which indicates that the current Managed Guest
-// Session is lockable. Set by the chrome.login extension API and read by
-// `UserManager`.
-inline constexpr char kLoginExtensionApiCanLockManagedGuestSession[] =
-    "extensions_api.login.can_lock_managed_guest_session";
-
 // String containing last RSU lookup key uploaded. Empty until first upload.
 inline constexpr char kLastRsuDeviceIdUploaded[] =
     "rsu.last_rsu_device_id_uploaded";

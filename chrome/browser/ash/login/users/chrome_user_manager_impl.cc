@@ -1106,35 +1106,16 @@ void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
 }
 
 void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
+  // TODO(crbug.com/1325210): Use ash::AnnotatedAccountId::Get(), when
+  // it gets fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user) {
-    if (user->is_profile_created()) {
-      // This happens sometimes in browser_tests.
-      // See also kIgnoreUserProfileMappingForTests and its uses.
-      // TODO(b/294452567): Consider how to remove this workaround for testing.
-      CHECK_IS_TEST();
-    } else {
-      CHECK(!user->GetProfilePrefs());
-      user->SetProfileIsCreated();
-      user->SetProfilePrefs(profile->GetPrefs());
-      auto observation =
-          std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
-              this);
-      observation->Observe(profile);
-      profile_observations_.push_back(std::move(observation));
-    }
-
-    for (auto& observer : observer_list_) {
-      observer.OnUserProfileCreated(*user);
-    }
-
-    // Managed Guest Sessions can be lockable if launched via the chrome.login
-    // extension API.
-    if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT &&
-        profile->GetPrefs()->GetBoolean(
-            ::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
-      user->set_can_lock(true);
-    }
+  if (user && OnUserProfileCreated(user->GetAccountId(), profile->GetPrefs())) {
+    // Add observer for graceful shutdown of User on Profile destruction.
+    auto observation =
+        std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
+            this);
+    observation->Observe(profile);
+    profile_observations_.push_back(std::move(observation));
   }
 
   // If there is pending user switch, do it now.
@@ -1148,10 +1129,11 @@ void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
   CHECK(base::EraseIf(profile_observations_, [profile](auto& observation) {
     return observation->IsObservingSource(profile);
   }));
+  // TODO(crbug.com/1325210): User ash::AnnotatedAccountId::Get(), when it gets
+  // fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user->is_profile_created()) {
-    CHECK_EQ(user->GetProfilePrefs(), profile->GetPrefs());
-    user->SetProfilePrefs(nullptr);
+  if (user) {
+    OnUserProfileWillBeDestroyed(user->GetAccountId());
   }
 }
 
