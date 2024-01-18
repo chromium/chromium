@@ -326,6 +326,34 @@ TEST_P(IsStartSafeToBreakDataTest, IsStartSafeToBreakData) {
   EXPECT_EQ(result->IsStartSafeToBreak(), data.expected);
 }
 
+TEST_F(ShapeResultTest, AddUnsafeToBreakLtr) {
+  HarfBuzzShaper shaper(u"ABC\u3042DEFG");
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  Vector<unsigned> offsets{2, 5};
+  for (const unsigned offset : offsets) {
+    EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
+  }
+  result->AddUnsafeToBreak(offsets);
+  for (const unsigned offset : offsets) {
+    EXPECT_NE(result->NextSafeToBreakOffset(offset), offset);
+  }
+}
+
+TEST_F(ShapeResultTest, AddUnsafeToBreakRtl) {
+  HarfBuzzShaper shaper(u"\u05d0\u05d1\u05d2\u05d3\u05d4\u05d5");
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+  Vector<unsigned> offsets{2, 5};
+  for (const unsigned offset : offsets) {
+    EXPECT_EQ(result->NextSafeToBreakOffset(offset), offset);
+  }
+  result->AddUnsafeToBreak(offsets);
+  for (const unsigned offset : offsets) {
+    EXPECT_NE(result->NextSafeToBreakOffset(offset), offset);
+  }
+}
+
 TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
   String string(u"abc");
   HarfBuzzShaper shaper(string);

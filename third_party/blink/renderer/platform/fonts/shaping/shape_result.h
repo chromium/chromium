@@ -219,6 +219,8 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   unsigned NextSafeToBreakOffset(unsigned offset) const;
   unsigned PreviousSafeToBreakOffset(unsigned offset) const;
 
+  void AddUnsafeToBreak(base::span<const unsigned>);
+
   // Returns the offset, relative to StartIndex, whose (origin,
   // origin+advance) contains |x|.
   unsigned OffsetForPosition(float x, BreakGlyphsOption) const;
@@ -426,6 +428,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   static unsigned CountGraphemesInCluster(base::span<const UChar>,
                                           uint16_t start_index,
                                           uint16_t end_index);
+
+  template <typename Iterator>
+  void AddUnsafeToBreak(Iterator offsets_begin, const Iterator offsets_end);
 
   struct GlyphIndexResult {
     STACK_ALLOCATED();

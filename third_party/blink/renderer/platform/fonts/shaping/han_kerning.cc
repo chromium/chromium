@@ -209,8 +209,10 @@ void HanKerning::Compute(const String& text,
       if (ShouldKernLast(type, last_type)) {
         DCHECK_GT(i, 0u);
         indices.push_back(i - 1);
+        unsafe_to_break_before_.push_back(i);
       } else if (ShouldKern(type, last_type)) {
         indices.push_back(i);
+        unsafe_to_break_before_.push_back(i);
       }
     }
 

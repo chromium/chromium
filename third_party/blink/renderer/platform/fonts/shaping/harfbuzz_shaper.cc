@@ -881,6 +881,10 @@ void HarfBuzzShaper::ShapeSegment(
                         adjusted_font, segment.script, canvas_rotation,
                         !fallback_iterator.HasNext(), result);
 
+    if (UNLIKELY(!han_kerning.UnsafeToBreakBefore().empty())) {
+      result->AddUnsafeToBreak(han_kerning.UnsafeToBreakBefore());
+    }
+
     hb_buffer_reset(range_data->buffer);
   }
 

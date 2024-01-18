@@ -70,6 +70,10 @@ class PLATFORM_EXPORT HanKerning {
     }
   }
 
+  const Vector<unsigned, 32>& UnsafeToBreakBefore() const {
+    return unsafe_to_break_before_;
+  }
+
   using CharType = HanKerningCharType;
 
   // Data retrieved from fonts for `HanKerning`.
@@ -119,6 +123,7 @@ class PLATFORM_EXPORT HanKerning {
 
   FontFeatures* features_ = nullptr;
   wtf_size_t num_features_before_;
+  Vector<unsigned, 32> unsafe_to_break_before_;
 };
 
 }  // namespace blink

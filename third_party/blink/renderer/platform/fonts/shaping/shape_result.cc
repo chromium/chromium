@@ -522,6 +522,48 @@ unsigned ShapeResult::PreviousSafeToBreakOffset(unsigned index) const {
   return StartIndex();
 }
 
+template <typename Iterator>
+void ShapeResult::AddUnsafeToBreak(Iterator offsets_iter,
+                                   const Iterator offsets_end) {
+  CHECK(offsets_iter != offsets_end);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  DCHECK(!character_position_);
+  DCHECK(std::is_sorted(
+      offsets_iter, offsets_end,
+      IsLtr() ? [](unsigned a, unsigned b) { return a < b; }
+              : [](unsigned a, unsigned b) { return a > b; }));
+  DCHECK_GE(*offsets_iter, StartIndex());
+#endif
+  unsigned offset = *offsets_iter;
+  for (const auto& run : runs_) {
+    unsigned run_offset = offset - run->StartIndex() - StartIndex();
+    if (run_offset >= run->num_characters_) {
+      continue;
+    }
+    for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_) {
+      if (glyph_data.character_index == run_offset) {
+        glyph_data.safe_to_break_before = false;
+        if (++offsets_iter == offsets_end) {
+          return;
+        }
+        offset = *offsets_iter;
+        run_offset = offset - run->StartIndex() - StartIndex();
+        if (run_offset >= run->num_characters_) {
+          break;
+        }
+      }
+    }
+  }
+}
+
+void ShapeResult::AddUnsafeToBreak(base::span<const unsigned> offsets) {
+  if (IsLtr()) {
+    AddUnsafeToBreak(offsets.begin(), offsets.end());
+  } else {
+    AddUnsafeToBreak(offsets.rbegin(), offsets.rend());
+  }
+}
+
 // If the position is outside of the result, returns the start or the end offset
 // depends on the position.
 void ShapeResult::OffsetForPosition(float target_x,
