@@ -25,7 +25,7 @@ class CC_EXPORT RecordingSource {
  public:
   RecordingSource();
   RecordingSource(const RecordingSource&) = delete;
-  virtual ~RecordingSource();
+  ~RecordingSource();
 
   RecordingSource& operator=(const RecordingSource&) = delete;
 
@@ -42,8 +42,7 @@ class CC_EXPORT RecordingSource {
 
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect);
 
-  // These functions are virtual for testing.
-  virtual scoped_refptr<RasterSource> CreateRasterSource() const;
+  scoped_refptr<RasterSource> CreateRasterSource() const;
 
   bool is_solid_color() const { return is_solid_color_; }
 

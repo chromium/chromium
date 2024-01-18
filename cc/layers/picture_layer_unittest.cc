@@ -21,7 +21,6 @@
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_proxy.h"
-#include "cc/test/fake_recording_source.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/test/skia_common.h"
@@ -424,12 +423,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
                                  std::round(390 * recording_scale), 1, 1),
                        non_solid_flags);
 
-  std::unique_ptr<FakeRecordingSource> recording_source_owned =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  FakeRecordingSource* recording_source = recording_source_owned.get();
-  scoped_refptr<FakePictureLayer> layer =
-      FakePictureLayer::CreateWithRecordingSource(
-          &client, std::move(recording_source_owned));
+  scoped_refptr<FakePictureLayer> layer = FakePictureLayer::Create(&client);
   layer->SetBounds(layer_bounds);
 
   FakeLayerTreeHostClient host_client;
@@ -447,7 +441,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
   // Solid color analysis will return true since the layer tree host has the
   // recording scale set to its default value of 1. The non solid pixel is
   // out of bounds for the unscaled layer size in this particular case.
-  EXPECT_TRUE(recording_source->is_solid_color());
+  EXPECT_TRUE(layer->GetRecordingSourceForTesting()->is_solid_color());
 
   host->SetRecordingScaleFactor(recording_scale);
   layer->SetNeedsDisplayRect(invalidation_bounds);
@@ -455,7 +449,7 @@ TEST(PictureLayerTest, RecordingScaleIsCorrectlySet) {
 
   // Once the recording scale is set and propagated to the recording source,
   // the solid color analysis should work as expected and return false.
-  EXPECT_FALSE(recording_source->is_solid_color());
+  EXPECT_FALSE(layer->GetRecordingSourceForTesting()->is_solid_color());
 }
 
 }  // namespace

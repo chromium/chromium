@@ -18,6 +18,7 @@ namespace cc {
 
 class ContentLayerClient;
 class DisplayItemList;
+class RasterSource;
 class RecordingSource;
 
 class CC_EXPORT PictureLayer : public Layer {
@@ -81,12 +82,12 @@ class CC_EXPORT PictureLayer : public Layer {
   };
 
   explicit PictureLayer(ContentLayerClient* client);
-  // Allow tests to inject a recording source.
-  PictureLayer(ContentLayerClient* client,
-               std::unique_ptr<RecordingSource> source);
   ~PictureLayer() override;
 
   bool HasDrawableContent() const override;
+
+  // Can be overridden in tests to customize RasterSource.
+  virtual scoped_refptr<RasterSource> CreateRasterSource() const;
 
   PictureLayerInputs picture_layer_inputs_;
 

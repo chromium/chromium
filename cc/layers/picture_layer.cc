@@ -38,12 +38,6 @@ PictureLayer::PictureLayer(ContentLayerClient* client)
   picture_layer_inputs_.client = client;
 }
 
-PictureLayer::PictureLayer(ContentLayerClient* client,
-                           std::unique_ptr<RecordingSource> source)
-    : PictureLayer(client) {
-  recording_source_.Write(*this) = std::move(source);
-}
-
 PictureLayer::~PictureLayer() = default;
 
 std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
@@ -88,10 +82,14 @@ void PictureLayer::PushPropertiesTo(
     base::debug::DumpWithoutCrashing();
   }
 
-  layer_impl->UpdateRasterSource(
-      recording_source_.Read(*this)->CreateRasterSource(),
-      &last_updated_invalidation_.Write(*this), nullptr, nullptr);
+  layer_impl->UpdateRasterSource(CreateRasterSource(),
+                                 &last_updated_invalidation_.Write(*this),
+                                 nullptr, nullptr);
   DCHECK(last_updated_invalidation_.Read(*this).IsEmpty());
+}
+
+scoped_refptr<RasterSource> PictureLayer::CreateRasterSource() const {
+  return recording_source_.Read(*this)->CreateRasterSource();
 }
 
 void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {

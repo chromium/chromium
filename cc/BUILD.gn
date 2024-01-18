@@ -539,7 +539,6 @@ cc_test_static_library("test_support") {
     "test/fake_raster_query_queue.h",
     "test/fake_raster_source.cc",
     "test/fake_raster_source.h",
-    "test/fake_recording_source.cc",
     "test/fake_recording_source.h",
     "test/fake_rendering_stats_instrumentation.h",
     "test/fake_scoped_ui_resource.cc",
