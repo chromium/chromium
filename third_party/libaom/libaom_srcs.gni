@@ -79,8 +79,10 @@ aom_av1_common_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/av1/common/x86/resize_ssse3.c",
 ]
 
-aom_av1_common_intrin_sve =
-    [ "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_sve.c" ]
+aom_av1_common_intrin_sve = [
+  "//third_party/libaom/source/libaom/av1/common/arm/highbd_warp_plane_sve.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_sve.c",
+]
 
 aom_av1_common_intrin_vsx =
     [ "//third_party/libaom/source/libaom/av1/common/ppc/cfl_ppc.c" ]
@@ -269,6 +271,7 @@ aom_av1_encoder_intrin_sve = [
 
 aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/av1_cx_iface.c",
+  "//third_party/libaom/source/libaom/av1/av1_cx_iface.h",
   "//third_party/libaom/source/libaom/av1/encoder/allintra_vis.c",
   "//third_party/libaom/source/libaom/av1/encoder/allintra_vis.h",
   "//third_party/libaom/source/libaom/av1/encoder/aq_complexity.c",
