@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {tabTargetSession} = await testRunner.startBlankWithTabTarget(
       `Test that prerender navigations receives the status updates`);
 

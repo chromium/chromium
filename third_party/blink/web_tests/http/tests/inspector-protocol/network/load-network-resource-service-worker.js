@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
     'Tests that we can load resources from a service worker.');
   const swHelper = (await testRunner.loadScript('../service-worker/resources/service-worker-helper.js'))(dp, session);

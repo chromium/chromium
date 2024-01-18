@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Tests that Network.requestWillBeSent and Fetch.requestPaused are emitted for worker importScripts before continuing request`);
 

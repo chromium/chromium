@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startBlank(
     "Tests that loadingFinished is correctly reported once when navigation " +
     "is aborted."

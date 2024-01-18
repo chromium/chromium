@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   // 1. Create a page, connect to it and use browser connection to grant it a remote debugging capability.
   const {page, session, dp} = await testRunner.startBlank(
       'Verify that errors in the protocol handlers are dispatched in the page.');

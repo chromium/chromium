@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startURL('resources/page-with-fenced-frame.php',
     'Tests that target for fenced frame is auto attached and target info fields are correct');
   await dp.Page.enable();

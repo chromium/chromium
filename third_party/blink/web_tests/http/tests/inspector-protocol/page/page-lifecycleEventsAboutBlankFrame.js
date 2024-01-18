@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const idToFrameMap = new Map();
   let frameNumber = 1;
 

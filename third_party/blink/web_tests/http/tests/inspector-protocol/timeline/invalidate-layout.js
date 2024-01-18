@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank('Tests that an InvalidateLayout trace event is dispatched at LocalFrameView::ScheduleRelayout');
 
   const TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');

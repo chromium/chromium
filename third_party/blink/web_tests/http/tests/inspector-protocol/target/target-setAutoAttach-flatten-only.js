@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   await testRunner.startBlank(
       `Tests that browser.Target.setAutoAttach() supports only flatten protocol.`);
 

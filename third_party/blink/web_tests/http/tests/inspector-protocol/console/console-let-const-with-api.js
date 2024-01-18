@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests how let/const declarations interact with command line api.');
 
   var response = await dp.Runtime.evaluate({expression: 'let a = 42;'});

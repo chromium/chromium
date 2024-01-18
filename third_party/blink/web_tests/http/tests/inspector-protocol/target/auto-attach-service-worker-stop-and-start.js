@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that ServiceWorker starts again after stopped when autoAttach:true and waitForDebuggerOnStart:false`);
 

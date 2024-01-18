@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, session, page} = await testRunner.startBlank(
       `Tests shared storage event tracking & fetching of entries/metadata.`);
 

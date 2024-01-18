@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const STABILIZE_NAMES = TestRunner.stabilizeNames +
       ['initiatingFrameId', 'loaderId', 'requestId'];
 

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const pageUrl =
       'http://127.0.0.1:8000/inspector-protocol/prerender/resources/inspector-protocol-page.html';
   const {tabTargetSession} = await testRunner.startBlankWithTabTarget(

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       '../resources/test-page.html',
       `Tests that CORB/ORB blocking gets reported as an issue to DevTools.`);

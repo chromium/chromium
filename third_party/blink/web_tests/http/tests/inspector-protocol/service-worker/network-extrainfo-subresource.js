@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       'Verifies that subresource requests made by service workers get Network.*ExtraInfo events for them.');
   const swHelper = (await testRunner.loadScript('resources/service-worker-helper.js'))(dp, session);

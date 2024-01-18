@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   testRunner.log('Tests auto-attach to FLEDGE worklets.');
   const bp = testRunner.browserP();
 

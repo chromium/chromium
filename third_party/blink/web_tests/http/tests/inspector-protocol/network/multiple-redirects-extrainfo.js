@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {page, session, dp} = await testRunner.startBlank(
     'Verifies that ExtraInfo events are emitted for each redirect in a chain in subsequent requests.\n');
 

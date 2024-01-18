@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Tests that the script which caused the frame to be labelled as an ad is reported via Page.getAdScriptId\n`);
   await dp.Page.enable();

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   await testRunner.log('Test that prerender fails if a frame target without tab target is attached.');
 
   const targetId = (await testRunner.browserP().Target.createTarget({

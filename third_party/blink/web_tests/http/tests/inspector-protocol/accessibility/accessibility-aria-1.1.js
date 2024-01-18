@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
     <input data-dump aria-errormessage='err' aria-invalid='true'>
     <h3 id='err'>This text field has an error!</h3>

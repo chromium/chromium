@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Tests that execution contexts are reported for frames that were blocked due to mixed content when runtime is enabled *before* navigation.`);
   await dp.Runtime.enable();

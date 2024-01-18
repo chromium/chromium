@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   await testRunner.startBlank('Tests that page focus emulation is not reset by unrelated sessions');
 
   const page = await testRunner.createPage();

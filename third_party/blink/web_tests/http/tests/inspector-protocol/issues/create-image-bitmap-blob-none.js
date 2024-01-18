@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { session, dp } = await testRunner.startBlank(
   'Verifies that ObsoleteCreateImageBitmapImageOrientationNone deprecation issue is created ' +
   'from page with {imageOrientation: "none"}.');

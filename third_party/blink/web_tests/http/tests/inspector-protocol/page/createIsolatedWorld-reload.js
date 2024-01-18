@@ -1,4 +1,4 @@
-(async function(testRunner) { const {page, session, dp} = await testRunner.startBlank(
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) { const {page, session, dp} = await testRunner.startBlank(
       "Verifies that isolated worlds can be created after same-process navigation");
 
   await dp.Runtime.enable();

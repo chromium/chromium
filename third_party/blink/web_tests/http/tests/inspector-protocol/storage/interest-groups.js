@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, session, page} = await testRunner.startBlank(
       `Tests that interest groups are read and cleared.`);
   const baseOrigin = 'https://a.test:8443/';

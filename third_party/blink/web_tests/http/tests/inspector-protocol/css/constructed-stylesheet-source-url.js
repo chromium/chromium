@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
     let {page, session, dp} = await testRunner.startHTML(`
   <script type="module">
     const styleSheetFromConstructor = new CSSStyleSheet();

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   async function backendNodeIdsToNodeIds(dp, backendNodeIds) {
     return (await dp.DOM.pushNodesByBackendIdsToFrontend({backendNodeIds})).result.nodeIds;
   }

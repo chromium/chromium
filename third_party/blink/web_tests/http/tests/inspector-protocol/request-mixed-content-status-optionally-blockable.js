@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       'https://example.test:8443/inspector-protocol/resources/test-page.html',
       `Tests that willSendRequest contains the correct mixed content status for passive mixed content.`);

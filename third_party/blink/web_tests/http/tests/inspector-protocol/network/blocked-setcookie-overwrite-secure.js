@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Verifies that when we get a non-secure set-cookie header that would overwrite a secure one, we get a Network.ResponseReceivedExtraInfo event with the blocked cookie.`);
   await dp.Network.enable();

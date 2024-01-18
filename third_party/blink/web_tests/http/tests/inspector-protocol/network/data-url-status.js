@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       '../resources/test-page.html',
       `Tests that network instrumentation indicates HTTP 200 status for data: URLs.`);

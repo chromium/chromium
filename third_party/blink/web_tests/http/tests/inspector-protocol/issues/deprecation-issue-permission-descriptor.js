@@ -1,4 +1,4 @@
-(async function (testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { page, session, dp } = await testRunner.startBlank(
     `Verifies that a deprecation issue is created when a deprecated permission string is used.\n`);
   await dp.Audits.enable();

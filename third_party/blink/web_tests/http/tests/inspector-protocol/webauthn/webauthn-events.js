@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} =
       await testRunner.startURL(
           "https://devtools.test:8443/inspector-protocol/webauthn/resources/webauthn-test.https.html",

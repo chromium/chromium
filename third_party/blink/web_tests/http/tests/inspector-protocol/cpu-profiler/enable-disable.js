@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       'Test that profiling can only be started when Profiler was enabled and that ' +
       'Profiler.disable command will stop recording all profiles.');

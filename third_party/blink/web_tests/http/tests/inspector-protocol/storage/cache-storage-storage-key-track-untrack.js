@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, session} = await testRunner.startBlank(
       `Tests that tracking and untracking CacheStorage for storage key works\n`);
   await dp.Page.enable();

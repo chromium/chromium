@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests that console.profile/profileEnd will record CPU profile when inspector front-end is connected.');
 
   function fail(message) {

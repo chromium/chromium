@@ -1,5 +1,5 @@
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       'http://first.test:8000/inspector-protocol/resources/test-page.html',
       `Tests the order in which unfinished Runtime.{enable,evaluate} calls are handled around paused navigation.`);

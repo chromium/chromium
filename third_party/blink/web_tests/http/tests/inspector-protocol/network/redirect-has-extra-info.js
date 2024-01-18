@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
     `Verifies that requestWillBeSent.redirectEmittedExtraInfo matches the presence of ExtraInfo events on redirects.\n`);
 

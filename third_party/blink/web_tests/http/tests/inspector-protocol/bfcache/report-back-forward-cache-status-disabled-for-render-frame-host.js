@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const { page, dp } = await testRunner.startBlank(
     `Test that back/forward navigations report the bfcache status`,
   );

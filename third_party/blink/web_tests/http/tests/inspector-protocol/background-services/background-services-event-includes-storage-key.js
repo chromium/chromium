@@ -17,7 +17,7 @@ async function tearDown(dp) {
   await dp.BackgroundService.onceRecordingStateChanged();
 }
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {session, dp} = await testRunner.startURL(
       'resources/background-services.html',
       `Tests that background service events are reported with storage key.\n`);

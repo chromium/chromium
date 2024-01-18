@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       'http://example.test:8000/inspector-protocol/resources/empty.html',
       `Tests that postMessage origin mismatches are logged with source url and line number if both frames are in the same process.`);

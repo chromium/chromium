@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank('Tests that frameDetached event is emitted when the OOPIF is gone.');
 
   const url = 'http://oopif.test:8000/inspector-protocol/resources/empty.html';

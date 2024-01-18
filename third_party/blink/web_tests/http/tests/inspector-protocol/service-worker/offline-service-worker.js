@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       `Verifies that Network.emulateNetworkConditions stops requests when offline is enabled for service workers.`);
   const swHelper = (await testRunner.loadScript('resources/service-worker-helper.js'))(dp, session);

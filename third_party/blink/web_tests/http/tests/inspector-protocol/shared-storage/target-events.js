@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
     'http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/empty.html', 'Tests target attach and crash for shared storage worklet.');
 

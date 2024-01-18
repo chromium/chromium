@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {page, session, dp} = await testRunner.startBlank(
       'Verifies resource type returned by the protocol when a fetch() or XHR is redirected');
 

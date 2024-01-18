@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       'resources/repeat-fetch-service-worker.html',
       'Verifies that service workers do not throw errors from devtools css enable initiated fetch.');

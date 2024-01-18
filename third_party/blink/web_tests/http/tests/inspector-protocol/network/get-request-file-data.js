@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startHTML(`
     <form action="/" enctype="multipart/form-data" method="post">
       <input type="file" name="file" />

@@ -1,4 +1,4 @@
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, dp} = await testRunner.startBlank(
     `Verifies that the AffectedRequest is included in an mixed content issue created when a HTTPS url redirects to a HTTP script (crbug.com/1190808)\n`);
 
