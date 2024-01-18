@@ -56,24 +56,14 @@ void MetricsHandler::HandleRecordAction(const base::Value::List& args) {
 void MetricsHandler::HandleRecordInHistogram(const base::Value::List& args) {
   const std::string& histogram_name = args[0].GetString();
   int int_value = static_cast<int>(args[1].GetDouble());
-  int int_boundary_value = static_cast<int>(args[2].GetDouble());
+  int exclusive_max = static_cast<int>(args[2].GetDouble());
 
-  DCHECK_GE(int_value, 0);
-  DCHECK_LE(int_value, int_boundary_value);
-  DCHECK_LT(int_boundary_value, 4000);
+  CHECK_GE(int_value, 0);
+  CHECK_LT(int_value, exclusive_max);
+  CHECK_LE(exclusive_max, 101)
+      << "Matches the contract for base::UmaHistogramExactLinear";
 
-  int bucket_count = int_boundary_value;
-  while (bucket_count >= 100) {
-    bucket_count /= 10;
-  }
-
-  // As |histogram_name| may change between calls, the UMA_HISTOGRAM_ENUMERATION
-  // macro cannot be used here.
-  base::HistogramBase* counter =
-      base::LinearHistogram::FactoryGet(
-          histogram_name, 1, int_boundary_value, bucket_count + 1,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->Add(int_value);
+  base::UmaHistogramExactLinear(histogram_name, int_value, exclusive_max);
 }
 
 void MetricsHandler::HandleRecordBooleanHistogram(
