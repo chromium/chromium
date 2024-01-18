@@ -39,6 +39,8 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
@@ -123,6 +125,15 @@ void FloatingWorkspaceService::OnSyncShutdown(syncer::SyncService* sync) {
     sync_service_->RemoveObserver(this);
   }
   sync_service_ = nullptr;
+}
+
+void FloatingWorkspaceService::OnShuttingDown() {
+  if (ash::NetworkHandler::IsInitialized()) {
+    auto* network_handler = NetworkHandler::Get();
+    if (network_handler->network_state_handler()->HasObserver(this)) {
+      network_handler->network_state_handler()->RemoveObserver(this);
+    }
+  }
 }
 
 // TODO(b/309137462): Clean up params to not need to be passed in.
@@ -261,6 +272,32 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
+void FloatingWorkspaceService::DefaultNetworkChanged(
+    const NetworkState* network) {
+  OnNetworkStateChanged();
+}
+
+void FloatingWorkspaceService::NetworkConnectionStateChanged(
+    const NetworkState* network) {
+  OnNetworkStateChanged();
+}
+
+void FloatingWorkspaceService::OnNetworkStateChanged() {
+  if (!floating_workspace_util::IsInternetConnected()) {
+    // Only send notification if there's no notification currently or the
+    // current notification is the same one that we want to display.
+    if (notification_ == nullptr ||
+        notification_->id() != kNotificationForNoNetworkConnection) {
+      StopProgressBarNotification();
+      SendNotification(kNotificationForNoNetworkConnection);
+    }
+  } else {
+    if (notification_ != nullptr &&
+        notification_->id() == kNotificationForNoNetworkConnection) {
+      MaybeCloseNotification();
+    }
+  }
+}
 void FloatingWorkspaceService::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
@@ -979,6 +1016,7 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   // chrome sync data is downloaded and the capture is kicked started after we
   // stopped the capture timer below.
   OnSyncShutdown(sync_service_);
+  OnShuttingDown();
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   if (app_cache_obs_.IsObserving()) {
@@ -997,6 +1035,12 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
     desks_storage::DeskSyncService* desk_sync_service) {
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
+  if (ash::NetworkHandler::IsInitialized()) {
+    auto* network_handler = NetworkHandler::Get();
+    if (!network_handler->network_state_handler()->HasObserver(this)) {
+      network_handler->network_state_handler()->AddObserver(this);
+    }
+  }
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);
   }

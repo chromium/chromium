@@ -31,7 +31,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -52,6 +54,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -303,6 +306,10 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
+  NetworkHandlerTestHelper* network_handler_test_helper() {
+    return network_handler_test_helper_.get();
+  }
+
   bool HasNotificationFor(const std::string& id) {
     std::optional<message_center::Notification> notification =
         display_service()->GetNotification(id);
@@ -316,6 +323,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   void CleanUpTestNetworkDevices() {
     network_handler_test_helper_->ClearDevices();
     network_handler_test_helper_->ClearServices();
+    network_handler_test_helper_->ClearProfiles();
   }
 
   apps::AppRegistryCache* cache() { return cache_.get(); }
@@ -668,6 +676,57 @@ TEST_F(FloatingWorkspaceServiceTest, NoNetworkForFloatingWorkspaceTemplate) {
 
   task_environment().RunUntilIdle();
   EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       NoNetworkForFloatingWorkspaceTemplateAfterLongDelay) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+  PopulateAppsCache();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceService::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+
+  task_environment().RunUntilIdle();
+  EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
+          .Get() -
+      base::Milliseconds(1));
+  CleanUpTestNetworkDevices();
+  task_environment().RunUntilIdle();
+  EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
+  scoped_feature_list().Reset();
+}
+
+TEST_F(
+    FloatingWorkspaceServiceTest,
+    NoNetworkForFloatingWorkspaceTemplateNotificationGoneAfterNetworkIsConnected) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+  PopulateAppsCache();
+  CleanUpTestNetworkDevices();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceService::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+
+  task_environment().RunUntilIdle();
+  EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
+  AddTestNetworkDevice();
+  network_handler_test_helper()->ResetDevicesAndServices();
+  network_handler_test_helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "online",
+            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID":
+            false})");
+  task_environment().RunUntilIdle();
+  floating_workspace_service->DefaultNetworkChanged(
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+  EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
   scoped_feature_list().Reset();
 }
 

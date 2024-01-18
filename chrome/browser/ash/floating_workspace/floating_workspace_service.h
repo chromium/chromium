@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/callback_list.h"
@@ -18,6 +19,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
@@ -67,7 +69,8 @@ class FloatingWorkspaceService : public KeyedService,
                                  public syncer::SyncServiceObserver,
                                  public apps::AppRegistryCache::Observer,
                                  public apps::AppRegistryCacheWrapper::Observer,
-                                 public ash::SessionObserver {
+                                 public ash::SessionObserver,
+                                 public NetworkStateHandlerObserver {
  public:
   static FloatingWorkspaceService* GetForProfile(Profile* profile);
 
@@ -107,6 +110,11 @@ class FloatingWorkspaceService : public KeyedService,
   // ash::SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  // NetworkStateHandlerObserver:
+  void OnShuttingDown() override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
+  void DefaultNetworkChanged(const NetworkState* network) override;
+
   void MaybeCloseNotification();
 
   std::vector<const ash::DeskTemplate*> GetFloatingWorkspaceTemplateEntries();
@@ -119,8 +127,8 @@ class FloatingWorkspaceService : public KeyedService,
       desks_storage::DeskSyncService* desk_sync_service);
 
   // Shuts down the observers and dependent services.
-  // This will be called when the user session changes to a different user or on
-  // service shutdown.
+  // This will be called when the user session changes to a different user or
+  // on service shutdown.
   void ShutDownServicesAndObservers();
 
   // Capture the current active desk task, running every ~30(TBD) seconds.
@@ -213,13 +221,13 @@ class FloatingWorkspaceService : public KeyedService,
   // with the current device.
   std::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
   // When sync passes an error status to floating workspace service,
-  // floating workspace service should send notification to user asking whether
-  // to restore the most recent FWS desk from local storage.
+  // floating workspace service should send notification to user asking
+  // whether to restore the most recent FWS desk from local storage.
   void HandleSyncEror();
 
-  // When floating workspace service waited long enough but no desk is restored
-  // floating workspace service should send notification to user asking whether
-  // to restore the most recent FWS desk from local storage.
+  // When floating workspace service waited long enough but no desk is
+  // restored floating workspace service should send notification to user
+  // asking whether to restore the most recent FWS desk from local storage.
   void MaybeHandleDownloadTimeOut();
 
   void SendNotification(const std::string& id);
@@ -234,13 +242,17 @@ class FloatingWorkspaceService : public KeyedService,
   void RemoveAllPreviousDesksExceptActiveDesk(
       const base::Uuid& exclude_desk_uuid);
 
-  // Sign out of the current user session when we detect another active session
-  // after this service was started.
+  // Sign out of the current user session when we detect another active
+  // session after this service was started.
   void MaybeSignOutOfCurrentSession();
 
   // Updates the `is_cache_ready_` status if all the required app types are
   // initialized.
   bool AreRequiredAppTypesInitialized();
+
+  // Once network state changes have been detected, handle the internet
+  // connectivity notification appropriately based on connection.
+  void OnNetworkStateChanged();
 
   const raw_ptr<Profile> profile_;
 
@@ -282,8 +294,8 @@ class FloatingWorkspaceService : public KeyedService,
   // from the 2 seconds after login to 15 seconds max wait time.
   base::RepeatingTimer progress_timer_;
 
-  // Convenience pointer to desks_storage::DeskSyncService. Guaranteed to be not
-  // null for the duration of `this`.
+  // Convenience pointer to desks_storage::DeskSyncService. Guaranteed to be
+  // not null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
 
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
@@ -295,9 +307,9 @@ class FloatingWorkspaceService : public KeyedService,
   std::unique_ptr<message_center::Notification> notification_;
   std::string progress_notification_id_;
 
-  // The in memory cache of the floating workspace that should be restored after
-  // downloading latest updates. Saved in case the user delays resuming the
-  // session and a captured template was uploaded.
+  // The in memory cache of the floating workspace that should be restored
+  // after downloading latest updates. Saved in case the user delays resuming
+  // the session and a captured template was uploaded.
   std::unique_ptr<DeskTemplate> floating_workspace_template_to_restore_ =
       nullptr;
 
