@@ -166,6 +166,9 @@ Polymer({
    * Only use the `prefilledValue` when it is also listed in the `items`.
    */
   isPrefilledValueValid() {
-    return this.prefilledValue && this.items.includes(this.prefilledValue);
+    if (this.prefilledValue === undefined || this.prefilledValue === null) {
+      return false;
+    }
+    return this.items.includes(this.prefilledValue);
   },
 });

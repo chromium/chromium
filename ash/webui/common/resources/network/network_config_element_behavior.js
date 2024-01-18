@@ -77,7 +77,7 @@ export const NetworkConfigElementBehavior = {
    * as readonly/disabled.
    */
   maybeLockByPrefilledValue() {
-    if (!this.prefilledValue) {
+    if (this.prefilledValue === undefined || this.prefilledValue === null) {
       return;
     }
     if (!this.isPrefilledValueValid()) {

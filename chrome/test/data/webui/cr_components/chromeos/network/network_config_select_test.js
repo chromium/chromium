@@ -5,6 +5,7 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/network_config_select.js';
 
+import {SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkConfigSelectTest', function() {
@@ -86,24 +87,26 @@ suite('NetworkConfigSelectTest', function() {
     assertFalse(optionEnabled);
   });
 
-  test('Valid Pre-filled value', function() {
+  test('Validation for Pre-filled value', function() {
     assertTrue(!!configSelect);
 
-    const validValue = 'None';
+    configSelect.key = 'security';
     configSelect.oncPrefix = 'WiFi.Security';
-    configSelect.items = [validValue];
-    configSelect.prefilledValue = validValue;
-    assertEquals(configSelect.value, configSelect.prefilledValue);
-  });
+    configSelect.items = [SecurityType.kNone, SecurityType.kWpaEap];
 
-  test('Invalid Pre-filled value', function() {
-    assertTrue(!!configSelect);
-
-    const validValue = 'None';
-    const invalidValue = 'Nothing';
-    configSelect.oncPrefix = 'WiFi.Security';
-    configSelect.items = [validValue];
-    configSelect.prefilledValue = invalidValue;
-    assertNotEquals(configSelect.value, configSelect.prefilledValue);
+    const testCases = [
+      {prefilledValue: null, shouldBeValid: false},
+      {prefilledValue: SecurityType.kWepPsk, shouldBeValid: false},
+      {prefilledValue: SecurityType.kNone, shouldBeValid: true},
+      {prefilledValue: SecurityType.kWpaEap, shouldBeValid: true},
+    ];
+    for (const {prefilledValue, shouldBeValid} of testCases) {
+      configSelect.prefilledValue = prefilledValue;
+      if (shouldBeValid) {
+        assertEquals(configSelect.value, configSelect.prefilledValue);
+      } else {
+        assertNotEquals(configSelect.value, configSelect.prefilledValue);
+      }
+    }
   });
 });
