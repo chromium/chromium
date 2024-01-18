@@ -174,10 +174,10 @@ class AddressComponent {
   // Returns the autofill storage type stored in |storage_type_|.
   FieldType GetStorageType() const;
 
-  // Returns either `storage_type_` or a fallback type used to replace
-  // `storage_type_` in case its node does not contain information.
-  // TODO(crbug.com/1464568): Add logic for i18n fallback types.
-  FieldType GetFallbackType() const { return storage_type_; }
+  // Returns the type to be used instead of `field_type` when this type does not
+  // contain information. It is assumed that `field_type` is a supported type of
+  // the node,
+  FieldType GetFallbackType(FieldType field_type) const;
 
   // Returns the string representation of |storage_type_|.
   std::string GetStorageTypeName() const;
