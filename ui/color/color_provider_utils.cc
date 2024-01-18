@@ -668,17 +668,12 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
 }
 
 bool IsRendererColorMappingEquivalent(
-    const ColorProvider* color_provider,
+    const ColorProvider& color_provider,
     const RendererColorMap& renderer_color_map) {
-  if (!color_provider) {
-    return false;
-  }
-  CHECK(!renderer_color_map.empty());
-
   for (const auto& table : kRendererColorIdMap) {
     // The `renderer_color_map_` should map the full set of renderer color ids.
     DCHECK(base::Contains(renderer_color_map, table.renderer_color_id));
-    if (color_provider->GetColor(table.color_id) !=
+    if (color_provider.GetColor(table.color_id) !=
         renderer_color_map.at(table.renderer_color_id)) {
       return false;
     }

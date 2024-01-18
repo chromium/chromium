@@ -108,7 +108,7 @@ void COMPONENT_EXPORT(COLOR)
 // Returns true if `color_provider` and `renderer_color_map` map renderer
 // color ids to the same SkColor.
 bool COMPONENT_EXPORT(COLOR) IsRendererColorMappingEquivalent(
-    const ColorProvider* color_provider,
+    const ColorProvider& color_provider,
     const RendererColorMap& renderer_color_map);
 
 // Sets the callback for converting a ChromeColorId to a string name. This is

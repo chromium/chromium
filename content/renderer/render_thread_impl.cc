@@ -1488,6 +1488,17 @@ void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
 
 void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {
+  bool color_providers_changed =
+      blink_platform_impl_->ThemeEngine()->UpdateColorProviders(
+          params->light_colors, params->dark_colors, params->forced_colors_map);
+  if (color_providers_changed) {
+    // Notify blink that the global ColorProvider instances for this renderer
+    // have changed. These color providers are only used to paint native
+    // controls and only require us to invalidate paint for local frames in this
+    // renderer.
+    blink::ColorProvidersChanged();
+  }
+
   auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
 
   bool did_system_color_info_change = native_theme->UpdateSystemColorInfo(
