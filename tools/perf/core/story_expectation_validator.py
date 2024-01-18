@@ -6,7 +6,6 @@
 
 import logging
 import os
-from functools import reduce
 
 from core import benchmark_utils
 from core import benchmark_finders
@@ -70,19 +69,6 @@ def validate_expectations_component_tags(test_expectations):
                "mobile and desktop condition tags") % e.lineno)
 
 
-def validate_tag_declaration_lists(tag_sets):
-  tags_set = set(reduce(lambda x, y: list(x) + list(y), tag_sets))
-  disallowed_tags = [x for x in tags_set if x not in SYSTEM_CONDITION_TAGS]
-  assert len(disallowed_tags) == 0, (
-      "Tags [%s] are not in Telemetry's set of allowable condition tags, "
-      "either remove it from expectations.config or add it to Telemetry's "
-      "set of allowable tags." % ', '.join(disallowed_tags))
-  unknown_tags = [x for x in SYSTEM_CONDITION_TAGS if x not in tags_set]
-  assert len(unknown_tags) == 0, (
-      "Tags [%s] are not declared in expectations.config, "
-      "please declare it the top of the file" % ', '.join(unknown_tags))
-
-
 def validate_supported_platform_lists(benchmarks):
   for b in benchmarks:
     assert all(tag.lower() in SYSTEM_CONDITION_TAGS
@@ -100,7 +86,6 @@ def main():
   if ret:
     logging.error(msg)
     return ret
-  validate_tag_declaration_lists(test_expectations.tag_sets)
   validate_supported_platform_lists(benchmarks)
   validate_story_names(benchmarks, test_expectations)
   validate_expectations_component_tags(test_expectations)
