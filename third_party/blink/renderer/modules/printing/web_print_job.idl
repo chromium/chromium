@@ -21,6 +21,7 @@ dictionary WebPrintJobAttributes {
 };
 
 [
+  ActiveScriptWrappable,
   Exposed=Window,
   RuntimeEnabled=WebPrinting,
   SecureContext,
