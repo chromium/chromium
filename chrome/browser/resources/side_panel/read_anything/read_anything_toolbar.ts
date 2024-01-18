@@ -310,6 +310,21 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.isReadAloudEnabled_) {
       fontOptions = Array.from(this.$.fontMenu.children);
       this.setCheckMarkForMenu_(this.$.fontMenu, currentFontIndex);
+
+      // Setting the custom fonts on each of the elements in the dropdown is
+      // technically possible when Read Aloud is disabled, but it can cause
+      // an issue where the first instance of opening the dropdown shows a
+      // scrollbar because the height is calculated before the font is set.
+      // Therefore, only set the custom fonts on the individual items when
+      // Read Aloud is enabled.
+      fontOptions.forEach(element => {
+        assert(element instanceof HTMLElement);
+        if (!element.innerText) {
+          return;
+        }
+        // Update the font of each button to be the same as the font text.
+        element.style.fontFamily = element.innerText;
+      });
     } else {
       const shadowRoot = this.shadowRoot;
       assert(shadowRoot);
@@ -319,15 +334,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       fontOptions = Array.from(select.options);
       select.selectedIndex = currentFontIndex;
     }
-
-    fontOptions.forEach(element => {
-      assert(element instanceof HTMLElement);
-      if (!element.innerText) {
-        return;
-      }
-      // Update the font of each button to be the same as the font text.
-      element.style.fontFamily = element.innerText;
-    });
   }
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
