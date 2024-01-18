@@ -56,11 +56,6 @@ bool IsAutoDisableAccessibilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kAutoDisableAccessibility);
 }
 
-BASE_FEATURE(kBacklightOcr, "BacklightOcr", base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsBacklightOcrEnabled() {
-  return base::FeatureList::IsEnabled(features::kBacklightOcr);
-}
-
 BASE_FEATURE(kEnableAccessibilityAriaVirtualContent,
              "AccessibilityAriaVirtualContent",
              base::FEATURE_DISABLED_BY_DEFAULT);

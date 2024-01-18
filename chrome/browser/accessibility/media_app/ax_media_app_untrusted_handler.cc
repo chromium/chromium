@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -49,7 +49,9 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     content::BrowserContext& context,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
     : browser_context_(context), media_app_page_(std::move(page)) {
-  if (features::IsBacklightOcrEnabled()) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
+    return;
+  }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     CHECK(ScreenAIInstallState::GetInstance())
         << "`ScreenAIInstallState` should always be created on browser "
@@ -60,15 +62,11 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
     ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-  }
 }
 
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() = default;
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  if (!features::IsBacklightOcrEnabled()) {
-    return false;
-  }
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (is_ocr_service_enabled_for_testing_) {
     return true;
@@ -105,7 +103,6 @@ void AXMediaAppUntrustedHandler::FlushForTesting() {
 
 void AXMediaAppUntrustedHandler::StateChanged(
     ScreenAIInstallState::State state) {
-  CHECK(features::IsBacklightOcrEnabled());
   if (screen_ai_install_state_ == state) {
     return;
   }
@@ -126,7 +123,7 @@ void AXMediaAppUntrustedHandler::StateChanged(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
-  return features::IsBacklightOcrEnabled() &&
+  return base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
          accessibility_state_utils::IsScreenReaderEnabled();
 }
 
@@ -182,7 +179,6 @@ void AXMediaAppUntrustedHandler::PerformAction(
 }
 
 void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
-  CHECK(features::IsBacklightOcrEnabled());
   if (media_app_) {
     media_app_->AccessibilityEnabledChanged(
         accessibility_state_utils::IsScreenReaderEnabled());
@@ -195,9 +191,6 @@ void AXMediaAppUntrustedHandler::DocumentUpdated(
   // `page_locations` should contain the new locations of all pages, whilst
   // `dirty_pages` only the indices of all the pages that need to be OCRed.
   CHECK_GE(page_locations.size(), dirty_pages.size());
-  if (!features::IsBacklightOcrEnabled()) {
-    return;
-  }
   page_locations_ = page_locations;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (dirty_pages.empty()) {
@@ -241,7 +234,6 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
 }
 
 void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
-  CHECK(features::IsBacklightOcrEnabled());
   if (!IsOcrServiceEnabled()) {
     return;
   }
@@ -263,7 +255,6 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
 void AXMediaAppUntrustedHandler::OnPageOcred(uint64_t dirty_page_index,
                                     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(features::IsBacklightOcrEnabled());
   // The tree update that comes from the OCR Service is only a list of nodes,
   // and it's missing valid tree data.
   //

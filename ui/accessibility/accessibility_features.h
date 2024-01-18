@@ -67,12 +67,6 @@ AX_BASE_EXPORT bool IsAugmentExistingImageLabelsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAutoDisableAccessibility);
 AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
 
-// Make PDFs displayed in the ChromeOS Media App (AKA Backlight)
-// accessible by performing OCR on the images for each page.
-// TODO(nektar): Should this be moved to ChromeOS section?
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kBacklightOcr);
-AX_BASE_EXPORT bool IsBacklightOcrEnabled();
-
 // Recognize "aria-virtualcontent" as a valid aria property.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityAriaVirtualContent);
 AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();

@@ -2792,12 +2792,6 @@ const char kPdfOcrDescription[] =
     "Enables a feature whereby inaccessible (i.e. untagged) PDFs are made "
     "accessible using an optical character recognition service.";
 
-const char kBacklightOcrName[] =
-    "Performs OCR on PDFs displayed in the Media App";
-const char kBacklightOcrDescription[] =
-    "Enables a feature that makes PDFs displayed in the ChromeOS Media App "
-    "(AKA Backlight) accessible by performing OCR on the images for each page.";
-
 const char kPdfXfaFormsName[] = "PDF XFA support";
 const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "

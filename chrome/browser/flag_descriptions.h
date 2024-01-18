@@ -1602,9 +1602,6 @@ extern const char kPasswordManagerShadowDomSupportDescription[];
 extern const char kPasswordParsingOnSaveUsesPredictionsName[];
 extern const char kPasswordParsingOnSaveUsesPredictionsDescription[];
 
-extern const char kBacklightOcrName[];
-extern const char kBacklightOcrDescription[];
-
 extern const char kPdfOcrName[];
 extern const char kPdfOcrDescription[];
 

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -60,7 +61,8 @@ std::vector<gfx::RectF> CreateFakePageBounds(const uint64_t num_pages) {
 
 class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  public:
-  AXMediaAppUntrustedHandlerTest() : feature_list_(features::kBacklightOcr) {}
+  AXMediaAppUntrustedHandlerTest()
+      : feature_list_(ash::features::kMediaAppPdfA11yOcr) {}
   AXMediaAppUntrustedHandlerTest(
       const AXMediaAppUntrustedHandlerTest&) = delete;
   AXMediaAppUntrustedHandlerTest& operator=(

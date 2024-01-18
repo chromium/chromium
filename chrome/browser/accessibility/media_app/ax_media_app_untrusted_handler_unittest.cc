@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
@@ -44,7 +44,8 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
 
 class AXMediaAppUntrustedHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  AXMediaAppUntrustedHandlerTest() : feature_list_(features::kBacklightOcr) {}
+  AXMediaAppUntrustedHandlerTest()
+      : feature_list_(ash::features::kMediaAppPdfA11yOcr) {}
   AXMediaAppUntrustedHandlerTest(
       const AXMediaAppUntrustedHandlerTest&) = delete;
   AXMediaAppUntrustedHandlerTest& operator=(
