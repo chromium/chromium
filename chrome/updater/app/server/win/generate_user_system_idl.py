@@ -18,6 +18,14 @@ the `IInterfaceSystem` to the `library` section.
 * `"addToLibrary": ["user"]` will add only `IInterfaceUser` to the
 `library` section.
 
+`includeFor` is an optional qualifier that indicates what scope the interface
+and the specializations should be included for, when used in conjunction with
+the optional `--generate_for` command line option. `includeFor` is ignored if
+no `--generate_for` command line option is specified. For instance:
+* `"includeFor": ["system"]` will add the interface and the specializations only
+when using the `--generate_for=system` command line option, but not when using
+the `--generate_for=user` command line option.
+
 Here is an example:
 
 ```
@@ -101,7 +109,7 @@ import json
 import re
 
 
-def _GenerateIDLFile(idl_template_filename, idl_output_filename):
+def _GenerateIDLFile(idl_template_filename, idl_output_filename, generate_for):
     pattern = re.compile(
         r'''BEGIN_INTERFACE\(
             (.*?)    # Group for the replacement dictionary.
@@ -122,22 +130,29 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename):
             trailer = matches[i + 2]
             interface_base_name = re.search(r'interface (\w+) :',
                                             interface_text).group(1)
-            interfaces_in_library.extend([
-                "interface " + interface_base_name + flavor.title()
-                for flavor in replacement_dict['addToLibrary']
-            ])
-            idl_output.append(interface_text)
+            if not generate_for or generate_for in replacement_dict.get(
+                    'includeFor',
+                {}) or generate_for in replacement_dict['addToLibrary']:
+                idl_output.append(interface_text)
+                if "" in replacement_dict['addToLibrary']:
+                    interfaces_in_library.append("interface " +
+                                                 interface_base_name)
 
-            for user_or_system, placeholder_guid in replacement_dict.get(
-                    'uuid', {}).items():
-                interface_gen = re.sub(r'(uuid\().*?(\))',
-                                       r'\1%s\2' % placeholder_guid,
-                                       interface_text)
-                for k in replacement_dict['tokensToSuffix']:
-                    interface_gen = re.sub(r'\b%s\b' % k,
-                                           k + user_or_system.title(),
-                                           interface_gen)
-                idl_output.append(interface_gen)
+                for scope, placeholder_guid in replacement_dict.get(
+                        'uuid', {}).items():
+                    if generate_for and generate_for != scope:
+                        continue
+                    interfaces_in_library.append("interface " +
+                                                 interface_base_name +
+                                                 scope.title())
+                    interface_gen = re.sub(r'(uuid\().*?(\))',
+                                           r'\1%s\2' % placeholder_guid,
+                                           interface_text)
+                    for k in replacement_dict['tokensToSuffix']:
+                        interface_gen = re.sub(r'\b%s\b' % k,
+                                               k + scope.title(),
+                                               interface_gen)
+                    idl_output.append(interface_gen)
 
             if trailer.strip():
                 trailer = re.sub(r'INTERFACES_IN_LIBRARY',
@@ -164,9 +179,13 @@ def _Main():
                             type=str,
                             required=True,
                             help='Output IDL file.')
+    cmd_parser.add_argument('--generate_for',
+                            type=str,
+                            help='Generate the IDL for `user` or `system`.')
     flags = cmd_parser.parse_args()
 
-    _GenerateIDLFile(flags.idl_template_file, flags.idl_output_file)
+    _GenerateIDLFile(flags.idl_template_file, flags.idl_output_file,
+                     flags.generate_for)
 
 
 if __name__ == '__main__':

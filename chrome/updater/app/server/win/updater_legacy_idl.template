@@ -581,7 +581,8 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "addToLibrary": [""]
+    "addToLibrary": [""],
+    "includeFor": ["system"]
   }
 )
 [
@@ -604,7 +605,8 @@ END_INTERFACE
 
 BEGIN_INTERFACE(
   {
-    "addToLibrary": [""]
+    "addToLibrary": [""],
+    "includeFor": ["system"]
   }
 )
 [
