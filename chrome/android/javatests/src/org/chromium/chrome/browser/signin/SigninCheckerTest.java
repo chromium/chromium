@@ -291,23 +291,23 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1293942")
+    @Features.EnableFeatures(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)
     public void signinWhenChildAccountIsFirstAccount() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         final CoreAccountInfo childAccount = mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mSigninTestRule.addAccount("the.second.account@gmail.com");
 
-        mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
         CriteriaHelper.pollUiThread(
                 () -> {
                     return childAccount.equals(
-                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
 
-        // The check should be done once at account addition and once at activity start-up.
+        // The check should be done twice at account addition and once during force sign-in.
         Assert.assertEquals(
-                2,
+                3,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
