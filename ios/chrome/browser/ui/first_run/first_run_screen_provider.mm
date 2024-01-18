@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
@@ -68,7 +69,8 @@ bool IsSearchEngineChoiceScreenEnabledFre() {
 
   [screens addObject:@(kDefaultBrowserPromo)];
 
-  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE)) {
+  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE) &&
+      ShouldShowOmniboxPositionChoiceInFRE(browserState)) {
     [screens addObject:@(kOmniboxPosition)];
   }
 

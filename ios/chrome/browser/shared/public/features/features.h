@@ -250,6 +250,9 @@ extern const char kBottomOmniboxPromoDefaultPositionParam[];
 extern const char kBottomOmniboxPromoDefaultPositionParamTop[];
 extern const char kBottomOmniboxPromoDefaultPositionParamBottom[];
 
+// Feature flag to enable region filter for the bottom omnibox promos.
+BASE_DECLARE_FEATURE(kBottomOmniboxPromoRegionFilter);
+
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);

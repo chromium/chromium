@@ -2759,7 +2759,8 @@
                     "enable_features": [
                         "BottomOmniboxPromoAppLaunch",
                         "BottomOmniboxPromoDefaultPosition",
-                        "BottomOmniboxPromoFRE"
+                        "BottomOmniboxPromoFRE",
+                        "BottomOmniboxPromoRegionFilter"
                     ]
                 }
             ]

@@ -7,14 +7,18 @@
 
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
-class PrefService;
+class ChromeBrowserState;
 
 /// Returns the address bar option that should be selected by default in the
 /// promo.
 ToolbarType DefaultSelectedOmniboxPosition();
 
 /// Returns whether the fullscreen IPH promo of OmniboxPositionChoice should be
-/// shown based on app state.
-bool ShouldShowOmniboxPositionChoiceIPHPromo(PrefService* pref_service);
+/// shown based on `browser_state`.
+bool ShouldShowOmniboxPositionChoiceIPHPromo(ChromeBrowserState* browser_state);
+
+/// Returns whether the FRE screen of OmniboxPositionChoice should be shown
+/// based on `browser_state`.
+bool ShouldShowOmniboxPositionChoiceInFRE(ChromeBrowserState* browser_state);
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_OMNIBOX_POSITION_OMNIBOX_POSITION_CHOICE_UTIL_H_

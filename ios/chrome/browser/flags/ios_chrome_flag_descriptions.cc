@@ -168,6 +168,11 @@ const char kBottomOmniboxPromoFREName[] = "Bottom omnibox promo FRE";
 const char kBottomOmniboxPromoFREDescription[] =
     "Enables the FRE promo for the bottom omnibox.";
 
+const char kBottomOmniboxPromoRegionFilterName[] =
+    "Bottom omnibox promo region filter";
+const char kBottomOmniboxPromoRegionFilterDescription[] =
+    "When enabled the bottom omnibox promo is limited to some regions.";
+
 const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
 const char kBottomOmniboxSteadyStateDescription[] =
     "Move the omnibox to the bottom in steady state";

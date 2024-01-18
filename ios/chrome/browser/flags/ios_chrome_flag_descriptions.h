@@ -148,6 +148,11 @@ extern const char kBottomOmniboxPromoDefaultPositionDescription[];
 extern const char kBottomOmniboxPromoFREName[];
 extern const char kBottomOmniboxPromoFREDescription[];
 
+// Title and description for the flag that enables region filter for the omnibox
+// position promos.
+extern const char kBottomOmniboxPromoRegionFilterName[];
+extern const char kBottomOmniboxPromoRegionFilterDescription[];
+
 // Title and description for the flag that moves the omnibox to the bottom in
 // the steady state.
 extern const char kBottomOmniboxSteadyStateName[];

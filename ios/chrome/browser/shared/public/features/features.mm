@@ -281,6 +281,10 @@ const char kBottomOmniboxPromoDefaultPositionParam[] =
 const char kBottomOmniboxPromoDefaultPositionParamTop[] = "Top";
 const char kBottomOmniboxPromoDefaultPositionParamBottom[] = "Bottom";
 
+BASE_FEATURE(kBottomOmniboxPromoRegionFilter,
+             "BottomOmniboxPromoRegionFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -76,7 +77,7 @@
 
   if (observableBoolean == _bottomOmniboxPref) {
     if (browserState->GetPrefs() && self.promosManager &&
-        !ShouldShowOmniboxPositionChoiceIPHPromo(browserState->GetPrefs())) {
+        !ShouldShowOmniboxPositionChoiceIPHPromo(browserState)) {
       self.promosManager->DeregisterPromo(
           promos_manager::Promo::OmniboxPosition);
     }
@@ -93,7 +94,7 @@
     return;
   }
   CHECK(self.promosManager);
-  if (ShouldShowOmniboxPositionChoiceIPHPromo(browserState->GetPrefs())) {
+  if (ShouldShowOmniboxPositionChoiceIPHPromo(browserState)) {
     self.promosManager->RegisterPromoForContinuousDisplay(
         promos_manager::Promo::OmniboxPosition);
     RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPromoRegistered,
