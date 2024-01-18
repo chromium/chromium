@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -70,6 +71,9 @@ class AutofillOptimizationGuideTest : public testing::Test {
         personal_data_manager_(std::make_unique<TestPersonalDataManager>()),
         autofill_optimization_guide_(
             std::make_unique<AutofillOptimizationGuide>(decider_.get())) {
+    // TODO(crbug.com/1519664): Cleanup default credit card creation in Autofill
+    // Optimization Guide unittests by defining the credit card in each
+    // individual test.
     CreditCard card = test::GetVirtualCard();
     test_api(card).set_network_for_virtual_card(kVisaCard);
     card.set_virtual_card_enrollment_type(
@@ -109,9 +113,9 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
   FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
 
-  EXPECT_CALL(*decider_, RegisterOptimizationTypes(testing::ElementsAre(
-                             optimization_guide::proto::IBAN_AUTOFILL_BLOCKED)))
-      .Times(1);
+  EXPECT_CALL(*decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::IBAN_AUTOFILL_BLOCKED)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
@@ -130,8 +134,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
 
   EXPECT_CALL(*decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA)))
-      .Times(1);
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
@@ -250,8 +253,7 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_CALL(*decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::IBAN_AUTOFILL_BLOCKED,
-                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA)))
-      .Times(1);
+                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
@@ -412,6 +414,124 @@ TEST_F(
 
   EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
       url, &virtual_card));
+}
+
+// Test that the Amex category-benefit optimization types are registered when we
+// have seen a credit card form and the user has an Amex card.
+TEST_F(AutofillOptimizationGuideTest,
+       CreditCardFormFound_AmexCategoryBenefits) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableCardBenefits};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  test_api(*personal_data_manager_->GetCreditCards()[0])
+      .set_network_for_virtual_card(kAmericanExpressCard);
+  test_api(*personal_data_manager_->GetCreditCards()[0])
+      .set_issuer_id_for_card(kAmexCardIssuerId);
+
+  EXPECT_CALL(*decider_,
+              RegisterOptimizationTypes(testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS,
+                  optimization_guide::proto::
+                      AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS)));
+
+  autofill_optimization_guide_->OnDidParseForm(form_structure,
+                                               personal_data_manager_.get());
+}
+
+// Test that the Capital One category-benefit optimization types are registered
+// when we have seen a credit card form and the user has a Capital One card.
+TEST_F(AutofillOptimizationGuideTest,
+       CreditCardFormFound_CapitalOneCategoryBenefits) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableCardBenefits};
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  CreditCard* card = personal_data_manager_->GetCreditCards()[0];
+  test_api(*card).set_network_for_virtual_card(kMasterCard);
+  test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
+
+  EXPECT_CALL(
+      *decider_,
+      RegisterOptimizationTypes(testing::UnorderedElementsAre(
+          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS,
+          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS,
+          optimization_guide::proto::
+              CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
+          optimization_guide::proto::
+              CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS)));
+
+  autofill_optimization_guide_->OnDidParseForm(form_structure,
+                                               personal_data_manager_.get());
+}
+
+// Test that the Amex category-benefit optimization types are not registered
+// when the kAutofillEnableCardBenefits experiment is disabled.
+TEST_F(AutofillOptimizationGuideTest,
+       CreditCardFormFound_AmexCategoryBenefits_ExperimentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefits);
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  test_api(*personal_data_manager_->GetCreditCards()[0])
+      .set_network_for_virtual_card(kAmericanExpressCard);
+  test_api(*personal_data_manager_->GetCreditCards()[0])
+      .set_issuer_id_for_card(kAmexCardIssuerId);
+
+  EXPECT_CALL(*decider_,
+              RegisterOptimizationTypes(testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS,
+                  optimization_guide::proto::
+                      AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS)))
+      .Times(0);
+
+  autofill_optimization_guide_->OnDidParseForm(form_structure,
+                                               personal_data_manager_.get());
+}
+
+// Test that the Capital One category-benefit optimization types are not
+// registered when the kAutofillEnableCardBenefits experiment is disabled.
+TEST_F(AutofillOptimizationGuideTest,
+       CreditCardFormFound_CapitalOneCategoryBenefits_ExperimentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefits);
+  FormStructure form_structure{
+      CreateTestCreditCardFormData(/*is_https=*/true,
+                                   /*use_month_type=*/true)};
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
+  CreditCard* card = personal_data_manager_->GetCreditCards()[0];
+  test_api(*card).set_network_for_virtual_card(kMasterCard);
+  test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
+
+  EXPECT_CALL(
+      *decider_,
+      RegisterOptimizationTypes(testing::UnorderedElementsAre(
+          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS,
+          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS,
+          optimization_guide::proto::
+              CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
+          optimization_guide::proto::
+              CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS)))
+      .Times(0);
+
+  autofill_optimization_guide_->OnDidParseForm(form_structure,
+                                               personal_data_manager_.get());
 }
 
 }  // namespace autofill

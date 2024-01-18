@@ -18,6 +18,10 @@ class CreditCardTestApi {
   explicit CreditCardTestApi(CreditCard* credit_card)
       : credit_card_(*credit_card) {}
 
+  void set_issuer_id_for_card(std::string_view network) {
+    credit_card_->issuer_id_ = std::string(network);
+  }
+
   void set_network_for_virtual_card(std::string_view network) {
     DCHECK_EQ(CreditCard::RecordType::kVirtualCard,
               credit_card_->record_type());
