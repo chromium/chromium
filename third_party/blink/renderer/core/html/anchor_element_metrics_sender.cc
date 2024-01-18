@@ -103,9 +103,8 @@ void AnchorElementMetricsSender::
   if (!AssociateInterface()) {
     return;
   }
-  auto msg = mojom::blink::AnchorElementPointerDataOnHoverTimerFired::New();
-  msg->anchor_id = anchor_id;
-  msg->pointer_data = std::move(pointer_data);
+  auto msg = mojom::blink::AnchorElementPointerDataOnHoverTimerFired::New(
+      anchor_id, std::move(pointer_data));
   metrics_host_->ReportAnchorElementPointerDataOnHoverTimerFired(
       std::move(msg));
 }
@@ -122,18 +121,17 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
   if (!AssociateInterface()) {
     return;
   }
-  auto click = mojom::blink::AnchorElementClick::New();
-  click->anchor_id = AnchorElementId(anchor_element);
-  click->target_url = anchor_element.Href();
   base::TimeDelta navigation_start_to_click =
       clock_->NowTicks() - NavigationStart(anchor_element);
-  click->navigation_start_to_click = navigation_start_to_click;
+  auto click = mojom::blink::AnchorElementClick::New(
+      AnchorElementId(anchor_element), anchor_element.Href(),
+      navigation_start_to_click);
   metrics_host_->ReportAnchorElementClick(std::move(click));
 }
 
 void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  if (!AssociateInterface()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -152,13 +150,15 @@ void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
 }
 
 bool AnchorElementMetricsSender::AssociateInterface() {
-  if (metrics_host_.is_bound())
+  if (metrics_host_.is_bound()) {
     return true;
+  }
 
   Document* document = GetSupplementable();
   // Unable to associate since no frame is attached.
-  if (!document->GetFrame())
+  if (!document->GetFrame()) {
     return false;
+  }
 
   document->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       metrics_host_.BindNewPipeAndPassReceiver(
@@ -233,7 +233,7 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
   DCHECK(!entries.empty());
-  if (!AssociateInterface()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -269,7 +269,7 @@ base::TimeTicks AnchorElementMetricsSender::NavigationStart(
 void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
     HTMLAnchorElement& element,
     const PointerEvent& pointer_event) {
-  if (!metrics_host_.is_bound()) {
+  if (!AssociateInterface()) {
     return;
   }
 
@@ -402,7 +402,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       DocumentLifecycle::kAfterPerformLayout) {
     return;
   }
-  if (!AssociateInterface()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -470,8 +470,12 @@ void AnchorElementMetricsSender::MaybeUpdateMetrics() {
 void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* execution_context = GetSupplementable()->GetExecutionContext();
-  if (!execution_context || !metrics_host_.is_bound()) {
+  if (metrics_.empty() && entered_viewport_messages_.empty() &&
+      left_viewport_messages_.empty()) {
+    return;
+  }
+
+  if (!AssociateInterface()) {
     return;
   }
 
