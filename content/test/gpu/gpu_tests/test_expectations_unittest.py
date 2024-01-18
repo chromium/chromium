@@ -190,9 +190,10 @@ def CheckTestExpectationsAreForExistingTests(
 def CheckTestExpectationPatternsForConflicts(expectations: str,
                                              file_name: str) -> str:
   test_expectations = expectations_parser.TestExpectations()
-  test_expectations.parse_tagged_list(
-      expectations, file_name=file_name, tags_conflict=_DoTagsConflict)
-  return test_expectations.check_test_expectations_patterns_for_conflicts()
+  _, error = test_expectations.parse_tagged_list(expectations,
+                                                 file_name=file_name,
+                                                 tags_conflict=_DoTagsConflict)
+  return error
 
 
 def _FindTestCases() -> List[Type[gpu_integration_test.GpuIntegrationTest]]:
