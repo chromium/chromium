@@ -90,6 +90,21 @@ void FatalErrorFn(const char* msg) {
   CHECK(false) << "ChromeML Error: " << msg;
 }
 
+// Helpers to disabiguate overloads in base.
+void RecordExactLinearHistogram(const char* name,
+                                int sample,
+                                int exclusive_max) {
+  base::UmaHistogramExactLinear(name, sample, exclusive_max);
+}
+
+void RecordCustomCountsHistogram(const char* name,
+                                 int sample,
+                                 int min,
+                                 int exclusive_max,
+                                 size_t buckets) {
+  base::UmaHistogramCustomCounts(name, sample, min, exclusive_max, buckets);
+}
+
 }  // namespace
 
 ChromeML::ChromeML(base::PassKey<ChromeML>,
@@ -155,6 +170,13 @@ std::unique_ptr<ChromeML> ChromeML::Create(
   api->InitDawnProcs(dawn::native::GetProcs());
   if (api->SetFatalErrorFn) {
     api->SetFatalErrorFn(&FatalGpuErrorFn);
+  }
+  if (api->SetMetricsFns) {
+    const ChromeMLMetricsFns metrics_fns{
+        .RecordExactLinearHistogram = &RecordExactLinearHistogram,
+        .RecordCustomCountsHistogram = &RecordCustomCountsHistogram,
+    };
+    api->SetMetricsFns(&metrics_fns);
   }
   if (api->SetFatalErrorNonGpuFn) {
     api->SetFatalErrorNonGpuFn(&FatalErrorFn);
