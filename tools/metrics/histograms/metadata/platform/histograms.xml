@@ -2411,6 +2411,33 @@ chromium-metrics-reviews@google.com.
   <summary>Records occurrences of U2F commands sent to cr50.</summary>
 </histogram>
 
+<histogram name="Platform.U2F.FipsStatus" enum="U2FFipsStatus"
+    expires_after="2024-12-31">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Records the FIPS mode status (whether it is activated) for the Cr50 U2F
+    implementation. This is recorded every time u2fd is started.
+  </summary>
+</histogram>
+
+<histogram name="Platform.U2F.FipsStatus.{U2FMode}" enum="U2FFipsStatus"
+    expires_after="2024-12-31">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Records the FIPS mode status (whether it is activated) for the Cr50 U2F
+    implementation when the U2F mode specified by device policy is {U2FMode}.
+    This is recorded every time u2fd is started.
+  </summary>
+  <token key="U2FMode">
+    <variant name="Disabled"/>
+    <variant name="U2f"/>
+    <variant name="U2fExtended"/>
+    <variant name="Unset"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.UnaggregatedUsageTime" units="seconds"
     expires_after="2024-06-30">
   <owner>mutexlox@chromium.org</owner>

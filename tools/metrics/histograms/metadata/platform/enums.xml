@@ -2581,6 +2581,12 @@ Full version information for the fingerprint enum values:
   <int value="2128775895" label="CROS Ti50 0.24.61"/>
 </enum>
 
+<enum name="U2FFipsStatus">
+  <int value="0" label="Error"/>
+  <int value="1" label="Not active"/>
+  <int value="2" label="Active"/>
+</enum>
+
 <enum name="WiFiPCIStatus">
   <int value="0" label="(Bad status) NIC not detected in lspci"/>
   <int value="1"
