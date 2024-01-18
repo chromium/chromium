@@ -37,6 +37,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
@@ -1097,6 +1098,15 @@ bool IsFailedDownload(bool is_download,
          !network::IsSuccessfulStatus(headers->response_code());
 }
 
+#define SCOPED_SET_NOW(name, time_field)                           \
+  base::ScopedClosureRunner name(base::BindOnce(                   \
+      [](base::WeakPtr<NavigationRequest> navigation_request) {    \
+        if (navigation_request) {                                  \
+          navigation_request->time_field = base::TimeTicks::Now(); \
+        }                                                          \
+      },                                                           \
+      weak_factory_.GetWeakPtr()))
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -2136,6 +2146,7 @@ NavigationRequest::~NavigationRequest() {
           "navigation", "Navigation StartToCommit",
           TRACE_ID_WITH_SCOPE("StartToCommit", TRACE_ID_LOCAL(this)), "URL",
           common_params_->url.spec(), "Net Error Code", net_error_);
+      MaybeRecordTraceEvents();
     }
 
     // Abandon the prerender host reserved for activation if it exists.
@@ -2194,6 +2205,7 @@ NavigationRequest::GetCommitDeferringConditionForTesting() {
 }
 
 void NavigationRequest::BeginNavigation() {
+  begin_navigation_time_ = base::TimeTicks::Now();
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::BeginNavigation",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
@@ -4070,6 +4082,7 @@ void NavigationRequest::OnResponseStarted(
     net::NetworkAnonymizationKey network_anonymization_key,
     std::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
+  receive_response_time_ = base::TimeTicks::Now();
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnResponseStarted",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
@@ -5143,6 +5156,7 @@ void NavigationRequest::OnStartChecksComplete(
       base::StrCat({"Navigation.WillStartRequestToLoaderStart.",
                     IsInMainFrame() ? "MainFrame" : "Subframe"}),
       base::TimeTicks::Now() - will_start_request_time_);
+  SCOPED_SET_NOW(scoped_set_now, loader_start_time_);
 
   loader_->Start();
   // DO NOT ADD CODE after this. The previous call to
@@ -6231,6 +6245,7 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
     navigation_handle_timing_.first_response_start_time =
         response_head_->load_timing.receive_headers_start;
     navigation_handle_timing_.first_loader_callback_time = loader_callback_time;
+    first_fetch_start_time_ = response_head_->request_start;
   }
 
   navigation_handle_timing_.final_request_start_time =
@@ -6240,6 +6255,8 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   navigation_handle_timing_.final_non_informational_response_start_time =
       response_head_->load_timing.receive_non_informational_headers_start;
   navigation_handle_timing_.final_loader_callback_time = loader_callback_time;
+  final_receive_headers_end_time_ =
+      response_head_->load_timing.receive_headers_end;
 
   // |navigation_commit_sent_time| will be updated by
   // UpdateNavigationHandleTimingsOnCommitSent() later.
@@ -10187,6 +10204,69 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
 
 bool NavigationRequest::HasLoader() const {
   return loader_.get() != nullptr;
+}
+
+void NavigationRequest::MaybeRecordTraceEvents() {
+  if (navigation_handle_timing_.navigation_commit_sent_time.is_null() ||
+      IsSameDocument() || IsRestore() ||
+      NavigationTypeUtils::IsHistory(common_params_->navigation_type) ||
+      NavigationTypeUtils::IsReload(common_params_->navigation_type)) {
+    return;
+  }
+
+  DCHECK(!blink::IsRendererDebugURL(common_params_->url));
+  base::TimeTicks navigation_start_time = common_params_->navigation_start;
+  DCHECK(!navigation_start_time.is_null());
+  const auto trace_id = TRACE_ID_WITH_SCOPE("NavigationBreakdown",
+                                            TRACE_ID_LOCAL(navigation_id_));
+
+#define TRACE_WITH_TIMESTAMP0(name, begin_time, end_time)                     \
+  do {                                                                        \
+    if (!begin_time.is_null() && !end_time.is_null() &&                       \
+        navigation_start_time <= begin_time &&                                \
+        end_time <= navigation_handle_timing_.navigation_commit_sent_time) {  \
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0("navigation", name,    \
+                                                       trace_id, begin_time); \
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,      \
+                                                     trace_id, end_time);     \
+    }                                                                         \
+  } while (0)
+
+#define TRACE_WITH_TIMESTAMP1(name, begin_time, end_time, arg1_name, arg1_val) \
+  do {                                                                         \
+    if (!begin_time.is_null() && !end_time.is_null() &&                        \
+        navigation_start_time <= begin_time &&                                 \
+        end_time <= navigation_handle_timing_.navigation_commit_sent_time) {   \
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(                        \
+          "navigation", name, trace_id, begin_time, arg1_name, arg1_val);      \
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,       \
+                                                     trace_id, end_time);      \
+    }                                                                          \
+  } while (0)
+
+  TRACE_WITH_TIMESTAMP0("NavigationStartToBeginNavigation",
+                        navigation_start_time, begin_navigation_time_);
+  TRACE_WITH_TIMESTAMP0("BeginNavigationToLoaderStart", begin_navigation_time_,
+                        loader_start_time_);
+  TRACE_WITH_TIMESTAMP1("LoaderStartToReceiveResponse", loader_start_time_,
+                        receive_response_time_, "URL",
+                        common_params_->url.spec());
+  TRACE_WITH_TIMESTAMP0("LoaderStartToFetchStart", loader_start_time_,
+                        first_fetch_start_time_);
+  TRACE_WITH_TIMESTAMP0("FetchStart", first_fetch_start_time_,
+                        navigation_handle_timing_.first_request_start_time);
+  TRACE_WITH_TIMESTAMP0("ReceiveHeaders",
+                        navigation_handle_timing_.first_request_start_time,
+                        final_receive_headers_end_time_);
+  TRACE_WITH_TIMESTAMP0("ReceiveHeadersToReceiveResponse",
+                        final_receive_headers_end_time_,
+                        receive_response_time_);
+  TRACE_WITH_TIMESTAMP0("ReceiveResponseToCommitNavigation",
+                        receive_response_time_,
+                        navigation_handle_timing_.navigation_commit_sent_time);
+
+#undef TRACE_WITH_TIMESTAMP0
+#undef TRACE_WITH_TIMESTAMP1
 }
 
 }  // namespace content

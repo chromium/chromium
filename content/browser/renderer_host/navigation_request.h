@@ -2039,6 +2039,8 @@ class CONTENT_EXPORT NavigationRequest
   GetOriginForURLLoaderFactoryUncheckedWithDebugInfo();
   url::Origin GetOriginForURLLoaderFactoryUnchecked();
 
+  void MaybeRecordTraceEvents();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
@@ -2298,6 +2300,27 @@ class CONTENT_EXPORT NavigationRequest
 
   // The time this navigation was ready to commit.
   base::TimeTicks ready_to_commit_time_;
+
+  // The time BeginNavigation() was called.
+  base::TimeTicks begin_navigation_time_;
+
+  // The time just after NavigationURLLoader::Start() was called.
+  base::TimeTicks loader_start_time_;
+
+  // The time OnResponseStarted() was called.
+  base::TimeTicks receive_response_time_;
+
+  // The first `fetchStart` time. This is different from the
+  // `first_request_start_time` in `NavigationHandleTiming` since the
+  // `first_fetch_start_time_` is the first time when the browser is
+  // ready to fetch using an HTTP request, whereas the `requestStart` is
+  // when the browser has obtained a connection and is ready to send the
+  // HTTP request.
+  base::TimeTicks first_fetch_start_time_;
+
+  // The time when the final (which might also be the first) headers are
+  // received.
+  base::TimeTicks final_receive_headers_end_time_;
 
   // The time WillStartRequest() was called.
   base::TimeTicks will_start_request_time_;
