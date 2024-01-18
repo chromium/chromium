@@ -20,7 +20,7 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
@@ -232,6 +232,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private response_: ComposeResponse|undefined;
   private partialResponse_: PartialComposeResponse|undefined;
   private saveAppStateDebouncer_: Debouncer;
+  private scrollCheckDebouncer_: Debouncer;
   private selectedLength_: Length;
   private selectedTone_: Tone;
   private textSelected_: boolean;
@@ -264,7 +265,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
     });
     this.bodyResizeObserver_ = new ResizeObserver(() => {
-      this.requestUpdateScroll();
+      this.scrollCheckDebouncer_ = Debouncer.debounce(
+          this.scrollCheckDebouncer_, timeOut.after(20), () => {
+            this.requestUpdateScroll();
+          });
     });
     this.bodyResizeObserver_.observe(this.$.body);
   }
