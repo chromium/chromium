@@ -137,7 +137,9 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     // this local state is set in OnUserCreationScreenExit and in the test we
     // advance directly to the consumerUpdate Screen.
     StartupUtils::SaveScreenAfterConsumerUpdate(
-        GaiaInfoScreenView::kScreenId.name);
+        ash::features::IsOobeGaiaInfoScreenEnabled()
+            ? GaiaInfoScreenView::kScreenId.name
+            : GaiaScreenHandler::kScreenId.name);
 
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()

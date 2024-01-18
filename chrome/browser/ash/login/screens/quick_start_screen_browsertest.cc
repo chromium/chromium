@@ -106,7 +106,16 @@ class QuickStartBrowserTest : public OobeBaseTest {
  public:
   QuickStartBrowserTest() {
     needs_network_screen_skip_check_ = true;
-    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
+
+    // Force enable Gaia Info screen flag, which is the default behaviour
+    // since adding field trial config entry for Gaia Info screen caused
+    // the flag to be disabled and the info screen is not shown.
+    // TODO: b/320870274 - Clean up GaiaInfoScreen flag upon
+    // completion of the Gaia Info screen experiment.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOobeQuickStart,
+                              features::kOobeGaiaInfoScreen},
+        /*disabled_features=*/{});
   }
   ~QuickStartBrowserTest() override = default;
 
