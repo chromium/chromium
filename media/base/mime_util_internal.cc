@@ -197,6 +197,8 @@ AudioCodec MimeUtilToAudioCodec(MimeUtil::Codec codec) {
       return AudioCodec::kDTSE;
     case MimeUtil::AC4:
       return AudioCodec::kAC4;
+    case MimeUtil::IAMF:
+      return AudioCodec::kIAMF;
     default:
       break;
   }
@@ -372,6 +374,10 @@ void MimeUtil::AddSupportedMediaFormats() {
   mp4_audio_codecs.emplace(DTSXP2);
   mp4_audio_codecs.emplace(DTSE);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
+  mp4_audio_codecs.emplace(IAMF);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 
   CodecSet mp4_codecs(mp4_audio_codecs);
   mp4_codecs.insert(mp4_video_codecs.begin(), mp4_video_codecs.end());
@@ -678,6 +684,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
 #endif
 
     case AC4:
+    case IAMF:
       return false;
   }
 
@@ -898,6 +905,13 @@ bool MimeUtil::ParseCodecHelper(base::StringPiece mime_type_lower_case,
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
   if (ParseDolbyAc4CodecId(codec_id.data(), nullptr, nullptr, nullptr)) {
     out_result->codec = MimeUtil::AC4;
+    return true;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
+  if (ParseIamfCodecId(codec_id.data(), nullptr, nullptr)) {
+    out_result->codec = MimeUtil::IAMF;
     return true;
   }
 #endif

@@ -215,7 +215,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
     std::set<int> audio_object_types;
     audio_object_types.insert(mp4::kISO_14496_3);
     mp4::MP4StreamParser mp4_stream_parser(audio_object_types, false, false,
-                                           false);
+                                           false, false);
     StreamParser::InitParameters stream_params(base::TimeDelta::Max());
     stream_params.detected_video_track_count = 1;
     mp4_stream_parser.Init(
@@ -520,7 +520,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
     std::set<int> audio_object_types;
     audio_object_types.insert(mp4::kISO_14496_3);
     mp4::MP4StreamParser mp4_stream_parser(audio_object_types, false, false,
-                                           false);
+                                           false, false);
     StreamParser::InitParameters stream_params(base::TimeDelta::Max());
     stream_params.detected_audio_track_count = 1;
     mp4_stream_parser.Init(

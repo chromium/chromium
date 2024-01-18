@@ -6,6 +6,8 @@
 #define MEDIA_BASE_AUDIO_CODECS_H_
 
 #include <string>
+#include <string_view>
+
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
 
@@ -38,13 +40,14 @@ enum class AudioCodec {
   kDTSXP2 = 19,
   kDTSE = 20,
   kAC4 = 21,
+  kIAMF = 22,
   // DO NOT ADD RANDOM AUDIO CODECS!
   //
   // The only acceptable time to add a new codec is if there is production code
   // that uses said codec in the same CL.
 
   // Must always be equal to the largest entry ever logged.
-  kMaxValue = kAC4,
+  kMaxValue = kIAMF,
 };
 
 enum class AudioCodecProfile {
@@ -54,7 +57,9 @@ enum class AudioCodecProfile {
   // kMaxValue to equal the new codec.
   kUnknown = 0,
   kXHE_AAC = 1,
-  kMaxValue = kXHE_AAC,
+  kIAMF_SIMPLE = 2,
+  kIAMF_BASE = 3,
+  kMaxValue = kIAMF_BASE,
 };
 
 std::string MEDIA_EXPORT GetCodecName(AudioCodec codec);
@@ -69,6 +74,11 @@ MEDIA_EXPORT bool ParseDolbyAc4CodecId(const std::string& codec_id,
                                        uint8_t* presentation_version,
                                        uint8_t* presentation_level);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
+MEDIA_EXPORT bool ParseIamfCodecId(std::string_view codec_id,
+                                   uint8_t* primary_profilec,
+                                   uint8_t* additional_profilec);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 
 }  // namespace media
 

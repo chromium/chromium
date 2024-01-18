@@ -79,6 +79,8 @@ EmeCodec ToAudioEmeCodec(AudioCodec codec) {
       return EME_CODEC_AC3;
     case AudioCodec::kAC4:
       return EME_CODEC_AC4;
+    case AudioCodec::kIAMF:
+      return EME_CODEC_IAMF;
     case AudioCodec::kMpegHAudio:
       return EME_CODEC_MPEG_H_AUDIO;
     case AudioCodec::kDTS:

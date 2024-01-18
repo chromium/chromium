@@ -54,7 +54,8 @@ class MEDIA_EXPORT MimeUtil {
     DTSXP2,
     DTSE,
     AC4,
-    LAST_CODEC = AC4
+    IAMF,
+    LAST_CODEC = IAMF
   };
 
   // Platform configuration structure.  Controls which codecs are supported at
