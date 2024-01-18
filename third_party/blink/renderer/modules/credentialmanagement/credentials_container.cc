@@ -143,6 +143,9 @@ enum class RequiredOriginType {
   kSecureAndPermittedByFederatedPermissionsPolicy,
   // Must be a secure origin with allowed payment permission policy.
   kSecureWithPaymentPermissionPolicy,
+  // Must be a secure origin with either the "payment" or
+  // "publickey-credentials-create" permission policy.
+  kSecureWithPaymentOrCreateCredentialPermissionPolicy,
 };
 
 bool IsSameOriginWithAncestors(const Frame* frame) {
@@ -307,8 +310,6 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
-      // TODO(crbug.com/1512605): "publickey-credentials-create" should also
-      // work for payments.
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kPayment)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -316,6 +317,29 @@ bool CheckSecurityRequirementsBeforeRequest(
             "The 'payment' feature is not enabled in this document. "
             "Permissions Policy may be used to delegate Web Payment "
             "capabilities to cross-origin child frames."));
+        return false;
+      }
+      break;
+    case RequiredOriginType::
+        kSecureWithPaymentOrCreateCredentialPermissionPolicy:
+      // For backwards compatibility, SPC credentials (that is, credentials with
+      // the "payment" extension set) can be created in a cross-origin iframe
+      // with either the 'payment' or 'publickey-credentials-create' permission
+      // set.
+      //
+      // Note that SPC only goes through the credentials API for creation and
+      // not authentication. Authentication flows via the Payment Request API,
+      // which checks for the 'payment' permission separately.
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kPayment) &&
+          !resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::
+                  kPublicKeyCredentialsCreate)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "The 'payment' or 'publickey-credentials-create' features are not "
+            "enabled in this document. Permissions Policy may be used to "
+            "delegate Web Payment capabilities to cross-origin child frames."));
         return false;
       }
       break;
@@ -374,6 +398,14 @@ void AssertSecurityRequirementsBeforeResponse(
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kPayment));
+      break;
+    case RequiredOriginType::
+        kSecureWithPaymentOrCreateCredentialPermissionPolicy:
+      SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
+                         mojom::blink::PermissionsPolicyFeature::kPayment) ||
+                     resolver->GetExecutionContext()->IsFeatureEnabled(
+                         mojom::blink::PermissionsPolicyFeature::
+                             kPublicKeyCredentialsCreate));
       break;
   }
 }
@@ -838,10 +870,16 @@ void OnSaveCredentialIdForPaymentExtension(
         AuthenticatorStatus::FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION;
     credential = nullptr;
   }
+  const auto required_origin_type =
+      RuntimeEnabledFeatures::WebAuthAllowCreateInCrossOriginFrameEnabled()
+          ? RequiredOriginType::
+                kSecureWithPaymentOrCreateCredentialPermissionPolicy
+          : RequiredOriginType::kSecureWithPaymentPermissionPolicy;
+
   OnMakePublicKeyCredentialComplete(
       std::move(scoped_resolver), std::move(scoped_abort_state),
-      RequiredOriginType::kSecureWithPaymentPermissionPolicy,
-      /*is_rk_required=*/false, status, std::move(credential),
+      required_origin_type, /*is_rk_required=*/false, status,
+      std::move(credential),
       /*dom_exception_details=*/nullptr);
 }
 
@@ -855,7 +893,10 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   auto* resolver = scoped_resolver->Release();
   const auto required_origin_type =
-      RequiredOriginType::kSecureWithPaymentPermissionPolicy;
+      RuntimeEnabledFeatures::WebAuthAllowCreateInCrossOriginFrameEnabled()
+          ? RequiredOriginType::
+                kSecureWithPaymentOrCreateCredentialPermissionPolicy
+          : RequiredOriginType::kSecureWithPaymentPermissionPolicy;
 
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
@@ -1785,7 +1826,10 @@ ScriptPromise CredentialsContainer::create(
   RequiredOriginType required_origin_type;
   if (IsForPayment(options, resolver->GetExecutionContext())) {
     required_origin_type =
-        RequiredOriginType::kSecureWithPaymentPermissionPolicy;
+        RuntimeEnabledFeatures::WebAuthAllowCreateInCrossOriginFrameEnabled()
+            ? RequiredOriginType::
+                  kSecureWithPaymentOrCreateCredentialPermissionPolicy
+            : RequiredOriginType::kSecureWithPaymentPermissionPolicy;
   } else if (options->hasPublicKey()) {
     // hasPublicKey() implies that this is a WebAuthn request.
     required_origin_type =

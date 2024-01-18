@@ -106,6 +106,8 @@ static_library("test_support") {
     "../browser/media/session/mock_media_session_player_observer.h",
     "../browser/media/session/mock_media_session_service_impl.cc",
     "../browser/media/session/mock_media_session_service_impl.h",
+    "../browser/payments/stub_payment_credential.cc",
+    "../browser/payments/stub_payment_credential.h",
     "../browser/preloading/prefetch/prefetch_test_utils.cc",
     "../browser/preloading/prefetch/prefetch_test_utils.h",
     "../browser/presentation/presentation_test_utils.cc",

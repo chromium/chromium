@@ -11680,6 +11680,14 @@ void RenderFrameHostImpl::CreatePaymentManager(
       BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
+void RenderFrameHostImpl::CreatePaymentCredential(
+    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+  // TODO(crbug.com/1512605): Move the 'is SPC allowed' check from
+  // payments::CreatePaymentCredential to here.
+  GetContentClient()->browser()->CreatePaymentCredential(this,
+                                                         std::move(receiver));
+}
+
 void RenderFrameHostImpl::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
   if (!base::FeatureList::IsEnabled(features::kWebUsb)) {

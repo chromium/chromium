@@ -23,8 +23,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/cbor/reader.h"
+#include "content/browser/payments/stub_payment_credential.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/navigation_handle.h"
@@ -134,6 +136,11 @@ constexpr char kCreatePermissionsPolicyMissingMessage[] =
     "not enabled in this document. Permissions Policy may be used to delegate "
     "Web Authentication capabilities to cross-origin child frames.";
 
+constexpr char kCreateWithPaymentPermissionsPolicyMissingMessage[] =
+    "NotSupportedError: The 'payment' or 'publickey-credentials-create' "
+    "features are not enabled in this document. Permissions Policy may be used "
+    "to delegate Web Payment capabilities to cross-origin child frames.";
+
 constexpr char kGetPermissionsPolicyMissingMessage[] =
     "NotAllowedError: The 'publickey-credentials-get' feature is "
     "not enabled in this document. Permissions Policy may be used to delegate "
@@ -180,6 +187,7 @@ constexpr char kCreatePublicKeyTemplate[] =
     "     authenticatorAttachment: '$5',"
     "  },"
     "  attestation: '$6',"
+    "  extensions: {payment: {isPayment: $8}},"
     "}}).then(c => 'OK',"
     "         e => e.toString())";
 
@@ -200,6 +208,7 @@ constexpr char kCreatePublicKeyWithAbortSignalTemplate[] =
     "     authenticatorAttachment: '$5',"
     "  },"
     "  attestation: '$6',"
+    "  extensions: {payment: {isPayment: $8}},"
     "}, signal: _signal_}"
     ").then(c => 'OK',"
     "       e => e.toString())";
@@ -217,6 +226,7 @@ struct CreateParameters {
   std::string exclude_credentials = "[]";
   std::string signal = "";
   std::string timeout = "10000";
+  bool is_payment = false;
 };
 
 std::string BuildCreateCallWithParameters(const CreateParameters& parameters) {
@@ -228,6 +238,7 @@ std::string BuildCreateCallWithParameters(const CreateParameters& parameters) {
   substitutions.push_back(parameters.authenticator_attachment);
   substitutions.push_back(parameters.attestation);
   substitutions.push_back(parameters.exclude_credentials);
+  substitutions.push_back(parameters.is_payment ? "true" : "false");
 
   std::string result;
   if (parameters.signal.empty()) {
@@ -443,6 +454,13 @@ class WebAuthBrowserTestContentBrowserClient
       RenderFrameHost* render_frame_host) override {
     test_state_->delegate_create_count++;
     return std::make_unique<WebAuthBrowserTestClientDelegate>(test_state_);
+  }
+
+  void CreatePaymentCredential(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver)
+      override {
+    StubPaymentCredential::Create(render_frame_host, std::move(receiver));
   }
 
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -950,7 +968,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 // normally accessed from Javascript in the renderer process.
 class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
  public:
-  WebAuthJavascriptClientBrowserTest() = default;
+  WebAuthJavascriptClientBrowserTest() {
+    // The "payment" extension tests require that SPC be enabled.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSecurePaymentConfirmation,
+         blink::features::kWebAuthAllowCreateInCrossOriginFrame},
+        {});
+  }
 
   WebAuthJavascriptClientBrowserTest(
       const WebAuthJavascriptClientBrowserTest&) = delete;
@@ -960,8 +984,7 @@ class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
   ~WebAuthJavascriptClientBrowserTest() override = default;
 
  private:
-  const base::test::ScopedFeatureList scoped_feature_list{
-      blink::features::kWebAuthAllowCreateInCrossOriginFrame};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 constexpr device::ProtocolVersion kAllProtocols[] = {
@@ -1443,6 +1466,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       {true, false, false, ""},
       {true, false, true, "publickey-credentials-get"},
       {true, true, false, "publickey-credentials-create"},
+      // The "payment" policy works for payment extension credentials (see
+      // `PaymentCredentialCreationFromIFrames`), but should not for other
+      // WebAuthn credentials.
+      {true, false, false, "payment"},
   };
 
   for (const auto& test : kTestCases) {
@@ -1495,6 +1522,91 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       EXPECT_EQ(std::string(kOkMessage), result);
     } else {
       EXPECT_EQ(kGetPermissionsPolicyMissingMessage, result);
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
+                       PaymentCredentialCreationFromIFrames) {
+  // This call is necessary for WebAuthenticationDelegate::SupportsResidentKeys
+  // to return true.
+  content::AuthenticatorEnvironment::GetInstance()
+      ->EnableVirtualAuthenticatorFor(
+          static_cast<content::RenderFrameHostImpl*>(
+              shell()->web_contents()->GetPrimaryMainFrame())
+              ->frame_tree_node(),
+          /*enable_ui=*/false);
+
+  static constexpr char kOuterHost[] = "acme.com";
+  static constexpr char kInnerHost[] = "notacme.com";
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetHttpsURL(kOuterHost, "/page_with_iframe.html")));
+
+  // SPC credentials (i.e., credentials with the "payment" extension specified)
+  // require a platform authenticator that supports resident keys.
+  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->SetTransport(
+      device::FidoTransportProtocol::kInternal);
+  virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+  virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
+  device::VirtualCtap2Device::Config config;
+  config.resident_key_support = true;
+  config.is_platform_authenticator = true;
+  config.internal_uv_support = true;
+  virtual_device_factory->SetCtap2Config(config);
+
+  static constexpr struct kTestCase {
+    // Whether the iframe loads from a different origin.
+    bool cross_origin;
+    bool create_with_payment_should_work;
+    // The contents of an "allow" attribute on the iframe.
+    const char allow_value[32];
+  } kTestCases[] = {
+      // XO |CreateWithPayment |Allow
+      {false, true, ""},
+      {true, false, ""},
+      {true, false, "publickey-credentials-get"},
+      {true, true, "publickey-credentials-create"},
+      {true, true, "payment"},
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.allow_value);
+    SCOPED_TRACE(test.cross_origin);
+
+    const std::string setAllowJS = base::StringPrintf(
+        "document.getElementById('test_iframe').setAttribute('allow', '%s'); "
+        "'OK';",
+        test.allow_value);
+    ASSERT_EQ("OK", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           setAllowJS.c_str()));
+
+    if (test.cross_origin) {
+      // Create a cross-origin iframe by loading it from notacme.com.
+      NavigateIframeToURL(shell()->web_contents(), "test_iframe",
+                          GetHttpsURL(kInnerHost, "/title2.html"));
+    } else {
+      // Create a same-origin iframe by loading it from acme.com.
+      NavigateIframeToURL(shell()->web_contents(), "test_iframe",
+                          GetHttpsURL(kOuterHost, "/title2.html"));
+    }
+
+    RenderFrameHost* const iframe = ChildFrameAt(shell()->web_contents(), 0);
+    ASSERT_TRUE(iframe);
+
+    CreateParameters create_parameters;
+    create_parameters.rp_id = test.cross_origin ? "notacme.com" : "acme.com";
+    create_parameters.require_resident_key = true;
+    create_parameters.user_verification = "required";
+    create_parameters.authenticator_attachment = "platform";
+    create_parameters.is_payment = true;
+    std::string result =
+        EvalJs(iframe, BuildCreateCallWithParameters(create_parameters))
+            .ExtractString();
+    if (test.create_with_payment_should_work) {
+      EXPECT_EQ(std::string(kOkMessage), result);
+    } else {
+      EXPECT_EQ(kCreateWithPaymentPermissionsPolicyMissingMessage, result);
     }
   }
 }

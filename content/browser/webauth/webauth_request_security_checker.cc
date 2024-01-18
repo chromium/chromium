@@ -303,8 +303,23 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
           blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
-  if ((type == RequestType::kMakePaymentCredential ||
-       type == RequestType::kGetPaymentCredentialAssertion) &&
+  // For credential creation, SPC credentials (i.e., credentials with the
+  // "payment" extension) may use either the 'publickey-credentials-create' or
+  // 'payment' permissions policy.
+  if (type == RequestType::kMakePaymentCredential) {
+    if (render_frame_host_->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kPayment)) {
+      return blink::mojom::AuthenticatorStatus::SUCCESS;
+    } else if (base::FeatureList::IsEnabled(
+                   blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
+               render_frame_host_->IsFeatureEnabled(
+                   blink::mojom::PermissionsPolicyFeature::
+                       kPublicKeyCredentialsCreate)) {
+      return blink::mojom::AuthenticatorStatus::SUCCESS;
+    }
+  }
+
+  if (type == RequestType::kGetPaymentCredentialAssertion &&
       render_frame_host_->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kPayment)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
