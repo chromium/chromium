@@ -1439,6 +1439,9 @@ void ShelfLayoutManager::OnDisplayMetricsChanged(
     return;
   }
 
+  // Layout may be needed if the display arrangement has changed.
+  LayoutShelf();
+
   // Update |user_work_area_bounds_| for the new display arrangement.
   UpdateShelfWorkAreaInsets();
 }
