@@ -711,6 +711,99 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
       OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
+  Initialize();
+
+  // Safety model info is valid but no metadata.
+  {
+    base::HistogramTester histogram_tester;
+
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kNoMetadata, 1);
+  }
+
+  // Safety model info is valid but metadata is of wrong type.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::Any any;
+    any.set_type_url("garbagetype");
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kMetadataWrongType, 1);
+  }
+
+  // Safety model info is valid but no feature configs.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kNoFeatureConfigs, 1);
+  }
+
+  // Safety model info is valid and metadata has feature configs.
+  {
+    base::HistogramTester histogram_tester;
+
+    proto::TextSafetyModelMetadata model_metadata;
+    model_metadata.add_feature_text_safety_configurations()->set_feature(
+        kFeature);
+    proto::Any any;
+    any.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+    model_metadata.SerializeToString(any.mutable_value());
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetAdditionalFiles(
+                {temp_dir().Append(kTsDataFile),
+                 temp_dir().Append(base::FilePath(kTsSpModelFile))})
+            .SetModelMetadata(any)
+            .Build();
+    test_controller_->MaybeUpdateSafetyModel(*model_info);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+  }
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   Initialize();
   base::test::ScopedFeatureList feature_list;
@@ -731,7 +824,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
   }
 
-  // Safety model info is valid but not config for feature, session not created
+  // Safety model info is valid but no config for feature, session not created
   // successfully.
   {
     base::HistogramTester histogram_tester;
@@ -754,6 +847,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     EXPECT_FALSE(
         test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
 
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
@@ -783,6 +880,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
 
     histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        TextSafetyModelMetadataValidity::kValid, 1);
+    histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kSuccess, 1);
@@ -801,6 +902,11 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+    // No model. Shouldn't even record this histogram.
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        0);
   }
 
   // Safety model reset to invalid, session no longer created successfully.
@@ -819,6 +925,11 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
         "Compose",
         OnDeviceModelEligibilityReason::kSafetyModelNotAvailable, 1);
+    // No required model files. Shouldn't even record this histogram.
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceTextSafetyModelMetadataValidity",
+        0);
   }
 }
 

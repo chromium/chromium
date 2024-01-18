@@ -100,6 +100,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Failed to load library"/>
 </enum>
 
+<enum name="OnDeviceTextSafetyModelMetadataValidity">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No metadata"/>
+  <int value="2" label="Wrong metadata type"/>
+  <int value="3" label="No feature configs"/>
+  <int value="4" label="Valid"/>
+</enum>
+
 <enum name="OptimizationGuideAccessTokenResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

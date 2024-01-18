@@ -388,6 +388,31 @@ enum class OnDeviceModelLoadResult {
   kMaxValue = kFailedToLoadLibrary,
 };
 
+// The validity of the model metadata packaged with the text safety model.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TextSafetyModelMetadataValidity {
+  kUnknown = 0,
+
+  // No metadata packaged with model.
+  kNoMetadata = 1,
+
+  // Metadata packaged with model is of the wrong type.
+  kMetadataWrongType = 2,
+
+  // Metadata packaged with model has no feature configs.
+  kNoFeatureConfigs = 3,
+
+  // Metadata was valid.
+  kValid = 4,
+
+  // This must be kept in sync with TextSafetyModelMetadataValidity in
+  // optimization/enums.xml.
+
+  kMaxValue = kValid,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_
