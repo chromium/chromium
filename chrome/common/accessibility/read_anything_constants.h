@@ -62,6 +62,9 @@ inline constexpr double kReadAnythingMinimumFontScale = 0.5;
 inline constexpr double kReadAnythingMaximumFontScale = 4.5;
 inline constexpr double kReadAnythingFontScaleIncrement = 0.25;
 
+// Display settings.
+inline constexpr bool kReadAnythingDefaultLinksEnabled = true;
+
 // The maximum number of times the label is shown in the omnibox icon.
 inline constexpr int kReadAnythingOmniboxIconLabelShownCountMax = 3;
 

@@ -24,6 +24,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
               OnReadAnythingThemeChanged,
               (const std::string& font_name,
                double font_scale,
+               bool links_enabled,
                ui::ColorId foreground_color_id,
                ui::ColorId background_color_id,
                ui::ColorId separator_color_id,
@@ -69,6 +70,9 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingLetterSpacing,
         static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue));
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kAccessibilityReadAnythingLinksEnabled,
+        kReadAnythingDefaultLinksEnabled);
   }
 
   void TearDown() override {
@@ -111,6 +115,10 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     controller_->OnLetterSpacingChanged(index);
   }
 
+  void MockOnLinksEnabledChanged(bool enabled) {
+    controller_->OnLinksEnabledChanged(enabled);
+  }
+
   void MockControllerForWebContentsOnLetterSpacingChanged(int index) {
     controller_for_web_contents_->OnLetterSpacingChanged(index);
   }
@@ -118,11 +126,12 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
   void MockModelInit(std::string language,
                      std::string font_name,
                      double font_scale,
+                     bool links_enabled,
                      read_anything::mojom::Colors colors,
                      read_anything::mojom::LineSpacing line_spacing,
                      read_anything::mojom::LetterSpacing letter_spacing) {
-    model_->Init(language, font_name, font_scale, colors, line_spacing,
-                 letter_spacing);
+    model_->Init(language, font_name, font_scale, links_enabled, colors,
+                 line_spacing, letter_spacing);
   }
 
   std::string GetPrefFontName() {
@@ -150,6 +159,11 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
         prefs::kAccessibilityReadAnythingLetterSpacing);
   }
 
+  bool GetPrefsLinksEnabled() {
+    return browser()->profile()->GetPrefs()->GetBoolean(
+        prefs::kAccessibilityReadAnythingLinksEnabled);
+  }
+
   TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
 
  protected:
@@ -168,7 +182,7 @@ TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
   // Initialize model with English so all fonts are available choices.
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5,
+  MockModelInit(language, font_name, 4.5, true,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -184,7 +198,7 @@ TEST_F(ReadAnythingControllerTest,
   // Initialize model with English so all fonts are available choices.
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5,
+  MockModelInit(language, font_name, 4.5, true,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -232,7 +246,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5,
+  MockModelInit(language, font_name, 4.5, true,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -248,7 +262,7 @@ TEST_F(ReadAnythingControllerTest,
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 4.5,
+  MockModelInit(language, font_name, 4.5, true,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -263,7 +277,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 0.5,
+  MockModelInit(language, font_name, 0.5, true,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -279,7 +293,7 @@ TEST_F(ReadAnythingControllerTest,
 
   std::string font_name;
   std::string language = "en";
-  MockModelInit(language, font_name, 0.5,
+  MockModelInit(language, font_name, 0.5, true,
                 read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
@@ -482,4 +496,12 @@ TEST_F(ReadAnythingControllerTest,
   MockControllerForWebContentsOnLetterSpacingChanged(10);
 
   EXPECT_EQ(GetPrefsLetterSpacing(), 1);
+}
+
+TEST_F(ReadAnythingControllerTest, OnLinksEnabledChangedUpdatesPref) {
+  EXPECT_EQ(GetPrefsLinksEnabled(), true);
+
+  MockOnLinksEnabledChanged(false);
+
+  EXPECT_EQ(GetPrefsLinksEnabled(), false);
 }

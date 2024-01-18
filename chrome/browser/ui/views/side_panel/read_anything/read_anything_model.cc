@@ -41,6 +41,7 @@ ReadAnythingModel::~ReadAnythingModel() = default;
 void ReadAnythingModel::Init(const std::string& lang_code,
                              const std::string& font_name,
                              double font_scale,
+                             bool links_enabled,
                              read_anything::mojom::Colors colors,
                              LineSpacing line_spacing,
                              LetterSpacing letter_spacing) {
@@ -54,6 +55,8 @@ void ReadAnythingModel::Init(const std::string& lang_code,
   }
 
   font_scale_ = GetValidFontScale(font_scale);
+
+  links_enabled_ = links_enabled;
 
   size_t colors_index = static_cast<size_t>(colors);
   if (colors_model_->IsValidIndex(colors_index)) {
@@ -176,6 +179,11 @@ void ReadAnythingModel::IncreaseTextSize() {
   NotifyThemeChanged();
 }
 
+void ReadAnythingModel::SetLinksEnabled(bool enabled) {
+  links_enabled_ = enabled;
+  NotifyThemeChanged();
+}
+
 void ReadAnythingModel::OnSystemThemeChanged() {
   NotifyThemeChanged();
 }
@@ -183,9 +191,10 @@ void ReadAnythingModel::OnSystemThemeChanged() {
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
     obs.OnReadAnythingThemeChanged(
-        font_name_, font_scale_, foreground_color_id_, background_color_id_,
-        separator_color_id_, dropdown_color_id_, selected_dropdown_color_id_,
-        focus_ring_color_id_, line_spacing_, letter_spacing_);
+        font_name_, font_scale_, links_enabled_, foreground_color_id_,
+        background_color_id_, separator_color_id_, dropdown_color_id_,
+        selected_dropdown_color_id_, focus_ring_color_id_, line_spacing_,
+        letter_spacing_);
   }
 }
 

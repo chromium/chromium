@@ -31,28 +31,29 @@
     assertEquals(expected, getComputedStyle(container).fontFamily);
   };
 
-  chrome.readingMode.setThemeForTesting('Poppins', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Poppins', 18.0, true, 0, 0, 1, 0);
   assertFontName('Poppins');
 
-  chrome.readingMode.setThemeForTesting('Sans-serif', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Sans-serif', 18.0, true, 0, 0, 1, 0);
   assertFontName('sans-serif');
 
-  chrome.readingMode.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Serif', 18.0, true, 0, 0, 1, 0);
   assertFontName('serif');
 
-  chrome.readingMode.setThemeForTesting('Comic Neue', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Comic Neue', 18.0, true, 0, 0, 1, 0);
   assertFontName('"Comic Neue"');
 
-  chrome.readingMode.setThemeForTesting('Lexend Deca', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Lexend Deca', 18.0, true, 0, 0, 1, 0);
   assertFontName('"Lexend Deca"');
 
-  chrome.readingMode.setThemeForTesting('EB Garamond', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('EB Garamond', 18.0, true, 0, 0, 1, 0);
   assertFontName('"EB Garamond"');
 
-  chrome.readingMode.setThemeForTesting('STIX Two Text', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting(
+      'STIX Two Text', 18.0, true, 0, 0, 1, 0);
   assertFontName('"STIX Two Text"');
 
-  chrome.readingMode.setThemeForTesting('Andika', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Andika', 18.0, true, 0, 0, 1, 0);
   assertFontName('Andika');
 
   return result;

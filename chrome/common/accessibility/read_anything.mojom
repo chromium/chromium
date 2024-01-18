@@ -22,6 +22,9 @@ struct ReadAnythingTheme {
   // The px value of the user's font size.
   float font_size;
 
+  // True if links are disabled.
+  bool links_enabled;
+
   // The various colors of the user's chosen theme.
   skia.mojom.SkColor foreground_color;
   skia.mojom.SkColor background_color;
@@ -193,6 +196,7 @@ interface UntrustedPage {
                            read_anything.mojom.LetterSpacing letter_spacing,
                            string font,
                            double font_size,
+                           bool links_enabled,
                            read_anything.mojom.Colors color,
                            double speech_rate,
                            mojo_base.mojom.DictionaryValue voices,

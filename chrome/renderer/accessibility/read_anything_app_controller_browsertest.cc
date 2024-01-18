@@ -190,13 +190,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void SetThemeForTesting(const std::string& font_name,
                           float font_size,
+                          bool links_enabled,
                           SkColor foreground_color,
                           SkColor background_color,
                           int line_spacing,
                           int letter_spacing) {
-    controller_->SetThemeForTesting(font_name, font_size, foreground_color,
-                                    background_color, line_spacing,
-                                    letter_spacing);
+    controller_->SetThemeForTesting(font_name, font_size, links_enabled,
+                                    foreground_color, background_color,
+                                    line_spacing, letter_spacing);
   }
 
   void AccessibilityEventReceived(
@@ -302,6 +303,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   float FontSize() { return controller_->FontSize(); }
 
+  bool LinksEnabled() { return controller_->LinksEnabled(); }
+
   SkColor ForegroundColor() { return controller_->ForegroundColor(); }
 
   SkColor BackgroundColor() { return controller_->BackgroundColor(); }
@@ -400,6 +403,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 TEST_F(ReadAnythingAppControllerTest, Theme) {
   std::string font_name = "Roboto";
   float font_size = 18.0;
+  bool links_enabled = false;
   SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
   SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
   int letter_spacing =
@@ -408,10 +412,11 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   int line_spacing =
       static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
   float line_spacing_value = 1.5;
-  SetThemeForTesting(font_name, font_size, foreground, background, line_spacing,
-                     letter_spacing);
+  SetThemeForTesting(font_name, font_size, links_enabled, foreground,
+                     background, line_spacing, letter_spacing);
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
+  EXPECT_EQ(links_enabled, LinksEnabled());
   EXPECT_EQ(foreground, ForegroundColor());
   EXPECT_EQ(background, BackgroundColor());
   EXPECT_EQ(line_spacing_value, LineSpacing());

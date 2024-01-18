@@ -293,6 +293,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       htmlTag = 'div';
     }
 
+    if (!chrome.readingMode.linksEnabled && htmlTag === 'a') {
+      htmlTag = 'span';
+    }
+
     const element = document.createElement(htmlTag);
     this.domNodeToAxNodeIdMap_.set(element, nodeId);
     const direction = chrome.readingMode.getTextDirection(nodeId);

@@ -31,6 +31,7 @@ declare namespace chrome {
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;
     let fontSize: number;
+    let linksEnabled: boolean;
     let foregroundColor: number;
     let backgroundColor: number;
     let lineSpacing: number;
@@ -204,8 +205,8 @@ declare namespace chrome {
 
     // Set the theme. Used by tests only.
     function setThemeForTesting(
-        fontName: string, fontSize: number, foregroundColor: number,
-        backgroundColor: number, lineSpacing: number,
+        fontName: string, fontSize: number, linksEnabled: boolean,
+        foregroundColor: number, backgroundColor: number, lineSpacing: number,
         letterSpacing: number): void;
 
     // Sets the default language. Used by tests only.

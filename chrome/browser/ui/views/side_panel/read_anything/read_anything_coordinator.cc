@@ -70,7 +70,6 @@ base::TimeDelta GetDelaySeconds() {
 
 }  // namespace
 
-
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser),
       distillable_urls_(GetDistillableURLs()),
@@ -110,33 +109,35 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   std::string prefs_lang = language_model->GetLanguages().front().lang_code;
   prefs_lang = language::ExtractBaseLanguage(prefs_lang);
 
-  std::string prefs_font_name;
-  prefs_font_name = browser->profile()->GetPrefs()->GetString(
+  std::string prefs_font_name = browser->profile()->GetPrefs()->GetString(
       prefs::kAccessibilityReadAnythingFontName);
 
-  double prefs_font_scale;
-  prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
+  double prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
       prefs::kAccessibilityReadAnythingFontScale);
 
-  read_anything::mojom::Colors prefs_colors;
-  prefs_colors = static_cast<read_anything::mojom::Colors>(
-      browser->profile()->GetPrefs()->GetInteger(
-          prefs::kAccessibilityReadAnythingColorInfo));
+  bool prefs_links_enabled = browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingLinksEnabled);
 
-  read_anything::mojom::LineSpacing prefs_line_spacing;
-  prefs_line_spacing = static_cast<read_anything::mojom::LineSpacing>(
-      browser->profile()->GetPrefs()->GetInteger(
-          prefs::kAccessibilityReadAnythingLineSpacing));
+  read_anything::mojom::Colors prefs_colors =
+      static_cast<read_anything::mojom::Colors>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kAccessibilityReadAnythingColorInfo));
 
-  read_anything::mojom::LetterSpacing prefs_letter_spacing;
-  prefs_letter_spacing = static_cast<read_anything::mojom::LetterSpacing>(
-      browser->profile()->GetPrefs()->GetInteger(
-          prefs::kAccessibilityReadAnythingLetterSpacing));
+  read_anything::mojom::LineSpacing prefs_line_spacing =
+      static_cast<read_anything::mojom::LineSpacing>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kAccessibilityReadAnythingLineSpacing));
+
+  read_anything::mojom::LetterSpacing prefs_letter_spacing =
+      static_cast<read_anything::mojom::LetterSpacing>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kAccessibilityReadAnythingLetterSpacing));
 
   model_->Init(
       /* lang code = */ prefs_lang,
-      /* font = */ prefs_font_name,
+      /* font name= */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
+      /* links enabled = */ prefs_links_enabled,
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,
       /* letter spacing = */ prefs_letter_spacing);

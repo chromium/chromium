@@ -245,6 +245,7 @@ class ReadAnythingModel {
     virtual void OnReadAnythingThemeChanged(
         const std::string& font_name,
         double font_scale,
+        bool links_enabled,
         ui::ColorId foreground_color_id,
         ui::ColorId background_color_id,
         ui::ColorId separator_color_id,
@@ -263,6 +264,7 @@ class ReadAnythingModel {
   void Init(const std::string& lang_code,
             const std::string& font_name,
             double font_scale,
+            bool links_enabled,
             read_anything::mojom::Colors colors,
             read_anything::mojom::LineSpacing line_spacing,
             read_anything::mojom::LetterSpacing letter_spacing);
@@ -274,6 +276,7 @@ class ReadAnythingModel {
   double GetValidFontScale(double font_scale);
   void DecreaseTextSize();
   void IncreaseTextSize();
+  void SetLinksEnabled(bool enabled);
   void SetSelectedColorsByIndex(size_t new_index);
   void SetSelectedLineSpacingByIndex(size_t new_index);
   void SetSelectedLetterSpacingByIndex(size_t new_index);
@@ -293,6 +296,8 @@ class ReadAnythingModel {
     return letter_spacing_;
   }
 
+  bool GetLinksEnabled() { return links_enabled_; }
+
  private:
   void NotifyThemeChanged();
 
@@ -311,6 +316,8 @@ class ReadAnythingModel {
 
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;
+
+  bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
 
   read_anything::mojom::LineSpacing line_spacing_ = LineSpacing::kDefaultValue;
   read_anything::mojom::LetterSpacing letter_spacing_ =

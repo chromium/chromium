@@ -138,6 +138,7 @@ class ReadAnythingAppController
       read_anything::mojom::LetterSpacing letter_spacing,
       const std::string& font,
       double font_size,
+      bool links_enabled,
       read_anything::mojom::Colors color,
       double speech_rate,
       base::Value::Dict voices,
@@ -186,6 +187,7 @@ class ReadAnythingAppController
   SkColor BackgroundColor() const;
   std::string FontName() const;
   float FontSize() const;
+  bool LinksEnabled() const;
   float SpeechRate() const;
   void OnFontSizeChanged(bool increase);
   void OnFontSizeReset();
@@ -340,6 +342,7 @@ class ReadAnythingAppController
                             std::vector<ui::AXNodeID> content_node_ids);
   void SetThemeForTesting(const std::string& font_name,
                           float font_size,
+                          bool links_enabled,
                           SkColor foreground_color,
                           SkColor background_color,
                           int line_spacing,

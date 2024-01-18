@@ -37,6 +37,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "url/url_util.h"
@@ -622,8 +623,16 @@ void ReadAnythingAppController::DrawSelection() {
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
+  bool needs_redraw_for_links =
+      model_.links_enabled() != new_theme->links_enabled;
   model_.OnThemeChanged(std::move(new_theme));
   ExecuteJavaScript("chrome.readingMode.updateTheme();");
+
+  // Only redraw if there is an active tree.
+  if (needs_redraw_for_links &&
+      model_.GetActiveTreeId() != ui::AXTreeIDUnknown()) {
+    Draw();
+  }
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
@@ -631,14 +640,21 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LetterSpacing letter_spacing,
     const std::string& font,
     double font_size,
+    bool links_enabled,
     read_anything::mojom::Colors color,
     double speech_rate,
     base::Value::Dict voices,
     read_anything::mojom::HighlightGranularity granularity) {
+  bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, color, speech_rate, &voices,
-                                     granularity);
+                                     font_size, links_enabled, color,
+                                     speech_rate, &voices, granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
+  // Only redraw if there is an active tree.
+  if (needs_redraw_for_links &&
+      model_.GetActiveTreeId() != ui::AXTreeIDUnknown()) {
+    Draw();
+  }
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -660,6 +676,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::BackgroundColor)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
+      .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
       .SetProperty("foregroundColor",
                    &ReadAnythingAppController::ForegroundColor)
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
@@ -797,6 +814,10 @@ std::string ReadAnythingAppController::FontName() const {
 
 float ReadAnythingAppController::FontSize() const {
   return model_.font_size();
+}
+
+bool ReadAnythingAppController::LinksEnabled() const {
+  return model_.links_enabled();
 }
 
 SkColor ReadAnythingAppController::ForegroundColor() const {
@@ -1747,6 +1768,7 @@ int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
 // int to their corresponding enums.
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,
+                                                   bool links_enabled,
                                                    SkColor foreground_color,
                                                    SkColor background_color,
                                                    int line_spacing,
@@ -1755,9 +1777,9 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
       static_cast<read_anything::mojom::LineSpacing>(line_spacing);
   auto letter_spacing_enum =
       static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
-  OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
-                                        background_color, line_spacing_enum,
-                                        letter_spacing_enum));
+  OnThemeChanged(ReadAnythingTheme::New(
+      font_name, font_size, links_enabled, foreground_color, background_color,
+      line_spacing_enum, letter_spacing_enum));
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(

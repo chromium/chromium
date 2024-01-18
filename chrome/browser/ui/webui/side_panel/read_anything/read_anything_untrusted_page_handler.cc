@@ -111,6 +111,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing)),
         prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
         prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
+        prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled),
         static_cast<read_anything::mojom::Colors>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
         speechRate,
@@ -297,6 +298,7 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
 void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
     const std::string& font_name,
     double font_scale,
+    bool links_enabled,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
@@ -314,9 +316,9 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
   SkColor background_skcolor =
       web_contents->GetColorProvider().GetColor(background_color_id);
 
-  page_->OnThemeChanged(
-      ReadAnythingTheme::New(font_name, font_scale, foreground_skcolor,
-                             background_skcolor, line_spacing, letter_spacing));
+  page_->OnThemeChanged(ReadAnythingTheme::New(
+      font_name, font_scale, links_enabled, foreground_skcolor,
+      background_skcolor, line_spacing, letter_spacing));
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(

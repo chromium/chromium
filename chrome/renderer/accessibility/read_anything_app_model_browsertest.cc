@@ -102,6 +102,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void SetThemeForTesting(const std::string& font_name,
                           float font_size,
+                          bool links_enabled,
                           SkColor foreground_color,
                           SkColor background_color,
                           int line_spacing,
@@ -111,7 +112,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     auto letter_spacing_enum =
         static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
     model_->OnThemeChanged(read_anything::mojom::ReadAnythingTheme::New(
-        font_name, font_size, foreground_color, background_color,
+        font_name, font_size, links_enabled, foreground_color, background_color,
         line_spacing_enum, letter_spacing_enum));
   }
 
@@ -119,7 +120,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
       read_anything::mojom::LetterSpacing letter_spacing,
       read_anything::mojom::LineSpacing line_spacing) {
     model_->OnThemeChanged(read_anything::mojom::ReadAnythingTheme::New(
-        "Arial", 15.0, SkColorSetRGB(0x33, 0x40, 0x36),
+        "Arial", 15.0, false, SkColorSetRGB(0x33, 0x40, 0x36),
         SkColorSetRGB(0xDF, 0xD2, 0x63), line_spacing, letter_spacing));
   }
 
@@ -147,6 +148,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   std::string FontName() { return model_->font_name(); }
 
   float FontSize() { return model_->font_size(); }
+
+  bool LinksEnabled() { return model_->links_enabled(); }
 
   SkColor ForegroundColor() { return model_->foreground_color(); }
 
@@ -252,6 +255,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 TEST_F(ReadAnythingAppModelTest, Theme) {
   std::string font_name = "Roboto";
   float font_size = 18.0;
+  bool links_enabled = false;
   SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
   SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
   int letter_spacing =
@@ -260,10 +264,11 @@ TEST_F(ReadAnythingAppModelTest, Theme) {
   int line_spacing =
       static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
   float line_spacing_value = 1.5;
-  SetThemeForTesting(font_name, font_size, foreground, background, line_spacing,
-                     letter_spacing);
+  SetThemeForTesting(font_name, font_size, links_enabled, foreground,
+                     background, line_spacing, letter_spacing);
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
+  EXPECT_EQ(links_enabled, LinksEnabled());
   EXPECT_EQ(foreground, ForegroundColor());
   EXPECT_EQ(background, BackgroundColor());
   EXPECT_EQ(line_spacing_value, LineSpacing());

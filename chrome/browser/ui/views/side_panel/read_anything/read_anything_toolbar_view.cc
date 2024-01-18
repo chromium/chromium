@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toggle_button_view.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -96,11 +98,11 @@ void ReadAnythingToolbarView::Init(
 
   // Create link toggle button.
   auto toggle_links_button = std::make_unique<ReadAnythingToggleButtonView>(
-      !delegate_->GetLinksEnabled(),
+      delegate_->GetLinksEnabled(),
       base::BindRepeating(&ReadAnythingToolbarView::LinksToggledCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL),
-      l10n_util::GetStringUTF16(IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL));
+      l10n_util::GetStringUTF16(IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL));
 
   toggle_links_button->SetProperty(views::kCrossAxisAlignmentKey,
                                    views::LayoutAlignment::kCenter);
@@ -222,6 +224,7 @@ void ReadAnythingToolbarView::CleanUp() {
 void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     const std::string& font_name,
     double font_scale,
+    bool links_enabled,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
