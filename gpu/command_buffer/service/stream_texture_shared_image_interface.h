@@ -28,10 +28,6 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
   // not longer valid or the context is lost.
   virtual void ReleaseResources() = 0;
 
-  // Whether the StreamTextureSharedImageInterface is accounting for gpu memory
-  // or not.
-  virtual bool IsUsingGpuMemory() const = 0;
-
   // Update texture image to the most recent frame.
   virtual void UpdateAndBindTexImage() = 0;
 

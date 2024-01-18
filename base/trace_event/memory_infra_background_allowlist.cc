@@ -86,17 +86,18 @@ constexpr auto kDumpProviderAllowlist =
         "Skia",
         "Sql",
         "TabRestoreServiceHelper",
+        "TextureOwner"
         "URLRequestContext",
         "V8Isolate",
         "WebMediaPlayer_MainThread",
         "WebMediaPlayer_MediaThread",
-      // clang-format on
+        // clang-format on
     });
 
 // A list of string names that are allowed for the memory allocator dumps in
 // background mode.
-constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
-    base::StringPiece>({
+constexpr auto kAllocatorDumpNameAllowlist =
+    base::MakeFixedFlatSet<base::StringPiece>({
 // clang-format off
         // Some of the blink values vary based on compile time flags. The
         // compile time flags are not in base, so all are listed here.
@@ -158,6 +159,7 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
         "gpu/gl/textures/context_group_0x?",
         "gpu/gr_shader_cache/cache_0x?",
         "gpu/shared_images",
+        "gpu/media_texture_owner_?",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
         "gpu/vulkan/vma_allocator_0x?",
@@ -307,8 +309,8 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
         "tracing/heap_profiler_blink_gc/AllocationRegister",
         "tracing/heap_profiler_malloc/AllocationRegister",
         "tracing/heap_profiler_partition_alloc/AllocationRegister",
-  // clang-format on
-});
+        // clang-format on
+    });
 
 const char* const* g_dump_provider_allowlist_for_testing = nullptr;
 const char* const* g_allocator_dump_name_allowlist_for_testing = nullptr;

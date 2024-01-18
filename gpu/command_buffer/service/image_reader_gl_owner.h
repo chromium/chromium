@@ -60,6 +60,10 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   }
   int32_t max_images_for_testing() const { return max_images_; }
 
+  // MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
  protected:
   void ReleaseResources() override;
 
@@ -139,9 +143,12 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
     size_t count = 0u;
     base::ScopedFD release_fence_fd;
+    gfx::Size size;
+    size_t estimated_size_in_bytes = 0;
   };
   using AImageRefMap = base::flat_map<AImage*, ImageRef>;
   AImageRefMap image_refs_ GUARDED_BY(lock_);
+  std::atomic<size_t> total_estimated_size_in_bytes_ = 0;
 
   // The context and surface that were used to create |texture_id_|.
   scoped_refptr<gl::GLContext> context_;

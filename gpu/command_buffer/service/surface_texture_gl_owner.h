@@ -44,6 +44,10 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
 
   void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
+  // MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
  protected:
   void ReleaseResources() override;
 
@@ -69,6 +73,9 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
 
   // To ensure that SetFrameAvailableCallback() is called only once.
   bool is_frame_available_callback_set_ = false;
+
+  // This is not precise, but good estimation for memory dumps.
+  absl::optional<gfx::Size> last_coded_size_for_memory_dumps_;
 
   THREAD_CHECKER(thread_checker_);
 };

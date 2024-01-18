@@ -163,14 +163,6 @@ VideoImageReaderImageBacking::~VideoImageReaderImageBacking() {
   }
 }
 
-size_t VideoImageReaderImageBacking::GetEstimatedSizeForMemoryDump() const {
-  base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-
-  // This backing contributes to gpu memory only if its bound to the texture
-  // and not when the backing is created.
-  return stream_texture_sii_->IsUsingGpuMemory() ? GetEstimatedSize() : 0;
-}
-
 // Representation of VideoImageReaderImageBacking as a GL Texture.
 class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
     : public GLTextureImageRepresentation,

@@ -122,4 +122,10 @@ void AndroidVideoImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
 }
 
+size_t AndroidVideoImageBacking::GetEstimatedSizeForMemoryDump() const {
+  // None of these images own memory directly, so we report 0. The real memory
+  // will be reported by `TextureOwner`s.
+  return 0;
+}
+
 }  // namespace gpu
