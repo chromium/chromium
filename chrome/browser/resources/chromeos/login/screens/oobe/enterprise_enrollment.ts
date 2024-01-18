@@ -10,93 +10,99 @@ import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/gaia_dialog.js';
+import {GaiaDialog} from '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
+import '../../components/buttons/oobe_back_button.js';
+import '../../components/buttons/oobe_next_button.js';
+import '../../components/buttons/oobe_text_button.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {OfflineAdLogin} from '../common/offline_ad_login.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {sendWithPromise} from '//resources/ash/common/cr.m.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {Authenticator, AuthFlow, AuthMode, AuthParams} from '//oobe/gaia_auth_host/authenticator.js';
+import {assert} from '//resources/js/assert.js';
+import {sendWithPromise} from '//resources/js/cr.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Authenticator, AuthFlow, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
-import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
 import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import * as OobeDebugger from '../../debug/debug.js';
-import {DisplayManager, invokePolymerMethod} from '../../display_manager.js';
-import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
+import {invokePolymerMethod} from '../../display_manager.js';
+import type {ActiveDirectoryErrorState, JoinConfigType} from '../common/offline_ad_login.js';
+import {ADLoginStep} from '../common/offline_ad_login.js';
 
 import {getTemplate} from './enterprise_enrollment.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const EnterpriseEnrollmentElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
-
-/**
- * @typedef {{
- *   skipConfirmationDialog:  OobeModalDialog,
- * }}
- */
-EnterpriseEnrollmentElementBase.$;
+const EnterpriseEnrollmentElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
 /**
  * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   enrollment_mode: string,
- *   is_enrollment_enforced: boolean,
- *   attestationBased: boolean,
- *   flow: string,
- *   license: (string|undefined),
- *   gaiaUrl: (string|undefined),
- *   gaiaPath: (string|undefined),
- *   gaia_buttons_type: (string|undefined),
- *   clientId: (string|undefined),
- *   hl: (string|undefined),
- *   management_domain: (string|undefined),
- *   email: (string|undefined),
- *   webviewPartitionName: (string|undefined),
- * }}
  */
-let EnterpriseEnrollmentScreenData;
+interface EnterpriseEnrollmentScreenData {
+  enrollment_mode: string;
+  is_enrollment_enforced: boolean;
+  attestationBased: boolean;
+  flow: string;
+  license: string|undefined;
+  gaiaUrl: string|undefined;
+  gaiaPath: string|undefined;
+  gaia_buttons_type: string|undefined;
+  clientId: string|undefined;
+  hl: string|undefined;
+  management_domain: string|undefined;
+  email: string|undefined;
+  webviewPartitionName: string|undefined;
+}
 
-/**
- * @polymer
- */
-class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
+declare global {
+  interface HTMLElementEventMap {
+    'authCompletedAd': CustomEvent<{
+      'distinguished_name': string,
+      'username': string,
+      'password': string,
+      'machine_name': string,
+      'encryption_types': string,
+    }>;
+    'unlockPasswordEntered': CustomEvent<{
+      'unlock_password': string,
+    }>;
+  }
+}
+
+export class EnterpriseEnrollmentElement extends
+    EnterpriseEnrollmentElementBase {
   static get is() {
-    return 'enterprise-enrollment-element';
+    return 'enterprise-enrollment-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
-       * Manager of the enrolled domain. Either a domain (foo.com) or an email
+       * Manager of the enrolled domain. Either a domain (foo.com) or an isMeet
        * address (admin@foo.com).
        */
-      domainManager_: {
+      domainManager: {
         type: String,
         value: '',
       },
@@ -104,7 +110,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       /**
        * Name of the device that was enrolled.
        */
-      deviceName_: {
+      deviceName: {
         type: String,
         value: 'Chromebook',
       },
@@ -113,7 +119,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
        * Type of license used for enrollment.
        * Only relevant for manual (gaia) flow.
        */
-      licenseType_: {
+      licenseType: {
         type: Number,
         value: OobeTypes.LicenseType.ENTERPRISE,
       },
@@ -121,7 +127,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       /**
        * Type of bottom buttons in the GAIA dialog.
        */
-      gaiaDialogButtonsType_: {
+      gaiaDialogButtonsType: {
         type: String,
         value: OobeTypes.GaiaDialogButtonsType.DEFAULT,
       },
@@ -129,7 +135,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       /**
        * Text on the error screen.
        */
-      errorText_: {
+      errorText: {
         type: String,
         value: '',
       },
@@ -140,7 +146,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
        * True:  Error Nature Recoverable
        * False: Error Nature Fatal
        */
-      canRetryAfterError_: {
+      canRetryAfterError: {
         type: Boolean,
         value: true,
       },
@@ -148,7 +154,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       /**
        * Device attribute : Asset ID.
        */
-      assetId_: {
+      assetId: {
         type: String,
         value: '',
       },
@@ -156,7 +162,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       /**
        * Device attribute : Location.
        */
-      deviceLocation_: {
+      deviceLocation: {
         type: String,
         value: '',
       },
@@ -164,7 +170,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       /**
        * Whether account identifier should be sent for check.
        */
-      hasAccountCheck_: {
+      hasAccountCheck: {
         type: Boolean,
         value: false,
       },
@@ -175,7 +181,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
        * True:  Automatic (Attestation-based)
        * False: Manual (OAuth)
        */
-      isAutoEnroll_: {
+      isAutoEnroll: {
         type: Boolean,
         value: false,
       },
@@ -186,28 +192,26 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
        * True:  Enrollment Enforced
        * False: Enrollment Optional
        */
-      isForced_: {
+      isForced: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Bound to gaia-dialog::authFlow.
-       * @private
        */
-      authFlow_: {
+      authFlow: {
         type: Number,
       },
 
       /**
        * Email for enrollment.
-       * @private
        */
-      email_: {
+      email: {
         type: String,
       },
 
-      isMeet_: {
+      isMeet: {
         type: Boolean,
         value() {
           return loadTimeData.valueExists('deviceFlowType') &&
@@ -218,19 +222,35 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     };
   }
 
+  private domainManager: string;
+  private deviceName: string;
+  private licenseType: OobeTypes.LicenseType;
+  private gaiaDialogButtonsType: string;
+  private errorText: string;
+  private canRetryAfterError: boolean;
+  private assetId: string;
+  private deviceLocation: string;
+  private hasAccountCheck: boolean;
+  private isAutoEnroll: boolean;
+  private isForced: boolean;
+  private authFlow: number;
+  private email: string;
+  private readonly isMeet: boolean;
+  private isCancelDisabled: boolean;
+  private isManualEnrollment: boolean|undefined;
+
   constructor() {
     super();
     /**
      * We block esc, back button and cancel button until gaia is loaded to
      * prevent multiple cancel events.
-     * @type {?boolean}
      */
     this.isCancelDisabled = false;
 
-    this.isManualEnrollment_ = undefined;
+    this.isManualEnrollment = undefined;
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'doReload',
       'setAdJoinConfiguration',
@@ -243,76 +263,112 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     ];
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): OobeTypes.EnrollmentStep {
     return OobeTypes.EnrollmentStep.LOADING;
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return OobeTypes.EnrollmentStep;
   }
 
-  get authenticator_() {
-    return this.$['step-signin'].getAuthenticator();
+  private getGaiaDialog(): GaiaDialog {
+    const gaiaDialog =
+        this.shadowRoot?.querySelector<GaiaDialog>('#step-signin');
+    assert(gaiaDialog instanceof GaiaDialog);
+    return gaiaDialog;
   }
 
-  get authView_() {
-    return this.$['step-signin'].getFrame();
+  private getOfflineAdLogin(): OfflineAdLogin {
+    const offlineAdLogin =
+        this.shadowRoot?.querySelector<OfflineAdLogin>('#step-ad-join');
+    assert(offlineAdLogin instanceof OfflineAdLogin);
+    return offlineAdLogin;
   }
 
-  ready() {
+  private getSkipConfirmationDialog(): OobeModalDialog {
+    const skipConfirmationDialog =
+        this.shadowRoot?.querySelector<OobeModalDialog>(
+            '#skipConfirmationDialog');
+    assert(skipConfirmationDialog instanceof OobeModalDialog);
+    return skipConfirmationDialog;
+  }
+
+  get authenticator(): Authenticator {
+    return this.getGaiaDialog().getAuthenticator();
+  }
+
+  get authView(): chrome.webviewTag.WebView {
+    // TODO(b/314762562): remove type cast once gaia_dialog is migrated to TS.
+    return this.getGaiaDialog().getFrame() as chrome.webviewTag.WebView;
+  }
+
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('OAuthEnrollmentScreen');
 
     // Establish an initial messaging between content script and
     // host script so that content script can message back.
-    this.authView_.addEventListener('loadstop', (e) => {
+    this.authView.addEventListener('loadstop', (e: Event) => {
+      const target = e.target;
       // Could be null in tests.
-      if (e.target && e.target.contentWindow) {
-        e.target.contentWindow.postMessage(
-            InjectedKeyboardUtils.INITIAL_MSG, this.authView_.src);
+      if (target instanceof HTMLIFrameElement && !!target.contentWindow) {
+        target.contentWindow.postMessage(
+            InjectedKeyboardUtils.INITIAL_MSG, this.authView.src);
       }
     });
 
-    this.$['step-ad-join'].addEventListener('authCompletedAd', (e) => {
-      this.$['step-ad-join'].disabled = true;
-      this.$['step-ad-join'].loading = true;
-      chrome.send('oauthEnrollAdCompleteLogin', [
-        e.detail.machine_name,
-        e.detail.distinguished_name,
-        e.detail.encryption_types,
-        e.detail.username,
-        e.detail.password,
-      ]);
-    });
+    const offlineAdLogin = this.getOfflineAdLogin();
+    offlineAdLogin.addEventListener(
+        'authCompletedAd', (e: CustomEvent<{
+                             'distinguished_name': string,
+                             'username': string,
+                             'password': string,
+                             'machine_name': string,
+                             'encryption_types': string,
+                           }>) => {
+          offlineAdLogin.disabled = true;
+          offlineAdLogin.loading = true;
+          chrome.send('oauthEnrollAdCompleteLogin', [
+            e.detail.machine_name,
+            e.detail.distinguished_name,
+            e.detail.encryption_types,
+            e.detail.username,
+            e.detail.password,
+          ]);
+        });
 
-    this.$['step-ad-join'].addEventListener('unlockPasswordEntered', (e) => {
-      this.$['step-ad-join'].disabled = true;
-      chrome.send(
-          'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
-    });
+    offlineAdLogin.addEventListener(
+        'unlockPasswordEntered', (e: CustomEvent<{
+                                   'unlock_password': string,
+                                 }>) => {
+          offlineAdLogin.disabled = true;
+          chrome.send(
+              'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
+        });
 
-    this.authenticator_.insecureContentBlockedCallback = (url) => {
+    this.authenticator.insecureContentBlockedCallback = (url: string) => {
       this.showError(
           loadTimeData.getStringF('insecureURLEnrollmentError', url), false);
     };
 
-    this.authenticator_.missingGaiaInfoCallback = () => {
+    this.authenticator.missingGaiaInfoCallback = () => {
       this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
     };
 
-    this.authenticator_.addEventListener('getDeviceId', (e) => {
+    this.authenticator.addEventListener('getDeviceId', (_e: Event) => {
       sendWithPromise('getDeviceIdForEnrollment')
-          .then(deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
+          .then(deviceId => this.authenticator.getDeviceIdResponse(deviceId));
     });
   }
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {EnterpriseEnrollmentScreenData|undefined} data Screen init payload,
+   * @param data Screen init payload,
    * contains the signin frame URL.
    */
-  onBeforeShow(data) {
-    if (data == undefined) {
+  onBeforeShow(data?: EnterpriseEnrollmentScreenData): void {
+    if (data === undefined) {
       return;
     }
 
@@ -323,32 +379,32 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       // simulated tab events will use the webview tab-stops. Simulated tab
       // events created from the webui treat the entire webview as one tab
       // stop. Real tab events do not do this. See crbug.com/543865.
-      this.authView_.addContentScripts([{
+      this.authView.addContentScripts([{
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],
         js: {code: KEYBOARD_UTILS_FOR_INJECTION.DATA},
-        run_at: 'document_start',
+        run_at: 'document_start' as chrome.extensionTypes.RunAt,
       }]);
     }
 
-    this.isManualEnrollment_ = (data.enrollment_mode === 'manual');
-    this.isForced_ = data.is_enrollment_enforced;
-    this.isAutoEnroll_ = data.attestationBased;
-    this.hasAccountCheck_ =
+    this.isManualEnrollment = (data.enrollment_mode === 'manual');
+    this.isForced = data.is_enrollment_enforced;
+    this.isAutoEnroll = data.attestationBased;
+    this.hasAccountCheck =
         ((data.flow === 'enterpriseLicense') ||
          (data.flow === 'educationLicense'));
 
-    this.licenseType_ = ('license' in data) ?
-        this.convertLicenseType(data.license) :
-        OobeTypes.LicenseType.ENTERPRISE;
+    this.licenseType = data.license ? this.convertLicenseType(data.license) :
+                                      OobeTypes.LicenseType.ENTERPRISE;
 
-    if (!this.isAutoEnroll_) {
-      const gaiaParams = {};
-      gaiaParams.gaiaUrl = data.gaiaUrl;
-      gaiaParams.gaiaPath = data.gaiaPath;
-      gaiaParams.clientId = data.clientId;
+    if (!this.isAutoEnroll) {
+      const gaiaParams = {} as AuthParams;
+      // If `isAutoEnroll` is false subsequent fields should exist.
+      gaiaParams.gaiaUrl = data.gaiaUrl!;
+      gaiaParams.gaiaPath = data.gaiaPath!;
+      gaiaParams.clientId = data.clientId!;
       gaiaParams.needPassword = false;
-      gaiaParams.hl = data.hl;
+      gaiaParams.hl = data.hl!;
       if (data.management_domain) {
         gaiaParams.enterpriseEnrollmentDomain = data.management_domain;
         gaiaParams.emailDomain = data.management_domain;
@@ -362,32 +418,33 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         gaiaParams.email = data.email;
       }
 
-      this.authenticator_.setWebviewPartition(
-          'webviewPartitionName' in data ? data.webviewPartitionName : '');
+      this.authenticator.setWebviewPartition(
+          data.webviewPartitionName ? data.webviewPartitionName : '');
 
-      this.authenticator_.load(AuthMode.DEFAULT, gaiaParams);
+      this.authenticator.load(AuthMode.DEFAULT, gaiaParams);
 
       if (data.gaia_buttons_type) {
-        this.gaiaDialogButtonsType_ = data.gaia_buttons_type;
+        this.gaiaDialogButtonsType = data.gaia_buttons_type;
       }
-      if (this.gaiaDialogButtonsType_ ==
+      if (this.gaiaDialogButtonsType ==
           OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
-        this.licenseType_ = OobeTypes.LicenseType.KIOSK;
+        this.licenseType = OobeTypes.LicenseType.KIOSK;
       }
     }
 
-    invokePolymerMethod(this.$['step-ad-join'], 'onBeforeShow');
+    invokePolymerMethod(this.getOfflineAdLogin(), 'onBeforeShow');
     if (!this.uiStep) {
       this.showStep(
-          this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
-                               OobeTypes.EnrollmentStep.LOADING);
+          this.isAutoEnroll ? OobeTypes.EnrollmentStep.WORKING :
+                              OobeTypes.EnrollmentStep.LOADING);
     }
   }
 
   /**
    * Initial UI State for screen
    */
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.ENROLLMENT_CANCEL_DISABLED;
   }
 
@@ -395,31 +452,30 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * Shows attribute-prompt step with pre-filled asset ID and
    * location.
    */
-  showAttributePromptStep(annotatedAssetId, annotatedLocation) {
-    this.assetId_ = annotatedAssetId;
-    this.deviceLocation_ = annotatedLocation;
+  showAttributePromptStep(annotatedAssetId: string, annotatedLocation: string):
+      void {
+    this.assetId = annotatedAssetId;
+    this.deviceLocation = annotatedLocation;
     this.showStep(OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT);
   }
 
   /**
    * Sets the type of the device and the enterprise domain to be shown.
    *
-   * @param {string} manager
-   * @param {string} device_type
    */
-  setEnterpriseDomainInfo(manager, device_type) {
-    this.domainManager_ = manager;
-    this.deviceName_ = device_type;
+  setEnterpriseDomainInfo(manager: string, deviceType: string): void {
+    this.domainManager = manager;
+    this.deviceName = deviceType;
   }
 
   /**
    * Invoked when identifierEntered message received.
-   * @param {!CustomEvent<!{accountIdentifier: string}>} e Event with payload
+   * @param e Event with payload
    *     containing: {string} accountIdentifier User identifier.
-   * @private
    */
-  onIdentifierEnteredMessage_(e) {
-    if (this.hasAccountCheck_) {
+  private onIdentifierEnteredMessage(
+      e: CustomEvent<{'accountIdentifier': string}>): void {
+    if (this.hasAccountCheck) {
       this.showStep(OobeTypes.EnrollmentStep.CHECKING);
       chrome.send('enterpriseIdentifierEntered', [e.detail.accountIdentifier]);
     }
@@ -429,29 +485,29 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * Cancels the current authentication and drops the user back to the next
    * screen (either the next authentication or the login screen).
    */
-  cancel() {
+  private cancel(): void {
     if (this.isCancelDisabled) {
       return;
     }
     this.isCancelDisabled = true;
-    this.closeEnrollment_('cancel');
+    this.closeEnrollment('cancel');
   }
 
   /**
    * Switches between the different steps in the enrollment flow.
-   * @param {string} step the steps to show, one of "signin", "working",
+   * @param step the steps to show, one of "signin", "working",
    * "attribute-prompt", "error", "success".
-   * @suppress {missingProperties} setOobeUIState() exists
    */
-  showStep(step) {
+  showStep(step: OobeTypes.EnrollmentStep): void {
     this.setUIStep(step);
     if (step === OobeTypes.EnrollmentStep.AD_JOIN) {
-      this.$['step-ad-join'].disabled = false;
-      this.$['step-ad-join'].loading = false;
-      this.$['step-ad-join'].focus();
+      const offlineAdLogin = this.getOfflineAdLogin();
+      offlineAdLogin.disabled = false;
+      offlineAdLogin.loading = false;
+      offlineAdLogin.focus();
     }
     this.isCancelDisabled = (step === OobeTypes.EnrollmentStep.SIGNIN &&
-                             !this.isManualEnrollment_) ||
+                             !this.isManualEnrollment) ||
         step === OobeTypes.EnrollmentStep.AD_JOIN ||
         step === OobeTypes.EnrollmentStep.WORKING ||
         step === OobeTypes.EnrollmentStep.CHECKING ||
@@ -472,50 +528,50 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
   }
 
-  doReload() {
-    this.authenticator_.reload();
+  doReload(): void {
+    this.authenticator.reload();
   }
 
   /**
    * Sets Active Directory join screen params.
-   * @param {string} machineName
-   * @param {string} userName
-   * @param {ActiveDirectoryErrorState} errorState
-   * @param {boolean} showUnlockConfig true if there is an encrypted
+   * @param showUnlockConfig true if there is an encrypted
    * configuration (and not unlocked yet).
    */
-  setAdJoinParams(machineName, userName, errorState, showUnlockConfig) {
-    this.$['step-ad-join'].disabled = false;
-    this.$['step-ad-join'].machineName = machineName;
-    this.$['step-ad-join'].userName = userName;
-    this.$['step-ad-join'].errorState = errorState;
+  setAdJoinParams(
+      machineName: string, userName: string,
+      errorState: ActiveDirectoryErrorState, showUnlockConfig: boolean): void {
+    const offlineAdLogin = this.getOfflineAdLogin();
+    offlineAdLogin.disabled = false;
+    offlineAdLogin.machineName = machineName;
+    offlineAdLogin.userName = userName;
+    offlineAdLogin.errorState = errorState;
     if (showUnlockConfig) {
-      this.$['step-ad-join'].setUIStep(ADLoginStep.UNLOCK);
+      offlineAdLogin.setUIStep(ADLoginStep.UNLOCK);
     } else {
-      this.$['step-ad-join'].setUIStep(ADLoginStep.CREDS);
+      offlineAdLogin.setUIStep(ADLoginStep.CREDS);
     }
   }
 
   /**
    * Sets Active Directory join screen with the unlocked configuration.
-   * @param {Array<JoinConfigType>} options
    */
-  setAdJoinConfiguration(options) {
-    this.$['step-ad-join'].disabled = false;
-    this.$['step-ad-join'].setJoinConfigurationOptions(options);
-    this.$['step-ad-join'].setUIStep(ADLoginStep.CREDS);
-    this.$['step-ad-join'].focus();
+  setAdJoinConfiguration(options: JoinConfigType[]): void {
+    const offlineAdLogin = this.getOfflineAdLogin();
+    offlineAdLogin.disabled = false;
+    offlineAdLogin.setJoinConfigurationOptions(options);
+    offlineAdLogin.setUIStep(ADLoginStep.CREDS);
+    offlineAdLogin.focus();
   }
 
-  clickPrimaryButtonForTesting() {
-    this.$['step-signin'].clickPrimaryButtonForTesting();
+  clickPrimaryButtonForTesting(): void {
+    this.getGaiaDialog().clickPrimaryButtonForTesting();
   }
 
   /**
    * Skips the device attribute update,
    * shows the successful enrollment step.
    */
-  skipAttributes_() {
+  private skipAttributes(): void {
     this.showStep(OobeTypes.EnrollmentStep.SUCCESS);
   }
 
@@ -523,71 +579,72 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * Uploads the device attributes to server. This goes to C++ side through
    * |chrome| and launches the device attribute update negotiation.
    */
-  submitAttributes_() {
-    chrome.send('oauthEnrollAttributes', [this.assetId_, this.deviceLocation_]);
+  private submitAttributes(): void {
+    chrome.send('oauthEnrollAttributes', [this.assetId, this.deviceLocation]);
   }
 
   /**
    * Shows the learn more dialog.
    */
-  onLearnMore_() {
+  private onLearnMore(): void {
     chrome.send('oauthEnrollOnLearnMore');
   }
 
-  closeEnrollment_(result) {
+  private closeEnrollment(result: string): void {
     chrome.send('oauthEnrollClose', [result]);
   }
 
-  onCancelKiosk_() {
+  private onCancelKiosk(): void {
     this.doReload();
     this.showStep(OobeTypes.EnrollmentStep.SIGNIN);
   }
 
-  onEnrollKiosk_() {
+  private onEnrollKiosk(): void {
     chrome.send(
-        'oauthEnrollCompleteLogin', [this.email_, OobeTypes.LicenseType.KIOSK]);
+        'oauthEnrollCompleteLogin', [this.email, OobeTypes.LicenseType.KIOSK]);
   }
 
   /**
    * Notifies chrome that enrollment have finished.
    */
-  onEnrollmentFinished_() {
-    this.closeEnrollment_('done');
+  private onEnrollmentFinished(): void {
+    this.closeEnrollment('done');
   }
 
   /**
    * Generates message on the success screen.
    */
-  successText_(locale, device, domain) {
-    return this.i18nAdvanced(
-        'oauthEnrollAbeSuccessDomain', {substitutions: [device, domain]});
+  private successText(locale: string, device: string, domain: string): string {
+    return this.i18nAdvancedDynamic(
+        locale, 'oauthEnrollAbeSuccessDomain',
+        {substitutions: [device, domain]});
   }
 
-  isEmpty_(str) {
+  private isEmpty(str: string): boolean {
     return !str;
   }
 
-  onAuthCompleted_(e) {
+  private onAuthCompleted(e: CustomEvent): void {
     const detail = e.detail;
     if (!detail.email) {
       this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
       return;
     }
-    if (this.licenseType_ == OobeTypes.LicenseType.ENTERPRISE) {
+    if (this.licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       chrome.send(
           'oauthEnrollCompleteLogin',
           [detail.email, OobeTypes.LicenseType.ENTERPRISE]);
-    } else if (this.licenseType_ == OobeTypes.LicenseType.EDUCATION) {
+    } else if (this.licenseType == OobeTypes.LicenseType.EDUCATION) {
       chrome.send(
           'oauthEnrollCompleteLogin',
           [detail.email, OobeTypes.LicenseType.EDUCATION]);
     } else {
-      this.email_ = detail.email;
+      this.email = detail.email;
       this.showStep(OobeTypes.EnrollmentStep.KIOSK_ENROLLMENT);
     }
   }
 
-  onReady() {
+  private onReady(): void {
     if (this.uiStep == OobeTypes.EnrollmentStep.LOADING) {
       this.showStep(OobeTypes.EnrollmentStep.SIGNIN);
     }
@@ -602,8 +659,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     chrome.send('frameLoadingCompleted');
   }
 
-  /** @suppress {missingProperties} */
-  openedFromDebugOverlay() {
+  private openedFromDebugOverlay(): boolean {
     if (OobeDebugger.DebuggerUI &&
         OobeDebugger.DebuggerUI.getInstance().currentScreenId ===
             'enterprise-enrollment') {
@@ -615,8 +671,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     return false;
   }
 
-  onLicenseTypeSelected(e) {
-    this.licenseType_ = e.detail;
+  private onLicenseTypeSelected(e: CustomEvent): void {
+    this.licenseType = e.detail;
   }
 
   /**
@@ -647,12 +703,12 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   /**
    * Sets an error message and switches to the error screen.
-   * @param {string} message the error message.
-   * @param {boolean} retry whether the retry link should be shown.
+   * @param message the error message.
+   * @param retry whether the retry link should be shown.
    */
-  showError(message, retry) {
-    this.errorText_ = message;
-    this.canRetryAfterError_ = retry;
+  showError(message: string, retry: boolean): void {
+    this.errorText = message;
+    this.canRetryAfterError = retry;
 
     if (this.uiStep === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
       this.showStep(OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT_ERROR);
@@ -663,8 +719,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
   }
 
-
-  convertLicenseType(license) {
+  private convertLicenseType(license: string): OobeTypes.LicenseType {
     switch (license) {
       case 'enterprise':
         return OobeTypes.LicenseType.ENTERPRISE;
@@ -679,26 +734,17 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   /**
    *  Provides the label for the generic cancel button (Skip / Enroll Manually)
-   *
    *  During automatic enrollment, the label is 'Enroll Manually'.
    *  During manual enrollment, the label is 'Skip'.
-   * @private
    */
-  getCancelButtonLabel_(locale_, is_automatic) {
-    if (this.isAutoEnroll_) {
-      return 'oauthEnrollManualEnrollment';
-    } else {
-      return 'oauthEnrollSkip';
-    }
+  private getCancelButtonLabel(isAutomatic: boolean): string {
+    return isAutomatic ? 'oauthEnrollManualEnrollment' : 'oauthEnrollSkip';
   }
 
   /**
    * Return title for enrollment in progress screen.
-   * @param {string} licenseType
-   * @returns {string}
-   * @private
    */
-  getWorkingTitleKey_(licenseType) {
+  private getWorkingTitleKey(licenseType: OobeTypes.LicenseType): string {
     if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       return 'oauthEnrollScreenTitle';
     }
@@ -710,11 +756,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   /**
    * Returns icon for enrollment steps.
-   * @param {*} licenseType
-   * @returns {string}
-   * @private
    */
-  getIcon_(licenseType) {
+  private getIcon(licenseType: OobeTypes.LicenseType): string {
     if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       return 'oobe-32:enterprise';
     }
@@ -726,46 +769,27 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   /**
    * Return title for success enrollment screen.
-   * @param {string} licenseType
-   * @returns {string}
-   * @private
    */
-  getSuccessTitle_(locale, licenseType) {
+  private getSuccessTitle(locale: string, licenseType: OobeTypes.LicenseType):
+      string {
     if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
-      return this.i18n('oauthEnrollSuccessTitle');
+      return this.i18nDynamic(locale, 'oauthEnrollSuccessTitle');
     }
     if (licenseType == OobeTypes.LicenseType.EDUCATION) {
-      return this.i18n('oauthEnrollEducationSuccessTitle');
+      return this.i18nDynamic(locale, 'oauthEnrollEducationSuccessTitle');
     }
-    return this.i18n('oauthEnrollKioskEnrollmentSuccessTitle');
+    return this.i18nDynamic(locale, 'oauthEnrollKioskEnrollmentSuccessTitle');
   }
-
 
   /**
    * Return title for error enrollment screen.
-   * @param {string} licenseType
-   * @returns {string}
-   * @private
    */
-  getErrorTitle_(locale, licenseType) {
+  private getErrorTitle(locale: string, licenseType: OobeTypes.LicenseType):
+      string {
     if (licenseType == OobeTypes.LicenseType.EDUCATION) {
-      return this.i18n('oauthEducationEnrollErrorTitle');
+      return this.i18nDynamic(locale, 'oauthEducationEnrollErrorTitle');
     }
-    return this.i18n('oauthEnrollErrorTitle');
-  }
-
-
-  /**
-   * Return title for error enrollment screen.
-   * @param {string} licenseType
-   * @returns {string}
-   * @private
-   */
-  getAttributePromptTitle_(locale, licenseType) {
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
-      return this.i18n('oauthEnrollEducationSuccessTitle');
-    }
-    return this.i18n('oauthEnrollScreenTitle');
+    return this.i18nDynamic(locale, 'oauthEnrollErrorTitle');
   }
 
   /**
@@ -774,11 +798,10 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    *  manual mode without enrollment enforcement.
    *
    *  When the enrollment is manual AND forced, a 'BACK' button will be shown.
-   * @param {Boolean} automatic - Whether the enrollment is automatic
-   * @param {Boolean} enforced  - Whether the enrollment is enforced
-   * @private
+   * @param automatic - Whether the enrollment is automatic
+   * @param enforced  - Whether the enrollment is enforced
    */
-  isGenericCancel_(automatic, enforced) {
+  private isGenericCancel(automatic: boolean, enforced: boolean): boolean {
     return automatic || (!automatic && !enforced);
   }
 
@@ -787,7 +810,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * attempt. This goes to the C++ side through |chrome| first to clean up the
    * profile, so that the next attempt is performed with a clean state.
    */
-  doRetry_() {
+  private doRetry(): void {
     chrome.send('oauthEnrollRetry');
   }
 
@@ -795,21 +818,21 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    *  Event handler for the 'Try again' button that is shown upon an error
    *  during ActiveDirectory join.
    */
-  onAdJoinErrorRetry_() {
+  private onAdJoinErrorRetry(): void {
     this.showStep(OobeTypes.EnrollmentStep.AD_JOIN);
   }
 
   /*
    * Whether authFlow is the SAML.
    */
-  isSaml_(authFlow) {
+  isSaml(authFlow: AuthFlow): boolean {
     return authFlow === AuthFlow.SAML;
   }
 
   /*
    * Called when we cancel TPM check early.
    */
-  onTPMCheckCanceled_() {
+  private onTpmCheckCanceled(): void {
     this.userActed('cancel-tpm-check');
   }
 
@@ -817,47 +840,49 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   /**
    * Return title for skip enrollment dialogue.
-   * @param {string} licenseType
-   * @returns {string}
-   * @private
    */
-  getSkipConfirmationTitle_(locale, licenseType) {
+  private getSkipConfirmationTitle(
+      locale: string, licenseType: OobeTypes.LicenseType): string {
     if (licenseType == OobeTypes.LicenseType.EDUCATION) {
-      return this.i18n('skipConfirmationDialogEducationTitle');
+      return this.i18nDynamic(locale, 'skipConfirmationDialogEducationTitle');
     }
-    return this.i18n('skipConfirmationDialogTitle');
+    return this.i18nDynamic(locale, 'skipConfirmationDialogTitle');
   }
 
   /**
    * Return text for skip enrollment dialogue.
-   * @param {string} licenseType
-   * @returns {string}
-   * @private
    */
-  getSkipConfirmationText_(locale, licenseType) {
+  private getSkipConfirmationText(
+      locale: string, licenseType: OobeTypes.LicenseType): string {
     if (licenseType == OobeTypes.LicenseType.EDUCATION) {
-      return this.i18n('skipConfirmationDialogEducationText');
+      return this.i18nDynamic(locale, 'skipConfirmationDialogEducationText');
     }
-    return this.i18n('skipConfirmationDialogText');
+    return this.i18nDynamic(locale, 'skipConfirmationDialogText');
   }
 
   /*
    * Called when we click go back button.
    */
-  onDialogClosed_() {
-    this.$.skipConfirmationDialog.hideDialog();
+  private onDialogClosed(): void {
+    this.getSkipConfirmationDialog().hideDialog();
   }
 
   /*
    * Called when we click skip button.
    */
-  onDialogSkip_() {
-    this.$.skipConfirmationDialog.hideDialog();
+  private onDialogSkip(): void {
+    this.getSkipConfirmationDialog().hideDialog();
     this.userActed('skip-confirmation');
   }
 
-  showSkipConfirmationDialog() {
-    this.$.skipConfirmationDialog.showDialog();
+  showSkipConfirmationDialog(): void {
+    this.getSkipConfirmationDialog().showDialog();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EnterpriseEnrollmentElement.is]: EnterpriseEnrollmentElement;
   }
 }
 

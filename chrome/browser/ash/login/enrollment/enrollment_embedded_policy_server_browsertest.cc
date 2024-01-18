@@ -99,7 +99,7 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
  public:
   EnrollmentEmbeddedPolicyServerBase() {
     gaia_frame_parent_ = "authView";
-    authenticator_id_ = "$('enterprise-enrollment').authenticator_";
+    authenticator_id_ = "$('enterprise-enrollment').authenticator";
   }
 
   EnrollmentEmbeddedPolicyServerBase(

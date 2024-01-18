@@ -18,7 +18,6 @@ js_type_check("closure_compile") {
       ]
   deps = [
     ":consumer_update",
-    ":enterprise_enrollment",
     ":oobe_network",
     ":welcome",
     ":welcome_dialog",
@@ -38,26 +37,6 @@ js_library("consumer_update") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("enterprise_enrollment") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enterprise_enrollment.js" ]
-  deps = [
-    "../../components:display_manager_types",
-    "../../components:gaia_dialog",
-    "../../components:keyboard_utils",
-    "../../components:keyboard_utils_oobe",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-    "../common:offline_ad_login",
-    "//ash/webui/common/resources:cr.m",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 

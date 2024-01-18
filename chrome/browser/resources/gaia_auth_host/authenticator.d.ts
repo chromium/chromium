@@ -59,6 +59,7 @@ export interface AuthParams {
   isDeviceOwner: boolean;
   isLoginPrimaryAccount: boolean;
   isSupervisedUser: boolean;
+  needPassword?: boolean;
   platformVersion: string;
   readOnlyEmail: boolean;
   samlAclUrl: string;

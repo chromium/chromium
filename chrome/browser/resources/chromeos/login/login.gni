@@ -82,7 +82,7 @@ oobe_screens_js_files = [
   "screens/oobe/demo_preferences.ts",
   "screens/oobe/demo_setup.ts",
   "screens/oobe/enable_debugging.ts",
-  "screens/oobe/enterprise_enrollment.js",
+  "screens/oobe/enterprise_enrollment.ts",
   "screens/oobe/hid_detection.ts",
   "screens/oobe/oobe_network.js",
   "screens/oobe/packaged_license.ts",

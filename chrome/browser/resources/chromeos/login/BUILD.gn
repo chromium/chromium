@@ -234,7 +234,6 @@ js_library("cr_ui") {
   deps = [
     ":display_manager",
     "components:api_keys_notice",
-    "screens/oobe:enterprise_enrollment",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:load_time_data.m",

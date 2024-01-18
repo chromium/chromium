@@ -105,6 +105,7 @@ export let AuthCompletedCredentials;
  *   samlAclUrl: string,
  *   isSupervisedUser: boolean,
  *   isDeviceOwner: boolean,
+ *   needPassword: (boolean|undefined),
  *   ssoProfile: string,
  *   urlParameterToAutofillSAMLUsername: string,
  *   frameUrl: URL,
