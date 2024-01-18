@@ -191,12 +191,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       continue;
     }
 
-    if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
-      continue;
-    }
-
     if (AutofillUITypeFromAutofillType(field.autofillType) ==
         AutofillUITypeProfileHomeAddressCountry) {
       [model addItem:[self countryItem]

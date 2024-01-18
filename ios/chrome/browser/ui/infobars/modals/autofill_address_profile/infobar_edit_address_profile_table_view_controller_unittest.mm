@@ -205,12 +205,6 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
         continue;
       }
 
-      if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-          !base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
-        continue;
-      }
-
       expected_values.push_back(
           {field.autofillType, profile.GetRawInfo(field.autofillType)});
     }
