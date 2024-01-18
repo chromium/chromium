@@ -430,6 +430,7 @@ grit("resources") {
 generate_definitions_js_files = [
   "assert.js",
   "auth_setup/set_local_password_input.html.js",
+  "auth_setup/auth_setup_icons.html.js",
   "bluetooth/bluetooth_pairing_confirm_code_page.html.js",
   "bluetooth/bluetooth_pairing_enter_code_page.html.js",
   "bluetooth/bluetooth_pairing_device_selection_page.html.js",
@@ -464,6 +465,8 @@ generate_definitions_js_files = [
   "focus_row_js.js",
   "focus_without_ink_js.js",
   "keyboard_shortcut_list_js.js",
+  "multidevice_setup/multidevice_setup_shared.css.js",
+  "multidevice_setup/multidevice_setup_delegate.js",
   "navigation_shared_vars.css.js",
   "network/cellular_utils.js",
   "network/cr_policy_network_behavior_mojo.js",
@@ -562,6 +565,9 @@ checked_in_dts_files = [
   "cellular_setup/setup_loading_page.d.ts",
   "smb_shares/add_smb_share_dialog.d.ts",
   "smb_shares/smb_browser_proxy.d.ts",
+
+  "multidevice_setup/mojo_api.d.ts",
+  "multidevice_setup/multidevice_setup.d.ts",
 
   "network/apn_detail_dialog.d.ts",
   "network/apn_list.d.ts",

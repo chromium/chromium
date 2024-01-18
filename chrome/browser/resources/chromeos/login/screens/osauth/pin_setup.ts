@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -14,6 +13,8 @@ import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
 
+import {SetupPinKeyboardElement} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
+import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -130,12 +131,14 @@ class PinSetup extends PinSetupBase {
     return PinSetupState.START;
   }
 
-  onBeforeShow(data: OobeTypes.PinSetupScreenParameters): void {
+  private getPinKeyboard(): SetupPinKeyboardElement {
     const pinKeyboard = this.shadowRoot?.querySelector('#pinKeyboard');
-    if (pinKeyboard) {
-      // TODO(b/320242398): Fix type once SetupPinKeyboardElement can be added.
-      (pinKeyboard as any).resetState();
-    }
+    assert(pinKeyboard instanceof SetupPinKeyboardElement);
+    return pinKeyboard;
+  }
+
+  onBeforeShow(data: OobeTypes.PinSetupScreenParameters): void {
+    this.getPinKeyboard().resetState();
     this.authToken = data.auth_token;
     this.isChildAccount = data.is_child_account;
   }
@@ -155,11 +158,7 @@ class PinSetup extends PinSetupBase {
   }
 
   private onPinSubmit(): void {
-    const pinKeyboard = this.shadowRoot?.querySelector('#pinKeyboard');
-    if (pinKeyboard) {
-      // TODO(b/320242398): Fix type once SetupPinKeyboardElement can be added.
-      (pinKeyboard as any).doSubmit();
-    }
+    this.getPinKeyboard().doSubmit();
   }
 
   private onSetPinDone(): void {
@@ -168,11 +167,7 @@ class PinSetup extends PinSetupBase {
 
   private onSkipButton(): void {
     this.authToken = '';
-    const pinKeyboard = this.shadowRoot?.querySelector('#pinKeyboard');
-    if (pinKeyboard) {
-      // TODO(b/320242398): Fix type once SetupPinKeyboardElement can be added.
-      (pinKeyboard as any).resetState();
-    }
+    this.getPinKeyboard().resetState();
     if (this.uiStep === PinSetupState.CONFIRM) {
       this.userActed('skip-button-in-flow');
     } else {
@@ -181,11 +176,7 @@ class PinSetup extends PinSetupBase {
   }
 
   private onBackButton(): void {
-    const pinKeyboard = this.shadowRoot?.querySelector('#pinKeyboard');
-    if (pinKeyboard) {
-      // TODO(b/320242398): Fix type once SetupPinKeyboardElement can be added.
-      (pinKeyboard as any).resetState();
-    }
+    this.getPinKeyboard().resetState();
     this.setUIStep(PinSetupState.START);
   }
 
@@ -195,11 +186,7 @@ class PinSetup extends PinSetupBase {
 
   private onDoneButton(): void {
     this.authToken = '';
-    const pinKeyboard = this.shadowRoot?.querySelector('#pinKeyboard');
-    if (pinKeyboard) {
-      // TODO(b/320242398): Fix type once SetupPinKeyboardElement can be added.
-      (pinKeyboard as any).resetState();
-    }
+    this.getPinKeyboard().resetState();
     this.userActed('done-button');
   }
 }
