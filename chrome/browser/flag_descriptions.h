@@ -4295,6 +4295,9 @@ extern const char kEnableBorderlessPrintingDescription[];
 extern const char kLacrosColorManagementName[];
 extern const char kLacrosColorManagementDescription[];
 
+extern const char kLockedModeName[];
+extern const char kLockedModeDescription[];
+
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
 

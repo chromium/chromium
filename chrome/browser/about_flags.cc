@@ -11117,6 +11117,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableVcn3dsAuthentication)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"cros-locked-mode", flag_descriptions::kLockedModeName,
+     flag_descriptions::kLockedModeDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(blink::features::kLockedMode)},
+#endif  // BUILDFLAG_(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

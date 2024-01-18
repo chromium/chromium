@@ -270,6 +270,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
           {wf::EnableLazyInitializeMediaControls,
            raw_ref(features::kLazyInitializeMediaControls)},
+#if BUILDFLAG(IS_CHROMEOS)
+          {wf::EnableLockedMode, raw_ref(blink::features::kLockedMode)},
+#endif
           {wf::EnableMachineLearningModelLoader,
            raw_ref(features::kEnableMachineLearningModelLoaderWebPlatformApi),
            kSetOnlyIfOverridden},

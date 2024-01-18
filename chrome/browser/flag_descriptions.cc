@@ -7484,6 +7484,11 @@ const char kLacrosColorManagementDescription[] =
     "Uses chrome-color-management wayland protocol to manage color spaces "
     "for lacros. This is necessary for enabling HDR on compatible devices.";
 
+const char kLockedModeName[] = "Enable the Locked Mode API.";
+const char kLockedModeDescription[] =
+    "Enabled the Locked Mode Web API which allows admin-allowlisted sites "
+    "to enter a locked down fullscreen mode.";
+
 const char kOneGroupPerRendererName[] =
     "Use one cgroup for each foreground renderer";
 const char kOneGroupPerRendererDescription[] =

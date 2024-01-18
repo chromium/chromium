@@ -2247,6 +2247,8 @@
     {
       name: "LockedMode",
       status: "test",
+      // Enabled by features::kLockedMode.
+      public: true,
     },
     {
       // Enables long aniamtion frames as a performance API (the

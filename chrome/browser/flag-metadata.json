@@ -1467,6 +1467,13 @@
     "expiry_milestone": 126
   },
   {
+    "name": "cros-locked-mode",
+    "owners": [
+      "//chrome/browser/chromeos/cros_apps/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cros-omnibox-install-dialog",
     "owners": [ "loubrett@google.com", "cros-apps-platform-core@google.com" ],
     "expiry_milestone": 130
