@@ -62,6 +62,8 @@ if (fuzztest_supported) {
 }
 ```
 
+You may also need to add `third_party/fuzztest` to your DEPS file.
+
 ## Adding `FUZZ_TEST` support to a target
 
 *** note
@@ -173,10 +175,17 @@ run for one second:
 
 On other platforms, the test will be ignored.
 
-If you want to try actually fuzzing with FuzzTest, add the gn argument
-`enable_fuzztest_fuzz = true`. You can then run your unit test
-with the extra command line argument `--fuzz=`, optionally specifying a test
-name. You'll see lots of output as it explores your code:
+If you want to try actually fuzzing with FuzzTest, modify your gn arguments to
+contain:
+
+```
+enable_fuzztest_fuzz=true
+is_component_build=false
+```
+
+You can then run your unit test with the extra command line argument `--fuzz=`,
+optionally specifying a test name. You'll see lots of output as it explores your
+code:
 
 ```
 [*] Corpus size:     1 | Edges covered:     73 | Fuzzing time:        1.60482ms | Total runs:  1.00e+00 | Runs/secs:   623 | Max stack usage:        0
