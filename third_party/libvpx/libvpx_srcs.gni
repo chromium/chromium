@@ -3588,6 +3588,7 @@ libvpx_srcs_arm64_highbd_neon = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/vpx_scaled_convolve8_neon.c",
 ]
 libvpx_srcs_arm64_highbd_neon_dotprod = [
+  "//third_party/libvpx/source/libvpx/vpx_dsp/arm/highbd_variance_neon_dotprod.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/sad4d_neon_dotprod.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/sad_neon_dotprod.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/sse_neon_dotprod.c",
