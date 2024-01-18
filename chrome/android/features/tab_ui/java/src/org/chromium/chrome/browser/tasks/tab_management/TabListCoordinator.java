@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -62,6 +63,8 @@ import java.util.List;
 /** Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes. */
 public class TabListCoordinator
         implements PriceMessageService.PriceWelcomeMessageProvider, DestroyObserver {
+    private static final String TAG = "TabListCoordinator";
+
     /**
      * Modes of showing the list of tabs.
      *
@@ -483,7 +486,15 @@ public class TabListCoordinator
     }
 
     void waitForLayoutWithTab(int tabId, Runnable r) {
-        assert mAwaitingLayoutRunnable == null;
+        // Very fast navigations to/from the tab list may not have time for a layout to reach a
+        // completed state. Since this is primarily used for cancellable or skippable animations
+        // where the runnable will not be serviced downstream, dropping the runnable altogether is
+        // safe.
+        if (mAwaitingLayoutRunnable != null) {
+            Log.d(TAG, "Dropping AwaitingLayoutRunnable for " + mAwaitingTabId);
+            mAwaitingLayoutRunnable = null;
+            mAwaitingTabId = Tab.INVALID_TAB_ID;
+        }
         int index = getIndexForTabId(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) {
             r.run();

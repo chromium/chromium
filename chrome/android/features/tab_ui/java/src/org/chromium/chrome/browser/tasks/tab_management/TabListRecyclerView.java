@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
@@ -182,9 +183,15 @@ class TabListRecyclerView extends RecyclerView
      * @param runnable the runnable that executes on next layout.
      */
     void runAnimationOnNextLayout(Runnable runnable) {
-        assert mOnNextLayoutRunnable == null
-                : "TabListRecyclerView animation on next layout set multiple times without"
-                        + " running.";
+        // Very fast navigations to/from the tab list may not have time for a layout to reach a
+        // completed state. Since this is primarily used for cancellable or skippable animations
+        // where the runnable will not be serviced downstream, dropping the runnable altogether is
+        // safe for Hub.
+        if (!HubFieldTrial.isHubEnabled()) {
+            assert mOnNextLayoutRunnable == null
+                    : "TabListRecyclerView animation on next layout set multiple times without"
+                            + " running.";
+        }
         mOnNextLayoutRunnable =
                 () -> {
                     if (mDynamicView == null) {
