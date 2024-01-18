@@ -15,9 +15,13 @@
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "base/check.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -87,6 +91,8 @@ PickerView::PickerView(PickerViewDelegate* delegate,
 
   user_education_view_ =
       AddChildView(std::make_unique<PickerUserEducationView>());
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
 PickerView::~PickerView() = default;
@@ -108,6 +114,14 @@ views::UniqueWidgetPtr PickerView::CreateWidget(
   widget->SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_HIDE);
   return widget;
+}
+
+bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+  if (auto* widget = GetWidget()) {
+    widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+  }
+  return true;
 }
 
 void PickerView::PaintChildren(const views::PaintInfo& paint_info) {
