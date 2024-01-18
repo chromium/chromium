@@ -539,9 +539,12 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
 
 int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
-      return views::style::TextStyle::STYLE_SECONDARY;
+      // The style for non-footer suggestions with lowered visual prominence.
+      return views::style::TextStyle::STYLE_BODY_3;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
@@ -561,8 +564,6 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFillExistingPlusAddress:
-    case PopupItemId::kFillFullEmail:
-    case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
@@ -581,7 +582,7 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
-      return views::style::TextStyle::STYLE_PRIMARY;
+      return GetPrimaryTextStyle();
   }
 }
 
@@ -686,6 +687,18 @@ bool ShouldApplyNewAutofillPopupStyle() {
              features::kAutofillShowAutocompleteDeleteButton) ||
          base::FeatureList::IsEnabled(
              features::kAutofillGranularFillingAvailable);
+}
+
+views::style::TextStyle GetPrimaryTextStyle() {
+  return ShouldApplyNewAutofillPopupStyle()
+             ? views::style::TextStyle::STYLE_BODY_3_MEDIUM
+             : views::style::TextStyle::STYLE_PRIMARY;
+}
+
+views::style::TextStyle GetSecondaryTextStyle() {
+  return ShouldApplyNewAutofillPopupStyle()
+             ? views::style::TextStyle::STYLE_BODY_4
+             : views::style::TextStyle::STYLE_SECONDARY;
 }
 
 }  // namespace autofill

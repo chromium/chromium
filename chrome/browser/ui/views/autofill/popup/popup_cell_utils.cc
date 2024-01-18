@@ -521,10 +521,13 @@ void FormatLabel(views::Label& label,
 // Creates a label for the suggestion's main text.
 std::unique_ptr<views::Label> CreateMainTextLabel(
     const Suggestion::Text& main_text,
-    int text_style) {
+    int primary_text_style) {
+  int non_primary_text_style = ShouldApplyNewAutofillPopupStyle()
+                                   ? views::style::TextStyle::STYLE_BODY_3
+                                   : views::style::TextStyle::STYLE_PRIMARY;
   return std::make_unique<views::Label>(
       main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      !main_text.is_primary ? views::style::STYLE_PRIMARY : text_style);
+      main_text.is_primary ? primary_text_style : non_primary_text_style);
 }
 
 // Creates a label for the suggestion's minor text.
@@ -534,7 +537,7 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
              ? nullptr
              : std::make_unique<views::Label>(
                    minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-                   views::style::STYLE_SECONDARY);
+                   GetSecondaryTextStyle());
 }
 
 int GetMaxPopupAddressProfileWidth() {
@@ -549,7 +552,7 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupRowContentView& content_view,
     const Suggestion& suggestion,
     FillingProduct main_filling_product,
-    int text_style) {
+    std::optional<int> text_style) {
   std::vector<std::unique_ptr<views::View>> result;
   const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
@@ -574,7 +577,8 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
       auto* label =
           label_row_container_view->AddChildView(std::make_unique<views::Label>(
               label_text.value,
-              ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL, text_style));
+              ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+              text_style ? *text_style : GetSecondaryTextStyle()));
       content_view.TrackLabel(label);
       // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(
