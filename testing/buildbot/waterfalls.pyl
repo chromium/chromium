@@ -1201,7 +1201,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_trichrome_64_cts_hostside_tests',
+          'gtest_tests': 'webview_trichrome_64_cts_hostside_gtests',
         }
       },
       'android-webview-13-x64-dbg-tests': {

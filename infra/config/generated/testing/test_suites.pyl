@@ -7890,6 +7890,15 @@
       },
     },
 
+    'webview_trichrome_64_cts_hostside_gtests': {
+      'webview_trichrome_64_cts_hostside_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ],
+      },
+    },
+
     'win_optional_gpu_tests_rel_gpu_telemetry_tests': {
       'gpu_common_and_optional_telemetry_tests': {
         'variants': [

@@ -1367,6 +1367,18 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "webview_trichrome_64_cts_hostside_gtests",
+    basic_suites = {
+        "webview_trichrome_64_cts_hostside_tests": targets.legacy_matrix_config(
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "win_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(

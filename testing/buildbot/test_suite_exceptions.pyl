@@ -5243,6 +5243,15 @@
       'android-12-x64-rel', # These tests are not ready to run on a non FYI CI.
     ]
   },
+  'webview_trichrome_64_cts_hostside_tests full_mode': {
+    'modifications': {
+      'android-webview-13-x64-dbg-hostside': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+    },
+  },
   'webview_ui_test_app_test_apk': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280
