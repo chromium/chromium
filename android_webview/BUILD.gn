@@ -871,6 +871,7 @@ android_library("common_java") {
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//gpu/config:config_java",
+    "//media/base/android:media_java",
     "//net/base:features_java",
     "//services/network/public:features_java",
     "//services/tracing/public:features_java",

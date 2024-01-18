@@ -1510,21 +1510,22 @@ BASE_FEATURE(kRecordWebAudioEngagement,
 // - PreloadMediaEngagementData: enables a list of origins to be considered as
 //   having a high MEI until there is enough local data to determine the user's
 //   preferred behaviour.
+BASE_FEATURE(kMediaEngagementBypassAutoplayPolicies,
+             "MediaEngagementBypassAutoplayPolicies",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kMediaEngagementBypassAutoplayPolicies,
-             "MediaEngagementBypassAutoplayPolicies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPreloadMediaEngagementData,
-             "PreloadMediaEngagementData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
-BASE_FEATURE(kMediaEngagementBypassAutoplayPolicies,
-             "MediaEngagementBypassAutoplayPolicies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE(kPreloadMediaEngagementData,
              "PreloadMediaEngagementData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
+);
 
 BASE_FEATURE(kMediaEngagementHTTPSOnly,
              "MediaEngagementHTTPSOnly",
@@ -1686,6 +1687,13 @@ BASE_FEATURE(kMediaLogToConsole,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kLibvpxUseChromeThreads,
+             "LibvpxUseChromeThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLibaomUseChromeThreads,
+             "LibaomUseChromeThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 // Allows decoding of theora / vp3 content.

@@ -26,6 +26,7 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
+import org.chromium.media.MediaFeatures;
 import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
@@ -868,6 +869,12 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.BOOST_NON_RENDER_BLOCKING_STYLE_LOADING_TASK_PRIORITY,
                 "If enabled, non-render-blocking style loading tasks have higher priority on"
                         + " visible pages"),
+        Flag.baseFeature(
+                MediaFeatures.LIBVPX_USE_CHROME_THREADS,
+                "Attaches libvpx threads to the chromium thread system."),
+        Flag.baseFeature(
+                MediaFeatures.LIBAOM_USE_CHROME_THREADS,
+                "Attaches libaom threads to the chromium thread system."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
