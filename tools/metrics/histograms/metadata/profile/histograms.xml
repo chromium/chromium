@@ -101,7 +101,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
-  <owner>anthonyvd@chromium.org</owner>
   <summary>
     This histogram tracks which UI screen was used to initiate and confirm the
     deletion of a profile. This does not track when the profile is actually

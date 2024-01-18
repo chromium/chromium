@@ -1122,11 +1122,6 @@
                     'chrome/browser/safe_browsing/cloud_content_scanning/|' \
                     'components/enterprise/common/proto/'
     },
-    'enterprise_reporting_private': {
-      'filepath': 'chrome/common/extensions/api/enterprise_reporting_private.idl|' \
-                  'chrome/browser/extensions/api/enterprise_reporting_private/|' \
-                  'chrome/browser/enterprise/signals/'
-    },
     'exo': {
       'filepath': 'components/exo',
     },
@@ -2867,7 +2862,6 @@
              'pushi+watch-eche@google.com'],
     'eme': ['eme-reviews@chromium.org'],
     'enterprise_connectors': ['dpr-eng@google.com'],
-    'enterprise_reporting_private': ['anthonyvd+watch@chormium.org'],
     'exo': ['crostini-ui+exo@chromium.org',
             'yhanada+watchexo@chromium.org'],
     'explore_sites': ['chili+watch@chromium.org',
