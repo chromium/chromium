@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -94,6 +95,9 @@ struct DisplayMetadata {
   // The path to the file that bytes are actually written to during download.
   // NOTE: This path is different from the download target path.
   base::FilePath file_path;
+
+  // A nullable image that represents the underlying download.
+  gfx::ImageSkia image;
 
   // Indicates the progress of the underlying download.
   Progress progress;

@@ -47,9 +47,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/views/large_image_view.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
+#include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view_utils.h"
@@ -514,6 +517,50 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   // not show again.
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Not(Contains(notification_id)));
+}
+
+// Verifies that the image download notification works as expected.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ImageDownload) {
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+
+  // Create a download.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Because `download` does not have an image, the notification image is null.
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  EXPECT_FALSE(popup_view->GetViewByID(
+      message_center::NotificationViewBase::kLargeImageView));
+
+  // Update `download` with `image`.
+  constexpr SkColor image_color = SK_ColorRED;
+  const gfx::ImageSkia image =
+      gfx::test::CreateImageSkia(/*size=*/100, image_color);
+  download->image = image;
+  Update(download->Clone());
+
+  popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  auto* const large_image_view =
+      static_cast<message_center::LargeImageView*>(popup_view->GetViewByID(
+          message_center::NotificationViewBase::kLargeImageView));
+  ASSERT_TRUE(large_image_view);
+
+  // Verify that the notification image is as expected.
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *large_image_view->original_image().bitmap(),
+      gfx::test::CreateBitmap(/*width=*/360,
+                              /*height=*/240, image_color)));
 }
 
 // Verifies that the notification of a download with an unknown total bytes

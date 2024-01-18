@@ -27,10 +27,19 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/skbitmap_operations.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -42,6 +51,10 @@ namespace ash::download_status {
 namespace {
 
 // Constants -------------------------------------------------------------------
+
+// A notification image's preferred size.
+constexpr gfx::Size kNotificationImagePreferredSize(/*width=*/360,
+                                                    /*height=*/240);
 
 constexpr char kNotificationNotifierId[] =
     "chrome://downloads/notification/id-notifier";
@@ -133,6 +146,62 @@ std::string GetNotificationIdFromGuid(const std::string& guid) {
   return base::StrCat({kNotificationNotifierId, "/", guid});
 }
 
+// Returns a notification image from `original_image`. This function should be
+// called only when the image of `original_image` is not null nor empty.
+// NOTE: This function avoids using image skia operations to prevent unnecessary
+// retention of original image data.
+gfx::Image GetNotificationImage(const gfx::ImageSkia& original_image) {
+  CHECK(!original_image.isNull());
+  CHECK(!original_image.size().IsEmpty());
+
+  const float target_aspect_ratio =
+      static_cast<float>(kNotificationImagePreferredSize.width()) /
+      kNotificationImagePreferredSize.height();
+  const float original_aspect_ratio =
+      static_cast<float>(original_image.width()) / original_image.height();
+
+  // Get the largest rect from `original_image` that has `target_aspect_ratio`.
+  gfx::Rect source_rect;
+  if (original_aspect_ratio > target_aspect_ratio) {
+    const float width = original_image.height() * target_aspect_ratio;
+    source_rect = gfx::Rect(/*x=*/(original_image.width() - width) / 2,
+                            /*y=*/0, width, original_image.height());
+  } else {
+    const float height = original_image.width() / target_aspect_ratio;
+    source_rect =
+        gfx::Rect(/*x=*/0, /*y=*/(original_image.height() - height) / 2,
+                  original_image.width(), height);
+  }
+  const SkBitmap cropped_bitmap = SkBitmapOperations::CreateTiledBitmap(
+      *original_image.bitmap(), source_rect.x(), source_rect.y(),
+      source_rect.width(), source_rect.height());
+
+  // Find the largest supported scale factor for the returned image without
+  // upscaling `original_image`.
+  gfx::Size scaled_preferred_size = kNotificationImagePreferredSize;
+  float largest_scale = 1.f;
+  for (const auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
+    if (scale <= 1.f) {
+      continue;
+    }
+
+    if (const gfx::Size scaled_size =
+            gfx::ScaleToCeiledSize(kNotificationImagePreferredSize, scale);
+        gfx::Rect(original_image.size()).Contains(gfx::Rect(scaled_size))) {
+      largest_scale = scale;
+      scaled_preferred_size = scaled_size;
+    }
+  }
+
+  const SkBitmap resized_bitmap = skia::ImageOperations::Resize(
+      cropped_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
+      scaled_preferred_size.width(), scaled_preferred_size.height());
+
+  return gfx::Image(
+      gfx::ImageSkia::CreateFromBitmap(resized_bitmap, largest_scale));
+}
+
 }  // namespace
 
 NotificationDisplayClient::NotificationDisplayClient(Profile* profile)
@@ -216,6 +285,12 @@ void NotificationDisplayClient::AddOrUpdate(
           .SetType(complete ? message_center::NOTIFICATION_TYPE_SIMPLE
                             : message_center::NOTIFICATION_TYPE_PROGRESS)
           .Build(/*keep_timestamp=*/false);
+
+  if (const gfx::ImageSkia& image = display_metadata.image;
+      !image.isNull() && !image.size().IsEmpty()) {
+    notification.set_image(GetNotificationImage(image));
+    notification.set_image_path(display_metadata.file_path);
+  }
 
   NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, std::move(notification),

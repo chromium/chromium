@@ -207,6 +207,7 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   display_metadata.command_infos = std::move(command_infos);
 
   display_metadata.file_path = *download_status.full_path;
+  display_metadata.image = download_status.image;
   display_metadata.progress = GetProgress(download_status);
   display_metadata.secondary_text = download_status.status_text;
   display_metadata.text = GetText(download_status);
