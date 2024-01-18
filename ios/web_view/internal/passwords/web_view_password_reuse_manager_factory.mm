@@ -8,6 +8,7 @@
 #import "build/build_config.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #import "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -60,13 +61,15 @@ WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
-  reuse_manager->Init(browser_state->GetPrefs(),
-                      WebViewProfilePasswordStoreFactory::GetForBrowserState(
-                          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get(),
-                      WebViewAccountPasswordStoreFactory::GetForBrowserState(
-                          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get());
+  reuse_manager->Init(
+      browser_state->GetPrefs(),
+      WebViewProfilePasswordStoreFactory::GetForBrowserState(
+          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      WebViewAccountPasswordStoreFactory::GetForBrowserState(
+          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      std::make_unique<password_manager::PasswordReuseDetectorImpl>());
   return reuse_manager;
 }
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
@@ -118,14 +119,16 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
 #endif
   auto reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
-  reuse_manager->Init(profile->GetPrefs(),
-                      ProfilePasswordStoreFactory::GetForProfile(
-                          profile, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get(),
-                      AccountPasswordStoreFactory::GetForProfile(
-                          profile, ServiceAccessType::EXPLICIT_ACCESS)
-                          .get(),
-                      identity_manager, std::move(shared_pref_delegate));
+  reuse_manager->Init(
+      profile->GetPrefs(),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      std::make_unique<password_manager::PasswordReuseDetectorImpl>(),
+      identity_manager, std::move(shared_pref_delegate));
 
   // Prepare password hash data for reuse detection.
   reuse_manager->PreparePasswordHashData(GetSignInStateForMetrics(profile));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 
 #include <memory>
 #include <optional>
@@ -125,7 +125,7 @@ void ConfigureEnterprisePasswordProtection(
 }
 
 TEST(PasswordReuseDetectorTest, TypingPasswordOnDifferentSite) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -173,7 +173,7 @@ TEST(PasswordReuseDetectorTest, TypingPasswordOnDifferentSite) {
 }
 
 TEST(PasswordReuseDetectorTest, PSLMatchNoReuseEvent) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -183,7 +183,7 @@ TEST(PasswordReuseDetectorTest, PSLMatchNoReuseEvent) {
 }
 
 TEST(PasswordReuseDetectorTest, NoPSLMatchReuseEvent) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -202,7 +202,7 @@ TEST(PasswordReuseDetectorTest, NoPSLMatchReuseEvent) {
 }
 
 TEST(PasswordReuseDetectorTest, TooShortPasswordNoReuseEvent) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -211,7 +211,7 @@ TEST(PasswordReuseDetectorTest, TooShortPasswordNoReuseEvent) {
 }
 
 TEST(PasswordReuseDetectorTest, PasswordNotInputSuffixNoReuseEvent) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -226,7 +226,7 @@ TEST(PasswordReuseDetectorTest, OnLoginsChanged) {
   for (PasswordStoreChange::Type type :
        {PasswordStoreChange::ADD, PasswordStoreChange::UPDATE,
         PasswordStoreChange::REMOVE}) {
-    PasswordReuseDetector reuse_detector;
+    PasswordReuseDetectorImpl reuse_detector;
     PasswordStoreChangeList changes =
         GetChangeList(type, GetForms(GetTestDomainsPasswords()));
     reuse_detector.OnLoginsChanged(changes);
@@ -250,7 +250,7 @@ TEST(PasswordReuseDetectorTest, OnLoginsChanged) {
 }
 
 TEST(PasswordReuseDetectorTest, AddAndRemoveSameLogin) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   std::vector<std::unique_ptr<PasswordForm>> login_credentials =
       GetForms(GetTestDomainsPasswords());
   // Add the test domain passwords into the saved passwords map.
@@ -292,7 +292,7 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLogin) {
 }
 
 TEST(PasswordReuseDetectorTest, AddAndRemoveSameLoginWithMultipleForms) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   // These credentials mimic a user using "secretword" on "https://example1.com"
   // and "https://example2.com" and then changing the password on
   // "https://example1.com" to "secretword1".
@@ -370,7 +370,7 @@ TEST(PasswordReuseDetectorTest, MatchMultiplePasswords) {
       {"https://d.com", "dUsername", "123456789"},
   };
 
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(domain_passwords));
 
   MockPasswordReuseDetectorConsumer mockConsumer;
@@ -410,7 +410,7 @@ TEST(PasswordReuseDetectorTest, MatchMultiplePasswords) {
 }
 
 TEST(PasswordReuseDetectorTest, GaiaPasswordNoReuse) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -434,7 +434,7 @@ TEST(PasswordReuseDetectorTest, GaiaPasswordNoReuse) {
 }
 
 TEST(PasswordReuseDetectorTest, GaiaPasswordReuseFound) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -454,7 +454,7 @@ TEST(PasswordReuseDetectorTest, GaiaPasswordReuseFound) {
 }
 
 TEST(PasswordReuseDetectorTest, EnterprisePasswordNoReuse) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   ConfigureEnterprisePasswordProtection(&reuse_detector);
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
@@ -482,7 +482,7 @@ TEST(PasswordReuseDetectorTest, EnterprisePasswordNoReuse) {
 }
 
 TEST(PasswordReuseDetectorTest, EnterprisePasswordReuseFound) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   ConfigureEnterprisePasswordProtection(&reuse_detector);
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
@@ -506,7 +506,7 @@ TEST(PasswordReuseDetectorTest, MatchGaiaAndMultipleSavedPasswords) {
       {"https://a.com", "aUsername", "34567890"},
       {"https://b.com", "bUsername", "01234567890"},
   };
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(domain_passwords));
 
   std::string gaia_password = "1234567890";
@@ -544,7 +544,7 @@ TEST(PasswordReuseDetectorTest, MatchGaiaAndMultipleSavedPasswords) {
 }
 
 TEST(PasswordReuseDetectorTest, MatchSavedPasswordButNotGaiaPassword) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -565,7 +565,7 @@ TEST(PasswordReuseDetectorTest, MatchSavedPasswordButNotGaiaPassword) {
 
 TEST(PasswordReuseDetectorTest,
      MatchSavedPasswordButNotGaiaPasswordInAccountStore) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
 
   auto account_store_form = std::make_unique<PasswordForm>();
   account_store_form->signon_realm = "https://twitter.com";
@@ -598,7 +598,7 @@ TEST(PasswordReuseDetectorTest, MatchEnterpriseAndMultipleSavedPasswords) {
       {"https://a.com", "aUsername", "34567890"},
       {"https://b.com", "bUsername", "01234567890"},
   };
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   ConfigureEnterprisePasswordProtection(&reuse_detector);
   reuse_detector.OnGetPasswordStoreResults(GetForms(domain_passwords));
 
@@ -637,7 +637,7 @@ TEST(PasswordReuseDetectorTest, MatchEnterpriseAndMultipleSavedPasswords) {
 }
 
 TEST(PasswordReuseDetectorTest, MatchSavedPasswordButNotEnterprisePassword) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   ConfigureEnterprisePasswordProtection(&reuse_detector);
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
@@ -663,7 +663,7 @@ TEST(PasswordReuseDetectorTest, MatchGaiaEnterpriseAndSavedPassword) {
       {"https://a.com", "aUsername", "34567890"},
       {"https://b.com", "bUsername", "01234567890"},
   };
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   ConfigureEnterprisePasswordProtection(&reuse_detector);
   reuse_detector.OnGetPasswordStoreResults(GetForms(domain_passwords));
 
@@ -705,7 +705,7 @@ TEST(PasswordReuseDetectorTest, MatchGaiaEnterpriseAndSavedPassword) {
 }
 
 TEST(PasswordReuseDetectorTest, ClearGaiaPasswordHash) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 
@@ -732,7 +732,7 @@ TEST(PasswordReuseDetectorTest, ClearGaiaPasswordHash) {
 }
 
 TEST(PasswordReuseDetectorTest, PasswordStoreRespectedOnRemove) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
 
   std::vector<std::unique_ptr<PasswordForm>> profile_credentials =
       GetForms(GetTestDomainsPasswords());
@@ -784,7 +784,7 @@ TEST(PasswordReuseDetectorTest, PasswordStoreRespectedOnRemove) {
 }
 
 TEST(PasswordReuseDetectorTest, AccountPasswordsCleared) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
 
   std::vector<std::unique_ptr<PasswordForm>> profile_credentials =
       GetForms({GetTestDomainsPasswords()[5]});
@@ -830,7 +830,7 @@ TEST(PasswordReuseDetectorTest, AccountPasswordsCleared) {
 }
 
 TEST(PasswordReuseDetectorTest, OnLoginsRetained) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
 
   std::vector<TestData> test_data = GetTestDomainsPasswords();
 
@@ -856,7 +856,7 @@ TEST(PasswordReuseDetectorTest, OnLoginsRetained) {
 }
 
 TEST(PasswordReuseDetectorTest, ShortPasswordReuseFound) {
-  PasswordReuseDetector reuse_detector;
+  PasswordReuseDetectorImpl reuse_detector;
   reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
   MockPasswordReuseDetectorConsumer mockConsumer;
 

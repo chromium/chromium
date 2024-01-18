@@ -12,6 +12,7 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
@@ -135,6 +136,7 @@ class PasswordReuseManagerImplTest : public testing::Test {
     shared_pref_delegate_android_ = mock_shared_pref_delegate_android.get();
 #endif
     reuse_manager_.Init(&prefs(), profile_store(), account_store(),
+                        std::make_unique<PasswordReuseDetectorImpl>(),
                         identity_manager,
                         std::move(mock_shared_pref_delegate_android));
     FastForwardUntilNoTasksRemain();

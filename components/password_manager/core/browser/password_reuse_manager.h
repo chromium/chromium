@@ -37,12 +37,14 @@ class PasswordReuseManager : public KeyedService {
   PasswordReuseManager& operator=(const PasswordReuseManager&) = delete;
 
   // Always call this on the UI thread.
-  virtual void Init(PrefService* prefs,
-                    PasswordStoreInterface* profile_store,
-                    PasswordStoreInterface* account_store,
-                    signin::IdentityManager* identity_manager = nullptr,
-                    std::unique_ptr<SharedPreferencesDelegate>
-                        shared_pref_delegate = nullptr) = 0;
+  virtual void Init(
+      PrefService* prefs,
+      PasswordStoreInterface* profile_store,
+      PasswordStoreInterface* account_store,
+      std::unique_ptr<PasswordReuseDetector> password_reuse_detector,
+      signin::IdentityManager* identity_manager = nullptr,
+      std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate =
+          nullptr) = 0;
 
   // Log whether a sync password hash saved.
   virtual void ReportMetrics(const std::string& username) = 0;
