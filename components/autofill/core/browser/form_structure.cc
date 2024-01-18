@@ -274,7 +274,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
             FieldTypeToStringView(field->server_type());
       }
       annotated_field.html_type = FieldTypeToStringView(field->html_type());
-      annotated_field.overall_type = field->Type().ToString();
+      annotated_field.overall_type = std::string(field->Type().ToStringView());
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
       annotated_field.section = field->section.ToString();
@@ -1158,7 +1158,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                        HashFormSignature(field->host_form_signature))});
     buffer << "\n  Name: " << field->parseable_name();
 
-    auto type = field->Type().ToString();
+    auto type = field->Type().ToStringView();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
     std::string server_type = ServerTypesToString(field);
     const char* is_override =
@@ -1234,7 +1234,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Name:" << field->parseable_name();
     buffer << Tr{} << "Placeholder:" << field->placeholder;
 
-    auto type = field->Type().ToString();
+    auto type = field->Type().ToStringView();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
     std::string server_type = ServerTypesToString(field);
     if (field->server_type_prediction_is_override())

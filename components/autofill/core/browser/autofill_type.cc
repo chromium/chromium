@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 
 #include <optional>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/notreached.h"
@@ -69,10 +69,10 @@ FieldType AutofillType::GetStorableType() const {
              : HtmlFieldTypeToBestCorrespondingFieldType(html_type_);
 }
 
-std::string AutofillType::ToString() const {
+std::string_view AutofillType::ToStringView() const {
   return IsUnknown()                    ? "UNKNOWN_TYPE"
-         : server_type_ != UNKNOWN_TYPE ? FieldTypeToString(server_type_)
-                                        : FieldTypeToString(html_type_);
+         : server_type_ != UNKNOWN_TYPE ? FieldTypeToStringView(server_type_)
+                                        : FieldTypeToStringView(html_type_);
 }
 
 }  // namespace autofill

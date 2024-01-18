@@ -132,16 +132,16 @@ and then write commands into it:
                                   command_file_path.AsUTF8Unsafe().c_str());
 }
 
-std::optional<autofill::FieldType> StringToFieldType(const std::string& str) {
+std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
   static auto map = []() {
-    std::map<std::string, autofill::FieldType> map;
+    std::map<std::string_view, autofill::FieldType> map;
     for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
-      map[autofill::AutofillType(field_type).ToString()] = field_type;
+      map[autofill::AutofillType(field_type).ToStringView()] = field_type;
     }
     for (autofill::HtmlFieldType html_field_type :
          autofill::kAllHtmlFieldTypes) {
       autofill::AutofillType field_type(html_field_type);
-      map[field_type.ToString()] = field_type.GetStorableType();
+      map[field_type.ToStringView()] = field_type.GetStorableType();
     }
     return map;
   }();

@@ -38,7 +38,7 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfPredictionStrings(
     std::vector<std::string> server_prediction_array;
     server_prediction_array.reserve(server_predictions.size());
     for (const auto& p : server_predictions) {
-      server_prediction_array.emplace_back(p.ToString());
+      server_prediction_array.emplace_back(std::string(p.ToStringView()));
     }
     return ToJavaArrayOfStrings(env, server_prediction_array);
   }
@@ -85,9 +85,10 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       field.max_length,
       /*heuristicType=*/field_types.heuristic_type.IsUnknown()
           ? nullptr
-          : ConvertUTF8ToJavaString(env, field_types.heuristic_type.ToString()),
-      ConvertUTF8ToJavaString(env, field_types.server_type.ToString()),
-      ConvertUTF8ToJavaString(env, field_types.computed_type.ToString()),
+          : ConvertUTF8ToJavaString(env,
+                                    field_types.heuristic_type.ToStringView()),
+      ConvertUTF8ToJavaString(env, field_types.server_type.ToStringView()),
+      ConvertUTF8ToJavaString(env, field_types.computed_type.ToStringView()),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions),
       field.bounds.x(), field.bounds.y(), field.bounds.right(),
       field.bounds.bottom(),
@@ -131,8 +132,8 @@ void FormFieldDataAndroidBridgeImpl::UpdateFieldTypes(
 
   Java_FormFieldData_updateFieldTypes(
       env, obj,
-      ConvertUTF8ToJavaString(env, field_types.server_type.ToString()),
-      ConvertUTF8ToJavaString(env, field_types.computed_type.ToString()),
+      ConvertUTF8ToJavaString(env, field_types.server_type.ToStringView()),
+      ConvertUTF8ToJavaString(env, field_types.computed_type.ToStringView()),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions));
 }
 

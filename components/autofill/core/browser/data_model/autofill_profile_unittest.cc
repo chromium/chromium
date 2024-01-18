@@ -1433,7 +1433,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
 
       SCOPED_TRACE(testing::Message()
                    << "Testing the Compare method for the type: "
-                   << AutofillType(type).ToString());
+                   << AutofillType(type).ToStringView());
 
       SCOPED_TRACE(testing::Message()
                    << "Verify the correct result for identical values");

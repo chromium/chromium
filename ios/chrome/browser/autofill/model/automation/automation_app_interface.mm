@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/autofill/model/automation/automation_app_interface.h"
 
+#import <map>
+#import <string_view>
+
 #import "base/containers/contains.h"
 #import "base/json/json_reader.h"
 #import "base/strings/sys_string_conversions.h"
@@ -26,9 +29,8 @@ namespace {
 
 // Converts a string (from the test recipe) to the autofill FieldType it
 // represents.
-autofill::FieldType FieldTypeFromString(const std::string& str,
-                                        NSError** error) {
-  static std::map<const std::string, autofill::FieldType>
+autofill::FieldType FieldTypeFromString(std::string_view str, NSError** error) {
+  static std::map<std::string_view, autofill::FieldType>
       string_to_field_type_map;
 
   // Only init the string to autofill field type map on the first call.
@@ -39,7 +41,7 @@ autofill::FieldType FieldTypeFromString(const std::string& str,
     for (size_t i = autofill::NO_SERVER_DATA;
          i < autofill::MAX_VALID_FIELD_TYPE; ++i) {
       autofill::AutofillType autofill_type(static_cast<autofill::FieldType>(i));
-      string_to_field_type_map[autofill_type.ToString()] =
+      string_to_field_type_map[autofill_type.ToStringView()] =
           autofill_type.GetStorableType();
     }
 
@@ -47,7 +49,7 @@ autofill::FieldType FieldTypeFromString(const std::string& str,
          i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
       autofill::AutofillType autofill_type(
           static_cast<autofill::HtmlFieldType>(i));
-      string_to_field_type_map[autofill_type.ToString()] =
+      string_to_field_type_map[autofill_type.ToStringView()] =
           autofill_type.GetStorableType();
     }
   }

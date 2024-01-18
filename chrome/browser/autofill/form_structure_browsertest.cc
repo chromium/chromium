@@ -135,7 +135,7 @@ std::string FormStructuresToString(
       }
 
       forms_string += base::JoinString(
-          {field->Type().ToString(), base::UTF16ToUTF8(field->name),
+          {field->Type().ToStringView(), base::UTF16ToUTF8(field->name),
            base::UTF16ToUTF8(field->label), base::UTF16ToUTF8(field->value),
            section},
           base::StringPiece(" | "));
