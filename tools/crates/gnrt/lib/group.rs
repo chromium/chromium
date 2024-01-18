@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use anyhow::Result;
+use serde::Deserialize;
 
 /// Privilege group for a crate. They are ordered with higher values being
 /// higher privilege.
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, Ord, PartialOrd)]
+#[derive(Copy, Clone, Debug, Deserialize, Hash, PartialEq, Eq, Ord, PartialOrd)]
+#[serde(rename_all = "lowercase")]
 pub enum Group {
     /// Test-only code (or for tools that don't contribute directly to the
     /// shipping product).
@@ -19,32 +20,11 @@ pub enum Group {
     Safe,
 }
 
-impl Group {
-    pub fn new_from_str(s: &str) -> Result<Group> {
-        match s {
-            "safe" => Ok(Group::Safe),
-            "sandbox" => Ok(Group::Sandbox),
-            "test" => Ok(Group::Test),
-            _ => Err(GroupParseError {}.into()),
-        }
-    }
-}
-
-impl ToString for Group {
-    fn to_string(&self) -> String {
-        match self {
-            Group::Safe => "safe".to_string(),
-            Group::Sandbox => "sandbox".to_string(),
-            Group::Test => "test".to_string(),
-        }
-    }
-}
-
 #[derive(Debug)]
-struct GroupParseError {}
+pub struct GroupParseError;
 impl std::error::Error for GroupParseError {}
 impl std::fmt::Display for GroupParseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         write!(f, "failed ot parse group, should be one of: safe|sandbox|test")
     }
 }
@@ -52,14 +32,6 @@ impl std::fmt::Display for GroupParseError {
 #[cfg(test)]
 mod test {
     use super::*;
-
-    #[test]
-    fn parse() {
-        assert_eq!(Group::new_from_str("safe").unwrap(), Group::Safe);
-        assert_eq!(Group::new_from_str("sandbox").unwrap(), Group::Sandbox);
-        assert_eq!(Group::new_from_str("test").unwrap(), Group::Test);
-        assert!(Group::new_from_str("oops").is_err());
-    }
 
     #[test]
     fn least_privilege() {
