@@ -120,7 +120,13 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   }
 
   // Using default RendererImpl. Put more detailed info into the UMA name.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (player_info.is_eme && player_info.video_pipeline_info.decoder_type ==
+                                VideoDecoderType::kMediaCodec) {
+    return uma_name + "MediaDrm." +
+           (is_hardware_secure_ ? "HardwareSecure" : "SoftwareSecure");
+  }
+#else
   if (player_info.video_pipeline_info.decoder_type ==
       VideoDecoderType::kDecrypting) {
     return uma_name + "DVD";

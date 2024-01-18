@@ -4453,6 +4453,12 @@ chromium-metrics-reviews@google.com.
                  DecryptingDemuxerStream"/>
     <variant name="DVD" summary="RendererImpl with DecryptingVideoDecoder"/>
     <variant name="HW" summary="RendererImpl with hardware decoder"/>
+    <variant name="MediaDrm.HardwareSecure"
+        summary="RendererImpl with requested hardware secure decryption and
+                 MediaCodecVideoDecoder"/>
+    <variant name="MediaDrm.SoftwareSecure"
+        summary="RendererImpl with requested software secure decryption and
+                 MediaCodecVideoDecoder"/>
     <variant name="MediaFoundationRenderer"/>
     <variant name="SW" summary="RendererImpl with software decoder"/>
     <variant name="UnknownRenderer" summary="an unknown Renderer"/>
