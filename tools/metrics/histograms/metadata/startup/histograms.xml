@@ -927,6 +927,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.LoadTime.RecordedProcessCreation" enum="Boolean"
+    expires_after="2024-06-20">
+  <owner>spvw@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Whether Process::Current().CreationTime() was able to acquire the process
+    startup time. Recorded once per process startup, as early as possible.
+  </summary>
+</histogram>
+
 <histogram name="Startup.MobileSessionStartAction"
     enum="MobileSessionStartAction" expires_after="2024-06-30">
   <owner>thegreenfrog@chromium.org</owner>
