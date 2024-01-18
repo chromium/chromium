@@ -7500,6 +7500,13 @@
        {}
       ]
      ],
+     "selection-modify-line-next-to-textarea.html": [
+      "b685add01c004885a32e22211acad17843f1d132",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-modify-per-word-in-table-header-group.html": [
       "66a57381eda5db2c3bba532cad9f9ef8423072f3",
       [
@@ -171559,7 +171566,7 @@
       ]
      ],
      "active-selection-031.html": [
-      "c7d79c8ac9fd300fa9f2704f64bb5cc28bfbbb7f",
+      "7b08269300e32f0257e90b3ce6b5ddecd2b4638d",
       [
        null,
        [
@@ -329511,7 +329518,7 @@
        []
       ],
       "active-selection-031-ref.html": [
-       "3bb7c329d46e0573a8d58e35d039fdb7826b9e45",
+       "a9581d40c72d3c0f5feff8b749a4e85a6b13d471",
        []
       ],
       "active-selection-041-notref.html": [
@@ -347255,7 +347262,7 @@
        []
       ],
       "parse-part-expected.txt": [
-       "305291700a56145e8e7237ab03946594bafa7586",
+       "5572d516e140525fe94f209b01b05f51ac4d1de7",
        []
       ],
       "parse-state-expected.txt": [
@@ -363045,10 +363052,6 @@
      }
     },
     "dom": {
-     "aria-element-reflection-expected.txt": [
-      "42f4c643d7a17ea34100f21b28e88f2bc31b448e",
-      []
-     ],
      "directionality": {
       "bdi-element-invalid-dir-ref.html": [
        "88ccd4b9b53ee27a8450bd77ec794861fc01a708",
@@ -363644,7 +363647,7 @@
       []
      ],
      "idlharness.https_include=HTML._-expected.txt": [
-      "69a8c929c9c40a5f68506c73502a635a3a057818",
+      "062da8ac204910a5d45e7c261506012d2da95255",
       []
      ],
      "idlharness.worker-expected.txt": [
@@ -379979,7 +379982,7 @@
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "3c89e027980f8cb1bd4ab61ab63a3cbd878da66b",
+     "28ffdbccf36b0f945ce3ebbc5177522c4ba6dd17",
      []
     ],
     "service-worker.js": [
@@ -389033,10 +389036,6 @@
     "declarative": {
      "clonable.window-expected.txt": [
       "1bc695efb2f0e4a34cabc11a721e98965b8296f1",
-      []
-     ],
-     "declarative-shadow-dom-basic-expected.txt": [
-      "2b9e5398b7dedee87ffd469b91eeee3015577d32",
       []
      ],
      "declarative-shadow-dom-opt-in-expected.txt": [
@@ -473139,7 +473138,7 @@
       ]
      ],
      "client-props-zoom.html": [
-      "fb4c95cada42696f29b00c35b9cce67b19aa05e2",
+      "fc5b07abb5152bd94f9094308dce85a361ce96c8",
       [
        null,
        {}
@@ -559448,7 +559447,7 @@
       ]
      ],
      "aria-element-reflection.html": [
-      "8d4d4b8f6a652ac79fae69a03aef50772098b5a5",
+      "54b9d34eb175d1a18df3d628b1cc38ae74a10d78",
       [
        null,
        {}
@@ -571591,6 +571590,13 @@
        ],
        "select-named-getter.html": [
         "da43da9d920cd56e2041fc51005f1653b0fbc71d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "select-parsing.tentative.html": [
+        "d3576a26b7f9b721acf1ec31cd68544a3eb9e9f1",
         [
          null,
          {}
