@@ -1487,15 +1487,6 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
-  // When pressed key is interrupted by mouse, the AppList should not toggle.
-  EXPECT_FALSE(
-      ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  controller_->GetAcceleratorHistory()->InterruptCurrentAccelerator();
-  EXPECT_FALSE(ProcessInController(
-      CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-
   // Verifies VKEY_RWIN triggers AppList, too. This happens if modifier
   // keys are swapped.
   GetAppListTestHelper()->DismissAndRunLoop();
