@@ -17,6 +17,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillFormSubmissionCheckById,
     &kAndroidAutofillPrefillRequestsForLoginForms,
+    &kAndroidAutofillSignatureForPrefillRequestSimilarityCheck,
     &kAndroidAutofillSupportVisibilityChanges,
 };
 
@@ -47,6 +48,15 @@ BASE_FEATURE(kAndroidAutofillFormSubmissionCheckById,
 // Future features may extend prefill requests to more form types.
 BASE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms,
              "AndroidAutofillPrefillRequestsForLoginForms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, similarity checks between cached forms and focused forms are
+// replaced by comparing the form signatures of the cached and the focused form.
+// The motivation behind this experiment is that the decision to cache a form is
+// made based on server predictions and the server predictions of two forms
+// match iff their form signatures match.
+BASE_FEATURE(kAndroidAutofillSignatureForPrefillRequestSimilarityCheck,
+             "AndroidAutofillSignatureForPrefillRequestSimilarityCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, visibility changes of form fields of the form of an ongoing

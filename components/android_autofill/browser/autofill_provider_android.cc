@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -206,8 +207,18 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   FormDataAndroid::SimilarityCheckResult similarity_result =
       cached_form_ ? cached_form_->SimilarFormAsWithDiagnosis(form)
                    : FormDataAndroid::kFormsAreSimilar;
-  const bool is_similar_to_cached_form =
-      cached_form_ && similarity_result == FormDataAndroid::kFormsAreSimilar;
+  const bool is_similar_to_cached_form = [&] {
+    if (!cached_form_) {
+      return false;
+    }
+    if (base::FeatureList::IsEnabled(
+            features::
+                kAndroidAutofillSignatureForPrefillRequestSimilarityCheck)) {
+      return CalculateFormSignature(cached_form_->form()) ==
+             CalculateFormSignature(form);
+    }
+    return similarity_result == FormDataAndroid::kFormsAreSimilar;
+  }();
   const bool use_id_of_cached_form =
       is_similar_to_cached_form && !has_used_cached_form_;
   form_ = std::make_unique<FormDataAndroid>(

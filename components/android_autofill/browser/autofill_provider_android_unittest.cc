@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -51,6 +52,7 @@ using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::ResultOf;
+using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
 using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
@@ -75,10 +77,11 @@ auto EqualsFormData(const FormData& expected) {
 }
 
 // Creates a matcher that compares the results of a `FormDataAndroid`'s `form()`
-// and `session_id()` methods to `form` and `session_id`.
-auto EqualsFormDataWithSessionId(const FormData& form, SessionId session_id) {
+// and `session_id()` methods to `form` and `session_id_matcher`.
+auto EqualsFormDataWithSessionId(const FormData& form,
+                                 auto session_id_matcher) {
   return AllOf(EqualsFormData(form),
-               Property(&FormDataAndroid::session_id, session_id));
+               Property(&FormDataAndroid::session_id, session_id_matcher));
 }
 
 // Returns an action that writes the `SessionId` of a `FormDataAndroid` into the
@@ -871,7 +874,7 @@ TEST_F(AutofillProviderAndroidTest,
   FormData changed_form = form;
   changed_form.fields.pop_back();
   android_autofill_manager().OnFormsSeen({changed_form},
-                                         /*removed_forms=*/{form.global_id()});
+                                         /*removed_forms=*/{});
   SessionId autofill_session_id = SessionId(0);
   EXPECT_CALL(provider_bridge(),
               StartAutofillSession(EqualsFormData(changed_form),
@@ -889,6 +892,62 @@ TEST_F(AutofillProviderAndroidTest,
       PrefillRequestState::kRequestSentFormChanged, 1);
   histogram_tester.ExpectTotalCount(
       AutofillProviderAndroid::kSimilarityCheckCacheRequestUma, 1);
+}
+
+// Tests that the session id used in a prefill request is also used for starting
+// the Autofill session even if the forms are not similar as long as their form
+// signatures (and ids) match.
+TEST_F(AutofillProviderAndroidTest,
+       SessionIdIsReusedForCachedFormsAsLongAsSignaturesAgree) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAndroidAutofillPrefillRequestsForLoginForms,
+       features::kAndroidAutofillSignatureForPrefillRequestSimilarityCheck},
+      /*disabled_features=*/{});
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
+  FormData changed_form = form;
+  changed_form.name_attribute += u"some-suffix";
+
+  SessionId cache_session_id = SessionId(0);
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)))
+        .WillOnce(SaveSessionId(&cache_session_id));
+    EXPECT_CALL(check, Call);
+    // Pass a lambda to perform the check because passing `cache_session_id`
+    // would match against the current value of cache_session_id (0).
+    EXPECT_CALL(provider_bridge(),
+                StartAutofillSession(
+                    EqualsFormDataWithSessionId(
+                        changed_form, Truly([&cache_session_id](SessionId id) {
+                          return id == cache_session_id;
+                        })),
+                    EqualsFieldInfo(/*index=*/0),
+                    /*has_server_predictions=*/true));
+  }
+
+  // Upon receiving server predictions a prefill request should be sent.
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+  check.Call();
+
+  // The changed form has the same signature as the cached form - therefore it
+  // should have the session id of the cached form.
+  ASSERT_EQ(CalculateFormSignature(form), CalculateFormSignature(changed_form));
+  android_autofill_manager().OnFormsSeen({changed_form}, /*removed_forms=*/{});
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      changed_form, changed_form.fields.front());
 }
 
 // Tests that the session id used in a prefill request is only used once to
