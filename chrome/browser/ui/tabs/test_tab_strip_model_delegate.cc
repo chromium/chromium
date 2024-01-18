@@ -20,8 +20,8 @@ void TestTabStripModelDelegate::AddTabAt(
     bool foreground,
     std::optional<tab_groups::TabGroupId> group) {}
 
-Browser* TestTabStripModelDelegate::CreateNewStripWithContents(
-    std::vector<NewStripContents> contentses,
+Browser* TestTabStripModelDelegate::CreateNewStripWithTabs(
+    std::vector<NewStripContents> tabs,
     const gfx::Rect& window_bounds,
     bool maximize) {
   return nullptr;

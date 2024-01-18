@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1418,12 +1419,12 @@ void TabDragController::Attach(TabDragContext* attached_context,
       if (drag_data_[i].pinned)
         add_types |= AddTabTypes::ADD_PINNED;
 
-      // We should have owned_contents here, this CHECK is used to gather data
-      // for https://crbug.com/677806.
-      CHECK(drag_data_[i].owned_contents);
-      attached_context_->GetTabStripModel()->InsertWebContentsAt(
-          index + i - first_tab_index(),
-          std::move(drag_data_[i].owned_contents), add_types, group_);
+      // We should have owned_tab here, this CHECK is used to gather data for
+      // https://crbug.com/677806.
+      CHECK(drag_data_[i].owned_tab);
+      attached_context_->GetTabStripModel()->InsertDetachedTabAt(
+          index + i - first_tab_index(), std::move(drag_data_[i].owned_tab),
+          add_types, group_);
 
       // If a sad tab is showing, the SadTabView needs to be updated.
       SadTabHelper* sad_tab_helper =
@@ -1507,8 +1508,7 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
     // Move the tab out of `attached_model`. Marking the view as detached tells
     // the TabStrip to not animate its closure, as it's actually being moved.
     drag_data_[i].attached_view->set_detached();
-    drag_data_[i].owned_contents =
-        attached_model->DetachWebContentsAtForInsertion(index);
+    drag_data_[i].owned_tab = attached_model->DetachTabAtForInsertion(index);
 
     // Detaching may end up deleting the tab, drop references to it.
     drag_data_[i].attached_view = nullptr;
@@ -2012,15 +2012,14 @@ void TabDragController::RevertDragAt(size_t drag_index) {
       // put it back into the original one. Marking the view as detached tells
       // the TabStrip to not animate its closure, as it's actually being moved.
       data->attached_view->set_detached();
-      std::unique_ptr<content::WebContents> detached_web_contents =
-          attached_context_->GetTabStripModel()
-              ->DetachWebContentsAtForInsertion(index);
+      std::unique_ptr<TabModel> detached_tab =
+          attached_context_->GetTabStripModel()->DetachTabAtForInsertion(index);
       // No-longer removing the last tab, so reset state.
       removing_last_tab_setter.reset();
       // TODO(beng): (Cleanup) seems like we should use Attach() for this
       //             somehow.
-      source_context_->GetTabStripModel()->InsertWebContentsAt(
-          target_index, std::move(detached_web_contents),
+      source_context_->GetTabStripModel()->InsertDetachedTabAt(
+          target_index, std::move(detached_tab),
           (data->pinned ? AddTabTypes::ADD_PINNED : 0));
     } else {
       // The Tab was moved within the TabDragContext where the drag
@@ -2043,8 +2042,8 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     // The Tab was detached from the TabDragContext where the drag
     // began, and has not been attached to any other TabDragContext.
     // We need to put it back into the source TabDragContext.
-    source_context_->GetTabStripModel()->InsertWebContentsAt(
-        target_index, std::move(data->owned_contents),
+    source_context_->GetTabStripModel()->InsertDetachedTabAt(
+        target_index, std::move(data->owned_tab),
         (data->pinned ? AddTabTypes::ADD_PINNED : 0));
   }
   TabStripModel* source_model = source_context_->GetTabStripModel();
@@ -2112,23 +2111,21 @@ void TabDragController::CompleteDrag() {
 
     base::AutoReset<bool> setter(&is_mutating_, true);
 
-    std::vector<TabStripModelDelegate::NewStripContents> contentses;
+    std::vector<TabStripModelDelegate::NewStripContents> tabs;
     for (auto& drag_datum : drag_data_) {
       TabStripModelDelegate::NewStripContents item;
       // We should have owned_contents here, this CHECK is used to gather data
       // for https://crbug.com/677806.
-      CHECK(drag_datum.owned_contents);
-      item.web_contents = std::move(drag_datum.owned_contents);
+      CHECK(drag_datum.owned_tab);
+      item.tab = std::move(drag_datum.owned_tab);
       item.add_types =
           drag_datum.pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_NONE;
-      contentses.push_back(std::move(item));
+      tabs.push_back(std::move(item));
     }
 
     Browser* new_browser =
-        source_context_->GetTabStripModel()
-            ->delegate()
-            ->CreateNewStripWithContents(std::move(contentses), window_bounds,
-                                         widget->IsMaximized());
+        source_context_->GetTabStripModel()->delegate()->CreateNewStripWithTabs(
+            std::move(tabs), window_bounds, widget->IsMaximized());
     ResetSelection(new_browser->tab_strip_model());
     new_browser->window()->Show();
   }
