@@ -3160,17 +3160,13 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_;
 }
 
-bool StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
+void StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
   const ComputedStyle& style = container.ComputedStyleRef();
-  // If we depend on container queries we need to update styles, and also
-  // the styles for dependents. Hence we return this value, which is used
-  // in RecalcStyleForContainer to set the flag for child recalc.
-  bool depends_on_container_queries =
-      style.HighlightData().DependsOnSizeContainerQueries() ||
-      style.HighlightsDependOnSizeContainerQueries();
   if (!style.HasAnyHighlightPseudoElementStyles() ||
-      !style.HasNonUaHighlightPseudoStyles() || !depends_on_container_queries) {
-    return false;
+      !style.HasNonUaHighlightPseudoStyles() ||
+      !(style.HighlightData().DependsOnSizeContainerQueries() ||
+        style.HighlightsDependOnSizeContainerQueries())) {
+    return;
   }
 
   // We are recalculating styles for a size container whose highlight pseudo
@@ -3186,8 +3182,6 @@ bool StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
     container.GetLayoutObject()->SetStyle(new_style,
                                           LayoutObject::ApplyStyleChanges::kNo);
   }
-
-  return depends_on_container_queries;
 }
 
 #if DCHECK_IS_ON()
@@ -3259,9 +3253,7 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
   container.SetChildNeedsStyleRecalc();
   style_recalc_root_.Update(nullptr, &container);
 
-  if (RecalcHighlightStylesForContainer(container)) {
-    change = change.ForceRecalcDescendantSizeContainers();
-  }
+  RecalcHighlightStylesForContainer(container);
 
   // TODO(crbug.com/1145970): Consider use a caching mechanism for FromAncestors
   // as we typically will call it for all containers on the first style/layout

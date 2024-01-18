@@ -834,7 +834,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
-  bool RecalcHighlightStylesForContainer(Element& container);
+  void RecalcHighlightStylesForContainer(Element& container);
   void RecalcPositionFallbackStyleForPseudoElement(
       PseudoElement& pseudo_element,
       const StyleRecalcChange,
