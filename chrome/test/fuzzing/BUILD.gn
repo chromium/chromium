@@ -48,6 +48,7 @@ if (fuzzing_engine_supports_custom_main) {
 if (!is_android) {
   in_process_fuzzer("html_in_process_fuzzer") {
     sources = [ "html_in_process_fuzzer.cc" ]
+    dict = "html_in_process_fuzzer.dictionary"
   }
   in_process_proto_fuzzer("page_load_in_process_fuzzer") {
     sources = [ "page_load_in_process_fuzzer.cc" ]
