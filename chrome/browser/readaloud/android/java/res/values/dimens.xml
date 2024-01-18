@@ -22,7 +22,7 @@ found in the LICENSE file.
 
     <!-- Header -->
     <dimen name="readaloud_sheet_drag_bar_margin">8dp</dimen>
-    <dimen name="readaloud_now_playing_spacing">20dp</dimen>
+    <dimen name="readaloud_now_playing_spacing">12dp</dimen>
 
     <!-- Title -->
     <dimen name="readaloud_expanded_player_title_margin_vertical">4dp</dimen>

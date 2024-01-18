@@ -42,6 +42,7 @@ found in the LICENSE file.
 
     <!-- Scroll view in case there are a lot of items. -->
     <ScrollView
+        android:id="@+id/items_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout

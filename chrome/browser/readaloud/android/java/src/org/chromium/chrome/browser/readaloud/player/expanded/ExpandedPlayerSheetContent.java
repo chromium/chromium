@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
     private final SeekBar mSeekBar;
+    private final ScrollView mScrollView;
     private View mContentView;
     // Effectively final and non null, can be null only in tests
     private OptionsMenuSheetContent mOptionsMenu;
@@ -87,6 +89,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+        mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
 
         mSeekBar.setAccessibilityDelegate(
                 new View.AccessibilityDelegate() {
@@ -128,6 +131,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     public void show() {
         mBottomSheetController.requestShowContent(this, /* animate= */ true);
+        // Reset scrolling if needed.
+        mScrollView.scrollTo(0, 0);
     }
 
     public void hide() {

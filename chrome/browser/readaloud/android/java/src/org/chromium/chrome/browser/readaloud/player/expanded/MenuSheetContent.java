@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ class MenuSheetContent implements BottomSheetContent {
     private static final String TAG = "ReadAloudMenu";
     private final BottomSheetController mBottomSheetController;
     protected final BottomSheetContent mParent;
+    private final ScrollView mScrollView;
     private boolean mOpeningSubmenu;
     protected final Menu mMenu;
 
@@ -64,6 +66,7 @@ class MenuSheetContent implements BottomSheetContent {
                             onBackPressed();
                         });
         mOpeningSubmenu = false;
+        mScrollView = (ScrollView) mMenu.findViewById(R.id.items_scroll_view);
 
         // Apply dynamic background color.
         Colors.setBottomSheetContentBackground(mMenu);
@@ -77,6 +80,7 @@ class MenuSheetContent implements BottomSheetContent {
             if (!mOpeningSubmenu) {
                 mBottomSheetController.requestShowContent(mParent, /* animate= */ true);
             }
+            mScrollView.scrollTo(0, 0);
         }
     }
 
