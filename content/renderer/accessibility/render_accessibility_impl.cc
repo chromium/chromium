@@ -403,10 +403,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       }
       break;
     case ax::mojom::Action::kSignalEndOfTest:
-      // Wait for 100ms to allow pending events to come in.
-      // TODO(accessibility) Remove sleep() hack; it should no longer be needed.
-      base::PlatformThread::Sleep(base::Milliseconds(100));
-
       HandleAXEvent(
           ui::AXEvent(ComputeRoot().AxID(), ax::mojom::Event::kEndOfTest));
       break;
