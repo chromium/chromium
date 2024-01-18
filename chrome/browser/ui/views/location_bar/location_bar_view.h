@@ -20,8 +20,6 @@
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/views/dropdown_bar_host.h"
-#include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -71,7 +69,6 @@ class LocationBarView : public LocationBar,
                         public views::View,
                         public views::DragController,
                         public views::AnimationDelegateViews,
-                        public DropdownBarHostDelegate,
                         public IconLabelBubbleView::Delegate,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
@@ -367,9 +364,6 @@ class LocationBarView : public LocationBar,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
-
-  // DropdownBarHostDelegate:
-  void FocusAndSelectAll() override;
 
   void OnTouchUiChanged();
 

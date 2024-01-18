@@ -1497,10 +1497,6 @@ void LocationBarView::OnOmniboxHovered(bool is_hovering) {
   }
 }
 
-void LocationBarView::FocusAndSelectAll() {
-  FocusLocation(true);
-}
-
 void LocationBarView::OnTouchUiChanged() {
   const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
