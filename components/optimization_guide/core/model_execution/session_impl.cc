@@ -67,6 +67,7 @@ class SessionImpl::ContextProcessor
 
     // This means input has been fully processed.
     if (tokens_processed < expected_tokens_) {
+      finished_processing_ = true;
       return;
     }
 
@@ -80,11 +81,13 @@ class SessionImpl::ContextProcessor
     }
   }
 
-  void MaybeCancelProcessing() {
+  // Returns whether the full context was processed.
+  bool MaybeCancelProcessing() {
     has_cancelled_ = true;
     if (can_cancel_) {
       client_.reset();
     }
+    return finished_processing_;
   }
 
   std::string& input() { return input_; }
@@ -107,6 +110,7 @@ class SessionImpl::ContextProcessor
 
   raw_ref<SessionImpl> session_;
   std::string input_;
+  bool finished_processing_ = false;
   uint32_t expected_tokens_ = 0;
   uint32_t tokens_processed_ = 0;
   bool can_cancel_ = false;
@@ -272,12 +276,18 @@ void SessionImpl::ExecuteModel(
 
   // Cancel any optional context still processing.
   if (on_device_state_->context_processor) {
-    on_device_state_->context_processor->MaybeCancelProcessing();
+    bool finished_processing =
+        on_device_state_->context_processor->MaybeCancelProcessing();
     base::UmaHistogramCounts10000(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.OnDeviceContextTokensProcessed.",
              GetStringNameForModelExecutionFeature(feature_)}),
         on_device_state_->context_processor->tokens_processed());
+    base::UmaHistogramBoolean(
+        base::StrCat({"OptimizationGuide.ModelExecution."
+                      "OnDeviceContextFinishedProcessing.",
+                      GetStringNameForModelExecutionFeature(feature_)}),
+        finished_processing);
     logged_request->set_input_context_num_tokens_processed(
         on_device_state_->context_processor->tokens_processed());
   }
