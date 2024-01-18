@@ -25,7 +25,7 @@ int StartHostAsRoot(int argc, char** argv) {
     if (at_symbol_pos != std::string::npos) {
       user_name = corp_user_email.substr(0, at_symbol_pos);
     }
-  } else if (command_line.HasSwitch("user_name")) {
+  } else if (command_line.HasSwitch("user-name")) {
     user_name = command_line.GetSwitchValueASCII("user-name");
   }
   if (user_name.empty()) {
