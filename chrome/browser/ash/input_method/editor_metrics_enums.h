@@ -120,7 +120,11 @@ enum class EditorStates {
   ErrorBlockedOutputs = 37,
   // Increase by 1 when user receives restricted region error from the server.
   ErrorRestrictedRegion = 38,
-  kMaxValue = ErrorRestrictedRegion,
+  // Increase by 1 when the native promo card is shown.
+  kPromoCardImpression = 39,
+  // Increase by 1 when user clicks "Dismiss" on the promo card.
+  kPromoCardExplicitDismissal = 40,
+  kMaxValue = kPromoCardExplicitDismissal,
 };
 
 }  // namespace ash::input_method

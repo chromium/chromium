@@ -110,6 +110,8 @@ void EditorPanelManager::OnPromoCardDismissed() {
 
 void EditorPanelManager::OnPromoCardDeclined() {
   delegate_->OnPromoCardDeclined();
+  delegate_->GetMetricsRecorder()->LogEditorState(
+      EditorStates::kPromoCardExplicitDismissal);
 }
 
 void EditorPanelManager::StartEditingFlow() {
@@ -169,6 +171,10 @@ void EditorPanelManager::LogEditorMode(
     for (EditorBlockedReason blocked_reason : delegate_->GetBlockedReasons()) {
       logger->LogEditorState(ToEditorStatesMetric(blocked_reason));
     }
+  }
+
+  if (mode == crosapi::mojom::EditorPanelMode::kPromoCard) {
+    logger->LogEditorState(EditorStates::kPromoCardImpression);
   }
 }
 

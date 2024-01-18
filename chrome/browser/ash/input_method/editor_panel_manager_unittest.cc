@@ -150,5 +150,33 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
   histogram_tester.ExpectTotalCount("InputMethod.Manta.Orca.States.Rewrite", 5);
 }
 
+TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {
+  EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
+      EditorOpportunityMode::kRewrite, {});
+  EditorPanelManager manager(&editor_panel_manager_delegate);
+  base::HistogramTester histogram_tester;
+
+  manager.OnPromoCardDeclined();
+
+  histogram_tester.ExpectUniqueSample("InputMethod.Manta.Orca.States.Rewrite",
+                                      EditorStates::kPromoCardExplicitDismissal,
+                                      1);
+}
+
+TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsShown) {
+  EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
+      EditorOpportunityMode::kWrite, {});
+  EditorPanelManager manager(&editor_panel_manager_delegate);
+  base::HistogramTester histogram_tester;
+
+  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kPromoCard);
+
+  histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
+                                     EditorStates::kPromoCardImpression, 1);
+  histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
+                                     EditorStates::kNativeUIShowOpportunity, 1);
+  histogram_tester.ExpectTotalCount("InputMethod.Manta.Orca.States.Write", 2);
+}
+
 }  // namespace
 }  // namespace ash::input_method

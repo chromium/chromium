@@ -224,6 +224,8 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="ERROR_UNSUPPORTED_LANGUAGE"/>
   <int value="37" label="ERROR_BLOCKED_OUTPUTS"/>
   <int value="38" label="ERROR_RESTRICTED_REGION"/>
+  <int value="39" label="PROMO_CARD_IMPRESSION"/>
+  <int value="40" label="PROMO_CARD_EXPLICIT_DISMISSAL"/>
 </enum>
 
 <enum name="IMEGrammarActions">
