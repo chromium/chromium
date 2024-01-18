@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -51,7 +51,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Test functionality of BidirectionalStream interface. */
-@DoNotBatch(reason = "crbug/1459563")
+@Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK},
