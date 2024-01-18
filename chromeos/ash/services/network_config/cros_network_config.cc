@@ -2190,24 +2190,54 @@ mojom::NetworkCertificatePtr GetMojoCert(
 
 mojom::TrafficCounterSource ConvertToTrafficCounterSourceEnum(
     const std::string& source) {
-  if (source == shill::kTrafficCounterSourceUnknown)
+  if (source == shill::kTrafficCounterSourceUnknown) {
     return mojom::TrafficCounterSource::kUnknown;
-  if (source == shill::kTrafficCounterSourceChrome)
+  }
+  if (source == shill::kTrafficCounterSourceChrome) {
     return mojom::TrafficCounterSource::kChrome;
-  if (source == shill::kTrafficCounterSourceUser)
+  }
+  if (source == shill::kTrafficCounterSourceUser) {
     return mojom::TrafficCounterSource::kUser;
-  if (source == shill::kTrafficCounterSourceArc)
+  }
+  if (source == shill::kTrafficCounterSourceArc) {
     return mojom::TrafficCounterSource::kArc;
-  if (source == shill::kTrafficCounterSourceCrosvm)
+  }
+  if (source == shill::kTrafficCounterSourceCrosvm) {
     return mojom::TrafficCounterSource::kCrosvm;
-  if (source == shill::kTrafficCounterSourcePluginvm)
+  }
+  if (source == shill::kTrafficCounterSourcePluginvm) {
     return mojom::TrafficCounterSource::kPluginvm;
-  if (source == shill::kTrafficCounterSourceUpdateEngine)
+  }
+  if (source == shill::kTrafficCounterSourceUpdateEngine) {
     return mojom::TrafficCounterSource::kUpdateEngine;
-  if (source == shill::kTrafficCounterSourceVpn)
+  }
+  if (source == shill::kTrafficCounterSourceVpn) {
     return mojom::TrafficCounterSource::kVpn;
-  if (source == shill::kTrafficCounterSourceSystem)
+  }
+  if (source == shill::kTrafficCounterSourceSystem) {
     return mojom::TrafficCounterSource::kSystem;
+  }
+  if (source == shill::kTrafficCounterSourceBorealisVM) {
+    return mojom::TrafficCounterSource::kPluginvm;
+  }
+  if (source == shill::kTrafficCounterSourceBruschettaVM) {
+    return mojom::TrafficCounterSource::kPluginvm;
+  }
+  if (source == shill::kTrafficCounterSourceCrostiniVM) {
+    return mojom::TrafficCounterSource::kPluginvm;
+  }
+  if (source == shill::kTrafficCounterSourceParallelsVM) {
+    return mojom::TrafficCounterSource::kPluginvm;
+  }
+  if (source == shill::kTrafficCounterSourceTethering) {
+    return mojom::TrafficCounterSource::kChrome;
+  }
+  if (source == shill::kTrafficCounterSourceWiFiDirect) {
+    return mojom::TrafficCounterSource::kChrome;
+  }
+  if (source == shill::kTrafficCounterSourceWiFiLOHS) {
+    return mojom::TrafficCounterSource::kChrome;
+  }
   NOTREACHED() << "Unknown traffic counter source: " << source;
   return mojom::TrafficCounterSource::kUnknown;
 }
