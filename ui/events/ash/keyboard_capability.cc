@@ -692,6 +692,12 @@ bool KeyboardCapability::IsFunctionKey(ui::KeyboardCode code) {
          code <= ui::KeyboardCode::VKEY_F24;
 }
 
+// static
+bool KeyboardCapability::IsF11OrF12(ui::KeyboardCode code) {
+  return code == ui::KeyboardCode::VKEY_F11 ||
+         code == ui::KeyboardCode::VKEY_F12;
+}
+
 std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     const KeyboardDevice& keyboard) const {
   // This set of modifier keys is available on every keyboard.
