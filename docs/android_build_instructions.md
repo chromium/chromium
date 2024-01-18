@@ -127,6 +127,9 @@ target_os = "android"
 target_cpu = "arm64"  # See "Figuring out target_cpu" below
 ```
 
+* There are several settings that will speed up compile/deploy time at the cost
+  of some unusual edge cases that will not affect most developers. See
+  `incremental_install` and other options below.
 * You only have to run this once for each new build directory, Ninja will
   update the build files as needed.
 * You can replace `Default` with another name, but
@@ -210,7 +213,7 @@ feature to package optimized versions for different OS versions.
    * Contains both Chrome and WebView (to save disk space).
 2. `trichrome_chrome_bundle` (`TrichromeChrome.aab`)
    * `minSdkVersion=29` (Android 10).
-   * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk` 
+   * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk`
    * Corresponding WebView target: `trichrome_webview_bundle`
 3. `chrome_public_bundle` & `chrome_public_apk` (`ChromePublic.aab`, `ChromePublic.apk`)
    * `minSdkVersion=24` (Nougat).
