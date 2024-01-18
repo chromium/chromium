@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
@@ -22,6 +22,15 @@
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
+namespace {
+
+void DeleteCoordinatorHelper(
+    std::unique_ptr<IsolatedWebAppInstallerCoordinator> coordinator) {
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(coordinator));
+}
+
+}  // namespace
 
 IsolatedWebAppInstallerCoordinator* LaunchIsolatedWebAppInstaller(
     Profile* profile,
@@ -31,7 +40,7 @@ IsolatedWebAppInstallerCoordinator* LaunchIsolatedWebAppInstaller(
       profile, bundle_path, std::move(on_closed_callback));
   IsolatedWebAppInstallerCoordinator* raw_coordinator = coordinator.get();
   base::OnceClosure delete_callback =
-      base::DoNothingWithBoundArgs(std::move(coordinator));
+      base::BindOnce(&DeleteCoordinatorHelper, std::move(coordinator));
   raw_coordinator->Show(base::IgnoreArgs<std::optional<webapps::AppId>>(
       std::move(delete_callback)));
   return raw_coordinator;
