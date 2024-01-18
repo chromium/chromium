@@ -132,20 +132,7 @@ bool IsLazyWebUILoadingEnabled() {
         ash::prefs::kLoginScreenWebUILazyLoading);
   }
 
-  // Feature override.
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          features::kEnableLazyLoginWebUILoading.name)) {
-    return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
-  }
-
-  // Disable for stable and beta.
-  if ((chrome::GetChannel() == version_info::Channel::STABLE) ||
-      (chrome::GetChannel() == version_info::Channel::BETA)) {
-    return false;
-  }
-
-  // Enable for dev builds.
-  return true;
+  return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
 }
 
 void UpdatePinAuthAvailability(const AccountId& account_id) {
