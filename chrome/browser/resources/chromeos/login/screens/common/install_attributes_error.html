@@ -12,10 +12,10 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'errorInstallAttributesFailureTitle')]]
   </h1>
-  <p slot="subtitle" hidden$="[[isRestartRequired_]]">
+  <p slot="subtitle" hidden$="[[isRestartRequired]]">
     [[i18nDynamic(locale, 'errorInstallAttributesFailureReset')]]
   </p>
-  <p slot="subtitle" hidden$="[[!isRestartRequired_]]">
+  <p slot="subtitle" hidden$="[[!isRestartRequired]]">
     [[i18nDynamic(locale, 'errorInstallAttributesFailureRestart')]]
   </p>
   <div slot="content" class="flex layout vertical center center-justified">
@@ -23,13 +23,13 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="restartButton" hidden$="[[!isRestartRequired_]]"
+    <oobe-text-button id="restartButton" hidden$="[[!isRestartRequired]]"
         inverse class="focus-on-show" text-key="resetButtonRestart"
-        on-tap="onRestartTap_">
+        on-tap="onRestart">
     </oobe-text-button>
-    <oobe-text-button id="resetButton" hidden$="[[isRestartRequired_]]"
+    <oobe-text-button id="resetButton" hidden$="[[isRestartRequired]]"
         inverse class="focus-on-show" text-key="resetButtonPowerwash"
-        on-tap="onPowerwashTap_">
+        on-tap="onPowerwash">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

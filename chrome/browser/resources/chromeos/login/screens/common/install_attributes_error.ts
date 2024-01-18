@@ -13,77 +13,79 @@ import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {getTemplate} from './install_attributes_error.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {LoginScreenBehaviorInterface}
- */
 const InstallAttributesErrorMessageElementBase =
-    mixinBehaviors([OobeI18nBehavior, LoginScreenBehavior], PolymerElement);
+    mixinBehaviors([OobeI18nBehavior, LoginScreenBehavior], PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface,
+    };
 
 /**
- * @typedef {{
- *   errorDialog:  OobeAdaptiveDialog,
- * }}
+ * Data that is passed to the screen during onBeforeShow.
  */
-InstallAttributesErrorMessageElementBase.$;
+interface InstallAttributesErrorScreenData {
+  restartRequired: boolean;
+}
 
-class InstallAttributesErrorMessage extends
+export class InstallAttributesErrorMessage extends
     InstallAttributesErrorMessageElementBase {
   static get is() {
-    return 'install-attributes-error-message-element';
+    return 'install-attributes-error-message-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /** Whether the restart is required for powerwash to be available. */
-      isRestartRequired_: {
+      isRestartRequired: {
         type: Boolean,
         value: false,
       },
     };
   }
 
+  private isRestartRequired: boolean;
+
   constructor() {
     super();
-    this.isRestartRequired_ = false;
+    this.isRestartRequired = false;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('InstallAttributesErrorMessageScreen');
   }
 
-  onPowerwashTap_() {
+  private onPowerwash(): void {
     this.userActed('powerwash-pressed');
   }
 
-  onRestartTap_() {
+  private onRestart(): void {
     this.userActed('reboot-system');
   }
 
-  onBeforeShow(data) {
-    this.isRestartRequired_ = data['restartRequired'];
+  onBeforeShow(data: InstallAttributesErrorScreenData): void {
+    this.isRestartRequired = data['restartRequired'];
   }
 
-  /**
-   * @override
-   */
-  get defaultControl() {
-    return this.$.errorDialog;
+  override get defaultControl(): HTMLElement|null {
+    return this.shadowRoot!.querySelector('#errorDialog');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [InstallAttributesErrorMessage.is]: InstallAttributesErrorMessage;
   }
 }
 
