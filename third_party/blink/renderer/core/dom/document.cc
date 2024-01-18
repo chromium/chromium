@@ -9174,12 +9174,8 @@ const ui::ColorProvider* Document::GetColorProviderForPainting(
     return nullptr;
   }
 
-  // TODO(crbug.com/1516529): This should be changed to use
-  // `in_forced_colors_mode_` once forced colors becomes a web setting in Blink.
-  return GetPage()->GetColorProviderForPainting(
-      color_scheme,
-      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
-          ForcedColors::kNone);
+  return GetPage()->GetColorProviderForPainting(color_scheme,
+                                                in_forced_colors_mode_);
 }
 
 void Document::CountUse(mojom::WebFeature feature) const {

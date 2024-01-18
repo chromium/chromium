@@ -77,79 +77,6 @@ WebThemeEngine::State GetWebThemeState(const Element& element) {
   return WebThemeEngine::kStateNormal;
 }
 
-SkColor GetContrastingColorFor(const Element& element,
-                               const mojom::ColorScheme color_scheme,
-                               WebThemeEngine::Part part) {
-  WebThemeEngine::State state = GetWebThemeState(element);
-
-  const ui::ColorProvider* color_provider =
-      element.GetDocument().GetColorProviderForPainting(color_scheme);
-
-  const bool is_disabled = (state == WebThemeEngine::kStateDisabled);
-  switch (part) {
-    case WebThemeEngine::kPartCheckbox:
-    case WebThemeEngine::kPartRadio:
-      return is_disabled ? color_provider->GetColor(
-                               ui::kColorWebNativeControlBackgroundDisabled)
-                         : color_provider->GetColor(
-                               ui::kColorWebNativeControlBackground);
-    case WebThemeEngine::kPartSliderTrack:
-    case WebThemeEngine::kPartSliderThumb:
-    case WebThemeEngine::kPartProgressBar:
-      // We use `kStateNormal` here because the user hovering or clicking on the
-      // slider will change the state to something else, and we don't want the
-      // color-scheme to flicker back and forth when the user interacts with it.
-      return color_provider->GetColor(ui::kColorWebNativeControlFill);
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
-mojom::ColorScheme CalculateColorSchemeForAccentColor(
-    absl::optional<SkColor> accent_color,
-    mojom::ColorScheme color_scheme,
-    SkColor light_contrasting_color,
-    SkColor dark_contrasting_color) {
-  if (!accent_color) {
-    return color_scheme;
-  }
-
-  const float contrast_with_light =
-      color_utils::GetContrastRatio(*accent_color, light_contrasting_color);
-  const float contrast_with_dark =
-      color_utils::GetContrastRatio(*accent_color, dark_contrasting_color);
-
-  // If there is enough contrast between `accent_color` and `color_scheme`, then
-  // let's keep it the same. Otherwise, flip the `color_scheme` to guarantee
-  // contrast.
-  if (color_scheme == mojom::ColorScheme::kDark) {
-    if (contrast_with_dark < color_utils::kMinimumVisibleContrastRatio &&
-        contrast_with_dark < contrast_with_light) {
-      // TODO(crbug.com/1216137): what if `contrast_with_light` is less than
-      // `kMinimumContrast`? Should we modify `accent_color`...?
-      return mojom::ColorScheme::kLight;
-    }
-  } else {
-    if (contrast_with_light < color_utils::kMinimumVisibleContrastRatio &&
-        contrast_with_light < contrast_with_dark) {
-      return mojom::ColorScheme::kDark;
-    }
-  }
-
-  return color_scheme;
-}
-
-mojom::blink::ColorScheme GetColorSchemeForAccentColor(
-    const Element& element,
-    const mojom::blink::ColorScheme color_scheme,
-    const absl::optional<SkColor> accent_color,
-    WebThemeEngine::Part part) {
-  return CalculateColorSchemeForAccentColor(
-      accent_color, color_scheme,
-      GetContrastingColorFor(element, mojom::blink::ColorScheme::kLight, part),
-      GetContrastingColorFor(element, mojom::blink::ColorScheme::kDark, part));
-}
-
 class DirectionFlippingScope {
   STACK_ALLOCATED();
 
@@ -304,20 +231,6 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
   WebThemeEngine::ExtraParams extra_params(button);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-
-  // This is used for `kPartCheckbox`, which gets drawn adjacent to
-  // `accent_color`. In order to guarantee contrast between `kPartCheckbox` and
-  // `accent_color`, we choose the `color_scheme` here based on the two possible
-  // color values for `kPartCheckbox`.
-  bool accent_color_affects_color_scheme =
-      button.checked &&
-      GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
-  if (accent_color_affects_color_scheme) {
-    color_scheme = GetColorSchemeForAccentColor(element, color_scheme,
-                                                GetAccentColor(style, document),
-                                                WebThemeEngine::kPartCheckbox);
-  }
-
   const ui::ColorProvider* color_provider =
       document.GetColorProviderForPainting(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
@@ -342,20 +255,6 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-
-  // This is used for `kPartRadio`, which gets drawn adjacent to `accent_color`.
-  // In order to guarantee contrast between `kPartRadio` and `accent_color`, we
-  // choose the `color_scheme` here based on the two possible color values for
-  // `kPartRadio`.
-  bool accent_color_affects_color_scheme =
-      button.checked &&
-      GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
-  if (accent_color_affects_color_scheme) {
-    color_scheme = GetColorSchemeForAccentColor(element, color_scheme,
-                                                GetAccentColor(style, document),
-                                                WebThemeEngine::kPartRadio);
-  }
-
   const ui::ColorProvider* color_provider =
       document.GetColorProviderForPainting(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
@@ -589,19 +488,6 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   }
   WebThemeEngine::ExtraParams extra_params(slider);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-
-  // This is used for `kPartSliderTrack`, which gets drawn adjacent to
-  // `accent_color`. In order to guarantee contrast between `kPartSliderTrack`
-  // and `accent_color`, we choose the `color_scheme` here based on the two
-  // possible color values for `kPartSliderTrack`.
-  bool accent_color_affects_color_scheme =
-      GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
-  if (accent_color_affects_color_scheme) {
-    color_scheme = GetColorSchemeForAccentColor(
-        element, color_scheme, GetAccentColor(style, element.GetDocument()),
-        WebThemeEngine::kPartSliderTrack);
-  }
-
   const ui::ColorProvider* color_provider =
       element.GetDocument().GetColorProviderForPainting(color_scheme);
 
@@ -638,19 +524,6 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                      element.GetDocument());
   WebThemeEngine::ExtraParams extra_params(slider);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-
-  // This is used for `kPartSliderThumb`, which gets drawn adjacent to
-  // `accent_color`. In order to guarantee contrast between `kPartSliderThumb`
-  // and `accent_color`, we choose the `color_scheme` here based on the two
-  // possible color values for `kPartSliderThumb`.
-  bool accent_color_affects_color_scheme =
-      GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
-  if (accent_color_affects_color_scheme) {
-    color_scheme = GetColorSchemeForAccentColor(
-        element, color_scheme, GetAccentColor(style, element.GetDocument()),
-        WebThemeEngine::kPartSliderThumb);
-  }
-
   const ui::ColorProvider* color_provider =
       element.GetDocument().GetColorProviderForPainting(color_scheme);
 
@@ -719,15 +592,6 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   WebThemeEngine::ExtraParams extra_params(progress_bar);
   DirectionFlippingScope scope(layout_object, paint_info, rect);
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-
-  // This is used for `kPartProgressBar`, which gets drawn adjacent to
-  // `accent_color`. In order to guarantee contrast between `kPartProgressBar`
-  // and `accent_color`, we choose the `color_scheme` here based on the two
-  // possible color values for `kPartProgressBar`.
-  color_scheme = GetColorSchemeForAccentColor(
-      element, color_scheme, GetAccentColor(style, element.GetDocument()),
-      WebThemeEngine::kPartProgressBar);
-
   const ui::ColorProvider* color_provider =
       element.GetDocument().GetColorProviderForPainting(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(

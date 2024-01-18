@@ -18,8 +18,8 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               const ui::ColorProvider* color_provider,
                               const absl::optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
-    PaintMacScrollBarParts(canvas, color_provider, part, state, rect,
-                           extra_params, color_scheme);
+    PaintMacScrollBarParts(canvas, GetColorProviderForPainting(color_scheme),
+                           part, state, rect, extra_params, color_scheme);
     return;
   }
 

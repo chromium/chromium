@@ -723,6 +723,7 @@ mojom("mojo_bindings") {
     "//ui/accessibility/mojom",
     "//ui/base/ime/mojom",
     "//ui/base/mojom",
+    "//ui/color:mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/events/mojom:event_latency_metadata_mojom",
