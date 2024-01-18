@@ -12,12 +12,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -691,6 +692,19 @@ bool IsNaturalScrollOn() {
       Shell::Get()->session_controller()->GetActivePrefService();
   return pref->GetBoolean(prefs::kTouchpadEnabled) &&
          pref->GetBoolean(prefs::kNaturalScroll);
+}
+
+bool IsNaturalScrollOn(const ui::ScrollEvent& event) {
+  if (auto* touchpad_device_settings =
+          InputDeviceSettingsController::Get()->GetTouchpadSettings(
+              event.source_device_id())) {
+    return touchpad_device_settings->reverse_scrolling;
+  }
+  // This case mainly happens in the unit tests which generate fake touch
+  // events but have no touch devices.
+  // TODO(zxdan): We should `CHECK` the setting's ptr after we fix corresponding
+  // unit tests.
+  return IsNaturalScrollOn();
 }
 
 bool ShouldRoundThumbnailWindow(views::View* backdrop_view,

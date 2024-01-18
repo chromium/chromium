@@ -181,8 +181,14 @@ bool ShouldShowForCurrentUser(aura::Window* window);
 
 ASH_EXPORT aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event);
 
-// Checks the prefs to see if natural scroll for the touchpad is turned on.
+// TODO(zxdan): Remove this method after all related code being migrated to the
+// new way of getting input device settings. Note: this method is being
+// deprecated. Please use IsNaturalScrollOn(const ui::ScrollEvent&).
 ASH_EXPORT bool IsNaturalScrollOn();
+
+// Checks the device settings to see if natural scroll for the touchpad is
+// turned on.
+ASH_EXPORT bool IsNaturalScrollOn(const ui::ScrollEvent& event);
 
 // The thumbnail window (transformed window for non-minimized state in overview,
 // mirror window for minimized state in overview and alt+tab windows) may need

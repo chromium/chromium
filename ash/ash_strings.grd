@@ -978,18 +978,6 @@ Style notes:
       <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now. MANAGER can be a domain or an email address.">
         <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately
       </message>
-      <message name="IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE" desc="The toast of changing enter overview gesture">
-        Swipe up with three fingers to enter Overview
-      </message>
-      <message name="IDS_CHANGE_EXIT_OVERVIEW_REVERSE_GESTURE" desc="The toast of changing exit overview gesture">
-        Swipe down with three fingers to exit Overview
-      </message>
-      <message name="IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE" desc="The toast of changing reverse gesture to switch to the next desk.">
-        Swipe right with four fingers to switch to the next desk
-      </message>
-      <message name="IDS_CHANGE_LAST_DESK_REVERSE_GESTURE" desc="The toast of changing reverse gesture to switch to the previous desk.">
-        Swipe left with four fingers to switch to the previous desk
-      </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to notify that the user should restart to get system updates. This notification body links to the info page on the update.">
         Learn more about the latest <ph name="SYSTEM_APP_NAME">$1<ex>ChromiumOS</ex></ph> update
       </message>

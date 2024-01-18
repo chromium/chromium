@@ -4,13 +4,8 @@
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/system/toast_data.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -22,74 +17,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/message_center_types.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_types.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
 
 namespace {
-
-constexpr char kEnterOverviewToastId[] = "ash.wm.reverse_enter_overview_toast";
-constexpr char kExitOverviewToastId[] = "ash.wm.reverse_exit_overview_toast";
-constexpr char kSwitchNextDeskToastId[] = "ash.wm.reverse_next_desk_toast";
-constexpr char kSwitchLastDeskToastId[] = "ash.wm.reverse_last_desk_toast";
-
-// Check if the user used the wrong gestures.
-bool g_did_wrong_enter_overview_gesture = false;
-bool g_did_wrong_exit_overview_gesture = false;
-bool g_did_wrong_next_desk_gesture = false;
-bool g_did_wrong_last_desk_gesture = false;
-
-// Reverse an offset when natural scrolling is on.
-float GetOffset(float offset) {
-  return window_util::IsNaturalScrollOn() ? -offset : offset;
-}
-
-void ShowReverseGestureToast(const char* toast_id,
-                             ToastCatalogName catalog_name,
-                             int message_id) {
-  Shell::Get()->toast_manager()->Show(
-      ToastData(toast_id, catalog_name, l10n_util::GetStringUTF16(message_id)));
-}
-
-// When the user performs wrong vertical gestures (i.e., swiping down/up with
-// three fingers to enter/exit overview), a toast will show up to tell user the
-// correct gesture.
-// TODO(b/285014048): The toast will be removed after M89.
-bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
-  const bool correct_gesture = in_overview ? (offset_y < 0) : (offset_y > 0);
-
-  if (window_util::IsNaturalScrollOn()) {
-    return correct_gesture;
-  }
-
-  bool* const did_wrong_ptr = in_overview ? &g_did_wrong_exit_overview_gesture
-                                          : &g_did_wrong_enter_overview_gesture;
-  const char* toast_id =
-      in_overview ? kExitOverviewToastId : kEnterOverviewToastId;
-
-  if (correct_gesture) {
-    *did_wrong_ptr = false;
-    Shell::Get()->toast_manager()->Cancel(toast_id);
-    return true;
-  }
-
-  if (*did_wrong_ptr) {
-    ShowReverseGestureToast(
-        toast_id,
-        in_overview ? ToastCatalogName::kExitOverviewGesture
-                    : ToastCatalogName::kEnterOverviewGesture,
-        in_overview ? IDS_CHANGE_EXIT_OVERVIEW_REVERSE_GESTURE
-                    : IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE);
-  } else {
-    *did_wrong_ptr = true;
-  }
-
-  return false;
-}
 
 // For the continuous scroll animation, calculate what `OverviewEnterExitType`
 // to use based on the scroll event and current overview state. Returns null if
@@ -134,8 +65,11 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
 
-  if (!MaybeHandleWrongVerticalGesture(GetOffset(scroll_y), in_overview))
+  // Ignore the wrong vertical gestures (i.e., swiping down/up with three
+  // fingers to enter/exit overview).
+  if (in_overview ? (scroll_y > 0) : (scroll_y < 0)) {
     return false;
+  }
 
   if (in_overview) {
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
@@ -212,49 +146,6 @@ bool Handle3FingerContinuousVerticalScroll(float scroll_y,
   return true;
 }
 
-// When the user performs wrong horizontal gestures (i.e., swiping
-// left/right with four fingers to switch to the next/previous desk), a toast
-// will show up to tell user the correct gesture.
-// TODO(b/285014048): The toast will be removed after M89.
-void MaybeHandleWrongHorizontalGesture(bool move_left,
-                                       const Desk* previous_desk,
-                                       const Desk* next_desk) {
-  if (window_util::IsNaturalScrollOn()) {
-    return;
-  }
-
-  // Perform wrong gesture on the first desk.
-  if (move_left && next_desk && !previous_desk) {
-    if (!g_did_wrong_next_desk_gesture) {
-      g_did_wrong_next_desk_gesture = true;
-    } else {
-      ShowReverseGestureToast(kSwitchNextDeskToastId,
-                              ToastCatalogName::kNextDeskGesture,
-                              IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE);
-    }
-    return;
-  }
-
-  // Perform wrong gesture on the last desk.
-  if (!move_left && !next_desk && previous_desk) {
-    if (!g_did_wrong_last_desk_gesture) {
-      g_did_wrong_last_desk_gesture = true;
-    } else {
-      ShowReverseGestureToast(kSwitchLastDeskToastId,
-                              ToastCatalogName::kPreviousDeskGesture,
-                              IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
-    }
-    return;
-  }
-
-  g_did_wrong_next_desk_gesture = false;
-  g_did_wrong_last_desk_gesture = false;
-
-  auto* toast_manager = Shell::Get()->toast_manager();
-  toast_manager->Cancel(kSwitchNextDeskToastId);
-  toast_manager->Cancel(kSwitchLastDeskToastId);
-}
-
 }  // namespace
 
 WmGestureHandler::WmGestureHandler() = default;
@@ -283,8 +174,10 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
   }
   DCHECK_EQ(ui::ET_SCROLL, event.type());
 
-  return ProcessEventImpl(event.finger_count(), event.x_offset(),
-                          event.y_offset());
+  const int direction = window_util::IsNaturalScrollOn(event) ? -1 : 1;
+
+  return ProcessEventImpl(event.finger_count(), event.x_offset() * direction,
+                          event.y_offset() * direction);
 }
 
 bool WmGestureHandler::ProcessEventImpl(int finger_count,
@@ -323,8 +216,8 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
   if (finger_count == 4) {
     DCHECK(!moved);
     // Horizontal gesture may be flipped.
-    const float offset_x = GetOffset(-delta_x);
-    const float scroll_x = GetOffset(scroll_data_->scroll_x);
+    const float offset_x = -delta_x;
+    const float scroll_x = scroll_data_->scroll_x;
     auto* desks_controller = DesksController::Get();
     // Update the continuous desk animation if it has already been started,
     // otherwise start it if it passes the threshold.
@@ -339,12 +232,6 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
         scroll_data_.reset();
         return false;
       }
-
-      MaybeHandleWrongHorizontalGesture(
-          /*move_left=*/scroll_x < 0,
-          desks_controller->GetPreviousDesk(/*use_target_active_desk=*/false),
-          desks_controller->GetNextDesk(/*use_target_active_desk=*/false));
-
       scroll_data_->horizontal_continuous_gesture_started = true;
     }
   }

@@ -5846,10 +5846,12 @@ class ContinuousOverviewAnimationTest
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
 
-    // Toggle natural scrolling. Behavior should always stay the same.
+    // TODO(zxdan): try to get and set the reverse scrolling with input device
+    // settings controller. Toggle natural scrolling. Behavior should always
+    // stay the same.
     PrefService* pref_service =
         Shell::Get()->session_controller()->GetActivePrefService();
-    bool enabled = GetParam();
+    const bool enabled = GetParam();
     pref_service->SetBoolean(prefs::kTouchpadEnabled, true);
     pref_service->SetBoolean(prefs::kNaturalScroll, enabled);
   }
@@ -5860,9 +5862,13 @@ class ContinuousOverviewAnimationTest
                          float y_offset,
                          bool complete_scroll,
                          const gfx::Point& start = gfx::Point()) {
+    // When natural (reverse) scroll is ON, the horizontal offset stays same
+    // while the vertical offset is flipped.
+    const bool is_reverse_on = GetParam();
     GetEventGenerator()->ScrollSequence(
-        start, base::Milliseconds(5), x_offset, y_offset,
-        /*steps=*/100, /*fingers=*/3,
+        start, base::Milliseconds(5), x_offset,
+        is_reverse_on ? -y_offset : y_offset,
+        /*steps=*/100, /*num_fingers=*/3,
         /*end_state=*/
         complete_scroll
             ? ui::test::EventGenerator::ScrollSequenceType::UpToFling
