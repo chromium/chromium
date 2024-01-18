@@ -579,6 +579,11 @@ interface IPolicyStatus3 : IPolicyStatus2 {
 };
 END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "addToLibrary": [""]
+  }
+)
 [
   object,
   oleautomation,
@@ -595,7 +600,13 @@ interface IProcessLauncher : IUnknown {
                             [in] DWORD caller_proc_id,
                             [out] ULONG_PTR* proc_handle);
 };
+END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "addToLibrary": [""]
+  }
+)
 [
   object,
   oleautomation,
@@ -613,6 +624,7 @@ interface IProcessLauncher2 : IProcessLauncher {
                           [out] ULONG_PTR* proc_handle,
                           [out] ULONG_PTR* stdout_handle);
 };
+END_INTERFACE
 
 [
   uuid(PLACEHOLDER-GUID-7A1FDE1F-AAA9-441B-B9AA-95B31D78592B),
@@ -672,6 +684,4 @@ library UpdaterLegacyLib {
   }
 
   INTERFACES_IN_LIBRARY;
-  interface IProcessLauncher;
-  interface IProcessLauncher2;
 };

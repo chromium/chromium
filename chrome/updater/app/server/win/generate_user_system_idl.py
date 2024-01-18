@@ -127,11 +127,12 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename):
                 for flavor in replacement_dict['addToLibrary']
             ])
             idl_output.append(interface_text)
-            for user_or_system in ['user', 'system']:
-                interface_gen = re.sub(
-                    r'(uuid\().*?(\))',
-                    r'\1%s\2' % replacement_dict['uuid'][user_or_system],
-                    interface_text)
+
+            for user_or_system, placeholder_guid in replacement_dict.get(
+                    'uuid', {}).items():
+                interface_gen = re.sub(r'(uuid\().*?(\))',
+                                       r'\1%s\2' % placeholder_guid,
+                                       interface_text)
                 for k in replacement_dict['tokensToSuffix']:
                     interface_gen = re.sub(r'\b%s\b' % k,
                                            k + user_or_system.title(),
