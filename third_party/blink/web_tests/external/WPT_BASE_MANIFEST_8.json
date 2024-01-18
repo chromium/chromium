@@ -395663,6 +395663,10 @@
      "utils.js": [
       "50c39605a1bc187d54afbedb4422ea6965dc5462",
       []
+     ],
+     "webauthn-subframe.sub.html": [
+      "c97255924e14e3242ed88b87abf74c69afb4fb8c",
+      []
      ]
     }
    },
@@ -397990,6 +397994,10 @@
     "legacy": {
      "README.txt": [
       "8adbf6aa173949718a90bd54cc95361e1a8801ba",
+      []
+     ],
+     "munge-dont-expected.txt": [
+      "6013bdd88010e749a9ed3c44f046b020456ee382",
       []
      ]
     },
@@ -466178,7 +466186,7 @@
       ]
      ],
      "all-with-discrete.tentative.html": [
-      "c3642eeed8919e867ec66677f814969c7671e4b8",
+      "37946717b4c1df8d523cfcae8498a87975f9c30b",
       [
        null,
        {}
@@ -656725,6 +656733,16 @@
       }
      ]
     ],
+    "createcredential-cross-origin-iframe.https.sub.html": [
+     "ecf99f68a2b4688391ebaf4bd4be1aa79ba342df",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "createcredential-excludecredentials.https.html": [
      "2b1eec19b7b3a806150d13c77d8cfd1ea01973a6",
      [
@@ -668040,6 +668058,15 @@
        null,
        {
         "testdriver": true
+       }
+      ]
+     ],
+     "munge-dont.html": [
+      "b5f0a4cb63ba728d76cdae6c6deeb724dc09f5ce",
+      [
+       null,
+       {
+        "timeout": "long"
        }
       ]
      ],
