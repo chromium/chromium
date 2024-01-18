@@ -9,8 +9,8 @@ import './base_page.js';
 import './icons.html.js';
 import './shimless_rma_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {focusPageTitle} from './shimless_rma_util.js';
 import {getTemplate} from './splash_screen.html.js';
@@ -21,25 +21,18 @@ import {getTemplate} from './splash_screen.html.js';
  * by getCurrentState.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SplashScreenBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const SplashScreenBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class SplashScreen extends SplashScreenBase {
   static get is() {
-    return 'splash-screen';
+    return 'splash-screen' as const;
   }
 
   static get template() {
     return getTemplate();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
@@ -47,11 +40,15 @@ export class SplashScreen extends SplashScreenBase {
 
   /**
    * Display the splash instructions.
-   * @returns {string}
-   * @protected
    */
-  getSplashInstructionsText() {
+  protected getSplashInstructionsText(): string {
     return this.i18n('shimlessSplashRemembering');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SplashScreen.is]: SplashScreen;
   }
 }
 
