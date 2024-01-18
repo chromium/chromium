@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <set>
 #include <string>
 #include <tuple>
 #include <variant>
@@ -79,24 +80,41 @@ using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 
 std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree,
-                                     bool skip_status_and_banner) {
+                                     bool skip_status_subtree) {
   // Create a string representation of the tree starting with the kPdfRoot
   // object.
   std::string ax_tree_dump;
   std::map<int32_t, int> id_to_indentation;
   bool found_pdf_root = false;
-  for (const ui::AXNodeData& node : ax_tree.nodes) {
+
+  // Status node's subtree is in the form of:
+  // pdfRoot -> banner -> status -> staticText.
+  // If the subtree should be skipped, this variable keeps the ids of the
+  // subtree nodes.
+  std::set<ui::AXNodeID> status_subtree_ids;
+
+  for (size_t i = 0; i < ax_tree.nodes.size(); i++) {
+    const ui::AXNodeData& node = ax_tree.nodes[i];
     if (node.role == ax::mojom::Role::kPdfRoot) {
       found_pdf_root = true;
+      if (skip_status_subtree) {
+        if (i + 3 < ax_tree.nodes.size() &&
+            ax_tree.nodes[i + 1].role == ax::mojom::Role::kBanner &&
+            ax_tree.nodes[i + 2].role == ax::mojom::Role::kStatus &&
+            ax_tree.nodes[i + 3].role == ax::mojom::Role::kStaticText) {
+          status_subtree_ids = {ax_tree.nodes[i + 1].id,
+                                ax_tree.nodes[i + 2].id,
+                                ax_tree.nodes[i + 3].id};
+        }
+      }
     }
     if (!found_pdf_root) {
       continue;
     }
 
-    // Exclude the status node and its wrapper node from `ax_tree_dump` if they
-    // exist in the tree. Tests don't expect them to be included in the dump.
-    if (skip_status_and_banner && (node.role == ax::mojom::Role::kBanner ||
-                                   node.role == ax::mojom::Role::kStatus)) {
+    // Exclude the status subtree from `ax_tree_dump` if they exist in the tree.
+    // Tests don't expect them to be included in the dump.
+    if (base::Contains(status_subtree_ids, node.id)) {
       continue;
     }
 
@@ -168,6 +186,8 @@ constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
     "  banner\n"
     "    status 'This PDF is inaccessible. Text extracted, powered by Google "
     "AI'\n"
+    "      staticText 'This PDF is inaccessible. Text extracted, powered by "
+    "Google AI'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
     "      region\n"
@@ -183,6 +203,8 @@ constexpr char kExpectedHelloWorldPDFAXTreeWithoutOcrResults[] =
     "  banner\n"
     "    status 'This PDF is inaccessible. Open context menu and turn on "
     "\"extract text from PDF\"'\n"
+    "      staticText 'This PDF is inaccessible. Open context menu and turn on "
+    "\"extract text from PDF\"'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
     "      image 'Unlabeled image'\n";
@@ -191,6 +213,7 @@ constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
     "pdfRoot 'PDF document containing 1 page'\n"
     "  banner\n"
     "    status 'This PDF is inaccessible. No text extracted'\n"
+    "      staticText 'This PDF is inaccessible. No text extracted'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
     "      image 'Unlabeled image'\n";
@@ -259,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ui::AXTreeUpdate ax_tree =
       GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/true);
 
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
@@ -280,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                                                 "1 First Section\r\n");
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/true);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
@@ -297,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/true);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
@@ -314,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/true);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/true);
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
@@ -900,7 +923,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     std::vector<std::string> actual_lines =
         base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
-    RemoveBannerAndStatusNodesFromFormatOutput(actual_lines, ax_inspect_type());
+    RemoveStatusSubtreeFromFormatOutput(actual_lines, ax_inspect_type());
 
     // Validate the dump against the expectation file.
     EXPECT_TRUE(test_helper_.ValidateAgainstExpectation(
@@ -937,37 +960,44 @@ class PDFExtensionAccessibilityTreeDumpTest
     return property_filters;
   }
 
-  void RemoveBannerAndStatusNodesFromFormatOutput(
+  void RemoveStatusSubtreeFromFormatOutput(
       std::vector<std::string>& output_lines,
       const ui::AXApiType::Type& platform_type) {
-    // The banner and status nodes will be in the second and third lines in the
-    // tree output, respectively. These two nodes are always added to the PDF
-    // accessibility tree after the PDF root node and don't get deleted. So,
-    // it is safe to assume that they are always there in the format output.
+    // The status subtree is of the form banner -> status -> staticText and will
+    // be in the second to fourth lines in the tree output. These nodes are
+    // always added to the PDF accessibility tree after the PDF root node and
+    // don't get deleted. So, it is safe to assume that they are always there in
+    // the format output.
     // Thus, delete the second and third lines from the tree format output.
     ASSERT_GT(output_lines.size(), 3u);
     std::string banner_role;
     std::string status_role;
+    std::string static_text_role;
     switch (platform_type) {
       case ui::AXApiType::kBlink:
         banner_role = "banner";
         status_role = "status";
+        static_text_role = "static";
         break;
       case ui::AXApiType::kLinux:
         banner_role = "landmark";
         status_role = "statusbar";
+        static_text_role = "static";
         break;
       case ui::AXApiType::kMac:
         banner_role = "AXLandmarkBanner";
         status_role = "AXApplicationStatus";
+        static_text_role = "AXStaticText";
         break;
       case ui::AXApiType::kWinIA2:
         banner_role = "IA2_ROLE_LANDMARK";
         status_role = "ROLE_SYSTEM_STATUSBAR";
+        static_text_role = "ROLE_SYSTEM_STATICTEXT";
         break;
       case ui::AXApiType::kWinUIA:
         banner_role = "Group";
         status_role = "StatusBar";
+        static_text_role = "Text";
         break;
       case ui::AXApiType::kNone:
         [[fallthrough]];
@@ -978,10 +1008,14 @@ class PDFExtensionAccessibilityTreeDumpTest
       case ui::AXApiType::kFuchsia:
         return;
     }
-    EXPECT_TRUE(base::Contains(output_lines[1], banner_role));
-    EXPECT_TRUE(base::Contains(output_lines[2], status_role));
+    EXPECT_TRUE(base::Contains(output_lines[1], banner_role))
+        << output_lines[1];
+    EXPECT_TRUE(base::Contains(output_lines[2], status_role))
+        << output_lines[2];
+    EXPECT_TRUE(base::Contains(output_lines[3], static_text_role))
+        << output_lines[3];
 
-    output_lines.erase(output_lines.begin() + 1, output_lines.begin() + 3);
+    output_lines.erase(output_lines.begin() + 1, output_lines.begin() + 4);
   }
 
   ui::AXInspectTestHelper test_helper_;
@@ -1357,7 +1391,7 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest, MAYBE_HelloWorld) {
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/false);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
 
   ASSERT_MULTILINE_STREQ(kExpectedHelloWorldPDFAXTreeWithOcrResults,
                          ax_tree_dump);
@@ -1395,7 +1429,7 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/false);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
 
   ASSERT_MULTILINE_STREQ(kExpectedHelloWorldPDFAXTreeWithoutOcrResults,
                          ax_tree_dump);
@@ -1435,7 +1469,7 @@ IN_PROC_BROWSER_TEST_F(PDFOCRIntegrationTest,
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(contents);
   std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_and_banner=*/false);
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
 
   ASSERT_MULTILINE_STREQ(kExpectedBlankPDFAXTreeWithPdfOcr, ax_tree_dump);
 }

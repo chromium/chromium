@@ -375,6 +375,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   std::unique_ptr<ui::AXNodeData> banner_node_;
   // The status node contains a notification message for the user.
   std::unique_ptr<ui::AXNodeData> status_node_;
+  std::unique_ptr<ui::AXNodeData> status_node_text_;
   std::vector<std::unique_ptr<ui::AXNodeData>> nodes_;
 
   // Map from the id of each static text AXNode and inline text box

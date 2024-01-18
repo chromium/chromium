@@ -579,6 +579,25 @@ void UpdateStatusNodeLiveRegionAttributes(ui::AXNodeData* node,
   }
 }
 
+std::unique_ptr<ui::AXNodeData> CreateStatusNodeStaticText(
+    content::RenderAccessibility* render_accessibility,
+    ui::AXNodeData* parent_node) {
+  // Creates a static text node for the status node to make it look like a
+  // rendered text.
+  std::unique_ptr<ui::AXNodeData> node =
+      CreateNode(ax::mojom::Role::kStaticText,
+                 ax::mojom::Restriction::kReadOnly, render_accessibility);
+  node->relative_bounds = parent_node->relative_bounds;
+  node->AddStringAttribute(ax::mojom::StringAttribute::kName, std::string());
+
+  // The static text node will be added as the first node to its parent node as
+  // the parent node will contain only this static text node.
+  CHECK(parent_node->child_ids.empty());
+  parent_node->child_ids.push_back(node->id);
+  VLOG(2) << "Creating a static text for OCR status node.";
+  return node;
+}
+
 std::unique_ptr<ui::AXNodeData> CreateStatusNode(
     content::RenderAccessibility* render_accessibility,
     ui::AXNodeData* parent_node) {
@@ -1783,6 +1802,9 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   // navigating the PDF accessibility tree.
   banner_node_ = CreateBannerNode(render_accessibility, doc_node_.get());
   status_node_ = CreateStatusNode(render_accessibility, banner_node_.get());
+  status_node_text_ =
+      CreateStatusNodeStaticText(render_accessibility, status_node_.get());
+
   SetStatusMessage(IDS_PDF_LOADING_TO_A11Y_TREE);
 
   // Create a PDF accessibility tree with the status node first to notify users
@@ -1796,7 +1818,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   tree_data_.tree_id = render_accessibility->GetTreeIDForPluginHost();
   tree_data_.focus_id = doc_node_->id;
   update.root_id = doc_node_->id;
-  update.nodes = {*doc_node_, *banner_node_, *status_node_};
+  update.nodes = {*doc_node_, *banner_node_, *status_node_, *status_node_text_};
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
@@ -1851,6 +1873,7 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
       tree_.Destroy();
       banner_node_.reset();
       status_node_.reset();
+      status_node_text_.reset();
     }
     return;
   }
@@ -1938,6 +1961,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
   update.root_id = doc_node_->id;
   update.nodes.push_back(*doc_node_);
   update.nodes.push_back(*status_node_);
+  update.nodes.push_back(*status_node_text_);
   for (const auto& node : nodes_)
     update.nodes.push_back(std::move(*node));
 
@@ -2098,6 +2122,7 @@ void PdfAccessibilityTree::SetOcrCompleteStatus() {
   ui::AXTreeUpdate update;
   update.root_id = doc_node_->id;
   update.nodes.push_back(*status_node_);
+  update.nodes.push_back(*status_node_text_);
 
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
@@ -2108,9 +2133,11 @@ void PdfAccessibilityTree::SetOcrCompleteStatus() {
 
 void PdfAccessibilityTree::SetStatusMessage(int message_id) {
   CHECK(status_node_);
+  CHECK(status_node_text_);
   const std::string message = l10n_util::GetStringUTF8(message_id);
   VLOG(2) << "Setting the status node with message: " << message;
   status_node_->SetNameChecked(message);
+  status_node_text_->SetNameChecked(message);
 }
 
 void PdfAccessibilityTree::ResetStatusNodeAttributes() {
@@ -2121,17 +2148,20 @@ void PdfAccessibilityTree::ResetStatusNodeAttributes() {
   }
 
   CHECK(status_node_);
+  CHECK(status_node_text_);
   // Clear out its live region and name attributes as it is no longer necessary
   // to keep the status node in this case.
   UpdateStatusNodeLiveRegionAttributes(status_node_.get(),
                                        AttributeUpdateType::kRemove);
   status_node_->RemoveStringAttribute(ax::mojom::StringAttribute::kName);
+  status_node_text_->RemoveStringAttribute(ax::mojom::StringAttribute::kName);
 
   ui::AXTreeUpdate update;
   update.root_id = doc_node_->id;
   // `status_node_` has been either cleared out or set with a new message, so
   // add it to `ui::AXTreeUpdate`.
   update.nodes.push_back(*status_node_);
+  update.nodes.push_back(*status_node_text_);
   if (!tree_.Unserialize(update)) {
     LOG(FATAL) << tree_.error();
   }
