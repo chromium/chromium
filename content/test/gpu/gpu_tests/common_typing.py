@@ -4,7 +4,7 @@
 """Helper module to store class-independent, common type hinting."""
 
 import optparse
-from typing import Any, Generator, Tuple
+from typing import Any, Callable, Generator, Optional, Tuple
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
@@ -14,6 +14,8 @@ from telemetry.internal.browser import browser
 TestArgs = list
 GeneratedTest = Tuple[str, str, TestArgs]
 TestGenerator = Generator[GeneratedTest, None, None]
+
+TagConflictChecker = Optional[Callable[[str, str], bool]]
 
 # Will hopefully eventually be replaced by argparses' equivalents once Telemetry
 # finally switches off optparse.

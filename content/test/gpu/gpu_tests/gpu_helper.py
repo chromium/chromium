@@ -391,5 +391,60 @@ def EvaluateVersionComparison(version: str,
 # pylint: enable=too-many-locals,too-many-branches
 
 
+# No good way to reduce the number of return statements to the required level
+# without harming readability.
+# pylint: disable=too-many-return-statements,too-many-branches
+def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
+  if driver_tag1 == driver_tag2:
+    return True
+
+  match = MatchDriverTag(driver_tag1)
+  vendor1 = match.group(1)
+  operation1 = match.group(2)
+  version1 = match.group(3)
+
+  match = MatchDriverTag(driver_tag2)
+  vendor2 = match.group(1)
+  operation2 = match.group(2)
+  version2 = match.group(3)
+
+  if vendor1 != vendor2:
+    return False
+
+  if operation1 == 'ne':
+    return not (operation2 == 'eq' and version1 == version2)
+  if operation2 == 'ne':
+    return not (operation1 == 'eq' and version1 == version2)
+  if operation1 == 'eq':
+    return EvaluateVersionComparison(version1, operation2, version2)
+  if operation2 == 'eq':
+    return EvaluateVersionComparison(version2, operation1, version1)
+
+  if operation1 in ('ge', 'gt') and operation2 in ('ge', 'gt'):
+    return True
+  if operation1 in ('le', 'lt') and operation2 in ('le', 'lt'):
+    return True
+
+  if operation1 == 'ge':
+    if operation2 == 'le':
+      return not EvaluateVersionComparison(version1, 'gt', version2)
+    if operation2 == 'lt':
+      return not EvaluateVersionComparison(version1, 'ge', version2)
+  if operation1 == 'gt':
+    return not EvaluateVersionComparison(version1, 'ge', version2)
+  if operation1 == 'le':
+    if operation2 == 'ge':
+      return not EvaluateVersionComparison(version1, 'lt', version2)
+    if operation2 == 'gt':
+      return not EvaluateVersionComparison(version1, 'le', version2)
+  if operation1 == 'lt':
+    return not EvaluateVersionComparison(version1, 'le', version2)
+  assert False
+  return False
+
+
+# pylint: enable=too-many-return-statements,too-many-branches
+
+
 def ExpectationsDriverTags() -> FrozenSet[str]:
   return EXPECTATIONS_DRIVER_TAGS

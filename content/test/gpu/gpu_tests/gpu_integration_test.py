@@ -16,7 +16,8 @@ import pkgutil
 import re
 import sys
 import types
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Type, Union
+from typing import (Any, Dict, Generator, List, Optional, Set, Tuple, Type,
+                    Union)
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -31,6 +32,7 @@ from telemetry.util import screenshot
 from typ import json_results
 
 import gpu_path_util
+import validate_tag_consistency
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
@@ -72,6 +74,20 @@ _ARGS_TO_CONSOLIDATE = frozenset([
 
 TestTuple = Tuple[str, ct.GeneratedTest]
 TestTupleGenerator = Generator[TestTuple, None, None]
+
+
+# Handled in a function to avoid polluting the module's environment with
+# temporary variable names.
+def _GenerateSpecificToGenericTagMapping() -> Dict[str, str]:
+  specific_to_generic = {}
+  for _, tag_set in validate_tag_consistency.TAG_SPECIALIZATIONS.items():
+    for general_tag, specific_tags in tag_set.items():
+      for tag in specific_tags:
+        specific_to_generic[tag] = general_tag
+  return specific_to_generic
+
+
+_specific_to_generic_tags = _GenerateSpecificToGenericTagMapping()
 
 
 @dataclasses.dataclass
@@ -1060,6 +1076,10 @@ class GpuIntegrationTest(
     return tags
 
   @classmethod
+  def GetTagConflictChecker(cls) -> ct.TagConflictChecker:
+    return _TagConflictChecker
+
+  @classmethod
   def _EnsureTabIsAvailable(cls) -> None:
     try:
       # If there is no browser, the previous run may have failed an additional
@@ -1147,6 +1167,15 @@ class GpuIntegrationTest(
     expectation file lives in a third party repo.
     """
     return gpu_path_util.CHROMIUM_SRC_DIR
+
+
+def _TagConflictChecker(tag1: str, tag2: str) -> bool:
+  # This conflict check takes into account both driver tag matching and
+  # cases of tags being subsets of others, e.g. win10 being a subset of win.
+  if gpu_helper.MatchDriverTag(tag1):
+    return not gpu_helper.IsDriverTagDuplicated(tag1, tag2)
+  return (tag1 != tag2 and tag1 != _specific_to_generic_tags.get(tag2, tag2)
+          and tag2 != _specific_to_generic_tags.get(tag1, tag1))
 
 
 def GenerateTestNameMapping() -> Dict[str, Type[GpuIntegrationTest]]:
