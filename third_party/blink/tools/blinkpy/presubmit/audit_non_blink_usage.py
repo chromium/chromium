@@ -1587,6 +1587,7 @@ _CONFIG = [
         'allowed': [
             # Required to provide a canonicalization functor to liburlpattern.
             "absl::InvalidArgumentError",
+            "absl::Status",
             "absl::StatusOr",
 
             # Required by liburlpattern API in order to pass string data

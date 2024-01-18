@@ -1,70 +1,76 @@
 // Copyright 2021 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Use of this source code is governed by an MIT-style license that can be
+// found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_PARSER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_PARSER_H_
+#ifndef THIRD_PARTY_LIBURLPATTERN_CONSTRUCTOR_STRING_PARSER_H_
+#define THIRD_PARTY_LIBURLPATTERN_CONSTRUCTOR_STRING_PARSER_H_
 
-#include <vector>
+#include <functional>
 
-#include "base/containers/enum_set.h"
-#include "base/types/strong_alias.h"
-#include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "third_party/liburlpattern/tokenize.h"
 
 namespace liburlpattern {
-struct Token;
-}  // namespace liburlpattern
-
-namespace blink {
-
-class ExceptionState;
-class URLPatternInit;
-class URLPatternOptions;
-
-namespace url_pattern {
 
 // A helper class to parse the first string passed to the URLPattern
 // constructor.  In general the parser works by using the liburlpattern
 // tokenizer to first split up the input into pattern tokens.  It can
 // then look through the tokens to find non-special characters that match
 // the different URL component separators.  Each component is then split
-// off and stored in a `URLPatternInit` object that can be accessed via
-// `GetResult()`.  The intent is that this init object should then be
-// processed as if it was passed into the constructor itself.
-class Parser final {
-  STACK_ALLOCATED();
-
+// off and stored in a `Result` object that can be accessed via `GetResult()`.
+// The intent is that this object should then be processed as if it was passed
+// into the constructor itself.
+class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
  public:
-  Parser(const String& input, const URLPatternOptions& external_options);
+  struct Result {
+    absl::optional<absl::string_view> protocol;
+    absl::optional<absl::string_view> username;
+    absl::optional<absl::string_view> password;
+    absl::optional<absl::string_view> hostname;
+    absl::optional<absl::string_view> port;
+    absl::optional<absl::string_view> pathname;
+    absl::optional<absl::string_view> search;
+    absl::optional<absl::string_view> hash;
+  };
+  struct StringParserOptions {
+    // This enables the behavior proposed in WICG/urlpattern#179.
+    bool more_wildcards = true;
+  };
+  using ProtocolCheckCallback =
+      std::function<absl::StatusOr<bool>(absl::string_view)>;
+
+  ConstructorStringParser(absl::string_view constructor_string,
+                          const StringParserOptions& options);
 
   // Attempt to parse the input string used to construct the Parser object.
-  // This method may only be called once.  Any errors will be thrown on the
-  // give `exception_state`.  Retrieve the parse result by calling
-  // `GetResult()`.  A protocol component will also be eagerly compiled for
-  // absolute pattern strings.  It is not compiled for relative pattern string.
-  // The compiled protocol Component can be accessed by calling
-  // `GetProtocolComponent()`.
-  void Parse(v8::Isolate* isolate, ExceptionState& exception_state);
+  // This method may only be called once.  Retrieve the parse result by calling
+  // `GetResult()`.
+  // `protocol_matches_special_scheme` is called with a protocol string. It must
+  // return whether the protocol component which is compiled from the protocol
+  // string matches a special scheme. It is not called for relative pattern
+  // string. The protocol component created inside the callback can be reused
+  // when creating a URLPattern object.
+  absl::Status Parse(ProtocolCheckCallback protocol_matches_special_scheme);
 
   // Return the parse result.  Should only be called after `Parse()` succeeds.
-  URLPatternInit* GetResult() const { return result_; }
-
-  // Return the protocol component if it was compiled as part of parsing the
-  // input string.  This should only be called after `Parse()` succeeds.
-  // This will return nullptr if the input was a relative pattern string.
-  Component* GetProtocolComponent() const { return protocol_component_; }
+  const Result& GetResult() const { return result_; }
 
   // Returns which of the components were actually present.
   // This is currently only used for data analysis to evaluate potential
   // evolution of the URL pattern syntax.
-  using ComponentSet = base::EnumSet<Component::Type,
-                                     Component::Type::kProtocol,
-                                     Component::Type::kHash>;
-  ComponentSet GetPresentComponents() { return present_components_; }
+  struct ComponentSet {
+    bool protocol = false;
+    bool username = false;
+    bool password = false;
+    bool hostname = false;
+    bool port = false;
+    bool pathname = false;
+    bool search = false;
+    bool hash = false;
+  };
+  const ComponentSet& GetPresentComponents() { return present_components_; }
 
  private:
   enum class StringParseState {
@@ -81,7 +87,7 @@ class Parser final {
     kDone,
   };
 
-  using Skip = base::StrongAlias<class SkipTag, int>;
+  using Skip = int;
 
   // A utility function to move from the current `state_` to `new_state`.  This
   // method will populate the component string in `result_` corresponding to the
@@ -105,7 +111,7 @@ class Parser final {
   // Attempt to access the Token at the given `index`.  If the `index` is out
   // of bounds for the `token_list_`, then the last Token in the list is
   // returned.  This will always be a `TokenType::kEnd` token.
-  const liburlpattern::Token& SafeToken(size_t index) const;
+  const Token& SafeToken(size_t index) const;
 
   // Returns true if the token at the given `index` is not a special pattern
   // character and if it matches the given `value`.  This simply checks that the
@@ -150,39 +156,20 @@ class Parser final {
   bool IsIPv6Open() const;
   bool IsIPv6Close() const;
 
-  // This method returns a String consisting of the tokens between
+  // This method returns a absl::string_view consisting of the tokens between
   // `component_start_` and the current `token_index_`.
-  String MakeComponentString() const;
+  absl::string_view MakeComponentString() const;
 
-  // Returns true if this URL should be treated as a "standard URL".  These URLs
-  // automatically append a `/` for the pathname if one is not specified.
-  void ComputeShouldTreatAsStandardURL(v8::Isolate* isolate,
-                                       ExceptionState& exception_state);
+  // The input UTF-8 string to the parser.
+  const absl::string_view input_;
+  const StringParserOptions options_;
 
-  // The input string to the parser.
-  const String input_;
-
-  // UTF8 representation of `input_`.
-  const StringUTF8Adaptor utf8_;
-
-  // Options passed in to the URLPattern constructor.  The external options is
-  // a garbage collected object.  Since this is a stack allocated object this
-  // reference will keep the options alive.
-  const URLPatternOptions& external_options_;
+  // The list of Tokens produced by calling `Tokenize()` on `input_`.
+  std::vector<Token> token_list_;
 
   // As we parse the input string we populate a `URLPatternInit` dictionary
   // with each component pattern.  This is then the final result of the parse.
-  URLPatternInit* result_ = nullptr;
-
-  // The compiled Component for the protocol.  This is generated for absolute
-  // strings where we need to determine if the value should be treated as
-  // a "standard" URL.
-  Component* protocol_component_ = nullptr;
-
-  // The list of Tokens produced by calling `liburlpattern::Tokenize()` on
-  // `input_`.
-  std::vector<liburlpattern::Token> token_list_
-      ALLOW_DISCOURAGED_TYPE("liburlpattern uses STL types");
+  Result result_;
 
   // The index of the first Token to include in the component string.
   size_t component_start_ = 0;
@@ -214,7 +201,6 @@ class Parser final {
   ComponentSet present_components_;
 };
 
-}  // namespace url_pattern
-}  // namespace blink
+}  // namespace liburlpattern
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_PARSER_H_
+#endif  // THIRD_PARTY_LIBURLPATTERN_CONSTRUCTOR_STRING_PARSER_H_
