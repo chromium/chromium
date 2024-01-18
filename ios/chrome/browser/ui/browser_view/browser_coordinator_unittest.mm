@@ -345,16 +345,17 @@ TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
 
 // Tests that BrowserCoordinator starts and stops the SaveToPhotosCoordinator
 // properly when SaveToPhotosCommands are issued.
+
 TEST_F(BrowserCoordinatorTest, StartsAndStopsSaveToPhotosCoordinator) {
-  // Mock the SaveToPhotosCoordinator class
+  // Mock the SaveToPhotosCoordinator class.
   id mockSaveToPhotosCoordinator =
       OCMStrictClassMock([SaveToPhotosCoordinator class]);
 
-  // Start the BrowserCoordinator
+  // Start the BrowserCoordinator.
   BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
 
-  // At rest, check the SaveToPhotosCoordinator is nil
+  // At rest, check the SaveToPhotosCoordinator is nil.
   EXPECT_EQ(browser_coordinator.saveToPhotosCoordinator, nil);
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();

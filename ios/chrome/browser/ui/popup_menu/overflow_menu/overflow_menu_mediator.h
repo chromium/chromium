@@ -26,6 +26,7 @@ class SyncService;
 
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 class AuthenticationService;
 @protocol BookmarksCommands;
 @protocol BrowserCoordinatorCommands;
@@ -61,6 +62,7 @@ class WebStateList;
 // Command Handlers.
 @property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;

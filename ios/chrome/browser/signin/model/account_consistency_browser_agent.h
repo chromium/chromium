@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 class Browser;
 @class SceneState;
 @class ManageAccountsDelegateBridge;
@@ -51,14 +52,14 @@ class AccountConsistencyBrowserAgent
   // `base_view_controller` is the view controller which UI will be presented
   // from.
   AccountConsistencyBrowserAgent(Browser* browser,
-                                 UIViewController* base_view_controller,
-                                 id<ApplicationCommands> handler);
+                                 UIViewController* base_view_controller);
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
   UIViewController* base_view_controller_;
-  id<ApplicationCommands> handler_;
+  id<ApplicationCommands> application_handler_;
+  id<ApplicationSettingsCommands> settings_handler_;
   Browser* browser_;
 
   // Bridge object to act as the delegate.

@@ -58,8 +58,13 @@ int UniqueWarningTypeCount(
 
 }  // namespace
 
-void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
-                                      id<ApplicationCommands> handler) {
+using password_manager::WarningType;
+using password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
+using password_manager::WarningType::kCompromisedPasswordsWarning;
+
+void HandleSafetyCheckUpdateChromeTap(
+    const GURL& chrome_upgrade_url,
+    id<ApplicationCommands> applicationHandler) {
   switch (::GetChannel()) {
     case version_info::Channel::STABLE:
     case version_info::Channel::BETA:
@@ -68,7 +73,7 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
       OpenNewTabCommand* command =
           [OpenNewTabCommand commandWithURLFromChrome:chrome_upgrade_url];
 
-      [handler openURLInNewTab:command];
+      [applicationHandler openURLInNewTab:command];
 
       break;
     }
@@ -79,15 +84,15 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
 
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& compromised_credentials,
-    id<ApplicationCommands> handler) {
+    id<ApplicationCommands> applicationHandler,
+    id<ApplicationSettingsCommands> settingsHandler) {
   // If there's only one compromised credential, navigate users to the detail
   // view for that particular credential.
   if (compromised_credentials.size() == 1) {
     password_manager::CredentialUIEntry credential =
         compromised_credentials.front();
-
-    [handler showPasswordDetailsForCredential:credential showCancelButton:YES];
-
+    [settingsHandler showPasswordDetailsForCredential:credential
+                                     showCancelButton:YES];
     return;
   }
 
@@ -98,14 +103,11 @@ void HandleSafetyCheckPasswordTap(
   // navigate users to the Password Checkup overview screen for that particular
   // warning type.
   if (unique_warning_type_count == 1) {
-    password_manager::WarningType type =
+    WarningType type =
         password_manager::GetWarningOfHighestPriority(compromised_credentials);
-
-    [handler showPasswordIssuesWithWarningType:type
-                                      referrer:password_manager::
-                                                   PasswordCheckReferrer::
-                                                       kSafetyCheckMagicStack];
-
+    [applicationHandler
+        showPasswordIssuesWithWarningType:type
+                                 referrer:kSafetyCheckMagicStack];
     return;
   }
 
@@ -115,8 +117,8 @@ void HandleSafetyCheckPasswordTap(
   base::RecordAction(
       base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
 
-  [handler showPasswordCheckupPageForReferrer:
-               password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
+  [applicationHandler
+      showPasswordCheckupPageForReferrer:kSafetyCheckMagicStack];
 }
 
 bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state) {

@@ -1936,7 +1936,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)openClearBrowsingData {
   RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
   [self dismissMenu];
-  [self.applicationHandler showClearBrowsingDataSettings];
+  [self.settingsHandler showClearBrowsingDataSettings];
 }
 
 // Follows the website corresponding to `webPage` and dismisses the menu.
@@ -2114,7 +2114,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kChromeMenuItem);
   [self dismissMenu];
-  [self.applicationHandler
+  [self.settingsHandler
       showSavedPasswordsSettingsFromViewController:self.baseViewController
                                   showCancelButton:NO];
 }

@@ -261,14 +261,15 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_openNewWindow {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenNewWindow"));
-  [_dispatcher openNewWindowWithActivity:ActivityToLoadURL(
-                                             WindowActivityKeyCommandOrigin,
-                                             GURL(kChromeUINewTabURL))];
+  [_applicationHandler
+      openNewWindowWithActivity:ActivityToLoadURL(
+                                    WindowActivityKeyCommandOrigin,
+                                    GURL(kChromeUINewTabURL))];
 }
 
 - (void)keyCommand_openNewIncognitoWindow {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenNewIncognitoWindow"));
-  [_dispatcher
+  [_applicationHandler
       openNewWindowWithActivity:ActivityToLoadURL(
                                     WindowActivityKeyCommandOrigin,
                                     GURL(kChromeUINewTabURL), web::Referrer(),
@@ -292,23 +293,23 @@ using base::UserMetricsAction;
     return;
   }
 
-  [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
+  [_applicationHandler openURLInNewTab:[OpenNewTabCommand command]];
   RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, _browser.get());
 }
 
 - (void)keyCommand_find {
   RecordAction(UserMetricsAction("MobileKeyCommandFind"));
-  [_dispatcher openFindInPage];
+  [_findInPageHandler openFindInPage];
 }
 
 - (void)keyCommand_findNext {
   RecordAction(UserMetricsAction("MobileKeyCommandFindNext"));
-  [_dispatcher findNextStringInPage];
+  [_findInPageHandler findNextStringInPage];
 }
 
 - (void)keyCommand_findPrevious {
   RecordAction(UserMetricsAction("MobileKeyCommandFindPrevious"));
-  [_dispatcher findPreviousStringInPage];
+  [_findInPageHandler findPreviousStringInPage];
 }
 
 - (void)keyCommand_openLocation {
@@ -318,7 +319,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_closeTab {
   RecordAction(UserMetricsAction("MobileKeyCommandCloseTab"));
-  [_browserCoordinatorCommandsHandler closeCurrentTab];
+  [_browserCoordinatorHandler closeCurrentTab];
 }
 
 - (void)keyCommand_showNextTab {
@@ -358,7 +359,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showBookmarks {
   RecordAction(UserMetricsAction("MobileKeyCommandShowBookmarks"));
-  [_browserCoordinatorCommandsHandler showBookmarksManager];
+  [_browserCoordinatorHandler showBookmarksManager];
 }
 
 - (void)keyCommand_addToBookmarks {
@@ -374,7 +375,7 @@ using base::UserMetricsAction;
   }
 
   NSString* title = tab_util::GetTabTitle(currentWebState);
-  [_bookmarksCommandsHandler
+  [_bookmarksHandler
       createOrEditBookmarkWithURL:[[URLWithTitle alloc] initWithURL:URL
                                                               title:title]];
 }
@@ -400,7 +401,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showHistory {
   RecordAction(UserMetricsAction("MobileKeyCommandShowHistory"));
-  [_dispatcher showHistory];
+  [_applicationHandler showHistory];
 }
 
 - (void)keyCommand_voiceSearch {
@@ -408,12 +409,12 @@ using base::UserMetricsAction;
   [LayoutGuideCenterForBrowser(_browser.get())
       referenceView:nil
           underName:kVoiceSearchButtonGuide];
-  [_dispatcher startVoiceSearch];
+  [_applicationHandler startVoiceSearch];
 }
 
 - (void)keyCommand_showSettings {
   RecordAction(UserMetricsAction("MobileKeyCommandShowSettings"));
-  [_dispatcher showSettingsFromViewController:_viewController];
+  [_applicationHandler showSettingsFromViewController:_viewController];
 }
 
 - (void)keyCommand_stop {
@@ -423,12 +424,12 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showHelp {
   RecordAction(UserMetricsAction("MobileKeyCommandShowHelp"));
-  [_browserCoordinatorCommandsHandler showHelpPage];
+  [_browserCoordinatorHandler showHelpPage];
 }
 
 - (void)keyCommand_showDownloads {
   RecordAction(UserMetricsAction("MobileKeyCommandShowDownloads"));
-  [_browserCoordinatorCommandsHandler showDownloadsFolder];
+  [_browserCoordinatorHandler showDownloadsFolder];
 }
 
 - (void)keyCommand_select1 {
@@ -478,7 +479,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_reportAnIssue {
   RecordAction(UserMetricsAction("MobileKeyCommandReportAnIssue"));
-  [_dispatcher
+  [_applicationHandler
       showReportAnIssueFromViewController:_viewController
                                    sender:UserFeedbackSender::KeyCommand];
 }
@@ -505,18 +506,18 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showReadingList {
   RecordAction(UserMetricsAction("MobileKeyCommandShowReadingList"));
-  [_browserCoordinatorCommandsHandler showReadingList];
+  [_browserCoordinatorHandler showReadingList];
 }
 
 - (void)keyCommand_goToTabGrid {
   RecordAction(UserMetricsAction("MobileKeyCommandGoToTabGrid"));
-  [_dispatcher prepareTabSwitcher];
-  [_dispatcher displayTabSwitcherInGridLayout];
+  [_applicationHandler prepareTabSwitcher];
+  [_applicationHandler displayTabSwitcherInGridLayout];
 }
 
 - (void)keyCommand_clearBrowsingData {
   RecordAction(UserMetricsAction("MobileKeyCommandClearBrowsingData"));
-  [_dispatcher showClearBrowsingDataSettings];
+  [_settingsHandler showClearBrowsingDataSettings];
 }
 
 #pragma mark - Private
@@ -561,14 +562,14 @@ using base::UserMetricsAction;
 - (void)openNewRegularTab {
   OpenNewTabCommand* newTabCommand = [OpenNewTabCommand command];
   newTabCommand.shouldFocusOmnibox = YES;
-  [_dispatcher openURLInNewTab:newTabCommand];
+  [_applicationHandler openURLInNewTab:newTabCommand];
 }
 
 - (void)openNewIncognitoTab {
   OpenNewTabCommand* newIncognitoTabCommand =
       [OpenNewTabCommand incognitoTabCommand];
   newIncognitoTabCommand.shouldFocusOmnibox = YES;
-  [_dispatcher openURLInNewTab:newIncognitoTabCommand];
+  [_applicationHandler openURLInNewTab:newIncognitoTabCommand];
 }
 
 - (void)showTabAtIndex:(NSUInteger)index {

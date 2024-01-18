@@ -73,9 +73,12 @@
   self.recentTabsTableViewController.browser = self.browser;
   self.recentTabsTableViewController.loadStrategy = self.loadStrategy;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<ApplicationCommands> handler =
+  id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
-  self.recentTabsTableViewController.handler = handler;
+  self.recentTabsTableViewController.applicationHandler = applicationHandler;
+  id<ApplicationSettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  self.recentTabsTableViewController.settingsHandler = settingsHandler;
   self.recentTabsTableViewController.presentationDelegate = self;
 
   self.recentTabsContextMenuHelper =

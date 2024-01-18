@@ -47,8 +47,9 @@ const CGFloat kSymbolSize = 18;
   if (!omniboxPedal) {
     return nil;
   }
-  __weak id<ApplicationCommands> pedalsEndpoint = self.pedalsEndpoint;
-  __weak id<OmniboxCommands> omniboxCommandHandler = self.omniboxCommandHandler;
+  __weak id<ApplicationCommands> applicationHandler = self.applicationHandler;
+  __weak id<ApplicationSettingsCommands> settingsHandler = self.settingsHandler;
+  __weak id<OmniboxCommands> omniboxHandler = self.omniboxHandler;
 
   NSString* hint =
       base::SysUTF16ToNSString(omniboxPedal->GetLabelStrings().hint);
@@ -76,7 +77,7 @@ const CGFloat kSymbolSize = 18;
                        OpenNewTabCommand* command =
                            [OpenNewTabCommand commandWithURLFromChrome:url
                                                            inIncognito:NO];
-                       [pedalsEndpoint openURLInNewTab:command];
+                       [applicationHandler openURLInNewTab:command];
                      }];
     }
     case OmniboxPedalId::CLEAR_BROWSING_DATA: {
@@ -94,8 +95,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showClearBrowsingDataSettings];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler showClearBrowsingDataSettings];
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
@@ -107,8 +108,8 @@ const CGFloat kSymbolSize = 18;
                                                           kSymbolSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       ProceduralBlock action = ^{
-        [omniboxCommandHandler cancelOmniboxEdit];
-        [pedalsEndpoint
+        [omniboxHandler cancelOmniboxEdit];
+        [settingsHandler
             showDefaultBrowserSettingsFromViewController:nil
                                             sourceForUMA:
                                                 DefaultBrowserPromoSource::
@@ -145,8 +146,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler
                            showSavedPasswordsSettingsFromViewController:nil
                                                        showCancelButton:NO];
                      }];
@@ -166,8 +167,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showCreditCardSettings];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler showCreditCardSettings];
                      }];
     }
     case OmniboxPedalId::LAUNCH_INCOGNITO: {
@@ -183,8 +184,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
+                       [omniboxHandler cancelOmniboxEdit];
+                       [applicationHandler
                            openURLInNewTab:[OpenNewTabCommand
                                                incognitoTabCommand]];
                      }];
@@ -204,8 +205,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
+                       [omniboxHandler cancelOmniboxEdit];
+                       [settingsHandler
                            showAndStartSafetyCheckInHalfSheet:NO
                                                      referrer:
                                                          password_manager::
@@ -228,8 +229,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showSettingsFromViewController:nil];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [applicationHandler showSettingsFromViewController:nil];
                      }];
     }
     case OmniboxPedalId::VIEW_CHROME_HISTORY: {
@@ -247,8 +248,8 @@ const CGFloat kSymbolSize = 18;
            imageBorderColor:nil
                        type:pedalType
                      action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint showHistory];
+                       [omniboxHandler cancelOmniboxEdit];
+                       [applicationHandler showHistory];
                      }];
     }
       // If a new case is added here, make sure to update the method returning

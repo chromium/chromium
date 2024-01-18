@@ -17,6 +17,7 @@ struct DistantSession;
 }
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 @protocol RecentTabsMenuProvider;
 @protocol RecentTabsPresentationDelegate;
 @protocol RecentTabsTableViewControllerDelegate;
@@ -29,8 +30,10 @@ struct DistantSession;
 // The Browser for the tabs being restored. It's an error to pass a nullptr
 // Browser.
 @property(nonatomic, assign) Browser* browser;
-// The command handler used by this ViewController.
-@property(nonatomic, weak) id<ApplicationCommands> handler;
+// The command handlers used by this ViewController.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
+
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
 // RecentTabsTableViewControllerDelegate delegate.

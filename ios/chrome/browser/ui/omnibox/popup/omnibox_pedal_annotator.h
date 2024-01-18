@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 struct AutocompleteMatch;
 @protocol OmniboxCommands;
 @class OmniboxPedalData;
@@ -15,11 +16,14 @@ struct AutocompleteMatch;
 /// A class to add pedal data to a given autocomplete match object
 @interface OmniboxPedalAnnotator : NSObject
 
-/// The endpoint that handles Actions and Pedals commands.
-@property(nonatomic, weak) id<ApplicationCommands> pedalsEndpoint;
+/// The endpoint that handles Actions and Pedals application commands.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
+/// The endpoint that handles Actions and Pedals settings commands.
+@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
 
 /// The endpoint that handles Omnibox commands.
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandHandler;
+@property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
 /// Creates a new pedal for the provided match.
 - (OmniboxPedalData*)pedalForMatch:(const AutocompleteMatch&)match;

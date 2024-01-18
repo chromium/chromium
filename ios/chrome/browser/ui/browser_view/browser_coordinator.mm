@@ -875,14 +875,21 @@ enum class ToolbarKind {
 
   _keyCommandsProvider =
       [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
-  _keyCommandsProvider.dispatcher =
-      static_cast<id<ApplicationCommands, FindInPageCommands>>(_dispatcher);
-  _keyCommandsProvider.omniboxHandler =
-      static_cast<id<OmniboxCommands>>(_dispatcher);
-  _keyCommandsProvider.bookmarksCommandsHandler =
-      static_cast<id<BookmarksCommands>>(_dispatcher);
-  _keyCommandsProvider.browserCoordinatorCommandsHandler =
+  _keyCommandsProvider.applicationHandler =
+      HandlerForProtocol(_dispatcher, ApplicationCommands);
+  _keyCommandsProvider.settingsHandler =
+      HandlerForProtocol(_dispatcher, ApplicationSettingsCommands);
+  _keyCommandsProvider.findInPageHandler =
+      HandlerForProtocol(_dispatcher, FindInPageCommands);
+  _keyCommandsProvider.browserCoordinatorHandler =
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
+
+  // TODO(crbug.com/1494417): This can't use HandlerForProtocol because dispatch
+  // for BookmarksCommands is set up when the tab grid coordinator starts, which
+  // is after this is called, so for now use static_cast until that can be
+  // untangled.
+  _keyCommandsProvider.bookmarksHandler =
+      static_cast<id<BookmarksCommands>>(_dispatcher);
 
   PrerenderService* prerenderService =
       PrerenderServiceFactory::GetForBrowserState(browserState);
@@ -1067,6 +1074,7 @@ enum class ToolbarKind {
   _viewController.loadQueryCommandsHandler = _loadQueryCommandsHandler;
   _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
   _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
+  _keyCommandsProvider.omniboxHandler = _omniboxCommandsHandler;
   _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
   _legacyTabStripCoordinator.baseViewController = self.viewController;
@@ -2147,7 +2155,7 @@ enum class ToolbarKind {
 #pragma mark - FormInputAccessoryCoordinatorNavigator
 
 - (void)openPasswordManager {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
       showSavedPasswordsSettingsFromViewController:self.viewController
                                   showCancelButton:YES];
 }
@@ -2168,12 +2176,12 @@ enum class ToolbarKind {
 }
 
 - (void)openAddressSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
       showProfileSettingsFromViewController:self.viewController];
 }
 
 - (void)openCreditCardSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
       showCreditCardSettings];
 }
 
@@ -2344,10 +2352,8 @@ enum class ToolbarKind {
     _urlLoadingBrowserAgent->SetDelegate(self);
   }
 
-  id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  AccountConsistencyBrowserAgent::CreateForBrowser(
-      self.browser, self.viewController, applicationCommandHandler);
+  AccountConsistencyBrowserAgent::CreateForBrowser(self.browser,
+                                                   self.viewController);
 
   if (FollowBrowserAgent::FromBrowser(self.browser)) {
     CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
@@ -2789,17 +2795,17 @@ enum class ToolbarKind {
 }
 
 - (void)showSyncPassphraseSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
       showSyncPassphraseSettingsFromViewController:self.viewController];
 }
 
 - (void)showGoogleServicesSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
       showGoogleServicesSettingsFromViewController:self.viewController];
 }
 
 - (void)showAccountSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands)
       showAccountsSettingsFromViewController:self.viewController
                         skipIfUINotAvailable:NO];
 }
@@ -3026,9 +3032,7 @@ enum class ToolbarKind {
 
 - (void)prepareForPageInfoPresentation {
   // Dismiss the omnibox (if open).
-  id<OmniboxCommands> omniboxHandler =
-      HandlerForProtocol(_dispatcher, OmniboxCommands);
-  [omniboxHandler cancelOmniboxEdit];
+  [_omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 - (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {
@@ -3177,19 +3181,19 @@ enum class ToolbarKind {
 }
 
 - (void)displaySavedPasswordList {
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
-  [applicationCommandsHandler
+  id<ApplicationSettingsCommands> settingsHandler =
+      HandlerForProtocol(_dispatcher, ApplicationSettingsCommands);
+  [settingsHandler
       showSavedPasswordsSettingsFromViewController:self.viewController
                                   showCancelButton:YES];
 }
 
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
-  [applicationCommandsHandler showPasswordDetailsForCredential:credential
-                                              showCancelButton:YES];
+  id<ApplicationSettingsCommands> settingsHandler =
+      HandlerForProtocol(_dispatcher, ApplicationSettingsCommands);
+  [settingsHandler showPasswordDetailsForCredential:credential
+                                   showCancelButton:YES];
 }
 
 #pragma mark - MiniMapCommands

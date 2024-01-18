@@ -54,9 +54,9 @@
 #pragma mark - SafeBrowsingTabHelperDelegate
 
 - (void)openSafeBrowsingSettings {
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler showSafeBrowsingSettings];
+  id<ApplicationSettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
+  [settingsHandler showSafeBrowsingSettings];
 }
 
 #pragma mark - WebStateListObserving

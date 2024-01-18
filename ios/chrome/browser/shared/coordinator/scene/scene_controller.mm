@@ -922,10 +922,11 @@ void InjectNTP(Browser* browser) {
   SceneState* sceneState = self.sceneState;
   ChromeBrowserState* browserState = sceneState.appState.mainBrowserState;
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
-             initWithBrowserState:browserState
-                       sceneState:sceneState
-       applicationCommandEndpoint:self
-      browsingDataCommandEndpoint:self.browsingDataCommandsHandler];
+      initWithBrowserState:browserState
+                sceneState:sceneState
+       applicationEndpoint:self
+          settingsEndpoint:self
+      browsingDataEndpoint:self.browsingDataCommandsHandler];
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
@@ -1866,9 +1867,13 @@ void InjectNTP(Browser* browser) {
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(webState);
   DCHECK(infoBarManager);
+  CommandDispatcher* dispatcher =
+      self.mainInterface.browser->GetCommandDispatcher();
+  id<ApplicationSettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
   SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.mainInterface.browser->GetBrowserState(), self,
-      baseViewController);
+      infoBarManager, self.mainInterface.browser->GetBrowserState(),
+      settingsHandler, baseViewController);
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -2655,10 +2660,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  id<ApplicationCommands> applicationCommandsHandler =
+  id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                         ApplicationCommands);
-  [applicationCommandsHandler showCreditCardSettings];
+                         ApplicationSettingsCommands);
+  [settingsHandler showCreditCardSettings];
 }
 
 - (void)openClearBrowsingDataDialog {
@@ -2666,10 +2671,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  id<ApplicationCommands> applicationCommandsHandler =
+  id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                         ApplicationCommands);
-  [applicationCommandsHandler showClearBrowsingDataSettings];
+                         ApplicationSettingsCommands);
+  [settingsHandler showClearBrowsingDataSettings];
 }
 
 - (void)openLatestTab {

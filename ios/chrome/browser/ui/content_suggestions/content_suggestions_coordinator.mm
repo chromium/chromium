@@ -478,52 +478,44 @@
   CHECK(IsSafetyCheckMagicStackEnabled());
 
   [self.NTPMetricsDelegate safetyCheckOpened];
+  Browser* browser = self.browser;
   [self.contentSuggestionsMediator
       logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                          kSafetyCheck];
 
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          browser->GetBrowserState());
+
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<ApplicationSettingsCommands> settingsHandler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), ApplicationSettingsCommands);
 
   switch (type) {
     case SafetyCheckItemType::kUpdateChrome: {
       const GURL& chrome_upgrade_url =
           safetyCheckManager->GetChromeAppUpgradeUrl();
-
-      HandleSafetyCheckUpdateChromeTap(
-          chrome_upgrade_url,
-          HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                             ApplicationCommands));
-
+      HandleSafetyCheckUpdateChromeTap(chrome_upgrade_url, applicationHandler);
       break;
     }
     case SafetyCheckItemType::kPassword: {
       std::vector<password_manager::CredentialUIEntry> credentials =
           safetyCheckManager->GetInsecureCredentials();
-
-      HandleSafetyCheckPasswordTap(
-          credentials, HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                          ApplicationCommands));
-
+      HandleSafetyCheckPasswordTap(credentials, applicationHandler,
+                                   settingsHandler);
       break;
     }
     case SafetyCheckItemType::kSafeBrowsing:
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          ApplicationSettingsCommands)
-          showSafeBrowsingSettings];
-
+      [settingsHandler showSafeBrowsingSettings];
       break;
     case SafetyCheckItemType::kAllSafe:
     case SafetyCheckItemType::kRunning:
     case SafetyCheckItemType::kDefault:
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          ApplicationCommands)
-          showAndStartSafetyCheckInHalfSheet:YES
-                                    referrer:password_manager::
-                                                 PasswordCheckReferrer::
-                                                     kSafetyCheckMagicStack];
-
+      password_manager::PasswordCheckReferrer referrer =
+          password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
+      [settingsHandler showAndStartSafetyCheckInHalfSheet:YES
+                                                 referrer:referrer];
       break;
   }
 }

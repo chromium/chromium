@@ -112,8 +112,8 @@ using password_manager::CredentialLeakType;
 }
 
 - (void)openSavedPasswordsSettings {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<ApplicationSettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
   password_manager::LogPasswordCheckReferrer(
       password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
   UMA_HISTOGRAM_ENUMERATION(

@@ -145,15 +145,18 @@
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-  annotator.pedalsEndpoint = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  annotator.omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  annotator.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  annotator.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+
   self.mediator.pedalAnnotator = annotator;
 
-  self.mediator.applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.mediator.applicationCommandsHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
   self.mediator.incognito = isIncognito;
   self.mediator.sceneState = self.browser->GetSceneState();
   self.mediator.presenter = [[OmniboxPopupPresenter alloc]

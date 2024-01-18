@@ -1782,30 +1782,31 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SyncPresenter
 
 - (void)showPrimaryAccountReauth {
-  [self.handler showSignin:[[ShowSigninCommand alloc]
-                               initWithOperation:AuthenticationOperation::
-                                                     kPrimaryAccountReauth
-                                     accessPoint:signin_metrics::AccessPoint::
-                                                     ACCESS_POINT_RECENT_TABS]
-        baseViewController:self];
+  [self.applicationHandler
+              showSignin:[[ShowSigninCommand alloc]
+                             initWithOperation:AuthenticationOperation::
+                                                   kPrimaryAccountReauth
+                                   accessPoint:signin_metrics::AccessPoint::
+                                                   ACCESS_POINT_RECENT_TABS]
+      baseViewController:self];
 }
 
 - (void)showSyncPassphraseSettings {
-  [self.handler showSyncPassphraseSettingsFromViewController:self];
+  [self.settingsHandler showSyncPassphraseSettingsFromViewController:self];
 }
 
 - (void)showGoogleServicesSettings {
-  [self.handler showGoogleServicesSettingsFromViewController:self];
+  [self.settingsHandler showGoogleServicesSettingsFromViewController:self];
 }
 
 - (void)showAccountSettings {
-  [self.handler showAccountsSettingsFromViewController:self
-                                  skipIfUINotAvailable:NO];
+  [self.settingsHandler showAccountsSettingsFromViewController:self
+                                          skipIfUINotAvailable:NO];
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.handler
+  [self.applicationHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
                                                    trigger:trigger
                                                accessPoint:
@@ -1815,7 +1816,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self.handler
+  [self.applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
                                                                 trigger:trigger
                                                             accessPoint:
@@ -1827,7 +1828,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  [self.handler showSignin:command baseViewController:self];
+  [self.applicationHandler showSignin:command baseViewController:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -1883,7 +1884,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   } else if ([self shouldShowHistorySyncOnPromoAction]) {
     [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
   } else if (ShouldShowSyncSettings(error)) {
-    [self.handler showSyncSettingsFromViewController:self];
+    [self.settingsHandler showSyncSettingsFromViewController:self];
   } else if (error ==
              syncer::SyncService::UserActionableError::kNeedsPassphrase) {
     [self showSyncPassphraseSettings];

@@ -277,6 +277,8 @@ using base::UserMetricsAction;
           HandlerForProtocol(dispatcher, ActivityServiceCommands);
       mediator.applicationHandler =
           HandlerForProtocol(dispatcher, ApplicationCommands);
+      mediator.settingsHandler =
+          HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
       mediator.bookmarksHandler =
           HandlerForProtocol(dispatcher, BookmarksCommands);
       mediator.browserCoordinatorHandler =
