@@ -25,7 +25,7 @@ numbers of the shared memory segments.
 
 On Windows, the Id is the HANDLE value from the renderer process. On Linux the
 id is the SysV key. Thus, on both Windows and Linux, the id is sufficient to map
-the transport DIB, while on Mac is is not. This is why, on Mac, the browser
+the transport DIB, while on Mac is not. This is why, on Mac, the browser
 keeps handles to all the possible transport DIBs.
 
 Each RenderProcessHost keeps a small cache of recently used transport DIBs. This
