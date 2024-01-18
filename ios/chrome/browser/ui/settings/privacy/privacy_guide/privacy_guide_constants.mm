@@ -10,3 +10,5 @@ NSString* const kPrivacyGuideNavigationBarViewID =
     @"kPrivacyGuideNavigationBarViewID";
 NSString* const kPrivacyGuideWelcomeViewID = @"kPrivacyGuideWelcomeViewID";
 NSString* const kPrivacyGuideURLUsageViewID = @"kPrivacyGuideURLUsageViewID";
+NSString* const kPrivacyGuideURLUsageSwitchID =
+    @"kPrivacyGuideURLUsageSwitchID";

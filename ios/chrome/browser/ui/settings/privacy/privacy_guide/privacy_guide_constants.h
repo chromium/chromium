@@ -22,4 +22,7 @@ extern NSString* const kPrivacyGuideWelcomeViewID;
 // The accessibility identifier for the URL usage step view.
 extern NSString* const kPrivacyGuideURLUsageViewID;
 
+// The accessibility identifier for the URL usage switch.
+extern NSString* const kPrivacyGuideURLUsageSwitchID;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_GUIDE_PRIVACY_GUIDE_CONSTANTS_H_
