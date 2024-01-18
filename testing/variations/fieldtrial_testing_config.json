@@ -20549,14 +20549,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Privacy_Hub_Default",
+                    "name": "BackgroundReplaceEnabled",
                     "enable_features": [
                         "CameraEffectsSupportedByHardware",
                         "CrOSLateBootAudioAPNoiseCancellation",
                         "CrOSLateBootAudioFlexibleLoopback",
                         "FeatureManagementVideoConference",
-                        "SpeakOnMuteEnabled",
-                        "SystemLiveCaption",
+                        "VCBackgroundReplace",
                         "VideoConference"
                     ],
                     "disable_features": [
