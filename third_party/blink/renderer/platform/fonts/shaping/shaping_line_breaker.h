@@ -138,10 +138,12 @@ class PLATFORM_EXPORT ShapingLineBreaker {
                      unsigned word_end,
                      bool backwards) const;
 
-  const ShapeResultView* ShapeToEnd(unsigned start,
-                                    const EdgeOffset& first_safe,
-                                    unsigned range_start,
-                                    unsigned range_end);
+  const ShapeResultView* ShapeToEnd(
+      unsigned start,
+      scoped_refptr<const ShapeResult> line_start_result,
+      unsigned first_safe,
+      unsigned range_start,
+      unsigned range_end);
   const ShapeResultView* ConcatShapeResults(
       unsigned start,
       unsigned end,

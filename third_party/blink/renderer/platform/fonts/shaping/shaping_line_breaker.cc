@@ -343,7 +343,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     // and thus unable to compute. Return the result up to range_end.
     DCHECK_EQ(candidate_break, range_end);
     SetBreakOffset(range_end, text, result_out);
-    return ShapeToEnd(start, first_safe, range_start, range_end);
+    return ShapeToEnd(start, std::move(line_start_result), first_safe.offset,
+                      range_start, range_end);
   }
 
   // candidate_break should be >= start, but rounding errors can chime in when
@@ -427,8 +428,10 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
   // measure beyond it.
   if (break_opportunity.offset >= range_end) {
     SetBreakOffset(range_end, text, result_out);
-    if (result_out->is_overflow)
-      return ShapeToEnd(start, first_safe, range_start, range_end);
+    if (result_out->is_overflow) {
+      return ShapeToEnd(start, std::move(line_start_result), first_safe.offset,
+                        range_start, range_end);
+    }
     break_opportunity.offset = range_end;
     // Avoid re-shape if at the end of the range.
     // eg. <span>abc</span>def ghi
@@ -543,7 +546,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
             std::max(candidate_break, start + 1), start, range_end);
         if (break_opportunity.offset >= range_end) {
           SetBreakOffset(range_end, text, result_out);
-          return ShapeToEnd(start, first_safe, range_start, range_end);
+          return ShapeToEnd(start, std::move(line_start_result),
+                            first_safe.offset, range_start, range_end);
         }
       }
       // Loop once more to compute last_safe for the new break opportunity.
@@ -605,7 +609,8 @@ const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
 // If |start| is safe-to-break, this copies the subset of the result.
 const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
     unsigned start,
-    const EdgeOffset& first_safe,
+    scoped_refptr<const ShapeResult> line_start_result,
+    unsigned first_safe,
     unsigned range_start,
     unsigned range_end) {
   DCHECK(result_);
@@ -613,10 +618,11 @@ const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
   DCHECK_EQ(range_end, result_->EndIndex());
   DCHECK_GE(start, range_start);
   DCHECK_LT(start, range_end);
-  DCHECK_GE(first_safe.offset, start);
+  DCHECK_GE(first_safe, start);
 
   // If |start| is safe-to-break, no reshape is needed.
-  if (start == first_safe.offset) {
+  if (!line_start_result) {
+    DCHECK_EQ(first_safe, start);
     // If |start| is at the start of the range the entire result object may be
     // reused, which avoids the sub-range logic and bounds computation.
     if (start == range_start) {
@@ -624,20 +630,17 @@ const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
     }
     return ShapeResultView::Create(result_.get(), start, range_end);
   }
+  DCHECK_NE(first_safe, start);
 
   // If no safe-to-break offset is found in range, reshape the entire range.
-  const ShapeOptions options{.han_kerning_start = first_safe.han_kerning};
-  if (first_safe.offset >= range_end) {
-    scoped_refptr<ShapeResult> line_result = Shape(start, range_end, options);
-    return ShapeResultView::Create(line_result.get());
+  if (UNLIKELY(first_safe >= range_end)) {
+    return ShapeResultView::Create(line_start_result.get(), start, range_end);
   }
 
   // Otherwise reshape to |first_safe|, then copy the rest.
-  scoped_refptr<ShapeResult> line_start =
-      Shape(start, first_safe.offset, options);
   ShapeResultView::Segment segments[2] = {
-      {line_start.get(), 0, std::numeric_limits<unsigned>::max()},
-      {result_.get(), first_safe.offset, range_end}};
+      {line_start_result.get(), 0, std::numeric_limits<unsigned>::max()},
+      {result_.get(), first_safe, range_end}};
   return ShapeResultView::Create(segments);
 }
 
