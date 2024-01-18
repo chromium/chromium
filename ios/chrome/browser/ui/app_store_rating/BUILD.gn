@@ -8,8 +8,6 @@ source_set("app_store_rating") {
     "app_store_rating_display_handler.mm",
     "app_store_rating_scene_agent.h",
     "app_store_rating_scene_agent.mm",
-    "constants.h",
-    "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [

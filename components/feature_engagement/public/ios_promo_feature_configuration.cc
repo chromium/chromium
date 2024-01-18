@@ -32,6 +32,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 365);
     config->trigger =
         EventConfig("app_store_promo_trigger", Comparator(EQUAL, 0), 365, 365);
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
   }
 
   if (kIPHiOSPromoWhatsNewFeature.name == feature->name) {
@@ -50,8 +53,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kViewedWhatsNew,
                     Comparator(LESS_THAN, 1), 365, 365));
-    config->event_configs.insert(EventConfig(
-        "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
   }
 
   if (kIPHiOSPromoDefaultBrowserFeature.name == feature->name) {
@@ -77,8 +81,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
                                     Comparator(LESS_THAN, 4), 365, 365);
     }
 
-    config->event_configs.insert(EventConfig(
-        "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
     // Default Browser promo shouldn't be shown if the Post Restore Default
     // Browser Promo has been shown in the past 7 days.
     config->event_configs.insert(

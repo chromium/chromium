@@ -91,7 +91,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -180,6 +179,14 @@ const char kAutofillBrandingKeyboardAccessoriesTapped[] =
 // Deprecated 12/2023.
 const char kSigninLastAccounts[] = "ios.signin.last_accounts";
 const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
+
+// Deprecated 01/2024.
+const char kAppStoreRatingTotalDaysOnChromeKey[] =
+    "AppStoreRatingTotalDaysOnChrome";
+const char kAppStoreRatingActiveDaysInPastWeekKey[] =
+    "AppStoreRatingActiveDaysInPastWeek";
+const char kAppStoreRatingLastShownPromoDayKey[] =
+    "AppStoreRatingLastShownPromoDay";
 
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
@@ -755,26 +762,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
     prefs->ClearPref(kTrialPrefName);
   }
 
-  // Added 09/2023
-  // TODO(crbug.com/1485045) To be removed after a few milestones.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  MigrateArrayOfDatesPreferenceFromUserDefaults(
-      kAppStoreRatingActiveDaysInPastWeekKey, prefs, defaults);
-
-  // Added 09/2023
-  // TODO(crbug.com/1485045) To be removed after a few milestones.
-  MigrateIntegerPreferenceFromUserDefaults(kAppStoreRatingTotalDaysOnChromeKey,
-                                           prefs, defaults);
-
-  // Added 09/2023
-  // TODO(crbug.com/1485045) To be removed after a few milestones.
-  MigrateNSDatePreferenceFromUserDefaults(kAppStoreRatingLastShownPromoDayKey,
-                                          prefs, defaults);
-
   // Added 10/2023.
   prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
 
   // Added 01/2024.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   MigrateNSStringPreferenceFromUserDefaults(kIOSChromeNextVersionKey, prefs,
                                             defaults);
   // Added 01/2024.
@@ -784,6 +776,18 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 01/2024.
   MigrateNSDatePreferenceFromUserDefaults(kLastInfobarDisplayTimeKey, prefs,
                                           defaults);
+
+  // Added 01/2024.
+  prefs->ClearPref(kAppStoreRatingActiveDaysInPastWeekKey);
+  [defaults removeObjectForKey:@(kAppStoreRatingActiveDaysInPastWeekKey)];
+
+  // Added 01/2024.
+  prefs->ClearPref(kAppStoreRatingTotalDaysOnChromeKey);
+  [defaults removeObjectForKey:@(kAppStoreRatingTotalDaysOnChromeKey)];
+
+  // Added 01/2024.
+  prefs->ClearPref(kAppStoreRatingLastShownPromoDayKey);
+  [defaults removeObjectForKey:@(kAppStoreRatingLastShownPromoDayKey)];
 }
 
 // This method should be periodically pruned of year+ old migrations.

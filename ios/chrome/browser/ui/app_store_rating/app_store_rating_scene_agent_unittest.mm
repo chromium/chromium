@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 
-#import "base/json/values_util.h"
-#import "base/values.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -22,7 +20,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -76,31 +73,6 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
     test_scene_agent_.sceneState = fake_scene_state_;
   }
 
-  // Set kAppStoreRatingTotalDaysOnChromeKey in ApplicationContext.
-  void SetTotalDaysOnChrome(int days) {
-    GetApplicationContext()->GetLocalState()->SetInteger(
-        kAppStoreRatingTotalDaysOnChromeKey, days);
-  }
-
-  // Set kAppStoreRatingActiveDaysInPastWeekKey in ApplicationContext to an
-  // array of NSDate objects.
-  void SetActiveDaysInPastWeek(int activeDays) {
-    base::Value::List datesToStore;
-    for (int a = activeDays - 1; a >= 0; a--) {
-      NSDate* date = CreateDateFromToday(-a);
-      datesToStore.Append(TimeToValue(base::Time::FromNSDate(date)));
-    }
-    GetApplicationContext()->GetLocalState()->SetList(
-        kAppStoreRatingActiveDaysInPastWeekKey, std::move(datesToStore));
-  }
-
-  // Set kAppStoreRatingLastShownPromoDayKey in ApplicationContext.
-  void SetPromoLastShownDaysAgo(int daysAgo) {
-    NSDate* date = CreateDateFromToday(-daysAgo);
-    GetApplicationContext()->GetLocalState()->SetTime(
-        kAppStoreRatingLastShownPromoDayKey, base::Time::FromNSDate(date));
-  }
-
   // Ensure that Chrome is considered as default browser.
   void SetTrueChromeLikelyDefaultBrowser() { LogOpenHTTPURLFromExternalURL(); }
 
@@ -118,33 +90,18 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
     browser_state_->GetPrefs()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
   }
-
-  // Helper method that creates an NSDate object.
-  NSDate* CreateDateFromToday(int daysToAdd) {
-    NSDate* now = [NSDate date];
-    NSDateComponents* components = [[NSDateComponents alloc] init];
-    [components setDay:daysToAdd];
-    NSCalendar* calendar = [NSCalendar currentCalendar];
-    NSDate* newDay = [calendar dateByAddingComponents:components
-                                               toDate:now
-                                              options:0];
-    return newDay;
-  }
 };
 
 #pragma mark - Tests
 
 // Tests that promo display is not requested when the App Store Rating policy is
 // disabled.
-TEST_F(AppStoreRatingSceneAgentTest, TestPolicyDisabled) {
+TEST_F(AppStoreRatingSceneAgentTest, TestDisabledByPolicy) {
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
       .Times(0);
 
-  SetActiveDaysInPastWeek(3);
-  SetTotalDaysOnChrome(16);
   EnableCPE();
   SetTrueChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(366);
 
   // Disabling the policy.
   local_state_.Get()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
@@ -154,77 +111,9 @@ TEST_F(AppStoreRatingSceneAgentTest, TestPolicyDisabled) {
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 }
 
-// Tests that promo display is not requested when the promo has already been
-// registered in the past 365 days.
-TEST_F(AppStoreRatingSceneAgentTest, TestPromoRegisteredLessThan365DaysAgo) {
-  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
-      .Times(0);
-
-  SetActiveDaysInPastWeek(3);
-  SetTotalDaysOnChrome(15);
-  EnableCPE();
-  SetTrueChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(360);
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
 // Tests that promo display is requested when the user meets all
 // requirements to be considered engaged.
-TEST_F(AppStoreRatingSceneAgentTest, TestPromoCorrectlyRequested) {
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
-      .Times(1);
-
-  // Creating the requirements to be considered engaged.
-  SetActiveDaysInPastWeek(3);
-  SetTotalDaysOnChrome(15);
-  EnableCPE();
-  SetTrueChromeLikelyDefaultBrowser();
-  SetPromoLastShownDaysAgo(366);
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
-// Tests that promo display is requested when CPE is enabled.
-TEST_F(AppStoreRatingSceneAgentTest,
-       TestPromoRequestedLoosenedTriggersCPEEnabled) {
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
-      .Times(1);
-
-  EnableCPE();
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
-// Tests that promo display is requested when Chrome is set as the default
-// browser.
-TEST_F(AppStoreRatingSceneAgentTest,
-       TestPromoRequestedLoosenedTriggersDefaultBrowserSet) {
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
-      .Times(1);
-
-  SetTrueChromeLikelyDefaultBrowser();
-
-  // Simulating the user launching or resuming the app.
-  [test_scene_agent_ sceneState:fake_scene_state_
-      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-}
-
-// Tests that promo display is requested when both CPE is enabled and Chrome is
-// set as the default browser.
-TEST_F(AppStoreRatingSceneAgentTest, TestPromoRequestedLoosenedTriggersAllMet) {
+TEST_F(AppStoreRatingSceneAgentTest, TestAllConditionsMet) {
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
@@ -238,13 +127,47 @@ TEST_F(AppStoreRatingSceneAgentTest, TestPromoRequestedLoosenedTriggersAllMet) {
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
 }
 
-// Tests that promo display is NOT requested when Chrome isn't set as the
-// default browser and CPE is not enabled.
+// Tests that promo display is requested when only the CPE condition is met.
+TEST_F(AppStoreRatingSceneAgentTest, TestOnlyCPEMet) {
+  EXPECT_CALL(
+      *promos_manager_.get(),
+      RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
+      .Times(1);
+
+  EnableCPE();
+  SetFalseChromeLikelyDefaultBrowser();
+
+  // Simulating the user launching or resuming the app.
+  [test_scene_agent_ sceneState:fake_scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+}
+
+// Tests that promo display is requested when only the default browser condition
+// is met.
+TEST_F(AppStoreRatingSceneAgentTest, TestOnlyDBMet) {
+  EXPECT_CALL(
+      *promos_manager_.get(),
+      RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
+      .Times(1);
+
+  DisableCPE();
+  SetTrueChromeLikelyDefaultBrowser();
+
+  // Simulating the user launching or resuming the app.
+  [test_scene_agent_ sceneState:fake_scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+}
+
+// Tests that promo display is NOT requested when none of the conditions are
+// met.
 TEST_F(AppStoreRatingSceneAgentTest, TestPromoNotRequestedLoosenedTriggers) {
   EXPECT_CALL(
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::AppStoreRating))
       .Times(0);
+
+  DisableCPE();
+  SetFalseChromeLikelyDefaultBrowser();
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
