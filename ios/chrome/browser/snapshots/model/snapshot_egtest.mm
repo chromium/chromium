@@ -180,8 +180,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
 // and the lower side is blue in the page. A snapshot is taken 2 times with the
 // same position before and after scrolling down.
-// TODO(crbug.com/1515809): Reenable after fixing.
-- (void)DISABLED_testSnapshotWithScrollDown {
+- (void)testSnapshotWithScrollDown {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
@@ -223,7 +222,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 250)];
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Scroll up a little bit to make the tab grid button visible.
   [[EarlGrey
