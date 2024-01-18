@@ -1135,6 +1135,11 @@ void DisplayLockContext::DetachDescendantTopLayerElements() {
   if (!ConnectedToView() || !SubtreeHasTopLayerElement())
     return;
 
+  std::optional<StyleEngine::DetachLayoutTreeScope> detach_scope;
+  if (!document_->InStyleRecalc()) {
+    detach_scope.emplace(document_->GetStyleEngine());
+  }
+
   // Detach all top layer elements contained by the element inducing this
   // display lock.
   // Detaching a layout tree can cause further top layer elements to be removed

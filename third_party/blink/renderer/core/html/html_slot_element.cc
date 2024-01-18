@@ -282,6 +282,8 @@ void HTMLSlotElement::DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded() {
   // tree during a layout tree update phase, but that is skipped in display
   // locked subtrees. In order to avoid a corrupt layout tree as a result, we
   // detach the node's layout tree.
+  StyleEngine& style_engine = GetDocument().GetStyleEngine();
+  StyleEngine::DetachLayoutTreeScope detach_scope(style_engine);
   for (auto& current : assigned_nodes_) {
     if (current->GetForceReattachLayoutTree())
       current->DetachLayoutTree();
