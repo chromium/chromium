@@ -307,13 +307,15 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputDevice) {
 }
 
 // Verify changing mute state in UI is reflected in cras.
-IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleInputMute) {
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleMuteStatus) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalMicMutedEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeInternalSpeakerMutedEvent);
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
   SetupContextWidget();
 
-  // Ensure input is not muted in cras.
+  // Ensure input and output are not muted in cras.
   EXPECT_FALSE(audio_handler()->IsInputMuted());
+  EXPECT_FALSE(audio_handler()->IsOutputMuted());
 
   StateChange fake_internal_mic_muted;
   fake_internal_mic_muted.type = StateChange::Type::kExistsAndConditionTrue;
@@ -322,29 +324,44 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ToggleInputMute) {
       CreateAudioPageDeepQueryForSelector(kInputMuteSelector);
   fake_internal_mic_muted.test_function = "btn => btn.ariaPressed";
 
+  StateChange fake_internal_speaker_muted;
+  fake_internal_speaker_muted.type = StateChange::Type::kExistsAndConditionTrue;
+  fake_internal_speaker_muted.event = kFakeInternalSpeakerMutedEvent;
+  fake_internal_speaker_muted.where =
+      CreateAudioPageDeepQueryForSelector(kOutputMuteSelector);
+  fake_internal_speaker_muted.test_function = "btn => btn.ariaPressed";
+
   RunTestSequence(
       Log("Setup active node changed state observers"),
       ObserveState(kActiveInputNodeState,
                    std::make_unique<ActiveAudioNodeStateObserver>(
                        audio_handler(), /*is_input=*/true)),
+      ObserveState(kActiveOutputNodeState,
+                   std::make_unique<ActiveAudioNodeStateObserver>(
+                       audio_handler(), /*is_input=*/false)),
 
-      // Set fake internal mic as active input device.
+      // Set fake internal mic and internal speaker as active device.
       DoSetActiveDevice(fake_internal_mic),
-      Log("Expected internal mic input device configured"),
+      DoSetActiveDevice(fake_internal_speaker),
+      Log("Expected internal mic and internal speaker configured"),
 
       Log("Open audio settings page and ensure it exists"),
       LoadAudioSettingsPage(),
 
-      Log("Mute input in UI"),
+      Log("Mute input and output in UI"),
       ClickElement(kOsSettingsElementId,
                    CreateAudioPageDeepQueryForSelector(kInputMuteSelector)),
+      ClickElement(kOsSettingsElementId,
+                   CreateAudioPageDeepQueryForSelector(kOutputMuteSelector)),
 
-      // Test input is muted in UI.
+      // Test input and output are muted in UI.
       WaitForStateChange(kOsSettingsElementId, fake_internal_mic_muted),
-      Log("Expected muted input is reflected in UI"));
+      WaitForStateChange(kOsSettingsElementId, fake_internal_speaker_muted),
+      Log("Expected muted input and output are reflected in UI"));
 
-  // Check cras to make sure input is in muted state now.
+  // Check cras to make sure input and output are in muted state now.
   EXPECT_TRUE(audio_handler()->IsInputMuted());
+  EXPECT_TRUE(audio_handler()->IsOutputMuted());
 }
 
 // Verify changing output volume in UI is reflected in cras.
