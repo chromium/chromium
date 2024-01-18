@@ -113,8 +113,12 @@ const char kEnhancedNetworkTtsGuestManifestFilename[] =
 const char kSelectToSpeakExtensionId[] = "klbcgckkldhdhonijdbnhhaiedfkllef";
 const char kSelectToSpeakExtensionPath[] = "chromeos/accessibility";
 const char kSelectToSpeakManifestFilename[] = "select_to_speak_manifest.json";
+const char kSelectToSpeakManifestV3Filename[] =
+    "select_to_speak_manifest_v3.json";
 const char kSelectToSpeakGuestManifestFilename[] =
     "select_to_speak_manifest_guest.json";
+const char kSelectToSpeakGuestManifestV3Filename[] =
+    "select_to_speak_manifest_v3_guest.json";
 const char kSwitchAccessExtensionId[] = "pmehocpgjmkenlokgjfkaichfjdhpeol";
 const char kSwitchAccessExtensionPath[] = "chromeos/accessibility";
 const char kSwitchAccessManifestFilename[] = "switch_access_manifest.json";

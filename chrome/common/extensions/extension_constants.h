@@ -216,8 +216,12 @@ extern const char kSelectToSpeakExtensionId[];
 extern const char kSelectToSpeakExtensionPath[];
 // The manifest filename of the Select to Speak extension.
 extern const char kSelectToSpeakManifestFilename[];
+// The manifest v3 filename of the Select to Speak extension.
+extern const char kSelectToSpeakManifestV3Filename[];
 // The guest manifest filename of the Select to Speak extension.
 extern const char kSelectToSpeakGuestManifestFilename[];
+// The guest manifest v3 filename of the Select to Speak extension.
+extern const char kSelectToSpeakGuestManifestV3Filename[];
 // The extension id of the Switch Access extension.
 extern const char kSwitchAccessExtensionId[];
 // Path to preinstalled Switch Access extension (relative to

@@ -2,16 +2,25 @@
 {%if key is defined %}
   "key": "{{key}}",
 {% endif %}
+{% if is_manifest_v3 == '1' %}
+  "manifest_version": 3,
+  "minimum_chrome_version": "93",
+  "background": {
+    "service_worker": "select_to_speak/select_to_speak_main.js",
+    "type": "module"
+  },
+{% else %}
   "manifest_version": 2,
+  "background": {
+    "page": "select_to_speak/background.html"
+  },
+{% endif %}
   "name": "__MSG_SELECT_TO_SPEAK_NAME__",
   "version": "{{set_version}}",
   "description": "__MSG_SELECT_TO_SPEAK_DESCRIPTION__",
 {% if is_guest_manifest == '1' %}
   "incognito": "split",
 {% endif %}
-  "background": {
-    "page": "select_to_speak/background.html"
-  },
   "permissions": [
     "accessibilityPrivate",
     "commandLinePrivate",
