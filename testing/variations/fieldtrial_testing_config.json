@@ -8779,30 +8779,40 @@
                     ]
                 },
                 {
-                    "name": "EnabledWith500Threshold",
+                    "name": "EnabledWith500TestData",
                     "params": {
-                        "MetadataGrantsThreshold": "500",
-                        "UseTestMetadata": "10000"
+                        "MetadataGrantsThreshold": "499",
+                        "UseTestMetadata": "500"
                     },
                     "enable_features": [
                         "HostIndexedMetadataGrants"
                     ]
                 },
                 {
-                    "name": "EnabledWith5000Threshold",
+                    "name": "DisabledWith500TestData",
+                    "params": {
+                        "MetadataGrantsThreshold": "1000",
+                        "UseTestMetadata": "500"
+                    },
+                    "enable_features": [
+                        "HostIndexedMetadataGrants"
+                    ]
+                },
+                {
+                    "name": "EnabledWith1500TestData",
+                    "params": {
+                        "MetadataGrantsThreshold": "1499",
+                        "UseTestMetadata": "1500"
+                    },
+                    "enable_features": [
+                        "HostIndexedMetadataGrants"
+                    ]
+                },
+                {
+                    "name": "DisabledWith1500TestData",
                     "params": {
                         "MetadataGrantsThreshold": "5000",
-                        "UseTestMetadata": "10000"
-                    },
-                    "enable_features": [
-                        "HostIndexedMetadataGrants"
-                    ]
-                },
-                {
-                    "name": "EnabledWith10000Threshold",
-                    "params": {
-                        "MetadataGrantsThreshold": "10000",
-                        "UseTestMetadata": "10000"
+                        "UseTestMetadata": "1500"
                     },
                     "enable_features": [
                         "HostIndexedMetadataGrants"
