@@ -570,7 +570,10 @@ public class NewTabPage
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
                 mIsTablet,
-                mTabStripHeightSupplier);
+                mTabStripHeightSupplier,
+                (GURL gurl) -> {
+                    mTab.loadUrl(new LoadUrlParams(gurl));
+                });
 
         boolean useMagicStack = StartSurfaceConfiguration.useMagicStack();
         if (useMagicStack) {
@@ -1073,6 +1076,7 @@ public class NewTabPage
     @Override
     public void reload() {
         mFeedSurfaceProvider.reload();
+        mNewTabPageLayout.reload();
     }
 
     // InvalidationAwareThumbnailProvider
