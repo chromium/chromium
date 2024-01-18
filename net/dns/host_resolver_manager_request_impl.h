@@ -112,8 +112,6 @@ class HostResolverManager::RequestImpl
     return resolve_context_ ? resolve_context_->host_cache() : nullptr;
   }
 
-  HostResolverFlags host_resolver_flags() const { return host_resolver_flags_; }
-
   RequestPriority priority() const { return priority_; }
   void set_priority(RequestPriority priority) { priority_ = priority; }
 
@@ -157,7 +155,6 @@ class HostResolverManager::RequestImpl
   const NetworkAnonymizationKey network_anonymization_key_;
   ResolveHostParameters parameters_;
   base::WeakPtr<ResolveContext> resolve_context_;
-  const HostResolverFlags host_resolver_flags_;
 
   RequestPriority priority_;
 

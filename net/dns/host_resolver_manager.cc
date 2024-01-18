@@ -253,15 +253,6 @@ base::Value::Dict NetLogResults(const HostCache::Entry& results) {
   return dict;
 }
 
-// Returns empty string if `host` has no known scheme.
-base::StringPiece GetScheme(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host))
-    return absl::get<url::SchemeHostPort>(host).scheme();
-
-  return base::StringPiece();
-}
-
 std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
                                         DnsQueryTypeSet query_types) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
@@ -289,6 +280,21 @@ int GetPortForGloballyReachableCheck() {
     return 443;
   }
   return features::kAlternativePortForGloballyReachableCheck.Get();
+}
+
+// Only use scheme/port in JobKey if `https_svcb_options_enabled` is true
+// (or the query is explicitly for HTTPS). Otherwise DNS will not give different
+// results for the same hostname.
+absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
+    const HostResolver::Host& input,
+    DnsQueryType query_type,
+    bool https_svcb_options_enabled) {
+  if ((https_svcb_options_enabled || query_type == DnsQueryType::HTTPS) &&
+      input.HasScheme()) {
+    return input.AsSchemeHostPort();
+  }
+
+  return std::string(input.GetHostnameWithoutBrackets());
 }
 
 }  // namespace
@@ -685,6 +691,68 @@ bool HostResolverManager::IsLocalTask(TaskType task) {
     default:
       return false;
   }
+}
+
+void HostResolverManager::InitializeJobKeyAndIPAddress(
+    const HostResolver::Host& host,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    const ResolveHostParameters& parameters,
+    const NetLogWithSource& source_net_log,
+    JobKey& out_job_key,
+    IPAddress& out_ip_address) {
+  out_job_key.host = CreateHostForJobKey(host, parameters.dns_query_type,
+                                         https_svcb_options_.enable);
+  out_job_key.network_anonymization_key = network_anonymization_key;
+  out_job_key.source = parameters.source;
+
+  const bool is_ip = out_ip_address.AssignFromIPLiteral(
+      HostResolver::GetHostname(out_job_key.host));
+
+  out_job_key.secure_dns_mode =
+      GetEffectiveSecureDnsMode(parameters.secure_dns_policy);
+  out_job_key.flags = HostResolver::ParametersToHostResolverFlags(parameters) |
+                      additional_resolver_flags_;
+
+  if (parameters.dns_query_type != DnsQueryType::UNSPECIFIED) {
+    out_job_key.query_types = {parameters.dns_query_type};
+    return;
+  }
+
+  DnsQueryTypeSet effective_types = {DnsQueryType::A, DnsQueryType::AAAA};
+
+  // Disable AAAA queries when we cannot do anything with the results.
+  bool use_local_ipv6 = true;
+  if (dns_client_) {
+    const DnsConfig* config = dns_client_->GetEffectiveConfig();
+    if (config) {
+      use_local_ipv6 = config->use_local_ipv6;
+    }
+  }
+  // When resolving IPv4 literals, there's no need to probe for IPv6. When
+  // resolving IPv6 literals, there's no benefit to artificially limiting our
+  // resolution based on a probe. Prior logic ensures that this is an automatic
+  // query, so the code requesting the resolution should be amenable to
+  // receiving an IPv6 resolution.
+  if (!use_local_ipv6 && !is_ip && !last_ipv6_probe_result_ &&
+      !ipv6_reachability_override_) {
+    out_job_key.flags |= HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6;
+    effective_types.Remove(DnsQueryType::AAAA);
+  }
+
+  // Optimistically enable feature-controlled queries. These queries may be
+  // skipped at a later point.
+
+  // `https_svcb_options_.enable` has precedence, so if enabled, ignore any
+  // other related features.
+  if (https_svcb_options_.enable && host.HasScheme()) {
+    static const char* const kSchemesForHttpsQuery[] = {
+        url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
+    if (base::Contains(kSchemesForHttpsQuery, host.GetScheme())) {
+      effective_types.Put(DnsQueryType::HTTPS);
+    }
+  }
+
+  out_job_key.query_types = effective_types;
 }
 
 HostCache::Entry HostResolverManager::ResolveLocally(
@@ -1262,62 +1330,6 @@ void HostResolverManager::CreateTaskSequence(
     DCHECK(base::ranges::find(*out_tasks, TaskType::DNS) == out_tasks->end());
     DCHECK(base::ranges::find(*out_tasks, TaskType::MDNS) == out_tasks->end());
   }
-}
-
-void HostResolverManager::GetEffectiveParametersForRequest(
-    const absl::variant<url::SchemeHostPort, std::string>& host,
-    DnsQueryType dns_query_type,
-    HostResolverFlags flags,
-    SecureDnsPolicy secure_dns_policy,
-    bool is_ip,
-    const NetLogWithSource& net_log,
-    DnsQueryTypeSet* out_effective_types,
-    HostResolverFlags* out_effective_flags,
-    SecureDnsMode* out_effective_secure_dns_mode) {
-  const SecureDnsMode secure_dns_mode =
-      GetEffectiveSecureDnsMode(secure_dns_policy);
-
-  *out_effective_secure_dns_mode = secure_dns_mode;
-  *out_effective_flags = flags | additional_resolver_flags_;
-
-  if (dns_query_type != DnsQueryType::UNSPECIFIED) {
-    *out_effective_types = {dns_query_type};
-    return;
-  }
-
-  DnsQueryTypeSet effective_types = {DnsQueryType::A, DnsQueryType::AAAA};
-
-  // Disable AAAA queries when we cannot do anything with the results.
-  bool use_local_ipv6 = true;
-  if (dns_client_) {
-    const DnsConfig* config = dns_client_->GetEffectiveConfig();
-    if (config)
-      use_local_ipv6 = config->use_local_ipv6;
-  }
-  // When resolving IPv4 literals, there's no need to probe for IPv6. When
-  // resolving IPv6 literals, there's no benefit to artificially limiting our
-  // resolution based on a probe. Prior logic ensures that this is an automatic
-  // query, so the code requesting the resolution should be amenable to
-  // receiving an IPv6 resolution.
-  if (!use_local_ipv6 && !is_ip && !last_ipv6_probe_result_ &&
-      !ipv6_reachability_override_) {
-    *out_effective_flags |= HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6;
-    effective_types.Remove(DnsQueryType::AAAA);
-  }
-
-  // Optimistically enable feature-controlled queries. These queries may be
-  // skipped at a later point.
-
-  // `https_svcb_options_.enable` has precedence, so if enabled, ignore any
-  // other related features.
-  if (https_svcb_options_.enable) {
-    static const char* const kSchemesForHttpsQuery[] = {
-        url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
-    if (base::Contains(kSchemesForHttpsQuery, GetScheme(host)))
-      effective_types.Put(DnsQueryType::HTTPS);
-  }
-
-  *out_effective_types = effective_types;
 }
 
 namespace {

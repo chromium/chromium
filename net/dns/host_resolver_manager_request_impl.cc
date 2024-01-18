@@ -35,25 +35,6 @@
 
 namespace net {
 
-namespace {
-
-// Only use scheme/port in JobKey if `https_svcb_options_enabled` is true
-// (or the query is explicitly for HTTPS). Otherwise DNS will not give different
-// results for the same hostname.
-absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
-    const HostResolver::Host& input,
-    DnsQueryType query_type,
-    bool https_svcb_options_enabled) {
-  if ((https_svcb_options_enabled || query_type == DnsQueryType::HTTPS) &&
-      input.HasScheme()) {
-    return input.AsSchemeHostPort();
-  }
-
-  return std::string(input.GetHostnameWithoutBrackets());
-}
-
-}  // namespace
-
 HostResolverManager::RequestImpl::RequestImpl(
     NetLogWithSource source_net_log,
     HostResolver::Host request_host,
@@ -71,8 +52,6 @@ HostResolverManager::RequestImpl::RequestImpl(
       parameters_(optional_parameters ? std::move(optional_parameters).value()
                                       : ResolveHostParameters()),
       resolve_context_(std::move(resolve_context)),
-      host_resolver_flags_(
-          HostResolver::ParametersToHostResolverFlags(parameters_)),
       priority_(parameters_.initial_priority),
       job_key_(JobKey(resolve_context_.get())),
       resolver_(std::move(resolver)),
@@ -323,18 +302,9 @@ int HostResolverManager::RequestImpl::DoIPv6Reachability() {
 }
 
 int HostResolverManager::RequestImpl::DoGetParameters() {
-  job_key_.host = CreateHostForJobKey(request_host_, parameters_.dns_query_type,
-                                      resolver_->https_svcb_options_.enable);
-  job_key_.network_anonymization_key = network_anonymization_key_;
-  job_key_.source = parameters_.source;
-
-  bool is_ip =
-      ip_address_.AssignFromIPLiteral(HostResolver::GetHostname(job_key_.host));
-
-  resolver_->GetEffectiveParametersForRequest(
-      job_key_.host, parameters_.dns_query_type, host_resolver_flags_,
-      parameters_.secure_dns_policy, is_ip, source_net_log_,
-      &job_key_.query_types, &job_key_.flags, &job_key_.secure_dns_mode);
+  resolver_->InitializeJobKeyAndIPAddress(
+      request_host_, network_anonymization_key_, parameters_, source_net_log_,
+      job_key_, ip_address_);
 
   // A reachability probe to determine if the network is only reachable on
   // IPv6 will be scheduled if the parameters are met for using NAT64 in place

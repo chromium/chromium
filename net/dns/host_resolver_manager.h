@@ -300,6 +300,17 @@ class NET_EXPORT HostResolverManager
   // Returns true if the task is local, synchronous, and instantaneous.
   static bool IsLocalTask(TaskType task);
 
+  // Initializes a job key and an IP address using manager properties and IPv6
+  // reachability. These job key and IP address are used to call
+  // ResolveLocally() and CreateAndStartJob().
+  void InitializeJobKeyAndIPAddress(
+      const HostResolver::Host& host,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const ResolveHostParameters& parameters,
+      const NetLogWithSource& source_net_log,
+      JobKey& out_job_key,
+      IPAddress& out_ip_address);
+
   // Attempts host resolution using fast local sources: IP literal resolution,
   // cache lookup, HOSTS lookup (if enabled), and localhost. Returns results
   // with error() OK if successful, ERR_NAME_NOT_RESOLVED if input is invalid,
@@ -410,19 +421,6 @@ class NET_EXPORT HostResolverManager
                           ResolveHostParameters::CacheUsage cache_usage,
                           SecureDnsPolicy secure_dns_policy,
                           std::deque<TaskType>* out_tasks);
-
-  // Determines "effective" request parameters using manager properties and IPv6
-  // reachability.
-  void GetEffectiveParametersForRequest(
-      const absl::variant<url::SchemeHostPort, std::string>& host,
-      DnsQueryType dns_query_type,
-      HostResolverFlags flags,
-      SecureDnsPolicy secure_dns_policy,
-      bool is_ip,
-      const NetLogWithSource& net_log,
-      DnsQueryTypeSet* out_effective_types,
-      HostResolverFlags* out_effective_flags,
-      SecureDnsMode* out_effective_secure_dns_mode);
 
   // Schedules probes to check IPv6 support. Returns OK if probe results are
   // already cached, and ERR_IO_PENDING when a probe is scheduled to be
