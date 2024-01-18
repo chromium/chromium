@@ -92,7 +92,7 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
       break;
     case WorldType::kIsolated:
     case WorldType::kInspectorIsolated:
-    case WorldType::kRegExp:
+    case WorldType::kBlinkInternalNonJSExposed:
     case WorldType::kForV8ContextSnapshotNonMain:
     case WorldType::kWorker:
     case WorldType::kShadowRealm: {
@@ -278,7 +278,7 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
         return WorldId::kInvalidWorldId;
       return next_devtools_isolated_world_id++;
     }
-    case WorldType::kRegExp:
+    case WorldType::kBlinkInternalNonJSExposed:
     case WorldType::kForV8ContextSnapshotNonMain:
     case WorldType::kWorker:
     case WorldType::kShadowRealm: {

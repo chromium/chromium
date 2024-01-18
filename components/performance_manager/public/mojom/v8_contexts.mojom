@@ -36,10 +36,11 @@ enum V8ContextWorldType {
   // Corresponds to the devtools inspector. Will not have a human readable
   // name or a stable id.
   kInspector,
-  // Corresponds to the regexp world. This world is unique in that it is per
-  // v8::Isolate, and not associated with any individual execution context.
-  // Will not have a human-readable name or stable id.
-  kRegExp,
+  // Corresponds to the blink internal utility world, which is not exposed to
+  // JavaScript. This world is unique in that it is per v8::Isolate, and not
+  // associated with any individual execution context. Will not have a
+  // human-readable name or stable id.
+  kBlinkInternalNonJSExposed,
 };
 
 // Information describing a V8 Context. A context is a unit of accounting for
@@ -54,6 +55,7 @@ struct V8ContextDescription {
   // isolated worlds this is a human-readable description.
   string? world_name;
   // The identity of the execution context that this V8Context is associated
-  // with. This is specified for all world types, except kRegExp worlds.
+  // with. This is specified for all world types, except
+  // kBlinkInternalNonJSExposed worlds.
   blink.mojom.ExecutionContextToken? execution_context_token;
 };

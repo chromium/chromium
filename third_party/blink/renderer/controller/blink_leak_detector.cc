@@ -66,14 +66,14 @@ void BlinkLeakDetector::PerformLeakDetection(
         // non-empty string creates a static ScriptRegexp value which holds a
         // V8PerContextData indirectly. This affects the number of
         // V8PerContextData. To ensure that context data is created, call
-        // ensureScriptRegexpContext here.
-        V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
+        // EnsureScriptRegexpScriptState here.
+        V8PerIsolateData::From(isolate)->EnsureScriptRegexpScriptState();
 
         MemoryCache::Get()->EvictResources();
 
         // FIXME: HTML5 Notification should be closed because notification
         // affects the result of number of DOM objects.
-        V8PerIsolateData::From(isolate)->ClearScriptRegexpContext();
+        V8PerIsolateData::From(isolate)->ClearUtilityScriptState();
       }));
 
   // Clear lazily loaded style sheets.

@@ -670,8 +670,8 @@ WorldType GetWorldType(const ExecutionContext& execution_context) {
       return WorldType::WORLD_ISOLATED;
     case DOMWrapperWorld::WorldType::kInspectorIsolated:
       return WorldType::WORLD_INSPECTOR_ISOLATED;
-    case DOMWrapperWorld::WorldType::kRegExp:
-      return WorldType::WORLD_REG_EXP;
+    case DOMWrapperWorld::WorldType::kBlinkInternalNonJSExposed:
+      return WorldType::WORLD_BLINK_INTERNAL_NON_JS_EXPOSED;
     case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain:
       return WorldType::WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN;
     case DOMWrapperWorld::WorldType::kWorker:

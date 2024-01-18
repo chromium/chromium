@@ -86,7 +86,7 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kMain,
     kIsolated,
     kInspectorIsolated,
-    kRegExp,
+    kBlinkInternalNonJSExposed,
     kForV8ContextSnapshotNonMain,
     kWorker,
     // Shadow realms do not have a corresponding Frame nor DOMWindow so they're
