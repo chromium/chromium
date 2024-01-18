@@ -7,7 +7,9 @@
 #include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/render_message_filter.mojom.h"
+#include "base/feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
@@ -253,6 +255,16 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       base::BindRepeating(create_spellcheck_host),
       content::GetUIThreadTaskRunner({}));
 #endif
+}
+
+void AwContentBrowserClient::
+    RegisterMojoBinderPoliciesForSameOriginPrerendering(
+        content::MojoBinderPolicyMap& policy_map) {
+  if (!base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+    return;
+  }
+  policy_map.SetAssociatedPolicy<page_load_metrics::mojom::PageLoadMetrics>(
+      content::MojoBinderAssociatedPolicy::kGrant);
 }
 
 }  // namespace android_webview
