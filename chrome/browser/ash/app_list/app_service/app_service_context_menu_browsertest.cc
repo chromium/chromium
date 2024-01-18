@@ -18,15 +18,22 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 #include "url/gurl.h"
 
-class AppServiceContextMenuBrowserTest : public InProcessBrowserTest {
+class AppServiceContextMenuBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  AppServiceContextMenuBrowserTest() = default;
+  AppServiceContextMenuBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        chromeos::features::kCrosShortstand, GetParam());
+  }
+
   ~AppServiceContextMenuBrowserTest() override = default;
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
@@ -37,10 +44,19 @@ class AppServiceContextMenuBrowserTest : public InProcessBrowserTest {
     else
       return views::kLaunchIcon;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppServiceContextMenuBrowserTest,
+IN_PROC_BROWSER_TEST_P(AppServiceContextMenuBrowserTest,
                        LaunchNewMenuItemDynamicallyChanges) {
+  // When Shortstand is enabled, the display mode can no longer be changed
+  // through the context menu. The submenu is replaced with a 'New Window'
+  // command.
+  if (AppServiceContextMenuBrowserTest::GetParam()) {
+    GTEST_SKIP();
+  }
   Profile* profile = browser()->profile();
   auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = GURL("https://example.org");
@@ -92,3 +108,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceContextMenuBrowserTest,
                   launch_new_submodel->GetCommandIdAt(launch_new_item_index)));
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppServiceContextMenuBrowserTest,
+                         ::testing::Bool());
