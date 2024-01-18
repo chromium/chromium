@@ -408,7 +408,7 @@
   {
     "name": "ash-capture-mode-gif-recording",
     "owners": [ "afakhry@chromium.org", "gzadina@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 133
   },
   {
     "name": "ash-debug-shortcuts",
