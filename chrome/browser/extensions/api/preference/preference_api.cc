@@ -229,6 +229,35 @@ bool StringToScope(const std::string& s, ChromeSettingScope& scope) {
   return scope != ChromeSettingScope::kNone;
 }
 
+bool RegisterTransformers(PrefMapping* pref_mapping) {
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kCookieControlsMode,
+      std::make_unique<CookieControlsModeTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      proxy_config::prefs::kProxy, std::make_unique<ProxyPrefTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefetch::prefs::kNetworkPredictionOptions,
+      std::make_unique<NetworkPredictionTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kProtectedContentDefault,
+      std::make_unique<ProtectedContentEnabledTransformer>());
+
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1TopicsEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1FledgeEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+
+  return true;
+}
+
 }  // namespace
 
 PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
@@ -463,39 +492,9 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
   PrefMapping* pref_mapping = PrefMapping::GetInstance();
 
-  // TODO(dbertoni): Only register the transformers once. We need a better
-  // place to do this and to only do it once. This will allow getting rid of
-  // the HasPrefTransformer API. Also, the ProxyPrefTransformer needs to be
-  // registered in somewhere else. This will happen in a follow-on CL.
-  if (!pref_mapping->HasPrefTransformer(prefs::kCookieControlsMode)) {
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kCookieControlsMode,
-        std::make_unique<CookieControlsModeTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        proxy_config::prefs::kProxy, std::make_unique<ProxyPrefTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefetch::prefs::kNetworkPredictionOptions,
-        std::make_unique<NetworkPredictionTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kProtectedContentDefault,
-        std::make_unique<ProtectedContentEnabledTransformer>());
-  }
-
-  if (!pref_mapping->HasPrefTransformer(
-          prefs::kPrivacySandboxM1TopicsEnabled)) {
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxM1TopicsEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxM1FledgeEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxM1AdMeasurementEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-    pref_mapping->RegisterPrefTransformer(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-        std::make_unique<PrivacySandboxTransformer>());
-  }
+  // This serves to ensure we only register transformers once.
+  static bool transformers_registered = RegisterTransformers(pref_mapping);
+  CHECK(transformers_registered);
 
   for (const auto& pref : PrefMapping::GetMappings()) {
     std::string event_name;
@@ -507,7 +506,7 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On lacros, ensure the PreferenceEventRouter is always created to watch for
-  // and notify of any pref changes, even if there's no extension listeners.
+  // and notify of any pref changes, even if there are no extension listeners.
   // TODO(crbug.com/1334829): Abstract out lacros logic from the
   // PreferenceEventRouter so we don't needlessly dispatch extension events.
   EnsurePreferenceEventRouterCreated();
