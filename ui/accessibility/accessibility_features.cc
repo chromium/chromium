@@ -234,7 +234,7 @@ bool IsAccessibilityMagnifierFollowsStsEnabled() {
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAccessibilityPerformanceFiltering,
              "AccessibilityPerformanceFiltering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityPerformanceFilteringEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityPerformanceFiltering);
