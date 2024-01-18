@@ -320,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
   RunSettingsTest("device_page/graphics_tablet_subpage_test.js");
 }
 
-class OSSettingsDeviceTestSplitEnabled : public OSSettingsMochaTest {
+class OSSettingsMochaTestSplitEnabled : public OSSettingsMochaTest {
  protected:
-  OSSettingsDeviceTestSplitEnabled() {
+  OSSettingsMochaTestSplitEnabled() {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kInputDeviceSettingsSplit);
   }
@@ -331,7 +331,7 @@ class OSSettingsDeviceTestSplitEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePageInputDeviceMojoInterfaceProvider) {
   RunSettingsTest("device_page/input_device_mojo_interface_provider_test.js");
 }
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralEnabledSplitDisabled,
   RunSettingsTest("device_page/keyboard_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePageKeyboardSixPackKeyRow) {
   RunSettingsTest("device_page/keyboard_six_pack_key_row_test.js");
 }
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestAltClickAndSplitEnabled,
   RunSettingsTest("device_page/per_device_keyboard_subsection_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePagePerDeviceMouse) {
   RunSettingsTest("device_page/per_device_mouse_test.js");
 }
@@ -449,22 +449,22 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
   RunSettingsTest("device_page/per_device_mouse_subsection_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePagePerDevicePointingStick) {
   RunSettingsTest("device_page/per_device_pointing_stick_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePagePerDevicePointingStickSubsection) {
   RunSettingsTest("device_page/per_device_pointing_stick_subsection_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePagePerDeviceTouchpad) {
   RunSettingsTest("device_page/per_device_touchpad_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestSplitEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
                        DevicePagePerDeviceTouchpadSubsection) {
   RunSettingsTest("device_page/per_device_touchpad_subsection_test.js");
 }
@@ -1037,6 +1037,63 @@ IN_PROC_BROWSER_TEST_F(
   RunSettingsTest(
       "os_apps_page/manage_isolated_web_apps_page/"
       "manage_isolated_web_apps_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsBluetoothPage) {
+  RunSettingsTest("os_bluetooth_page/os_bluetooth_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsBluetoothChangeDeviceNameDialog) {
+  RunSettingsTest(
+      "os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestSplitEnabled,
+                       OsBluetoothPageOsBluetoothDeviceDetailSubpage) {
+  RunSettingsTest(
+      "os_bluetooth_page/os_bluetooth_device_detail_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsBluetoothDevicesSubpage) {
+  RunSettingsTest("os_bluetooth_page/os_bluetooth_devices_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsBluetoothPairingDialog) {
+  RunSettingsTest("os_bluetooth_page/os_bluetooth_pairing_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsBluetoothSavedDevicesList) {
+  RunSettingsTest("os_bluetooth_page/os_saved_devices_list_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsBluetoothSavedDevicesSubpage) {
+  RunSettingsTest(
+      "os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsBluetoothPageOsBluetoothSummary) {
+  RunSettingsTest("os_bluetooth_page/os_bluetooth_summary_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsBluetoothTrueWirelessImages) {
+  RunSettingsTest(
+      "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsPairedBluetoothList) {
+  RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsBluetoothPageOsPairedBluetoothListItem) {
+  RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_item_test.js");
 }
 
 }  // namespace ash::settings

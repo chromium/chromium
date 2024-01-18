@@ -97,48 +97,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
      ]
    }
  ],
- ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_test.js'],
- [
-   'OsBluetoothPageOsBluetoothChangeDeviceNameDialog',
-   'os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.js',
- ],
- [
-   'OsBluetoothPageOsBluetoothDeviceDetailSubpage',
-   'os_bluetooth_page/os_bluetooth_device_detail_subpage_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
- ],
- [
-   'OsBluetoothPageOsBluetoothDevicesSubpage',
-   'os_bluetooth_page/os_bluetooth_devices_subpage_test.js'
- ],
- [
-   'OsBluetoothPageOsBluetoothPairingDialog',
-   'os_bluetooth_page/os_bluetooth_pairing_dialog_test.js'
- ],
- [
-   'OsBluetoothPageOsBluetoothSavedDevicesList',
-   'os_bluetooth_page/os_saved_devices_list_test.js'
- ],
- [
-   'OsBluetoothPageOsBluetoothSavedDevicesSubpage',
-   'os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.js'
- ],
- [
-   'OsBluetoothPageOsBluetoothSummary',
-   'os_bluetooth_page/os_bluetooth_summary_test.js'
- ],
- [
-   'OsBluetoothPageOsBluetoothTrueWirelessImages',
-   'os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js',
- ],
- [
-   'OsBluetoothPageOsPairedBluetoothList',
-   'os_bluetooth_page/os_paired_bluetooth_list_test.js'
- ],
- [
-   'OsBluetoothPageOsPairedBluetoothListItem',
-   'os_bluetooth_page/os_paired_bluetooth_list_item_test.js'
- ],
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  [
    'OsFilesPageFilesSettingsCard',
