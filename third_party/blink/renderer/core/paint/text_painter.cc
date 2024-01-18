@@ -113,8 +113,60 @@ const ComputedStyle& GetSvgStyleToPaint(
   return *style_to_paint;
 }
 
+void PrepareStrokeGeometry(const TextPainter::SvgTextPaintState& state,
+                           const ComputedStyle& style,
+                           const LayoutObject& layout_parent,
+                           SvgPaintMode svg_paint_mode,
+                           cc::PaintFlags& flags) {
+  float stroke_scale_factor = 1;
+  // The stroke geometry needs be generated based on the scaled font.
+  if (style.VectorEffect() != EVectorEffect::kNonScalingStroke) {
+    switch (svg_paint_mode) {
+      case SvgPaintMode::kText:
+        stroke_scale_factor = state.InlineText().ScalingFactor();
+        break;
+      case SvgPaintMode::kTextDecoration: {
+        Font scaled_font;
+        LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+            layout_parent, stroke_scale_factor, scaled_font);
+        DCHECK(stroke_scale_factor);
+        break;
+      }
+    }
+  }
+
+  StrokeData stroke_data;
+  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
+      stroke_data, style, layout_parent, stroke_scale_factor);
+  if (stroke_scale_factor != 1) {
+    stroke_data.SetThickness(stroke_data.Thickness() * stroke_scale_factor);
+  }
+  stroke_data.SetupPaint(&flags);
+}
+
+const ShadowList* GetTextShadows(const ComputedStyle& style,
+                                 const LayoutObject& layout_parent) {
+  // Text shadows are disabled when printing. http://crbug.com/258321
+  if (layout_parent.GetDocument().Printing()) {
+    return nullptr;
+  }
+  return style.TextShadow();
+}
+
+void PrepareTextShadow(const ComputedStyle& style,
+                       const LayoutObject& layout_parent,
+                       cc::PaintFlags& flags) {
+  const ShadowList* text_shadows = GetTextShadows(style, layout_parent);
+  if (!text_shadows) {
+    return;
+  }
+  flags.setLooper(TextPainterBase::CreateDrawLooper(
+      text_shadows, DrawLooperBuilder::kShadowRespectsAlpha,
+      style.VisitedDependentColor(GetCSSPropertyColor()),
+      style.UsedColorScheme(), TextPainterBase::kBothShadowsAndTextProper));
+}
+
 bool SetupPaintForSvgText(const TextPainter::SvgTextPaintState& state,
-                          const GraphicsContext& context,
                           const ComputedStyle& style,
                           SvgPaintMode svg_paint_mode,
                           LayoutSVGResourceMode resource_mode,
@@ -130,45 +182,14 @@ bool SetupPaintForSvgText(const TextPainter::SvgTextPaintState& state,
 
   flags.setAntiAlias(true);
 
-  if (style.TextShadow() &&
-      // Text shadows are disabled for clip-paths, because they are not
-      // geometry.
-      !state.IsRenderingClipPathAsMaskImage() &&
-      // Text shadows are disabled when printing. http://crbug.com/258321
-      !layout_parent.GetDocument().Printing()) {
-    flags.setLooper(TextPainterBase::CreateDrawLooper(
-        style.TextShadow(), DrawLooperBuilder::kShadowRespectsAlpha,
-        style.VisitedDependentColor(GetCSSPropertyColor()),
-        style.UsedColorScheme()));
+  // Text shadows are disabled for clip-paths, because they are not geometry.
+  if (!state.IsRenderingClipPathAsMaskImage()) {
+    PrepareTextShadow(style, layout_parent, flags);
   }
 
   if (resource_mode == kApplyToStrokeMode) {
-    // The stroke geometry needs be generated based on the scaled font.
-    float stroke_scale_factor = 1;
-    if (style.VectorEffect() != EVectorEffect::kNonScalingStroke) {
-      switch (svg_paint_mode) {
-        case SvgPaintMode::kText: {
-          stroke_scale_factor = state.InlineText().ScalingFactor();
-          break;
-        }
-        case SvgPaintMode::kTextDecoration: {
-          Font scaled_font;
-          LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-              layout_parent, stroke_scale_factor, scaled_font);
-          DCHECK(stroke_scale_factor);
-          break;
-        }
-      }
-    }
-
-    StrokeData stroke_data;
-    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-        stroke_data, style, layout_parent, stroke_scale_factor);
-    if (stroke_scale_factor != 1)
-      stroke_data.SetThickness(stroke_data.Thickness() * stroke_scale_factor);
-    stroke_data.SetupPaint(&flags);
+    PrepareStrokeGeometry(state, style, layout_parent, svg_paint_mode, flags);
   }
-
   return true;
 }
 
@@ -388,9 +409,8 @@ void TextPainter::PaintSvgTextFragment(
 
     cc::PaintFlags stroke_flags;
     bool should_paint_stroke = false;
-    if (SetupPaintForSvgText(state, graphics_context_, state.Style(),
-                             SvgPaintMode::kText, kApplyToStrokeMode,
-                             stroke_flags)) {
+    if (SetupPaintForSvgText(state, state.Style(), SvgPaintMode::kText,
+                             kApplyToStrokeMode, stroke_flags)) {
       should_paint_stroke = true;
       stroke_flags.setLooper(nullptr);
       stroke_flags.setColor(state.TextMatchColor().Rgb());
@@ -436,8 +456,8 @@ void TextPainter::PaintSvgTextFragment(
 
     if (resource_mode) {
       cc::PaintFlags flags;
-      if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
-                               SvgPaintMode::kText, *resource_mode, flags)) {
+      if (SetupPaintForSvgText(state, style_to_paint, SvgPaintMode::kText,
+                               *resource_mode, flags)) {
         graphics_context_.DrawText(font_, fragment_paint_info,
                                    gfx::PointF(text_origin_), flags, node_id,
                                    auto_dark_mode);
@@ -483,7 +503,7 @@ void TextPainter::PaintSvgDecorationsExceptLineThrough(
 
     if (resource_mode) {
       cc::PaintFlags flags;
-      if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
+      if (SetupPaintForSvgText(state, style_to_paint,
                                SvgPaintMode::kTextDecoration, *resource_mode,
                                flags)) {
         TextPainterBase::PaintUnderOrOverLineDecorations(
@@ -528,7 +548,7 @@ void TextPainter::PaintSvgDecorationsOnlyLineThrough(
 
     if (resource_mode) {
       cc::PaintFlags flags;
-      if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
+      if (SetupPaintForSvgText(state, style_to_paint,
                                SvgPaintMode::kTextDecoration, *resource_mode,
                                flags)) {
         TextPainterBase::PaintDecorationsOnlyLineThrough(decoration_info,
