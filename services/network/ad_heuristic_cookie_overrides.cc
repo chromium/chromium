@@ -22,7 +22,8 @@ enum class AdsHeuristicCookieOverride {
   kSkipHeuristics = 3,
   kSkipMetadata = 4,
   kSkipTrial = 5,
-  kMaxValue = kSkipTrial
+  kSkipTopLevelTrial = 6,
+  kMaxValue = kSkipTopLevelTrial
 };
 
 void LogCookieOverrideHistogram(AdsHeuristicCookieOverride override) {
@@ -61,6 +62,12 @@ void AddAdsHeuristicCookieSettingOverrides(
   if (features::kSkipTpcdMitigationsForAdsTrial.Get()) {
     LogCookieOverrideHistogram(AdsHeuristicCookieOverride::kSkipTrial);
     overrides.Put(net::CookieSettingOverride::kSkipTPCDTrial);
+    has_override = true;
+  }
+
+  if (features::kSkipTpcdMitigationsForAdsTopLevelTrial.Get()) {
+    LogCookieOverrideHistogram(AdsHeuristicCookieOverride::kSkipTopLevelTrial);
+    overrides.Put(net::CookieSettingOverride::kSkipTopLevelTPCDTrial);
     has_override = true;
   }
 

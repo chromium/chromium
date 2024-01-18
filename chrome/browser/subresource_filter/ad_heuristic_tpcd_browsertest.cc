@@ -43,6 +43,7 @@
 #include "components/tpcd/metadata/parser_test_helper.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -70,7 +71,8 @@ enum class AdsHeuristicCookieOverride {
   kSkipHeuristics = 3,
   kSkipMetadata = 4,
   kSkipTrial = 5,
-  kMaxValue = kSkipTrial
+  kSkipTopLevelTrial = 6,
+  kMaxValue = kSkipTopLevelTrial
 };
 
 const char kAdHeuristicOverrideHistogramName[] =
@@ -189,6 +191,33 @@ class AdHeuristicTPCDBrowserTestBase
               ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
+  void SetTopLevelTrialGrant(const GURL& third_party_url,
+                             const GURL& first_party_url) {
+    // Only |first_party_url| is used when creating the top-level tpcd support
+    // setting, since the settings are only scoped to the top-level site
+    // involved in the cookie access and therefore only use their
+    // |primary_site_pattern| field.
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    settings_map->SetContentSettingDefaultScope(
+        first_party_url, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
+        CONTENT_SETTING_ALLOW);
+
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->SetContentSettings(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
+                             settings_map->GetSettingsForOneType(
+                                 ContentSettingsType::TOP_LEVEL_TPCD_TRIAL),
+                             base::NullCallback());
+
+    EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())
+                  ->GetCookieSetting(third_party_url, first_party_url,
+                                     net::CookieSettingOverrides()),
+              ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
   void Verify3PCookieAccessAllowed(
       net::test_server::ControllableHttpResponse* register_response) {
     // 3p cookie read
@@ -213,7 +242,8 @@ class AdHeuristicTPCDBrowserTestBase
       net::test_server::ControllableHttpResponse* register_response2,
       int metadata_count,
       int heuristics_count,
-      int trial_count) {
+      int support_count,
+      int top_level_support_count) {
     content::CookieChangeObserver observer(web_contents());
     FetchCookies("b.test", "/set-cookie?thirdparty=1;SameSite=None;Secure");
     observer.Wait();
@@ -247,7 +277,11 @@ class AdHeuristicTPCDBrowserTestBase
         AdsHeuristicCookieOverride::kSkipHeuristics, heuristics_count);
     histogram_tester.ExpectBucketCount(kAdHeuristicOverrideHistogramName,
                                        AdsHeuristicCookieOverride::kSkipTrial,
-                                       trial_count);
+                                       support_count);
+    histogram_tester.ExpectBucketCount(
+        kAdHeuristicOverrideHistogramName,
+        AdsHeuristicCookieOverride::kSkipTopLevelTrial,
+        top_level_support_count);
 
     // Check JS access.
     NavigateFrameTo("b.test", "/empty.html");
@@ -274,7 +308,8 @@ class AdHeuristicTPCDBrowserTestMetadataGrant
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsMetadata", "false"},
            {"SkipTpcdMitigationsForAdsHeuristics", "true"},
-           {"SkipTpcdMitigationsForAdsSupport", "true"}}}},
+           {"SkipTpcdMitigationsForAdsSupport", "true"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "true"}}}},
         {});
   }
 
@@ -307,7 +342,8 @@ class AdHeuristicTPCDBrowserTestSkipMetadata
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsMetadata", "true"},
            {"SkipTpcdMitigationsForAdsHeuristics", "false"},
-           {"SkipTpcdMitigationsForAdsSupport", "false"}}}},
+           {"SkipTpcdMitigationsForAdsSupport", "false"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "false"}}}},
         {});
   }
 
@@ -333,7 +369,8 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipMetadata, CookieBlocked) {
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/1, /*heuristics_count=*/0,
-                              /*trial_count=*/0);
+                              /*support_count=*/0,
+                              /*top_level_support_count=*/0);
 }
 
 class AdHeuristicTPCDBrowserTestHeuristicsGrant
@@ -348,7 +385,8 @@ class AdHeuristicTPCDBrowserTestHeuristicsGrant
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsHeuristics", "false"},
            {"SkipTpcdMitigationsForAdsMetadata", "true"},
-           {"SkipTpcdMitigationsForAdsSupport", "true"}}}},
+           {"SkipTpcdMitigationsForAdsSupport", "true"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "true"}}}},
         {});
   }
 
@@ -385,7 +423,8 @@ class AdHeuristicTPCDBrowserTestSkipHeuristicsGrant
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsHeuristics", "true"},
            {"SkipTpcdMitigationsForAdsMetadata", "false"},
-           {"SkipTpcdMitigationsForAdsSupport", "false"}}}},
+           {"SkipTpcdMitigationsForAdsSupport", "false"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "false"}}}},
         {});
   }
 
@@ -418,7 +457,8 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipHeuristicsGrant,
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/0, /*heuristics_count=*/1,
-                              /*trial_count=*/0);
+                              /*support_count=*/0,
+                              /*top_level_support_count=*/0);
 }
 
 class AdHeuristicTPCDBrowserTestTrialGrant
@@ -431,6 +471,7 @@ class AdHeuristicTPCDBrowserTestTrialGrant
          {content_settings::features::kTrackingProtection3pcd, {}},
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsSupport", "false"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "true"},
            {"SkipTpcdMitigationsForAdsMetadata", "true"},
            {"SkipTpcdMitigationsForAdsHeuristics", "true"}}}},
         {});
@@ -470,6 +511,7 @@ class AdHeuristicTPCDBrowserTestSkipTrialGrant
          {content_settings::features::kTrackingProtection3pcd, {}},
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsSupport", "true"},
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "false"},
            {"SkipTpcdMitigationsForAdsMetadata", "false"},
            {"SkipTpcdMitigationsForAdsHeuristics", "false"}}}},
         {});
@@ -502,5 +544,86 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipTrialGrant,
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/0, /*heuristics_count=*/0,
-                              /*trial_count=*/1);
+                              /*support_count=*/1,
+                              /*top_level_support_count=*/0);
+}
+
+class AdHeuristicTPCDBrowserTestTopLevelTrialGrant
+    : public AdHeuristicTPCDBrowserTestBase {
+ public:
+  AdHeuristicTPCDBrowserTestTopLevelTrialGrant() {
+    // Experiment feature param requests 3PCs blocked.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kTopLevelTpcdTrialSettings, {}},
+         {content_settings::features::kTrackingProtection3pcd, {}},
+         {network::features::kSkipTpcdMitigationsForAds,
+          {{"SkipTpcdMitigationsForAdsTopLevelTrial", "false"},
+           {"SkipTpcdMitigationsForAdsSupport", "true"},
+           {"SkipTpcdMitigationsForAdsMetadata", "true"},
+           {"SkipTpcdMitigationsForAdsHeuristics", "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestTopLevelTrialGrant,
+                       CookieAllowed) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/empty.html?isad=1");
+
+  ASSERT_TRUE(https_server()->Start());
+
+  NavigateToPageWithFrame("a.test");
+
+  GURL third_party_url = https_server()->GetURL("b.test", "/");
+  GURL first_party_url = https_server()->GetURL("a.test", "/");
+  SetTopLevelTrialGrant(third_party_url, first_party_url);
+
+  Verify3PCookieAccessAllowed(register_response.get());
+}
+
+class AdHeuristicTPCDBrowserTestSkipTopLevelTrialGrant
+    : public AdHeuristicTPCDBrowserTestBase {
+ public:
+  AdHeuristicTPCDBrowserTestSkipTopLevelTrialGrant() {
+    // Experiment feature param requests 3PCs blocked.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kTopLevelTpcdTrialSettings, {}},
+         {content_settings::features::kTrackingProtection3pcd, {}},
+         {network::features::kSkipTpcdMitigationsForAds,
+          {{"SkipTpcdMitigationsForAdsTopLevelTrial", "true"},
+           {"SkipTpcdMitigationsForAdsSupport", "false"},
+           {"SkipTpcdMitigationsForAdsMetadata", "false"},
+           {"SkipTpcdMitigationsForAdsHeuristics", "false"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipTopLevelTrialGrant,
+                       CookieBlocked) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/empty.html?isad=1");
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/empty.html");
+
+  ASSERT_TRUE(https_server()->Start());
+
+  NavigateToPageWithFrame("a.test");
+
+  GURL third_party_url = https_server()->GetURL("b.test", "/");
+  GURL first_party_url = https_server()->GetURL("a.test", "/");
+  SetTopLevelTrialGrant(third_party_url, first_party_url);
+
+  VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
+                              /*metadata_count=*/0, /*heuristics_count=*/0,
+                              /*support_count=*/0,
+                              /*top_level_support_count=*/1);
 }
