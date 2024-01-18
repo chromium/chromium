@@ -39,7 +39,7 @@ constexpr float kIntersectionRatioThreshold = 0.5f;
 bool ShouldHaveAnchorElementMetricsSender(Document& document) {
   bool is_feature_enabled =
       base::FeatureList::IsEnabled(features::kNavigationPredictor);
-  const KURL& url = document.BaseURL();
+  const KURL& url = document.Url();
   return is_feature_enabled && document.IsInOutermostMainFrame() &&
          url.IsValid() && url.ProtocolIsInHTTPFamily() &&
          document.GetExecutionContext() &&
@@ -116,7 +116,7 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
   Document* top_document = GetTopDocument(anchor_element);
   if (!anchor_element.Href().ProtocolIsInHTTPFamily() || !top_document ||
       !top_document->Url().ProtocolIsInHTTPFamily() ||
-      !anchor_element.GetDocument().BaseURL().ProtocolIsInHTTPFamily()) {
+      !anchor_element.GetDocument().Url().ProtocolIsInHTTPFamily()) {
     return;
   }
   if (!AssociateInterface()) {
