@@ -29,6 +29,7 @@ js_type_check("closure_compile_local") {
     ":consolidated_consent",
     ":error_message",
     ":guest_tos",
+    ":install_attributes_error",
     ":offline_ad_login",
     ":quick_start",
     ":recommend_apps",
@@ -180,6 +181,17 @@ js_library("signin_fatal_error") {
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("install_attributes_error") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/install_attributes_error.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

@@ -557,6 +557,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.ERROR,
     },
     {
+      id: 'install-attributes-error-message',
+      kind: ScreenKind.ERROR,
+    },
+    {
       id: 'signin-fatal-error',
       kind: ScreenKind.ERROR,
       states: [

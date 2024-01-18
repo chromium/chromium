@@ -1968,6 +1968,8 @@ source_set("ash") {
     "nonclosable_app_ui_utils.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
+    "login/screens/install_attributes_error_screen.cc",
+    "login/screens/install_attributes_error_screen.h",
     "login/screens/placeholder_screen.cc",
     "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",

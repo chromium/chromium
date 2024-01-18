@@ -3790,6 +3790,17 @@
     To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>
   </message>
 
+  <!-- Device health display strings-->
+  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_TITLE" desc="Title of the screen notifying user about install attributes error.">
+    Something went wrong with setting up the device
+  </message>
+  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESTART" desc="Suggestion to restart the device in case of the install attributes error.">
+    The device encountered an error. Please restart your device and try again.
+  </message>
+  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESET" desc="Suggestion to reset the device in case of the install attributes error.">
+    The device encountered an unrecoverable error. Please reset your device (it will erase all user data) and try again.
+  </message>
+
   <!-- Set time/date UI display strings -->
   <message name="IDS_SET_TIME_TITLE" desc="Title of the set time/date UI.">
     Check your system time

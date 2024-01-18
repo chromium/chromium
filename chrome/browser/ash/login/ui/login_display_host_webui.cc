@@ -68,11 +68,11 @@
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -210,8 +210,8 @@ void MaybeShowInstallAttributesCorruptedScreen() {
       !InstallAttributes::Get()->IsDeviceLocked()) {
     LOG(ERROR) << "Corrupted install attributes, showing the TPM error";
     base::UmaHistogramBoolean(kValidInstallAttributesHistogram, false);
-    // TODO(b/314268843): Create a separate screen for this error.
-    LoginDisplayHost::default_host()->StartWizard(TpmErrorView::kScreenId);
+    LoginDisplayHost::default_host()->StartWizard(
+        InstallAttributesErrorView::kScreenId);
   } else {
     base::UmaHistogramBoolean(kValidInstallAttributesHistogram, true);
   }

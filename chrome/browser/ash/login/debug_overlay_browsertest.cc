@@ -21,7 +21,7 @@ constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kCommonScreensCount = 47;
+constexpr int kCommonScreensCount = 48;
 constexpr int kOobeOnlyScreensCount = 10;
 constexpr int kLoginOnlyScreensCount = 7;
 

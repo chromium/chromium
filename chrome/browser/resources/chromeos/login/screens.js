@@ -25,6 +25,7 @@ import './screens/common/gaia_signin.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
 import './screens/common/hw_data_collection.js';
+import './screens/common/install_attributes_error.js';
 import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
@@ -188,6 +189,10 @@ export const commonScreensList = [
     condition: 'isTouchpadScrollEnabled',
   },
   {tag: 'tpm-error-message-element', id: 'tpm-error-message'},
+  {
+    tag: 'install-attributes-error-message-element',
+    id: 'install-attributes-error-message',
+  },
   {
     tag: 'user-allowlist-check-screen-element',
     id: 'user-allowlist-check-screen',

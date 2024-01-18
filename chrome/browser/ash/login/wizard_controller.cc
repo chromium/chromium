@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
+#include "chrome/browser/ash/login/screens/install_attributes_error_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
@@ -175,6 +176,7 @@
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
@@ -307,6 +309,7 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     KioskEnableScreenView::kScreenId,
     ManagementTransitionScreenView::kScreenId,
     TpmErrorView::kScreenId,
+    InstallAttributesErrorView::kScreenId,
     WrongHWIDScreenView::kScreenId,
     LocalStateErrorScreenView::kScreenId,
 };
@@ -789,6 +792,9 @@ WizardController::CreateScreens() {
 
   append(std::make_unique<TpmErrorScreen>(
       oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
+
+  append(std::make_unique<InstallAttributesErrorScreen>(
+      oobe_ui->GetView<InstallAttributesErrorScreenHandler>()->AsWeakPtr()));
 
   append(std::make_unique<GaiaPasswordChangedScreen>(
       base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
@@ -3052,6 +3058,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
   } else if (screen_id == LocalPasswordSetupView::kScreenId) {
     ShowLocalPasswordSetupScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
+             screen_id == InstallAttributesErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||

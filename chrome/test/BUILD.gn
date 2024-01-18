@@ -4548,6 +4548,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/screens/gesture_navigation_screen_browsertest.cc",
         "../browser/ash/login/screens/guest_tos_screen_browsertest.cc",
         "../browser/ash/login/screens/hid_detection_screen_browsertest.cc",
+        "../browser/ash/login/screens/install_attributes_error_screen_browsertest.cc",
         "../browser/ash/login/screens/lacros_data_backward_migration_screen_browsertest.cc",
         "../browser/ash/login/screens/lacros_data_migration_screen_browsertest.cc",
         "../browser/ash/login/screens/locale_switch_screen_browsertest.cc",

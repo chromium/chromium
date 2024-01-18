@@ -3269,6 +3269,8 @@ static_library("ui") {
       "webui/ash/os_feedback_dialog.h",
 
       # Template used by the `tools/oobe/generate_screen_template.py` script.
+      "webui/ash/login/install_attributes_error_screen_handler.cc",
+      "webui/ash/login/install_attributes_error_screen_handler.h",
       "webui/ash/login/placeholder_screen_handler.cc",
       "webui/ash/login/placeholder_screen_handler.h",
       "webui/ash/login/quick_start_screen_handler.cc",
