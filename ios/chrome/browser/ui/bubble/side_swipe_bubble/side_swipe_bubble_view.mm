@@ -100,14 +100,20 @@ CGRect GetInitialBubbleFrameForView(CGSize bubble_bounding_size,
                                     BubbleView* bubble_view) {
   BubbleArrowDirection direction = bubble_view.direction;
   // Bubble's initial placement should NOT go beyond the middle of the screen.
+  CGFloat shift_distance = 0;
   switch (direction) {
-    case BubbleArrowDirectionUp:
     case BubbleArrowDirectionDown:
+      shift_distance = bubble_bounding_size.height / 2;
+      [[fallthrough]];
+    case BubbleArrowDirectionUp:
       bubble_bounding_size.height = bubble_bounding_size.height / 2 -
                                     kInitialBubbleDistanceToEdgeSpacingVertical;
       break;
     case BubbleArrowDirectionLeading:
     case BubbleArrowDirectionTrailing:
+      if (!IsArrowPointingLeft(direction)) {
+        shift_distance = bubble_bounding_size.width / 2;
+      }
       bubble_bounding_size.width /= 2;
       break;
   }
@@ -116,9 +122,16 @@ CGRect GetInitialBubbleFrameForView(CGSize bubble_bounding_size,
   CGSize max_bubble_size = bubble_util::BubbleMaxSize(
       anchor_pt, 0, direction, BubbleAlignmentCenter, bubble_bounding_size);
   CGSize bubble_size = [bubble_view sizeThatFits:max_bubble_size];
-  return bubble_util::BubbleFrame(anchor_pt, 0, bubble_size, direction,
-                                  BubbleAlignmentCenter,
-                                  bubble_bounding_size.width);
+  CGRect frame = bubble_util::BubbleFrame(anchor_pt, 0, bubble_size, direction,
+                                          BubbleAlignmentCenter,
+                                          bubble_bounding_size.width);
+  if (direction == BubbleArrowDirectionUp ||
+      direction == BubbleArrowDirectionDown) {
+    frame.origin.y += shift_distance;
+  } else {
+    frame.origin.x += shift_distance;
+  }
+  return frame;
 }
 
 // Returns the transparent gesture indicator circle at its initial size and
