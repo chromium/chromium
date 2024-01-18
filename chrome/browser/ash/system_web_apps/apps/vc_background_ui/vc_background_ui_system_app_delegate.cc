@@ -41,6 +41,10 @@ VcBackgroundUISystemAppDelegate::GetWebAppInfo() const {
   return info;
 }
 
+gfx::Size VcBackgroundUISystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 420};
+}
+
 bool VcBackgroundUISystemAppDelegate::IsAppEnabled() const {
   return ::ash::features::IsVcBackgroundReplaceEnabled() &&
          manta::features::IsMantaServiceEnabled();

@@ -1102,9 +1102,9 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ash::OobeUI, ash::personalization_app::PersonalizationAppUI,
-      ash::settings::OSSettingsUI, ash::DiagnosticsDialogUI,
-      ash::FirmwareUpdateAppUI, ash::ScanningUI, ash::OSFeedbackUI,
-      ash::ShortcutCustomizationAppUI,
+      ash::vc_background_ui::VcBackgroundUI, ash::settings::OSSettingsUI,
+      ash::DiagnosticsDialogUI, ash::FirmwareUpdateAppUI, ash::ScanningUI,
+      ash::OSFeedbackUI, ash::ShortcutCustomizationAppUI,
       ash::printing::printing_manager::PrintManagementUI,
       ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::SetTimeUI,
       ash::BluetoothPairingDialogUI, nearby_share::NearbyShareDialogUI,

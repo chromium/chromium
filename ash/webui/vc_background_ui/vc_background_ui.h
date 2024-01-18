@@ -12,7 +12,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash::common {
 class SeaPenProvider;
@@ -47,9 +53,13 @@ class VcBackgroundUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
 
  private:
   std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
