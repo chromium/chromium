@@ -5651,3 +5651,129 @@ TEST_F(DiskCacheBackendTest, BlockFileImmediateCloseNoDangle) {
   EXPECT_EQ(result.net_error(), net::ERR_IO_PENDING);
   run_loop.Run();
 }
+
+// Test that when a write causes a doom, it doesn't result in wrong delivery
+// order of callbacks due to re-entrant operation execution.
+TEST_F(DiskCacheBackendTest, SimpleWriteOrderEviction) {
+  SetSimpleCacheMode();
+  SetMaxSize(4096);
+  InitCache();
+
+  // Writes of [1, 2, ..., kMaxSize] are more than enough to trigger eviction,
+  // as (1 + 80)*80/2 * 2 = 6480 (last * 2 since two streams are written).
+  constexpr int kMaxSize = 80;
+
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      CacheTestCreateAndFillBuffer(kMaxSize, /*no_nulls=*/false);
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("key", &entry), IsOk());
+  ASSERT_TRUE(entry);
+
+  bool expected_next_write_stream_1 = true;
+  int expected_next_write_size = 1;
+  int next_offset = 0;
+  base::RunLoop run_loop;
+  for (int size = 1; size <= kMaxSize; ++size) {
+    entry->WriteData(/*index=*/1, /*offset = */ next_offset, buffer.get(),
+                     /*buf_len=*/size,
+                     base::BindLambdaForTesting([&](int result) {
+                       EXPECT_TRUE(expected_next_write_stream_1);
+                       EXPECT_EQ(result, expected_next_write_size);
+                       expected_next_write_stream_1 = false;
+                     }),
+                     /*truncate=*/true);
+    // Stream 0 writes are used here because unlike with stream 1 ones,
+    // WriteDataInternal can succeed and queue response callback immediately.
+    entry->WriteData(/*index=*/0, /*offset = */ next_offset, buffer.get(),
+                     /*buf_len=*/size,
+                     base::BindLambdaForTesting([&](int result) {
+                       EXPECT_FALSE(expected_next_write_stream_1);
+                       EXPECT_EQ(result, expected_next_write_size);
+                       expected_next_write_stream_1 = true;
+                       ++expected_next_write_size;
+                       if (expected_next_write_size == (kMaxSize + 1)) {
+                         run_loop.Quit();
+                       }
+                     }),
+                     /*truncate=*/true);
+    next_offset += size;
+  }
+
+  entry->Close();
+  run_loop.Run();
+}
+
+// Test that when a write causes a doom, it doesn't result in wrong delivery
+// order of callbacks due to re-entrant operation execution. Variant that
+// uses stream 0 ops only.
+TEST_F(DiskCacheBackendTest, SimpleWriteOrderEvictionStream0) {
+  SetSimpleCacheMode();
+  SetMaxSize(4096);
+  InitCache();
+
+  // Writes of [1, 2, ..., kMaxSize] are more than enough to trigger eviction,
+  // as (1 + 120)*120/2 = 7260.
+  constexpr int kMaxSize = 120;
+
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      CacheTestCreateAndFillBuffer(kMaxSize, /*no_nulls=*/false);
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("key", &entry), IsOk());
+  ASSERT_TRUE(entry);
+
+  int expected_next_write_size = 1;
+  int next_offset = 0;
+  base::RunLoop run_loop;
+  for (int size = 1; size <= kMaxSize; ++size) {
+    // Stream 0 writes are used here because unlike with stream 1 ones,
+    // WriteDataInternal can succeed and queue response callback immediately.
+    entry->WriteData(/*index=*/0, /*offset = */ next_offset, buffer.get(),
+                     /*buf_len=*/size,
+                     base::BindLambdaForTesting([&](int result) {
+                       EXPECT_EQ(result, expected_next_write_size);
+                       ++expected_next_write_size;
+                       if (expected_next_write_size == (kMaxSize + 1)) {
+                         run_loop.Quit();
+                       }
+                     }),
+                     /*truncate=*/true);
+    next_offset += size;
+  }
+
+  entry->Close();
+  run_loop.Run();
+}
+
+// Test to make sure that if entry creation triggers eviction, a queued up
+// close (possible with optimistic ops) doesn't run from within creation
+// completion handler (which is indirectly detected as a dangling pointer).
+TEST_F(DiskCacheBackendTest, SimpleNoCloseFromWithinCreate) {
+  SetSimpleCacheMode();
+  SetMaxSize(4096);
+  InitCache();
+
+  // Make entries big enough to force their eviction.
+  constexpr int kDataSize = 4097;
+
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kDataSize);
+  CacheTestFillBuffer(buffer->data(), kDataSize, false);
+
+  for (int i = 0; i < 100; ++i) {
+    std::string key = base::NumberToString(i);
+    EntryResult entry_result =
+        cache_->CreateEntry(key, net::HIGHEST, base::DoNothing());
+    ASSERT_EQ(entry_result.net_error(), net::OK);
+    disk_cache::Entry* entry = entry_result.ReleaseEntry();
+    // Doing stream 0 write to avoid need for thread round-trips for it to take
+    // effect if SimpleEntryImpl runs it.
+    entry->WriteData(/*index=*/0, /*offset = */ 0, buffer.get(),
+                     /*buf_len=*/kDataSize,
+                     base::BindLambdaForTesting(
+                         [&](int result) { EXPECT_EQ(kDataSize, result); }),
+                     /*truncate=*/true);
+    entry->Close();
+  }
+  RunUntilIdle();
+}

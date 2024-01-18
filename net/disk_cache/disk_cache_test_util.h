@@ -12,11 +12,16 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache.h"
+
+namespace net {
+class IOBufferWithSize;
+}  // namespace net
 
 // Re-creates a given test file inside the cache test folder.
 bool CreateCacheTestFile(const base::FilePath& name);
@@ -26,6 +31,12 @@ bool DeleteCache(const base::FilePath& path);
 
 // Fills buffer with random values (may contain nulls unless no_nulls is true).
 void CacheTestFillBuffer(char* buffer, size_t len, bool no_nulls);
+
+// Creates a buffer of size `len`, and fills in with random values, which
+// may contain 0 unless `no_nulls` is true.
+scoped_refptr<net::IOBufferWithSize> CacheTestCreateAndFillBuffer(
+    size_t len,
+    bool no_nulls);
 
 // Generates a random key of up to 200 bytes.
 std::string GenerateKey(bool same_length);

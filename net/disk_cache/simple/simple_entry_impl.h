@@ -343,20 +343,21 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   int64_t GetDiskUsage() const;
 
   // Completes a read from the stream data kept in memory, logging metrics
-  // and updating metadata. Returns the # of bytes read successfully.
-  // This asumes the caller has already range-checked offset and buf_len
-  // appropriately.
-  int ReadFromBuffer(net::GrowableIOBuffer* in_buf,
-                     int offset,
-                     int buf_len,
-                     net::IOBuffer* out_buf);
+  // and updating metadata. This assumes the caller has already range-checked
+  // offset and buf_len appropriately, and therefore always reads `buf_len`
+  // bytes.
+  void ReadFromBuffer(net::GrowableIOBuffer* in_buf,
+                      int offset,
+                      int buf_len,
+                      net::IOBuffer* out_buf);
 
   // Copies data from |buf| to the internal in-memory buffer for stream 0. If
   // |truncate| is set to true, the target buffer will be truncated at |offset|
   // + |buf_len| before being written.
-  int SetStream0Data(net::IOBuffer* buf,
-                     int offset, int buf_len,
-                     bool truncate);
+  void SetStream0Data(net::IOBuffer* buf,
+                      int offset,
+                      int buf_len,
+                      bool truncate);
 
   // We want all async I/O on entries to complete before recycling the dir.
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
@@ -421,12 +422,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // an operation is being executed no one owns the synchronous entry. Therefore
   // SimpleEntryImpl should not be deleted while an operation is running as that
   // would leak the SimpleSynchronousEntry.
-  // This dangling raw_ptr occurred in:
-  // content_unittests:
-  // GeneratedCodeCacheTest/GeneratedCodeCacheTest.StressVeryLargeEntries/1
-  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425125/test-results?q=ExactID%3Aninja%3A%2F%2Fcontent%2Ftest%3Acontent_unittests%2FGeneratedCodeCacheTest.StressVeryLargeEntries%2FGeneratedCodeCacheTest.1+VHash%3Ab3ba0803668e9981&sortby=&groupby=
-  raw_ptr<SimpleSynchronousEntry, FlakyDanglingUntriaged> synchronous_entry_ =
-      nullptr;
+  raw_ptr<SimpleSynchronousEntry> synchronous_entry_ = nullptr;
 
   scoped_refptr<net::PrioritizedTaskRunner> prioritized_task_runner_;
 
