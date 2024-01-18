@@ -637,10 +637,9 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (maximum_size.has_value() || minimum_size.has_value() ||
       title.has_value() || bounds_in_root.has_value()) {
-    window_info->arc_extra_info = WindowInfo::ArcExtraInfo();
-    window_info->arc_extra_info->maximum_size = maximum_size;
-    window_info->arc_extra_info->minimum_size = minimum_size;
-    window_info->arc_extra_info->bounds_in_root = bounds_in_root;
+    window_info->arc_extra_info = {.maximum_size = maximum_size,
+                                   .minimum_size = minimum_size,
+                                   .bounds_in_root = bounds_in_root};
   }
 
   // Display id is set as the app launch parameter, so we don't need to return

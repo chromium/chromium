@@ -2,7 +2,7 @@ The app_restore component contains code necessary for collecting app launching
 information, app window information, and writing to the data storage. It
 provides:
 
-* The interfaces for chrome/browser/ash/full_restore to read the storage
+* The interfaces for chrome/browser/ash/app_restore to read the storage
 to get app launching information.
 * The interfaces for the Window Management component (ash/wm) to collect and
 save the app windows information.

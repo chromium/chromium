@@ -193,10 +193,9 @@ class RestoreDataTest : public testing::Test {
     window_info1.window_state_type = kWindowStateType1;
     window_info1.display_id = kDisplayId2;
     window_info1.app_title = kTitle1;
-    window_info1.arc_extra_info = WindowInfo::ArcExtraInfo();
-    window_info1.arc_extra_info->maximum_size = kMaxSize1;
-    window_info1.arc_extra_info->minimum_size = kMinSize1;
-    window_info1.arc_extra_info->bounds_in_root = kBoundsInRoot1;
+    window_info1.arc_extra_info = {.maximum_size = kMaxSize1,
+                                   .minimum_size = kMinSize1,
+                                   .bounds_in_root = kBoundsInRoot1};
 
     WindowInfo window_info2;
     window_info2.activation_index = kActivationIndex2;
@@ -207,9 +206,8 @@ class RestoreDataTest : public testing::Test {
     window_info2.pre_minimized_show_state_type = kPreMinimizedWindowStateType2;
     window_info2.display_id = kDisplayId1;
     window_info2.app_title = kTitle2;
-    window_info2.arc_extra_info = WindowInfo::ArcExtraInfo();
-    window_info2.arc_extra_info->minimum_size = kMinSize2;
-    window_info2.arc_extra_info->bounds_in_root = kBoundsInRoot2;
+    window_info2.arc_extra_info = {.minimum_size = kMinSize2,
+                                   .bounds_in_root = kBoundsInRoot2};
 
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;

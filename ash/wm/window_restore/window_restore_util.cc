@@ -147,12 +147,11 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   if (IsArcWindow(window)) {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     if (widget) {
-      auto extra = app_restore::WindowInfo::ArcExtraInfo();
-      extra.maximum_size = widget->GetMaximumSize();
-      extra.minimum_size = widget->GetMinimumSize();
-      extra.bounds_in_root =
-          GetBoundsIgnoringTransforms(window, /*use_screen=*/false);
-      window_info->arc_extra_info = extra;
+      window_info->arc_extra_info = {
+          .maximum_size = widget->GetMaximumSize(),
+          .minimum_size = widget->GetMinimumSize(),
+          .bounds_in_root =
+              GetBoundsIgnoringTransforms(window, /*use_screen=*/false)};
       window_info->app_title = window->GetTitle();
     }
   }
