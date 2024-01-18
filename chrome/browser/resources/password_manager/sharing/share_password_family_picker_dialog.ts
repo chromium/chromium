@@ -42,7 +42,11 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
   static get properties() {
     return {
       dialogTitle: String,
-      members: Array,
+
+      members: {
+        type: Array,
+        value: [],
+      },
 
       selectedRecipients: {
         type: Array,
@@ -69,6 +73,16 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
   private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
   private ineligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
 
+    override ready() {
+      super.ready();
+
+      // Pre-select the member if they are eligible for sharing and there are no
+      // other members in the group.
+      if (this.members.length === 1 && this.computeEligible_().length === 1) {
+        this.selectedRecipients = this.members;
+      }
+    }
+
   private computeEligible_(): chrome.passwordsPrivate.RecipientInfo[] {
     const eligibleMembers = this.members.filter(member => member.isEligible);
     eligibleMembers.sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
@@ -87,6 +101,12 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
             .from(this.shadowRoot!.querySelectorAll('share-password-recipient'))
             .filter(item => item.selected)
             .map(item => item.recipient);
+  }
+
+  // Should only be called for eligible recipients.
+  private shouldPreselectFirstEntry_(index: number): boolean {
+    // Only pre-select the first entry when there is only single group member.
+    return index === 0 && this.members.length === 1;
   }
 
   private onViewFamilyClick_() {
