@@ -342,7 +342,22 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
             time_to_first_response.InMilliseconds());
   }
 
-  on_device_state_->current_response += chunk->text;
+  if (!on_device_state_->MutableLoggedResponse()->has_repeats()) {
+    // Only continue updating the response if repeats have not been detected.
+    on_device_state_->current_response += chunk->text;
+
+    // Check for repeats here instead of SendResponse since we see each new
+    // token as it comes in here, and SendResponse will only see tokens if
+    // ts_scores are available.
+    int num_repeats = features::GetOnDeviceModelNumRepeats();
+    if (num_repeats > 1 &&
+        HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
+                           num_repeats, on_device_state_->current_response)) {
+      on_device_state_->MutableLoggedResponse()->set_has_repeats(true);
+      LogResponseHasRepeats(feature_, true);
+    }
+  }
+
   if (chunk->ts_scores) {
     on_device_state_->current_text_safety_scores = *chunk->ts_scores;
   }
@@ -509,13 +524,8 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     return;
   }
 
-  int num_repeats = features::GetOnDeviceModelNumRepeats();
-  if (!is_complete && num_repeats > 1 &&
-      HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
-                         num_repeats, current_response)) {
-    on_device_state_->MutableLoggedResponse()->set_has_repeats(true);
-    LogResponseHasRepeats(feature_, true);
-
+  if (!is_complete &&
+      on_device_state_->MutableLoggedResponse()->has_repeats()) {
     if (features::GetOnDeviceModelRetractRepeats()) {
       on_device_state_->current_response.clear();
       logged_response->set_status(
@@ -528,11 +538,15 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     // If a repeat is detected, halt the response, and artificially send the
     // OnComplete event.
     on_device_state_->receiver.reset();
+    auto summary = on_device_model::mojom::ResponseSummary::New();
+    if (!on_device_state_->current_text_safety_scores.empty()) {
+      summary->ts_scores = on_device_state_->current_text_safety_scores;
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SessionImpl::OnComplete,
                        on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                       on_device_model::mojom::ResponseSummary::New()));
+                       std::move(summary)));
   } else if (is_complete &&
              !on_device_state_->MutableLoggedResponse()->has_repeats()) {
     // Log completed responses with no repeats to calculate percentage of

@@ -110,10 +110,15 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
       chunk->ts_scores = g_ts_scores;
       remote->OnResponse(std::move(chunk));
     } else {
+      int ts_interval = input->ts_interval.value_or(1);
+      int n = 0;
       for (const auto& text : g_model_execute_result) {
+        n++;
         auto chunk = on_device_model::mojom::ResponseChunk::New();
         chunk->text = text;
-        chunk->ts_scores = g_ts_scores;
+        if ((n % ts_interval) == 0) {
+          chunk->ts_scores = g_ts_scores;
+        }
         remote->OnResponse(std::move(chunk));
       }
     }
@@ -1821,5 +1826,86 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
       false, 1);
 }
+
+class OnDeviceModelServiceControllerTsIntervalTest
+    : public OnDeviceModelServiceControllerTest,
+      public ::testing::WithParamInterface<int> {};
+
+TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
+       DetectsRepeatsWithSafetyModel) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOptimizationGuideOnDeviceModel,
+        {{"on_device_model_retract_repeats", "false"}}},
+       {features::kTextSafetyClassifier,
+        {{"on_device_must_use_safety_model", "true"},
+         {"on_device_retract_unsafe_content", "true"},
+         {"on_device_text_safety_token_interval",
+          base::NumberToString(GetParam())}}}},
+      {});
+
+  Initialize();
+
+  proto::TextSafetyModelMetadata model_metadata;
+  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
+  safety_config->set_feature(kFeature);
+  auto* threshold1 = safety_config->add_safety_category_thresholds();
+  threshold1->set_output_index(0);
+  threshold1->set_threshold(0.5);
+  auto* threshold2 = safety_config->add_safety_category_thresholds();
+  threshold2->set_output_index(1);
+  threshold2->set_threshold(0.5);
+  proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+  model_metadata.SerializeToString(any.mutable_value());
+  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetAdditionalFiles(
+              {temp_dir().Append(kTsDataFile),
+               temp_dir().Append(base::FilePath(kTsSpModelFile))})
+          .SetModelMetadata(any)
+          .Build();
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  EXPECT_TRUE(session);
+
+  g_ts_scores = {0.3, 0.3};
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(response_received_);
+  EXPECT_EQ(*response_received_,
+            "some text some more repeating text some more repeating text");
+
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+                  ->model_execution_info()
+                  .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
+      true, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(OnDeviceModelServiceControllerTsIntervalTests,
+                         OnDeviceModelServiceControllerTsIntervalTest,
+                         testing::ValuesIn<int>({1, 2, 3, 4, 10}));
 
 }  // namespace optimization_guide
