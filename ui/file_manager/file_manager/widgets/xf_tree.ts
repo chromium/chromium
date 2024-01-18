@@ -28,17 +28,6 @@ import {handleTreeSlotChange, isTreeItem} from './xf_tree_util.js';
  */
 @customElement('xf-tree')
 export class XfTree extends XfBase {
-  // Inside the tree, there's at most 1 tree item is focusable (tabindex = 0)
-  // "delegatesFocus = true" will make sure when the tree is focused (either
-  // via click or focus() call on the host element), the only focusable tree
-  // item will get the focus.
-  static override get shadowRootOptions() {
-    return {
-      ...XfBase.shadowRootOptions,
-      delegatesFocus: true,
-    };
-  }
-
   static get events() {
     return {
       /** Triggers when a tree item has been selected. */
@@ -92,6 +81,19 @@ export class XfTree extends XfBase {
 
   static override get styles() {
     return getCSS();
+  }
+
+  /**
+   * The <xf-tree> itself is not focusable, it will delegate the focus down to
+   * its `focusedItem_`.
+   *
+   * Note: previously we use `delegatesFocus: true` in the shadowRootOptions,
+   * but it triggers weird behavior b/320580121, hence the override here.
+   */
+  override focus() {
+    if (this.focusedItem_) {
+      this.focusedItem_.focus();
+    }
   }
 
   override render() {
