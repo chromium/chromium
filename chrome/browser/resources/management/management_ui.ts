@@ -317,9 +317,17 @@ class ManagementUiElement extends ManagementUiElementBase {
         return 'management:usb';
       case DeviceReportingType.LEGACY_TECH:
         return 'management:legacy-tech';
+      case DeviceReportingType.WEBSITE_INFO_AND_ACTIVITY:
+        return 'management:web';
       default:
         return 'cr:computer';
     }
+  }
+
+  private getDeviceReportingHtmlContent_(response: DeviceReportingResponse):
+      TrustedHTML {
+    return this.i18nAdvanced(
+        response.messageId, {substitutions: response.messageParams});
   }
   // </if>
 

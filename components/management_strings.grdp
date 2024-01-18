@@ -173,6 +173,12 @@
     <message name="IDS_MANAGEMENT_REPORT_CRD_SESSIONS" desc="Message stating that administrators can see Chrome Remote Desktop events.">
       Chrome Remote Desktop history, including timestamps, hosts and client session ids
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_ALL_WEBSITE_INFO_AND_ACTIVITY" desc="Message stating that administrators can see what websites are visited and when.">
+      Which websites are visited and when.
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_WEBSITE_INFO_AND_ACTIVITY" desc="Message stating that administrators can see administrator-specified list of websites when they are visited.">
+      Which administrator-defined websites are visited and when: <ph name="ALLOWLISTED_WEBSITES">$1<ex>[*.]google.com, example.com</ex></ph>
+    </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
     </message>
