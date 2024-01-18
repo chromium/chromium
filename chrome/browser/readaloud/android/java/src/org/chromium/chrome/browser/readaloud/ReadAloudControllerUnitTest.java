@@ -83,6 +83,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -121,6 +122,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private ActivityWindowAndroid mActivityWindowAndroid;
 
     MockTabModelSelector mTabModelSelector;
 
@@ -198,7 +200,8 @@ public class ReadAloudControllerUnitTest {
                         mTabModelSelector.getModel(false),
                         mBottomSheetController,
                         mBrowserControlsSizer,
-                        mLayoutManagerSupplier);
+                        mLayoutManagerSupplier,
+                        mActivityWindowAndroid);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mTab = mTabModelSelector.getCurrentTab();
@@ -1406,12 +1409,12 @@ public class ReadAloudControllerUnitTest {
         // no playback, request is a no op
         mController.maybeShowPlayer();
 
-        verify(mPlayerCoordinator, never()).restoreMiniPlayer();
+        verify(mPlayerCoordinator, never()).restorePlayers();
 
         requestAndStartPlayback();
         mController.maybeShowPlayer();
 
-        verify(mPlayerCoordinator).restoreMiniPlayer();
+        verify(mPlayerCoordinator).restorePlayers();
     }
 
     @Test
@@ -1419,12 +1422,12 @@ public class ReadAloudControllerUnitTest {
         // no playback, request is a no op
         mController.maybeHidePlayer();
 
-        verify(mPlayerCoordinator, never()).hideMiniPlayer();
+        verify(mPlayerCoordinator, never()).hidePlayers();
 
         requestAndStartPlayback();
         mController.maybeHidePlayer();
 
-        verify(mPlayerCoordinator).hideMiniPlayer();
+        verify(mPlayerCoordinator).hidePlayers();
     }
 
     private void requestAndStartPlayback() {

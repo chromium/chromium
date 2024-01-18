@@ -42,11 +42,14 @@ import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -62,7 +65,8 @@ public class ReadAloudController
         implements Player.Observer,
                 Player.Delegate,
                 PlaybackListener,
-                ApplicationStatus.ApplicationStateListener {
+                ApplicationStatus.ApplicationStateListener,
+                InsetObserver.WindowInsetObserver {
     private static final String TAG = "ReadAloudController";
 
     private final Activity mActivity;
@@ -190,6 +194,7 @@ public class ReadAloudController
     private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
     // Selected voice ID.
     private final ObservableSupplierImpl<String> mSelectedVoiceId;
+    private final ActivityWindowAndroid mActivityWindowAndroid;
 
     private long mTranslationObserverHandle;
     private final TranslationObserver mTranslationObserver =
@@ -260,7 +265,8 @@ public class ReadAloudController
             TabModel tabModel,
             BottomSheetController bottomSheetController,
             BrowserControlsSizer browserControlsSizer,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier) {
+            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            ActivityWindowAndroid activityWindowAndroid) {
         ReadAloudFeatures.init();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
@@ -273,6 +279,7 @@ public class ReadAloudController
         mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
+        mActivityWindowAndroid = activityWindowAndroid;
     }
 
     public ObservableSupplier<String> getReadabilitySupplier() {
@@ -322,6 +329,11 @@ public class ReadAloudController
                             maybeStopPlayback(tab);
                         }
                     };
+            InsetObserver insetObserver =
+                    InsetObserverSupplier.getValueOrNullFrom(mActivityWindowAndroid);
+            if (insetObserver != null) {
+                insetObserver.addObserver(this);
+            }
         }
     }
 
@@ -524,6 +536,11 @@ public class ReadAloudController
         resetCurrentPlayback();
         mStateToRestoreOnBringingToForeground = null;
         ReadAloudFeatures.shutdown();
+        InsetObserver insetObserver =
+                InsetObserverSupplier.getValueOrNullFrom(mActivityWindowAndroid);
+        if (insetObserver != null) {
+            insetObserver.removeObserver(this);
+        }
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
@@ -820,10 +837,20 @@ public class ReadAloudController
         }
     }
 
+    // InsetObserver.WindowInsetObserver
+    @Override
+    public void onKeyboardInsetChanged(int inset) {
+        if (inset > 0) {
+            maybeHidePlayer();
+        } else {
+            maybeShowPlayer();
+        }
+    }
+
     /** Show mini player if there is an active playback. */
     public void maybeShowPlayer() {
         if (mPlayback != null) {
-            mPlayerCoordinator.restoreMiniPlayer();
+            mPlayerCoordinator.restorePlayers();
         }
     }
 
@@ -834,7 +861,7 @@ public class ReadAloudController
      */
     public void maybeHidePlayer() {
         if (mPlayback != null) {
-            mPlayerCoordinator.hideMiniPlayer();
+            mPlayerCoordinator.hidePlayers();
         }
     }
 

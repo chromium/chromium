@@ -132,4 +132,14 @@ public interface Player {
      * #restoreMiniPlayer() restoreMiniPlayer} is called.
      */
     default void hideMiniPlayer() {}
+
+    /**
+     * Hide players, unsubscribe from updates. State updates will resume after {@link
+     * #restoreMiniPlayer() restoreMiniPlayer} or {@link #restorePlayers() restorePlayers} is
+     * called.
+     */
+    default void hidePlayers() {}
+
+    /** Show back whatever player was shown last. Assumes the playback is running. */
+    default void restorePlayers() {}
 }

@@ -37,6 +37,8 @@ public class PlayerCoordinator implements Player {
     private final MiniPlayerCoordinator mMiniPlayer;
     private final ExpandedPlayerCoordinator mExpandedPlayer;
     private Playback mPlayback;
+    private boolean mRestoreMiniPlayer;
+    private boolean mRestoreExpandedPlayer;
 
     // TODO remove internal call and then remove this constructor
     public PlayerCoordinator(
@@ -156,6 +158,37 @@ public class PlayerCoordinator implements Player {
                 || miniPlayerVisibility == VisibilityState.VISIBLE) {
         mMiniPlayer.dismiss(true);
         mMediator.setHiddenAndPlaying(true);
+        }
+    }
+
+    @Override
+    public void hidePlayers() {
+        int expandedSheetVisibility = mExpandedPlayer.getVisibility();
+        int miniPlayerVisibility = mMiniPlayer.getVisibility();
+        if (expandedSheetVisibility == VisibilityState.SHOWING
+                || expandedSheetVisibility == VisibilityState.VISIBLE) {
+            mRestoreExpandedPlayer = true;
+            mRestoreMiniPlayer = false;
+            mExpandedPlayer.dismiss();
+        } else if (miniPlayerVisibility == VisibilityState.SHOWING
+                || miniPlayerVisibility == VisibilityState.VISIBLE) {
+            mRestoreMiniPlayer = true;
+            mRestoreExpandedPlayer = false;
+            mMiniPlayer.dismiss(true);
+        }
+
+        mMediator.setHiddenAndPlaying(true);
+    }
+
+    @Override
+    public void restorePlayers() {
+        if (mRestoreMiniPlayer) {
+            restoreMiniPlayer();
+            mRestoreMiniPlayer = false;
+        } else if (mRestoreExpandedPlayer) {
+            mExpandedPlayer.show();
+            mRestoreExpandedPlayer = false;
+            mMediator.setHiddenAndPlaying(false);
         }
     }
 

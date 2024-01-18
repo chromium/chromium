@@ -234,6 +234,67 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testHideAndRestoreMiniPlayer() {
+        doReturn(VisibilityState.VISIBLE).when(mMiniPlayer).getVisibility();
+        doReturn(VisibilityState.GONE).when(mExpandedPlayer).getVisibility();
+
+        mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
+
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+
+        mPlayerCoordinator.hidePlayers();
+        verify(mMiniPlayer).getVisibility();
+        verify(mExpandedPlayer).getVisibility();
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+        verify(mMiniPlayer).dismiss(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(true));
+        verify(mExpandedPlayer, never()).dismiss();
+
+        mPlayerCoordinator.restorePlayers();
+        verify(mMiniPlayer).show(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(false));
+        verify(mExpandedPlayer, never()).show();
+    }
+
+    @Test
+    public void testHideAndRestoreExpandedPlayer() {
+        doReturn(VisibilityState.GONE).when(mMiniPlayer).getVisibility();
+        doReturn(VisibilityState.VISIBLE).when(mExpandedPlayer).getVisibility();
+
+        mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
+
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+
+        mPlayerCoordinator.hidePlayers();
+        verify(mMiniPlayer).getVisibility();
+        verify(mExpandedPlayer).getVisibility();
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+        verify(mExpandedPlayer).dismiss();
+        verify(mMiniPlayer, never()).dismiss(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(true));
+
+        mPlayerCoordinator.restorePlayers();
+        verify(mExpandedPlayer).show();
+        verify(mMiniPlayer, never()).show(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(false));
+    }
+
+    @Test
+    public void testHideAndRestoreNoPlayerVisible() {
+        mPlayerCoordinator.hidePlayers();
+        verify(mExpandedPlayer, never()).dismiss();
+        verify(mMiniPlayer, never()).dismiss(eq(true));
+
+        mPlayerCoordinator.restorePlayers();
+        verify(mExpandedPlayer, never()).show();
+        verify(mMiniPlayer, never()).show(eq(true));
+    }
+
+    @Test
     public void testCloseClicked() {
         mPlayerCoordinator =
                 new PlayerCoordinator(mMiniPlayer, mMediator, mDelegate, mExpandedPlayer);
