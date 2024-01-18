@@ -14134,6 +14134,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4768" label="V8WasmTypeReflection"/>
   <int value="4769" label="V8WasmExnRef"/>
   <int value="4770" label="V8WasmTypedFuncRef"/>
+  <int value="4771" label="HTMLButtonInSelect"/>
+  <int value="4772" label="HTMLDatalistInSelect"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

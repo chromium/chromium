@@ -3657,6 +3657,12 @@
       base_feature: "none",
     },
     {
+      // Allows <button> and <datalist> in <select> which replace the default
+      // button and listbox respectively.
+      name: "StylableSelect",
+      status: "experimental",
+    },
+    {
       name: "StylusHandwriting",
       base_feature: "none",
     },

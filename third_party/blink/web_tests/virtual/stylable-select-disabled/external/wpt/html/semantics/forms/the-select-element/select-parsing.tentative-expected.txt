@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] <button>s and <datalist>s should be allowed in <select>.
+  assert_equals: expected "\\n  div 1\\n  <button>button</button>\\n  div 2\\n  <datalist>\\n    <option>option</option>\\n  </datalist>\\n  div 3\\n" but got "\\n  div 1\\n  button\\n  div 2\\n  \\n    <option>option</option>\\n  \\n  div 3\\n"
+[FAIL] Nested <button>s in <select> should be flattened out.
+  assert_equals: expected "\\n  div 1\\n  <button>\\n    <span>level 1</span>\\n    </button><button>\\n      <span>level 2</span>\\n    </button>\\n  \\n  div 2\\n" but got "\\n  div 1\\n  \\n    level 1\\n    \\n      level 2\\n    \\n  \\n  div 2\\n"
+[FAIL] </select> should close <button>.
+  assert_equals: expected "\\n  <button>button\\n</button>" but got "\\n  button\\n"
+[FAIL] </select> should close <datalist>.
+  assert_equals: expected "\\n  <datalist>datalist\\n</datalist>" but got "\\n  datalist\\n"
+[FAIL] <select> in <button> in <select> should remove inner <select>.
+  assert_equals: expected "\\n  <button>\\n    </button>" but got "\\n  \\n    "
+[FAIL] <select> in <select><button><div> should remove inner <select>.
+  assert_equals: expected "\\n  <button>\\n    <div>\\n      </div></button>" but got "\\n  \\n    \\n      "
+Harness: the test ran to completion.
+

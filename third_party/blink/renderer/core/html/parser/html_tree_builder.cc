@@ -1463,6 +1463,24 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       }
       ParseError(token);
       break;
+    case kInButtonInSelectMode:
+    case kInDatalistInSelectMode:
+      switch (tag) {
+        case HTMLTag::kSelect: {
+          // Don't allow <select> within <select> even if there is a <button> or
+          // <datalist> in between. To match the other branch for <select> in
+          // <select>, add a </select> instead of a <select>. ProcessEndTag()
+          // will also end all tags within the currently open <select>.
+          ParseError(token);
+          AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
+          ProcessEndTag(&end_select);
+          break;
+        }
+        default:
+          ProcessStartTagForInBody(token);
+          break;
+      }
+      break;
     case kInSelectInTableMode:
       switch (tag) {
         case HTMLTag::kCaption:
@@ -1546,6 +1564,27 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         case HTMLTag::kTemplate:
           ProcessTemplateStartTag(token);
           return;
+        case HTMLTag::kButton:
+          // TODO(crbug.com/1511354): Add console warnings for this and the
+          // datalist branch when the flag is disabled once we're certain that
+          // we are shipping with <button> and <datalist>.
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kHTMLButtonInSelect);
+          if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+            SetInsertionMode(kInButtonInSelectMode);
+            ProcessStartTagForInBody(token);
+            return;
+          }
+          break;
+        case HTMLTag::kDatalist:
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kHTMLDatalistInSelect);
+          if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+            SetInsertionMode(kInDatalistInSelectMode);
+            ProcessStartTagForInBody(token);
+            return;
+          }
+          break;
         default:
           break;
       }
@@ -2372,6 +2411,39 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
     case kAfterAfterFramesetMode:
       ParseError(token);
       break;
+    case kInButtonInSelectMode:
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      switch (tag) {
+        case HTMLTag::kButton:
+          SetInsertionMode(kInSelectMode);
+          break;
+        case HTMLTag::kSelect:
+          SetInsertionMode(kInSelectMode);
+          tree_.OpenElements()->PopUntilPopped(HTMLTag::kSelect);
+          ResetInsertionModeAppropriately();
+          return;
+        default:
+          break;
+      }
+      // TODO(crbug.com/1511354): We need to review which end tags cause which
+      // elements to close once there's a reviewed HTML PR for styleable select.
+      ProcessEndTagForInBody(token);
+      return;
+    case kInDatalistInSelectMode:
+      switch (tag) {
+        case HTMLTag::kDatalist:
+          SetInsertionMode(kInSelectMode);
+          break;
+        case HTMLTag::kSelect:
+          SetInsertionMode(kInSelectMode);
+          tree_.OpenElements()->PopUntilPopped(HTMLTag::kSelect);
+          ResetInsertionModeAppropriately();
+          return;
+        default:
+          break;
+      }
+      ProcessEndTagForInBody(token);
+      return;
     case kInSelectInTableMode:
       switch (tag) {
         case HTMLTag::kCaption:
@@ -2543,6 +2615,8 @@ ReprocessBuffer:
     case kInBodyMode:
     case kInCaptionMode:
     case kTemplateContentsMode:
+    case kInDatalistInSelectMode:
+    case kInButtonInSelectMode:
     case kInCellMode: {
       ProcessCharacterBufferForInBody(buffer);
       break;
@@ -2709,6 +2783,8 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInFramesetMode:
     case kInTableMode:
     case kInTableBodyMode:
+    case kInButtonInSelectMode:
+    case kInDatalistInSelectMode:
     case kInSelectInTableMode:
     case kInSelectMode:
       if (tree_.CurrentNode() != tree_.OpenElements()->RootNode())
@@ -3083,6 +3159,8 @@ const char* HTMLTreeBuilder::ToString(HTMLTreeBuilder::InsertionMode mode) {
     DEFINE_STRINGIFY(kInCellMode)
     DEFINE_STRINGIFY(kInSelectMode)
     DEFINE_STRINGIFY(kInSelectInTableMode)
+    DEFINE_STRINGIFY(kInButtonInSelectMode)
+    DEFINE_STRINGIFY(kInDatalistInSelectMode)
     DEFINE_STRINGIFY(kAfterBodyMode)
     DEFINE_STRINGIFY(kInFramesetMode)
     DEFINE_STRINGIFY(kAfterFramesetMode)

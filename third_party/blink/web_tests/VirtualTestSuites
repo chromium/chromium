@@ -2676,5 +2676,16 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Jun 1, 2024"
+  },
+  {
+    "prefix": "stylable-select-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-select-element/select-parsing.tentative.html",
+      "fast/forms/select/button-or-datalist-in-select-usecounter.html"
+    ],
+    "args": ["--disable-features=StylableSelect"],
+    "expires": "Oct 1, 2024",
+    "owners": ["jarhar@chromium.org", "masonf@chromium.org"]
   }
 ]
