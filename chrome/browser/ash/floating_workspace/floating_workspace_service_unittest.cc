@@ -740,6 +740,24 @@ TEST_F(
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
+       NoNetworkNotificationLogicWhenSyncIsInactiveAndOnceSyncIsActiveAgain) {
+  PopulateAppsCache();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceService::GetForProfile(profile());
+  test_sync_service()->SetHasSyncConsent(false);
+  ASSERT_FALSE(test_sync_service()->IsSyncFeatureEnabled());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+  test_sync_service()->FireStateChanged();
+  EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
+  test_sync_service()->SetHasSyncConsent(true);
+  ASSERT_TRUE(test_sync_service()->IsSyncFeatureEnabled());
+  test_sync_service()->FireStateChanged();
+  EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
+}
+
+TEST_F(FloatingWorkspaceServiceV2Test,
        FloatingWorkspaceTemplateRestoreAfterTimeOut) {
   PopulateAppsCache();
   const std::string template_name = "floating_workspace_template";

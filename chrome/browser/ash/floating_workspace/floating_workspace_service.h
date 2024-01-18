@@ -256,9 +256,10 @@ class FloatingWorkspaceService : public KeyedService,
   // initialized.
   bool AreRequiredAppTypesInitialized();
 
-  // Once network state changes have been detected, handle the internet
-  // connectivity notification appropriately based on connection.
-  void OnNetworkStateChanged();
+  // Once network state or sync feature active state changes have been detected,
+  // handle the internet connectivity notification appropriately based on
+  // connection.
+  void OnNetworkStateOrSyncServiceStateChanged();
 
   const raw_ptr<Profile> profile_;
 

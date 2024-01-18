@@ -238,9 +238,14 @@ void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
 }
 
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
+  OnNetworkStateOrSyncServiceStateChanged();
+  // Prematurely return when sync feature is not active.
+  if (!sync_service_->IsSyncFeatureActive()) {
+    return;
+  }
   switch (sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK)) {
     case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates: {
-      // Floating Workspace Service needs to Wait until workspace desks are up
+      // Floating Workspace Service needs to wait until workspace desks are up
       // to date.
       break;
     }
@@ -276,16 +281,17 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
 
 void FloatingWorkspaceService::DefaultNetworkChanged(
     const NetworkState* network) {
-  OnNetworkStateChanged();
+  OnNetworkStateOrSyncServiceStateChanged();
 }
 
 void FloatingWorkspaceService::NetworkConnectionStateChanged(
     const NetworkState* network) {
-  OnNetworkStateChanged();
+  OnNetworkStateOrSyncServiceStateChanged();
 }
 
-void FloatingWorkspaceService::OnNetworkStateChanged() {
-  if (!floating_workspace_util::IsInternetConnected()) {
+void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
+  if (!floating_workspace_util::IsInternetConnected() ||
+      (sync_service_ && !sync_service_->IsSyncFeatureActive())) {
     // Only send notification if there's no notification currently or the
     // current notification is the same one that we want to display.
     if (notification_ == nullptr ||
