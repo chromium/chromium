@@ -2425,6 +2425,34 @@
       },
     },
   },
+  'dawn_end2end_implicit_device_sync_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
+  },
+  'dawn_end2end_no_dxc_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
+  },
   'dawn_end2end_skip_validation_tests': {
     'remove_from': [
       # TODO(crbug.com/1363409): Enable these once they're shown to work on
@@ -2434,6 +2462,32 @@
       'Dawn Android arm64 DEPS Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
+  },
+  'dawn_end2end_tests': {
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
   },
   'dawn_end2end_validation_layers_tests': {
     'remove_from': [
@@ -2454,6 +2508,18 @@
       'Dawn Android arm64 DEPS Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
+    'modifications': {
+      'Dawn Win10 x64 ASAN Release (Intel)': {
+        'swarming': {
+          'shards': 2,
+        }
+      },
+      'Dawn Win10 x64 ASAN Release (NVIDIA)': {
+        'swarming': {
+          'shards': 2,
+        }
+      }
+    },
   },
   'dawn_perf_tests': {
     'remove_from': [
