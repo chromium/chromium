@@ -116,7 +116,7 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
     return;
   }
 
-  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     if (!search_handler_) {
       return;
     }
@@ -181,7 +181,7 @@ void KeyboardShortcutProvider::OnSearchComplete(
 void KeyboardShortcutProvider::OnShortcutsSearchComplete(
     std::vector<ash::shortcut_customization::mojom::SearchResultPtr>
         search_results) {
-  CHECK(ash::features::isSearchCustomizableShortcutsInLauncherEnabled());
+  CHECK(ash::features::IsSearchCustomizableShortcutsInLauncherEnabled());
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

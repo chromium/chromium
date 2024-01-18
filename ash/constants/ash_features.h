@@ -1320,7 +1320,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAndroidStagingSmds();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseStorkSmds();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseMappableSharedImage();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool isSearchCustomizableShortcutsInLauncherEnabled();
+bool IsSearchCustomizableShortcutsInLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShortcutCustomizationLoggingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();

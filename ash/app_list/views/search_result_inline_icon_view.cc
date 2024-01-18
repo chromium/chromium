@@ -62,7 +62,7 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
 
   ui::ImageModel icon_model;
-  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     icon_model = ui::ImageModel::FromVectorIcon(
         *icon_, use_modified_styling_
                     ? cros_tokens::kCrosSysSystemOnPrimaryContainer
@@ -101,7 +101,7 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   label_->SetText(text);
   label_->SetVisible(true);
 
-  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     label_->SetEnabledColorId(
         use_modified_styling_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                               : cros_tokens::kCrosSysOnSurface);
@@ -127,7 +127,7 @@ void SearchResultInlineIconView::SetTooltipTextForImageView(
 }
 
 void SearchResultInlineIconView::OnPaint(gfx::Canvas* canvas) {
-  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+  if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     return;
   }
 

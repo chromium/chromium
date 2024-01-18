@@ -4520,7 +4520,7 @@ bool ShouldArcFileTasksUseAppService() {
   return base::FeatureList::IsEnabled(kArcFileTasksUseAppService);
 }
 
-bool isSearchCustomizableShortcutsInLauncherEnabled() {
+bool IsSearchCustomizableShortcutsInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
 }
 
