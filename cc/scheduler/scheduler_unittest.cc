@@ -295,7 +295,7 @@ class FakeSchedulerClient : public SchedulerClient,
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
   std::vector<const char*> actions_;
-  raw_ptr<TestScheduler, DanglingUntriaged> scheduler_ = nullptr;
+  raw_ptr<TestScheduler> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
   std::optional<FrameSkippedReason> last_frame_skipped_reason_;
 };
@@ -371,7 +371,7 @@ class SchedulerTest : public testing::Test {
       : task_runner_(base::MakeRefCounted<SchedulerTestTaskRunner>()),
         fake_external_begin_frame_source_(nullptr) {}
 
-  ~SchedulerTest() override = default;
+  ~SchedulerTest() override { client_->set_scheduler(nullptr); }
 
  protected:
   TestScheduler* CreateScheduler(BeginFrameSourceType bfs_type) {
