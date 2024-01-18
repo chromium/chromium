@@ -596,6 +596,13 @@ void ImmersiveModeControllerCocoa::
 void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
     NSWindow* window,
     NSView* anchor_view) {
+  // Only move |window| when it is on the active space. If |window| has a child
+  // with key an unwanted space switch will occur. See http://crbug.com/1519484
+  // and http://crbug.com/1316543.
+  if (!window.isOnActiveSpace) {
+    return;
+  }
+
   // Find the anchor view's point on screen (bottom left).
   NSPoint point_in_window = [anchor_view convertPoint:NSZeroPoint toView:nil];
   NSPoint point_on_screen =
