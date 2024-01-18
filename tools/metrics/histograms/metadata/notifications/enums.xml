@@ -1,0 +1,345 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanSystemNotifications">
+  <int value="0" label="Using Chrome notifications"/>
+  <int value="1" label="Using system notifications"/>
+</enum>
+
+<enum name="ChimeEvent">
+  <int value="0" label="Register"/>
+  <int value="1" label="UnRegister"/>
+  <int value="2" label="Notification Create"/>
+  <int value="3" label="Notification Click"/>
+  <int value="4" label="Notification Remove"/>
+  <int value="5" label="Notification Expire"/>
+  <int value="6" label="Notification Action Click"/>
+</enum>
+
+<enum name="NotificationActionSource">
+  <int value="0" label="Browser app"/>
+  <int value="1" label="Helper app"/>
+</enum>
+
+<enum name="NotificationActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Notification added"/>
+  <int value="2" label="Notification updated"/>
+  <int value="3" label="Notification clicked"/>
+  <int value="4" label="Notification button clicked"/>
+  <int value="5" label="Notification displayed"/>
+  <int value="6" label="Notification closed by user"/>
+  <int value="7" label="Notification closed by system"/>
+</enum>
+
+<enum name="NotificationDatabaseStatus">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not found error"/>
+  <int value="2" label="Corruption error"/>
+  <int value="3" label="Failure error"/>
+  <int value="4" label="I/O error"/>
+  <int value="5" label="Not supported error"/>
+  <int value="6" label="Invalid Argument error"/>
+</enum>
+
+<enum name="NotificationHelperComServerModuleStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="FACTORY_CREATION_FAILED"/>
+  <int value="2" label="ICLASSFACTORY_OBJECT_CREATION_FAILED"/>
+  <int value="3" label="REGISTRATION_FAILED"/>
+  <int value="4" label="UNREGISTRATION_FAILED"/>
+</enum>
+
+<enum name="NotificationHelperNotificationActivatorPrimaryStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Chrome exe missing"/>
+  <int value="2" label="ShellExecute failed"/>
+</enum>
+
+<enum name="NotificationHelperNotificationActivatorSecondaryStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="LaunchId empty"/>
+  <int value="2" label="AllowSetForegroundWindow failed"/>
+  <int value="3" label="LaunchId empty, AllowSetForegroundWindow failed"/>
+  <int value="4" label="Handle missing"/>
+  <int value="5" label="LaunchId empty, Handle missing"/>
+  <int value="6" label="AllowSetForegroundWindow failed, Handle missing"/>
+  <int value="7"
+      label="LaunchId empty, AllowSetForegroundWindow failed, Handle missing"/>
+</enum>
+
+<enum name="NotificationSchedulerActionButtonEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Helpful"/>
+  <int value="2" label="Unhelpful"/>
+</enum>
+
+<enum name="NotificationSchedulerNotificationLifeCycleEvent">
+  <int value="0" label="Schedule request"/>
+  <int value="1" label="Scheduled"/>
+  <int value="2" label="Invalid input parameters"/>
+  <int value="3" label="Shown"/>
+  <int value="4" label="Client Cancel"/>
+</enum>
+
+<enum name="NotificationSchedulerUserActionType">
+  <int value="0" label="Click"/>
+  <int value="1" label="Button Click"/>
+  <int value="2" label="Dismiss"/>
+</enum>
+
+<enum name="NotificationTypeDetailed">
+  <int value="0" label="ChromeApp priority=-2"/>
+  <int value="1" label="ChromeApp priority=-2 requireInteraction"/>
+  <int value="2" label="ChromeApp priority=-1"/>
+  <int value="3" label="ChromeApp priority=-1 requireInteraction"/>
+  <int value="4" label="ChromeApp priority=0"/>
+  <int value="5" label="ChromeApp priority=0 requireInteraction"/>
+  <int value="6" label="ChromeApp priority=1"/>
+  <int value="7" label="ChromeApp priority=1 requireInteraction"/>
+  <int value="8" label="ChromeApp priority=2"/>
+  <int value="9" label="ChromeApp priority=2 requireInteraction"/>
+  <int value="10" label="Arc priority=-2"/>
+  <int value="11" label="Arc priority=-2 pinned"/>
+  <int value="12" label="Arc priority=-1"/>
+  <int value="13" label="Arc priority=-1 pinned"/>
+  <int value="14" label="Arc priority=0"/>
+  <int value="15" label="Arc priority=0 pinned"/>
+  <int value="16" label="Arc priority=1"/>
+  <int value="17" label="Arc priority=1 pinned"/>
+  <int value="18" label="Arc priority=2"/>
+  <int value="19" label="Arc priority=2 pinned"/>
+  <int value="20" label="Web"/>
+  <int value="21" label="Web requireInteraction"/>
+  <int value="22" label="CrOS priority=-2"/>
+  <int value="23" label="CrOS priority=-2 pinned"/>
+  <int value="24" label="CrOS priority=-1"/>
+  <int value="25" label="CrOS priority=-1 pinned"/>
+  <int value="26" label="CrOS priority=0"/>
+  <int value="27" label="CrOS priority=0 pinned"/>
+  <int value="28" label="CrOS priority=1"/>
+  <int value="29" label="CrOS priority=1 pinned"/>
+  <int value="30" label="CrOS priority=2"/>
+  <int value="31" label="CrOS priority=2 pinned"/>
+  <int value="32" label="CrOS SystemPriority"/>
+  <int value="33" label="CrOS SystemPriority pinned"/>
+  <int value="34" label="CrOS SystemPriority level=Warning pinned"/>
+  <int value="35" label="CrOS SystemPriority level=Warning"/>
+  <int value="36" label="CrOS SystemPriority level=CriticalWarning"/>
+  <int value="37" label="CrOS SystemPriority level=CriticalWarning pinned"/>
+  <int value="38" label="Other"/>
+  <int value="39" label="PhoneHub priority=-2"/>
+  <int value="40" label="PhoneHub priority=-1"/>
+  <int value="41" label="PhoneHub priority=0"/>
+  <int value="42" label="PhoneHub priority=1"/>
+  <int value="43" label="PhoneHub priority=2"/>
+</enum>
+
+<enum name="NotifierType">
+  <int value="0" label="Application"/>
+  <int value="1" label="Arc++"/>
+  <int value="2" label="Web Page"/>
+  <int value="3" label="System Component"/>
+  <int value="4" label="Crostini"/>
+  <int value="5" label="Phone Hub"/>
+</enum>
+
+<enum name="PersistentNotificationDisplayResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Registration is not active"/>
+  <int value="2" label="Permission not granted"/>
+  <int value="3" label="Silent with vibrate option"/>
+  <int value="4" label="Renotify without tag option"/>
+  <int value="5" label="Failed to serialize data option"/>
+  <int value="6" label="Button action with placeholder option"/>
+  <int value="7" label="Show trigger delay too far ahead in future"/>
+  <int value="8" label="Too much data in user defined option"/>
+  <int value="9" label="Internal error"/>
+  <int value="10" label="Permission denied"/>
+</enum>
+
+<enum name="PlatformNotificationStatus">
+  <int value="0" label="OK"/>
+  <int value="1" label="Service Worker not found"/>
+  <int value="2" label="Service Worker error"/>
+  <int value="3" label="event.waitUntil promise rejected"/>
+  <int value="4" label="Database error"/>
+  <int value="5" label="No permission granted"/>
+</enum>
+
+<enum name="UNNotificationPermissionRequestResult">
+  <int value="0" label="Permission request failed"/>
+  <int value="1" label="Permission denied"/>
+  <int value="2" label="Permission granted"/>
+</enum>
+
+<enum name="UNNotificationPermissionStatus">
+  <int value="0" label="Permission not requested yet"/>
+  <int value="1" label="Permission denied"/>
+  <int value="2" label="Permission granted"/>
+</enum>
+
+<enum name="UNNotificationStyle">
+  <int value="0" label="None"/>
+  <int value="1" label="Banners"/>
+  <int value="2" label="Alerts"/>
+</enum>
+
+<enum name="WindowsNotificationActivationStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="GET_PROFILE_ID_INVALID_LAUNCH_ID (deprecated)"/>
+  <int value="2" label="ACTIVATION_INVALID_LAUNCH_ID (deprecated)"/>
+  <int value="3" label="INVALID_LAUNCH_ID"/>
+</enum>
+
+<enum name="WindowsNotificationCloseStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="GET_TOAST_HISTORY_FAILED"/>
+  <int value="2" label="REMOVING_TOAST_FAILED"/>
+</enum>
+
+<enum name="WindowsNotificationDisplayStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="RO_ACTIVATE_FAILED"/>
+  <int value="2" label="CONVERSION_FAILED_INSPECTABLE_TO_XML_IO"/>
+  <int value="3" label="LOAD_XML_FAILED"/>
+  <int value="4" label="CONVERSION_FAILED_XML_IO_TO_XML"/>
+  <int value="5" label="CREATE_FACTORY_FAILED"/>
+  <int value="6" label="CREATE_TOAST_NOTIFICATION_FAILED"/>
+  <int value="7" label="CREATE_TOAST_NOTIFICATION2_FAILED"/>
+  <int value="8" label="SETTING_GROUP_FAILED"/>
+  <int value="9" label="SETTING_TAG_FAILED"/>
+  <int value="10" label="GET_GROUP_FAILED"/>
+  <int value="11" label="GET_TAG_FAILED"/>
+  <int value="12" label="SUPPRESS_POPUP_FAILED"/>
+  <int value="13" label="ADD_TOAST_DISMISS_HANDLER_FAILED (deprecated)"/>
+  <int value="14" label="ADD_TOAST_ERROR_HANDLER_FAILED"/>
+  <int value="15" label="SHOWING_TOAST_FAILED"/>
+  <int value="16" label="CREATE_TOAST_NOTIFICATION_MANAGER_FAILED"/>
+  <int value="17" label="CREATE_TOAST_NOTIFIER_WITH_ID_FAILED"/>
+  <int value="18" label="DISABLED_FOR_APPLICATION (deprecated)"/>
+  <int value="19" label="DISABLED_FOR_USER (deprecated)"/>
+  <int value="20" label="DISABLED_BY_GROUP_POLICY (deprecated)"/>
+  <int value="21" label="DISABLED_BY_MANIFEST (deprecated)"/>
+</enum>
+
+<enum name="WindowsNotificationGetDisplayedLaunchIdStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="DECODE_LAUNCH_ID_FAILED"/>
+</enum>
+
+<enum name="WindowsNotificationGetDisplayedStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="SUCCESS_WITH_GET_AT_FAILURE"/>
+  <int value="2" label="GET_TOAST_HISTORY_FAILED"/>
+  <int value="3" label="QUERY_TOAST_NOTIFICATION_HISTORY2_FAILED"/>
+  <int value="4" label="GET_HISTORY_WITH_ID_FAILED"/>
+  <int value="5" label="GET_SIZE_FAILED"/>
+</enum>
+
+<enum name="WindowsNotificationGetNotificationLaunchIdStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="NOTIFICATION_GET_CONTENT_FAILED"/>
+  <int value="2" label="GET_ELEMENTS_BY_TAG_FAILED"/>
+  <int value="3" label="MISSING_TOAST_ELEMENT_IN_DOC"/>
+  <int value="4" label="ITEM_AT_FAILED"/>
+  <int value="5" label="GET_ATTRIBUTES_FAILED"/>
+  <int value="6" label="GET_NAMED_ITEM_FAILED"/>
+  <int value="7" label="GET_FIRST_CHILD_FAILED"/>
+  <int value="8" label="GET_NODE_VALUE_FAILED"/>
+  <int value="9" label="CONVERSION_TO_PROP_VALUE_FAILED"/>
+  <int value="10" label="GET_STRING_FAILED"/>
+  <int value="11" label="GET_NAMED_ITEM_NULL"/>
+  <int value="12" label="GET_FIRST_CHILD_NULL"/>
+</enum>
+
+<enum name="WindowsNotificationGetSettingPolicy">
+  <int value="0" label="ENABLED"/>
+  <int value="1" label="DISABLED_FOR_APPLICATION"/>
+  <int value="2" label="DISABLED_FOR_USER"/>
+  <int value="3" label="DISABLED_BY_GROUP_POLICY"/>
+  <int value="4" label="DISABLED_BY_MANIFEST"/>
+  <int value="5" label="UNKNOWN"/>
+</enum>
+
+<enum name="WindowsNotificationGetSettingStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="UNKNOWN_FAILURE"/>
+</enum>
+
+<enum name="WindowsNotificationHandleEventStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="HANDLE_EVENT_LAUNCH_ID_INVALID"/>
+</enum>
+
+<enum name="WindowsNotificationHistoryStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="CREATE_TOAST_NOTIFICATION_MANAGER_FAILED"/>
+  <int value="2" label="QUERY_TOAST_MANAGER_STATISTICS2_FAILED"/>
+  <int value="3" label="GET_TOAST_HISTORY_FAILED"/>
+</enum>
+
+<enum name="WindowsNotificationLaunchIdDecodeStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Empty input"/>
+  <int value="2" label="Component id invalid"/>
+  <int value="3" label="Component id out of range"/>
+  <int value="4" label="Insufficient tokens"/>
+  <int value="5" label="Button index invalild"/>
+  <int value="6" label="Type invalid"/>
+  <int value="7" label="Type out of range"/>
+</enum>
+
+<enum name="WindowsNotificationOnFailedStatus">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="GET_ERROR_CODE_FAILED"/>
+</enum>
+
+<enum name="WindowsNotificationSetReadyCallbackStatus2">
+  <int value="0" label="Success"/>
+  <int value="1" label="Misconfig - Shortcut"/>
+  <int value="2" label="Misconfig - ComServer"/>
+  <int value="3" label="Misconfig - Shortcut and ComServer"/>
+  <int value="4" label="Misconfig - ComInitialization"/>
+  <int value="5" label="Misconfig - Shortcut and ComInitialization"/>
+  <int value="6" label="Misconfig - ComServer and ComInitialization"/>
+  <int value="7"
+      label="Misconfig - Shortcut and ComServer and ComInitialization"/>
+</enum>
+
+<enum name="WindowsNotificationStartMenuShortcutStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Get shortcut path failed"/>
+  <int value="2" label="Shortcut missing"/>
+  <int value="3" label="Toast activator CLSID incorrect"/>
+  <int value="4" label="Read shortcut property failed"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -1,0 +1,100 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanHasData">
+  <int value="0" label="No data"/>
+  <int value="1" label="Has data"/>
+</enum>
+
+<enum name="BooleanHasFetchers">
+  <int value="0" label="Missing fetchers"/>
+  <int value="1" label="Has fetchers"/>
+</enum>
+
+<enum name="LocalStorageOpenError">
+  <int value="0" label="Directory open failed"/>
+  <int value="1" label="Database open failed"/>
+  <int value="2" label="Invalid schema version"/>
+  <int value="3" label="Error reading schema version"/>
+  <int value="4" label="Success"/>
+</enum>
+
+<enum name="SessionRestoreFinishReason">
+  <int value="0"
+      label="SessionRestore.ForegroundTabFirstPaint4_XX successfully
+             recorded."/>
+  <int value="1"
+      label="No tabs were visible the whole time before first paint."/>
+  <int value="2" label="No restored tabs were painted."/>
+  <int value="3" label="A non-restored tab was painted first."/>
+</enum>
+
+<enum name="SessionStorageDatabaseOpen">
+  <int value="0" label="OK">Succesfully opened the database.</int>
+  <int value="1" label="Recovered">
+    Failed to open the existing db, deleted it, and created a new empty db.
+  </int>
+  <int value="2"
+      label="(Obsolete) Reopen: Total Fail. Deprecated 2016/11. Replaced by
+             other 'Reopen' errors.">
+    Failed to open the database and also failed to delete and start over.
+  </int>
+  <int value="3" label="Reopen: not found">
+    Reopen attempt failed with (not found) after successful database delete.
+  </int>
+  <int value="4" label="Reopen: not supported">
+    Reopen attempt failed with (not supported) after successful database delete.
+  </int>
+  <int value="5" label="Reopen: corruption">
+    Reopen attempt failed with (corruption) after successful database delete.
+  </int>
+  <int value="6" label="Reopen: invalid argument">
+    Reopen attempt failed with (invalid argument) after successful database
+    delete.
+  </int>
+  <int value="7" label="Reopen: I/O error">
+    Reopen attempt failed with (I/O error) after successful database delete.
+  </int>
+</enum>
+
+<enum name="SessionStorageFormat">
+  <int value="0" label="Legacy"/>
+  <int value="1" label="Optimized"/>
+</enum>
+
+<enum name="SessionStorageMigrationStatus">
+  <int value="0" label="MigrationSucceeded">The migration was successful.</int>
+  <int value="1" label="MigrationFailure">The migration failed.</int>
+  <int value="2" label="MigrationInterrupted">
+    The application crashed (or was terminated by the user) during migration.
+  </int>
+</enum>
+
+</enums>
+
+</histogram-configuration>

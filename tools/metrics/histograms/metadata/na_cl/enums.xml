@@ -1,0 +1,249 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="NaClEmbedderTypeEnum">
+  <int value="0" label="PNaCl Open Web"/>
+  <int value="1" label="PNaCl Hosted App"/>
+  <int value="2" label="PNaCl Platform App"/>
+  <int value="3" label="PNaCl Legacy Packaged App"/>
+  <int value="4" label="PNaCl Browser MV2 Extension"/>
+  <int value="5" label="PNaCl Browser MV3 Extension"/>
+  <int value="6" label="PNaCl Login Screen MV2 Extension"/>
+  <int value="7" label="PNaCl Login Screen MV3 Extension"/>
+  <int value="8" label="NaCl Open Web"/>
+  <int value="9" label="NaCl Hosted App"/>
+  <int value="10" label="NaCl Platform App"/>
+  <int value="11" label="NaCl Legacy Packaged App"/>
+  <int value="12" label="NaCl Browser MV2 Extension"/>
+  <int value="13" label="NaCl Browser MV3 Extension"/>
+  <int value="14" label="NaCl Login Screen MV2 Extension"/>
+  <int value="15" label="NaCl Login Screen MV3 Extension"/>
+</enum>
+
+<enum name="NaClHelperStatus">
+  <int value="0" label="Helper not initialized"/>
+  <int value="1" label="Helper executable missing"/>
+  <int value="2" label="Helper bootstrap executable missing"/>
+  <int value="3" label="Browser running under Valgrind"/>
+  <int value="4" label="Helper failed to launch"/>
+  <int value="5" label="Helper failed to ACK"/>
+  <int value="6" label="Helper started correctly"/>
+</enum>
+
+<enum name="NaClHttpStatusCodeClass">
+  <int value="0" label="0XX"/>
+  <int value="1" label="1XX"/>
+  <int value="2" label="2XX"/>
+  <int value="3" label="3XX"/>
+  <int value="4" label="4XX"/>
+  <int value="5" label="5XX"/>
+  <int value="6" label="No status"/>
+</enum>
+
+<enum name="NaClManifestType">
+  <int value="0" label="File"/>
+  <int value="1" label="DataURI"/>
+</enum>
+
+<enum name="NaClOSArchEnum">
+  <int value="0" label="Linux x86-32"/>
+  <int value="1" label="Linux x86-64"/>
+  <int value="2" label="Linux ARM"/>
+  <int value="3" label="Mac x86-32"/>
+  <int value="4" label="Mac x86-64"/>
+  <int value="5" label="Mac ARM"/>
+  <int value="6" label="Windows x86-32"/>
+  <int value="7" label="Windows x86-64"/>
+  <int value="8" label="Windows ARM"/>
+  <int value="9" label="Linux Mips32"/>
+</enum>
+
+<enum name="NaClPluginErrorCode">
+  <int value="0" label="ERROR_LOAD_SUCCESS"/>
+  <int value="1" label="ERROR_LOAD_ABORTED"/>
+  <int value="2" label="ERROR_UNKNOWN"/>
+  <int value="3" label="ERROR_MANIFEST_RESOLVE_URL"/>
+  <int value="4" label="ERROR_MANIFEST_LOAD_URL"/>
+  <int value="5" label="ERROR_MANIFEST_STAT"/>
+  <int value="6" label="ERROR_MANIFEST_TOO_LARGE"/>
+  <int value="7" label="ERROR_MANIFEST_OPEN"/>
+  <int value="8" label="ERROR_MANIFEST_MEMORY_ALLOC"/>
+  <int value="9" label="ERROR_MANIFEST_READ"/>
+  <int value="10" label="ERROR_MANIFEST_PARSING"/>
+  <int value="11" label="ERROR_MANIFEST_SCHEMA_VALIDATE"/>
+  <int value="12" label="ERROR_MANIFEST_GET_NEXE_URL"/>
+  <int value="13" label="ERROR_NEXE_LOAD_URL"/>
+  <int value="14" label="ERROR_NEXE_ORIGIN_PROTOCOL"/>
+  <int value="15" label="ERROR_NEXE_FH_DUP"/>
+  <int value="16" label="ERROR_NEXE_STAT"/>
+  <int value="17" label="ERROR_ELF_CHECK_IO"/>
+  <int value="18" label="ERROR_ELF_CHECK_FAIL"/>
+  <int value="19" label="ERROR_SEL_LDR_INIT"/>
+  <int value="20" label="ERROR_SEL_LDR_CREATE_LAUNCHER"/>
+  <int value="21" label="ERROR_SEL_LDR_FD"/>
+  <int value="22" label="ERROR_SEL_LDR_LAUNCH"/>
+  <int value="23" label="ERROR_SEL_LDR_COMMUNICATION"/>
+  <int value="24" label="ERROR_SEL_LDR_SEND_NEXE"/>
+  <int value="25" label="ERROR_SEL_LDR_HANDLE_PASSING"/>
+  <int value="26" label="ERROR_SEL_LDR_START_MODULE"/>
+  <int value="27" label="ERROR_SEL_LDR_START_STATUS"/>
+  <int value="28" label="ERROR_SRPC_CONNECTION_FAIL"/>
+  <int value="29" label="ERROR_START_PROXY_CHECK_PPP"/>
+  <int value="30" label="ERROR_START_PROXY_ALLOC"/>
+  <int value="31" label="ERROR_START_PROXY_MODULE"/>
+  <int value="32" label="ERROR_START_PROXY_INSTANCE"/>
+  <int value="33" label="ERROR_SEL_LDR_COMMUNICATION_CMD_CHANNEL"/>
+  <int value="34" label="ERROR_SEL_LDR_COMMUNICATION_REV_SETUP"/>
+  <int value="35" label="ERROR_SEL_LDR_COMMUNICATION_WRAPPER"/>
+  <int value="36" label="ERROR_SEL_LDR_COMMUNICATION_REV_SERVICE"/>
+  <int value="37" label="ERROR_START_PROXY_CRASH"/>
+  <int value="38" label="ERROR_MANIFEST_PROGRAM_MISSING_ARCH"/>
+  <int value="39" label="ERROR_PNACL_CACHE_OPEN_INPROGRESS"/>
+  <int value="40" label="ERROR_PNACL_CACHE_OPEN_NOACCESS"/>
+  <int value="41" label="ERROR_PNACL_CACHE_OPEN_NOQUOTA"/>
+  <int value="42" label="ERROR_PNACL_CACHE_OPEN_NOSPACE"/>
+  <int value="43" label="ERROR_PNACL_CACHE_OPEN_OTHER"/>
+  <int value="44" label="ERROR_PNACL_CACHE_DIRECTORY_CREATE"/>
+  <int value="45" label="ERROR_PNACL_CACHE_FILEOPEN_NOACCESS"/>
+  <int value="46" label="ERROR_PNACL_CACHE_FILEOPEN_NOQUOTA"/>
+  <int value="47" label="ERROR_PNACL_CACHE_FILEOPEN_NOSPACE"/>
+  <int value="48" label="ERROR_PNACL_CACHE_FILEOPEN_NOTAFILE"/>
+  <int value="49" label="ERROR_PNACL_CACHE_FILEOPEN_OTHER"/>
+  <int value="50" label="ERROR_PNACL_CACHE_FETCH_NOACCESS"/>
+  <int value="51" label="ERROR_PNACL_CACHE_FETCH_NOTFOUND"/>
+  <int value="52" label="ERROR_PNACL_CACHE_FETCH_OTHER"/>
+  <int value="53" label="ERROR_PNACL_CACHE_FINALIZE_COPY_NOQUOTA"/>
+  <int value="54" label="ERROR_PNACL_CACHE_FINALIZE_COPY_NOSPACE"/>
+  <int value="55" label="ERROR_PNACL_CACHE_FINALIZE_COPY_OTHER"/>
+  <int value="56" label="ERROR_PNACL_CACHE_FINALIZE_RENAME_NOACCESS"/>
+  <int value="57" label="ERROR_PNACL_CACHE_FINALIZE_RENAME_OTHER"/>
+  <int value="58" label="ERROR_PNACL_RESOURCE_FETCH"/>
+  <int value="59" label="ERROR_PNACL_PEXE_FETCH_ABORTED"/>
+  <int value="60" label="ERROR_PNACL_PEXE_FETCH_NOACCESS"/>
+  <int value="61" label="ERROR_PNACL_PEXE_FETCH_OTHER"/>
+  <int value="62" label="ERROR_PNACL_THREAD_CREATE"/>
+  <int value="63" label="ERROR_PNACL_LLC_SETUP"/>
+  <int value="64" label="ERROR_PNACL_LD_SETUP"/>
+  <int value="65" label="ERROR_PNACL_LLC_INTERNAL"/>
+  <int value="66" label="ERROR_PNACL_LD_INTERNAL"/>
+  <int value="67" label="ERROR_PNACL_CREATE_TEMP"/>
+  <int value="68" label="ERROR_PNACL_NOT_ENABLED"/>
+  <int value="69" label="ERROR_MANIFEST_NOACCESS_URL"/>
+  <int value="70" label="ERROR_NEXE_NOACCESS_URL"/>
+</enum>
+
+<enum name="NaClSelLdrErrorCode">
+  <int value="0" label="LOAD_OK"/>
+  <int value="1" label="LOAD_STATUS_UNKNOWN"/>
+  <int value="2" label="LOAD_UNSUPPORTED_OS_PLATFORM"/>
+  <int value="3" label="LOAD_DEP_UNSUPPORTED"/>
+  <int value="4" label="LOAD_INTERNAL"/>
+  <int value="5" label="LOAD_DUP_LOAD_MODULE"/>
+  <int value="6" label="LOAD_DUP_START_MODULE"/>
+  <int value="7" label="LOAD_OPEN_ERROR"/>
+  <int value="8" label="LOAD_READ_ERROR"/>
+  <int value="9" label="LOAD_TOO_MANY_PROG_HDRS"/>
+  <int value="10" label="LOAD_BAD_PHENTSIZE"/>
+  <int value="11" label="LOAD_BAD_ELF_MAGIC"/>
+  <int value="12" label="LOAD_NOT_32_BIT"/>
+  <int value="13" label="LOAD_NOT_64_BIT"/>
+  <int value="14" label="LOAD_BAD_ABI"/>
+  <int value="15" label="LOAD_NOT_EXEC"/>
+  <int value="16" label="LOAD_BAD_MACHINE"/>
+  <int value="17" label="LOAD_BAD_ELF_VERS"/>
+  <int value="18" label="LOAD_TOO_MANY_SECT"/>
+  <int value="19" label="LOAD_BAD_SECT"/>
+  <int value="20" label="LOAD_NO_MEMORY"/>
+  <int value="21" label="LOAD_SECT_HDR"/>
+  <int value="22" label="LOAD_ADDR_SPACE_TOO_SMALL"/>
+  <int value="23" label="LOAD_ADDR_SPACE_TOO_BIG"/>
+  <int value="24" label="LOAD_DATA_OVERLAPS_STACK_SECTION"/>
+  <int value="25" label="LOAD_RODATA_OVERLAPS_DATA"/>
+  <int value="26" label="LOAD_DATA_NOT_LAST_SEGMENT"/>
+  <int value="27" label="LOAD_NO_DATA_BUT_RODATA_NOT_LAST_SEGMENT"/>
+  <int value="28" label="LOAD_TEXT_OVERLAPS_RODATA"/>
+  <int value="29" label="LOAD_TEXT_OVERLAPS_DATA"/>
+  <int value="30" label="LOAD_BAD_RODATA_ALIGNMENT"/>
+  <int value="31" label="LOAD_BAD_DATA_ALIGNMENT"/>
+  <int value="32" label="LOAD_UNLOADABLE"/>
+  <int value="33" label="LOAD_BAD_ELF_TEXT"/>
+  <int value="34" label="LOAD_TEXT_SEG_TOO_BIG"/>
+  <int value="35" label="LOAD_DATA_SEG_TOO_BIG"/>
+  <int value="36" label="LOAD_MPROTECT_FAIL"/>
+  <int value="37" label="LOAD_MADVISE_FAIL"/>
+  <int value="38" label="LOAD_TOO_MANY_SYMBOL_STR"/>
+  <int value="39" label="LOAD_SYMTAB_ENTRY_TOO_SMALL"/>
+  <int value="40" label="LOAD_NO_SYMTAB"/>
+  <int value="41" label="LOAD_NO_SYMTAB_STRINGS"/>
+  <int value="42" label="LOAD_SYMTAB_ENTRY"/>
+  <int value="43" label="LOAD_UNKNOWN_SYMBOL_TYPE"/>
+  <int value="44" label="LOAD_SYMTAB_DUP"/>
+  <int value="45" label="LOAD_REL_ERROR"/>
+  <int value="46" label="LOAD_REL_UNIMPL"/>
+  <int value="47" label="LOAD_UNDEF_SYMBOL"/>
+  <int value="48" label="LOAD_BAD_SYMBOL_DATA"/>
+  <int value="49" label="LOAD_BAD_FILE"/>
+  <int value="50" label="LOAD_BAD_ENTRY"/>
+  <int value="51" label="LOAD_SEGMENT_OUTSIDE_ADDRSPACE"/>
+  <int value="52" label="LOAD_DUP_SEGMENT"/>
+  <int value="53" label="LOAD_SEGMENT_BAD_LOC"/>
+  <int value="54" label="LOAD_BAD_SEGMENT"/>
+  <int value="55" label="LOAD_REQUIRED_SEG_MISSING"/>
+  <int value="56" label="LOAD_SEGMENT_BAD_PARAM"/>
+  <int value="57" label="LOAD_VALIDATION_FAILED"/>
+  <int value="58" label="LOAD_UNIMPLEMENTED"/>
+  <int value="59" label="SRT_NO_SEG_SEL"/>
+  <int value="60" label="LOAD_BAD_EHSIZE"/>
+  <int value="61" label="LOAD_EHDR_OVERFLOW"/>
+  <int value="62" label="LOAD_PHDR_OVERFLOW"/>
+  <int value="63" label="LOAD_UNSUPPORTED_CPU"/>
+  <int value="64" label="LOAD_NO_MEMORY_FOR_DYNAMIC_TEXT"/>
+  <int value="65" label="LOAD_NO_MEMORY_FOR_ADDRESS_SPACE"/>
+</enum>
+
+<enum name="NaClValidationCacheEnum">
+  <int value="0" label="Miss"/>
+  <int value="1" label="Hit"/>
+</enum>
+
+<enum name="PNaClOptionsOptLevelEnum">
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="Default / Unknown"/>
+</enum>
+
+<enum name="PNaClTranslationCacheEnum">
+  <int value="0" label="Miss"/>
+  <int value="1" label="Hit"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

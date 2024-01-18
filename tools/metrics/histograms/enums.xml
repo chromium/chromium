@@ -1984,18 +1984,6 @@ Called by update_autofill_enums.py.-->
              the OS."/>
 </enum>
 
-<enum name="BatterySaverBubbleActionType">
-  <int value="0" label="Turn off mode for current session"/>
-  <int value="1" label="Dismissed bubble"/>
-</enum>
-
-<enum name="BatterySaverModeState">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="Enabled below threshold"/>
-  <int value="2" label="Enabled on battery"/>
-  <int value="3" label="Enabled"/>
-</enum>
-
 <enum name="BeforeUnloadDialogResult">
   <int value="0" label="No dialog: no string returned"/>
   <int value="1" label="No dialog: blocked, no user gesture"/>
@@ -2203,11 +2191,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Related Searches"/>
 </enum>
 
-<enum name="BooleanBringToForegroundReason">
-  <int value="0" label="Other"/>
-  <int value="1" label="Notification click (within last 5 seconds)"/>
-</enum>
-
 <enum name="BooleanCacheHit">
   <int value="0" label="Miss"/>
   <int value="1" label="Hit"/>
@@ -2377,16 +2360,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanHardwareAccelerated">
   <int value="0" label="Not hardware accelerated"/>
   <int value="1" label="Hardware accelerated"/>
-</enum>
-
-<enum name="BooleanHasData">
-  <int value="0" label="No data"/>
-  <int value="1" label="Has data"/>
-</enum>
-
-<enum name="BooleanHasFetchers">
-  <int value="0" label="Missing fetchers"/>
-  <int value="1" label="Has fetchers"/>
 </enum>
 
 <enum name="BooleanHasUserActivation">
@@ -2612,11 +2585,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Switched"/>
 </enum>
 
-<enum name="BooleanSystemNotifications">
-  <int value="0" label="Using Chrome notifications"/>
-  <int value="1" label="Using system notifications"/>
-</enum>
-
 <enum name="BooleanTimedOut">
   <int value="0" label="Did not time out"/>
   <int value="1" label="Timed out"/>
@@ -2815,58 +2783,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Update available"/>
   <int value="2" label="Enterprise rollback required"/>
   <int value="3" label="Channel rollback required"/>
-</enum>
-
-<enum name="CacheStorageErrorStorageType">
-  <int value="0" label="kDidCreateNullCache"/>
-  <int value="1" label="kDeleteCacheFailed"/>
-  <int value="2" label="kMatchBackendClosed"/>
-  <int value="3" label="kMatchAllBackendClosed"/>
-  <int value="4" label="kWriteSideDataBackendClosed"/>
-  <int value="5" label="kBatchBackendClosed"/>
-  <int value="6" label="kBatchInvalidSpace"/>
-  <int value="7" label="kBatchDidGetUsageAndQuotaInvalidSpace"/>
-  <int value="8" label="kBatchDidGetUsageAndQuotaUndefinedOp"/>
-  <int value="9" label="kKeysBackendClosed"/>
-  <int value="10" label="kQueryCacheBackendClosed"/>
-  <int value="11" label="kQueryCacheFilterEntryFailed"/>
-  <int value="12" label="kQueryCacheDidReadMetadataNullBlobContext"/>
-  <int value="13" label="kStorageMatchAllBackendClosed"/>
-  <int value="14" label="kWriteSideDataImplBackendClosed"/>
-  <int value="15" label="kPutImplBackendClosed"/>
-  <int value="16" label="kPutDidDeleteEntryBackendClosed"/>
-  <int value="17" label="kMetadataSerializationFailed"/>
-  <int value="18" label="kPutDidWriteHeadersWrongBytes"/>
-  <int value="19" label="kPutDidWriteBlobToCacheFailed"/>
-  <int value="20" label="kDeleteImplBackendClosed"/>
-  <int value="21" label="kKeysImplBackendClosed"/>
-  <int value="22" label="kCreateBackendDidCreateFailed"/>
-  <int value="23" label="kStorageGetAllMatchedEntriesBackendClosed"/>
-  <int value="24" label="kStorageHandleNull"/>
-  <int value="25" label="kWriteSideDataDidWriteMetadataWrongBytes"/>
-  <int value="26" label="kDefaultBucketError"/>
-</enum>
-
-<enum name="CacheStorageErrorType">
-  <int value="0" label="OK"/>
-  <int value="1" label="Exists Error"/>
-  <int value="2" label="Storage Error"/>
-  <int value="3" label="Not Found Error"/>
-  <int value="4" label="Quota Exceeded Error"/>
-  <int value="5" label="Cache Name Not Found Error"/>
-  <int value="6" label="Query Too Large Error"/>
-  <int value="7" label="Not Implemented Error"/>
-  <int value="8" label="Duplicate Operation Error"/>
-  <int value="9" label="Cross Origin Resource Policy Error"/>
-</enum>
-
-<enum name="CacheStorageIndexResult">
-  <int value="0" label="OK"/>
-  <int value="1" label="Failed to Parse"/>
-  <int value="2" label="Missing Origin"/>
-  <int value="3" label="Empty Origin URL"/>
-  <int value="4" label="Path Mismatch"/>
-  <int value="5" label="Path FileInfo Failed"/>
 </enum>
 
 <enum name="CameraOpenEntryPoint">
@@ -3673,16 +3589,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="27" label="CHANNEL_LAYOUT_7_1_WIDE_BACK"/>
   <int value="28" label="CHANNEL_LAYOUT_OCTAGONAL"/>
   <int value="29" label="CHANNEL_LAYOUT_DISCRETE"/>
-</enum>
-
-<enum name="ChimeEvent">
-  <int value="0" label="Register"/>
-  <int value="1" label="UnRegister"/>
-  <int value="2" label="Notification Create"/>
-  <int value="3" label="Notification Click"/>
-  <int value="4" label="Notification Remove"/>
-  <int value="5" label="Notification Expire"/>
-  <int value="6" label="Notification Action Click"/>
 </enum>
 
 <enum name="ChromeBrowsingDataRemoverTasks">
@@ -4539,21 +4445,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="PLAY_STORE"/>
   <int value="2" label="BACKUP_AND_RESTORE"/>
   <int value="3" label="GOOGLE_LOCATION_SERVICE"/>
-</enum>
-
-<enum name="ConsolidatedConsentScreenUserAction">
-  <summary>Actions which happen on the consolidated consent screen.</summary>
-  <int value="0" label="Accept button clicked"/>
-  <int value="1" label="Back button on demo mode clicked"/>
-  <int value="2" label="Google ToS link clicked"/>
-  <int value="3" label="Chrome and ChromeOS additional ToS clicked"/>
-  <int value="4" label="Google Play ToS clicked"/>
-  <int value="5" label="Google Privacy Policy clicked"/>
-  <int value="6" label="Usage data opt-in learn more clicked"/>
-  <int value="7" label="Backup opt-in learn more clicked"/>
-  <int value="8" label="Location opt-in learn more clicked"/>
-  <int value="9" label="Footer learn more clicked"/>
-  <int value="10" label="Error step retry button clicked"/>
 </enum>
 
 <enum name="ContentIndexCategory">
@@ -6190,12 +6081,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="320" label="Network - Busy">
     100 * MountType::kNetworkStorage + MountError::kBusy
   </int>
-</enum>
-
-<enum name="CrossProcessTimeDelta">
-  <int value="0" label="Normal time delta measured"/>
-  <int value="1" label="Unexpectedly negative time delta measured"/>
-  <int value="2" label="The system clock is known to be inaccurate"/>
 </enum>
 
 <enum name="CrostiniAppLaunchAppType">
@@ -8382,28 +8267,6 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Consent Logged Recived"/>
   <int value="4" label="Account Succesfully Added"/>
   <int value="5" label="Error"/>
-</enum>
-
-<enum name="EmbeddedWorkerStartingPhase">
-  <int value="0" label="NOT_STARTING"/>
-  <int value="1" label="ALLOCATING_PROCESS"/>
-  <int value="2" label="REGISTERING_TO_DEVTOOLS (obsolete)"/>
-  <int value="3" label="SENT_START_WORKER"/>
-  <int value="4" label="SCRIPT_DOWNLOADING"/>
-  <int value="5" label="SCRIPT_LOADED"/>
-  <int value="6" label="SCRIPT_EVALUATED (obsolete)"/>
-  <int value="7" label="THREAD_STARTED"/>
-  <int value="8" label="SCRIPT_READ_STARTED (obsolete)"/>
-  <int value="9" label="SCRIPT_READ_FINISHED (obsolete)"/>
-  <int value="10" label="SCRIPT_STREAMING"/>
-  <int value="11" label="SCRIPT_EVALUATION"/>
-</enum>
-
-<enum name="EmbeddedWorkerStatus">
-  <int value="0" label="STOPPED"/>
-  <int value="1" label="STARTING"/>
-  <int value="2" label="RUNNING"/>
-  <int value="3" label="STOPPING"/>
 </enum>
 
 <enum name="EmeApiType">
@@ -14948,23 +14811,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="18" label="CaptureResetTest"/>
 </enum>
 
-<enum name="FingerprintSetupScreenUserAction">
-  <summary>Actions which happen on the screen.</summary>
-  <int value="0" label="Setup done button clicked"/>
-  <int value="1" label="Skipped button clicked">
-    Obsolete, splited into skip in flow and skip on start actions in M90.
-  </int>
-  <int value="2" label="Do it later button clicked">
-    Obsolete, the button is removed.
-  </int>
-  <int value="3" label="Add another finger button clicked"/>
-  <int value="4" label="Show sensor location button clicked">
-    Obsolete, the button in removed.
-  </int>
-  <int value="5" label="Skip button clicked on starting page"/>
-  <int value="6" label="Skip button clicked in flow"/>
-</enum>
-
 <enum name="FingerprintUnlockResult">
   <int value="0" label="Success">
     Successful fingerprint unlock occurred.
@@ -15252,23 +15098,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="253" label="Seccomp violation">
     MINIJAIL_ERR_JAIL from libminijail
   </int>
-</enum>
-
-<enum name="GaiaLoginVariant">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="OOBE"/>
-  <int value="2" label="Add User"/>
-  <int value="3" label="Online Signin"/>
-</enum>
-
-<enum name="GaiaPasswordChangedScreenUserAction">
-  <summary>Actions which happen on the screen.</summary>
-  <int value="0" label="Resync user data"/>
-  <int value="1" label="Migrate user data"/>
-  <int value="2" label="Cancel dialog"/>
-  <int value="3" label="Incorrect old password"/>
-  <int value="4" label="Don't setup Recovery"/>
-  <int value="5" label="Setup Recovery"/>
 </enum>
 
 <enum name="GaiaServiceType">
@@ -15921,38 +15750,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Ready and success"/>
   <int value="3" label="Ready, empty index (not success)"/>
   <int value="4" label="Ready, other status (not success, not empty index)"/>
-</enum>
-
-<enum name="HidDetectionBluetoothPairingResult">
-  <int value="0" label="Attempted but did not pair via Bluetooth"/>
-  <int value="1" label="Paired via Bluetooth"/>
-</enum>
-
-<enum name="HidsMissing">
-  <summary>
-    Possible combination of human input device types that may be missing when
-    OOBE starts.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="Pointer"/>
-  <int value="2" label="Keyboard"/>
-  <int value="3" label="Pointer and keyboard"/>
-</enum>
-
-<enum name="HidType">
-  <summary>
-    Possible device types of HIDs interfaced with in the OOBE HID detection
-    screen
-  </summary>
-  <int value="0" label="Touchscreen"/>
-  <int value="1" label="USB Keyboard"/>
-  <int value="2" label="USB Pointer"/>
-  <int value="3" label="Serial Keyboard"/>
-  <int value="4" label="Serial Pointer"/>
-  <int value="5" label="Bluetooth Keyboard"/>
-  <int value="6" label="Bluetooth Pointer"/>
-  <int value="7" label="Unknown Keyboard"/>
-  <int value="8" label="Unknown Pointer"/>
 </enum>
 
 <enum name="HistoryClustersFinalState">
@@ -17030,22 +16827,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Close Incognito"/>
 </enum>
 
-<enum name="IncognitoForcedStart">
-  <int value="0" label="No Incognito switch and not forced"/>
-  <int value="1" label="Incognito switch but not forced"/>
-  <int value="2" label="No Incognito switch but forced"/>
-  <int value="3" label="Incognito switch and forced"/>
-</enum>
-
-<enum name="InitialServiceWorkerStatus">
-  <int value="0" label="kRunning"/>
-  <int value="1" label="kStarting"/>
-  <int value="2" label="kStopping"/>
-  <int value="3" label="kStopped"/>
-  <int value="4" label="kWarmingUp"/>
-  <int value="5" label="kWarmedUp"/>
-</enum>
-
 <enum name="InnerHTMLFastPathParserParseResult">
   <int value="0" label="Content was successfully parsed"/>
   <int value="1" label="Could not use fast path because tracing is enabled"/>
@@ -17477,17 +17258,6 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="InvalidOriginReason">
   <int value="0" label="Opaque Origin"/>
   <int value="1" label="Empty URL"/>
-</enum>
-
-<enum name="IOSColdStartType">
-  <int value="0" label="Cold start"/>
-  <int value="1" label="Cold start with FRE"/>
-  <int value="2" label="Cold start after device restore"/>
-  <int value="3" label="Cold start after Chrome upgrade"/>
-  <int value="4" label="Cold start after device restore and Chrome upgrade"/>
-  <int value="5" label="Cold start with unknown device restore"/>
-  <int value="6"
-      label="Cold start with unknown device restore and Chrome upgrade"/>
 </enum>
 
 <enum name="IOSContentSizeCategory">
@@ -19699,14 +19469,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Success"/>
   <int value="2" label="EmptyQuery"/>
   <int value="3" label="EmptyIndex"/>
-</enum>
-
-<enum name="LocalStorageOpenError">
-  <int value="0" label="Directory open failed"/>
-  <int value="1" label="Database open failed"/>
-  <int value="2" label="Invalid schema version"/>
-  <int value="3" label="Error reading schema version"/>
-  <int value="4" label="Success"/>
 </enum>
 
 <enum name="LocalStorageRendererAreaCacheHitEnum">
@@ -30231,32 +29993,6 @@ Called by update_use_counter_css.py.-->
   <int value="139" label="AlignCenter"/>
 </enum>
 
-<enum name="MarketingOptInBackendConnectorEvent">
-  <summary>
-    An event that occurs on the MarketingBackendConnector used in the OOBE
-    MarketingOptInScreen.
-  </summary>
-  <int value="0" label="Request successful"/>
-  <int value="1" label="Internal Server Error"/>
-  <int value="2" label="Request Timeout Error"/>
-  <int value="3" label="Authentication Error"/>
-  <int value="4" label="Other Error"/>
-</enum>
-
-<enum name="MarketingOptInGeolocationEvent">
-  <summary>Geolocation resolve status on OOBE MarketingOptInScreen.</summary>
-  <int value="0" label="Country could not be determined."/>
-  <int value="1" label="Country determined successfully."/>
-</enum>
-
-<enum name="MarketingOptInScreenEvent">
-  <summary>Opt-in actions that occur on the OOBE MarketingOptInScreen.</summary>
-  <int value="0" label="Opt-in when the default is opt-in"/>
-  <int value="1" label="Opt-in when the default is opt-out"/>
-  <int value="2" label="Opt-out when the default is opt-in"/>
-  <int value="3" label="Opt-out when the default is opt-out"/>
-</enum>
-
 <enum name="MediaEncryptionType">
   <int value="0" label="None"/>
   <int value="1" label="Clear"/>
@@ -30451,31 +30187,6 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="None"/>
 </enum>
 
-<enum name="MemorySaverBubbleActionType">
-  <int value="0" label="Open settings"/>
-  <int value="1" label="Dismiss dialog"/>
-  <int value="2" label="Add exception"/>
-</enum>
-
-<enum name="MemorySaverChipState">
-  <int value="0" label="Collapsed chip"/>
-  <int value="1" label="Expanded educational chip"/>
-  <int value="2" label="Expanded chip with savings"/>
-</enum>
-
-<enum name="MemorySaverModeExceptionListAction">
-  <int value="0" label="Add"/>
-  <int value="1" label="Edit"/>
-  <int value="2" label="Remove"/>
-  <int value="3" label="Add from current"/>
-</enum>
-
-<enum name="MemorySaverModeState">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="Enabled"/>
-  <int value="2" label="Enabled on timer"/>
-</enum>
-
 <enum name="MenuSourceType">
   <int value="0" label="None"/>
   <int value="1" label="Mouse"/>
@@ -30548,63 +30259,6 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Started"/>
   <int value="1" label="Failed"/>
   <int value="2" label="ResponseReceived"/>
-</enum>
-
-<enum name="MobileSessionCallerApp">
-  <int value="0" label="Google Search"/>
-  <int value="1" label="Gmail"/>
-  <int value="2" label="Google+"/>
-  <int value="3" label="Google Drive"/>
-  <int value="4" label="Google Earth"/>
-  <int value="5" label="Other Google Apps"/>
-  <int value="6" label="Other"/>
-  <int value="7" label="Mobile Safari"/>
-  <int value="8" label="Other Apple Apps"/>
-  <int value="9" label="YouTube"/>
-  <int value="10" label="Google Maps"/>
-  <int value="11" label="Information not available"/>
-  <int value="12" label="Chrome Today Extension"/>
-  <int value="13" label="Chrome Search Extension"/>
-  <int value="14" label="Chrome Content Extension"/>
-  <int value="15" label="Chrome Share Extension"/>
-  <int value="16" label="Chrome"/>
-  <int value="17" label="Third Party">
-    A non-Google application (more precisely an app that doesn't share an app
-    group with Chrome) launched Chrome with an http or https URL. This can
-    happen on iOS 14+ when Chrome is set as the default browser and a system app
-    (f.e. Messages) or an app from a 3rd party developer opens a URL.
-  </int>
-  <int value="18" label="Chrome Open In Extension"/>
-</enum>
-
-<enum name="MobileSessionStartAction">
-  <int value="0" label="Open http">
-    Logged when an application passes an http URL to Chrome using the custom
-    registered scheme (f.e. googlechrome).
-  </int>
-  <int value="1" label="Open https">
-    Logged when an application passes an https URL to Chrome using the custom
-    registered scheme (f.e. googlechromes).
-  </int>
-  <int value="2" label="Open file"/>
-  <int value="3" label="x-callback-url open"/>
-  <int value="4" label="x-callback-url other"/>
-  <int value="5" label="Other"/>
-  <int value="6" label="x-callback-url app-group-command"/>
-  <int value="7" label="OS opened http">
-    Logged when any application passes an http URL to Chrome using the standard
-    &quot;http&quot; scheme. This can happen when Chrome is set as the default
-    browser on iOS 14+ as http openURL calls will be directed to Chrome by the
-    system from all other apps.
-  </int>
-  <int value="8" label="OS opened https">
-    Logged when any application passes an https URL to Chrome using the standard
-    &quot;https&quot; scheme. This can happen when Chrome is set as the default
-    browser on iOS 14+ as http openURL calls will be directed to Chrome by the
-    system from all other apps.
-  </int>
-  <int value="9" label="Open widget kit command"/>
-  <int value="10" label="Open external action URL"/>
 </enum>
 
 <enum name="ModuleType">
@@ -30708,211 +30362,6 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Extended mode"/>
   <int value="1" label="Mirroring mode"/>
   <int value="2" label="Unified mode"/>
-</enum>
-
-<enum name="NaClEmbedderTypeEnum">
-  <int value="0" label="PNaCl Open Web"/>
-  <int value="1" label="PNaCl Hosted App"/>
-  <int value="2" label="PNaCl Platform App"/>
-  <int value="3" label="PNaCl Legacy Packaged App"/>
-  <int value="4" label="PNaCl Browser MV2 Extension"/>
-  <int value="5" label="PNaCl Browser MV3 Extension"/>
-  <int value="6" label="PNaCl Login Screen MV2 Extension"/>
-  <int value="7" label="PNaCl Login Screen MV3 Extension"/>
-  <int value="8" label="NaCl Open Web"/>
-  <int value="9" label="NaCl Hosted App"/>
-  <int value="10" label="NaCl Platform App"/>
-  <int value="11" label="NaCl Legacy Packaged App"/>
-  <int value="12" label="NaCl Browser MV2 Extension"/>
-  <int value="13" label="NaCl Browser MV3 Extension"/>
-  <int value="14" label="NaCl Login Screen MV2 Extension"/>
-  <int value="15" label="NaCl Login Screen MV3 Extension"/>
-</enum>
-
-<enum name="NaClHelperStatus">
-  <int value="0" label="Helper not initialized"/>
-  <int value="1" label="Helper executable missing"/>
-  <int value="2" label="Helper bootstrap executable missing"/>
-  <int value="3" label="Browser running under Valgrind"/>
-  <int value="4" label="Helper failed to launch"/>
-  <int value="5" label="Helper failed to ACK"/>
-  <int value="6" label="Helper started correctly"/>
-</enum>
-
-<enum name="NaClHttpStatusCodeClass">
-  <int value="0" label="0XX"/>
-  <int value="1" label="1XX"/>
-  <int value="2" label="2XX"/>
-  <int value="3" label="3XX"/>
-  <int value="4" label="4XX"/>
-  <int value="5" label="5XX"/>
-  <int value="6" label="No status"/>
-</enum>
-
-<enum name="NaClManifestType">
-  <int value="0" label="File"/>
-  <int value="1" label="DataURI"/>
-</enum>
-
-<enum name="NaClOSArchEnum">
-  <int value="0" label="Linux x86-32"/>
-  <int value="1" label="Linux x86-64"/>
-  <int value="2" label="Linux ARM"/>
-  <int value="3" label="Mac x86-32"/>
-  <int value="4" label="Mac x86-64"/>
-  <int value="5" label="Mac ARM"/>
-  <int value="6" label="Windows x86-32"/>
-  <int value="7" label="Windows x86-64"/>
-  <int value="8" label="Windows ARM"/>
-  <int value="9" label="Linux Mips32"/>
-</enum>
-
-<enum name="NaClPluginErrorCode">
-  <int value="0" label="ERROR_LOAD_SUCCESS"/>
-  <int value="1" label="ERROR_LOAD_ABORTED"/>
-  <int value="2" label="ERROR_UNKNOWN"/>
-  <int value="3" label="ERROR_MANIFEST_RESOLVE_URL"/>
-  <int value="4" label="ERROR_MANIFEST_LOAD_URL"/>
-  <int value="5" label="ERROR_MANIFEST_STAT"/>
-  <int value="6" label="ERROR_MANIFEST_TOO_LARGE"/>
-  <int value="7" label="ERROR_MANIFEST_OPEN"/>
-  <int value="8" label="ERROR_MANIFEST_MEMORY_ALLOC"/>
-  <int value="9" label="ERROR_MANIFEST_READ"/>
-  <int value="10" label="ERROR_MANIFEST_PARSING"/>
-  <int value="11" label="ERROR_MANIFEST_SCHEMA_VALIDATE"/>
-  <int value="12" label="ERROR_MANIFEST_GET_NEXE_URL"/>
-  <int value="13" label="ERROR_NEXE_LOAD_URL"/>
-  <int value="14" label="ERROR_NEXE_ORIGIN_PROTOCOL"/>
-  <int value="15" label="ERROR_NEXE_FH_DUP"/>
-  <int value="16" label="ERROR_NEXE_STAT"/>
-  <int value="17" label="ERROR_ELF_CHECK_IO"/>
-  <int value="18" label="ERROR_ELF_CHECK_FAIL"/>
-  <int value="19" label="ERROR_SEL_LDR_INIT"/>
-  <int value="20" label="ERROR_SEL_LDR_CREATE_LAUNCHER"/>
-  <int value="21" label="ERROR_SEL_LDR_FD"/>
-  <int value="22" label="ERROR_SEL_LDR_LAUNCH"/>
-  <int value="23" label="ERROR_SEL_LDR_COMMUNICATION"/>
-  <int value="24" label="ERROR_SEL_LDR_SEND_NEXE"/>
-  <int value="25" label="ERROR_SEL_LDR_HANDLE_PASSING"/>
-  <int value="26" label="ERROR_SEL_LDR_START_MODULE"/>
-  <int value="27" label="ERROR_SEL_LDR_START_STATUS"/>
-  <int value="28" label="ERROR_SRPC_CONNECTION_FAIL"/>
-  <int value="29" label="ERROR_START_PROXY_CHECK_PPP"/>
-  <int value="30" label="ERROR_START_PROXY_ALLOC"/>
-  <int value="31" label="ERROR_START_PROXY_MODULE"/>
-  <int value="32" label="ERROR_START_PROXY_INSTANCE"/>
-  <int value="33" label="ERROR_SEL_LDR_COMMUNICATION_CMD_CHANNEL"/>
-  <int value="34" label="ERROR_SEL_LDR_COMMUNICATION_REV_SETUP"/>
-  <int value="35" label="ERROR_SEL_LDR_COMMUNICATION_WRAPPER"/>
-  <int value="36" label="ERROR_SEL_LDR_COMMUNICATION_REV_SERVICE"/>
-  <int value="37" label="ERROR_START_PROXY_CRASH"/>
-  <int value="38" label="ERROR_MANIFEST_PROGRAM_MISSING_ARCH"/>
-  <int value="39" label="ERROR_PNACL_CACHE_OPEN_INPROGRESS"/>
-  <int value="40" label="ERROR_PNACL_CACHE_OPEN_NOACCESS"/>
-  <int value="41" label="ERROR_PNACL_CACHE_OPEN_NOQUOTA"/>
-  <int value="42" label="ERROR_PNACL_CACHE_OPEN_NOSPACE"/>
-  <int value="43" label="ERROR_PNACL_CACHE_OPEN_OTHER"/>
-  <int value="44" label="ERROR_PNACL_CACHE_DIRECTORY_CREATE"/>
-  <int value="45" label="ERROR_PNACL_CACHE_FILEOPEN_NOACCESS"/>
-  <int value="46" label="ERROR_PNACL_CACHE_FILEOPEN_NOQUOTA"/>
-  <int value="47" label="ERROR_PNACL_CACHE_FILEOPEN_NOSPACE"/>
-  <int value="48" label="ERROR_PNACL_CACHE_FILEOPEN_NOTAFILE"/>
-  <int value="49" label="ERROR_PNACL_CACHE_FILEOPEN_OTHER"/>
-  <int value="50" label="ERROR_PNACL_CACHE_FETCH_NOACCESS"/>
-  <int value="51" label="ERROR_PNACL_CACHE_FETCH_NOTFOUND"/>
-  <int value="52" label="ERROR_PNACL_CACHE_FETCH_OTHER"/>
-  <int value="53" label="ERROR_PNACL_CACHE_FINALIZE_COPY_NOQUOTA"/>
-  <int value="54" label="ERROR_PNACL_CACHE_FINALIZE_COPY_NOSPACE"/>
-  <int value="55" label="ERROR_PNACL_CACHE_FINALIZE_COPY_OTHER"/>
-  <int value="56" label="ERROR_PNACL_CACHE_FINALIZE_RENAME_NOACCESS"/>
-  <int value="57" label="ERROR_PNACL_CACHE_FINALIZE_RENAME_OTHER"/>
-  <int value="58" label="ERROR_PNACL_RESOURCE_FETCH"/>
-  <int value="59" label="ERROR_PNACL_PEXE_FETCH_ABORTED"/>
-  <int value="60" label="ERROR_PNACL_PEXE_FETCH_NOACCESS"/>
-  <int value="61" label="ERROR_PNACL_PEXE_FETCH_OTHER"/>
-  <int value="62" label="ERROR_PNACL_THREAD_CREATE"/>
-  <int value="63" label="ERROR_PNACL_LLC_SETUP"/>
-  <int value="64" label="ERROR_PNACL_LD_SETUP"/>
-  <int value="65" label="ERROR_PNACL_LLC_INTERNAL"/>
-  <int value="66" label="ERROR_PNACL_LD_INTERNAL"/>
-  <int value="67" label="ERROR_PNACL_CREATE_TEMP"/>
-  <int value="68" label="ERROR_PNACL_NOT_ENABLED"/>
-  <int value="69" label="ERROR_MANIFEST_NOACCESS_URL"/>
-  <int value="70" label="ERROR_NEXE_NOACCESS_URL"/>
-</enum>
-
-<enum name="NaClSelLdrErrorCode">
-  <int value="0" label="LOAD_OK"/>
-  <int value="1" label="LOAD_STATUS_UNKNOWN"/>
-  <int value="2" label="LOAD_UNSUPPORTED_OS_PLATFORM"/>
-  <int value="3" label="LOAD_DEP_UNSUPPORTED"/>
-  <int value="4" label="LOAD_INTERNAL"/>
-  <int value="5" label="LOAD_DUP_LOAD_MODULE"/>
-  <int value="6" label="LOAD_DUP_START_MODULE"/>
-  <int value="7" label="LOAD_OPEN_ERROR"/>
-  <int value="8" label="LOAD_READ_ERROR"/>
-  <int value="9" label="LOAD_TOO_MANY_PROG_HDRS"/>
-  <int value="10" label="LOAD_BAD_PHENTSIZE"/>
-  <int value="11" label="LOAD_BAD_ELF_MAGIC"/>
-  <int value="12" label="LOAD_NOT_32_BIT"/>
-  <int value="13" label="LOAD_NOT_64_BIT"/>
-  <int value="14" label="LOAD_BAD_ABI"/>
-  <int value="15" label="LOAD_NOT_EXEC"/>
-  <int value="16" label="LOAD_BAD_MACHINE"/>
-  <int value="17" label="LOAD_BAD_ELF_VERS"/>
-  <int value="18" label="LOAD_TOO_MANY_SECT"/>
-  <int value="19" label="LOAD_BAD_SECT"/>
-  <int value="20" label="LOAD_NO_MEMORY"/>
-  <int value="21" label="LOAD_SECT_HDR"/>
-  <int value="22" label="LOAD_ADDR_SPACE_TOO_SMALL"/>
-  <int value="23" label="LOAD_ADDR_SPACE_TOO_BIG"/>
-  <int value="24" label="LOAD_DATA_OVERLAPS_STACK_SECTION"/>
-  <int value="25" label="LOAD_RODATA_OVERLAPS_DATA"/>
-  <int value="26" label="LOAD_DATA_NOT_LAST_SEGMENT"/>
-  <int value="27" label="LOAD_NO_DATA_BUT_RODATA_NOT_LAST_SEGMENT"/>
-  <int value="28" label="LOAD_TEXT_OVERLAPS_RODATA"/>
-  <int value="29" label="LOAD_TEXT_OVERLAPS_DATA"/>
-  <int value="30" label="LOAD_BAD_RODATA_ALIGNMENT"/>
-  <int value="31" label="LOAD_BAD_DATA_ALIGNMENT"/>
-  <int value="32" label="LOAD_UNLOADABLE"/>
-  <int value="33" label="LOAD_BAD_ELF_TEXT"/>
-  <int value="34" label="LOAD_TEXT_SEG_TOO_BIG"/>
-  <int value="35" label="LOAD_DATA_SEG_TOO_BIG"/>
-  <int value="36" label="LOAD_MPROTECT_FAIL"/>
-  <int value="37" label="LOAD_MADVISE_FAIL"/>
-  <int value="38" label="LOAD_TOO_MANY_SYMBOL_STR"/>
-  <int value="39" label="LOAD_SYMTAB_ENTRY_TOO_SMALL"/>
-  <int value="40" label="LOAD_NO_SYMTAB"/>
-  <int value="41" label="LOAD_NO_SYMTAB_STRINGS"/>
-  <int value="42" label="LOAD_SYMTAB_ENTRY"/>
-  <int value="43" label="LOAD_UNKNOWN_SYMBOL_TYPE"/>
-  <int value="44" label="LOAD_SYMTAB_DUP"/>
-  <int value="45" label="LOAD_REL_ERROR"/>
-  <int value="46" label="LOAD_REL_UNIMPL"/>
-  <int value="47" label="LOAD_UNDEF_SYMBOL"/>
-  <int value="48" label="LOAD_BAD_SYMBOL_DATA"/>
-  <int value="49" label="LOAD_BAD_FILE"/>
-  <int value="50" label="LOAD_BAD_ENTRY"/>
-  <int value="51" label="LOAD_SEGMENT_OUTSIDE_ADDRSPACE"/>
-  <int value="52" label="LOAD_DUP_SEGMENT"/>
-  <int value="53" label="LOAD_SEGMENT_BAD_LOC"/>
-  <int value="54" label="LOAD_BAD_SEGMENT"/>
-  <int value="55" label="LOAD_REQUIRED_SEG_MISSING"/>
-  <int value="56" label="LOAD_SEGMENT_BAD_PARAM"/>
-  <int value="57" label="LOAD_VALIDATION_FAILED"/>
-  <int value="58" label="LOAD_UNIMPLEMENTED"/>
-  <int value="59" label="SRT_NO_SEG_SEL"/>
-  <int value="60" label="LOAD_BAD_EHSIZE"/>
-  <int value="61" label="LOAD_EHDR_OVERFLOW"/>
-  <int value="62" label="LOAD_PHDR_OVERFLOW"/>
-  <int value="63" label="LOAD_UNSUPPORTED_CPU"/>
-  <int value="64" label="LOAD_NO_MEMORY_FOR_DYNAMIC_TEXT"/>
-  <int value="65" label="LOAD_NO_MEMORY_FOR_ADDRESS_SPACE"/>
-</enum>
-
-<enum name="NaClValidationCacheEnum">
-  <int value="0" label="Miss"/>
-  <int value="1" label="Hit"/>
 </enum>
 
 <enum name="NativeSmbFileShare_AuthMethod">
@@ -31393,15 +30842,6 @@ Called by update_net_error_codes.py.-->
              configured."/>
 </enum>
 
-<enum name="NetworkErrorType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Portal"/>
-  <int value="2" label="Offline"/>
-  <int value="3" label="Proxy"/>
-  <int value="4" label="LoadingTimeout"/>
-  <int value="5" label="None"/>
-</enum>
-
 <enum name="NetworkSandboxState">
   <summary>
     The possible states for the network service sandbox. See
@@ -31425,22 +30865,6 @@ Called by update_net_error_codes.py.-->
 <enum name="NewUserPriorityPrefsSyncResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Timed out"/>
-</enum>
-
-<enum name="NotificationActionSource">
-  <int value="0" label="Browser app"/>
-  <int value="1" label="Helper app"/>
-</enum>
-
-<enum name="NotificationActionType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Notification added"/>
-  <int value="2" label="Notification updated"/>
-  <int value="3" label="Notification clicked"/>
-  <int value="4" label="Notification button clicked"/>
-  <int value="5" label="Notification displayed"/>
-  <int value="6" label="Notification closed by user"/>
-  <int value="7" label="Notification closed by system"/>
 </enum>
 
 <enum name="NotificationAppStatus">
@@ -31632,118 +31056,6 @@ Called by update_net_error_codes.py.-->
   <int value="176" label="Network Carrier Unlock"/>
   <int value="177" label="Coral Feature"/>
   <int value="178" label="Input Device Settings"/>
-</enum>
-
-<enum name="NotificationDatabaseStatus">
-  <int value="0" label="OK"/>
-  <int value="1" label="Not found error"/>
-  <int value="2" label="Corruption error"/>
-  <int value="3" label="Failure error"/>
-  <int value="4" label="I/O error"/>
-  <int value="5" label="Not supported error"/>
-  <int value="6" label="Invalid Argument error"/>
-</enum>
-
-<enum name="NotificationHelperComServerModuleStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="FACTORY_CREATION_FAILED"/>
-  <int value="2" label="ICLASSFACTORY_OBJECT_CREATION_FAILED"/>
-  <int value="3" label="REGISTRATION_FAILED"/>
-  <int value="4" label="UNREGISTRATION_FAILED"/>
-</enum>
-
-<enum name="NotificationHelperNotificationActivatorPrimaryStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Chrome exe missing"/>
-  <int value="2" label="ShellExecute failed"/>
-</enum>
-
-<enum name="NotificationHelperNotificationActivatorSecondaryStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="LaunchId empty"/>
-  <int value="2" label="AllowSetForegroundWindow failed"/>
-  <int value="3" label="LaunchId empty, AllowSetForegroundWindow failed"/>
-  <int value="4" label="Handle missing"/>
-  <int value="5" label="LaunchId empty, Handle missing"/>
-  <int value="6" label="AllowSetForegroundWindow failed, Handle missing"/>
-  <int value="7"
-      label="LaunchId empty, AllowSetForegroundWindow failed, Handle missing"/>
-</enum>
-
-<enum name="NotificationSchedulerActionButtonEvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Helpful"/>
-  <int value="2" label="Unhelpful"/>
-</enum>
-
-<enum name="NotificationSchedulerNotificationLifeCycleEvent">
-  <int value="0" label="Schedule request"/>
-  <int value="1" label="Scheduled"/>
-  <int value="2" label="Invalid input parameters"/>
-  <int value="3" label="Shown"/>
-  <int value="4" label="Client Cancel"/>
-</enum>
-
-<enum name="NotificationSchedulerUserActionType">
-  <int value="0" label="Click"/>
-  <int value="1" label="Button Click"/>
-  <int value="2" label="Dismiss"/>
-</enum>
-
-<enum name="NotificationTypeDetailed">
-  <int value="0" label="ChromeApp priority=-2"/>
-  <int value="1" label="ChromeApp priority=-2 requireInteraction"/>
-  <int value="2" label="ChromeApp priority=-1"/>
-  <int value="3" label="ChromeApp priority=-1 requireInteraction"/>
-  <int value="4" label="ChromeApp priority=0"/>
-  <int value="5" label="ChromeApp priority=0 requireInteraction"/>
-  <int value="6" label="ChromeApp priority=1"/>
-  <int value="7" label="ChromeApp priority=1 requireInteraction"/>
-  <int value="8" label="ChromeApp priority=2"/>
-  <int value="9" label="ChromeApp priority=2 requireInteraction"/>
-  <int value="10" label="Arc priority=-2"/>
-  <int value="11" label="Arc priority=-2 pinned"/>
-  <int value="12" label="Arc priority=-1"/>
-  <int value="13" label="Arc priority=-1 pinned"/>
-  <int value="14" label="Arc priority=0"/>
-  <int value="15" label="Arc priority=0 pinned"/>
-  <int value="16" label="Arc priority=1"/>
-  <int value="17" label="Arc priority=1 pinned"/>
-  <int value="18" label="Arc priority=2"/>
-  <int value="19" label="Arc priority=2 pinned"/>
-  <int value="20" label="Web"/>
-  <int value="21" label="Web requireInteraction"/>
-  <int value="22" label="CrOS priority=-2"/>
-  <int value="23" label="CrOS priority=-2 pinned"/>
-  <int value="24" label="CrOS priority=-1"/>
-  <int value="25" label="CrOS priority=-1 pinned"/>
-  <int value="26" label="CrOS priority=0"/>
-  <int value="27" label="CrOS priority=0 pinned"/>
-  <int value="28" label="CrOS priority=1"/>
-  <int value="29" label="CrOS priority=1 pinned"/>
-  <int value="30" label="CrOS priority=2"/>
-  <int value="31" label="CrOS priority=2 pinned"/>
-  <int value="32" label="CrOS SystemPriority"/>
-  <int value="33" label="CrOS SystemPriority pinned"/>
-  <int value="34" label="CrOS SystemPriority level=Warning pinned"/>
-  <int value="35" label="CrOS SystemPriority level=Warning"/>
-  <int value="36" label="CrOS SystemPriority level=CriticalWarning"/>
-  <int value="37" label="CrOS SystemPriority level=CriticalWarning pinned"/>
-  <int value="38" label="Other"/>
-  <int value="39" label="PhoneHub priority=-2"/>
-  <int value="40" label="PhoneHub priority=-1"/>
-  <int value="41" label="PhoneHub priority=0"/>
-  <int value="42" label="PhoneHub priority=1"/>
-  <int value="43" label="PhoneHub priority=2"/>
-</enum>
-
-<enum name="NotifierType">
-  <int value="0" label="Application"/>
-  <int value="1" label="Arc++"/>
-  <int value="2" label="Web Page"/>
-  <int value="3" label="System Component"/>
-  <int value="4" label="Crostini"/>
-  <int value="5" label="Phone Hub"/>
 </enum>
 
 <enum name="NotifyResult">
@@ -32217,46 +31529,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Users cancel when the device disconnects"/>
   <int value="9"
       label="The permission request is delivered to phone's Exo package"/>
-</enum>
-
-<enum name="OobeConsumerUpdateScreenSkippedReason">
-  <int value="0" label="Critical update was already completed"/>
-  <int value="1" label="Update is not required"/>
-  <int value="2" label="Update error"/>
-  <int value="3" label="User declined update over cellular"/>
-</enum>
-
-<enum name="OobeMultideviceScreenSkippedReason">
-  <int value="0" label="Public session or ephermeral login"/>
-  <int value="1" label="Host phone already set"/>
-  <int value="2" label="Device sync finished and no eligible host phone found"/>
-  <int value="3" label="Setup client not initialized"/>
-  <int value="4"
-      label="Device sync not initialized during better together metadata
-             status fetch"/>
-  <int value="5"
-      label="Device sync not initialized during group private key status
-             fetch"/>
-  <int value="6"
-      label="No device syncer set during better together metadata status
-             fetch"/>
-  <int value="7"
-      label="No device syncer set during group private key status fetch"/>
-  <int value="8" label="Encrypted metadata empty"/>
-  <int value="9" label="Waiting to receive group private key"/>
-  <int value="10" label="No encrypted group private key received"/>
-  <int value="11" label="Encrypted group private key empty"/>
-  <int value="12" label="Local device sync better together key missing"/>
-  <int value="13" label="Group private key decryption failed"/>
-  <int value="14" label="Screen destroyed before reason could be determined"/>
-  <int value="15" label="Unknown"/>
-</enum>
-
-<enum name="OobeWebViewLoadResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Load timeout"/>
-  <int value="2" label="Load error"/>
-  <int value="3" label="HTTP error"/>
 </enum>
 
 <enum name="OpenDownloadDialogEvent">
@@ -33658,20 +32930,6 @@ Called by update_net_error_codes.py.-->
   <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
 </enum>
 
-<enum name="PersistentNotificationDisplayResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Registration is not active"/>
-  <int value="2" label="Permission not granted"/>
-  <int value="3" label="Silent with vibrate option"/>
-  <int value="4" label="Renotify without tag option"/>
-  <int value="5" label="Failed to serialize data option"/>
-  <int value="6" label="Button action with placeholder option"/>
-  <int value="7" label="Show trigger delay too far ahead in future"/>
-  <int value="8" label="Too much data in user defined option"/>
-  <int value="9" label="Internal error"/>
-  <int value="10" label="Permission denied"/>
-</enum>
-
 <enum name="PersonalizationSearchConceptId">
   <int value="0" label="kPersonalization"/>
   <int value="100" label="kChangeWallpaper"/>
@@ -33727,13 +32985,6 @@ Called by update_net_error_codes.py.-->
   <int value="17" label="Crash ID identifying an uploaded crash report"/>
 </enum>
 
-<enum name="PinSetupScreenUserAction">
-  <summary>Actions which happen on the screen.</summary>
-  <int value="0" label="Done button clicked"/>
-  <int value="1" label="Skip button clicked on starting page"/>
-  <int value="2" label="Skip button clicked in flow"/>
-</enum>
-
 <enum name="PipelineStatus">
   <int value="0" label="PIPELINE_OK"/>
   <int value="1" label="PIPELINE_ERROR_URL_NOT_FOUND"/>
@@ -33780,15 +33031,6 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="NOT_EMPTY"/>
   <int value="15" label="INVALID_URL"/>
   <int value="16" label="I/O"/>
-</enum>
-
-<enum name="PlatformNotificationStatus">
-  <int value="0" label="OK"/>
-  <int value="1" label="Service Worker not found"/>
-  <int value="2" label="Service Worker error"/>
-  <int value="3" label="event.waitUntil promise rejected"/>
-  <int value="4" label="Database error"/>
-  <int value="5" label="No permission granted"/>
 </enum>
 
 <enum name="PluginVmDlcUseResult">
@@ -33866,19 +33108,6 @@ Called by update_net_error_codes.py.-->
   <int value="15"
       label="User cancelled setup while validating Plugin VM license"/>
   <int value="16" label="User cancelled while starting the dispatcher"/>
-</enum>
-
-<enum name="PNaClOptionsOptLevelEnum">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="Default / Unknown"/>
-</enum>
-
-<enum name="PNaClTranslationCacheEnum">
-  <int value="0" label="Miss"/>
-  <int value="1" label="Hit"/>
 </enum>
 
 <enum name="PointerPrimaryButton">
@@ -36052,13 +35281,6 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Validated with ok but no content length"/>
 </enum>
 
-<enum name="ProcessCreationReason">
-  <int value="0" label="Activity"/>
-  <int value="1" label="Service"/>
-  <int value="2" label="Content Provider"/>
-  <int value="3" label="Broadcast Receiver"/>
-</enum>
-
 <enum name="ProcessPerSiteWithMainFrameThresholdBlockReason">
   <int value="0" label="Not blocked"/>
   <int value="1" label="Process reuse is disabled"/>
@@ -36561,31 +35783,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failure"/>
   <int value="3" label="Device does't have a passcode set up."/>
   <int value="4" label="Open Passcode Settings."/>
-</enum>
-
-<enum name="RecommendAppsScreenAction">
-  <int value="0" label="Skipped"/>
-  <int value="1" label="Retried"/>
-  <int value="2" label="Selected none"/>
-  <int value="3" label="Selected some apps"/>
-</enum>
-
-<enum name="RecommendAppsScreenState">
-  <int value="0" label="Show"/>
-  <int value="1" label="No show"/>
-  <int value="2" label="Error"/>
-</enum>
-
-<enum name="RecoveryOptInResult">
-  <summary>
-    The result of the cryptohome recovery opt-in. For managed users the policy
-    value is used, for unmanaged users the user selection is used.
-  </summary>
-  <int value="0" label="Not supported"/>
-  <int value="1" label="User Opt In"/>
-  <int value="2" label="User Opt Out"/>
-  <int value="3" label="Policy Opt In"/>
-  <int value="4" label="Policy Opt Out"/>
 </enum>
 
 <enum name="RelatedActiveContentsSyncAccessInfo">
@@ -37847,12 +37044,6 @@ Called by update_net_error_codes.py.-->
       label="Ondemand model execution failed, returned cached results."/>
 </enum>
 
-<enum name="SelectedTheme">
-  <int value="0" label="Auto Mode"/>
-  <int value="1" label="Dark Mode"/>
-  <int value="2" label="Light Mode"/>
-</enum>
-
 <enum name="SendTabToSelfClickResult">
   <int value="0"
       label="(Obsolete) SendTabToSelf entry point is shown. Removed on
@@ -37900,22 +37091,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Success with suggestions"/>
 </enum>
 
-<enum name="ServiceWorkerDatabaseStatus">
-  <int value="0" label="OK"/>
-  <int value="1" label="Not Found Error"/>
-  <int value="2" label="IO Error"/>
-  <int value="3" label="Corruption Error"/>
-  <int value="4" label="Operation Error"/>
-  <int value="5" label="Not Supported Error"/>
-  <int value="6" label="Database Disabled Error"/>
-</enum>
-
-<enum name="ServiceWorkerDeleteAndStartOverResult">
-  <int value="0" label="OK"/>
-  <int value="1" label="Failed to delete ServiceWorkerDatabase"/>
-  <int value="2" label="Failed to delete ServiceWorkerDiskCache"/>
-</enum>
-
 <enum name="ServiceWorkerEventStatus">
   <int value="0" label="Completed"/>
   <int value="1" label="Rejected"/>
@@ -37923,120 +37098,9 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Timeout"/>
 </enum>
 
-<enum name="ServiceWorkerFetchEventResult">
-  <int value="0" label="Should Fallback"/>
-  <int value="1" label="Got Response"/>
-</enum>
-
-<enum name="ServiceWorkerFetchHandlerSkipReason">
-  <int value="0" label="No Fetch Handler"/>
-  <int value="1" label="Not Skipped"/>
-  <int value="2" label="Skipped for Empty Fetch Handler"/>
-  <int value="3" label="Main resource is skipped by origin trial"/>
-  <int value="4" label="Main resource is skipped by feature flag"/>
-  <int value="5" label="Main resource is skipped by allowed origin list"/>
-  <int value="6" label="Main resource is skipped by allowed script list"/>
-  <int value="7"
-      label="Skipped by
-             kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop"/>
-  <int value="8"
-      label="Skipped by
-             kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting"/>
-</enum>
-
-<enum name="ServiceWorkerFetchHandlerType">
-  <int value="0" label="No Fetch Handler"/>
-  <int value="1" label="Not Skippable"/>
-  <int value="2" label="Empty Fetch Handler"/>
-</enum>
-
-<enum name="ServiceWorkerFetchResponseFrom">
-  <int value="0" label="No response yet"/>
-  <int value="1" label="ServiceWorker"/>
-  <int value="2" label="Without ServiceWorker"/>
-  <int value="3" label="SubresourceLoader is handling redirect"/>
-  <int value="4" label="AutoPreload is handling fallback"/>
-</enum>
-
-<enum name="ServiceWorkerMetrics.EventType">
-  <int value="0" label="ACTIVATE"/>
-  <int value="1" label="INSTALL"/>
-  <int value="2" label="FETCH (unused)"/>
-  <int value="3" label="SYNC"/>
-  <int value="4" label="NOTIFICATION_CLICK"/>
-  <int value="5" label="PUSH"/>
-  <int value="6" label="GEOFENCING (unused)"/>
-  <int value="7" label="SERVICE_PORT_CONNECT (unused)"/>
-  <int value="8" label="MESSAGE"/>
-  <int value="9" label="NOTIFICATION_CLOSE"/>
-  <int value="10" label="FETCH_MAIN_FRAME"/>
-  <int value="11" label="FETCH_SUB_FRAME"/>
-  <int value="12" label="FETCH_SHARED_WORKER"/>
-  <int value="13" label="FETCH_SUB_RESOURCE"/>
-  <int value="14" label="UNKNOWN"/>
-  <int value="15" label="FOREIGN_FETCH"/>
-  <int value="16" label="FETCH_WAITUNTIL"/>
-  <int value="17" label="FOREIGN_FETCH_WAITUNTIL"/>
-  <int value="18" label="NAVIGATION_HINT_LINK_MOUSE_DOWN"/>
-  <int value="19" label="NAVIGATION_HINT_LINK_TAP_UNCONFIRMED"/>
-  <int value="20" label="NAVIGATION_HINT_LINK_TAP_DOWN"/>
-  <int value="21" label="EXTERNAL_REQUEST"/>
-  <int value="22" label="PAYMENT_REQUEST"/>
-  <int value="23" label="BACKGROUND_FETCH_ABORT"/>
-  <int value="24" label="BACKGROUND_FETCH_CLICK"/>
-  <int value="25" label="BACKGROUND_FETCH_FAIL"/>
-  <int value="26" label="BACKGROUND_FETCHED"/>
-  <int value="27" label="NAVIGATION_HINT"/>
-  <int value="28" label="CAN_MAKE_PAYMENT"/>
-  <int value="29" label="ABORT_PAYMENT"/>
-  <int value="30" label="COOKIE_CHANGE"/>
-  <int value="31" label="LONG_RUNNING_MESSAGE"/>
-  <int value="32" label="BACKGROUND_FETCH_SUCCESS"/>
-  <int value="33" label="PERIODIC_SYNC"/>
-  <int value="34" label="CONTENT_DELETE"/>
-  <int value="35" label="PUSH_SUBSCRIPTION_CHANGE"/>
-  <int value="36" label="FETCH_FENCED_FRAME"/>
-  <int value="37" label="BYPASS_MAIN_RESOURCE"/>
-  <int value="38" label="SKIP_EMPTY_FETCH_HANDLER"/>
-  <int value="39" label="BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED"/>
-  <int value="40" label="WARM_UP"/>
-</enum>
-
-<enum name="ServiceWorkerRaceNetworkRequestDataTransferMojoResult">
-  <int value="0" label="MOJO_RESULT_OK"/>
-  <int value="1" label="MOJO_RESULT_CANCELLED"/>
-  <int value="2" label="MOJO_RESULT_UNKNOWN"/>
-  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
-  <int value="4" label="MOJO_RESULT_DEADLINE_EXCEEDED"/>
-  <int value="5" label="MOJO_RESULT_NOT_FOUND"/>
-  <int value="6" label="MOJO_RESULT_ALREADY_EXISTS"/>
-  <int value="7" label="MOJO_RESULT_PERMISSION_DENIED"/>
-  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
-  <int value="9" label="MOJO_RESULT_FAILED_PRECONDITION"/>
-  <int value="10" label="MOJO_RESULT_ABORTED"/>
-  <int value="11" label="MOJO_RESULT_OUT_OF_RANGE"/>
-  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
-  <int value="13" label="MOJO_RESULT_INTERNAL"/>
-  <int value="14" label="MOJO_RESULT_UNAVAILABLE"/>
-  <int value="15" label="MOJO_RESULT_DATA_LOSS"/>
-  <int value="16" label="MOJO_RESULT_BUSY"/>
-  <int value="17" label="MOJO_RESULT_SHOULD_WAIT"/>
-</enum>
-
-<enum name="ServiceWorkerReadResponseResult">
-  <int value="0" label="OK"/>
-  <int value="1" label="Read headers error"/>
-  <int value="2" label="Read data error"/>
-</enum>
-
 <enum name="ServiceWorkerRegisteredCheck">
   <int value="0" label="kOriginOnly"/>
   <int value="1" label="kPath"/>
-</enum>
-
-<enum name="ServiceWorkerRendererStartWorker">
-  <int value="0" label="Received on installed service worker."/>
-  <int value="1" label="Received on uninstalled service worker."/>
 </enum>
 
 <enum name="ServiceWorkerResourceLoadStatus">
@@ -38062,26 +37126,6 @@ Called by update_net_error_codes.py.-->
   <int value="7"
       label="not falled back for main resource, and no sub resource are
              loaded."/>
-</enum>
-
-<enum name="ServiceWorkerRouterEvaluatorErrorEnums">
-  <int value="0" label="kNoError"/>
-  <int value="1" label="kInvalidType"/>
-  <int value="2" label="kParseError"/>
-  <int value="3" label="kCompileError"/>
-  <int value="4" label="kEmptyCondition"/>
-  <int value="5" label="kEmptySource"/>
-  <int value="6" label="kInvalidSource"/>
-  <int value="7" label="kInvalidCondition"/>
-  <int value="8" label="kExceedMaxConditionDepth"/>
-  <int value="9" label="kExceedMaxRouterSize"/>
-</enum>
-
-<enum name="ServiceWorkerRouterSourceType">
-  <int value="0" label="kNetwork"/>
-  <int value="1" label="kRace"/>
-  <int value="2" label="kFetchEvent"/>
-  <int value="3" label="kCache"/>
 </enum>
 
 <enum name="ServiceWorkerStatusCode">
@@ -38110,69 +37154,12 @@ Called by update_net_error_codes.py.-->
   <int value="22" label="SERVICE_WORKER_ERROR_STORAGE_DATA_CORRUPTED"/>
 </enum>
 
-<enum name="ServiceWorkerWriteResponseResult">
-  <int value="0" label="OK"/>
-  <int value="1" label="Write headers error"/>
-  <int value="2" label="Write data error"/>
-</enum>
-
 <enum name="ServicificationStartupMode">
   <int value="0" label="Cold start of Chrome as a full browser"/>
   <int value="1"
       label="Half warm start of Chrome with ServiceManager already running"/>
   <int value="2" label="Cold start of ServiceManager only"/>
   <int value="3" label="Warm start of ServiceManager only"/>
-</enum>
-
-<enum name="SessionRestoreFinishReason">
-  <int value="0"
-      label="SessionRestore.ForegroundTabFirstPaint4_XX successfully
-             recorded."/>
-  <int value="1"
-      label="No tabs were visible the whole time before first paint."/>
-  <int value="2" label="No restored tabs were painted."/>
-  <int value="3" label="A non-restored tab was painted first."/>
-</enum>
-
-<enum name="SessionStorageDatabaseOpen">
-  <int value="0" label="OK">Succesfully opened the database.</int>
-  <int value="1" label="Recovered">
-    Failed to open the existing db, deleted it, and created a new empty db.
-  </int>
-  <int value="2"
-      label="(Obsolete) Reopen: Total Fail. Deprecated 2016/11. Replaced by
-             other 'Reopen' errors.">
-    Failed to open the database and also failed to delete and start over.
-  </int>
-  <int value="3" label="Reopen: not found">
-    Reopen attempt failed with (not found) after successful database delete.
-  </int>
-  <int value="4" label="Reopen: not supported">
-    Reopen attempt failed with (not supported) after successful database delete.
-  </int>
-  <int value="5" label="Reopen: corruption">
-    Reopen attempt failed with (corruption) after successful database delete.
-  </int>
-  <int value="6" label="Reopen: invalid argument">
-    Reopen attempt failed with (invalid argument) after successful database
-    delete.
-  </int>
-  <int value="7" label="Reopen: I/O error">
-    Reopen attempt failed with (I/O error) after successful database delete.
-  </int>
-</enum>
-
-<enum name="SessionStorageFormat">
-  <int value="0" label="Legacy"/>
-  <int value="1" label="Optimized"/>
-</enum>
-
-<enum name="SessionStorageMigrationStatus">
-  <int value="0" label="MigrationSucceeded">The migration was successful.</int>
-  <int value="1" label="MigrationFailure">The migration failed.</int>
-  <int value="2" label="MigrationInterrupted">
-    The application crashed (or was terminated by the user) during migration.
-  </int>
 </enum>
 
 <enum name="SettingId">
@@ -39522,13 +38509,6 @@ Called by update_net_error_codes.py.-->
              profiling started"/>
 </enum>
 
-<enum name="StartupTemperature">
-  <int value="0" label="Cold startup (mostly hard faults)"/>
-  <int value="1" label="Warm startup (nearly no hard faults)"/>
-  <int value="2" label="Lukewarm startup (in between cold and warm)"/>
-  <int value="3" label="Unable to determine the startup temperature"/>
-</enum>
-
 <enum name="StoragePartitionRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kCookies"/>
@@ -39734,29 +38714,6 @@ would be helpful to identify which type is being sent.
   <int value="31" label="L3T2KeyShift"/>
   <int value="32" label="L3T3Key"/>
   <int value="33" label="L3T3KeyShift"/>
-</enum>
-
-<enum name="SyncConsentBehavior">
-  <summary>
-    Behavior of the out-of-box experience (OOBE) sync consent screen.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Show"/>
-  <int value="2" label="Skip, disabled, non-GAIA account"/>
-  <int value="3" label="Skip, disabled, public account"/>
-  <int value="4" label="Skip, disabled, sync feature policy"/>
-  <int value="5" label="Skip, enabled, non-branded build"/>
-  <int value="6" label="Skip, enabled, ephemeral user"/>
-  <int value="7" label="Skip, enabled, consent screen policy"/>
-</enum>
-
-<enum name="SyncConsentUserChoice">
-  <summary>
-    Which button the user clicked in the out-of-box experience (OOBE) sync
-    consent screen.
-  </summary>
-  <int value="0" label="Declined"/>
-  <int value="1" label="Accepted"/>
 </enum>
 
 <enum name="SyncDownloadStatusWaitingForUpdatesReason">
@@ -40150,24 +39107,6 @@ would be helpful to identify which type is being sent.
   <int value="3" label="Challenge-response security token"/>
 </enum>
 
-<enum name="UNNotificationPermissionRequestResult">
-  <int value="0" label="Permission request failed"/>
-  <int value="1" label="Permission denied"/>
-  <int value="2" label="Permission granted"/>
-</enum>
-
-<enum name="UNNotificationPermissionStatus">
-  <int value="0" label="Permission not requested yet"/>
-  <int value="1" label="Permission denied"/>
-  <int value="2" label="Permission granted"/>
-</enum>
-
-<enum name="UNNotificationStyle">
-  <int value="0" label="None"/>
-  <int value="1" label="Banners"/>
-  <int value="2" label="Alerts"/>
-</enum>
-
 <enum name="UnPackStatus">
   <int value="0" label="No Error"/>
   <int value="1" label="Archive file not found"/>
@@ -40413,23 +39352,6 @@ would be helpful to identify which type is being sent.
 <enum name="UpdateEngineInstallDateProvisioningSource">
   <int value="0" label="Omaha Response"/>
   <int value="1" label="OOBE Marker"/>
-</enum>
-
-<enum name="UpdateEngineOperation">
-  <int value="-1" label="kError"/>
-  <int value="0" label="kIdle"/>
-  <int value="1" label="kCheckingForUpdate"/>
-  <int value="2" label="kUpdateAvailable"/>
-  <int value="3" label="kDownloading"/>
-  <int value="4" label="kVerifying"/>
-  <int value="5" label="kFinalizing"/>
-  <int value="6" label="kUpdateNeedReboot"/>
-  <int value="7" label="kReportErrorEvent"/>
-  <int value="8" label="kAttemptingRollback"/>
-  <int value="9" label="kDisabled"/>
-  <int value="10" label="kNeedPermissionToUpdate"/>
-  <int value="11" label="kCleanupPreviousUpdate"/>
-  <int value="12" label="kUpdatedButDeferred"/>
 </enum>
 
 <enum name="UpdateEnginePayloadFormat">
@@ -41836,23 +40758,6 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="Revoked ephemeral permission by website"/>
 </enum>
 
-<enum name="WelcomeScreenA11yUserAction">
-  <int value="0" label="Enable spoken feedback"/>
-  <int value="1" label="Disable spoken feedback"/>
-  <int value="2" label="Enable large cursor"/>
-  <int value="3" label="Disable large cursor"/>
-  <int value="4" label="Enable high contrast"/>
-  <int value="5" label="Disable high contrast"/>
-  <int value="6" label="Enable screen magnifier"/>
-  <int value="7" label="Disable screen magnifier"/>
-  <int value="8" label="Enable select to speak option"/>
-  <int value="9" label="Disable select to speak option"/>
-  <int value="10" label="Enable docked magnifier"/>
-  <int value="11" label="Disable docked magnifier"/>
-  <int value="12" label="Enable virtual keyboard"/>
-  <int value="13" label="Disable virtual keyboard"/>
-</enum>
-
 <enum name="WellKnownChangePasswordResult">
   <int value="0" label="Fallback to Origin"/>
   <int value="1" label="Fallback to Url Override"/>
@@ -42028,136 +40933,6 @@ Called by update_scheduler_enums.py.-->
   <int value="1818" label="RPC_S_CALL_CANCELLED"/>
   <int value="85436397" label="0x517a7ed - Crashpad simulated exception"/>
   <int value="1073807364" label="0x40010004 - DBG_TERMINATE_PROCESS"/>
-</enum>
-
-<enum name="WindowsNotificationActivationStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="GET_PROFILE_ID_INVALID_LAUNCH_ID (deprecated)"/>
-  <int value="2" label="ACTIVATION_INVALID_LAUNCH_ID (deprecated)"/>
-  <int value="3" label="INVALID_LAUNCH_ID"/>
-</enum>
-
-<enum name="WindowsNotificationCloseStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="GET_TOAST_HISTORY_FAILED"/>
-  <int value="2" label="REMOVING_TOAST_FAILED"/>
-</enum>
-
-<enum name="WindowsNotificationDisplayStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="RO_ACTIVATE_FAILED"/>
-  <int value="2" label="CONVERSION_FAILED_INSPECTABLE_TO_XML_IO"/>
-  <int value="3" label="LOAD_XML_FAILED"/>
-  <int value="4" label="CONVERSION_FAILED_XML_IO_TO_XML"/>
-  <int value="5" label="CREATE_FACTORY_FAILED"/>
-  <int value="6" label="CREATE_TOAST_NOTIFICATION_FAILED"/>
-  <int value="7" label="CREATE_TOAST_NOTIFICATION2_FAILED"/>
-  <int value="8" label="SETTING_GROUP_FAILED"/>
-  <int value="9" label="SETTING_TAG_FAILED"/>
-  <int value="10" label="GET_GROUP_FAILED"/>
-  <int value="11" label="GET_TAG_FAILED"/>
-  <int value="12" label="SUPPRESS_POPUP_FAILED"/>
-  <int value="13" label="ADD_TOAST_DISMISS_HANDLER_FAILED (deprecated)"/>
-  <int value="14" label="ADD_TOAST_ERROR_HANDLER_FAILED"/>
-  <int value="15" label="SHOWING_TOAST_FAILED"/>
-  <int value="16" label="CREATE_TOAST_NOTIFICATION_MANAGER_FAILED"/>
-  <int value="17" label="CREATE_TOAST_NOTIFIER_WITH_ID_FAILED"/>
-  <int value="18" label="DISABLED_FOR_APPLICATION (deprecated)"/>
-  <int value="19" label="DISABLED_FOR_USER (deprecated)"/>
-  <int value="20" label="DISABLED_BY_GROUP_POLICY (deprecated)"/>
-  <int value="21" label="DISABLED_BY_MANIFEST (deprecated)"/>
-</enum>
-
-<enum name="WindowsNotificationGetDisplayedLaunchIdStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="DECODE_LAUNCH_ID_FAILED"/>
-</enum>
-
-<enum name="WindowsNotificationGetDisplayedStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="SUCCESS_WITH_GET_AT_FAILURE"/>
-  <int value="2" label="GET_TOAST_HISTORY_FAILED"/>
-  <int value="3" label="QUERY_TOAST_NOTIFICATION_HISTORY2_FAILED"/>
-  <int value="4" label="GET_HISTORY_WITH_ID_FAILED"/>
-  <int value="5" label="GET_SIZE_FAILED"/>
-</enum>
-
-<enum name="WindowsNotificationGetNotificationLaunchIdStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="NOTIFICATION_GET_CONTENT_FAILED"/>
-  <int value="2" label="GET_ELEMENTS_BY_TAG_FAILED"/>
-  <int value="3" label="MISSING_TOAST_ELEMENT_IN_DOC"/>
-  <int value="4" label="ITEM_AT_FAILED"/>
-  <int value="5" label="GET_ATTRIBUTES_FAILED"/>
-  <int value="6" label="GET_NAMED_ITEM_FAILED"/>
-  <int value="7" label="GET_FIRST_CHILD_FAILED"/>
-  <int value="8" label="GET_NODE_VALUE_FAILED"/>
-  <int value="9" label="CONVERSION_TO_PROP_VALUE_FAILED"/>
-  <int value="10" label="GET_STRING_FAILED"/>
-  <int value="11" label="GET_NAMED_ITEM_NULL"/>
-  <int value="12" label="GET_FIRST_CHILD_NULL"/>
-</enum>
-
-<enum name="WindowsNotificationGetSettingPolicy">
-  <int value="0" label="ENABLED"/>
-  <int value="1" label="DISABLED_FOR_APPLICATION"/>
-  <int value="2" label="DISABLED_FOR_USER"/>
-  <int value="3" label="DISABLED_BY_GROUP_POLICY"/>
-  <int value="4" label="DISABLED_BY_MANIFEST"/>
-  <int value="5" label="UNKNOWN"/>
-</enum>
-
-<enum name="WindowsNotificationGetSettingStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="UNKNOWN_FAILURE"/>
-</enum>
-
-<enum name="WindowsNotificationHandleEventStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="HANDLE_EVENT_LAUNCH_ID_INVALID"/>
-</enum>
-
-<enum name="WindowsNotificationHistoryStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="CREATE_TOAST_NOTIFICATION_MANAGER_FAILED"/>
-  <int value="2" label="QUERY_TOAST_MANAGER_STATISTICS2_FAILED"/>
-  <int value="3" label="GET_TOAST_HISTORY_FAILED"/>
-</enum>
-
-<enum name="WindowsNotificationLaunchIdDecodeStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Empty input"/>
-  <int value="2" label="Component id invalid"/>
-  <int value="3" label="Component id out of range"/>
-  <int value="4" label="Insufficient tokens"/>
-  <int value="5" label="Button index invalild"/>
-  <int value="6" label="Type invalid"/>
-  <int value="7" label="Type out of range"/>
-</enum>
-
-<enum name="WindowsNotificationOnFailedStatus">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="GET_ERROR_CODE_FAILED"/>
-</enum>
-
-<enum name="WindowsNotificationSetReadyCallbackStatus2">
-  <int value="0" label="Success"/>
-  <int value="1" label="Misconfig - Shortcut"/>
-  <int value="2" label="Misconfig - ComServer"/>
-  <int value="3" label="Misconfig - Shortcut and ComServer"/>
-  <int value="4" label="Misconfig - ComInitialization"/>
-  <int value="5" label="Misconfig - Shortcut and ComInitialization"/>
-  <int value="6" label="Misconfig - ComServer and ComInitialization"/>
-  <int value="7"
-      label="Misconfig - Shortcut and ComServer and ComInitialization"/>
-</enum>
-
-<enum name="WindowsNotificationStartMenuShortcutStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Get shortcut path failed"/>
-  <int value="2" label="Shortcut missing"/>
-  <int value="3" label="Toast activator CLSID incorrect"/>
-  <int value="4" label="Read shortcut property failed"/>
 </enum>
 
 <enum name="WinGetLastError">
