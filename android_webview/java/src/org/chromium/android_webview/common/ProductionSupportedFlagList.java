@@ -562,6 +562,8 @@ public final class ProductionSupportedFlagList {
                 "Determines whether to always flush Local State immediately after an UMA/UKM "
                         + "log upload."),
         Flag.baseFeature(
+                MetricsFeatures.METRICS_LOG_TRIMMING, "Controls trimming for metrics logs."),
+        Flag.baseFeature(
                 ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
                 "When enabled runs the main thread at compositing priority."),
         Flag.baseFeature(

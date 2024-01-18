@@ -35,6 +35,12 @@ BASE_DECLARE_FEATURE(kMetricsServiceDeltaSnapshotInBg);
 // background.
 BASE_DECLARE_FEATURE(kReportingServiceAlwaysFlush);
 
+// Controls trimming for metrics logs. This feature allows tuning of the log
+// trimming behaviour via serverside parameters. Do not remove. See
+// components/metrics/metrics_service_client.cc and
+// components/metrics/unsent_log_store.cc.
+BASE_DECLARE_FEATURE(kMetricsLogTrimming);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_
