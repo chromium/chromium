@@ -467,27 +467,27 @@ BitstreamBufferMetadata AV1VaapiVideoEncoderDelegate::GetMetadata(
 //    compressed data.
 VaapiVideoEncoderDelegate::PrepareEncodeJobResult
 AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
-  PicParamOffsets offsets;
-
   if (frame_num_ == current_params_.intra_period) {
     encode_job.ProduceKeyframe();
   }
 
-  if (!SubmitTemporalDelimiter(offsets)) {
+  size_t frame_header_obu_offset = 0;
+  if (!SubmitTemporalDelimiter(frame_header_obu_offset)) {
     LOG(ERROR) << "Failed to submit temporal delimiter";
     return PrepareEncodeJobResult::kFail;
   }
 
   if (encode_job.IsKeyframeRequested()) {
     frame_num_ = 0;
-    if (!SubmitSequenceHeader(offsets)) {
+    size_t sequence_header_obu_size = 0;
+    if (!SubmitSequenceHeader(sequence_header_obu_size)) {
       return PrepareEncodeJobResult::kFail;
     }
+    frame_header_obu_offset += sequence_header_obu_size;
   }
 
   // TODO(b/267521747): Rate control buffers go here
-
-  if (!SubmitFrame(encode_job, offsets)) {
+  if (!SubmitFrame(encode_job, frame_header_obu_offset)) {
     LOG(ERROR) << "Failed to submit frame";
     return PrepareEncodeJobResult::kFail;
   }
@@ -510,7 +510,7 @@ void AV1VaapiVideoEncoderDelegate::BitrateControlUpdate(
 
 // See section 5.6 of the AV1 specification.
 bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
-    PicParamOffsets& offsets) {
+    size_t& temporal_delimiter_obu_size) {
   PackedData temporal_delimiter_obu;
   temporal_delimiter_obu.WriteOBUHeader(
       /*type=*/libgav1::ObuType::kObuTemporalDelimiter,
@@ -520,18 +520,17 @@ bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
 
   std::vector<uint8_t> temporal_delimiter_obu_data =
       temporal_delimiter_obu.Flush();
-  offsets.frame_hdr_obu_size_byte_offset = temporal_delimiter_obu_data.size();
-
+  temporal_delimiter_obu_size = temporal_delimiter_obu_data.size();
   return SubmitPackedData(temporal_delimiter_obu_data);
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeader(
-    PicParamOffsets& offsets) {
+    size_t& sequence_header_obu_size) {
   if (!SubmitSequenceParam()) {
     LOG(ERROR) << "Failed to submit sequence header";
     return false;
   }
-  if (!SubmitSequenceHeaderOBU(offsets)) {
+  if (!SubmitSequenceHeaderOBU(sequence_header_obu_size)) {
     LOG(ERROR) << "Failed to submit packed sequence header";
     return false;
   }
@@ -585,7 +584,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceParam() {
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
-    PicParamOffsets& offsets) {
+    size_t& sequence_header_obu_size) {
   PackedData sequence_header_obu;
 
   sequence_header_obu.WriteOBUHeader(
@@ -602,8 +601,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
       std::make_move_iterator(packed_sequence_data.begin()),
       std::make_move_iterator(packed_sequence_data.end()));
 
-  offsets.frame_hdr_obu_size_byte_offset += sequence_header_obu_data.size();
-
+  sequence_header_obu_size = sequence_header_obu_data.size();
   return SubmitPackedData(sequence_header_obu_data);
 }
 
@@ -667,7 +665,7 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackSequenceHeader() const {
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
-                                               PicParamOffsets& offsets) {
+                                               size_t frame_header_obu_offset) {
   VAEncPictureParameterBufferAV1 pic_param{};
   VAEncSegMapBufferAV1 segment_map_param{};
   scoped_refptr<AV1Picture> pic = GetAV1Picture(job);
@@ -676,11 +674,15 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
     LOG(ERROR) << "Failed to fill PPS";
     return false;
   }
-  if (!SubmitFrameOBU(pic_param, offsets)) {
+
+  size_t frame_header_obu_size_offset = 0;
+  if (!SubmitFrameOBU(pic_param, frame_header_obu_size_offset)) {
     LOG(ERROR) << "Failed to submit packed picture header";
     return false;
   }
-  if (!SubmitPictureParam(pic_param, offsets)) {
+  pic_param.byte_offset_frame_hdr_obu_size =
+      frame_header_obu_offset + frame_header_obu_size_offset;
+  if (!SubmitPictureParam(pic_param)) {
     LOG(ERROR) << "Failed to submit picture header";
     return false;
   }
@@ -899,16 +901,6 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 
   memset(&pic_param.wm, 0, sizeof(pic_param.wm));
 
-  // The following are initialized in SubmitPictureParam because we need to
-  // generate the rest of the bitstream to compute their value:
-  // bit_offset_qindex
-  // bit_offset_segmentation
-  // bit_offset_loopfilter_params
-  // bit_offset_cdef_params
-  // size_in_bits_cdef_params
-  // byte_offset_frame_hdr_obu_size
-  // size_in_bits_frame_hdr_obu
-
   pic_param.tile_group_obu_hdr_info.bits.obu_extension_flag = 0;
   pic_param.tile_group_obu_hdr_info.bits.obu_has_size_field = 1;
   pic_param.tile_group_obu_hdr_info.bits.temporal_id = 0;
@@ -926,25 +918,15 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 // to be optional, while the latter does not.
 bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
     const VAEncPictureParameterBufferAV1& pic_param,
-    PicParamOffsets& offsets) {
+    size_t& frame_header_obu_size_offset) {
   PackedData frame_obu;
-
   frame_obu.WriteOBUHeader(/*type=*/libgav1::ObuType::kObuFrame,
                            /*extension_flag=*/false,
                            /*has_size=*/true);
+  frame_header_obu_size_offset = frame_obu.OutstandingBits() / 8;
 
-  std::vector<uint8_t> frame_header_data = PackFrameHeader(pic_param, offsets);
-
-  offsets.frame_hdr_obu_size_byte_offset += frame_obu.OutstandingBits() / 8;
-
+  std::vector<uint8_t> frame_header_data = PackFrameHeader(pic_param);
   frame_obu.EncodeLeb128(frame_header_data.size(), 4);
-
-  offsets.q_idx_bit_offset += frame_obu.OutstandingBits();
-  offsets.segmentation_bit_offset += frame_obu.OutstandingBits();
-  offsets.loop_filter_params_bit_offset += frame_obu.OutstandingBits();
-  offsets.cdef_params_bit_offset += frame_obu.OutstandingBits();
-  offsets.frame_hdr_obu_size_bits += frame_obu.OutstandingBits();
-
   std::vector<uint8_t> frame_obu_data = frame_obu.Flush();
   frame_obu_data.insert(frame_obu_data.end(),
                         std::make_move_iterator(frame_header_data.begin()),
@@ -957,8 +939,7 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
 // Sensible default values for most parameters taken from
 // https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
 std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
-    const VAEncPictureParameterBufferAV1& pic_param,
-    PicParamOffsets& offsets) const {
+    const VAEncPictureParameterBufferAV1& pic_param) const {
   PackedData ret;
   libgav1::FrameType frame_type =
       static_cast<libgav1::FrameType>(pic_param.picture_flags.bits.frame_type);
@@ -1019,7 +1000,6 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
   ret.WriteBool(false);  // Don't increment log2 of tile rows
 
   // Pack quantization parameters.
-  offsets.q_idx_bit_offset = ret.OutstandingBits();
   ret.Write(pic_param.base_qindex, 8);
   ret.WriteBool(false);  // No DC Y delta Q
   ret.WriteBool(false);  // U and V delta Q is same
@@ -1028,7 +1008,6 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
   ret.WriteBool(false);  // No Qmatrix
 
   // Pack segmentation parameters
-  offsets.segmentation_bit_offset = ret.OutstandingBits();
   ret.WriteBool(true);  // Enable segmentation
   if (pic_param.primary_ref_frame != kPrimaryReferenceNone) {
     ret.WriteBool(true);   // Update segment map
@@ -1054,13 +1033,10 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
       }
     }
   }
-  offsets.segmentation_bit_size =
-      ret.OutstandingBits() - offsets.segmentation_bit_offset;
 
   ret.WriteBool(false);  // No delta q present
 
   // Pack loop filter parameters
-  offsets.loop_filter_params_bit_offset = ret.OutstandingBits();
   ret.Write(pic_param.filter_level[0], 6);
   ret.Write(pic_param.filter_level[1], 6);
   ret.Write(pic_param.filter_level_u, 6);
@@ -1071,7 +1047,6 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
             1);  // Disable loop filter delta
 
   // Pack CDEF parameters
-  offsets.cdef_params_bit_offset = ret.OutstandingBits();
   ret.Write(2, 2);  // Set CDEF damping minus 3 to 5 - 3
   ret.Write(3, 2);  // Set CDEF bits to 3
   for (size_t i = 0; i < ARRAY_SIZE(current_params_.cdef_y_pri_strength); i++) {
@@ -1080,8 +1055,6 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
     ret.Write(current_params_.cdef_uv_pri_strength[i], 4);
     ret.Write(current_params_.cdef_uv_sec_strength[i], 2);
   }
-  offsets.cdef_params_size_bits =
-      ret.OutstandingBits() - offsets.cdef_params_bit_offset;
 
   ret.WriteBool(true);  // TxMode TX_MODE_SELECT
 
@@ -1098,26 +1071,11 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
     }
   }
 
-  offsets.frame_hdr_obu_size_bits = ret.OutstandingBits();
-
   return ret.Flush();
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitPictureParam(
-    VAEncPictureParameterBufferAV1& pic_param,
-    const PicParamOffsets& offsets) {
-  // TODO(b/275711269): These should actually be 0 in CQP mode, but that results
-  // in a corrupt bitstream.
-  pic_param.bit_offset_qindex = offsets.q_idx_bit_offset;
-  pic_param.bit_offset_segmentation = offsets.segmentation_bit_offset;
-  pic_param.bit_offset_loopfilter_params =
-      offsets.loop_filter_params_bit_offset;
-  pic_param.bit_offset_cdef_params = offsets.cdef_params_bit_offset;
-  pic_param.size_in_bits_cdef_params = offsets.cdef_params_size_bits;
-  pic_param.byte_offset_frame_hdr_obu_size =
-      offsets.frame_hdr_obu_size_byte_offset;
-  pic_param.size_in_bits_frame_hdr_obu = offsets.frame_hdr_obu_size_bits;
-
+    const VAEncPictureParameterBufferAV1& pic_param) {
   return vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
                                       sizeof(VAEncPictureParameterBufferAV1),
                                       &pic_param);

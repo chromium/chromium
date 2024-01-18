@@ -37,19 +37,6 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     uint8_t cdef_uv_sec_strength[8] = {0, 2, 0, 0, 0, 1, 0, 1};
   };
 
-  struct PicParamOffsets {
-    uint32_t q_idx_bit_offset = 0;
-    uint32_t segmentation_bit_offset = 0;
-    uint32_t segmentation_bit_size = 0;
-    uint32_t loop_filter_params_bit_offset = 0;
-    uint32_t frame_hdr_obu_size_bits = 0;
-    uint32_t frame_hdr_obu_size_byte_offset = 0;  // Tell the driver where to
-                                                  // put the frame size
-    uint32_t uncompressed_hdr_byte_offset = 0;
-    uint32_t cdef_params_bit_offset = 0;
-    uint32_t cdef_params_size_bits = 0;
-  };
-
   AV1VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
                                base::RepeatingClosure error_cb);
 
@@ -74,23 +61,21 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;
 
-  bool SubmitTemporalDelimiter(PicParamOffsets& offsets);
-  bool SubmitSequenceHeader(PicParamOffsets& offsets);
+  bool SubmitTemporalDelimiter(size_t& temporal_delimiter_obu_size);
+  bool SubmitSequenceHeader(size_t& sequence_header_obu_size);
   bool SubmitSequenceParam();
-  bool SubmitSequenceHeaderOBU(PicParamOffsets& offsets);
+  bool SubmitSequenceHeaderOBU(size_t& sequence_header_obu_size);
   std::vector<uint8_t> PackSequenceHeader() const;
-  bool SubmitFrame(EncodeJob& job, PicParamOffsets& offsets);
+  bool SubmitFrame(EncodeJob& job, size_t frame_header_obu_offset);
   bool FillPictureParam(VAEncPictureParameterBufferAV1& pic_param,
                         VAEncSegMapBufferAV1& segment_map_param,
                         const EncodeJob& job,
                         const AV1Picture& pic);
   bool SubmitFrameOBU(const VAEncPictureParameterBufferAV1& pic_param,
-                      PicParamOffsets& offsets);
+                      size_t& frame_header_obu_size_offset);
   std::vector<uint8_t> PackFrameHeader(
-      const VAEncPictureParameterBufferAV1& pic_param,
-      PicParamOffsets& offsets) const;
-  bool SubmitPictureParam(VAEncPictureParameterBufferAV1& pic_param,
-                          const PicParamOffsets& offsets);
+      const VAEncPictureParameterBufferAV1& pic_param) const;
+  bool SubmitPictureParam(const VAEncPictureParameterBufferAV1& pic_param);
   bool SubmitSegmentMap(const VAEncSegMapBufferAV1& segment_map_param);
   bool SubmitTileGroup();
   bool SubmitPackedData(const std::vector<uint8_t>& data);
