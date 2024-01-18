@@ -98,7 +98,9 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
-    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    features_.InitWithFeaturesAndParameters(
+        GetEnabledFeatures(),
+        {content_settings::features::kActiveContentSettingExpiry});
     InProcessBrowserTest::SetUp();
   }
 

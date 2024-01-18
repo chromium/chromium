@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_rules.h"
 
 class GURL;
 
@@ -26,8 +27,6 @@ class Value;
 }  // namespace base
 
 namespace content_settings {
-
-class RuleIterator;
 
 // Stores and provides access to Content Settings Rules.
 //
@@ -41,22 +40,6 @@ class RuleIterator;
 // Iterator itself will hold the lock until it's destroyed.
 class OriginIdentifierValueMap {
  public:
-  struct PatternPair {
-    ContentSettingsPattern primary_pattern;
-    ContentSettingsPattern secondary_pattern;
-    PatternPair(const ContentSettingsPattern& primary_pattern,
-                const ContentSettingsPattern& secondary_pattern);
-    bool operator<(const OriginIdentifierValueMap::PatternPair& other) const;
-  };
-
-  struct ValueEntry {
-    base::Value value;
-    RuleMetaData metadata;
-    ValueEntry();
-    ~ValueEntry();
-  };
-
-  typedef std::map<PatternPair, ValueEntry> Rules;
   typedef std::map<ContentSettingsType, Rules> EntryMap;
 
   base::Lock& GetLock() const LOCK_RETURNED(lock_) { return lock_; }

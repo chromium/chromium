@@ -32,8 +32,6 @@ using ::testing::_;
 
 namespace content_settings {
 
-typedef std::vector<Rule> Rules;
-
 class PolicyProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };

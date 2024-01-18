@@ -8,6 +8,8 @@
 #include <string>
 
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -57,12 +59,12 @@ TEST_F(HostIndexedContentSettingsTest, DomainWildcardMatchFound) {
                     CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_ALLOW);
 }
 
@@ -78,13 +80,56 @@ TEST_F(HostIndexedContentSettingsTest, MostSpecificMatchBlocks) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_ALLOW),
       CreateSetting("www.example.com/123", "*", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(HostIndexedContentSettingsTest, SetDelete) {
+  for (auto& [primary, secondary] :
+       std::vector<std::pair<std::string, std::string>>(
+           {{"*", "toplevel.com"}, {"example.com", "toplevel.com"}})) {
+    HostIndexedContentSettings index;
+    // Insert a setting.
+    EXPECT_TRUE(index.SetValue(ContentSettingsPattern::FromString(primary),
+                               ContentSettingsPattern::FromString(secondary),
+                               base::Value(CONTENT_SETTING_ALLOW),
+                               /*metadata=*/{}));
+    // Check setting.
+    EXPECT_EQ(ValueToContentSetting(index
+                                        .Find(GURL("https://example.com"),
+                                              GURL("https://toplevel.com"))
+                                        ->second.value),
+              CONTENT_SETTING_ALLOW);
+
+    // Check that inserting the same setting returns false.
+    EXPECT_FALSE(index.SetValue(ContentSettingsPattern::FromString(primary),
+                                ContentSettingsPattern::FromString(secondary),
+                                base::Value(CONTENT_SETTING_ALLOW),
+                                /*metadata=*/{}));
+
+    // Check that inserting the a different value return true.
+    EXPECT_TRUE(index.SetValue(ContentSettingsPattern::FromString(primary),
+                               ContentSettingsPattern::FromString(secondary),
+                               base::Value(CONTENT_SETTING_BLOCK),
+                               /*metadata=*/{}));
+    // Delete setting.
+    EXPECT_TRUE(
+        index.DeleteValue(ContentSettingsPattern::FromString(primary),
+                          ContentSettingsPattern::FromString(secondary)));
+    // Check setting is gone.
+    EXPECT_EQ(
+        index.Find(GURL("https://example.com"), GURL("https://toplevel.com")),
+        nullptr);
+    // Check that deleting the setting again returns false.
+    EXPECT_FALSE(
+        index.DeleteValue(ContentSettingsPattern::FromString(primary),
+                          ContentSettingsPattern::FromString(secondary)));
+  }
 }
 
 TEST_F(HostIndexedContentSettingsTest, ExactDomainMatchFound) {
@@ -99,12 +144,12 @@ TEST_F(HostIndexedContentSettingsTest, ExactDomainMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_ALLOW);
 }
 
@@ -121,12 +166,12 @@ TEST_F(HostIndexedContentSettingsTest, NotFirstDomainMatchFound) {
       CreateSetting("https://www.example.com/*", "[*.]example.com",
                     CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_ALLOW);
 }
 
@@ -141,12 +186,12 @@ TEST_F(HostIndexedContentSettingsTest, WildcardMatchFound) {
       CreateSetting("https://www.example.com:123/", "[*.]toplevel.com",
                     CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_ALLOW);
 }
 
@@ -161,8 +206,7 @@ TEST_F(HostIndexedContentSettingsTest, NoMatchFound) {
       CreateSetting("https://www.example.com:123/", "[*.]toplevel.com",
                     CONTENT_SETTING_ALLOW),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
       test_multi_indexed_settings.Find(test_primary_url, test_secondary_url),
@@ -181,12 +225,12 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatch) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_ALLOW);
 }
 
@@ -202,12 +246,12 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatchIsBlock) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
-      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
-          ->GetContentSetting(),
+      ValueToContentSetting(test_multi_indexed_settings
+                                .Find(test_primary_url, test_secondary_url)
+                                ->second.value),
       CONTENT_SETTING_BLOCK);
 }
 
@@ -223,8 +267,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesNoMatch) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_BLOCK),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_multi_indexed_settings =
-      HostIndexedContentSettings(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings(test_settings);
 
   EXPECT_EQ(
       test_multi_indexed_settings.Find(test_primary_url, test_secondary_url),

@@ -16,6 +16,7 @@
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
@@ -109,12 +110,10 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard()) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kHostIndexedMetadataGrants)) {
-        host_indexed_content_settings_[type]->Add(
-            ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
-                                        ContentSettingsPattern::Wildcard(),
-                                        base::Value(CONTENT_SETTING_ALLOW),
-                                        /*source=*/std::string(),
-                                        /*incognito=*/false));
+        host_indexed_content_settings_[type]->SetValue(
+            ContentSettingsPattern::Wildcard(),
+            ContentSettingsPattern::Wildcard(),
+            base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
         // TODO(b/314800700): clear content_settings_ since we only need one
         // copy of these content settings.
       }
@@ -347,7 +346,6 @@ ContentSetting CookieSettings::GetContentSetting(
     content_settings::SettingInfo* info) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "ContentSettings.GetContentSetting.Network.Duration");
-  const ContentSettingPatternSource* result;
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
 #if DCHECK_IS_ON()
@@ -357,27 +355,36 @@ ContentSetting CookieSettings::GetContentSetting(
         << "Different result in index lookup: " << primary_url.spec() << " "
         << secondary_url.spec();
 #endif
-    result = GetHostIndexedContentSettings(content_type)
-                 .Find(primary_url, secondary_url);
-  } else {
-    result = content_settings::FindContentSetting(
-        primary_url, secondary_url, GetContentSettings(content_type));
-  }
-
-  if (!result) {
-    if (info) {
-      info->primary_pattern = ContentSettingsPattern::Wildcard();
-      info->secondary_pattern = ContentSettingsPattern::Wildcard();
+    const content_settings::RuleEntry* result =
+        GetHostIndexedContentSettings(content_type)
+            .Find(primary_url, secondary_url);
+    if (result) {
+      if (info) {
+        info->primary_pattern = result->first.primary_pattern;
+        info->secondary_pattern = result->first.secondary_pattern;
+        info->metadata = result->second.metadata;
+      }
+      return content_settings::ValueToContentSetting(result->second.value);
     }
-    return CONTENT_SETTING_BLOCK;
+  } else {
+    const ContentSettingPatternSource* result =
+        content_settings::FindContentSetting(primary_url, secondary_url,
+                                             GetContentSettings(content_type));
+    if (result) {
+      if (info) {
+        info->primary_pattern = result->primary_pattern;
+        info->secondary_pattern = result->secondary_pattern;
+        info->metadata = result->metadata;
+      }
+      return result->GetContentSetting();
+    }
   }
-
   if (info) {
-    info->primary_pattern = result->primary_pattern;
-    info->secondary_pattern = result->secondary_pattern;
-    info->metadata = result->metadata;
+    info->primary_pattern = ContentSettingsPattern::Wildcard();
+    info->secondary_pattern = ContentSettingsPattern::Wildcard();
+    info->metadata = {};
   }
-  return result->GetContentSetting();
+  return CONTENT_SETTING_BLOCK;
 }
 
 bool CookieSettings::IsThirdPartyCookiesAllowedScheme(

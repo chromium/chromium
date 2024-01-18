@@ -284,7 +284,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingGetsFirstSetting) {
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_BLOCK),
-       CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY)});
+       CreateSetting("*", kURL, CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
@@ -674,10 +674,10 @@ TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {
   CookieSettings settings;
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
-      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW),
+      {CreateSetting(kURL, "*", CONTENT_SETTING_ALLOW),
        CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate().Run(
-      kURL, net::CookieSourceScheme::kNonSecure));
+      "foo.com", net::CookieSourceScheme::kNonSecure));
 }
 
 TEST_P(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
