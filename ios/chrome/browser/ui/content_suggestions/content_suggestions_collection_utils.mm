@@ -20,6 +20,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ui/base/device_form_factor.h"
@@ -378,6 +379,15 @@ UIColor* SearchHintLabelColor() {
     return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }
   return [UIColor colorNamed:kTextfieldPlaceholderColor];
+}
+
+int SetUpListTitleStringID() {
+  return IsIOSTipsNotificationsEnabled() ? IDS_IOS_SET_UP_LIST_TIPS_TITLE
+                                         : IDS_IOS_SET_UP_LIST_TITLE;
+}
+
+NSString* SetUpListTitleString() {
+  return l10n_util::GetNSString(SetUpListTitleStringID());
 }
 
 }  // namespace content_suggestions

@@ -11,18 +11,20 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
 
 namespace {
 
@@ -335,7 +337,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kSetUpListContentNotification:
-      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
+      return content_suggestions::SetUpListTitleString();
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
@@ -539,8 +541,10 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListContentNotification:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION);
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
+          l10n_util::GetStringUTF16(
+              content_suggestions::SetUpListTitleStringID()));
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSStringF(

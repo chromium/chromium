@@ -4385,6 +4385,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_EXPAND" desc="Accessibility label for the button to expand the Set Up List.">
         Expand list
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION" desc="Description for the long-press context menu for the Set Up List module.">
+          Hide "<ph name="TITLE">$1<ex>Get the most out of Chromium</ex></ph>"
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_MENU" desc="Accessibility label for the Set Up List menu button.">
         Options
       </message>

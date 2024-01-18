@@ -789,9 +789,9 @@ void TapMoreButtonIfVisible() {
                                    IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  id<GREYMatcher> setUpToggle = grey_allOf(
-      grey_accessibilityID(l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE)),
-      grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> setUpToggle =
+      grey_allOf(grey_accessibilityID([NewTabPageAppInterface setUpListTitle]),
+                 grey_sufficientlyVisible(), nil);
   // Assert Set Up List toggle is on, and then turn if off.
   [[EarlGrey selectElementWithMatcher:setUpToggle]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
@@ -810,8 +810,8 @@ void TapMoreButtonIfVisible() {
 
   // Assert Set Up List is not there. If it is, it is always the first module.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
-                                   IDS_IOS_SET_UP_LIST_TITLE))]
+      selectElementWithMatcher:grey_accessibilityID(
+                                   [NewTabPageAppInterface setUpListTitle])]
       assertWithMatcher:grey_nil()];
 }
 
