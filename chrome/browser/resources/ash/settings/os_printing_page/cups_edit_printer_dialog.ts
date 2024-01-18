@@ -46,7 +46,7 @@ enum DialogActions {
 }
 
 /** Keyword used for recording metrics */
-const METRICS_KEYWORD = 'Printing.CUPS.EditDialog';
+const METRICS_KEYWORD = 'Printing.CUPS.PrinterEditDialogActions';
 
 const SettingsCupsEditPrinterDialogElementBase =
     mixinBehaviors([NetworkListenerBehavior], I18nMixin(PolymerElement)) as

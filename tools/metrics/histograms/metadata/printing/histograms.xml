@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterEditDialogActions"
-    enum="PrinterEditDialogActions" expires_after="2024-02-26">
+    enum="PrinterEditDialogActions" expires_after="2024-07-01">
   <owner>nmuggli@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -268,7 +268,9 @@ chromium-metrics-reviews@google.com.
     Additional buckets will get incremented for specific actions, such as
     clicking the View PPD button. Therefore, the first bucket acts as the total
     number of potential events and subsequest buckets track how many times
-    specific events occurred. Only on Chrome OS.
+    specific events occurred. Only on Chrome OS. Note that this metric was not
+    being recorded until middle of January 2024 (M122) despite initially landing
+    in M109.
   </summary>
 </histogram>
 
