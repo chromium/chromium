@@ -135,6 +135,16 @@
     width: 28px;
   }
 
+  @media (forced-colors: active) {
+    #descriptorMenuD button {
+      border: solid 1px ButtonBorder;
+    }
+
+    .descriptor-d {
+      forced-color-adjust: none;
+    }
+  }
+
   #colorPickerIcon {
     -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
     -webkit-mask-repeat: no-repeat;
