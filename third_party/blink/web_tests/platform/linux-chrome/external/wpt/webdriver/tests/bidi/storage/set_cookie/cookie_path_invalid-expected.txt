@@ -1,4 +1,4 @@
 This is a wdspec test.
 [FAIL] test_path_invalid_values[no_leading_forward_slash]
-  AttributeError: module 'webdriver.bidi.error' has no attribute 'UnableToSetCookieException'
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
 Harness: the test ran to completion.

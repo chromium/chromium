@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Window Position
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_window_rect is not a function"
-[FAIL] Window Size
-  promise_test: Unhandled rejection with value: object "TypeError: test_driver.get_window_rect is not a function"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.

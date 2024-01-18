@@ -1,6 +1,6 @@
 This is a wdspec test.
 [FAIL] test_page_protocols[http]
-  TypeError: Object of type Undefined is not JSON serializable
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
 [FAIL] test_page_protocols[https]
-  TypeError: Object of type Undefined is not JSON serializable
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
 Harness: the test ran to completion.

@@ -1,6 +1,6 @@
 This is a wdspec test.
 [FAIL] test_partition_context
-  TypeError: Object of type Undefined is not JSON serializable
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
 [FAIL] test_partition_storage_key_source_origin
-  TypeError: Object of type Undefined is not JSON serializable
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
 Harness: the test ran to completion.
