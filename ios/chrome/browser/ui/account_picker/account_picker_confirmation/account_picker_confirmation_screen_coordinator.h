@@ -39,11 +39,16 @@
 // If `showAskEveryTimeSwitch` is YES, then this is the current value of the
 // switch. Otherwise defaults to YES.
 @property(nonatomic, assign, readonly) BOOL askEveryTime;
+// View controller to add as a child view controller in the account confirmation
+// screen above the list of accounts to choose from.
+@property(nonatomic, weak) UIViewController* childViewController;
 
 // Starts the spinner and disables buttons.
 - (void)startValidationSpinner;
 // Stops the spinner and enables buttons.
 - (void)stopValidationSpinner;
+// Shows/hides the identity button.
+- (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated;
 
 @end
 

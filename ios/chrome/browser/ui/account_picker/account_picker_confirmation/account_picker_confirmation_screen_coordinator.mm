@@ -57,6 +57,8 @@
   _confirmationViewController =
       [[AccountPickerConfirmationScreenViewController alloc]
           initWithConfiguration:_configuration];
+  _confirmationViewController.accountConfirmationChildViewController =
+      self.childViewController;
   _mediator.consumer = _confirmationViewController;
   _confirmationViewController.actionDelegate = self;
   _confirmationViewController.layoutDelegate = _layoutDelegate;
@@ -69,6 +71,11 @@
 
 - (void)stopValidationSpinner {
   [_confirmationViewController stopSpinner];
+}
+
+- (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  [_confirmationViewController setIdentityButtonHidden:hidden
+                                              animated:animated];
 }
 
 - (void)stop {

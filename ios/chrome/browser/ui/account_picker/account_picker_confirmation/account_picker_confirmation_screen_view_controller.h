@@ -47,11 +47,18 @@
 @property(nonatomic, weak) id<AccountPickerConfirmationScreenActionDelegate>
     actionDelegate;
 @property(nonatomic, weak) id<AccountPickerLayoutDelegate> layoutDelegate;
+// View controller to add as a child view controller in the account confirmation
+// screen above the list of accounts to choose from. This property can only be
+// set once before the view controller is presented.
+@property(nonatomic, weak)
+    UIViewController* accountConfirmationChildViewController;
 
 // Starts the spinner and disables buttons.
 - (void)startSpinner;
 // Stops the spinner and enables buttons.
 - (void)stopSpinner;
+// Shows/hides the identity button.
+- (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated;
 
 @end
 
