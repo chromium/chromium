@@ -12,6 +12,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
@@ -38,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -1154,6 +1157,30 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showInactiveTabs {
   CHECK(IsInactiveTabsEnabled());
   [self.inactiveTabsCoordinator show];
+}
+
+- (BOOL)tabGridIsUserEligibleForSwipeToIncognitoIPH {
+  return _pageConfiguration == TabGridPageConfiguration::kAllPagesEnabled &&
+         IsFirstRunRecent(base::Days(60)) &&
+         feature_engagement::TrackerFactory::GetForBrowserState(
+             self.regularBrowser->GetBrowserState())
+             ->WouldTriggerHelpUI(
+                 feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito);
+}
+
+- (BOOL)tabGridShouldPresentSwipeToIncognitoIPH {
+  return feature_engagement::TrackerFactory::GetForBrowserState(
+             self.regularBrowser->GetBrowserState())
+      ->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito);
+}
+
+- (void)tabGridDidDismissSwipeToIncognitoIPH {
+  feature_engagement::TrackerFactory::GetForBrowserState(
+      self.regularBrowser->GetBrowserState())
+      ->DismissedWithSnooze(
+          feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito,
+          feature_engagement::Tracker::SnoozeAction::DISMISSED);
 }
 
 #pragma mark - InactiveTabsCoordinatorDelegate

@@ -4694,6 +4694,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SUPERVISED_USER_UNAVAILABLE_SETTING_MESSAGE" desc="Text displayed to inform that the setting is not available for supervised user.">
         This setting is unavailable.
       </message>
+      <message name="IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH" desc="The text for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid for RTL devices.">
+        You can swipe left to browse in Incognito.
+      </message>
+      <message name="IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH" desc="The text for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid.">
+        You can swipe right to browse in Incognito.
+      </message>
       <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_CONTINUE" desc="Action of a dialog to enable saving addresses to the Google Account. If the user chose to continue, addresses will start syncing.">
         Continue
       </message>
