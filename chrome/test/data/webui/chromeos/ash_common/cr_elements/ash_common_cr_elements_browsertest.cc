@@ -25,6 +25,10 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrDialog) {
   RunTest("chromeos/ash_common/cr_elements/cr_dialog_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrDrawer) {
+  RunTest("chromeos/ash_common/cr_elements/cr_drawer_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrExpandButton) {
   RunTest("chromeos/ash_common/cr_elements/cr_expand_button_test.js",
           "mocha.run()");
@@ -35,6 +39,11 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrIconButton) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrSearchField) {
+  RunTest("chromeos/ash_common/cr_elements/cr_search_field_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrToast) {
   RunTest("chromeos/ash_common/cr_elements/cr_toast_test.js", "mocha.run()");
 }
@@ -42,6 +51,10 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrToast) {
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrToastManager) {
   RunTest("chromeos/ash_common/cr_elements/cr_toast_manager_test.js",
           "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrToolbar) {
+  RunTest("chromeos/ash_common/cr_elements/cr_toolbar_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, I18nMixin) {

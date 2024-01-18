@@ -16,16 +16,23 @@ build_webui("build") {
     "cr_button/cr_button.ts",
     "cr_checkbox/cr_checkbox.ts",
     "cr_dialog/cr_dialog.ts",
+    "cr_drawer/cr_drawer.ts",
     "cr_expand_button/cr_expand_button.ts",
     "cr_icon_button/cr_icon_button.ts",
     "cr_input/cr_input.ts",
+    "cr_search_field/cr_search_field.ts",
     "cr_toast/cr_toast.ts",
     "cr_toast/cr_toast_manager.ts",
+    "cr_toolbar/cr_toolbar.ts",
+    "cr_toolbar/cr_toolbar_search_field.ts",
+    "cr_toolbar/cr_toolbar_selection_overlay.ts",
   ]
 
   non_web_component_files = [
     "cr_container_shadow_mixin.ts",
+    "focus_row_mixin.ts",
     "i18n_mixin.ts",
+    "cr_search_field/cr_search_field_mixin.ts",
   ]
 
   icons_html_files = [ "icons.html" ]

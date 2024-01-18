@@ -16,6 +16,21 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrCheckbox) {
   RunTest("chromeos/ash_common/cr_elements/cr_checkbox_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrFocusRowMixin) {
+  RunTest("chromeos/ash_common/cr_elements/cr_focus_row_mixin_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrInput) {
   RunTest("chromeos/ash_common/cr_elements/cr_input_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrToolbar) {
+  RunTest("chromeos/ash_common/cr_elements/cr_toolbar_focus_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsFocusTest, CrToolbarSearchField) {
+  RunTest("chromeos/ash_common/cr_elements/cr_toolbar_search_field_test.js",
+          "mocha.run()");
 }
