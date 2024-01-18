@@ -297,7 +297,8 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     auto color_space = gfx::ColorSpace::CreateSRGB();
     shared_image_factory_->CreateSharedImage(
         mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::kNullSurfaceHandle, SHARED_IMAGE_USAGE_RASTER,
+        kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
         "TestLabel");
 
     if (cleared) {
