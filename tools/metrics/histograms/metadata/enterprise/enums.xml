@@ -1849,8 +1849,7 @@ chromium-metrics-reviews@google.com.
   <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
   <int value="1030" label="ExtensionManifestV2Availability"/>
   <int value="1031" label="OffsetParentNewSpecBehaviorEnabled"/>
-  <int value="1032"
-      label="OBSOLETE_SendMouseEventsDisabledFormControlsEnabled"/>
+  <int value="1032" label="SendMouseEventsDisabledFormControlsEnabled"/>
   <int value="1033" label="BruschettaVMConfiguration"/>
   <int value="1034" label="DnsOverHttpsSalt"/>
   <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
@@ -2002,11 +2001,11 @@ chromium-metrics-reviews@google.com.
   <int value="1181" label="NativeHostsExecutablesLaunchDirectly"/>
   <int value="1182" label="FeedbackSurveysEnabled"/>
   <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
-  <int value="1184" label="OopPrintDriversEnabled"/>
+  <int value="1184" label="OopPrintDriversAllowed"/>
   <int value="1185" label="DeviceHardwareVideoDecodingEnabled"/>
-  <int value="1186" label="TabOrganizationAllowed"/>
-  <int value="1187" label="ComposeAllowed"/>
-  <int value="1188" label="WallpaperSearchAllowed"/>
+  <int value="1186" label="TabOrganizerSettings"/>
+  <int value="1187" label="HelpMeWriteSettings"/>
+  <int value="1188" label="CreateThemesSettings"/>
   <int value="1189" label="ListenToThisPageEnabled"/>
   <int value="1190" label="AlwaysOnVpnPreConnectUrlAllowlist"/>
   <int value="1191" label="CACertificates"/>
