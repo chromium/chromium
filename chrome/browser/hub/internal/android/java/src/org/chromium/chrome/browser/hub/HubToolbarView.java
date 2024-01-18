@@ -65,6 +65,7 @@ public class HubToolbarView extends LinearLayout {
                 // TODO(https://crbug.com/1496708): Conditionally use text instead.
                 Drawable drawable = buttonData.resolveIcon(context);
                 tab.setIcon(drawable);
+                tab.setContentDescription(buttonData.resolveContentDescription(context));
                 mPaneSwitcher.addTab(tab);
             }
             mPaneSwitcher.setVisibility(View.VISIBLE);

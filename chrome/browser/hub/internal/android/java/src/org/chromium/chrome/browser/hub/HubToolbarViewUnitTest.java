@@ -161,6 +161,18 @@ public class HubToolbarViewUnitTest {
 
     @Test
     @MediumTest
+    public void testPaneSwitcherContentDescription() {
+        FullButtonData fullButtonData = makeTestButtonData();
+        mPropertyModel.set(
+                PANE_SWITCHER_BUTTON_DATA, Arrays.asList(fullButtonData, fullButtonData));
+
+        assertEquals(
+                fullButtonData.resolveContentDescription(mActivity),
+                mPaneSwitcher.getTabAt(0).getContentDescription());
+    }
+
+    @Test
+    @MediumTest
     public void testPaneSwitcherIndex() {
         FullButtonData fullButtonData = makeTestButtonData();
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
