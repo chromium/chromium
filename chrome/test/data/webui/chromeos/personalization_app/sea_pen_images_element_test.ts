@@ -223,6 +223,26 @@ suite('SeaPenImagesElementTest', function() {
         'image heading should not be displayed when an error is present');
   });
 
+  test('display user quota exceeded error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kPerUserQuotaExceeded;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorResourceExhausted'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
+  });
+
   test('display generic error state', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
         MantaStatusCode.kGenericError;
