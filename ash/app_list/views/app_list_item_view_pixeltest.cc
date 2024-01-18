@@ -509,7 +509,7 @@ TEST_P(AppListItemViewWebAppShortcutPixelTest,
       base::JoinString(
           {"web_app_shortcut_icon_effects_exists", GenerateScreenshotName()},
           "."),
-      /*revision_number=*/0, shortcut_item_view));
+      /*revision_number=*/1, shortcut_item_view));
 }
 
 }  // namespace ash

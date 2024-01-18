@@ -233,6 +233,8 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   }
   int GetShortcutHostBadgeIconContainerDimension() const;
   int GetShortcutBackgroundContainerDimension() const;
+  int GetShortcutTeardropCornerRadius() const;
+
   gfx::Size GetShortcutIconSize() const;
 
   gfx::Size grid_icon_size() const {
@@ -326,6 +328,9 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The dimension of a host badge icon container border of a shortcut.
   const int shortcut_host_badge_icon_border_margin_;
+
+  // The bottom right corner radius of a shortcut.
+  const int shortcut_teardrop_corner_radius_;
 
   // The dimension of a background container border of a shortcut.
   const int shortcut_background_border_margin_;

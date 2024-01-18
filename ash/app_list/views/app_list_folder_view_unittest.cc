@@ -116,12 +116,11 @@ TEST_F(AppListFolderViewTest,
   auto* folder_view = helper->GetBubbleFolderView();
   AppListItemView* item_view = folder_view->items_grid_view()->GetItemViewAt(0);
 
-  views::ImageView* badge_icon_view = item_view->GetHostBadgeIconViewForTest();
   AppListItem* item = GetAppListTestHelper()->model()->FindItem("shortcut_id");
 
   ASSERT_TRUE(helper->IsInFolderView());
   EXPECT_FALSE(item->GetHostBadgeIcon().isNull());
-  EXPECT_TRUE(badge_icon_view);
+  EXPECT_TRUE(item_view->has_host_badge_for_test());
 }
 
 }  // namespace ash

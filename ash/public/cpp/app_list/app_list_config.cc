@@ -179,6 +179,15 @@ int ShortcutIconBorderMarginForType(ash::AppListConfigType type) {
   }
 }
 
+int ShortcutTeardropCornerRadiusForType(ash::AppListConfigType type) {
+  switch (type) {
+    case ash::AppListConfigType::kRegular:
+      return 16;
+    case ash::AppListConfigType::kDense:
+      return 12;
+  }
+}
+
 int BadgeIconBorderMarginForType(ash::AppListConfigType type) {
   switch (type) {
     case ash::AppListConfigType::kRegular:
@@ -267,6 +276,8 @@ AppListConfig::AppListConfig(AppListConfigType type)
       shortcut_host_badge_icon_dimension_(HostBadgeIconDimensionForType(type)),
       shortcut_host_badge_icon_border_margin_(
           BadgeIconBorderMarginForType(type)),
+      shortcut_teardrop_corner_radius_(
+          ShortcutTeardropCornerRadiusForType(type)),
       shortcut_background_border_margin_(ShortcutIconBorderMarginForType(type)),
       promise_icon_dimension_installing_(PromiseIconDimensionInstalling(type)),
       promise_icon_dimension_pending_(PromiseIconDimensionPending(type)) {}
@@ -308,6 +319,8 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
           Scale(base_config.shortcut_host_badge_icon_dimension_, scale_x)),
       shortcut_host_badge_icon_border_margin_(
           Scale(base_config.shortcut_host_badge_icon_border_margin_, scale_x)),
+      shortcut_teardrop_corner_radius_(
+          Scale(base_config.shortcut_teardrop_corner_radius_, scale_x)),
       shortcut_background_border_margin_(
           Scale(base_config.shortcut_background_border_margin_, scale_x)),
       promise_icon_dimension_installing_(
@@ -324,6 +337,10 @@ int AppListConfig::GetShortcutHostBadgeIconContainerDimension() const {
 
 int AppListConfig::GetShortcutBackgroundContainerDimension() const {
   return grid_icon_dimension_;
+}
+
+int AppListConfig::GetShortcutTeardropCornerRadius() const {
+  return shortcut_teardrop_corner_radius_;
 }
 
 gfx::Size AppListConfig::GetShortcutIconSize() const {

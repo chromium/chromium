@@ -556,10 +556,9 @@ TEST_P(AppListItemViewTest, ShortcutIconEffectsShowOnShorcutItemWithHostBadge) {
 
   auto* apps_grid_view = helper->GetScrollableAppsGridView();
   AppListItemView* view = apps_grid_view->GetItemViewAt(0);
-  views::ImageView* badge_icon_view = view->GetHostBadgeIconViewForTest();
 
   EXPECT_FALSE(item->GetHostBadgeIcon().isNull());
-  EXPECT_TRUE(badge_icon_view);
+  EXPECT_TRUE(view->has_host_badge_for_test());
 }
 
 TEST_P(AppListItemViewTest, NoShortcutIconEffectOntItemWithoutHostBadge) {
@@ -570,10 +569,9 @@ TEST_P(AppListItemViewTest, NoShortcutIconEffectOntItemWithoutHostBadge) {
 
   auto* apps_grid_view = helper->GetScrollableAppsGridView();
   AppListItemView* view = apps_grid_view->GetItemViewAt(0);
-  views::ImageView* badge_icon_view = view->GetHostBadgeIconViewForTest();
 
   EXPECT_TRUE(item->GetHostBadgeIcon().isNull());
-  EXPECT_FALSE(badge_icon_view);
+  EXPECT_FALSE(view->has_host_badge_for_test());
 }
 
 TEST_P(AppListItemViewTestWithDragDropController,
@@ -585,7 +583,6 @@ TEST_P(AppListItemViewTestWithDragDropController,
 
   auto* apps_grid_view = helper->GetScrollableAppsGridView();
   AppListItemView* view = apps_grid_view->GetItemViewAt(0);
-  views::ImageView* badge_icon_view = view->GetHostBadgeIconViewForTest();
   auto* generator = GetEventGenerator();
   ASSERT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
 
@@ -618,7 +615,7 @@ TEST_P(AppListItemViewTestWithDragDropController,
   EXPECT_FALSE(IsIconScaled(view));
 
   EXPECT_FALSE(item->GetHostBadgeIcon().isNull());
-  EXPECT_TRUE(badge_icon_view);
+  EXPECT_TRUE(view->has_host_badge_for_test());
 
   MaybeCheckDragStartedOnControllerCount(1);
 }
