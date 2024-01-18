@@ -47,12 +47,6 @@ struct CORE_EXPORT LogicalOofInsets {
   absl::optional<LayoutUnit> block_end;
 };
 
-bool IsInsetAutoForAxis(const Length& side1,
-                        const Length& side2,
-                        const ComputedStyle& style,
-                        WritingDirectionMode container_writing_direction,
-                        const AnchorEvaluatorImpl*);
-
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
@@ -69,6 +63,10 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   LayoutUnit inline_end;
   LayoutUnit block_start;
   LayoutUnit block_end;
+
+  // If the axis has any auto inset.
+  bool has_auto_inline_inset = false;
+  bool has_auto_block_inset = false;
 
   // Indicates how the insets were calculated. Besides, when we need to clamp
   // the IMCB size, the stronger inset (i.e., the inset we are biased towards)
