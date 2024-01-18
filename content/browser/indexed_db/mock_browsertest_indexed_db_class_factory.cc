@@ -5,7 +5,9 @@
 #include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
 
 #include <stddef.h>
+
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -258,11 +260,11 @@ class LevelDBTraceIterator : public TransactionalLevelDBIterator {
     prev_tracer_.log_call();
     return TransactionalLevelDBIterator::Prev();
   }
-  base::StringPiece Key() const override {
+  std::string_view Key() const override {
     key_tracer_.log_call();
     return TransactionalLevelDBIterator::Key();
   }
-  base::StringPiece Value() const override {
+  std::string_view Value() const override {
     value_tracer_.log_call();
     return TransactionalLevelDBIterator::Value();
   }

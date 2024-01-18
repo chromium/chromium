@@ -9,14 +9,13 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::StringPiece;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 
@@ -73,14 +72,14 @@ TEST(IndexedDBLevelDBCodingTest, DecodeByte) {
 
     unsigned char res;
     ASSERT_GT(v.size(), 0u);
-    StringPiece slice(v);
+    std::string_view slice(v);
     EXPECT_TRUE(DecodeByte(&slice, &res));
     EXPECT_EQ(n, res);
     EXPECT_TRUE(slice.empty());
   }
 
   {
-    StringPiece slice;
+    std::string_view slice;
     unsigned char value;
     EXPECT_FALSE(DecodeByte(&slice, &value));
   }
@@ -109,8 +108,8 @@ static int CompareKeys(const std::string& a, const std::string& b) {
   DCHECK(!a.empty());
   DCHECK(!b.empty());
 
-  StringPiece slice_a(a);
-  StringPiece slice_b(b);
+  std::string_view slice_a(a);
+  std::string_view slice_b(b);
   bool ok;
   int result = CompareEncodedIDBKeys(&slice_a, &slice_b, &ok);
   EXPECT_TRUE(ok);
@@ -188,7 +187,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeBool) {
   {
     std::string encoded;
     encoded.push_back(1);
-    StringPiece slice(encoded);
+    std::string_view slice(encoded);
     bool value;
     EXPECT_TRUE(DecodeBool(&slice, &value));
     EXPECT_TRUE(value);
@@ -197,14 +196,14 @@ TEST(IndexedDBLevelDBCodingTest, DecodeBool) {
   {
     std::string encoded;
     encoded.push_back(0);
-    StringPiece slice(encoded);
+    std::string_view slice(encoded);
     bool value;
     EXPECT_TRUE(DecodeBool(&slice, &value));
     EXPECT_FALSE(value);
     EXPECT_TRUE(slice.empty());
   }
   {
-    StringPiece slice;
+    std::string_view slice;
     bool value;
     EXPECT_FALSE(DecodeBool(&slice, &value));
   }
@@ -229,7 +228,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeInt) {
     int64_t n = test_cases[i];
     std::string v = WrappedEncodeInt(n);
     ASSERT_GT(v.size(), 0u);
-    StringPiece slice(v);
+    std::string_view slice(v);
     int64_t value;
     EXPECT_TRUE(DecodeInt(&slice, &value));
     EXPECT_EQ(n, value);
@@ -237,13 +236,13 @@ TEST(IndexedDBLevelDBCodingTest, DecodeInt) {
 
     // Verify decoding at an offset, to detect unaligned memory access.
     v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = StringPiece(&*v.begin() + 1, v.size() - 1);
+    slice = std::string_view(&*v.begin() + 1, v.size() - 1);
     EXPECT_TRUE(DecodeInt(&slice, &value));
     EXPECT_EQ(n, value);
     EXPECT_TRUE(slice.empty());
   }
   {
-    StringPiece slice;
+    std::string_view slice;
     int64_t value;
     EXPECT_FALSE(DecodeInt(&slice, &value));
   }
@@ -277,9 +276,9 @@ TEST(IndexedDBLevelDBCodingTest, DecodeString) {
     const std::u16string& test_case = test_cases[i];
     std::string v = WrappedEncodeString(test_case);
 
-    StringPiece slice;
+    std::string_view slice;
     if (v.size()) {
-      slice = StringPiece(&*v.begin(), v.size());
+      slice = std::string_view(&*v.begin(), v.size());
     }
 
     std::u16string result;
@@ -289,7 +288,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeString) {
 
     // Verify decoding at an offset, to detect unaligned memory access.
     v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = StringPiece(&*v.begin() + 1, v.size() - 1);
+    slice = std::string_view(&*v.begin() + 1, v.size() - 1);
     EXPECT_TRUE(DecodeString(&slice, &result));
     EXPECT_EQ(test_case, result);
     EXPECT_TRUE(slice.empty());
@@ -335,21 +334,21 @@ TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
     std::u16string s = test_cases[i];
     std::string v = WrappedEncodeStringWithLength(s);
     ASSERT_GT(v.size(), 0u);
-    StringPiece slice(v);
+    std::string_view slice(v);
     std::u16string res;
     EXPECT_TRUE(DecodeStringWithLength(&slice, &res));
     EXPECT_EQ(s, res);
     EXPECT_TRUE(slice.empty());
 
-    slice = StringPiece(&*v.begin(), v.size() - 1);
+    slice = std::string_view(&*v.begin(), v.size() - 1);
     EXPECT_FALSE(DecodeStringWithLength(&slice, &res));
 
-    slice = StringPiece(&*v.begin(), static_cast<size_t>(0));
+    slice = std::string_view(&*v.begin(), static_cast<size_t>(0));
     EXPECT_FALSE(DecodeStringWithLength(&slice, &res));
 
     // Verify decoding at an offset, to detect unaligned memory access.
     v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = StringPiece(&*v.begin() + 1, v.size() - 1);
+    slice = std::string_view(&*v.begin() + 1, v.size() - 1);
     EXPECT_TRUE(DecodeStringWithLength(&slice, &res));
     EXPECT_EQ(s, res);
     EXPECT_TRUE(slice.empty());
@@ -360,8 +359,8 @@ static int CompareStrings(const std::string& p, const std::string& q) {
   bool ok;
   DCHECK(!p.empty());
   DCHECK(!q.empty());
-  StringPiece slice_p(p);
-  StringPiece slice_q(q);
+  std::string_view slice_p(p);
+  std::string_view slice_q(q);
   int result = CompareEncodedStringsWithLength(&slice_p, &slice_q, &ok);
   EXPECT_TRUE(ok);
   EXPECT_TRUE(slice_p.empty());
@@ -444,21 +443,21 @@ TEST(IndexedDBLevelDBCodingTest, DecodeBinary) {
     std::string value = test_cases[i];
     std::string v = WrappedEncodeBinary(value);
     ASSERT_GT(v.size(), 0u);
-    StringPiece slice(v);
+    std::string_view slice(v);
     std::string result;
     EXPECT_TRUE(DecodeBinary(&slice, &result));
     EXPECT_EQ(value, result);
     EXPECT_TRUE(slice.empty());
 
-    slice = StringPiece(&*v.begin(), v.size() - 1);
+    slice = std::string_view(&*v.begin(), v.size() - 1);
     EXPECT_FALSE(DecodeBinary(&slice, &result));
 
-    slice = StringPiece(&*v.begin(), static_cast<size_t>(0));
+    slice = std::string_view(&*v.begin(), static_cast<size_t>(0));
     EXPECT_FALSE(DecodeBinary(&slice, &result));
 
     // Verify decoding at an offset, to detect unaligned memory access.
     v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = StringPiece(&*v.begin() + 1, v.size() - 1);
+    slice = std::string_view(&*v.begin() + 1, v.size() - 1);
     EXPECT_TRUE(DecodeBinary(&slice, &result));
     EXPECT_EQ(value, result);
     EXPECT_TRUE(slice.empty());
@@ -483,21 +482,21 @@ TEST(IndexedDBLevelDBCodingTest, DecodeDouble) {
     double value = test_cases[i];
     std::string v = WrappedEncodeDouble(value);
     ASSERT_GT(v.size(), 0u);
-    StringPiece slice(v);
+    std::string_view slice(v);
     double result;
     EXPECT_TRUE(DecodeDouble(&slice, &result));
     EXPECT_EQ(value, result);
     EXPECT_TRUE(slice.empty());
 
-    slice = StringPiece(&*v.begin(), v.size() - 1);
+    slice = std::string_view(&*v.begin(), v.size() - 1);
     EXPECT_FALSE(DecodeDouble(&slice, &result));
 
-    slice = StringPiece(&*v.begin(), static_cast<size_t>(0));
+    slice = std::string_view(&*v.begin(), static_cast<size_t>(0));
     EXPECT_FALSE(DecodeDouble(&slice, &result));
 
     // Verify decoding at an offset, to detect unaligned memory access.
     v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = StringPiece(&*v.begin() + 1, v.size() - 1);
+    slice = std::string_view(&*v.begin() + 1, v.size() - 1);
     EXPECT_TRUE(DecodeDouble(&slice, &result));
     EXPECT_EQ(value, result);
     EXPECT_TRUE(slice.empty());
@@ -508,7 +507,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKey) {
   IndexedDBKey expected_key;
   std::unique_ptr<IndexedDBKey> decoded_key;
   std::string v;
-  StringPiece slice;
+  std::string_view slice;
 
   std::vector<IndexedDBKey> test_cases = {
       IndexedDBKey(1234, blink::mojom::IDBKeyType::Number),
@@ -527,15 +526,15 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKey) {
     expected_key = test_cases[i];
     v.clear();
     EncodeIDBKey(expected_key, &v);
-    slice = StringPiece(&*v.begin(), v.size());
+    slice = std::string_view(&*v.begin(), v.size());
     EXPECT_TRUE(DecodeIDBKey(&slice, &decoded_key));
     EXPECT_TRUE(decoded_key->Equals(expected_key));
     EXPECT_TRUE(slice.empty());
 
-    slice = StringPiece(&*v.begin(), v.size() - 1);
+    slice = std::string_view(&*v.begin(), v.size() - 1);
     EXPECT_FALSE(DecodeIDBKey(&slice, &decoded_key));
 
-    slice = StringPiece(&*v.begin(), static_cast<size_t>(0));
+    slice = std::string_view(&*v.begin(), static_cast<size_t>(0));
     EXPECT_FALSE(DecodeIDBKey(&slice, &decoded_key));
   }
 }
@@ -613,7 +612,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
     std::string v = WrappedEncodeIDBKeyPath(key_path);
     EXPECT_EQ(encoded, v);
 
-    StringPiece slice(encoded);
+    std::string_view slice(encoded);
     IndexedDBKeyPath decoded;
     EXPECT_TRUE(DecodeIDBKeyPath(&slice, &decoded));
     EXPECT_EQ(key_path, decoded);
@@ -647,7 +646,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeBlobJournal) {
   for (const auto& journal_iter : journals) {
     std::string encoding;
     EncodeBlobJournal(journal_iter, &encoding);
-    StringPiece slice(encoding);
+    std::string_view slice(encoding);
     BlobJournalType journal_out;
     EXPECT_TRUE(DecodeBlobJournal(&slice, &journal_out));
     EXPECT_EQ(journal_iter, journal_out);
@@ -666,7 +665,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeBlobJournal) {
   for (const auto& journal_iter : journals) {
     std::string encoding;
     EncodeBlobJournal(journal_iter, &encoding);
-    StringPiece slice(encoding);
+    std::string_view slice(encoding);
     BlobJournalType journal_out;
     EXPECT_FALSE(DecodeBlobJournal(&slice, &journal_out));
   }
@@ -697,7 +696,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeLegacyIDBKeyPath) {
     IndexedDBKeyPath key_path = key_paths[i];
     std::string encoded = encoded_paths[i];
 
-    StringPiece slice(encoded);
+    std::string_view slice(encoded);
     IndexedDBKeyPath decoded;
     EXPECT_TRUE(DecodeIDBKeyPath(&slice, &decoded));
     EXPECT_EQ(key_path, decoded);
@@ -766,14 +765,14 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
 
     std::string extracted_a;
     std::string extracted_b;
-    StringPiece slice;
+    std::string_view slice;
 
-    slice = StringPiece(encoded_a);
+    slice = std::string_view(encoded_a);
     EXPECT_TRUE(ExtractEncodedIDBKey(&slice, &extracted_a));
     EXPECT_TRUE(slice.empty());
     EXPECT_EQ(encoded_a, extracted_a);
 
-    slice = StringPiece(encoded_b);
+    slice = std::string_view(encoded_b);
     EXPECT_TRUE(ExtractEncodedIDBKey(&slice, &extracted_b));
     EXPECT_TRUE(slice.empty());
     EXPECT_EQ(encoded_b, extracted_b);
@@ -783,7 +782,7 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
     EXPECT_EQ(CompareKeys(extracted_a, extracted_a), 0);
     EXPECT_EQ(CompareKeys(extracted_b, extracted_b), 0);
 
-    slice = StringPiece(&*encoded_a.begin(), encoded_a.size() - 1);
+    slice = std::string_view(&*encoded_a.begin(), encoded_a.size() - 1);
     EXPECT_FALSE(ExtractEncodedIDBKey(&slice, &extracted_a));
   }
 }
@@ -1031,7 +1030,7 @@ TEST(IndexedDBLevelDBCodingTest, IndexDataKeyEncodeDecode) {
 
   std::vector<IndexDataKey> obj_keys;
   for (const std::string& key : keys) {
-    base::StringPiece piece(key);
+    std::string_view piece(key);
     IndexDataKey obj_key;
     EXPECT_TRUE(IndexDataKey::Decode(&piece, &obj_key));
     obj_keys.push_back(std::move(obj_key));

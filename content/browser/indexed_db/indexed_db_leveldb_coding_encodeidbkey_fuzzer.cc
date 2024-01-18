@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
+#include <string_view>
 #include <tuple>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -113,8 +112,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Ensure that |result| can be decoded back into the original key.
   auto decoded_key = std::make_unique<IndexedDBKey>();
-  auto result_str_piece = base::StringPiece(result);
-  std::ignore = content::DecodeIDBKey(&result_str_piece, &decoded_key);
+  auto result_str_view = std::string_view(result);
+  std::ignore = content::DecodeIDBKey(&result_str_view, &decoded_key);
   assert(decoded_key->Equals(key));
   return 0;
 }
