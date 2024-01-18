@@ -120,28 +120,13 @@ class V8WrapperInstantiationScope final {
   STACK_ALLOCATED();
 
  public:
-  V8WrapperInstantiationScope(ScriptState* script_state,
-                              const WrapperTypeInfo* type)
-      : context_(script_state->GetIsolate()->GetCurrentContext()),
-        type_(type) {
+  V8WrapperInstantiationScope(ScriptState* script_state)
+      : context_(script_state->GetIsolate()->GetCurrentContext()) {
     v8::Local<v8::Context> context_for_wrapper = script_state->GetContext();
 
     // For performance, we enter the context only if the currently running
     // context is different from the context that we are about to enter.
     if (LIKELY(context_for_wrapper == context_)) {
-      return;
-    }
-
-    // Slow path checks that require try/catch to catch cross-context access
-    // exceptions.
-    try_catch_.emplace(script_state->GetIsolate());
-
-    if (UNLIKELY(!BindingSecurityForPlatform::
-                     ShouldAllowWrapperCreationOrThrowException(
-                         context_, context_for_wrapper, type_))) {
-      DCHECK(try_catch_->HasCaught());
-      try_catch_->ReThrow();
-      access_check_failed_ = true;
       return;
     }
 
@@ -152,40 +137,16 @@ class V8WrapperInstantiationScope final {
 
   ~V8WrapperInstantiationScope() {
     if (LIKELY(!did_enter_context_)) {
-      if (UNLIKELY(try_catch_.has_value())) {
-        try_catch_->ReThrow();
-      }
       return;
     }
     context_->Exit();
-
-    DCHECK(!access_check_failed_);
-    DCHECK(try_catch_.has_value());
-    if (LIKELY(!try_catch_->HasCaught())) {
-      return;
-    }
-
-    // Any exception caught here is a cross context exception and it may not be
-    // safe to directly rethrow the exception in the current context (without
-    // converting it). RethrowWrapperCreationException converts the exception in
-    // such a scenario.
-    v8::Local<v8::Value> caught_exception = try_catch_->Exception();
-    try_catch_->Reset();
-    BindingSecurityForPlatform::RethrowWrapperCreationException(
-        context_->GetIsolate()->GetCurrentContext(), context_, type_,
-        caught_exception);
-    try_catch_->ReThrow();
   }
 
   v8::Local<v8::Context> GetContext() const { return context_; }
-  bool AccessCheckFailed() const { return access_check_failed_; }
 
  private:
   bool did_enter_context_ = false;
-  bool access_check_failed_ = false;
   v8::Local<v8::Context> context_;
-  const WrapperTypeInfo* type_;
-  absl::optional<v8::TryCatch> try_catch_;
 };
 
 }  // namespace blink

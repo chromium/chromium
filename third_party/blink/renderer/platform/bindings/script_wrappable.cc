@@ -46,11 +46,9 @@ v8::MaybeLocal<v8::Value> ScriptWrappable::Wrap(ScriptState* script_state) {
 
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
-  v8::Local<v8::Object> wrapper;
-  if (!V8DOMWrapper::CreateWrapper(script_state, wrapper_type_info)
-           .ToLocal(&wrapper)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
+  v8::Local<v8::Object> wrapper =
+      V8DOMWrapper::CreateWrapper(script_state, wrapper_type_info)
+          .ToLocalChecked();
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
 }

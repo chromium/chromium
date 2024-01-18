@@ -72,10 +72,6 @@ bool IsSameWindowAgentFactory(const LocalDOMWindow* window1,
 void BindingSecurity::Init() {
   BindingSecurityForPlatform::SetShouldAllowAccessToV8Context(
       ShouldAllowAccessToV8Context);
-  BindingSecurityForPlatform::SetShouldAllowWrapperCreationOrThrowException(
-      ShouldAllowWrapperCreationOrThrowException);
-  BindingSecurityForPlatform::SetRethrowWrapperCreationException(
-      RethrowWrapperCreationException);
 }
 
 namespace {
@@ -301,49 +297,6 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
     v8::MaybeLocal<v8::Context> target_context) {
   return ShouldAllowAccessToV8ContextInternal(accessing_context, target_context,
                                               nullptr);
-}
-
-bool BindingSecurity::ShouldAllowWrapperCreationOrThrowException(
-    v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> creation_context,
-    const WrapperTypeInfo* wrapper_type_info) {
-  // Fast path for the most likely case.
-  if (!creation_context.IsEmpty() &&
-      accessing_context == creation_context.ToLocalChecked())
-    return true;
-
-  // According to
-  // https://html.spec.whatwg.org/C/#security-location,
-  // cross-origin script access to a few properties of Location is allowed.
-  // Location already implements the necessary security checks.
-  if (wrapper_type_info->Equals(V8Location::GetWrapperTypeInfo()))
-    return true;
-
-  ExceptionState exception_state(
-      accessing_context->GetIsolate(),
-      ExceptionContextType::kConstructorOperationInvoke,
-      wrapper_type_info->interface_name);
-  return ShouldAllowAccessToV8ContextInternal(
-      accessing_context, creation_context, &exception_state);
-}
-
-void BindingSecurity::RethrowWrapperCreationException(
-    v8::Local<v8::Context> accessing_context,
-    v8::MaybeLocal<v8::Context> creation_context,
-    const WrapperTypeInfo* wrapper_type_info,
-    v8::Local<v8::Value> cross_context_exception) {
-  DCHECK(!cross_context_exception.IsEmpty());
-  v8::Isolate* isolate = creation_context.ToLocalChecked()->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kConstructorOperationInvoke,
-      wrapper_type_info->interface_name);
-  if (!ShouldAllowAccessToV8ContextInternal(accessing_context, creation_context,
-                                            &exception_state)) {
-    // A cross origin exception has turned into a SecurityError.
-    CHECK(exception_state.HadException());
-    return;
-  }
-  exception_state.RethrowV8Exception(cross_context_exception);
 }
 
 void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,

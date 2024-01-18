@@ -43,12 +43,7 @@ v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapper(
   RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
                            RuntimeCallStats::CounterId::kCreateWrapper);
 
-  const V8WrapperInstantiationScope scope(script_state, type);
-  if (UNLIKELY(scope.AccessCheckFailed())) {
-    // V8WrapperInstantiationScope's ctor throws an exception if
-    // AccessCheckFailed.
-    return v8::MaybeLocal<v8::Object>();
-  }
+  const V8WrapperInstantiationScope scope(script_state);
 
   v8::Local<v8::Object> wrapper;
   auto* per_context_data = V8PerContextData::From(scope.GetContext());
