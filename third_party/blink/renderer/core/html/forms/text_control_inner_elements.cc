@@ -94,7 +94,8 @@ void TextControlInnerEditorElement::DefaultEventHandler(Event& event) {
       shadow_ancestor->DefaultEventHandler(event);
   }
 
-  if (event.type() == event_type_names::kScroll) {
+  if (event.type() == event_type_names::kScroll ||
+      event.type() == event_type_names::kScrollend) {
     // The scroller for a text control is inside of a shadow tree but the
     // scroll event won't bubble past the shadow root and authors cannot add
     // an event listener to it. Fire the scroll event at the shadow host so
