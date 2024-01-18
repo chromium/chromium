@@ -182,7 +182,7 @@ public class QuickDeleteControllerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-
+    @DisabledTest(message = "https://crbug.com/1477790")
     public void testSnackbarShown_WhenClickingDelete() throws IOException {
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.positive_button)).perform(click());
