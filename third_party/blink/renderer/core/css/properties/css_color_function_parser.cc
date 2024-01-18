@@ -6,6 +6,7 @@
 #include <cmath>
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -84,6 +85,10 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
     if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_color)) {
       result = color_value->Value();
       return true;
+    } else if (auto* css_color_mix_value =
+                   DynamicTo<cssvalue::CSSColorMixValue>(css_color)) {
+      // TODO(crbug.com/1519215): Support color-mix as origin color.
+      return false;
     } else {
       CSSValueID value_id = To<CSSIdentifierValue>(css_color)->GetValueID();
       // TODO(crbug.com/1447327): Just like with
