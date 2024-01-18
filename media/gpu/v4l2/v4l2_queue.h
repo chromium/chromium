@@ -502,7 +502,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // different VideoFrames passed to this method does not exceed the number of
   // V4L2 buffers allocated on the queue.
   [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
-      const VideoFrame& frame);
+      const gfx::GenericSharedMemoryId& id);
   // This returns the V4L2 buffer that is attached to the corresponding
   // |secure_handle|. This will always return a valid buffer since it already
   // will be linked from a prior call to GetFreeSecureHandle(). It returns an

@@ -1424,7 +1424,7 @@ absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer(
 }
 
 absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
-    const VideoFrame& frame) {
+    const gfx::GenericSharedMemoryId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // No buffers allocated at the moment?
@@ -1437,13 +1437,8 @@ absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
     return absl::nullopt;
   }
 
-  gfx::GenericSharedMemoryId id;
-  if (auto* gmb = frame.GetGpuMemoryBuffer()) {
-    id = gmb->GetId();
-  } else if (frame.HasDmaBufs()) {
-    id = gfx::GenericSharedMemoryId(frame.GetDmabufFd(0));
-  } else {
-    DVLOGF(1) << "Unsupported frame provided";
+  if (!id.is_valid()) {
+    DVLOGF(1) << "Provided identifier was not valid";
     return absl::nullopt;
   }
 

@@ -19,6 +19,7 @@
 #include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
@@ -344,7 +345,8 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
         // once frames are available.
         if (!video_frame)
           return;
-        buffer = output_queue_->GetFreeBufferForFrame(*video_frame);
+        buffer = output_queue_->GetFreeBufferForFrame(
+            GetSharedMemoryId(*video_frame));
         if (!buffer) {
           no_buffer = true;
           break;
