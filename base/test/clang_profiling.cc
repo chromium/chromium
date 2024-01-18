@@ -27,7 +27,11 @@ void WriteClangProfilingProfile() {
 // be run under continuous coverage mode (enabled by adding %c to the
 // LLVM_PROFILE_FILE environment variable), which updates counters in real time,
 // so __llvm_profile_dump() is not needed.
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(USE_CLANG_COVERAGE)
+// TODO(crbug.com/1518474): Android requires calling __llvm_profile_dump() for
+// native code coverage. Remove Android from this conditional once Android
+// testing devices have enabled continuous mode.
+#if BUILDFLAG(IS_ANDROID) || \
+    (!BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(USE_CLANG_COVERAGE))
   __llvm_profile_dump();
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(USE_CLANG_COVERAGE)
 }
