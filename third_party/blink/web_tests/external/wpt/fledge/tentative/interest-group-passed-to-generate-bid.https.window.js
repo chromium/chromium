@@ -11,7 +11,9 @@
 // META: variant=?26-30
 // META: variant=?31-35
 // META: variant=?36-40
-// META: variant=?41-last
+// META: variant=?41-45
+// META: variant=?46-50
+// META: variant=?51-last
 
 "use strict;"
 
@@ -190,6 +192,92 @@ makeTest({
 });
 
 makeTest({
+  name: 'InterestGroup.biddingWasmHelperURL not set.',
+  fieldName: 'biddingWasmHelperURL',
+  fieldValue: undefined
+});
+
+makeTest({
+  name: 'InterestGroup.biddingWasmHelperURL.',
+  fieldName: 'biddingWasmHelperURL',
+  fieldValue: `${OTHER_ORIGIN1}${RESOURCE_PATH}wasm-helper.py`,
+  interestGroupOverrides: {owner: OTHER_ORIGIN1}
+});
+
+makeTest({
+  name: 'InterestGroup.biddingWasmHelperURL with non-normalized value.',
+  fieldName: 'biddingWasmHelperURL',
+  fieldValue: `${OTHER_ORIGIN1}${RESOURCE_PATH}wasm-helper.py`,
+  interestGroupOverrides: {
+    owner: OTHER_ORIGIN1,
+    biddingWasmHelperURL:
+        `${OTHER_ORIGIN1.toUpperCase()}${RESOURCE_PATH}wasm-helper.py`
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.biddingWasmHelperURL with relative URL.',
+  fieldName: 'biddingWasmHelperURL',
+  fieldValue: `${OTHER_ORIGIN1}${RESOURCE_PATH}wasm-helper.py`,
+  interestGroupOverrides: {
+    owner: OTHER_ORIGIN1,
+    biddingWasmHelperURL: 'foo/../resources/wasm-helper.py'
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.biddingWasmHelperURL with unpaired surrogate characters, which should be replaced with "\\uFFFD".',
+  fieldName: 'biddingWasmHelperURL',
+  fieldValue: (new URL(`${OTHER_ORIGIN1}${RESOURCE_PATH}wasm-helper.py?\uFFFD.\uFFFD`)).href,
+  interestGroupOverrides: {
+    owner: OTHER_ORIGIN1,
+    biddingWasmHelperURL: `${OTHER_ORIGIN1}${RESOURCE_PATH}wasm-helper.py?\uD800.\uDBF0`
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.updateURL not set.',
+  fieldName: 'updateURL',
+  fieldValue: undefined
+});
+
+makeTest({
+  name: 'InterestGroup.updateURL.',
+  fieldName: 'updateURL',
+  fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}This-File-Does-Not-Exist.json`,
+  interestGroupOverrides: {owner: OTHER_ORIGIN1}
+});
+
+makeTest({
+  name: 'InterestGroup.updateURL with non-normalized value.',
+  fieldName: 'updateURL',
+  fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}This-File-Does-Not-Exist.json`,
+  interestGroupOverrides: {
+    owner: OTHER_ORIGIN1,
+    updateURL: `${OTHER_ORIGIN1.toUpperCase()}${BASE_PATH}This-File-Does-Not-Exist.json`
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.updateURL with relative URL.',
+  fieldName: 'updateURL',
+  fieldValue: (new URL(`${OTHER_ORIGIN1}${BASE_PATH}../This-File-Does-Not-Exist.json`)).href,
+  interestGroupOverrides: {
+    owner: OTHER_ORIGIN1,
+    updateURL: '../This-File-Does-Not-Exist.json'
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.updateURL with unpaired surrogate characters, which should be replaced with "\\uFFFD".',
+  fieldName: 'updateURL',
+  fieldValue: (new URL(`${BASE_URL}\uFFFD.\uFFFD`)).href,
+  interestGroupOverrides: {
+    updateURL: `${BASE_URL}\uD800.\uDBF0`
+  }
+});
+
+makeTest({
   name: 'InterestGroup.executionMode not present.',
   fieldName: 'executionMode',
   fieldValue: 'compatibility',
@@ -230,18 +318,28 @@ makeTest({
 makeTest({
   name: 'InterestGroup.trustedBiddingSignalsURL.',
   fieldName: 'trustedBiddingSignalsURL',
-  fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}this-file-does-not-exist.json`,
+  fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}This-File-Does-Not-Exist.json`,
   interestGroupOverrides: {owner: OTHER_ORIGIN1}
 });
 
 makeTest({
   name: 'InterestGroup.trustedBiddingSignalsURL with non-normalized value.',
   fieldName: 'trustedBiddingSignalsURL',
-  fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}this-file-does-not-exist.json`,
+  fieldValue: `${OTHER_ORIGIN1}${BASE_PATH}This-File-Does-Not-Exist.json`,
   interestGroupOverrides: {
     owner: OTHER_ORIGIN1,
     trustedBiddingSignalsURL:
-        `${OTHER_ORIGIN1.toUpperCase()}${BASE_PATH}this-file-does-not-exist.json`
+        `${OTHER_ORIGIN1.toUpperCase()}${BASE_PATH}This-File-Does-Not-Exist.json`
+  }
+});
+
+makeTest({
+  name: 'InterestGroup.trustedBiddingSignalsURL with relative URL.',
+  fieldName: 'trustedBiddingSignalsURL',
+  fieldValue: (new URL(`${OTHER_ORIGIN1}${BASE_PATH}../This-File-Does-Not-Exist.json`)).href,
+  interestGroupOverrides: {
+    owner: OTHER_ORIGIN1,
+    trustedBiddingSignalsURL: '../This-File-Does-Not-Exist.json'
   }
 });
 
