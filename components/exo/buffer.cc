@@ -224,9 +224,11 @@ Buffer::Texture::Texture(
   // and destination of writes. Add GLES2 usage as they will be used by
   // RasterImplementationGLES if OOP-R is not enabled.
   // NOTE: After OOP-R ships GLES2 usage can be removed here.
-  const uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   shared_image_ = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
@@ -261,9 +263,11 @@ Buffer::Texture::Texture(
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // Add GLES2 usage as it is used by RasterImplementationGLES.
-  uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

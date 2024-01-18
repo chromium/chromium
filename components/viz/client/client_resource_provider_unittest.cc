@@ -540,7 +540,8 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
       sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1),
                              gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
                              kPremul_SkAlphaType,
-                             gpu::SHARED_IMAGE_USAGE_RASTER |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
                              "TestLabel", gpu::kNullSurfaceHandle)
           ->mailbox();

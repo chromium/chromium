@@ -834,7 +834,8 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   // writable via GLES2 (by contract).
   constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-                              gpu::SHARED_IMAGE_USAGE_RASTER |
+                              gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 

@@ -44,7 +44,8 @@ bool g_force_use_gpu_memory_buffer_for_test = false;
 // interface (which will be going over GLES2 if OOP-R is not enabled), sent
 // to the display compositor, and may be used as overlays.
 constexpr uint32_t kSharedImageUsage =
-    gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER |
+    gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
 // The usage of the GpuMemoryBuffer that backs the video frames on an actual
