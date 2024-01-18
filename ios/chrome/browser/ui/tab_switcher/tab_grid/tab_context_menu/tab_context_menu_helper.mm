@@ -179,8 +179,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   UIAction* closeTabAction;
   ProceduralBlock closeTabActionBlock = ^{
     [self.contextMenuDelegate closeTabWithIdentifier:cell.itemIdentifier
-                                           incognito:self.incognito
-                                              pinned:pinned];
+                                           incognito:self.incognito];
   };
 
   if (IsPinnedTabsEnabled() && !self.incognito && pinned) {

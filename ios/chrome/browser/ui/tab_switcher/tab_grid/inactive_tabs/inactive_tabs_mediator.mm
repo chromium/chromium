@@ -404,9 +404,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-#pragma mark - TabCollectionCommands
-
-- (void)selectItemWithID:(web::WebStateID)itemID {
+- (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
   NOTREACHED_NORETURN();
 }
 

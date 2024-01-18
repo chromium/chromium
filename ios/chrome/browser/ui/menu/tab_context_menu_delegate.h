@@ -65,10 +65,8 @@ class WebStateID;
 
 // Tells the delegate to close the tab with the item identifier `identifier`.
 // `incognito`tracks the incognito state of the tab.
-// `pinned` tracks the pinned state of the tab.
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
-                     incognito:(BOOL)incognito
-                        pinned:(BOOL)pinned;
+                     incognito:(BOOL)incognito;
 
 @end
 

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
@@ -167,9 +168,75 @@ TEST_P(BaseGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
   web::WebStateID identifier =
       browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier();
-  [mediator_ selectItemWithID:identifier];
+  [mediator_ selectItemWithID:identifier pinned:NO];
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier, consumer_.selectedItemID);
+}
+
+// Tests that the active index is updated when `-selectItemWithID:` is called.
+// Tests that the consumer's selected index is updated with pinned state.
+TEST_P(BaseGridMediatorTest, SelectPinnedItemCommand) {
+  if (GetParam() == TEST_INCOGNITO_MEDIATOR || !IsPinnedTabsEnabled()) {
+    // Test only available in non-incognito when pinned tabs are enabled.
+    return;
+  }
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebStateID identifier_0 =
+      web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
+  web::WebStateID identifier_1 =
+      web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+  web::WebStateID identifier_2 =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+  [mediator_ setPinState:YES forItemWithID:identifier_0];
+  ASSERT_EQ(1, browser_->GetWebStateList()->active_index());
+  ASSERT_EQ(identifier_1, consumer_.selectedItemID);
+
+  [mediator_ selectItemWithID:identifier_0 pinned:YES];
+
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
+  EXPECT_EQ(identifier_0, consumer_.selectedItemID);
+
+  [mediator_ selectItemWithID:identifier_2 pinned:NO];
+
+  EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
+  EXPECT_EQ(identifier_2, consumer_.selectedItemID);
+
+  // Selecting the pinned one with pinned = NO fails.
+  [mediator_ selectItemWithID:identifier_0 pinned:NO];
+
+  EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
+  EXPECT_EQ(identifier_2, consumer_.selectedItemID);
+}
+
+// Tests the pinned tab command.
+TEST_P(BaseGridMediatorTest, PinItemCommand) {
+  if (GetParam() == TEST_INCOGNITO_MEDIATOR || !IsPinnedTabsEnabled()) {
+    // Test only available in non-incognito when pinned tabs are enabled.
+    return;
+  }
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  // At first the second web state is active.
+  ASSERT_EQ(1, web_state_list->active_index());
+  ASSERT_EQ(0, web_state_list->pinned_tabs_count());
+
+  web::WebStateID selected_identifier =
+      web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+  web::WebStateID identifier =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+
+  [mediator_ setPinState:YES forItemWithID:identifier];
+
+  // The pinned web state moved to the first position, moving the others.
+  EXPECT_EQ(1, web_state_list->pinned_tabs_count());
+  EXPECT_EQ(2, web_state_list->active_index());
+  EXPECT_EQ(selected_identifier, consumer_.selectedItemID);
+
+  [mediator_ setPinState:NO forItemWithID:identifier];
+
+  // The pinned web state moves back to the end of the WebStateList.
+  EXPECT_EQ(0, web_state_list->pinned_tabs_count());
+  EXPECT_EQ(1, web_state_list->active_index());
+  EXPECT_EQ(selected_identifier, consumer_.selectedItemID);
 }
 
 // Tests that the WebStateList count is decremented when
@@ -341,7 +408,8 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
   // No need to set a null price drop - it will be null by default.
-  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
+  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
+                       pinned:NO];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
@@ -352,7 +420,8 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
       browser_->GetWebStateList()->GetWebStateAt(2);
   // Add a fake price drop.
   SetFakePriceDrop(web_state_to_select);
-  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
+  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
+                       pinned:NO];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
 }

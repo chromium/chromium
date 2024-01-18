@@ -9,14 +9,12 @@
 
 #import <set>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_collection_commands.h"
-
 namespace web {
 class WebStateID;
 }  // namespace web
 
 // Commands issued to a model backing a grid UI.
-@protocol GridCommands <TabCollectionCommands>
+@protocol GridCommands
 // Tells the receiver to insert a new item at the end of the list. Return YES if
 // it inserted an element, NO otherwise.
 - (BOOL)addNewItem;
@@ -60,6 +58,17 @@ class WebStateID;
 // and provide it to the `completion` block.
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
                                    completion:(void (^)(size_t))completion;
+
+// Tells the receiver to select the item with identifier `itemID`. If there is
+// no item with that identifier, no change in selection should be made.
+- (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned;
+
+// Tells the receiver to close the item with identifier `itemID`. If there is
+// no item with that identifier, no item is closed.
+- (void)closeItemWithID:(web::WebStateID)itemID;
+
+// Tells the receiver to pin or unpin the tab with identifier `itemID`.
+- (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID;
 
 @end
 

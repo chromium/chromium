@@ -104,7 +104,6 @@
     _pinnedTabsMediator = [[PinnedTabsMediator alloc]
         initWithConsumer:self.tabGridViewController.pinnedTabsConsumer];
     _pinnedTabsMediator.browser = self.browser;
-    self.tabGridViewController.pinnedTabsDelegate = _pinnedTabsMediator;
     self.tabGridViewController.pinnedTabsDragDropHandler = _pinnedTabsMediator;
   }
 

@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -44,7 +45,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_collection_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_activity_observer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -1720,10 +1720,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)pinnedTabsViewController:
             (PinnedTabsViewController*)pinnedTabsViewController
              didSelectItemWithID:(web::WebStateID)itemID {
+  base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
+  LogPinnedTabsUsedForDefaultBrowserPromo();
   // Record how long it took to select an item.
   [self reportTabSelectionTime];
 
-  [self.pinnedTabsDelegate selectItemWithID:itemID];
+  [self.regularTabsDelegate selectItemWithID:itemID pinned:YES];
 
   self.activePage = self.currentPage;
   [self setCurrentIdlePageStatus:NO];
@@ -1831,7 +1833,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self setCurrentIdlePageStatus:NO];
   }
 
-  [tabsDelegate selectItemWithID:itemID];
+  [tabsDelegate selectItemWithID:itemID pinned:NO];
 
   // TODO(crbug.com/1501837): Change the condition to verify if the given item
   // ID is a group or not.

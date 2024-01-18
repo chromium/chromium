@@ -37,7 +37,7 @@
 
 - (void)removeItemWithID:(web::WebStateID)removedItemID
           selectedItemID:(web::WebStateID)selectedItemID {
-  auto it = std::remove(_items.begin(), _items.end(), selectedItemID);
+  auto it = std::remove(_items.begin(), _items.end(), removedItemID);
   _items.erase(it, _items.end());
   _selectedItemID = selectedItemID;
 }

@@ -30,7 +30,6 @@ class GURL;
 @class RecentTabsTableViewController;
 @class RegularGridViewController;
 @class TabGridBottomToolbar;
-@protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabGridActivityObserver;
@@ -131,7 +130,6 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
-@property(nonatomic, weak) id<TabCollectionCommands> pinnedTabsDelegate;
 
 // Handles drag and drop interactions that require the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler>

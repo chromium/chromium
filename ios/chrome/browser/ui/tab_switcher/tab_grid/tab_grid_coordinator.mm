@@ -1342,7 +1342,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)unpinTabWithIdentifier:(web::WebStateID)identifier {
-  [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
+  [self.regularTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
 - (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
@@ -1360,16 +1360,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
-                     incognito:(BOOL)incognito
-                        pinned:(BOOL)pinned {
+                     incognito:(BOOL)incognito {
   if (incognito) {
     [self.incognitoTabsMediator closeItemWithID:identifier];
-    return;
-  }
-
-  if (pinned) {
-    DCHECK(IsPinnedTabsEnabled());
-    [self.pinnedTabsMediator closeItemWithID:identifier];
     return;
   }
 

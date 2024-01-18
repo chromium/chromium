@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drag_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drop_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
@@ -68,7 +69,8 @@ class PinnedTabsMediatorTest : public PlatformTest {
   // the given `url`.
   std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(
       const GURL& url) {
-    auto web_state = std::make_unique<web::FakeWebState>();
+    std::unique_ptr<web::FakeWebState> web_state =
+        std::make_unique<web::FakeWebState>();
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
     navigation_manager->SetLastCommittedItem(
@@ -96,32 +98,37 @@ class PinnedTabsMediatorTest : public PlatformTest {
 // Tests that the consumer is notified when a web state is pinned.
 TEST_F(PinnedTabsMediatorTest, ConsumerInsertItem) {
   // The Pinned Tabs feature is not available on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (!IsPinnedTabsEnabled()) {
     return;
   }
 
   // Inserts two new pinned tabs.
-  auto web_state1 = CreateFakeWebStateWithURL(GURLWithIndex(1));
+  std::unique_ptr<web::WebState> web_state1 =
+      CreateFakeWebStateWithURL(GURLWithIndex(1));
   regular_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state1), WebStateList::INSERT_PINNED, WebStateOpener());
-  auto web_state2 = CreateFakeWebStateWithURL(GURLWithIndex(2));
+  std::unique_ptr<web::WebState> web_state2 =
+      CreateFakeWebStateWithURL(GURLWithIndex(2));
   regular_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state2), WebStateList::INSERT_PINNED, WebStateOpener());
   EXPECT_EQ(2UL, consumer_.items.size());
 
   // Inserts one regular and one incoginto tab.
-  auto web_state3 = CreateFakeWebStateWithURL(GURLWithIndex(3));
+  std::unique_ptr<web::WebState> web_state3 =
+      CreateFakeWebStateWithURL(GURLWithIndex(3));
   regular_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state3), WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener());
-  auto web_state4 = CreateFakeWebStateWithURL(GURLWithIndex(4));
+  std::unique_ptr<web::WebState> web_state4 =
+      CreateFakeWebStateWithURL(GURLWithIndex(4));
   incognito_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state4), WebStateList::INSERT_FORCE_INDEX,
       WebStateOpener());
   EXPECT_EQ(2UL, consumer_.items.size());
 
   // Inserts a third pinned tab.
-  auto web_state5 = CreateFakeWebStateWithURL(GURLWithIndex(5));
+  std::unique_ptr<web::WebState> web_state5 =
+      CreateFakeWebStateWithURL(GURLWithIndex(5));
   regular_browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state5), WebStateList::INSERT_PINNED, WebStateOpener());
   EXPECT_EQ(3UL, consumer_.items.size());
@@ -131,7 +138,7 @@ TEST_F(PinnedTabsMediatorTest, ConsumerInsertItem) {
 // pinned view.
 TEST_F(PinnedTabsMediatorTest, DropOperation) {
   // The Pinned Tabs feature is not available on iPad.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (!IsPinnedTabsEnabled()) {
     return;
   }
 
@@ -155,4 +162,33 @@ TEST_F(PinnedTabsMediatorTest, DropOperation) {
       incognito_browser_->GetWebStateList()->GetWebStateAt(0));
   EXPECT_EQ([mediator_ dropOperationForDropSession:incognito_drop_session],
             UIDropOperationMove);
+}
+
+// Tests the drag and drop to reorder webstates.
+TEST_F(PinnedTabsMediatorTest, DragAndDropReorder) {
+  // The Pinned Tabs feature is not available on iPad.
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+
+  std::unique_ptr<web::WebState> web_state1 =
+      CreateFakeWebStateWithURL(GURLWithIndex(1));
+  web::WebState* web_state_to_move = web_state1.get();
+  regular_browser_->GetWebStateList()->InsertWebState(
+      0, std::move(web_state1), WebStateList::INSERT_PINNED, WebStateOpener());
+  regular_browser_->GetWebStateList()->InsertWebState(
+      1, CreateFakeWebStateWithURL(GURLWithIndex(2)),
+      WebStateList::INSERT_PINNED, WebStateOpener());
+  regular_browser_->GetWebStateList()->InsertWebState(
+      2, CreateFakeWebStateWithURL(GURLWithIndex(3)),
+      WebStateList::INSERT_PINNED, WebStateOpener());
+
+  ASSERT_EQ(web_state_to_move,
+            regular_browser_->GetWebStateList()->GetWebStateAt(0));
+
+  UIDragItem* drag_item = CreateTabDragItem(web_state_to_move);
+  [mediator_ dropItem:drag_item toIndex:2 fromSameCollection:YES];
+
+  EXPECT_EQ(web_state_to_move,
+            regular_browser_->GetWebStateList()->GetWebStateAt(2));
 }
