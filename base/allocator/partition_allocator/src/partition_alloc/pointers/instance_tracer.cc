@@ -12,7 +12,6 @@
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
-#include "partition_alloc/partition_ref_count.h"
 #include "partition_alloc/partition_root.h"
 
 namespace base::internal {
@@ -55,7 +54,7 @@ void InstanceTracer::TraceImpl(uint64_t owner_id, uintptr_t address) {
   const std::pair<uintptr_t, size_t> slot_and_size =
       partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   const uintptr_t slot_count = reinterpret_cast<uintptr_t>(
-      partition_alloc::internal::PartitionRefCountPointer(
+      partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
           slot_and_size.first, slot_and_size.second));
 
   const std::lock_guard guard(GetStorageMutex());
@@ -86,7 +85,7 @@ InstanceTracer::GetStackTracesForAddressForTest(const void* address) {
       partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(
           reinterpret_cast<uintptr_t>(address));
   const uintptr_t slot_count = reinterpret_cast<uintptr_t>(
-      partition_alloc::internal::PartitionRefCountPointer(
+      partition_alloc::PartitionRoot::RefCountPointerFromSlotStartAndSize(
           slot_and_size.first, slot_and_size.second));
   return GetStackTracesForDanglingRefs(slot_count);
 }
