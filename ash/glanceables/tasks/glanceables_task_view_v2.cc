@@ -270,7 +270,6 @@ class GlanceablesTaskViewV2::TaskTitleButton : public views::LabelButton {
     const auto color_id = completed ? cros_tokens::kCrosSysSecondary
                                     : cros_tokens::kCrosSysOnSurface;
     SetEnabledTextColorIds(color_id);
-    SetTextColorId(views::Button::ButtonState::STATE_DISABLED, color_id);
     label()->SetFontList(
         TypographyProvider::Get()
             ->ResolveTypographyToken(TypographyToken::kCrosButton2)
@@ -299,9 +298,8 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetCollapseMargins(true);
 
-  check_button_ =
-      AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
-          &GlanceablesTaskViewV2::CheckButtonPressed, base::Unretained(this))));
+  button_ = AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
+      &GlanceablesTaskViewV2::CheckButtonPressed, base::Unretained(this))));
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -372,9 +370,8 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
   contents_view_->SetProperty(views::kMarginsKey, double_row
                                                       ? kDoubleRowTextMargins
                                                       : kSingleRowTextMargins);
-  check_button_->SetProperty(views::kMarginsKey, double_row
-                                                     ? kDoubleRowButtonMargin
-                                                     : kSingleRowButtonMargin);
+  button_->SetProperty(views::kMarginsKey, double_row ? kDoubleRowButtonMargin
+                                                      : kSingleRowButtonMargin);
 
   auto a11y_description = task_title_;
   if (!details.empty()) {
@@ -383,8 +380,8 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_METADATA_WRAPPER_ACCESSIBLE_DESCRIPTION,
         base::JoinString(details, u", "));
   }
-  check_button_->SetAccessibleDescription(a11y_description);
-  check_button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  button_->SetAccessibleDescription(a11y_description);
+  button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 
   Shell::Get()->focus_controller()->AddObserver(this);
 }
@@ -410,11 +407,11 @@ void GlanceablesTaskViewV2::OnWindowActivated(
     aura::Window* lost_active) {}
 
 const views::ImageButton* GlanceablesTaskViewV2::GetCheckButtonForTest() const {
-  return check_button_;
+  return button_;
 }
 
 bool GlanceablesTaskViewV2::GetCompletedForTest() const {
-  return check_button_->checked();
+  return button_->checked();
 }
 
 void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
@@ -440,8 +437,7 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
               task_title_, base::BindRepeating(
                                &GlanceablesTaskViewV2::TaskTitleButtonPressed,
                                base::Unretained(this))));
-      task_title_button_->UpdateLabelForState(
-          /*completed=*/check_button_->checked());
+      task_title_button_->UpdateLabelForState(/*completed=*/button_->checked());
       task_title_button_->SetProperty(views::kMarginsKey,
                                       kTitleAndDetailMarginsInViewState);
       break;
@@ -457,14 +453,14 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
 
       edit_in_browser_button_ = contents_view_->AddChildView(
           std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
-      check_button_->SetEnabled(false);
       break;
   }
 }
 
 void GlanceablesTaskViewV2::CheckButtonPressed() {
-  bool target_state = !check_button_->checked();
-  check_button_->SetChecked(target_state);
+  bool target_state = !button_->checked();
+  // Visually mark the task as completed.
+  button_->SetChecked(target_state);
   if (task_title_button_) {
     task_title_button_->UpdateLabelForState(/*completed=*/target_state);
   }
@@ -473,6 +469,7 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
 }
 
 void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
+  // TODO(b/301253574): notify siblings to switch to `kView`.
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
 }
 
@@ -485,23 +482,21 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
   if (task_id_.empty() || task_title_ != old_title) {
-    task_title_button_->SetEnabled(false);
     save_callback_.Run(weak_ptr_factory_.GetWeakPtr(), task_id_,
                        base::UTF16ToUTF8(task_title_),
                        base::BindOnce(&GlanceablesTaskViewV2::OnSaved,
                                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    check_button_->SetEnabled(true);
+    // TODO(b/301253574): introduce "disabled" state for this view to prevent
+    // editing / marking as complete while the task is not fully created yet and
+    // race conditions while editing the same task.
   }
 }
 
 void GlanceablesTaskViewV2::OnSaved(const api::Task* task) {
-  check_button_->SetEnabled(true);
-  task_title_button_->SetEnabled(true);
-
-  if (task) {
-    task_id_ = task->id;
+  if (!task) {
+    return;
   }
+  task_id_ = task->id;
 }
 
 BEGIN_METADATA(GlanceablesTaskViewV2, views::View)

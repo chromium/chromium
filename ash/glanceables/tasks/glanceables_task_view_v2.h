@@ -37,7 +37,7 @@ struct Task;
 // |`GlanceablesTaskViewV2`                                        |
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
-// | |'check_button_'  | |'contents_view_'                       | |
+// | |'button_'        | |'contents_view_'                       | |
 // | |                 | | +-----------------------------------+ | |
 // | |                 | | |'tasks_title_view_'                | | |
 // | |                 | | +-----------------------------------+ | |
@@ -88,7 +88,7 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   class CheckButton;
   class TaskTitleButton;
 
-  // Handles press events on `check_button_`.
+  // Handles press events on `button_`.
   void CheckButtonPressed();
 
   // Handles press events on `task_title_button_`.
@@ -103,7 +103,7 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   void OnSaved(const api::Task* task);
 
   // Owned by views hierarchy.
-  raw_ptr<CheckButton> check_button_ = nullptr;
+  raw_ptr<CheckButton> button_ = nullptr;
   raw_ptr<views::FlexLayoutView> contents_view_ = nullptr;
   raw_ptr<views::FlexLayoutView> tasks_title_view_ = nullptr;
   raw_ptr<TaskTitleButton> task_title_button_ = nullptr;
