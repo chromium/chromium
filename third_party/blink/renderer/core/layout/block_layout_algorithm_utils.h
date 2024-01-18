@@ -13,6 +13,7 @@ class BlockBreakToken;
 class BoxFragmentBuilder;
 class ComputedStyle;
 class ExclusionSpace;
+class UseCounter;
 struct BfcOffset;
 
 // OOF-positioned nodes which were initially inline-level, however are in a
@@ -40,9 +41,11 @@ enum class BlockContentAlignment {
   kUnsafeEnd
 };
 BlockContentAlignment ComputeContentAlignmentForBlock(
-    const ComputedStyle& style);
+    const ComputedStyle& style,
+    UseCounter* use_counter = nullptr);
 BlockContentAlignment ComputeContentAlignmentForTableCell(
-    const ComputedStyle& style);
+    const ComputedStyle& style,
+    UseCounter* use_counter = nullptr);
 
 void AlignBlockContent(const ComputedStyle& style,
                        const BlockBreakToken* break_token,

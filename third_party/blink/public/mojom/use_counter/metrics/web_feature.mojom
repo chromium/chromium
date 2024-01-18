@@ -4110,6 +4110,8 @@ enum WebFeature {
   kV8WasmTypedFuncRef = 4770,
   kHTMLButtonInSelect = 4771,
   kHTMLDatalistInSelect = 4772,
+  kEffectiveAlignContentForBlock = 4773,
+  kEffectiveAlignContentForTableCell = 4774,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

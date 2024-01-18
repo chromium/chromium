@@ -1618,8 +1618,8 @@ void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
 
   LayoutUnit free_space =
       builder->FragmentBlockSize() - unconstrained_intrinsic_block_size;
-  BlockContentAlignment alignment =
-      ComputeContentAlignmentForTableCell(builder->Style());
+  BlockContentAlignment alignment = ComputeContentAlignmentForTableCell(
+      builder->Style(), &builder->Node().GetDocument());
   if (alignment == BlockContentAlignment::kSafeCenter ||
       alignment == BlockContentAlignment::kSafeEnd) {
     free_space = free_space.ClampNegativeToZero();
