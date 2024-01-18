@@ -677,10 +677,11 @@ TEST_F(SafetyCheckMediatorTest, OmahaRespondsOutOfDateAndUpdatesInfobarTime) {
   [mediator_ handleOmahaResponse:details];
   EXPECT_EQ(mediator_.updateCheckRowState, UpdateCheckRowStateOutOfDate);
 
-  NSDate* lastDisplay = [[NSUserDefaults standardUserDefaults]
-      objectForKey:kLastInfobarDisplayTimeKey];
-  EXPECT_GE([lastDisplay timeIntervalSinceNow], -1);
-  EXPECT_LE([lastDisplay timeIntervalSinceNow], 1);
+  PrefService* pref_service = GetApplicationContext()->GetLocalState();
+  const base::Time last_display =
+      pref_service->GetTime(kLastInfobarDisplayTimeKey);
+  EXPECT_GE((base::Time::Now() - last_display).InSeconds(), -1);
+  EXPECT_LE((base::Time::Now() - last_display).InSeconds(), 1);
   ResetNSUserDefaultsForTesting();
   ResetLocalPrefsForTesting();
 }

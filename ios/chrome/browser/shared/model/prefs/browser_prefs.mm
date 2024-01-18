@@ -485,6 +485,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterStringPref(kIOSChromeNextVersionKey, std::string());
   registry->RegisterStringPref(kIOSChromeUpgradeURLKey, std::string());
+  registry->RegisterTimePref(kLastInfobarDisplayTimeKey, base::Time());
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -779,6 +780,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 01/2024.
   MigrateNSStringPreferenceFromUserDefaults(kIOSChromeUpgradeURLKey, prefs,
                                             defaults);
+
+  // Added 01/2024.
+  MigrateNSDatePreferenceFromUserDefaults(kLastInfobarDisplayTimeKey, prefs,
+                                          defaults);
 }
 
 // This method should be periodically pruned of year+ old migrations.

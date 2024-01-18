@@ -986,8 +986,6 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     return;
   }
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
   if (details.is_up_to_date) {
     [self possiblyDelayReconfigureUpdateCheckItemWithState:
               UpdateCheckRowStateUpToDate];
@@ -1028,7 +1026,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.
-    [defaults setObject:[NSDate date] forKey:kLastInfobarDisplayTimeKey];
+    prefService->SetTime(kLastInfobarDisplayTimeKey, base::Time::Now());
   }
 }
 
