@@ -1,5 +1,6 @@
 <style include="md-select">
   :host {
+    --compose-loading-body-and-footer-height: 136px;
     --gap-between-sections_: 16px;
     --padding_: 20px;
     display: grid;
@@ -213,7 +214,7 @@
   :host([loading-indicator-shown_]) #bodyAndFooter {
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
-    height: 136px;
+    height: var(--compose-loading-body-and-footer-height);
   }
 
   :host([loading-indicator-shown_]) #body {

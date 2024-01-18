@@ -107,8 +107,8 @@ export class ComposeTextareaElement extends PolymerElement {
     this.animator_.transitionToEditable();
   }
 
-  transitionToReadonly() {
-    this.animator_.transitionToReadonly();
+  transitionToReadonly(fromHeight?: number) {
+    this.animator_.transitionToReadonly(fromHeight);
   }
 
   transitionToEditing(bodyHeight: number) {

@@ -49,12 +49,14 @@ export class ComposeTextareaAnimator extends Animator {
     ].flat();
   }
 
-  transitionToReadonly(): Animation[] {
+  transitionToReadonly(fromHeight?: number): Animation[] {
+    const fromHeightValue =
+        fromHeight ? `${fromHeight}px` : 'var(--compose-textarea-input-height)';
     const dimensionsAnimation = this.animate(
         '#inputContainer textarea, #readonlyContainer',
         [
           {
-            height: 'var(--compose-textarea-input-height)',
+            height: fromHeightValue,
             padding: 'var(--compose-textarea-input-padding)',
           },
           {

@@ -46,6 +46,7 @@ export interface ComposeAppElement {
     freMsbbDialog: HTMLElement,
     appDialog: HTMLElement,
     body: HTMLElement,
+    bodyAndFooter: HTMLElement,
     cancelEditButton: CrButtonElement,
     closeButton: HTMLElement,
     firstRunCloseButton: HTMLElement,
@@ -446,10 +447,15 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
+    const bodyHeight = this.$.bodyAndFooter.offsetHeight;
+    const editTextareaHeight = this.$.editTextarea.offsetHeight;
     this.isEditingSubmittedInput_ = false;
     this.input_ = this.editedInput_;
     this.selectedLength_ = Length.kUnset;
     this.selectedTone_ = Tone.kUnset;
+    this.animator_.transitionFromEditingToLoading(bodyHeight);
+    this.$.textarea.transitionToReadonly(editTextareaHeight);
+    this.$.editTextarea.transitionToReadonly(editTextareaHeight);
     this.compose_(true);
     this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
@@ -523,6 +529,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private rewrite_(style: StyleModifiers|null) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
+    const bodyHeight = this.$.body.offsetHeight;
     const resultHeight = this.$.resultContainer.offsetHeight;
     this.$.body.scrollTop = 0;
     this.loading_ = true;
@@ -530,7 +537,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.rewrite(style);
-    this.animator_.transitionFromResultToLoading(resultHeight);
+    this.animator_.transitionFromResultToLoading(bodyHeight, resultHeight);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {

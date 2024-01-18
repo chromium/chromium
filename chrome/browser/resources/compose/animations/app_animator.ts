@@ -73,6 +73,29 @@ export class ComposeAppAnimator extends Animator {
     return this.fadeIn('#loading', {delay: 100, duration: 100});
   }
 
+  transitionFromEditingToLoading(bodyHeight: number): Animation[] {
+    return [
+      // Shrink #bodyAndFooter from the current expanded height of the edit UI
+      // to the loading state.
+      this.animate(
+          '#bodyAndFooter',
+          [
+            {height: `${bodyHeight}px`},
+            {height: `var(--compose-loading-body-and-footer-height)`},
+          ],
+          {duration: 250, easing: STANDARD_EASING}),
+
+      // Fade out the edit form.
+      this.fadeOutAndHide('#editContainer', 'flex', {duration: 250}),
+
+      // The footer for the edit form fades out faster.
+      this.fadeOut('#editContainer .footer', {duration: 50}),
+      this.maintainStyles(
+          '#editContainer .footer', {opacity: 0},
+          {delay: 50, duration: 200, fill: 'none'}),
+    ].flat();
+  }
+
   transitionFromLoadingToCompleteResult(loadingHeight: number): Animation[] {
     const resultsHeight = this.getElement('#resultContainer').offsetHeight;
     return [
@@ -117,18 +140,42 @@ export class ComposeAppAnimator extends Animator {
         '#resultOptions, #resultFooter', {delay: 100, duration: 100});
   }
 
-  transitionFromResultToLoading(resultsHeight: number): Animation[] {
+  transitionFromResultToLoading(bodyHeight: number, resultsHeight: number):
+      Animation[] {
     const loadingHeight = this.getElement('#loading').offsetHeight;
     return [
-      this.fadeOutAndHide('#resultContainer', 'block', {duration: 100}),
-      this.fadeIn('#loading', {duration: 100}),
+      this.fadeOutAndHide('#resultContainer', 'flex', {duration: 250}),
+
+      // Fade out result options and keep faded out for the rest of animation.
+      this.fadeOut('#resultOptions', {duration: 50}),
+      this.maintainStyles(
+          '#resultOptions', {opacity: 0},
+          {delay: 50, duration: 200, fill: 'none'}),
+
+      this.fadeIn('#loading', {delay: 100, duration: 100}),
+
+      this.animate(
+          '#bodyAndFooter',
+          [
+            {height: `${bodyHeight}px`},
+            {height: 'var(--compose-loading-body-and-footer-height)'},
+          ],
+          {duration: 250, easing: STANDARD_EASING}),
       this.animate(
           '#resultContainer',
           [
-            {height: `${resultsHeight}px`},
-            {height: `${loadingHeight}px`},
+            {
+              height: `${resultsHeight}px`,
+              overflow: 'hidden',
+              alignItems: 'flex-end',
+            },
+            {
+              height: `${loadingHeight}px`,
+              overflow: 'hidden',
+              alignItems: 'flex-end',
+            },
           ],
-          {duration: 100, easing: STANDARD_EASING}),
+          {duration: 250, easing: STANDARD_EASING}),
     ].flat();
   }
 
