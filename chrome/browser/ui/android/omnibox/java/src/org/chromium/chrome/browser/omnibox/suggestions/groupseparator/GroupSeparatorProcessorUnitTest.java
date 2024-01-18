@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.dividerline;
+package org.chromium.chrome.browser.omnibox.suggestions.groupseparator;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,21 +17,21 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
-/** Tests for {@link DividerLineProcessor}. */
+/** Tests for {@link GroupSeparatorProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
-public class DividerLineProcessorUnitTest {
-    private DividerLineProcessor mProcessor;
+public class GroupSeparatorProcessorUnitTest {
+    private GroupSeparatorProcessor mProcessor;
 
     @Before
     public void setUp() {
-        mProcessor = new DividerLineProcessor(ContextUtils.getApplicationContext());
+        mProcessor = new GroupSeparatorProcessor(ContextUtils.getApplicationContext());
     }
 
     @Test
     @SmallTest
     public void basicInfoTest() {
-        Assert.assertEquals(OmniboxSuggestionUiType.DIVIDER_LINE, mProcessor.getViewTypeId());
+        Assert.assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, mProcessor.getViewTypeId());
 
         int minimumHeight =
                 ContextUtils.getApplicationContext()

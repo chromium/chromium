@@ -30,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxSuggestionUiType.HEADER,
     OmniboxSuggestionUiType.TILE_NAVSUGGEST,
     OmniboxSuggestionUiType.PEDAL_SUGGESTION,
-    OmniboxSuggestionUiType.DIVIDER_LINE,
+    OmniboxSuggestionUiType.GROUP_SEPARATOR,
     OmniboxSuggestionUiType.QUERY_TILES,
     OmniboxSuggestionUiType.COUNT
 })
@@ -45,7 +45,7 @@ public @interface OmniboxSuggestionUiType {
     int HEADER = 6;
     int TILE_NAVSUGGEST = 7;
     int PEDAL_SUGGESTION = 8;
-    int DIVIDER_LINE = 9;
+    int GROUP_SEPARATOR = 9;
     int QUERY_TILES = 10;
 
     int COUNT = 11;

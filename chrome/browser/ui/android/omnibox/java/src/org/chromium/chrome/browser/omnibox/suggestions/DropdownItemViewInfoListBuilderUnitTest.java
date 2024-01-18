@@ -40,7 +40,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor;
 import org.chromium.chrome.test.util.browser.Features;
@@ -71,7 +71,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     private @Spy HeaderProcessor mMockHeaderProcessor = new HeaderProcessor(mContext);
     private @Mock HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
 
-    private DividerLineProcessor mDividerLineProcessor = new DividerLineProcessor(mContext);
+    private GroupSeparatorProcessor mGroupSeparatorProcessor =
+            new GroupSeparatorProcessor(mContext);
     DropdownItemViewInfoListBuilder mBuilder;
 
     @Before
@@ -84,7 +85,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 new DropdownItemViewInfoListBuilder(
                         () -> null, (url) -> false, mOpenHistoryClustersDelegate);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
-        mBuilder.setDividerLineProcessorForTest(mDividerLineProcessor);
+        mBuilder.setGroupSeparatorProcessorForTest(mGroupSeparatorProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }
 
@@ -282,7 +283,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
         Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
 
-        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.DIVIDER_LINE);
+        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.GROUP_SEPARATOR);
         Assert.assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
 
         Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
@@ -619,7 +620,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
 
         assertEquals(/* 1 space + 2 suggestions = */ 3, result.size());
-        assertEquals(OmniboxSuggestionUiType.DIVIDER_LINE, result.get(0).type);
+        assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, result.get(0).type);
         assertEquals(OmniboxSuggestionUiType.DEFAULT, result.get(1).type);
         assertEquals(OmniboxSuggestionUiType.DEFAULT, result.get(2).type);
     }

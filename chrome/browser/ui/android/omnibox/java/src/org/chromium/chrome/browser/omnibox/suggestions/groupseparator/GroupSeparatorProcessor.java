@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.dividerline;
+package org.chromium.chrome.browser.omnibox.suggestions.groupseparator;
 
 import android.content.Context;
 
@@ -13,16 +13,16 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * A class that handles model and view creation for the suggestion divider line.
+ * A class that handles model and view creation for the suggestion group separator.
  * TODO(crbug/1518967): Move functionality to HeaderView and remove this component.
  */
-public class DividerLineProcessor implements DropdownItemProcessor {
+public class GroupSeparatorProcessor implements DropdownItemProcessor {
     private final int mMinimumHeight;
 
     /**
      * @param context An Android context.
      */
-    public DividerLineProcessor(Context context) {
+    public GroupSeparatorProcessor(Context context) {
         mMinimumHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.divider_height)
                         + context.getResources()
@@ -32,7 +32,7 @@ public class DividerLineProcessor implements DropdownItemProcessor {
 
     @Override
     public int getViewTypeId() {
-        return OmniboxSuggestionUiType.DIVIDER_LINE;
+        return OmniboxSuggestionUiType.GROUP_SEPARATOR;
     }
 
     @Override

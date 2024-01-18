@@ -20,9 +20,9 @@ import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionPr
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -48,7 +48,7 @@ class DropdownItemViewInfoListBuilder {
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private final @NonNull Supplier<Tab> mActivityTabSupplier;
 
-    private @Nullable DividerLineProcessor mDividerLineProcessor;
+    private @Nullable GroupSeparatorProcessor mGroupSeparatorProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable OmniboxImageSupplier mImageSupplier;
@@ -85,7 +85,7 @@ class DropdownItemViewInfoListBuilder {
             mImageSupplier = new OmniboxImageSupplier(context);
         }
 
-        mDividerLineProcessor = new DividerLineProcessor(context);
+        mGroupSeparatorProcessor = new GroupSeparatorProcessor(context);
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(
                 new EditUrlSuggestionProcessor(
@@ -141,12 +141,12 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
-     * Specify instance of the DividerLineProcessor that will be used to run tests.
+     * Specify instance of the GroupSeparatorProcessor that will be used to run tests.
      *
      * @param processor divider line processor used to build the suggestion divider line.
      */
-    void setDividerLineProcessorForTest(DividerLineProcessor processor) {
-        mDividerLineProcessor = processor;
+    void setGroupSeparatorProcessorForTest(GroupSeparatorProcessor processor) {
+        mGroupSeparatorProcessor = processor;
     }
 
     /**
@@ -279,8 +279,8 @@ class DropdownItemViewInfoListBuilder {
             result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
         } else if (previousDetails != null
                 && previousDetails.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
-            final PropertyModel model = mDividerLineProcessor.createModel();
-            result.add(new DropdownItemViewInfo(mDividerLineProcessor, model, groupDetails));
+            final PropertyModel model = mGroupSeparatorProcessor.createModel();
+            result.add(new DropdownItemViewInfo(mGroupSeparatorProcessor, model, groupDetails));
         }
 
 
