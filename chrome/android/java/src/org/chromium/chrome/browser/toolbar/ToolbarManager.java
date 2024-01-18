@@ -424,11 +424,13 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackCancelled() {
+            if (mHandler == null) return;
             mHandler.onBackCancelled();
         }
 
         @Override
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            if (mHandler == null) return;
             mHandler.onBackProgressed(
                     backEvent.getTouchX(),
                     backEvent.getTouchY(),
@@ -440,6 +442,7 @@ public class ToolbarManager
 
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return;
             mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
             mHandler.onBackStarted(
                     backEvent.getTouchX(),
