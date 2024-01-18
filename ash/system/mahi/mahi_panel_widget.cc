@@ -8,17 +8,11 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
+#include "ash/system/mahi/mahi_panel_view.h"
 #include "ui/aura/window.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -26,7 +20,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kPanelCornerRadius = 16;
 constexpr int kPanelDefaultWidth = 340;
 constexpr int kPanelDefaultHeight = 450;
 constexpr int kPanelBoundsPadding = 8;
@@ -63,29 +56,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
 
-  // TODO(b/319329821): Finish creating main panel layout.
-  auto view = std::make_unique<views::BoxLayoutView>();
-  view->SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
-
-  // Create a layer for the view for background blur and rounded corners.
-  view->SetPaintToLayer();
-  view->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kPanelCornerRadius});
-  view->layer()->SetFillsBoundsOpaquely(false);
-  view->layer()->SetIsFastRoundedCorner(true);
-  view->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  view->layer()->SetBackdropFilterQuality(
-      ColorProvider::kBackgroundBlurQuality);
-  view->SetBorder(std::make_unique<views::HighlightBorder>(
-      kPanelCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow,
-      /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
-
-  auto label = std::make_unique<views::Label>(u"Mahi Panel");
-  view->AddChildView(std::move(label));
-
-  widget->SetContentsView(std::move(view));
+  widget->SetContentsView(std::make_unique<MahiPanelView>());
   widget->SetBounds(CalculateWidgetBounds(root_window));
   return widget;
 }

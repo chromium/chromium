@@ -1679,6 +1679,8 @@ component("ash") {
     "system/locale/unified_locale_detailed_view_controller.h",
     "system/lock_screen_notification_controller.cc",
     "system/lock_screen_notification_controller.h",
+    "system/mahi/mahi_panel_view.cc",
+    "system/mahi/mahi_panel_view.h",
     "system/mahi/mahi_panel_widget.cc",
     "system/mahi/mahi_panel_widget.h",
     "system/media/media_color_theme.cc",
