@@ -3108,6 +3108,9 @@
         <message name="IDS_SEA_PEN_ERROR_GENERIC" desc="Error message displayed when an error occurs.">
           Something went wrong. Try again.
         </message>
+        <message name="IDS_SEA_PEN_THUMBNAILS_LOADING" desc="Placeholder text displayed when thumbnails are loading">
+          Generating images...
+        </message>
 
 
         <!-- Traffic Counters UI -->

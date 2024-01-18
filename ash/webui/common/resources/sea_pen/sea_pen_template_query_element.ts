@@ -42,9 +42,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   static get properties() {
     return {
-      templateId: {
-        type: SeaPenTemplateId,
-      },
+      templateId: String,
 
       path: String,
 
@@ -78,16 +76,27 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
       options_: {
         type: Array,
       },
+
+      thumbnailsLoading_: Boolean,
     };
   }
 
+  path: string;
+  // TODO(b/319719709) this should be SeaPenTemplateId.
+  templateId: string|null;
   private seaPenTemplate_: SeaPenTemplate;
   private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
   private templateTokens_: TemplateToken[];
   private options_: SeaPenOption[]|null;
   private selectedChip_: ChipToken|null;
-  path: string;
-  templateId: string|null;
+  private thumbnailsLoading_: boolean;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.watch<SeaPenTemplateQueryElement['thumbnailsLoading_']>(
+        'thumbnailsLoading_', state => state.loading.thumbnails);
+    this.updateFromStore();
+  }
 
   private computeSeaPenTemplate_(templateId: string|null) {
     const seaPenTemplates = getSeaPenTemplates();

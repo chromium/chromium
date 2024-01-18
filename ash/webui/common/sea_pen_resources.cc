@@ -32,6 +32,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenErrorResourceExhausted", IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED},
       {"seaPenErrorGeneric", IDS_SEA_PEN_ERROR_GENERIC},
       {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL},
+      {"seaPenThumbnailsLoading", IDS_SEA_PEN_THUMBNAILS_LOADING},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }

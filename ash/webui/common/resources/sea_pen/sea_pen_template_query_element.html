@@ -66,13 +66,21 @@
   }
 
   #searchButtons {
+    align-items: center;
+    box-sizing: border-box;
     display: flex;
+    height: 56px;
     justify-content: center;
     padding: 12px 0;
   }
 
   #searchButtons cr-button {
     margin: 0 4px;
+  }
+
+  #thumbnailsLoadingText {
+    color: var(--cros-text-color-prominent);
+    font: var(--cros-annotation-1-font);
   }
 
   cr-button {
@@ -120,21 +128,26 @@
     </template>
   </div>
   <div id="searchButtons">
-    <cr-button id="inspire" on-click="onClickInspire_">
-      <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
-      <p>[[i18n('seaPenInspireMeButton')]]</p>
-    </cr-button>
-    <cr-button
-        id="searchButton"
-        class="action-button"
-        on-click="onClickSearchButton_">
-      <iron-icon icon="[[getSearchButtonIcon_(path)]]" slot="prefix-icon">
-      </iron-icon>
-      <p>[[getSearchButtonText_(path)]]</p>
-    </cr-button>
+    <template is="dom-if" if="[[thumbnailsLoading_]]">
+      <span id="thumbnailsLoadingText">[[i18n('seaPenThumbnailsLoading')]]</span>
+    </template>
+    <template is="dom-if" if="[[!thumbnailsLoading_]]">
+      <cr-button id="inspire" on-click="onClickInspire_">
+        <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
+        <p>[[i18n('seaPenInspireMeButton')]]</p>
+      </cr-button>
+      <cr-button
+          id="searchButton"
+          class="action-button"
+          on-click="onClickSearchButton_">
+        <iron-icon icon="[[getSearchButtonIcon_(path)]]" slot="prefix-icon">
+        </iron-icon>
+        <p>[[getSearchButtonText_(path)]]</p>
+      </cr-button>
+    </template>
   </div>
   <cr-action-menu>
-    <template id="optionList"is="dom-repeat" items="[[options_]]" as="option">
+    <template id="optionList" is="dom-repeat" items="[[options_]]" as="option">
       <button
           aria-selected$="[[isOptionSelected_(option, selectedChip_.translation)]]"
           class="dropdown-item"
