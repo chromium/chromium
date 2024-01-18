@@ -686,7 +686,6 @@ source_set("quiche_tests") {
     "src/quiche/spdy/core/hpack/hpack_output_stream_test.cc",
     "src/quiche/spdy/core/hpack/hpack_round_trip_test.cc",
     "src/quiche/spdy/core/hpack/hpack_static_table_test.cc",
-    "src/quiche/spdy/core/metadata_extension_test.cc",
     "src/quiche/spdy/core/spdy_alt_svc_wire_format_test.cc",
     "src/quiche/spdy/core/spdy_frame_builder_test.cc",
     "src/quiche/spdy/core/spdy_framer_test.cc",
