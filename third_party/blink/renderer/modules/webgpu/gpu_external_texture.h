@@ -61,6 +61,9 @@ class ExternalTextureCache : public GarbageCollected<ExternalTextureCache> {
   void Add(VideoFrame* frame, GPUExternalTexture* external_texture);
   void Remove(VideoFrame* frame);
 
+  void ReferenceUntilGPUIsFinished(
+      scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
+
   void Trace(Visitor* visitor) const;
   GPUDevice* device() const;
 
@@ -104,12 +107,14 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       WGPUExternalTexture external_texture,
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
       bool is_zero_copy,
+      bool read_lock_fences_enabled,
       absl::optional<media::VideoFrame::ID> media_video_frame_unique_id);
 
   GPUExternalTexture(const GPUExternalTexture&) = delete;
   GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;
 
   bool isZeroCopy() const;
+  bool isReadLockFenceEnabled() const;
 
   void Destroy();
   void Expire();
@@ -179,13 +184,18 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   bool is_zero_copy_ = false;
   bool remove_from_cache_task_scheduled_ = false;
 
+  // read_lock_fences_enabled_ comes from media::VideoFrame metadata.
+  // VideoFrame set this metadata as a hint to ensure all previous gpu
+  // execution complete before returning video frame to producer.
+  bool read_lock_fences_enabled_ = false;
+
   absl::optional<media::VideoFrame::ID> media_video_frame_unique_id_;
   WeakMember<HTMLVideoElement> video_;
   WeakMember<VideoFrame> frame_;
   WeakMember<ExternalTextureCache> cache_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::atomic<Status> status_ = Status::Expired;
+  std::atomic<Status> status_ = Status::Active;
 };
 
 }  // namespace blink
