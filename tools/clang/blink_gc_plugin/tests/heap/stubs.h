@@ -159,13 +159,7 @@ class unordered_map {};
 template <typename Elem>
 class vector {};
 template <typename Elem, size_t N>
-class array {
- public:
-  const Elem& operator[](size_t n) const { return elems_[n]; }
-
- private:
-  Elem elems_[N];
-};
+class array {};
 template <typename T1, typename T2>
 class pair {};
 template <typename T>

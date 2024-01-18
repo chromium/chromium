@@ -197,11 +197,6 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
         // conservative stack scanning.
         return;
       }
-      if (member && (collection->getNameAsString() == "array")) {
-        // std::array of Members is fine as long as it is traced (which is
-        // enforced by another checker).
-        return;
-      }
       if (gc_type) {
         diagnostics_.CollectionOfGCed(bad_decl, collection, gc_type);
       } else {

@@ -134,9 +134,6 @@ class ArrayEdge : public Edge {
   explicit ArrayEdge(Edge* value) : value_(value){};
   LivenessKind Kind() override { return kStrong; }
   bool NeedsFinalization() override { return false; }
-  TracingStatus NeedsTracing(NeedsTracingOption option) override {
-    return value_->NeedsTracing(option);
-  }
   void Accept(EdgeVisitor* visitor) override { visitor->VisitArrayEdge(this); }
   Edge* element() { return value_; }
 
@@ -288,7 +285,23 @@ class Collection : public Edge {
       (*it)->Accept(visitor);
   }
   bool NeedsFinalization() override;
-  TracingStatus NeedsTracing(NeedsTracingOption) override;
+  TracingStatus NeedsTracing(NeedsTracingOption) override {
+    if (on_heap_)
+      return TracingStatus::Needed();
+
+    // This will be handled by matchers.
+    if (IsSTDCollection()) {
+      return TracingStatus::Unknown();
+    }
+
+    // For off-heap collections, determine tracing status of members.
+    TracingStatus status = TracingStatus::Unneeded();
+    for (Members::iterator it = members_.begin(); it != members_.end(); ++it) {
+      // Do a non-recursive test here since members could equal the holder.
+      status = status.LUB((*it)->NeedsTracing(kNonRecursive));
+    }
+    return status;
+  }
 
  private:
   RecordInfo* info_;

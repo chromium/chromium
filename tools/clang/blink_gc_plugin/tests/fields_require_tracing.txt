@@ -19,10 +19,4 @@ void HeapObject::Trace(Visitor* visitor) const {
 ./fields_require_tracing.h:43:5: note: [blink-gc] Untraced field 'm_part' declared here:
     PartObject m_part;
     ^
-./fields_require_tracing.h:44:5: note: [blink-gc] Untraced field 'm_array1' declared here:
-    Member<HeapObject> m_array1[2];
-    ^
-./fields_require_tracing.h:45:5: note: [blink-gc] Untraced field 'm_array2' declared here:
-    std::array<Member<HeapObject>, 2> m_array2;
-    ^
 3 warnings generated.
