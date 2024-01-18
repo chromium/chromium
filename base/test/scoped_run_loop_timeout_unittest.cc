@@ -190,6 +190,8 @@ TEST(ScopedRunLoopTimeoutTest, OverwriteTimeoutCallbackForTesting) {
                           GetExpectedTimeoutMessage(location, kErrorMessage));
 
   EXPECT_TRUE(custom_handler_called);
+
+  ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(nullptr);
 }
 
 }  // namespace base::test
